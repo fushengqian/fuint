@@ -1,0 +1,22 @@
+<link href="<@sp.static/>/assets/plugins/bootstrap/css/bootstrap.min.css" rel="stylesheet"/>
+<link href="<@sp.static/>/assets/css/style.min.css" rel="stylesheet"/>
+<link href="<@sp.static/>/assets/plugins/datatables/css/data-table.css" rel="stylesheet"/>
+<div style="overflow: auto; height: 300px; position: relative; margin: 8px;">
+    <div id="qstoreList"></div>
+    <input type="hidden" id="giveId" value="${giveId}"/>
+</div>
+<!-- jquery -->
+<script src="<@sp.static/>/js/jquery/jquery-3.0.0.min.js" type="text/javascript" charset="UTF-8"></script>
+<!-- jquery validate -->
+<script src="<@sp.static/>/js/jquery/validation/jquery.validate.min.js" type="text/javascript" charset="UTF-8"></script>
+<script src="<@sp.static/>/assets/plugins/jquery-ui/ui/minified/jquery-ui.min.js"></script>
+<script src="<@sp.static/>/assets/plugins/bootstrap/js/bootstrap.min.js"></script>
+<script src="<@sp.static/>/js/layer/layer.js" type="text/javascript" charset="UTF-8"></script>
+<script src="<@sp.static/>/js/custom/util.js" type="text/javascript" charset="UTF-8"></script>
+<script src="<@sp.static/>/js/custom/message.js" type="text/javascript" charset="UTF-8"></script>
+<script src="<@sp.static/>/js/custom/send.js?v=3423006756" type="text/javascript" charset="UTF-8"></script>
+<script type="text/javascript" language="JavaScript">
+    $(function () {
+        postDataByForm('${rc.contextPath}/backend/give/giveItem?giveId='+$("#giveId").val(), 'qstoreList', 'storeForm');
+    });
+</script>

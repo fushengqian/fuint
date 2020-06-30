@@ -1,0 +1,203 @@
+<link href="<@sp.static/>/assets/plugins/jquery-file-upload/css/jquery.fileupload.css" rel="stylesheet" />
+<link href="<@sp.static/>/assets/plugins/jquery-file-upload/css/jquery.fileupload-ui.css" rel="stylesheet" />
+<h1 class="page-header">
+    <small>分组管理</small>
+</h1>
+<hr/>
+<div class="panel panel-inverse" data-sortable-id="form-stuff-5">
+    <div class="panel-heading">
+        <h4 class="panel-title">分组查询</h4>
+    </div>
+    <div class="panel-body">
+        <form id="activityGroupForm" name="activityGroupForm" method="post" class="form-inline">
+            <div class="form-group m-r-4">
+                    <input type="text" placeholder="分组ID" class="form-control" style="width: 90%" id="EQ_id" name="EQ_id">
+            </div>
+            <div class="form-group m-r-10">
+                    <input type="text" placeholder="分组名称" class="form-control" style="width: 90%" id="LIKE_name" name="LIKE_name">
+            </div>
+            <div class="form-group m-r-10">
+                <select class="form-control" name="EQ_type" id="EQ_type">
+                    <option value="">类型</option>
+                    <option value="C" <#if 'C' == params.EQ_type >selected</#if> >优惠券</option>
+                    <option value="P" <#if 'P' == params.EQ_type >selected</#if> >预存卡</option>
+                </select>
+           </div>
+            <div class="form-group m-r-5">
+                <button type="button"
+                        class="btn btn-success btn-sm"
+                        onclick="postDataByForm('${rc.contextPath}/backend/couponGroup/queryList','activityGroupList','activityGroupForm')">
+                        <i class="fa fa-search"></i>
+                    查询
+                </button>
+                <button type="reset"
+                        class="btn btn-success btn-sm">
+                        <i class="fa fa-remove"></i>
+                    重置
+                </button>
+                <button type="button"
+                        class="btn btn-success btn-sm"
+                        onclick="batchSendCoupon();">
+                        <i class="fa fa-paste"></i>
+                    批量发券
+                </button>
+                <button type="button"
+                        class="btn btn-danger btn-sm"
+                        onclick="getData('${rc.contextPath}/backend/couponGroup/add','displayArea')">
+                    <i class="fa fa-plus"></i>
+                    新增分组
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+<div id="activityGroupList"></div>
+<script type="application/javascript">
+
+    $(function () {
+        postDataByForm('${rc.contextPath}/backend/couponGroup/queryList', 'activityGroupList', 'activityGroupForm');
+    });
+
+    /**
+     * 删除优惠分组
+     * @param groupId 组ID
+     */
+    function removeCouponGroup(groupId) {
+        layer.confirm('确定要删除该优惠分组吗？', {
+            btn: ['确定', '取消'] //按钮
+        }, function () {
+            $.ajax({
+                type: "GET",
+                url: "${rc.contextPath}/backend/couponGroup/delete/" + groupId,
+                success: function (data) {
+                    if (data.result) {
+                        $.close();
+                        postDataByForm('${rc.contextPath}/backend/couponGroup/queryList', 'activityGroupList', 'activityGroupForm')
+                    } else {
+                        $.close();
+                        layer.alert(data.msg);
+                    }
+                }
+            })
+        }, function () {
+            $.close();
+        });
+    }
+
+    /**
+     * 发券
+     * @param groupId 组ID
+     * */
+    function sendCoupon(groupId) {
+        var html = '<div style="margin-bottom:10px;"><span><i style="color:red;margin-right:2px;">*</i>手机号码：</span><input type="text" id="send_mobile" name="mobile" value=""/></div>'+
+                    '<div><span><i style="color:red;margin-right:2px;">*</i>发放套数：</span><input id="send_num" type="text" name="num" value=""/></div>';
+        layer.confirm(html, {
+            btn: ['发放', '取消'] //按钮
+        }, function () {
+            var mobile = $("#send_mobile").val();
+            var num = $("#send_num").val();
+
+            if (mobile.length != 11) {
+                layer.alert("手机号码格式有误！");
+                return;
+            }
+
+            if (num.length < 1) {
+                layer.alert("发放套数不能为空！");
+                return;
+            }
+
+            var re = /^[0-9]+$/ ;
+            if (!re.test(num) || parseInt(num) < 1) {
+                layer.alert("发放套数须为正整数！");
+                return;
+            }
+
+            $.ajax({
+                type: "POST",
+                data:{"groupId": groupId, "mobile": mobile, "num": num},
+                url: "${rc.contextPath}/backend/couponGroup/sendCoupon",
+                success: function (data) {
+                    if (data.result) {
+                        layer.alert("发券成功！");
+                        return;
+                    } else {
+                        layer.alert(data.msg);
+                        return;
+                    }
+                }
+            })
+        }, function () {
+            $.close();
+        });
+    }
+
+    function selectFile() {
+        $("#filePath").css("display", "block");
+        var value = $("#fileInput").val();
+        var index = value.lastIndexOf("\\");
+        value = value.substring(index + 1);
+        $("#filePath").val(value);
+    }
+
+    /**
+     * 批量发券
+     * */
+    function batchSendCoupon() {
+        var html = '<div>批量发券模板.xlsx &nbsp;&nbsp;<a style="color:#2a72b5;" target="_blank" href="${rc.contextPath}/backend/couponGroup/exportTemplate">下载</a></div>'+
+                    '<div style="margin-bottom:10px;margin-top:8px;width:322px;"><input type="text" style="display: none;" class="form-control" id="filePath" name="filePath"/></div>'+
+                    '<div><span class="btn btn-success fileinput-button">'+
+                    '<i class="fa fa-plus"></i>'+
+                    '<span>选择文件</span>'+
+                    '<input type="file" onchange="selectFile();" id="fileInput" name="fileInput" accept="application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet">'+
+                    '</span></div>';
+        layer.confirm(html, {
+            btn: ['上传并发送']
+        }, function () {
+            $.load();
+            var url = "${rc.contextPath}/backend/couponGroup/upload/";
+            $.ajaxFileUpload({
+                url: url,
+                secureuri: false,
+                fileElementId: "fileInput",
+                dataType: 'text',
+                success: function (result) {
+                    var resultJson = jQuery.parseJSON(result);
+                    $.close();
+                    if ("true" == resultJson.status) {
+                        var html = '<div>批量发券成功！ &nbsp;&nbsp;<a style="color:#2a72b5;font-size: 12px;" href="javascript:getData(\'${rc.contextPath}/backend/member/CouponinfoList?EQ_uuid='+resultJson.batchCode+'\', \'displayArea\');">查看已发放的券&gt;</a></div>';
+                        layer.confirm(html, {
+                            btn: ['确定']
+                        }, function () {
+                            $.close();
+                        });
+                    } else {
+                        layer.alert("上传错误,"+resultJson.message+",请修改后重新上传！");
+                    }
+                },
+                error: function (data, status, e) {
+                    $.close();
+                    $.error(e);
+                }
+            });
+        });
+    }
+    
+    function getGroupData(groupId) {
+        $.load();
+        $.ajax({
+            type: "POST",
+            data:{"groupId": groupId},
+            url: "${rc.contextPath}/backend/couponGroup/getGroupData",
+            success: function (data) {
+                var resultJson = jQuery.parseJSON(data);
+                $("#unSendNum_"+groupId).html(resultJson.unSendNum);
+                $("#sendNum_"+groupId).html(resultJson.sendNum);
+                $("#useNum_"+groupId).html(resultJson.useNum);
+                $("#expireNum_"+groupId).html(resultJson.expireNum);
+                $("#cancelNum_"+groupId).html(resultJson.cancelNum);
+                $.close();
+            }
+        })
+    }
+</script>

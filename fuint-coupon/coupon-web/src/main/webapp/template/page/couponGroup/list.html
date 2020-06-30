@@ -1,0 +1,76 @@
+<div class="panel panel-inverse" data-sortable-id="table-basic-4">
+    <div class="panel-heading">
+        <h4 class="panel-title">优惠分组列表</h4>
+    </div>
+    <div class="panel-body">
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th style="width: 10%">分组ID</th>
+                <th style="width: 10%">分组名称</th>
+                <th style="width: 10%">类型</th>
+                <th style="width: 10%">卡券数</th>
+                <th style="width: 10%">发行套数</th>
+                <th style="width: 10%">创建时间</th>
+                <th style="width: 10%">操作</th>
+            </tr>
+            </thead>
+            <tbody>
+            <#if paginationResponse.content?has_content && paginationResponse.content?exists && paginationResponse.content?size gt 0>
+                <#list paginationResponse.content as ct>
+                <tr>
+                    <td> ${ct.id}</td>
+                    <td> ${ct.name}</td>
+                    <td> <#if (ct.type == 'P')>预存卡<#else>优惠券</#if></td>
+                    <td> <#if (ct.num > 0)>${ct.num} <#else> 0 </#if></td>
+                    <td>
+                        ${ct.total}
+                        <#list groupData as item>
+                        <#if (item.key == ct.id)>
+                        <ul style="list-style-type:none;padding-left: 0px;">
+                            <li class="dropdown" >
+                                <a href="javascript:;" onclick="javascript:getGroupData(${ct.id});" data-toggle="dropdown">
+                                    <span class="label label-success" title="点击查看统计数据">统计数据</span>
+                                </a>
+                                <ul class="dropdown-menu animated fadeInLeft group-data">
+                                    <li>
+                                        <a href="javascript:getData('${rc.contextPath}/backend/member/CouponinfoList?EQ_groupId=${ct.id}','displayArea');">
+                                            <span class="row first-row">未发放：<span id="unSendNum_${ct.id}">${item.data.unSendNum}</span>套</span>
+                                            <span class="row first-row">已发放：<span id="sendNum_${ct.id}">${item.data.sendNum}</span>套</span>
+                                            <span class="row second-row">已使用：<span id="useNum_${ct.id}">${item.data.useNum}</span>张</span>
+                                            <span class="row second-row">已过期：<span id="expireNum_${ct.id}">${item.data.expireNum}</span>张</span>
+                                            <span class="row second-row">已作废：<span id="cancelNum_${ct.id}">${item.data.cancelNum}</span>张</span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
+                        </#if>
+                        </#list>
+                    </td>
+                    <td> ${ct.createTime}</td>
+                    <td>
+                        <#if ct.status == "D">
+                        <span class="label label-success small-btn"><i class="fa fa-trash"></i>已删除</span>
+                        <#else>
+                        <a class="label label-success small-btn" href="javascript:getData('${rc.contextPath}/backend/coupon/index?EQ_groupId=${ct.id}','displayArea');" title="卡券"><i class="fa fa-file-text"></i>卡券</a>
+                        <a class="label label-success small-btn" href="javascript:getData('${rc.contextPath}/backend/couponGroup/couponGroupEditInit/${ct.id}','displayArea')" title="编辑"><i class="fa fa-edit"></i>编辑</a>
+                        <a class="label label-success small-btn" href="javascript:sendCoupon('${ct.id}');" title="发券"><i class="fa fa-plus"></i>发券</a>
+                        <a class="label label-danger small-btn" href="javascript:removeCouponGroup('${ct.id}')" title="删除"><i class="fa fa-remove"></i>删除</a>
+                        </#if>
+                    </td>
+                </tr>
+                </#list>
+            <#else>
+            <tr class="gradeA even" role="row">
+                <td colspan="8" class="text-center">没有符合条件的数据！</td>
+            </tr>
+            </#if>
+            </tbody>
+        </table>
+        <!-- 分页组件 -->
+        <!-- recordBean 分页查询结果Bean  action 分页请求URL formName 分页需要的查询参数的表单名称 -->
+    <@sp.pagination recordBean=paginationResponse action="${rc.contextPath}/backend/couponGroup/queryList"
+    area="activityGroupList" formName="activityGroupForm"/>
+    </div>
+</div>

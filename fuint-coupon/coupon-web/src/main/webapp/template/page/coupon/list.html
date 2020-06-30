@@ -1,0 +1,98 @@
+<style>
+    .table>tbody>tr>td, .table>tbody>tr>th, .table>tfoot>tr>td, .table>tfoot>tr>th, .table>thead>tr>td, .table>thead>tr>th {
+        border-color: #e2e7eb;
+        padding: 10px 14px;
+    }
+</style>
+<div class="panel panel-inverse" data-sortable-id="table-basic-4" id="result">
+    <div class="panel-heading">
+        <small>卡券列表</small>
+    </div>
+    <div class="panel-body">
+        <table id="data-table" class="table table-striped">
+            <thead>
+            <tr>
+                <th >卡券ID</th>
+                <th >分组</th>
+                <th >类型</th>
+                <th >卡券名称</th>
+                <th >有效期</th>
+                <th >所属店铺</th>
+                <th >发行张数</th>
+                <th >创建时间</th>
+                <th >操作</th>
+            </tr>
+            </thead>
+            <tbody>
+            <#if paginationResponse?has_content && paginationResponse.content?exists && paginationResponse.content?size gt 0>
+                <#list paginationResponse.content as ct>
+                        <tr>
+                            <td>${ct.id}</td>
+                            <td>
+                                <#list groupMap as group>
+                                <#if group.id == ct.groupId >
+                                     ${group.name}
+                                </#if>
+                                </#list>
+                            </td>
+                            <td>
+                                <#list groupMap as type>
+                                <#if type.id == ct.groupId >
+                                ${type.type}
+                                </#if>
+                                </#list>
+                            </td>
+                            <td>${ct.name}</td>
+                            <td>
+                                <span style="border-radius: 5px;" class="badge badge-success badge-square">${ct.beginTime}</span></br>
+                                <span style="border-radius: 5px;" class="badge badge-danger badge-square">${ct.endTime}</span>
+                            </td>
+                            <td>
+                                <#if ct.storeIds != null && ct.storeIds != "" >
+                                    <#list storeMap as ht>
+                                        <#if ht.key == ct.storeIds >
+                                        ${ht.value}
+                                        </#if>
+                                    </#list>
+                                <#else>
+                                全部店铺
+                                </#if>
+                            </td>
+                            <td>
+                                <#list groupMap as total>
+                                <#if total.id == ct.groupId >
+                                     ${ct.total*total.total}
+                                </#if>
+                                </#list>
+                            </td>
+                            <td>
+                                ${ct.createTime}
+                            </td>
+                            <td>
+                                <#if ct.status == "D">
+                                <span>已删除</span>
+                                <#else>
+                                    <#if canCreate == "Y">
+                                        <a class="label label-success small-btn" href="javascript:void(0)" onclick="javascript:getData('${rc.contextPath}/backend/coupon/couponEditInit/${ct.id}','displayArea')"><i class="fa fa-edit" title="修改"></i>修改</a>
+                                        <a class="label label-danger small-btn" href="javascript:removeCoupon('${ct.id}')"><i title="删除" class="fa fa-trash"></i>删除</a>
+                                    <#else>
+                                        <a class="label label-success small-btn" href="javascript:void(0)" onclick="javascript:getData('${rc.contextPath}/backend/coupon/couponEditInit/${ct.id}','displayArea')"><i class="fa fa-eye" title="查看"></i>详情</a>
+                                    </#if>
+                                </#if>
+                            </td>
+                        </tr>
+                </#list>
+            <#else>
+                <tr class="gradeA even" role="row">
+                    <td colspan="12" class="text-center">没有符合条件的数据！</td>
+                </tr>
+            </#if>
+        </table>
+    </div>
+</div>
+
+<!-- 分页组件 -->
+<!-- recordBean 分页查询结果Bean
+     action 分页请求URL
+     formName 分页需要的查询参数的表单名称 -->
+<@sp.pagination recordBean=paginationResponse action="${rc.contextPath}/backend/coupon/queryList" area="activityList" formName="activityForm"/>

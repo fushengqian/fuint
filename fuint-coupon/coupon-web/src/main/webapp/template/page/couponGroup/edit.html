@@ -1,0 +1,103 @@
+<h1 class="page-header">
+    <small>分组管理</small>
+</h1>
+<hr/>
+<div class="panel panel-inverse" data-sortable-id="form-stuff-1">
+    <div class="panel-heading">
+        <h4 class="panel-title">编辑分组</h4>
+    </div>
+    <div class="panel-body">
+        <form id="activityGroupForm" name="activityGroupForm" method="post" class="form-horizontal">
+            <input type="hidden" name="id" value="${couponGroup.id}">
+            <div class="form-group">
+                <label class="col-md-3 control-label"><span class="requiredstar">* </span>分组名称：</label>
+                <div class="col-md-6">
+                    <input type="text" class="form-control" name="name" value="${couponGroup.name}" placeholder="分组名称 2-100位" rangelength="1,100" required/>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-md-3 control-label"><span class="requiredstar">*</span>类型：</label>
+                <div class="col-md-2">
+                    <select class="form-control" name="type" id="type">
+                        <option <#if (couponGroup.type == '')>selected</#if> value="">类型</option>
+                        <option <#if (couponGroup.type == 'C')>selected</#if> value="C">优惠券</option>
+                        <option <#if (couponGroup.type == 'P')>selected</#if> value="P">预存卡</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-md-3 control-label"><span class="requiredstar">* </span>发行套数：</label>
+                <div class="col-md-2">
+                    <input type="hidden" id="res_total" value="${couponGroup.total}">
+                    <input type="text" class="form-control" id="total" name="total" oninput="value=value.replace(/[^\d]/g,'')" value="${couponGroup.total}" placeholder="单位：套" maxlength="20" required/>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-md-3 control-label">备注信息：</label>
+                <div class="col-md-6">
+                    <textarea rows="5" class="form-control" id="description" name="description"
+                              maxlength="500" placeholder="请输入备注信息">${couponGroup.description}</textarea>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-md-3 control-label"></label>
+                <div class="col-md-6">
+                    <button type="button" id="submitButton" class="btn btn-sm btn-success"
+                            style="width: 130px;margin-right: 10px">提交
+                    </button>
+                    <button type="button" class="btn btn-sm btn-danger"
+                            onclick="getData('${rc.contextPath}/backend/couponGroup/index','displayArea')">返回
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<script type="application/javascript">
+
+    $(function () {
+        $('#submitButton').click(function () {
+            $('#activityGroupForm').submit();
+        })
+
+        $('#activityGroupForm').validate({
+            rules: {},
+            messages: {},
+            errorPlacement: function (error, element) {
+                error.appendTo(element.parent());
+            },
+            submitHandler: function () {
+                var n = $('#total').val();
+                var res = $('#res_total').val();
+
+                if (parseInt(n) < parseInt(res)) {
+                    layer.alert("券数只能增加！");
+                    return false;
+                }
+                if (parseInt(n) < 1) {
+                    layer.alert("发行量不能是负数！");
+                    return false;
+                }
+                if (parseInt(n) > 50000) {
+                    layer.alert("一次生成不能超过50000套！");
+                    return false;
+                }
+
+                if (parseInt(n) === parseInt(res)) {
+                    postDataByForm('${rc.contextPath}/backend/couponGroup/update', 'displayArea', 'activityGroupForm');
+                    return false;
+                }
+
+                layer.confirm('确认生成'+(parseInt(n) - parseInt(res))+'套券？', {
+                    btn: ['确定']
+                }, function () {
+                    postDataByForm('${rc.contextPath}/backend/couponGroup/update', 'displayArea', 'activityGroupForm');
+                    $.close();
+                }, function () {
+                    $.close();
+                });
+            }
+        })
+    });
+
+</script>

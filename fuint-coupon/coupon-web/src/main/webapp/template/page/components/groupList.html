@@ -1,0 +1,48 @@
+<div class="panel panel-inverse" data-sortable-id="table-basic-4" id="result">
+    <div class="panel-heading">
+        <small>分组列表</small>
+    </div>
+    <div class="panel-body">
+        <table class="table table-striped" style="font-size: 12px !important;">
+            <thead>
+            <tr>
+                <th>选择</th>
+                <th>ID</th>
+                <th>名称</th>
+            </tr>
+            </thead>
+            <tbody>
+            <#if groupList?has_content && groupList?exists && groupList?size gt 0>
+                <#list groupList as ct>
+                <tr>
+                    <td>
+                        <input type="radio" value="${ct.id}" name="id"
+                            <#if selectGroupIds?exists && selectGroupIds?seq_contains(ct.id+"") >
+                               checked
+                            </#if>
+                        />
+                    </td>
+                    <td>${ct.id}<br></td>
+                    <td>${ct.name}<br>
+                        <input type="hidden" name="NameTD" value="${ct.name}"/>
+                        <input type="hidden" name="IdTD" value="${ct.id}"/>
+                        <input type="hidden" name="TypeTD" value="${ct.type}"/>
+                    </td>
+                </tr>
+                </#list>
+            <#else>
+            <tr class="gradeA even" role="row">
+                <td colspan="11" class="text-center">没有符合条件的数据！</td>
+            </tr>
+            </#if>
+            </tbody>
+        </table>
+    </div>
+</div>
+<script type="text/javascript">
+    $(function () {
+        $('#checkAll').click(function () {
+            $("[name='id']").prop("checked", $("#checkAll").prop("checked"));
+        })
+    });
+</script>

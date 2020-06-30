@@ -1,0 +1,73 @@
+<h1 class="page-header">
+    <small><#if groupName>${groupName}-</#if>卡券列表</small>
+</h1>
+<hr/>
+<div class="panel panel-inverse" data-sortable-id="form-stuff-5">
+    <div class="panel-heading">
+        <h4 class="panel-title">卡券查询</h4>
+    </div>
+    <div class="panel-body">
+        <form id="activityForm" name="activityForm" method="post" class="form-inline">
+            <#if (EQ_groupId > 0)>
+            <input id="EQ_groupId" type="hidden" name="EQ_groupId" value="${EQ_groupId}">
+            <#else>
+            <div class="form-group m-r-10">
+                <input type="text" placeholder="分组ID" class="form-control" style="width: 100%" id="EQ_groupId" name="EQ_groupId">
+            </div>
+            </#if>
+            <div class="form-group m-r-10">
+                    <input type="text" placeholder="卡券ID" class="form-control" style="width: 100%" id="EQ_id" name="EQ_id">
+            </div>
+            <div class="form-group m-r-10">
+                    <input type="text" placeholder="卡券名称" class="form-control" style="width: 100%" id="LIKE_name" name="LIKE_name">
+            </div>
+            <div class="form-group m-r-10">
+                <button type="button"
+                        class="btn btn-success btn-sm"
+                        onclick="postDataByForm('${rc.contextPath}/backend/coupon/queryList','activityList','activityForm')">
+                    <i class="fa fa-search"></i>查询
+                </button>
+                <button type="reset"
+                        class="btn btn-success btn-sm">
+                    <i class="fa fa-remove"></i>重置
+                </button>
+                <button type="button"
+                        class="btn btn-danger btn-sm"
+                        onclick="getData('${rc.contextPath}/backend/coupon/add?groupId=${EQ_groupId}','displayArea')">
+                    <i class="fa fa-plus"></i>新增
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+<div id="activityList"></div>
+<script type="application/javascript">
+
+    $(function () {
+        postDataByForm('${rc.contextPath}/backend/coupon/queryList', 'activityList', 'activityForm');
+    });
+
+    /**
+     * 删除优惠券
+     * @param groupId 规则ID
+     */
+    function removeCoupon(id) {
+        layer.confirm('确定要删除该卡券吗？', {
+            btn: ['确定', '取消'] //按钮
+        }, function () {
+            $.ajax({
+                type: "GET",
+                url: "${rc.contextPath}/backend/coupon/delete/" + id,
+                success: function (data) {
+                    if (data.result) {
+                        $.close();
+                        postDataByForm('${rc.contextPath}/backend/coupon/queryList', 'activityList', 'activityForm')
+                    }
+                }
+            })
+        }, function () {
+            $.close();
+        });
+    }
+
+</script>

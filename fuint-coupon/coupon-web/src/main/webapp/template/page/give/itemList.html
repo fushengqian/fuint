@@ -1,0 +1,47 @@
+<div class="panel panel-inverse" data-sortable-id="table-basic-4" id="result">
+    <div class="panel-body">
+        <table class="table table-striped" style="font-size: 12px !important;">
+            <thead>
+            <tr>
+                <th>记录ID</th>
+                <th>用户手机号</th>
+                <th>赠予手机号</th>
+                <th>分组ID</th>
+                <th>分组名称</th>
+                <th>券ID</th>
+                <th>券名称</th>
+                <th>金额</th>
+                <th>操作时间</th>
+            </tr>
+            </thead>
+            <tbody>
+            <#if itemList?has_content && itemList?exists &&itemList?size gt 0>
+                <#list itemList as ct>
+                <tr>
+                    <td name="activityIdTD">${ct.id}<br></td>
+                    <td name="activityNameTD">${ct.mobile}</td>
+                    <td name="activityNameTD">${ct.userMobile}</td>
+                    <td name="activityNameTD">${ct.groupId}</td>
+                    <td name="activityNameTD">${ct.groupName}</td>
+                    <td name="activityNameTD">${ct.couponId}</td>
+                    <td name="activityNameTD">${ct.couponName}</td>
+                    <td name="activityNameTD">${ct.money}</td>
+                    <td name="activityNameTD">${ct.createTime}</td>
+                </tr>
+                </#list>
+            <#else>
+            <tr class="gradeA even" role="row">
+                <td colspan="11" class="text-center">没有符合条件的数据！</td>
+            </tr>
+            </#if>
+            </tbody>
+        </table>
+    </div>
+</div>
+<script type="text/javascript">
+    $(function () {
+        $('#checkAll').click(function () {
+            $("[name='id']").prop("checked",$("#checkAll").prop("checked"));
+        });
+    });
+</script>

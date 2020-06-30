@@ -1,0 +1,75 @@
+<h1 class="page-header">
+    <small>转赠统计</small>
+</h1>
+<hr/>
+<div class="panel panel-inverse" data-sortable-id="form-stuff-5">
+    <div class="panel-heading">
+        <h4 class="panel-title">转赠统计查询</h4>
+    </div>
+    <div class="panel-body">
+        <form id="activityForm" name="activityForm" method="post" class="form-inline">
+            <div class="block clearfix" style="display: block;height: 45px;">
+                <div class="col-md-4">
+                    <div class="col-md-7">
+                        <input type="text" placeholder="用户手机" class="form-control" style="width: 100%" id="EQ_userMobile" name="EQ_userMobile">
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="col-md-7">
+                        <input type="text" placeholder="赠予对象手机" class="form-control" style="width: 100%" id="EQ_mobile" name="EQ_mobile">
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="col-md-7">
+                        <input type="text" placeholder="分组ID" class="form-control" style="width: 100%" id="LIKE_groupIds" name="LIKE_groupIds">
+                    </div>
+                </div>
+            </div>
+            <div class="block clearfix" style="display: block;height: 45px;">
+                <div class="col-md-4">
+                    <div class="col-md-7">
+                        <input type="text" placeholder="分组名称" class="form-control" style="width: 100%" id="LIKE_groupNames" name="LIKE_groupNames">
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="col-md-7">
+                        <input type="text" placeholder="券ID" class="form-control" style="width: 100%" id="LIKE_couponIds" name="LIKE_couponIds">
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="col-md-7">
+                        <input type="text" placeholder="券名称" class="form-control" style="width: 100%" id="LIKE_couponNames" name="LIKE_couponNames">
+                    </div>
+                </div>
+            </div>
+            <div class="block clearfix" style="display: block;padding-left:16px;">
+                <div class="col-md-12">
+                    <button type="button" class="btn btn-success btn-sm" onclick="postDataByForm('${rc.contextPath}/backend/give/queryList','activityList','activityForm')">
+                        <i class="fa fa-search"></i>查询
+                    </button>
+                    <button type="reset" class="btn btn-danger btn-sm"><i class="fa fa-remove"></i>重置</button>
+                    <button type="button" class="btn btn-success btn-sm" onclick="exportExcel();"><i class="fa fa-sign-out"></i>导出Excel</button>
+                    <span style="color: red;">一次导出表格不可超过50000条，否则可能导致出错哦.</span>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<div id="activityList"></div>
+<script type="application/javascript">
+
+    $(function () {
+        postDataByForm('${rc.contextPath}/backend/give/queryList', 'activityList', 'activityForm');
+    });
+
+    function viewItem(giveId) {
+        alterpage('${rc.contextPath}/backend/give/viewItem?giveId='+giveId, "转赠详情");
+    }
+
+    function exportExcel() {
+        var params = "EQ_userMobile="+$("#EQ_userMobile").val()+"&EQ_mobile="+$("#EQ_mobile").val()+"&LIKE_groupIds="+$("#LIKE_groupIds").val()+"&LIKE_groupNames="+$("#LIKE_groupNames").val()+"&LIKE_couponIds="+$("#LIKE_couponIds").val()+"&LIKE_couponNames="+$("#LIKE_couponNames").val();
+        window.open( "${rc.contextPath}/backend/give/export?" + params, "_blank");
+        $.close();
+    }
+
+</script>

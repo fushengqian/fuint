@@ -1,0 +1,28 @@
+<!-- begin #header -->
+<div id="header" class="header navbar navbar-default navbar-fixed-top">
+    <!-- begin container-fluid -->
+    <div class="container-fluid">
+        <!-- begin mobile sidebar expand / collapse button -->
+        <div class="navbar-header">
+            <a href="index.html" class="navbar-brand"><span class="navbar-logo"></span>${systemName}</a>
+        </div>
+        <!-- end mobile sidebar expand / collapse button -->
+        <!-- begin header navigation  right -->
+        <ul class="nav navbar-nav navbar-right">
+            <li class="dropdown navbar-user">
+                <a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown">
+                    <span class="hidden-xs">您好:${shiroUserHelper.getCurrentShiroUser().acctName}</span> <b
+                        class="caret"></b>
+                </a>
+                <ul class="dropdown-menu animated fadeInLeft">
+                    <li class="arrow"></li>
+                    <li><a onclick="getData('${rc.contextPath}/user/editpwdinit','displayArea','classForm')">修改密码</a></li>
+                    <li><a href="${rc.contextPath}/logout">退出系统</a></li>
+                </ul>
+            </li>
+        </ul>
+        <!-- end header navigation right -->
+    </div>
+    <!-- end container-fluid -->
+</div>
+<!-- end #header -->

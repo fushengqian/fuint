@@ -1,0 +1,56 @@
+<div class="panel panel-inverse" data-sortable-id="table-basic-4" id="result">
+    <div class="panel-heading">
+        <small>店铺列表</small>
+    </div>
+    <div class="panel-body">
+        <table class="table table-striped" style="font-size: 12px !important;">
+            <thead>
+            <tr>
+                <th style="width:2%"></th>
+                <th>店铺ID</th>
+                <th>店铺名称</th>
+            </tr>
+            </thead>
+            <tbody>
+            <#if storeList?has_content && storeList?exists &&storeList?size gt 1>
+            <tr>
+                <td>
+                    <input type="radio" value="-1" name="id" onclick="checkOne()"
+                    <#if selectStoreIds?exists && selectStoreIds?seq_contains("-1") >
+                    checked
+                   </#if>
+                   >
+                </td>
+                <td name="activityIdTD">-1<br></td>
+                <td name="activityNameTD" style="color: rgb(229, 51, 51);">全部店铺<br>
+                    <input type="hidden" name="storeNameTD" value="全部店铺">
+                    <input type="hidden" name="storeIdTD" value="-1">
+                </td>
+            </tr>
+            </#if>
+            <#if storeList?has_content && storeList?exists &&storeList?size gt 0>
+                <#list storeList as ct>
+                <tr>
+                    <td>
+                        <input type="radio" value="${ct.id}" name="id" onclick="checkOne()"
+                            <#if selectStoreIds?exists && selectStoreIds?seq_contains(ct.id+"") >
+                               checked
+                            </#if>
+                        >
+                    </td>
+                    <td name="activityIdTD">${ct.id}<br></td>
+                    <td name="activityNameTD">${ct.name}<br>
+                        <input type="hidden" name="storeNameTD" value="${ct.name}"/>
+                        <input type="hidden" name="storeIdTD" value="${ct.id}"/>
+                    </td>
+                </tr>
+                </#list>
+            <#else>
+            <tr class="gradeA even" role="row">
+                <td colspan="11" class="text-center">没有符合条件的数据！</td>
+            </tr>
+            </#if>
+            </tbody>
+        </table>
+    </div>
+</div>

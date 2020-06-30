@@ -1,0 +1,373 @@
+
+/*
+KISSY CSS Reset
+理念：清除和重置是紧密不可分的
+特色：1.适应中文 2.基于最新主流浏览器
+维护：玉伯(lifesinger@gmail.com), 正淳(ragecarrier@gmail.com)
+*/
+
+/* 清除内外边距 */
+body, h1, h2, h3, h4, h5, h6, hr, p, blockquote, /* structural elements 结构元素 */
+dl, dt, dd, ul, ol, li, /* list elements 列表元素 */
+pre, /* text formatting elements 文本格式元素 */
+fieldset, lengend, button, input, textarea, /* form elements 表单元素 */
+th, td { /* table elements 表格元素 */
+    margin: 0;
+    padding: 0;
+}
+
+h1 { font-size: 18px; /* 18px / 12px = 1.5 */ }
+h2 { font-size: 16px; }
+h3 { font-size: 14px; }
+h4, h5, h6 { font-size: 100%; }
+
+address, cite, dfn, em, var, i { font-style: normal; } /* 将斜体扶正 */
+code, kbd, pre, samp, tt { font-family: "Courier New", Courier, monospace; } /* 统一等宽字体 */
+small { font-size: 12px; } /* 小于 12px 的中文很难阅读，让 small 正常化 */
+
+/* 重置列表元素 */
+ul, ol { list-style: none; }
+
+/* 重置文本格式元素 */
+/*a { color: #343434!important; text-decoration: none!important; outline:none!important;}*/
+.c_fff a{color: #fff!important;}
+a:hover { text-decoration: underline; }
+
+abbr[title], acronym[title] { /* 注：1.ie6 不支持 abbr; 2.这里用了属性选择符，ie6 下无效果 */
+    border-bottom: 1px dotted;
+    cursor: help;
+}
+
+q:before, q:after { content: ''; }
+
+/* 重置表单元素 */
+legend { color: #000; } /* for ie6 */
+fieldset, img { border: none; } /* img 搭车：让链接里的 img 无边框 */
+/* 注：optgroup 无法扶正 */
+button, input, select, textarea {
+    font-size: 100%; /* 使得表单元素在 ie 下能继承字体大小 */
+}
+
+/* 重置表格元素 */
+table {
+    border-collapse: collapse;
+    border-spacing: 0;
+}
+
+/* 重置 hr */
+hr {
+    border: none;
+    height: 1px;
+}
+
+/* 让非ie浏览器默认也显示垂直滚动条，防止因滚动条引起的闪烁 */
+html { overflow-y: scroll; }
+
+/* =============================********** 清楚浮动的样式处理 ***************========================= */    
+/* For modern browsers */
+.cf:before,
+.cf:after { content:"";display:table;}
+.cf:after { clear:both; }/* For IE 6/7 (trigger hasLayout) */
+.cf { zoom:1; }
+/** end 清除浮动 **/
+/* input 
+-----------------------------------------------------------------------*/
+/* textarea */
+.textarea_style1 { color:#000; border:1px solid #9dc2df; background-color:#fff; vertical-align:middle;}
+
+/* end input */
+
+/* select */
+.select_style1 { height:44px; line-height:44px; color:#666666; border:1px solid #c4c4c4; font-size:16px; vertical-align:middle;}
+.select_style2 { height:30px; line-height:26px; color:#c70009; border:1px solid #dcdcdc; font-size:26px; vertical-align:middle;}
+.select_style2 * { vertical-align: top; }
+select { color:#000; font-size:12px;font-family:Microsoft YaHei}
+/* end select 
+-----------------------------------------------------------------------*/
+
+
+/* font *********************************************************************************** */
+/* 文本样式 ************************************************************************** */
+/* 行高 */
+.l_20,.l_20 td{line-height:20px;}
+/* 字体大小 */
+.f_14,.f_14 *{font-size:14px;}
+.f_16,.f_16 *{font-size:16px;}
+.f_18,.f_18 *{font-size:18px;}
+.f_20,.f_20 *{font-size:20px;}
+/* 字体加粗 */
+.f_bold,.f_bold *{font-weight:bold;}
+/* 颜色 */
+.c_000,.c_000 a,.c_000 a:hover{color:#000;}
+.c_fff,.c_fff a,.c_fff a:hover{color:#fff;}
+.c_333,.c_333 a{color:#333;}.c_333 a:hover{color:#000;}
+.c_666,.c_666 a{color:#666;}.c_666 a:hover{color:#333;}
+.c_999,.c_999 a{color:#999;}.c_999 a:hover{color:#666;}
+.c_b21515,.c_b21515 a{color:#b21515;}.c_b21515 a:hover{color:#b21515;}
+.c_red,.c_red a{color:#f00;}.c_red a:hover{color:#f00;}
+.c_red02,.c_red02 a{color:#c70009;}.c_red02 a:hover,.c_red02:hover{color:#ff000c;}
+.c_green,.c_green a{color:#2aa00f;}.c_green a:hover{color:#2aa00f;}
+.c_gray,.c_gray a{color:#676767;}.c_gray a:hover{color:#676767;}
+.c_gray02,.c_gray02 a{color:#808080;}.c_gray02 a:hover{color:#808080;}
+.c_org,.c_org a{color:#ff6000;}.c_org a:hover{color:#ff6000;}
+.c_blue,.c_blue a{color:#0672e4;}.c_blue a:hover{color:#0672e4;}
+.c_blue02,.c_blue02 a{color:#00a0e9;}.c_blue02 a:hover{color:#00a0e9;}
+.c_blue03,.c_blue03 a{color:#178dd0;}.c_blue03 a:hover{color:#178dd0;}
+.c_79869c,.c_79869c a{color:#79869c;}.c_79869c a:hover{color:#79869c;}
+        
+/* 背景色 */
+.b_f1f1f1{background-color:#f1f1f1;}
+/* 结构样式 *******************************************/
+.w_10 {width: 10px !important;}
+.w_22 {width: 22px !important;}
+.w_24 {width: 24px !important;}
+.w_25 {width: 25px;}
+.w_48 {width: 48px;}
+.w_52 {width: 52px;}
+.w_58 {width: 58px;}
+.w_60 {width: 60px;}
+.w_65 {width: 65px;}
+.w_74 {width: 74px;}
+.w_77 {width: 77px;}
+.w_98 {width: 98px;}
+.w_110 {width: 110px;}
+.w_117 {width: 117px;}
+.w_128 {width: 128px;}
+.w_150 {width: 150px !important;}
+.w_190 {width: 190px;}
+.w_198 {width: 198px;}
+.w_210 {width: 210px;}
+.w_223 {width: 223px;}
+.w_225 {width: 225px;}
+.w_235 {width: 235px;}
+.w_265 {width: 265px;}
+.w_276{width: 276px;}
+.w_278{width: 278px !important;}
+.w_288 {width: 288px;}
+.w_292 { width:292px;}
+.w_300 { width:300px;}
+.w_305{width: 305px;}
+.w_335{width: 335px;}
+.w_347{width: 347px;}
+.w_350{width: 350px;}
+.w_476 { width:476px;}
+.w_500 { width:500px !important;}
+.w_502 { width:502px;}
+.w_521 { width:521px;}
+.w_530 { width:530px;}
+.w_536 { width:536px;}
+.w_600 { width: 600px;}
+.w_681 { width: 681px;}
+.w_700 { width: 700px !important;}
+.w_683 { width: 683px;}
+.w_865 { width: 865px; }
+.w_882 { width: 882px; }
+.w_1000{ width: 1000px; }
+/* 内边距 */
+.p_0 { padding:0px;}
+.p_10 { padding:10px;}
+.p_13 { padding:13px;}
+.p_15 { padding:15px;}
+.p_18 { padding:18px;}
+.p_20 { padding:20px;}
+.p_30 { padding:30px;}/*add by zsz*/
+.p_10_15 { padding:10px 15px;}
+.p_15_20 { padding:15px 20px;}
+.p_20_30 { padding:20px 30px;}
+.p_24_48 { padding:24px 48px;}
+.p_r_0 {padding-right:0px;}
+.p_r_4 {padding-right:4px;}
+.p_r_5 {padding-right:5px;}
+.p_r_7 {padding-right:7px;}
+.p_r_10 {padding-right:10px;}
+.p_r_12 {padding-right:12px;}
+.p_r_13 {padding-right:13px;}
+.p_r_15 {padding-right:15px;}
+.p_r_20 {padding-right:20px;}
+.p_r_35 {padding-right:35px;}
+.p_r_45 {padding-right:45px;}
+.p_t_0 {padding-top:0px!important;}
+.p_t_6 {padding-top:6px;}
+.p_t_10 {padding-top:10px;}
+.p_t_16 {padding-top:16px;}
+.p_t_20 {padding-top:20px;}
+.p_t_30 {padding-top:30px;}
+.p_t_38 {padding-top:38px;}
+.p_t_90 {padding-top:90px;}
+.p_t_190 {padding-top:190px;}
+.p_t_350 {padding-top:350px;}
+.p_b_2 {padding-bottom:2px;}
+.p_b_3 {padding-bottom:3px;}
+.p_b_5 {padding-bottom:5px;}
+.p_b_6 {padding-bottom:6px;}
+.p_b_10 {padding-bottom:10px;}
+.p_b_15 {padding-bottom:15px;}
+.p_b_16 {padding-bottom:16px;}
+.p_b_20 {padding-bottom:20px;}
+.p_b_30 {padding-bottom:30px;}
+.p_b_40 {padding-bottom:40px;}
+.p_b_50 {padding-bottom:50px;}
+.p_l_5 {padding-left:5px;}
+.p_l_7 {padding-left:7px;}
+.p_l_10 {padding-left:10px;}
+.p_l_12 {padding-left:12px;}
+.p_l_13 {padding-left:13px;}
+.p_l_15 {padding-left:15px;}
+.p_l_20 {padding-left:20px;}
+.p_l_23 {padding-left:23px!important;}
+.p_l_25 {padding-left:25px!important;}
+.p_l_36 {padding-left:36px;}
+.p_l_140 {padding-left:140px;}
+.p_l_190 {padding-left:190px;}/*add by zsz*/
+
+/* 外边距 */
+.m_r_0 { margin-right:0px !important;}
+.m_r_1 { margin-right:1px;}
+.m_r_2 { margin-right:2px;}
+.m_r_3 { margin-right:3px;}
+.m_r_5 { margin-right:5px;}
+.m_r_8 { margin-right:8px;}
+.m_r_10 { margin-right:10px;}
+.m_r_11 { margin-right:11px;}
+.m_r_12 { margin-right:12px;}
+.m_r_15 { margin-right:15px;}
+.m_r_20 { margin-right:20px;}
+.m_r_35 { margin-right:35px;}
+.m_r_45 { margin-right:45px;}
+.m_b_0 {margin-bottom:0px;}
+.m_b_2 { margin-bottom:2px;}
+.m_b_3 { margin-bottom:3px;}
+.m_b_4 { margin-bottom:4px;}
+.m_b_5 { margin-bottom:5px;}
+.m_b_6 { margin-bottom:6px;}
+.m_b_8 { margin-bottom:8px;}
+.m_b_9 { margin-bottom:9px;}
+.m_b_10 { margin-bottom:10px;}
+.m_b_15 { margin-bottom:15px !important;}
+.m_b_17 { margin-bottom:17px;}
+.m_b_18 { margin-bottom:18px;}
+.m_b_19 { margin-bottom:19px;}
+.m_b_20 { margin-bottom:20px;}
+.m_b_25 { margin-bottom:25px;}
+.m_b_27 { margin-bottom:27px;}/**login页面新增**/
+.m_b_30 { margin-bottom:30px;}
+.m_b_40 { margin-bottom:40px;}
+.m_b_50 { margin-bottom:50px;}
+.m_b_80 { margin-bottom:80px;}
+.m_l-33 { margin-left:-33px;}
+.m_l-15 { margin-left:-15px;}
+.m_l-5 { margin-left:-5px;}
+.m_l-3 { margin-left:-3px;}
+.m_l_1 { margin-left:1px;}
+.m_l_2 { margin-left:2px;}
+.m_l_3 { margin-left:3px;}
+.m_l_5 { margin-left:5px;}
+.m_l_7 { margin-left:7px;}
+.m_l_10 { margin-left:10px;}
+.m_l_12 { margin-left:12px !important;}
+.m_l_14 { margin-left:14px;}
+.m_l_15 { margin-left:15px;}
+.m_l_20 { margin-left:20px;}
+.m_l_30 { margin-left:30px;}
+.m_l_41 { margin-left:41px;}
+.m_l_45 { margin-left:45px;}
+.m_l_50 { margin-left:50px !important;}
+.m_l_53 { margin-left:53px;}
+.m_l_56 { margin-left:56px;}
+.m_l_70 { margin-left:70px;}
+.m_l_80 { margin-left:80px;}
+.m_l_90 { margin-left:90px;}
+.m_l_110 { margin-left:110px;}
+.m_l_134 {margin-left:134px;}
+.m_l_180 { margin-left:180px;}
+.m_t-2 { margin-top:-2px !important;}
+.m_t-1 { margin-top:-1px;}
+.m_t_2 { margin-top:2px;}
+.m_t_3 { margin-top:3px !important;}
+.m_t_5 { margin-top:5px !important;}
+.m_t_7 { margin-top:7px !important;}
+.m_t_10 { margin-top:10px !important;}
+.m_t_12 { margin-top:12px !important;}
+.m_t_15 { margin-top:15px !important;}
+.m_t_20 { margin-top:20px !important;margin-top: 20px\0;}
+.m_t_25 { margin-top:25px;}
+.m_t_30 { margin-top:30px;}
+.m_t_38 { margin-top:38px;}
+.m_t_45 { margin-top:45px;}
+.m_t_48 { margin-top:48px;}
+.m_t_60 { margin-top:60px;}
+.m_t_99 { margin-top:99px;}
+
+/** del **/
+.b_gray_b_1 {
+    border-bottom:1px solid #c4c4c4;
+}
+
+.block { display:block}
+.noShow{ display:none;}
+.hide{ display:none;}
+.hidden_block { visibility:hidden;}
+.bg_none { background:none!important}
+.fl { float:left!important}
+.fr { float:right!important}
+
+.tl { text-align:left!important;}
+.tr { text-align:right!important;}
+.tc { text-align:center!important;}
+
+.posit_rel { position:relative;}
+.posit_abs { position:absolute;}
+.posit_fix {position: fixed;}
+/* end table layout style */
+.pointer{ cursor:pointer;}
+.del_style{ text-decoration:line-through;}
+.unline { text-decoration: underline; }
+.v_m, .v_m * {vertical-align: middle;}
+
+.radio{ margin:0 5px; *margin:0 2px; vertical-align:-2px;*vertical-align:middle;}
+.checkbox{ margin:0 5px 0 2px;*margin:0 3px 0 0px;vertical-align:-2px;*vertical-align:middle;}
+
+/* =============================********** 清楚浮动的样式处理 ***************========================= */  
+.clearfix:after {
+  content: '\20';
+  display: block;
+  clear: both;  
+}
+.clearfix {
+  display:inline-block;
+  zoom:1;
+}
+* html .clearfix {
+  height:1%;
+}
+.clearfix {
+  display:block;
+}
+.none{
+  display: none !important;
+}
+
+.cp{
+  cursor: pointer !important;
+}
+
+.cd{
+  cursor: default !important;
+}
+
+.tran{
+  transition: all .3s linear !important;
+}
+
+.tc{
+  text-align: center;
+}
+
+.ps{
+  position:relative;
+}
+/** end 清除浮动 **/
+
+html{
+  color:#211551;
+}
