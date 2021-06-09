@@ -1,0 +1,54 @@
+/**
+ * rainbow.com Inc.
+ * Copyright (c) 2014-2015 All Rights Reserved.
+ */
+package com.mahua.base.service;
+
+import java.util.*;
+
+
+import com.mahua.base.dao.entities.TAccount;
+import com.mahua.base.dao.entities.TAccountDuty;
+import com.mahua.base.dao.entities.TSource;
+import com.mahua.base.service.account.TAccountService;
+import com.mahua.base.service.source.TSourceService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+
+/**
+ * 基础接口服务类
+ *
+ * @author HarrisonHan
+ * @version $Id: BaseServiceImpl.java, v 0.1 2015年11月20日 上午10:31:07 HarrisonHan Exp $
+ */
+@Service
+public class BaseServiceImpl implements BaseService {
+
+    /**
+     * 账户接口服务
+     */
+    @Autowired
+    private TAccountService tAccountService;
+    /**
+     * 资源接口服务
+     */
+    @Autowired
+    private TSourceService tResourceService;
+
+
+    public Set<String> findRoles(Long accountId) {
+        TAccount user = this.tAccountService.findAccountById(accountId);
+        Set<String> roles = new HashSet<String>();
+        if (user != null) {
+            Iterator<TAccountDuty> it = user.getHtAccountDuties().iterator();
+            TAccountDuty htAccountDuty = null;
+            while (it.hasNext()) {
+                htAccountDuty = it.next();
+                roles.add(htAccountDuty.gettDuty().getName());
+            }
+        }
+        return roles;
+    }
+
+}

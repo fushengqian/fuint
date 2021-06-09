@@ -1,0 +1,97 @@
+<h1 class="page-header">
+    <small>会员等级管理</small>
+</h1>
+<hr/>
+<div class="panel panel-inverse" data-sortable-id="form-stuff-5">
+    <div class="panel-heading">
+        <h4 class="panel-title">会员等级查询</h4>
+    </div>
+    <div class="panel-body">
+        <form id="gradeForm" name="gradeForm" method="post" class="form-inline">
+            <div class="form-group m-r-10">
+                <input type="text" class="form-control" name="EQ_id" value="${EQ_id}"
+                       placeholder="等级ID">
+            </div>
+            <div class="form-group m-r-10">
+                <input type="text" class="form-control" name="LIKE_name" value="${LIKE_name}"
+                       placeholder="等级名称">
+            </div>
+            <div class="form-group m-r-10">
+                <select class="form-control" name="EQ_catchType" id="EQ_catchType">
+                    <option value="">升级方式</option>
+                    <#if catchTypeList?has_content && catchTypeList?exists>
+                    <#list catchTypeList as pf>
+                    <option value="${pf.key}" <#if params.EQ_catchType== pf.key> selected</#if>>${pf.value}</option>
+                    </#list>
+                    </#if>
+                 </select>
+            </div>
+            <button type="button" class="btn btn-sm btn-success"
+                    onclick="postDataByForm('backend/userGrade/queryList','displayArea','gradeForm')"><i class="fa fa-search"></i>查询
+            </button>
+            <button type="button" class="btn btn-sm btn-danger" onclick="getData('${rc.contextPath}/backend/userGrade/add', 'displayArea')"><i class="fa fa-plus"></i> 新增会员等级</button>
+        </form>
+    </div>
+</div>
+<hr/>
+<div class="panel panel-inverse" data-sortable-id="table-basic-4">
+    <div class="panel-heading">
+        <h4 class="panel-title">会员等级列表</h4>
+    </div>
+    <div class="panel-body">
+        <table class="table table-striped table-bordered">
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>等级</th>
+                <th>名称</th>
+                <th>升级方式</th>
+                <th>升级条件值</th>
+                <th>有效天数</th>
+                <th>享受折扣</th>
+                <th>积分加速</th>
+                <th>状态</th>
+                <th>操作</th>
+            </tr>
+            </thead>
+            <tbody>
+            <#if paginationResponse?has_content && paginationResponse.content?exists && paginationResponse.content?size gt 0>
+                <#list paginationResponse.content as ct>
+                    <tr>
+                        <td>${ct.id}</td>
+                        <td>${ct.grade}</td>
+                        <td>${ct.name}</td>
+                        <td>${ct.catchType}</td>
+                        <td>${ct.catchValue}</td>
+                        <td>${ct.validDay}</td>
+                        <td>${ct.discount}折</td>
+                        <td>${ct.speedPoint}倍</td>
+                        <td>
+                        <#if ct.status == "A">
+                            激活
+                        <#else>
+                            禁用
+                        </#if>
+                        </td>
+                        <td>
+                            <a class="label label-success small-btn" href="javascript:getData('${rc.contextPath}/backend/userGrade/editInit/${ct.id}','displayArea')"><i class="fa fa-edit"></i>编辑</a>
+                            <#if ct.status == "A">
+                            <a class="label label-danger small-btn" href="javascript:getConfirmData('确定删除该会员用户信息吗?','${rc.contextPath}/backend/userGrade/delete/${ct.id}','displayArea')"><i class="fa fa-remove"></i>删除</a>
+                            </#if>
+                        </td>
+                    </tr>
+                </#list>
+            <#else>
+            <tr class="gradeA even" role="row">
+                <td colspan="12" class="text-center">没有符合条件的数据！</td>
+            </tr>
+            </#if>
+        </table>
+    </div>
+</div>
+
+<!-- 分页组件 -->
+<!-- recordBean 分页查询结果Bean
+     action 分页请求URL
+     formName 分页需要的查询参数的表单名称 -->
+<@sp.pagination recordBean=paginationResponse action="${rc.contextPath}/backend/userGrade/queryList" formName="gradeForm"/>

@@ -1,0 +1,84 @@
+<h1 class="page-header">
+    <small>新增角色</small>
+</h1>
+<hr/>
+<div class="panel panel-inverse" data-sortable-id="form-stuff-1">
+    <div class="panel-heading">
+        <h4 class="panel-title">角色表单</h4>
+    </div>
+    <div class="panel-body">
+        <form id="dutyForm" name="dutyForm" action="" method="post" class="form-horizontal">
+            <div class="form-group">
+                <label class="col-md-3 control-label">角色名称</label>
+
+                <div class="col-md-9">
+                    <input type="text" id="name" class="form-control" name="name" value="" placeholder="角色名称 2-10位" rangelength="2,10" required>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-md-3 control-label">角色描述</label>
+
+                <div class="col-md-9">
+                    <textarea class="form-control" placeholder="请填写角色描述.... 1-100位" rows="5" name="describe" id="describe"
+                              rangelength="1,100"></textarea>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-md-3 control-label">角色状态</label>
+
+                <div class="col-md-9">
+                    <select class="form-control" name="status" id="status" required>
+                        <option value="">--请选择--</option>
+                        <option value="A">有效</option>
+                        <option value="D">无效</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-md-3 control-label">角色类型</label>
+
+                <div class="col-md-9">
+                    <select class="form-control" name="dutyType" id="dutyType" required>
+                        <option value="1">超级管理员</option>
+                        <option value="2">普通管理员</option>
+                        <option value="3">用户角色</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-md-3 control-label">分配菜单</label>
+                <div class="col-md-9">
+                    <@sp.tree actionUrl="${rc.contextPath}/source/tree" title="分配菜单" selected=""/>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-md-3 control-label"></label>
+
+                <div class="col-md-9">
+                    <button type="button" id="submitButton" class="btn btn-sm btn-success">提交</button>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="right fr">
+
+    </div>
+</div>
+<script type="application/javascript">
+
+    $(function () {
+        $('#submitButton').click(function () {
+            $('#dutyForm').submit();
+        })
+        $('#dutyForm').validate({
+            errorPlacement: function (error, element) {
+                error.appendTo(element.parent());
+            },
+            submitHandler: function () {
+                var selectNode =  $.selectedTreeNode();
+                postDataByFormParams('${rc.contextPath}/duty/add', 'displayArea', 'dutyForm',selectNode);
+            }
+        })
+    })
+</script>
+

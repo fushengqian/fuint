@@ -1,0 +1,10 @@
+#会话工具类
+sessionUtil=com.mahua.base.util.Functions
+#字符串工具类
+stringUtil=com.mahua.util.StringUtil
+#日期工具类
+dateUtil=com.mahua.util.DateUtil
+#shiro 当前用户工具类
+shiroUserHelper=com.mahua.base.shiro.util.ShiroUserHelper
+#用户菜单工具类
+menuUtil=com.mahua.base.util.MenuUtil

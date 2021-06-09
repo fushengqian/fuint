@@ -1,0 +1,76 @@
+<h1 class="page-header">
+    <small>积分设置</small>
+</h1>
+<hr/>
+<div class="panel panel-inverse" data-sortable-id="form-stuff-1">
+    <div class="panel-heading">
+        <h4 class="panel-title">积分设置信息</h4>
+    </div>
+    <div class="panel-body">
+        <form class="form-horizontal" id="settingForm" name="settingForm" method="post">
+            <div class="form-group">
+                <label class="col-md-3 control-label">返1积分所需消费金额：</label>
+                <div class="col-md-9">
+                    <input type="text" id="pointNeedConsume" class="form-control" name="pointNeedConsume" value="${pointNeedConsume}" placeholder="返1积分所需消费金额" required>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-md-3 control-label">是否可当作现金使用：</label>
+                <div class="col-md-9">
+                    <select class="form-control" name="canUsedAsMoney" id="canUsedAsMoney">
+                        <option <#if (canUsedAsMoney == 'true')>selected</#if> value="true">是</option>
+                        <option <#if (canUsedAsMoney == 'false')>selected</#if> value="false">否</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-md-3 control-label">多少积分可抵扣1元现金：</label>
+                <div class="col-md-5">
+                    <input class="form-control" id="exchangeNeedPoint" value="${exchangeNeedPoint}" name="exchangeNeedPoint" placeholder="多少积分可抵扣1元现金"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-md-3 control-label">充值返积分倍数：</label>
+                <div class="col-md-5">
+                    <input class="form-control" id="rechargePointSpeed" value="${rechargePointSpeed}" name="rechargePointSpeed" placeholder="充值返积分倍数"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-md-3 control-label">状态：</label>
+                <div class="col-md-9">
+                    <select class="form-control" name="status" id="status">
+                        <option <#if (status == 'A')>selected</#if> value="A">激活</option>
+                        <option <#if (status == 'D')>selected</#if> value="D">禁用</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-md-3 control-label"></label>
+                <div class="col-md-9">
+                    <button type="button" id="submitButton" class="btn btn-sm btn-success">提交</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<script type="application/javascript">
+    $(function () {
+        $('#submitButton').click(function () {
+            $.ajax({
+                type: "POST",
+                data: $("#settingForm").serializeArray(),
+                url: "${rc.contextPath}/backend/point/save",
+                success: function (data) {
+                    if (data.result) {
+                        layer.alert("保存成功");
+                        return;
+                    } else {
+                        layer.alert("保存失败");
+                        return;
+                    }
+                }
+            })
+        })
+    });
+</script>
+

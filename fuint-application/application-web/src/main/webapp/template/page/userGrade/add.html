@@ -1,0 +1,109 @@
+<h1 class="page-header">
+    <small>新增会员等级</small>
+</h1>
+<hr/>
+<div class="panel panel-inverse" data-sortable-id="form-stuff-1">
+    <div class="panel-heading">
+        <h4 class="panel-title">会员等级信息</h4>
+    </div>
+    <div class="panel-body">
+        <form class="form-horizontal" id="memberGradeForm" name="memberGradeForm" method="post">
+            <div class="form-group">
+                <label class="col-md-3 control-label">等级：</label>
+                <div class="col-md-9">
+                    <input type="text" id="grade" class="form-control" name="grade" placeholder="等级 正整数" required>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-md-3 control-label">名称：</label>
+                <div class="col-md-9">
+                    <input type="text" id="name" required class="form-control" name="name" placeholder="名称 最长20位" maxlength="20" >
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-md-3 control-label">升级条件描述：</label>
+                <div class="col-md-5">
+                    <input class="form-control" id="condition" name="condition" placeholder="升级条件描述..."/>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-md-3 control-label">会员权益描述：</label>
+                <div class="col-md-5">
+                    <textarea rows="8" class="form-control" id="privilege" name="privilege" maxlength="500" placeholder="会员权益描述..."></textarea>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-md-3 control-label">升级方式：</label>
+                <div class="col-md-9">
+                    <select class="form-control" id="catchType" name="catchType">
+                        <#list catchTypeList as catchType>
+                        <option value="${catchType.key}">${catchType.value}</option>
+                        </#list>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-md-3 control-label">升级条件值：</label>
+                <div class="col-md-9">
+                    <input type="text" id="catchValue" class="form-control" name="catchValue" placeholder="升级条件值" required>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-md-3 control-label">有效天数：</label>
+                <div class="col-md-9">
+                    <input type="text" id="validDay" class="form-control" name="validDay" placeholder="有效天数，如：30，0表示无限期" maxlength="20" >
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-md-3 control-label">享受折扣：</label>
+                <div class="col-md-9">
+                    <input type="text" id="discount" class="form-control" name="discount" placeholder="享受折扣" maxlength="20" >
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-md-3 control-label">积分加速：</label>
+                <div class="col-md-9">
+                    <input type="text" id="speedPoint" class="form-control" name="speedPoint" placeholder="积分加速倍数" maxlength="20" >
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-md-3 control-label">状态：</label>
+                <div class="col-md-9">
+                    <select class="form-control" name="status" id="status">
+                        <option value="A">激活</option>
+                        <option value="D">禁用</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-md-3 control-label"></label>
+                <div class="col-md-9">
+                    <button type="button" id="submitButton" class="btn btn-sm btn-success">提交</button>
+                    <button type="button" class="btn btn-sm btn-danger"
+                            onclick="getData('${rc.contextPath}/backend/userGrade/queryList','displayArea')">返回
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<script type="application/javascript">
+    $(function () {
+        $('#submitButton').click(function () {
+            $('#memberGradeForm').submit();
+        })
+
+        $('#memberGradeForm').validate({
+            rules: {},
+            messages: {},
+            errorPlacement: function (error, element) {
+                error.appendTo(element.parent());
+            },
+            submitHandler: function () {
+                postDataByForm('${rc.contextPath}/backend/userGrade/save', 'displayArea', 'memberGradeForm');
+                $.close();
+            }
+        })
+    });
+</script>
+
