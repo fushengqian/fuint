@@ -21,7 +21,7 @@
       <httpclient.version>4.5.2</httpclient.version>
       <servlet.version>3.1.0</servlet.version>
       <slf4j.version>1.7.18</slf4j.version>
-      <logback.version>1.1.3</logback.version>
+      <logback.version>1.2.0</logback.version>
       <commonspool.version>1.5.4</commonspool.version>
       <commonsio.version>1.3.2</commonsio.version>
       <commonsfileupload.version>1.3.1</commonsfileupload.version>
