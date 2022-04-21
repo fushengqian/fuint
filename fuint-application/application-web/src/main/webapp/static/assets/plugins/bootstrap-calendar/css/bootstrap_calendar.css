@@ -1,0 +1,70 @@
+.calendar{
+    background: #F9F9F9;
+    border-radius: 5px;
+    border: 1px solid #DDD;
+}
+.calendar a{
+    text-decoration: none;
+    color: #333;
+    cursor: pointer;
+}
+.calendar td{
+    text-align: center;
+}
+.calendar .header{
+    padding: 10px 0 10px 0;
+}
+.calendar .prev_month{
+    float: left;
+}
+.calendar .next_month{
+    float: right;
+}
+.calendar .year{
+    text-align: center;
+    font-weight: 500;
+}
+.calendar .week_days{
+    font-weight: 500;
+}
+.calendar .event{
+    color: white;
+    background: #3B5A97;
+    text-shadow: 0 0 2px #333;
+    box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.3);
+    -moz-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.3);
+    -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.3);
+    font-weight: bold;
+}
+.calendar .event:hover{
+    background: #3B5A97;
+    text-shadow: 0 0 2px #000;
+    box-shadow: inset 0 0 7px rgba(0, 0, 0, 0.8);
+}
+.calendar .event a{
+    color: white;
+}
+.calendar .table td{
+    padding: 5px;
+}
+.calendar .table{
+    margin-bottom: 3px;
+}
+.calendar .week_days td{
+    background: #f0f0f0 ;
+    color: #000;
+}
+.calendar .visualmonthyear {
+    color: #000;
+}
+.noborder, .noborder .calendar, .noborder .calendar * {
+    border: none !important;
+}
+.dropdown-menu .calendar td a {
+    padding: 0px;
+}
+@media (max-width: 979px) {
+    .nav-collapse .nav>li>a, .nav-collapse .dropdown-menu a {
+        padding: 5px;
+    }
+}

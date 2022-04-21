@@ -1,0 +1,81 @@
+<h1 class="page-header">
+    <small>快速收款</small>
+</h1>
+<hr/>
+<div class="panel panel-inverse" data-sortable-id="form-stuff-1">
+    <div class="panel-heading">
+        <h4 class="panel-title">快速收款</h4>
+    </div>
+    <div class="panel-body">
+        <div class="cashier-form">
+            <form id="cashierForm" name="cashierForm" method="post" onSubmit="return false;" class="form-horizontal">
+                <div class="form-group">
+                    <label class="col-md-3 control-label">会员手机号：</label>
+                    <div class="col-md-5">
+                        <input type="text" id="mobile" class="form-control mobile" name="mobile" placeholder="请询问会员的手机号码并输入" rangelength="1,20"/>
+                        <input type="hidden" id="adminMobile" name="adminMobile" value="13800000008">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-md-3 control-label"><span class="requiredstar">*</span>收款金额（元）：</label>
+                    <div class="col-md-5">
+                        <input type="text" id="amount" class="form-control amount" name="amount" placeholder="请输入收款金额" rangelength="1,10" required/>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-md-3 control-label"><span class="requiredstar">*</span>支付二维码：</label>
+                    <div class="col-md-5">
+                        <input type="text" id="authCode" class="form-control amount" name="authCode" placeholder="请使用扫码枪扫描微信支付二维码" rangelength="1,100" required/>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-md-3 control-label"></label>
+                    <div class="col-md-9">
+                        <button type="button" id="submitButton" class="btn confirm-btn btn-danger" onclick="toCashier()">发起收款</button>
+                        <button type="button" class="btn btn-back btn-success" onclick="getData('${rc.contextPath}/backend/home/index','displayArea')">返回主页</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<script type="application/javascript">
+    // 扫码枪回车事件
+    $('#mobile').bind('keyup', function(event) {
+        if (event.keyCode == "13") {
+            return false;
+        }
+    });
+    // 发起收款
+    function toCashier() {
+       let mobile = $("#mobile").val();
+       if (mobile.length < 1) {
+           mobile = $('#adminMobile').val();
+       }
+       if ($("#amount").val().length < 1) {
+           layer.alert("请输入支付金额！");
+           return false;
+       }
+       if ($("#authCode").val().length < 1) {
+            layer.alert("请使用扫码枪扫描会员的微信支付二维码！");
+            return false;
+       }
+       // 发起结算
+       $.ajax({
+          type: "POST",
+          dataType: "json",
+          contentType: 'application/json;charset=UTF-8',
+          data: JSON.stringify({"mobile": mobile, "payAmount": $("#amount").val(), "authCode": $("#authCode").val(),"type": "payment", "payType": "MICROPAY", "remark": "后台收款"}),
+          url: "${rc.contextPath}/rest/settlement/submit",
+          success: function (data) {
+              if (data.data) {
+                  getData('${rc.contextPath}/backend/home/cashierResult?orderId=' + data.data.orderInfo.id,'displayArea')
+                  return;
+              } else {
+                  layer.alert(data.message);
+                  return;
+              }
+          }
+       })
+    }
+</script>

@@ -1,0 +1,28 @@
+<h1 class="page-header">
+    <small>快速收款</small>
+</h1>
+<hr/>
+<div class="panel panel-inverse" data-sortable-id="form-stuff-1">
+    <div class="panel-heading">
+        <h4 class="panel-title">收款结果</h4>
+    </div>
+    <div class="panel-body">
+        <div class="result-tpl">
+                <div class="result-msg">
+                    <#if orderInfo.payStatus == 'B'>
+                    <div class="msg-item result"><img class="t-icon" src="<@sp.static/>/img/success.png"/>收款成功！</div>
+                    <div class="msg-item">订单号：${orderInfo.orderSn}</div>
+                    <div class="msg-item amount">￥${orderInfo.payAmount}</div>
+                    <#else>
+                    <div class="msg-item fail"><img class="t-icon" src="<@sp.static/>/img/fail.png"/>收款失败！</div>
+                    <div class="msg-item">订单号：${orderInfo.orderSn}</div>
+                    <div class="msg-item amount">￥${orderInfo.payAmount}</div>
+                    </#if>
+                </div>
+                <div class="result-op">
+                    <button type="button" id="submitButton" class="btn confirm-btn btn-danger" onclick="getData('${rc.contextPath}/backend/home/toCashier','displayArea')">继续收款</button>
+                    <button type="button" class="btn btn-back btn-success" onclick="getData('${rc.contextPath}/backend/home/index','displayArea')">返回主页</button>
+                </div>
+        </div>
+    </div>
+</div>

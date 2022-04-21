@@ -1,0 +1,187 @@
+<h1 class="page-header">
+    <small>卡券明细</small>
+</h1>
+<hr/>
+<div class="panel panel-inverse" data-sortable-id="form-stuff-5">
+    <div class="panel-heading">
+        <h4 class="panel-title">会员卡券查询</h4>
+    </div>
+    <div class="panel-body">
+        <form id="couponForm" name="couponForm" method="post" class="form">
+                <div class="search-rows">
+                    <div class="col-md-3 item">
+                        <input type="text" class="form-control" name="EQ_userId" value="${params.EQ_userId}" placeholder="会员ID">
+                    </div>
+                    <div class="col-md-3 item">
+                        <input type="text" class="form-control" name="EQ_mobile" value="${params.EQ_mobile}" placeholder="会员手机号">
+                    </div>
+                    <div class="col-md-3 item">
+                        <input type="text" class="form-control" name="EQ_couponId" value="${params.EQ_couponId}" placeholder="卡券ID">
+                    </div>
+                    <div class="col-md-3 item">
+                        <select class="form-control" name="EQ_type" id="EQ_type">
+                            <option value="">卡券类型</option>
+                            <#if typeList?has_content && typeList?exists>
+                            <#list typeList as pf>
+                            <option value="${pf.key}" <#if params.EQ_type== pf.key> selected</#if>>${pf.value}</option>
+                            </#list>
+                            </#if>
+                         </select>
+                     </div>
+                </div>
+                <div class="search-rows">
+                    <div class="col-md-3 item">
+                        <select class="form-control" name="EQ_storeId" id="EQ_storeId">
+                            <option value="">使用店铺</option>
+                            <#if storeList?has_content && storeList?exists>
+                            <#list storeList as pf>
+                            <option value="${pf.id}" <#if params.EQ_storeId== pf.id>selected</#if>>${pf.name}</option>
+                            </#list>
+                            </#if>
+                        </select>
+                    </div>
+                    <div class="col-md-3 item">
+                        <input type="text" class="form-control" name="EQ_code" value="${params.EQ_code}" placeholder="核销二维码">
+                    </div>
+                    <div class="col-md-2 item">
+                        <select class="form-control" name="EQ_status" id="EQ_status">
+                            <option value="">状态</option>
+                            <option value="A" <#if params.EQ_status== "A"> selected</#if>>未使用</option>
+                            <option value="B" <#if params.EQ_status== "B"> selected</#if>>已使用</option>
+                            <option value="C" <#if params.EQ_status== "C"> selected</#if>>已过期</option>
+                            <option value="D" <#if params.EQ_status== "D"> selected</#if>>已作废</option>
+                            <option value="E" <#if params.EQ_status== "E"> selected</#if>>待领取</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4 item">
+                        <button type="button" class="btn btn-sm btn-success m-r-5" onclick="postDataByForm('backend/userCoupon/list','displayArea','couponForm')"><i class="fa fa-search"></i>查询</button>
+                        <button type="button" class="btn btn-sm btn-danger m-r-5" onclick="downLoad();"><i class="fa fa-download"></i>下载二维码</button>
+                    </div>
+                </div>
+        </form>
+    </div>
+</div>
+<hr />
+<div class="panel panel-inverse" data-sortable-id="table-basic-4">
+    <div class="panel-heading">
+        <div class="panel-heading-btn">
+        </div>
+        <h4 class="panel-title">会员卡券</h4>
+    </div>
+    <div class="panel-body">
+        <table class="table table-striped table-bordered">
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>会员ID</th>
+                <th>会员名称</th>
+                <th>卡券类型</th>
+                <th>卡券ID</th>
+                <th>卡券名称</th>
+                <th>所属店铺</th>
+                <th>面额</th>
+                <th>余额</th>
+                <th>状态</th>
+                <th>使用时间</th>
+                <th>生成时间</th>
+                <th>操作</th>
+            </tr>
+            </thead>
+            <tbody>
+            <#if paginationResponse.content?has_content && paginationResponse.content?exists && paginationResponse.content?size gt 0>
+            <#list paginationResponse.content as ct>
+            <tr>
+                <td>${ct.id}</td>
+                <td><#if ct.userInfo.id>${ct.userInfo.id}<#else>--</#if></td>
+                <td><#if ct.userInfo.name>${ct.userInfo.name}<#else>--</#if></td>
+                <td>
+                    <#if ct.type == 'T'>
+                    集次卡
+                    <#elseif ct.type == 'P'>
+                    预存卡
+                    <#else>
+                    优惠券
+                    </#if>
+                </td>
+                <td><#if ct.name>${ct.couponId}<#else>--</#if></td>
+                <td><#if ct.name>${ct.name}<#else>--</#if></td>
+                <td><#if ct.storeInfo>${ct.storeInfo.name}<#else>暂无</#if></td>
+                <td>${ct.amount}</td>
+                <td><#if ct.balance>${ct.balance}<#else>${ct.amount}</#if></td>
+                <td>
+                    <#if ct.status='A'>
+                    <span class="status-active">未使用</span>
+                    <#elseif ct.status='B'>
+                    <span class="status-normal">已使用</span>
+                    <#elseif ct.status='C'>
+                    <span class="status-disabled">已过期</span>
+                    <#elseif ct.status='D'>
+                    <span class="status-disabled">已删除</span>
+                    <#elseif ct.status='E'>
+                    <span class="status-active">待领取</span>
+                    </#if>
+                </td>
+                <td><#if ct.usedTime>${ct.usedTime}<#else>--</#if></td>
+                <td>${ct.createTime}</td>
+                <td>
+                    <!--未使用、待领取-->
+                    <#if ct.status == "A" || ct.status == "E" >
+                    <a class="label label-success small-btn" href="javascript:confirmerCoupon('${ct.id}')"  title="手动核销"><i class="fa fa-adjust"></i>核销</a>
+                    <a class="label label-danger small-btn" href="javascript:getConfirmData('确定作废该卡券？作废后该操作不可撤回，请确认！','${rc.contextPath}/backend/coupon/deleteUserCoupon/${ct.id}', 'displayArea')"><i class="fa fa-trash"></i>作废</a>
+                    <#else>
+                    --
+                    </#if>
+                </td>
+            </tr>
+            </#list>
+            <#else>
+            <tr class="gradeA even" role="row">
+                <td colspan="11" class="text-center">没有符合条件的数据！</td>
+            </tr>
+            </#if>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script language="JavaScript" charset="utf-8">
+    /**
+     * 核销卡券
+     * @param userCouponId
+     */
+    function confirmerCoupon(userCouponId) {
+        layer.confirm('您确定要核销该卡券吗？', {
+            btn: ['确定', '取消']
+        }, function () {
+            getData('${rc.contextPath}/backend/userCoupon/doConfirm/?userCouponId='+userCouponId, "displayArea");
+            $.close();
+        }, function () {
+            $.close();
+        });
+    }
+
+    function downLoad() {
+        var params = "";
+        var inp = document.getElementsByTagName("input");
+
+        for (var i = 0; i < inp.length; i++) {
+            if (inp[i].value.length > 0) {
+                params += inp[i].name+"="+inp[i].value+"&"
+            }
+        }
+
+        var sel = document.getElementsByTagName("select");
+        for (var i = 0; i < sel.length; i++) {
+            if (sel[i].value.length > 0) {
+                params += sel[i].name+"="+sel[i].value+"&"
+            }
+        }
+
+        window.location = "${rc.contextPath}/backend/userCoupon/exportList?" + params;
+    }
+</script>
+<!-- 分页组件 -->
+<!-- recordBean 分页查询结果Bean
+     action 分页请求URL
+     formName 分页需要的查询参数的表单名称 -->
+<@sp.pagination recordBean=paginationResponse action="${rc.contextPath}/backend/userCoupon/list" formName="couponForm"/>

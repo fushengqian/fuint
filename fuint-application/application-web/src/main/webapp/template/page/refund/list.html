@@ -1,0 +1,96 @@
+<h1 class="page-header">
+    <small>售后列表</small>
+</h1>
+<hr/>
+<div class="panel panel-inverse" data-sortable-id="form-stuff-5">
+    <div class="panel-heading">
+        <h4 class="panel-title">售后订单查询</h4>
+    </div>
+    <div class="panel-body">
+        <form id="orderForm" name="orderForm" method="post" class="form">
+            <div class="search-rows">
+                <div class="col-md-3 item">
+                    <input type="text" class="form-control" name="EQ_userId" value="${EQ_userId}" placeholder="会员ID">
+                </div>
+                <div class="col-md-3 item">
+                    <input type="text" class="form-control" name="EQ_orderId" value="${EQ_orderId}" placeholder="订单ID">
+                </div>
+                <button type="button" class="btn btn-sm btn-success"
+                    onclick="postDataByForm('backend/refund/index','displayArea','orderForm')"><i class="fa fa-search"></i>查询
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+<hr/>
+<div class="panel panel-inverse" data-sortable-id="table-basic-4">
+    <div class="panel-heading">
+        <h4 class="panel-title">售后订单列表</h4>
+    </div>
+    <div class="panel-body">
+        <table class="table table-striped table-bordered">
+            <thead>
+            <tr>
+                <th>售后ID</th>
+                <th>订单ID</th>
+                <#if storeId < 1>
+                <th>店铺ID</th>
+                </#if>
+                <th>会员ID</th>
+                <th>售后类型</th>
+                <th>退款金额</th>
+                <th>提交时间</th>
+                <th>更新时间</th>
+                <th>备注</th>
+                <th>状态</th>
+                <th>操作</th>
+            </tr>
+            </thead>
+            <tbody>
+            <#if paginationResponse?has_content && paginationResponse.content?exists && paginationResponse.content?size gt 0>
+                <#list paginationResponse.content as ct>
+                    <tr>
+                        <td>${ct.id}</td>
+                        <td>${ct.orderId}</td>
+                        <#if storeId < 1>
+                            <td><#if ct.storeId>${ct.storeId}<#else>--</#if></td>
+                        </#if>
+                        <td><#if ct.userId>${ct.userId}<#else>--</#if></td>
+                        <td><#if ct.type == 'return'>退货退款<#else>换货</#if></td>
+                        <td><#if ct.amount>${ct.amount}<#else>0.00</#if></td>
+                        <td>${ct.createTime}</td>
+                        <td>${ct.updateTime}</td>
+                        <td>${ct.remark}</td>
+                        <td>
+                        <#if ct.status == "A">
+                            <span class="status-normal">申请中</span>
+                        <#elseif ct.status == "B">
+                            <span class="status-active">已同意</span>
+                        <#elseif ct.status == "C">
+                            <span class="status-disabled">已拒绝</span>
+                        </#if>
+                        </td>
+                        <td>
+                            <#if ct.status == "A">
+                            <a class="label label-success small-btn" href="javascript:getConfirmData('您确定审核同意吗?','${rc.contextPath}/backend/refund/agree/${ct.id}', 'displayArea');"><i class="fa fa-file-text"></i>同意</a>
+                            <a class="label label-danger small-btn" href="javascript:getConfirmData('您确定拒绝售后吗?','${rc.contextPath}/backend/refund/disagree/${ct.id}', 'displayArea');"><i class="fa fa-trash"></i>拒绝</a>
+                            <#else>
+                            --
+                            </#if>
+                        </td>
+                    </tr>
+                </#list>
+            <#else>
+            <tr class="gradeA even" role="row">
+                <td colspan="12" class="text-center">没有符合条件的数据！</td>
+            </tr>
+            </#if>
+        </table>
+    </div>
+</div>
+
+<!-- 分页组件 -->
+<!-- recordBean 分页查询结果Bean
+     action 分页请求URL
+     formName 分页需要的查询参数的表单名称 -->
+<@sp.pagination recordBean=paginationResponse action="${rc.contextPath}/backend/order/list" formName="orderForm"/>

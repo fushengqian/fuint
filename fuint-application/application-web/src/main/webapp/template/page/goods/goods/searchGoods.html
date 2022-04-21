@@ -1,0 +1,62 @@
+ <link href="<@sp.static/>/assets/plugins/bootstrap/css/bootstrap.min.css" rel="stylesheet"/>
+<link href="<@sp.static/>/assets/plugins/font-awesome/css/font-awesome.min.css" rel="stylesheet" />
+<link href="<@sp.static/>/assets/css/style.min.css" rel="stylesheet"/>
+<link href="<@sp.static/>/assets/plugins/datatables/css/data-table.css" rel="stylesheet"/>
+<div style="overflow: auto; height: 450px; position: relative; margin: 8px;">
+    <div class="panel panel-inverse pop-panel" data-sortable-id="form-stuff-5">
+        <div class="panel-body">
+            <form id="goodsForm" name="goodsForm" method="post" class="form-inline">
+                    <input style="width:160px;" type="text" placeholder="商品ID" class="form-control" name="EQ_id">
+                    <input style="width:200px;" type="text" placeholder="商品名称" class="form-control" name="LIKE_name">
+                    <input type="hidden" class="form-control" name="selectGoodsIds" id="selectGoodsIds" value="${selectGoodsIds}">
+                    <button type="button" class="btn btn-success btn-sm"
+                            onclick="postDataByForm('${rc.contextPath}/backend/goods/goods/quickSearchGoods', 'qGoodsList', 'goodsForm');"><i class="fa fa-search"></i>查询
+                    </button>
+            </form>
+        </div>
+    </div>
+    <div class="pop-list" id="qGoodsList"></div>
+    <div class="pop-footer">
+        <button type="button" id="selectedButton" class="btn btn-sm btn-success m-5">确定</button>
+    </div>
+</div>
+
+<!-- jquery -->
+<script src="<@sp.static/>/js/jquery/jquery-3.0.0.min.js" type="text/javascript" charset="UTF-8"></script>
+<!-- jquery validate -->
+<script src="<@sp.static/>/js/jquery/validation/jquery.validate.min.js" type="text/javascript" charset="UTF-8"></script>
+<script src="<@sp.static/>/assets/plugins/jquery-ui/ui/minified/jquery-ui.min.js"></script>
+<script src="<@sp.static/>/assets/plugins/bootstrap/js/bootstrap.min.js"></script>
+<script src="<@sp.static/>/js/layer/layer.js?v=1.7.8" type="text/javascript" charset="UTF-8"></script>
+<script src="<@sp.static/>/js/custom/util.js?v=1.7.8" type="text/javascript" charset="UTF-8"></script>
+<script src="<@sp.static/>/js/custom/message.js?v=1.7.8" type="text/javascript" charset="UTF-8"></script>
+<script src="<@sp.static/>/js/custom/send.js?v=1.7.8" type="text/javascript" charset="UTF-8"></script>
+<script type="text/javascript" language="JavaScript">
+    $(function () {
+        postDataByForm('${rc.contextPath}/backend/goods/goods/quickSearchGoods?v='+Math.random()+'&selectGoodsIds='+ $("#selectGoodsIds").val(), 'qGoodsList', 'goodsForm');
+    });
+
+    $(function () {
+        $('#selectedButton').click(function () {
+            parent.$('#goodsName').empty();
+            var goods = '';
+            $("input:checkbox[name='id']:checked").each(function (index, elem) {
+                //如果父页面已存在，则跳出执行下一条
+                var goodsName = $(elem).parent().parent().find("input[name='goodsNameTD']").val();
+                var goodsId = $(elem).parent().parent().find("input[name='goodsIdTD']").val();
+                var goodsLogo = $(elem).parent().parent().find("input[name='goodsLogoTD']").val();
+                var showName = "<p class='quick-goods-item'><img src='"+goodsLogo+"'>"+goodsName+"</p>"
+                parent.$('#goodsName').append(showName);
+                if (goods.length > 0) {
+                    goods = goods + ',' + goodsId;
+                } else {
+                    goods = goodsId;
+                }
+            });
+
+            var goodsHtml = '<input id="goodsIds" name="goodsIds" type="hidden" value="'+goods+'">';
+            parent.$('#goodsName').append(goodsHtml);
+            parent.layer.closeAll();
+        });
+    });
+</script>

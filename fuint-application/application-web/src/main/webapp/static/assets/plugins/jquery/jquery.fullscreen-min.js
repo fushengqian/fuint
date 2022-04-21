@@ -1,0 +1,8 @@
+/*
+ jquery.fullscreen 1.1.5
+ https://github.com/code-lts/jquery-fullscreen-plugin
+ Copyright (C) 2012-2013 Klaus Reimer <k@ailis.de>
+ Licensed under the MIT license
+ (See http://www.opensource.org/licenses/mit-license)
+*/
+!function(e){function l(e){var l,r,c;return this.length?((l=this[0]).ownerDocument?c=l.ownerDocument:l=(c=l).documentElement,null==e?c.exitFullscreen||c.webkitExitFullscreen||c.webkitCancelFullScreen||c.msExitFullscreen||c.mozCancelFullScreen?(e=n(c))&&(c.fullscreenElement||c.webkitFullscreenElement||c.webkitCurrentFullScreenElement||c.msFullscreenElement||c.mozFullScreenElement)||e:null:e?((r=l.requestFullscreen||l.webkitRequestFullscreen||l.webkitRequestFullScreen||l.msRequestFullscreen||l.mozRequestFullScreen)&&r.call(l),this):((r=c.exitFullscreen||c.webkitExitFullscreen||c.webkitCancelFullScreen||c.msExitFullscreen||c.mozCancelFullScreen)&&n(c)&&r.call(c),this)):this}function n(e){return!!(e.fullscreenElement||e.msFullscreenElement||e.webkitIsFullScreen||e.mozFullScreen)}function r(l){e(document).trigger(new e.Event("fullscreenchange"))}function c(l){e(document).trigger(new e.Event("fullscreenerror"))}var u,t,s;e.fn.fullScreen=l,e.fn.toggleFullScreen=function(){return l.call(this,!l.call(this))},(u=document).webkitCancelFullScreen?(t="webkitfullscreenchange",s="webkitfullscreenerror"):u.msExitFullscreen?(t="MSFullscreenChange",s="MSFullscreenError"):u.mozCancelFullScreen?(t="mozfullscreenchange",s="mozfullscreenerror"):(t="fullscreenchange",s="fullscreenerror"),e(document).bind(t,r),e(document).bind(s,c)}(jQuery);

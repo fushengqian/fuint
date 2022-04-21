@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>收银下单 - ${systemName}</title>
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport" />
+    <meta content="fuint会员营销系统" name="description" />
+    <meta content="fsq_better" name="author" />
+    <link rel="icon" href="<@sp.static/>/assets/favicon.ico">
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700" rel="stylesheet" />
+    <link href="<@sp.static/>/assets/plugins/cashier/vendor.min.css?v=1.7.8" rel="stylesheet" />
+    <link href="<@sp.static/>/assets/plugins/cashier/app.min.css?v=1.7.8" rel="stylesheet" />
+</head>
+<body class='pace-top'>
+    <div id="app" class="app app-content-full-height app-without-sidebar app-without-header bg-white">
+
+    <div id="content" class="app-content p-0">
+
+    <div class="pos pos-customer" id="pos-customer">
+
+    <div class="pos-menu">
+    <div class="logo">
+    <a href="/fuint-application/home">
+    <div class="logo-img"><img src="<@sp.static/>/assets/plugins/cashier/assets/logo.svg"/></div>
+    <div class="logo-text">收银下单</div>
+    </a>
+    </div>
+    <div class="nav-container">
+    <div data-scrollbar="true" data-height="100%" data-skip-mobile="true">
+    <ul class="nav nav-tabs">
+        <li class="nav-item">
+            <a class="nav-link active" href="javascript:;" data-filter="all">
+                <img class="cate-logo" src="<@sp.static/>/assets/plugins/cashier/assets/all-cate.svg"/> 全部商品
+            </a>
+        </li>
+        <#list cateList as cate>
+        <li class="nav-item">
+            <a class="nav-link" href="javascript:;" data-filter="${cate.id}">
+                <img class="cate-logo" src="${imagePath}${cate.logo}"/> ${cate.name}
+            </a>
+        </li>
+        </#list>
+    </ul>
+    </div>
+    </div>
+    </div>
+    <div class="pos-content">
+        <div class="product-nav">
+            <div class="col-md-6">
+                <input type="text" class="form-control goods-no" name="goodsNo" value="" placeholder="请输入商品条码"/>
+                <button type="button" class="btn btn-success add-goods-no"><i class="fa fa-cart-plus"></i>添加购物车</button>
+            </div>
+            <div class="col-md-6">
+                <button type="button" class="btn btn-danger clear-cart"><i class="fa fa-trash"></i>清空购物车</button>
+                <button type="button" class="btn btn-danger member-info"><i class="fa fa-user"></i>选择会员</button>
+            </div>
+        </div>
+        <div class="pos-content-container" data-scrollbar="true" data-height="100%" data-skip-mobile="true">
+            <div class="product-row">
+                <#list goodsList as goods>
+                <div class="product-container" data-type="${goods.cateId}">
+                    <a href="javascript:;" class="product" data-id="${goods.id}">
+                    <div class="img" style="background-image: url(${imagePath}${goods.logo})"></div>
+                        <div class="text">
+                        <div class="title">${goods.name}</div>
+                        <div class="desc">${goods.salePoint}</div>
+                        <div class="price">￥${goods.price}</div>
+                    </div>
+                    </a>
+                </div>
+                </#list>
+            </div>
+        </div>
+    </div>
+
+    <div class="pos-sidebar" id="pos-sidebar">
+    <div class="pos-sidebar-header">
+    <div class="back-btn">
+    <button type="button" data-dismiss-class="pos-mobile-sidebar-toggled" data-target="#pos-customer" class="btn">
+    <svg viewBox="0 0 16 16" class="bi bi-chevron-left" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+    <path fill-rule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z" />
+    </svg>
+    </button>
+    </div>
+    <div class="icon"><img src="<@sp.static/>/assets/plugins/cashier/assets/icon-cart.svg" /></div>
+    <div class="title">${storeInfo.name}</div>
+        <div class="full-screen"><i class="fa fa-arrows"></i>&nbsp;全屏</div>
+    <div class="order">
+        <b><i class="fa fa-cog"></i>&nbsp;${shiroUserHelper.getCurrentShiroUser().acctName}</b>
+    </div>
+    </div>
+    <div class="pos-sidebar-nav">
+        <ul class="nav nav-tabs nav-fill">
+            <li class="nav-item">
+                <a class="nav-link active" href="javascript:;" data-bs-toggle="tab" data-bs-target="#newOrderTab">购物车</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="javascript:;" data-bs-toggle="tab" data-bs-target="#orderHistoryTab">订单列表</a>
+            </li>
+        </ul>
+    </div>
+    <div class="pos-sidebar-body tab-content" data-scrollbar="true" data-height="100%">
+        <div class="tab-pane fade h-100 show active" id="newOrderTab">
+        <div class="pos-table h-100">
+            <div id="cartItem" style="display: none;">
+                <div class="row pos-table-row">
+                <div class="col-9">
+                    <div class="pos-product-thumb">
+                        <div class="img" id="cartGoodsImg" style="background-image: url(<@sp.static/>/uploadImages/20220110/856dbc96197e4782b4febb7a6e671bcb.jpg)"></div>
+                        <div class="info">
+                            <input type="hidden" name="goodsId" value="0"/>
+                            <input type="hidden" name="skuId" value="0"/>
+                            <input type="hidden" name="cartId" value="0"/>
+                            <div class="title" id="cartGoodsName">s1</div>
+                            <div class="single-price" id="cartGoodsPrice">￥0.00</div>
+                            <div class="desc" id="cartGoodsSpec">
+                                <span class="spec">中号</span>
+                                <span class="spec">黑色</span>
+                            </div>
+                            <div class="input-group qty">
+                                <div class="minus-cart input-group-append">
+                                    <a href="javascript:;" class="btn btn-default"><i class="fa fa-minus"></i></a>
+                                </div>
+                                <input type="text" name="buyNum" class="form-control" value="0"/>
+                                <div class="increase-cart input-group-prepend">
+                                     <a href="javascript:;" class="btn btn-default"><i class="fa fa-plus"></i></a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-3 total-price">
+                    <div>￥<span id="cartGoodsTotalPrice">0.00</span></div>
+                     <i class="fa fa-trash remove-cart" title="移出购物车"></i>
+                </div>
+                <div class="pos-remove-confirmation" style="display: none;">
+                    <svg width="2em" height="2em" viewBox="0 0 16 16" class="me-2" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z" />
+                        <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4L4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z" />
+                    </svg>
+                    移出购物车?
+                    <a href="javascript:;" class="btn btn-white ms-auto me-2 cancel-remove-cart">取消</a>
+                    <a href="javascript:;" class="btn btn-danger do-remove-cart">确定</a>
+                </div>
+            </div>
+            </div>
+            <div class="no-cart h-100 d-flex align-items-center justify-content-center text-center p-20">
+                <div>
+                    <div class="mb-3 mt-n5">
+                        <svg width="6em" height="6em" viewBox="0 0 16 16" class="text-gray-300" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                            <path fill-rule="evenodd" d="M14 5H2v9a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1V5zM1 4v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V4H1z" />
+                            <path d="M8 1.5A2.5 2.5 0 0 0 5.5 4h-1a3.5 3.5 0 1 1 7 0h-1A2.5 2.5 0 0 0 8 1.5z" />
+                        </svg>
+                    </div>
+                    <h5>暂无结算商品</h5>
+                </div>
+            </div>
+        </div>
+        </div>
+        <div class="tab-pane fade h-100" id="orderHistoryTab">
+            <div class="no-order h-100 d-flex align-items-center justify-content-center text-center p-20">
+                <div>
+                    <div class="mb-3 mt-n5">
+                        <svg width="6em" height="6em" viewBox="0 0 16 16" class="text-gray-300" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                            <path fill-rule="evenodd" d="M14 5H2v9a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1V5zM1 4v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V4H1z" />
+                            <path d="M8 1.5A2.5 2.5 0 0 0 5.5 4h-1a3.5 3.5 0 1 1 7 0h-1A2.5 2.5 0 0 0 8 1.5z" />
+                        </svg>
+                    </div>
+                    <h5>暂无订单信息</h5>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="pos-sidebar-footer">
+        <div class="subtotal">
+            <div class="text">总件数</div>
+            <div class="price" id="totalNum">0</div>
+        </div>
+        <div class="total">
+            <div class="text">总金额</div>
+            <div class="price">￥<span id="totalPrice">0.00</span></div>
+        </div>
+        <div class="btn-row">
+            <a href="javascript:;" class="btn btn-success"><i class="fa fa-file-invoice-dollar fa-fw fa-lg"></i> 挂单</a>
+            <a id="submitCheck" href="javascript:;" class="btn btn-danger"><i class="fa fa-check fa-fw fa-lg"></i> 提交结算 </a>
+        </div>
+    </div>
+
+    </div>
+    </div>
+    <a href="javascript:;" class="pos-mobile-sidebar-toggler" data-toggle-class="pos-mobile-sidebar-toggled" data-target="#pos-customer">
+        <svg viewBox="0 0 16 16" class="img" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+            <path fill-rule="evenodd" d="M14 5H2v9a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1V5zM1 4v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V4H1z" />
+            <path d="M8 1.5A2.5 2.5 0 0 0 5.5 4h-1a3.5 3.5 0 1 1 7 0h-1A2.5 2.5 0 0 0 8 1.5z" />
+        </svg>
+        <span class="badge">5</span>
+    </a>
+
+    </div>
+        <a href="javascript:;" class="btn btn-icon btn-circle btn-success btn-scroll-to-top" data-toggle="scroll-to-top"><i class="fa fa-angle-up"></i></a>
+    </div>
+
+    <!--操作提示 start-->
+    <div class="modal fade" id="messageModal" tabindex="-1" role="dialog" style="margin-top: 2rem;" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="myModalLabel">操作提示</h4>
+                </div>
+                <div class="modal-body operate-message" id="messageModalContent"><i class="fa fa-check fa-fw fa-lg"></i>操作成功！</div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-success" data-bs-dismiss="modal">确定</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--操作提示 end-->
+
+    <!--扫描付款码提示 start-->
+    <div class="modal fade" id="cashCodeModal" tabindex="-1" style="margin-top: 2rem;" role="dialog" aria-labelledby="cashCodeModal" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">扫码收款中...</h4>
+                </div>
+                <div class="modal-body complete-pay">
+                     <div class="amount-notice">金额：￥<span id="doPayAmount" class="amount">0.00</span></div>
+                     <div class="text-notice">请使用扫码枪，扫码收款！</div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-success" id="completePay" data-bs-dismiss="modal">扫描完成</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--扫描付款码提示 end-->
+
+    <!--支付成功提示 start-->
+    <div class="modal fade" id="paySuccessModal" tabindex="-1" style="margin-top: 2rem;" role="dialog" aria-labelledby="paySuccessModal" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">支付结果</h4>
+                </div>
+                <div class="modal-body pay-success">
+                    <svg t="1650527140882" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="1532" width="48" height="48"><path d="M511.2879 0C229.296245 0 0 229.296245 0 511.2879s229.296245 511.2879 511.2879 511.2879 511.2879-229.296245 511.2879-511.2879S793.279555 0 511.2879 0z m0 995.515994C244.962448 995.515994 28.484006 777.613352 28.484006 511.2879S244.962448 28.484006 511.2879 28.484006s482.803894 216.478442 482.803894 482.803894c1.4242 266.325452-216.478442 484.228095-482.803894 484.228094z m215.054242-655.132128l37.029207 37.029208-283.415855 327.566064-42.726009 49.847009-38.453407-49.847009-138.147427-182.297636 37.029207-37.029207 139.571627 105.39082L726.342142 340.383866z" p-id="1533" fill="#ff5b57"></path></svg>
+                    <div class="text-notice">现金支付成功！</div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-success" data-bs-dismiss="modal">确定</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--支付成功提示 end-->
+
+    <!--弹框选择商品 start-->
+    <div class="modal modal-pos-item fade" id="modalPosItem" style="margin-top: 2rem;">
+        <div class="modal-dialog modal-lg modal-goods-info">
+        <div class="modal-content">
+        <div class="modal-body p-0">
+        <a href="javascript:;" data-bs-dismiss="modal" class="btn-close position-absolute top-0 end-0 m-4"></a>
+        <div class="pos-product">
+        <div class="pos-product-img">
+             <div class="img" id="modalGoodsLogo"></div>
+        </div>
+        <div class="pos-product-info">
+        <div class="title" id="modalGoodsName"></div>
+        <div class="desc" id="modalGoodsTips"></div>
+        <div class="price" id="modalGoodsPrice">￥0.00</div>
+        <hr />
+        <div class="option-row">
+        <div class="qty">
+            <div class="input-group">
+                <a href="javascript:;" id="modalMinusNum" class="btn btn-default"><i class="fa fa-minus"></i></a>
+                <input type="text" id="modalCartNum" class="form-control border-0 text-center" name="num" value="1"/>
+                <a href="javascript:;" id="modalAddNum" class="btn btn-default"><i class="fa fa-plus"></i></a>
+            </div>
+        </div>
+        </div>
+        <div id="modalGoodsOptions" class="goods-options">
+            <div class="option-row spec-item">
+                <div class="option-title">型号</div>
+                <div class="option-list">
+                    <div class="option">
+                        <input type="radio" id="size3" value="size3" class="option-input" checked="checked" />
+                        <label class="option-label" for="size3">
+                        <span class="option-text">小号</span>
+                        <span class="option-price">+0.00</span>
+                        </label>
+                    </div>
+                    <div class="option">
+                        <input type="radio" id="size1" value="size1" class="option-input" />
+                        <label class="option-label" for="size1">
+                        <span class="option-text">中号</span>
+                        <span class="option-price">+3.00</span>
+                        </label>
+                    </div>
+                    <div class="option">
+                        <input type="radio" id="size2" value="size2" class="option-input" />
+                        <label class="option-label" for="size2">
+                        <span class="option-text">大号</span>
+                        <span class="option-price">+1.50</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="btn-row">
+            <a href="javascript:;" class="btn btn-default" data-bs-dismiss="modal">取消</a>
+            <a href="javascript:;" id="addCart" class="btn btn-success">加入购物车<i class="fa fa-plus fa-fw ms-2"></i></a>
+        </div>
+        </div>
+        </div>
+        </div>
+        </div>
+        </div>
+    </div>
+    <!--弹框选择商品 end-->
+
+    <!--弹框结算 start-->
+    <div class="modal modal-pos-check fade" id="modalPosCheck" style="margin-top: 2rem;">
+        <div class="modal-dialog modal-lg modal-check-info" style="max-width:1000px">
+            <div class="modal-content">
+                <div class="modal-body p-0">
+                    <a href="javascript:;" data-bs-dismiss="modal" class="btn-close position-absolute top-0 end-0 m-4"></a>
+                    <div class="pay-check">
+                         <div class="pay-type-info">
+                             <div class="title">请选择支付方式</div>
+                             <div class="pay-tool weixin active" attr="MICROPAY" title="选择微信支付">
+                                 <svg t="1649925318920" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="2605" width="32" height="32"><path d="M337.387283 341.82659c-17.757225 0-35.514451 11.83815-35.514451 29.595375s17.757225 29.595376 35.514451 29.595376 29.595376-11.83815 29.595376-29.595376c0-18.49711-11.83815-29.595376-29.595376-29.595375zM577.849711 513.479769c-11.83815 0-22.936416 12.578035-22.936416 23.6763 0 12.578035 11.83815 23.676301 22.936416 23.676301 17.757225 0 29.595376-11.83815 29.595376-23.676301s-11.83815-23.676301-29.595376-23.6763zM501.641618 401.017341c17.757225 0 29.595376-12.578035 29.595376-29.595376 0-17.757225-11.83815-29.595376-29.595376-29.595375s-35.514451 11.83815-35.51445 29.595375 17.757225 29.595376 35.51445 29.595376zM706.589595 513.479769c-11.83815 0-22.936416 12.578035-22.936416 23.6763 0 12.578035 11.83815 23.676301 22.936416 23.676301 17.757225 0 29.595376-11.83815 29.595376-23.676301s-11.83815-23.676301-29.595376-23.6763z" fill="#28C445" p-id="2606"></path><path d="M510.520231 2.959538C228.624277 2.959538 0 231.583815 0 513.479769s228.624277 510.520231 510.520231 510.520231 510.520231-228.624277 510.520231-510.520231-228.624277-510.520231-510.520231-510.520231zM413.595376 644.439306c-29.595376 0-53.271676-5.919075-81.387284-12.578034l-81.387283 41.433526 22.936416-71.768786c-58.450867-41.433526-93.965318-95.445087-93.965317-159.815029 0-113.202312 105.803468-201.988439 233.803468-201.98844 114.682081 0 216.046243 71.028902 236.023121 166.473989-7.398844-0.739884-14.797688-1.479769-22.196532-1.479769-110.982659 1.479769-198.289017 85.086705-198.289017 188.67052 0 17.017341 2.959538 33.294798 7.398844 49.572255-7.398844 0.739884-15.537572 1.479769-22.936416 1.479768z m346.265896 82.867052l17.757225 59.190752-63.630058-35.514451c-22.936416 5.919075-46.612717 11.83815-70.289017 11.83815-111.722543 0-199.768786-76.947977-199.768786-172.393063-0.739884-94.705202 87.306358-171.653179 198.289017-171.65318 105.803468 0 199.028902 77.687861 199.028902 172.393064 0 53.271676-34.774566 100.624277-81.387283 136.138728z" fill="#28C445" p-id="2607"></path></svg>
+                                 微信支付
+                             </div>
+                             <div class="pay-tool alipay" attr="ALIPAY" title="选择支付宝支付">
+                                 <svg t="1649925405749" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="3423" width="32" height="32"><path d="M230.4 576.512c-12.288 9.728-25.088 24.064-28.672 41.984-5.12 24.576-1.024 55.296 22.528 79.872 28.672 29.184 72.704 37.376 91.648 38.912 51.2 3.584 105.984-22.016 147.456-50.688 16.384-11.264 44.032-34.304 70.144-69.632-59.392-30.72-133.632-64.512-212.48-61.44-40.448 1.536-69.632 9.728-90.624 20.992z m752.64 135.68c26.112-61.44 40.96-129.024 40.96-200.192C1024 229.888 794.112 0 512 0S0 229.888 0 512s229.888 512 512 512c170.496 0 321.536-83.968 414.72-211.968-88.064-43.52-232.96-115.712-322.56-159.232-42.496 48.64-105.472 97.28-176.64 118.272-44.544 13.312-84.992 18.432-126.976 9.728-41.984-8.704-72.704-28.16-90.624-47.616-9.216-10.24-19.456-22.528-27.136-37.888 0.512 1.024 1.024 2.048 1.024 3.072 0 0-4.608-7.68-7.68-19.456-1.536-6.144-3.072-11.776-3.584-17.92-0.512-4.096-0.512-8.704 0-12.8-0.512-7.68 0-15.872 1.536-24.064 4.096-20.48 12.8-44.032 35.328-65.536 49.152-48.128 114.688-50.688 148.992-50.176 50.176 0.512 138.24 22.528 211.968 48.64 20.48-43.52 33.792-90.112 41.984-121.344h-307.2v-33.28h157.696v-66.56H272.384V302.08h190.464V235.52c0-9.216 2.048-16.384 16.384-16.384h74.752V302.08h207.36v33.28h-207.36v66.56h165.888s-16.896 92.672-68.608 184.32c115.2 40.96 278.016 104.448 331.776 125.952z" fill="#06B4FD" p-id="3424"></path></svg>
+                                 支付宝&nbsp;&nbsp;
+                             </div>
+                             <div class="pay-tool cash" attr="CASH" title="选择现金支付">
+                                 <svg t="1649925544528" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="5311" width="32" height="32"><path d="M512 1024C229.239467 1024 0 794.760533 0 512 0 229.239467 229.239467 0 512 0c282.760533 0 512 229.239467 512 512 0 282.760533-229.239467 512-512 512z m37.614933-542.037333h163.4304c20.753067 0 37.751467-16.1792 37.751467-36.181334 0-19.899733-16.861867-36.181333-37.751467-36.181333H310.818133C290.065067 409.6 273.066667 425.745067 273.066667 445.781333c0 19.8656 16.861867 36.181333 37.751466 36.181334h163.4304v120.354133H310.818133c-20.753067 0-37.751467 16.145067-37.751466 36.181333 0 20.002133 16.861867 36.181333 37.751466 36.181334h163.4304v108.3392c0 19.899733 16.861867 36.181333 37.751467 36.181333 20.8896 0 37.751467-16.145067 37.751467-36.181333v-108.373334h163.4304c20.753067 0 37.751467-16.145067 37.751466-36.181333 0-20.002133-16.861867-36.1472-37.751466-36.1472h-163.566934V481.962667zM409.6 204.8c-18.773333 0-34.133333 15.2576-34.133333 34.133333v68.266667c0 18.773333 15.223467 34.133333 34.133333 34.133333 18.773333 0 34.133333-15.2576 34.133333-34.133333V238.933333c0-18.875733-15.2576-34.133333-34.133333-34.133333z m204.8 0c-18.773333 0-34.133333 15.2576-34.133333 34.133333v68.266667c0 18.773333 15.223467 34.133333 34.133333 34.133333 18.773333 0 34.133333-15.2576 34.133333-34.133333V238.933333c0-18.875733-15.36-34.133333-34.133333-34.133333z" p-id="5312" fill="#00acac"></path></svg>
+                                 现金支付
+                             </div>
+                         </div>
+                         <div class="main-info">
+                             <div class="title">支付信息</div>
+                             <div class="coupon-info">
+                                 <div class="coupon-head">卡券核销：</div>
+                                 <div class="coupon-form">
+                                     <input type="text" class="form-control qr-code" id="couponCode" name="code" placeholder="请扫描或输入核销码"/>
+                                     <button type="button" class="btn confirm-btn btn-success" id="doConfirm">确定核销</button>
+                                 </div>
+                             </div>
+                             <div class="discount-info">
+                                 <div class="discount">
+                                     <div class="discount-head">折扣：(折)</div>
+                                     <div class="discount-form">
+                                         <input type="text" class="form-control" id="discount" name="discount" placeholder="请输入折扣"/>
+                                     </div>
+                                 </div>
+                                 <div class="take-int">
+                                     <div class="discount-head">立减：(元)</div>
+                                     <div class="discount-form">
+                                         <input type="text" class="form-control" id="reduce" name="reduce" placeholder="请输入立减金额"/>
+                                     </div>
+                                 </div>
+                             </div>
+                             <div class="desc-info">
+                                 <div class="desc-head">备注：</div>
+                                 <div class="desc-form">
+                                     <textarea rows="2" class="form-control" id="remark" name="remark" maxlength="500" placeholder="请输入备注信息"></textarea>
+                                 </div>
+                             </div>
+                             <div class="footer">
+                                  <div class="amount-info">
+                                      <span class="discount-amount">优惠金额：￥<span class="amount" id="totalDiscount">0.00</span></span>
+                                      <span class="pay-amount">实付金额：￥<span class="amount" id="payAmount">0.00</span></span>
+                                      <input type="hidden" id="orderId" name="orderId" value="0"/>
+                                  </div>
+                                  <button type="button" data-bs-dismiss="modal" class="btn btn-default">取消</button>
+                                  <button type="button" class="btn btn-danger" id="doCash">确认收款</button>
+                             </div>
+                         </div>
+                         <div class="user-info">
+                             <div class="title">会员信息</div>
+                             <div class="info">
+                                  <div class="condition">
+                                      <input type="text" class="form-control" id="queryMobile" name="queryMobile" clearable placeholder="请输入会员手机号" />
+                                      <button type="button" id="queryMember" class="btn btn-danger">查询</button>
+                                  </div>
+                                  <div class="member" id="memberInfo" style="display: none">
+                                      <input type="hidden" id="memberId" name="memberId" value="0"/>
+                                      <div class="avatar">
+                                          <img id="memberAvatar" src="/fuint-application/static/assets/img/avatar/user-1.png"/>
+                                      </div>
+                                      <div class="base">
+                                          <p class="name"><span>名称：</span><span id="memberName"></span></p>
+                                          <p class="card-no"><span>会员号：</span><span id="memberNo"></span></p>
+                                          <p class="mobile"><span>手机号：</span><span id="memberMobile"></span></p>
+                                      </div>
+                                      <div class="balance">
+                                          <p class="id"><span>积分：</span><span id="memberPoint"></span>（分）</p>
+                                          <p class="id"><span>余额：</span><span id="memberBalance"></span>（元）</p>
+                                      </div>
+                                  </div>
+                                  <div class="no-member" id="noMember">
+                                      <svg t="1649997756802" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="3473" width="48" height="48"><path d="M60.235294 361.411765l744.809412 425.622588A30.117647 30.117647 0 0 1 790.136471 843.294118H173.658353a60.235294 60.235294 0 0 1-59.783529-52.766118L60.235294 361.411765z" fill="#F5C164" p-id="3474"></path><path d="M963.764706 361.411765l-53.63953 429.116235A60.235294 60.235294 0 0 1 850.341647 843.294118H233.893647a30.117647 30.117647 0 0 1-14.968471-56.259765L963.764706 361.411765z" fill="#F5C164" p-id="3475"></path><path d="M512 240.941176l331.053176 509.289412A60.235294 60.235294 0 0 1 792.545882 843.294118H231.454118a60.235294 60.235294 0 0 1-50.507294-93.06353L512 240.941176z" fill="#FFE09E" p-id="3476"></path><path d="M512 240.941176l331.053176 509.289412A60.235294 60.235294 0 0 1 792.545882 843.294118H512V240.941176z" fill="#F9CF7E" p-id="3477"></path><path d="M512 210.823529m-60.235294 0a60.235294 60.235294 0 1 0 120.470588 0 60.235294 60.235294 0 1 0-120.470588 0Z" fill="#FFE19F" p-id="3478"></path><path d="M963.764706 331.294118m-60.235294 0a60.235294 60.235294 0 1 0 120.470588 0 60.235294 60.235294 0 1 0-120.470588 0Z" fill="#FFE19F" p-id="3479"></path><path d="M60.235294 331.294118m-60.235294 0a60.235294 60.235294 0 1 0 120.470588 0 60.235294 60.235294 0 1 0-120.470588 0Z" fill="#FFE19F" p-id="3480"></path></svg>
+                                      <p>当前非会员</p>
+                                  </div>
+                             </div>
+                         </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--弹框结算 end-->
+
+    <script src="<@sp.static/>/assets/plugins/cashier/vendor.min.js?v=1.7.8" type="text/javascript" charset="UTF-8"></script>
+    <script src="<@sp.static/>/assets/plugins/cashier/app.min.js?v=1.7.8" type="text/javascript" charset="UTF-8"></script>
+    <script src="<@sp.static/>/assets/plugins/cashier/pos.js?v=1.7.8" type="text/javascript" charset="UTF-8"></script>
+    <script src="<@sp.static/>/assets/plugins/jquery/jquery.fullscreen-min.js?v=1.7.8" type="text/javascript" charset="UTF-8"></script>
+</body>
+</html>

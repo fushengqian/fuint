@@ -1,0 +1,100 @@
+<h1 class="page-header">
+    <small>核销记录</small>
+</h1>
+<hr/>
+<div class="panel panel-inverse" data-sortable-id="form-stuff-5">
+    <div class="panel-heading">
+        <h4 class="panel-title">核销记录查询</h4>
+    </div>
+    <div class="panel-body">
+        <form id="logForm" name="logForm" method="post" class="form-inline">
+            <div class="block clearfix" style="display: block;height: 45px;padding-top: 5px;">
+                <div class="form-group m-r-20">
+                    <input type="text" class="form-control" name="EQ_couponId" value="${params.EQ_couponId}" placeholder="卡券ID">
+                </div>
+                <div class="form-group m-r-20">
+                    <input type="text" class="form-control" name="EQ_userId" value="${params.EQ_userId}" placeholder="会员ID">
+                </div>
+                <div class="form-group m-r-20">
+                    <select class="form-control" name="EQ_storeId" id="EQ_storeId">
+                        <option value="">核销店铺</option>
+                        <#if storeList?has_content && storeList?exists>
+                        <#list storeList as pf>
+                        <option value="${pf.id}" <#if params.EQ_storeId== pf.id> selected</#if>>${pf.name}</option>
+                        </#list>
+                        </#if>
+                    </select>
+                </div>
+               <div class="form-group m-r-20">
+                    <button type="button" class="btn btn-sm btn-success m-r-5"
+                       onclick="postDataByForm('backend/confirmLog/confirmLogList','displayArea','logForm')"><i class="fa fa-search"></i>查询
+                    </button>
+               </div>
+           </div>
+        </form>
+    </div>
+</div>
+<hr/>
+<div class="panel panel-inverse" data-sortable-id="table-basic-4">
+    <div class="panel-heading">
+        <h4 class="panel-title">核销记录列表</h4>
+    </div>
+    <div class="panel-body">
+        <table class="table table-striped table-bordered">
+            <thead>
+            <tr>
+                <th>流水号</th>
+                <th>会员ID</th>
+                <th>会员名称</th>
+                <th>卡券名称</th>
+                <th>核销金额</th>
+                <th>使用店铺</th>
+                <th>核销时间</th>
+                <th>备注</th>
+                <th>核销人</th>
+                <th>状态</th>
+                <th>操作</th>
+            </tr>
+            </thead>
+            <tbody>
+            <#if paginationResponse?has_content && paginationResponse.content?exists && paginationResponse.content?size gt 0>
+                <#list paginationResponse.content as ct>
+                    <tr>
+                        <td>${ct.code}</td>
+                        <td>${ct.userInfo.id}</td>
+                        <td>
+                            <#if ct.userInfo.name><p>${ct.userInfo.name}</p><#else><p>${ct.userInfo.id}</p></#if>
+                        </td>
+                        <td>${ct.couponInfo.name}</td>
+                        <td>${ct.amount}</td>
+                        <td><#if ct.storeInfo.name>${ct.storeInfo.name}<#else>--</#if></td>
+                        <td>${ct.createTime}</td>
+                        <td>${ct.remark}</td>
+                        <td>${ct.operator}</td>
+                        <td>
+                            <#if ct.status == "A">
+                            <span class="status-active">已使用</span>
+                            <#else>
+                            <span class="status-disabled">已撤销</span>
+                            </#if>
+                        </td>
+                        <td>
+                         <#if ct.status == "A">
+                            <a class="label label-danger small-btn" href="javascript:void(0)" onclick="javascript:getConfirmData('撤销后该券将可重新使用，确定撤销吗？','${rc.contextPath}/backend/coupon/rollbackUserCoupon/${ct.id}?userCouponId=${ct.userCouponId}','displayArea')"><i class="fa fa-trash"></i>撤销</a>
+                        </#if>
+                        </td>
+                    </tr>
+                </#list>
+            <#else>
+            <tr class="gradeA even" role="row">
+                <td colspan="12" class="text-center">没有符合条件的数据！</td>
+            </tr>
+            </#if>
+        </table>
+    </div>
+</div>
+<!-- 分页组件 -->
+<!-- recordBean 分页查询结果Bean
+     action 分页请求URL
+     formName 分页需要的查询参数的表单名称 -->
+<@sp.pagination recordBean=paginationResponse action="${rc.contextPath}/backend/confirmLog/confirmLogList" formName="logForm"/>

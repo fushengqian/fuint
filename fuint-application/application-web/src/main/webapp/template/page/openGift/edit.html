@@ -1,0 +1,88 @@
+<h1 class="page-header">
+    <small>编辑开卡赠礼</small>
+</h1>
+<hr/>
+<div class="panel panel-inverse" data-sortable-id="form-stuff-1">
+    <div class="panel-heading">
+        <h4 class="panel-title">赠礼信息</h4>
+    </div>
+    <div class="panel-body">
+        <form class="form-horizontal" id="openGiftForm" name="openGiftForm" action="" method="post">
+            <input type="hidden" id="id" name="id" placeholder="会员号" value="${openGiftInfo.id}">
+            <div class="form-group">
+                <label class="col-md-3 control-label">会员等级：</label>
+                <div class="col-md-3">
+                    <select class="form-control" required id="gradeId" name="gradeId">
+                        <#list userGradeMap as grade>
+                        <option <#if grade.id == openGiftInfo.gradeInfo.id>selected</#if> value="${grade.id}">${grade.name}</option>
+                        </#list>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-md-3 control-label">赠送卡券ID：</label>
+                <div class="col-md-3">
+                    <input type="text" id="couponId" class="form-control" name="couponId" required placeholder="赠送卡券ID" maxlength="20" value="${openGiftInfo.couponInfo.id}">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-md-3 control-label">卡券数量：</label>
+                <div class="col-md-3">
+                    <input type="text" id="couponNum" class="form-control" name="couponNum" required placeholder="卡券数量" maxlength="50" value="${openGiftInfo.couponNum}">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-md-3 control-label">赠送积分：</label>
+                <div class="col-md-3">
+                    <input type="text" id="point" class="form-control" name="point" required placeholder="赠送积分" maxlength="20" value="${openGiftInfo.point}">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-md-3 control-label">状态：</label>
+                <div class="col-md-3">
+                    <select class="form-control" name="status" id="status">
+                        <option value="A" <#if member.status == "A">selected</#if>>激活</option>
+                        <option value="D" <#if member.status == "D">selected</#if>>禁用</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-md-3 control-label"></label>
+                <div class="col-md-9">
+                    <button type="button" id="submitButton" class="btn btn-sm btn-success">提交</button>
+                    <button type="button" class="btn btn-sm btn-danger"
+                            onclick="getData('${rc.contextPath}/backend/openGift/list', 'displayArea')">返回
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<script type="application/javascript">
+    $(function () {
+        $('#submitButton').click(function () {
+            $('#openGiftForm').submit();
+        });
+
+        $('#openGiftForm').validate({
+            rules: {
+                gradeId: {
+                    maxlength : 20
+                }
+
+            },
+            messages: {
+                gradeId: {
+                    maxlength : "不能大于20个字符"
+                }
+            },
+            errorPlacement: function (error, element) {
+                error.appendTo(element.parent());
+            },
+            submitHandler: function () {
+                postDataByFormParams('${rc.contextPath}/backend/openGift/handleSave', 'displayArea', 'openGiftForm');
+            }
+        })
+    })
+</script>
+

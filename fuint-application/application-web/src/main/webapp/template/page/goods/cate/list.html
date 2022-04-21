@@ -1,0 +1,82 @@
+<h1 class="page-header">
+    <small>商品分类管理</small>
+</h1>
+<hr/>
+<div class="panel panel-inverse" data-sortable-id="form-stuff-5">
+    <div class="panel-heading">
+        <h4 class="panel-title">分类查询</h4>
+    </div>
+    <div class="panel-body">
+        <form id="cateForm" name="cateForm" method="post" class="form">
+            <div class="search-rows">
+                <div class="col-md-3 item">
+                    <input type="text" class="form-control" name="LIKE_name" value="${params.LIKE_name}" placeholder="分类名称">
+                </div>
+                <div class="col-md-3 item">
+                    <select class="form-control" name="EQ_status" id="EQ_status">
+                         <option value="">状态</option>
+                         <option value="A" <#if params.EQ_status== "A"> selected</#if>>激活</option>
+                         <option value="D" <#if params.EQ_status== "D"> selected</#if>>禁用</option>
+                    </select>
+                </div>
+               <div class="col-md-6 item">
+                    <button type="button" class="btn btn-sm btn-success"
+                            onclick="postDataByForm('backend/goods/cate/list', 'displayArea', 'cateForm')"><i class="fa fa-search"></i>查询
+                    </button>
+                    <button type="button" class="btn btn-sm btn-danger"
+                       onclick="getData('${rc.contextPath}/backend/goods/cate/add', 'displayArea')"><i class="fa fa-plus"></i>新增</button>
+               </div>
+            </div>
+        </form>
+    </div>
+</div>
+<hr/>
+<div class="panel panel-inverse" data-sortable-id="table-basic-4">
+    <div class="panel-heading">
+        <h4 class="panel-title">分类列表</h4>
+    </div>
+    <div class="panel-body">
+        <table class="table table-striped table-bordered">
+            <thead>
+            <tr>
+                <th>分类ID</th>
+                <th>图片</th>
+                <th>分类名称</th>
+                <th>描述</th>
+                <th>状态</th>
+                <th>创建时间</th>
+                <th>操作</th>
+            </tr>
+            </thead>
+            <tbody>
+            <#if paginationResponse?has_content && paginationResponse.content?exists && paginationResponse.content?size gt 0>
+                <#list paginationResponse.content as ct>
+                    <tr>
+                        <td>${ct.id}</td>
+                        <td><img class="m-r-20 m-b-10" src="${imagePath}${ct.logo}" style="border:1px solid #cccccc;width:80px;height:60px;border-radius: 5px;"></td>
+                        <td>${ct.name}</td>
+                        <td>${ct.description}</td>
+                        <td>
+                            <#if ct.status == "A">
+                            <span class="status-active">激活</span>
+                            <#else>
+                            <span class="status-disabled">禁用</span>
+                           </#if>
+                        </td>
+                        <td>${ct.createTime}</td>
+                        <td>
+                            <a class="label label-success small-btn" href="javascript:getData('${rc.contextPath}/backend/goods/cate/edit/${ct.id}','displayArea')"><i class="fa fa-edit"></i>编辑</a>
+                        </td>
+                    </tr>
+                </#list>
+            <#else>
+            <tr class="gradeA even" role="row">
+                <td colspan="12" class="text-center">没有符合条件的数据！</td>
+            </tr>
+            </#if>
+        </table>
+    </div>
+</div>
+
+<!-- 分页组件 -->
+<@sp.pagination recordBean=paginationResponse action="${rc.contextPath}/backend/goods/cate/list" formName="cateForm"/>

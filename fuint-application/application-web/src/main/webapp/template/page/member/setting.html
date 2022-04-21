@@ -1,0 +1,70 @@
+<h1 class="page-header">
+    <small>会员设置</small>
+</h1>
+<hr/>
+<div class="panel panel-inverse" data-sortable-id="form-stuff-1">
+    <div class="panel-heading">
+        <h4 class="panel-title">会员设置项</h4>
+    </div>
+    <div class="panel-body">
+        <form class="form-horizontal" id="settingForm" name="settingForm" method="post">
+            <div class="form-group">
+                <label class="col-md-3 control-label"><span class="requiredstar">* </span>领券是否需要手机号：</label>
+                <div class="col-md-3">
+                    <select class="form-control" name="getCouponNeedPhone" id="getCouponNeedPhone">
+                       <option <#if (getCouponNeedPhone == 'true')>selected</#if> value="true">是</option>
+                    <option <#if (getCouponNeedPhone == 'false')>selected</#if> value="false">否</option>
+                </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-md-3 control-label"><span class="requiredstar">* </span>提交订单是否需要手机号：</label>
+                <div class="col-md-3">
+                    <select class="form-control" name="submitOrderNeedPhone" id="submitOrderNeedPhone">
+                        <option <#if (submitOrderNeedPhone == 'true')>selected</#if> value="true">是</option>
+                        <option <#if (submitOrderNeedPhone == 'false')>selected</#if> value="false">否</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-md-3 control-label"><span class="requiredstar">* </span>登录是否需要手机号：</label>
+                <div class="col-md-3">
+                    <select class="form-control" name="loginNeedPhone" id="loginNeedPhone">
+                         <option <#if (loginNeedPhone == 'true')>selected</#if> value="true">是</option>
+                         <option <#if (loginNeedPhone == 'false')>selected</#if> value="false">否</option>
+                     </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-md-3 control-label"></label>
+                <div class="col-md-3">
+                    <button type="button" id="submitButton" class="btn btn-sm btn-success">提交</button>
+                    <button type="button" class="btn btn-sm btn-danger"
+                            onclick="getData('${rc.contextPath}/backend/member/queryList', 'displayArea')">返回
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<script type="application/javascript">
+    $(function () {
+        $('#submitButton').click(function () {
+            $.ajax({
+                type: "POST",
+                data: $("#settingForm").serializeArray(),
+                url: "${rc.contextPath}/backend/member/saveSetting",
+                success: function (data) {
+                    if (data.result) {
+                        layer.alert("恭喜，保存成功！");
+                        return;
+                    } else {
+                        layer.alert("抱歉，保存失败！");
+                        return;
+                    }
+                }
+            })
+        })
+    });
+</script>
+

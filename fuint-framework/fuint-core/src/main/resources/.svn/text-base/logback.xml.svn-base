@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<configuration scan="true" scanPeriod="60 seconds" debug="false" level="DEBUG">
+    <!-- 配置文件路径 -->
+    <property resource="config/application.properties" />
+    <property file="${env.properties.path}/${env.app.name}/${env.level}/application.properties" />
+    <!-- 控制台输出日志 -->
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>[%d{yyyy-MM-dd HH:mm:ss.SSS}] [%-5level] [%thread] [%logger] >>> %msg%n</pattern>
+        </encoder>
+    </appender>
+    <!--非error 级别输出到runtime.log 15天备份. 文件大小位10M-->
+    <appender name="NOT-ERROR-FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <append>true</append>
+        <Encoding>UTF-8</Encoding>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${log.path:-../logs}/runtime.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>7</maxHistory>
+        </rollingPolicy>
+        <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+            <maxFileSize>20MB</maxFileSize>
+        </triggeringPolicy>
+        <encoder>
+            <pattern>[%d{yyyy-MM-dd HH:mm:ss.SSS}] [%level] [%thread] [%caller{1}] >>> %msg%n</pattern>
+        </encoder>
+    </appender>
+    <!--error 级别输出到error.log 15天备份. 文件大小位10M-->
+    <appender name="ERROR-FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <append>true</append>
+        <Encoding>UTF-8</Encoding>
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>ERROR</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${log.path:-../logs}/error.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>7</maxHistory>
+        </rollingPolicy>
+        <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+            <maxFileSize>20MB</maxFileSize>
+        </triggeringPolicy>
+        <encoder>
+            <pattern>[%d{yyyy-MM-dd HH:mm:ss.SSS}] [%level] [%thread] [%caller{1}] >>> %msg%n</pattern>
+        </encoder>
+    </appender>
+    <root level="${log.level:-DEBUG}">
+        <appender-ref ref="STDOUT"/>
+        <appender-ref ref="NOT-ERROR-FILE"/>
+        <appender-ref ref="ERROR-FILE"/>
+    </root>
+</configuration>

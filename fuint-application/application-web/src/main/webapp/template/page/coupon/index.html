@@ -1,0 +1,135 @@
+<h1 class="page-header">
+    <small><#if groupName>${groupName}-</#if>卡券列表</small>
+</h1>
+<hr/>
+<div class="panel panel-inverse" data-sortable-id="form-stuff-5">
+    <div class="panel-heading">
+        <h4 class="panel-title">卡券查询</h4>
+    </div>
+    <div class="panel-body">
+        <form id="activityForm" name="activityForm" method="post" class="form">
+            <div class="search-rows">
+                <#if (EQ_groupId > 0)>
+                <input id="EQ_groupId" type="hidden" name="EQ_groupId" value="${EQ_groupId}">
+                <#else>
+                <div class="col-md-3 item">
+                    <input type="text" placeholder="分组ID" class="form-control" style="width: 100%" id="EQ_groupId" name="EQ_groupId">
+                </div>
+                </#if>
+                <input id="EQ_status" type="hidden" name="EQ_status" value="A">
+                <div class="col-md-3 item">
+                     <input type="text" placeholder="卡券ID" class="form-control" style="width: 100%" id="EQ_id" name="EQ_id">
+                </div>
+                <div class="col-md-3 item">
+                     <input type="text" placeholder="卡券名称" class="form-control" style="width: 100%" id="LIKE_name" name="LIKE_name">
+                </div>
+                <div class="col-md-3 item">
+                    <select class="form-control" name="EQ_type" id="EQ_type">
+                        <option value="">类型</option>
+                        <#if typeList?has_content && typeList?exists>
+                        <#list typeList as pf>
+                        <option value="${pf.key}" <#if params.EQ_type== pf.key> selected</#if>>${pf.value}</option>
+                        </#list>
+                        </#if>
+                     </select>
+                </div>
+            </div>
+            <div class="search-rows">
+                <div class="col-md-12 item" style="float: right;text-align: right">
+                    <button type="button"
+                            class="btn btn-success btn-sm"
+                            onclick="postDataByForm('${rc.contextPath}/backend/coupon/queryList','activityList','activityForm')">
+                        <i class="fa fa-search"></i>查询
+                    </button>
+                    <button type="reset"
+                            class="btn btn-success btn-sm">
+                        <i class="fa fa-remove"></i>重置
+                    </button>
+                    <button type="button"
+                            class="btn btn-danger btn-sm"
+                            onclick="getData('${rc.contextPath}/backend/coupon/add?groupId=${EQ_groupId}','displayArea')">
+                        <i class="fa fa-plus"></i>新增卡券
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<div id="activityList"></div>
+<script type="application/javascript">
+    $(function () {
+        postDataByForm('${rc.contextPath}/backend/coupon/queryList', 'activityList', 'activityForm');
+    });
+
+    /**
+     * 发券
+     * @param couponId 卡券ID
+     * */
+    function sendCoupon(couponId) {
+        var html = '<div style="margin-bottom:10px;"><span><i style="color:red;margin-right:2px;">*</i>手机号码：</span><input type="text" id="send_mobile" name="mobile" value=""/></div>'+
+                   '<div><span><i style="color:red;margin-right:2px;">*</i>发放套数：</span><input id="send_num" type="text" name="num" value=""/></div>';
+        layer.confirm(html, {
+            btn: ['发放', '取消'] //按钮
+        }, function () {
+            var mobile = $("#send_mobile").val();
+            var num = $("#send_num").val();
+
+            if (mobile.length != 11) {
+                layer.alert("手机号码格式有误！");
+                return;
+            }
+
+            if (num.length < 1) {
+                layer.alert("发放套数不能为空！");
+                return;
+            }
+
+            var re = /^[0-9]+$/ ;
+            if (!re.test(num) || parseInt(num) < 1) {
+                layer.alert("发放套数须为正整数！");
+                return;
+            }
+
+            $.ajax({
+                type: "POST",
+                data:{"couponId": couponId, "mobile": mobile, "num": num},
+                url: "${rc.contextPath}/backend/coupon/sendCoupon",
+                success: function (data) {
+                    if (data.result) {
+                        layer.alert("恭喜，发券成功！");
+                        return;
+                    } else {
+                        layer.alert(data.msg);
+                        return;
+                    }
+                }
+            })
+        }, function () {
+            $.close();
+        });
+    }
+
+    /**
+     * 删除卡券
+     * @param groupId 规则ID
+     */
+    function removeCoupon(id) {
+        layer.confirm('确定要删除该卡券吗？', {
+            btn: ['确定', '取消'] //按钮
+        }, function () {
+            $.ajax({
+                type: "GET",
+                url: "${rc.contextPath}/backend/coupon/delete/" + id,
+                success: function (data) {
+                    if (data.result) {
+                        $.close();
+                        postDataByForm('${rc.contextPath}/backend/coupon/queryList', 'activityList', 'activityForm')
+                    }
+                }
+            })
+        }, function () {
+            $.close();
+        });
+    }
+
+</script>
