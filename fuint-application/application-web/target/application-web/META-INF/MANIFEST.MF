@@ -1,5 +1,0 @@
-Manifest-Version: 1.0
-Created-By: IntelliJ IDEA
-Built-By: fushe
-Build-Jdk: 1.8.0_161
-
