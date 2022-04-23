@@ -249,18 +249,18 @@ public class goodsController {
         String name = CommonUtil.replaceXSS(request.getParameter("name"));
         String description = request.getParameter("editorValue") == null ? "" : request.getParameter("editorValue");
         String images[] = request.getParameterValues("image") == null ? new String[0] : request.getParameterValues("image");
-        String sort = request.getParameter("sort") == null ? "0" : request.getParameter("sort");
-        String stock = request.getParameter("stock") == null ? "0" : request.getParameter("stock");
-        String status = request.getParameter("status") == null ? StatusEnum.ENABLED.getKey() : request.getParameter("status");
+        String sort = StringUtils.isEmpty(request.getParameter("sort")) ? "0" : request.getParameter("sort");
+        String stock = StringUtils.isEmpty(request.getParameter("stock")) ? "0" : request.getParameter("stock");
+        String status = StringUtils.isEmpty(request.getParameter("status")) ? StatusEnum.ENABLED.getKey() : request.getParameter("status");
         String goodsNo = request.getParameter("goodsNo") == null ? "" : request.getParameter("goodsNo");
-        String price = request.getParameter("price") == null ? "0" : request.getParameter("price");
-        String linePrice = request.getParameter("linePrice") == null ? "0" : request.getParameter("linePrice");
-        String weight = request.getParameter("weight") == null ? "0" : request.getParameter("weight");
+        String price = StringUtils.isEmpty(request.getParameter("price")) ? "0" : request.getParameter("price");
+        String linePrice = StringUtils.isEmpty(request.getParameter("linePrice")) ? "0" : request.getParameter("linePrice");
+        String weight = StringUtils.isEmpty(request.getParameter("weight")) ? "0" : request.getParameter("weight");
         Integer initSale = request.getParameter("initSale") == null ? 0 : Integer.parseInt(request.getParameter("initSale"));
         String salePoint = request.getParameter("salePoint") == null ? "" : request.getParameter("salePoint");
-        String canUsePoint = request.getParameter("canUsePoint") == null ? "N" : request.getParameter("canUsePoint");
-        String isMemberDiscount = request.getParameter("isMemberDiscount") == null ? "N" : request.getParameter("isMemberDiscount");
-        String isSingleSpec = request.getParameter("isSingleSpec") == null ? "Y" : request.getParameter("isSingleSpec");
+        String canUsePoint = StringUtils.isEmpty(request.getParameter("canUsePoint")) ? "N" : request.getParameter("canUsePoint");
+        String isMemberDiscount = StringUtils.isEmpty(request.getParameter("isMemberDiscount")) ? "N" : request.getParameter("isMemberDiscount");
+        String isSingleSpec = StringUtils.isEmpty(request.getParameter("isSingleSpec")) ? "Y" : request.getParameter("isSingleSpec");
         Integer cateId = request.getParameter("cateId") == null ? 0 : Integer.parseInt(request.getParameter("cateId"));
         Integer storeId = request.getParameter("storeId") == null ? 0 : Integer.parseInt(request.getParameter("storeId"));
 

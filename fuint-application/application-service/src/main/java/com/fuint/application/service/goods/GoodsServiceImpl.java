@@ -132,7 +132,7 @@ public class GoodsServiceImpl implements GoodsService {
             mtGoods.setName(reqDto.getName());
         }
         if (StringUtils.isNotEmpty(reqDto.getStatus())) {
-            mtGoods.setStatus(StatusEnum.ENABLED.getKey());
+            mtGoods.setStatus(reqDto.getStatus());
         }
         if (StringUtils.isNotEmpty(reqDto.getLogo())) {
             mtGoods.setLogo(reqDto.getLogo());

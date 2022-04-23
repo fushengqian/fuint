@@ -60,7 +60,7 @@
                         <label class="col-md-3 control-label"><span class="requiredstar">* </span>商品图片：</label>
                         <div class="col-md-9">
                             <div class="upload-list">
-                                <#if images?size gt 0>
+                                <#if images ? size gt 0>
                                 <#list images as img>
                                 <div class="upload-item">
                                     <img name="image${img_index+1}" class="m-r-20 m-b-10" id="image${img_index+1}" src="${imagePath}${img}" style="border:1px solid #ccc;border-radius:1px;width: 120px;height: 80px;">
@@ -71,10 +71,10 @@
                                 </#list>
                                 <#else>
                                 <div class="upload-item">
-                                    <img name="image1" class="m-r-20 m-b-10" id="image1" src="<@mh.static/>/defaultImage/image.png" style="border:1px solid #ccc;border-radius:1px;width: 120px;height: 80px;">
+                                    <img name="image1" class="m-r-20 m-b-10" id="image1" src="<@mh.static/>/defaultImage/none.png" style="border:1px solid #ccc;border-radius:1px;width: 120px;height: 80px;">
                                     <input type="file" name="picture1" id="picture1" style="display: inline-block" onchange="ajaxFileUpload(1, '${rc.contextPath}/backend');">
                                     <div style="color:#cccccc;margin-bottom: 10px;">（格式：jpeg/jpg/png）</div>
-                                    <input type="text" type="hidden" placeholder="存储路径" class="form-control" name="image" id="filePath1" value="" onchange="changeImagePath('<@mh.static/>', '1')">
+                                    <input type="hidden" placeholder="存储路径" class="form-control" name="image" id="filePath1" value="" onchange="changeImagePath('<@mh.static/>', '1')">
                                 </div>
                                 </#if>
                             </div>
@@ -82,7 +82,7 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        <label class="col-md-3 control-label"><span class="requiredstar">* </span>排序：</label>
+                        <label class="col-md-3 control-label">排序：</label>
                         <div class="col-md-2">
                             <input type="text" id="sort" class="form-control" value="${goods.sort}" name="sort" placeholder="排序，正整数" rangelength="1, 10"/>
                         </div>
@@ -309,7 +309,28 @@
             initialFrameHeight: 600
         });
 
+        // 基本信息提交
         $('#submitBase').click(function () {
+            const name = $("#name").val();
+            if (name.length < 1) {
+                alert('商品名称必填！');
+                return false;
+            }
+            const goodsNo = $("#goodsNo").val();
+            if (goodsNo.length < 1) {
+                alert('商品编码必填！');
+                return false;
+            }
+            const logo = $("#filePath1").val();
+            if (logo.length < 1) {
+                alert('至少上传一张商品图片！');
+                return false;
+            }
+            const sort = $("#sort").val();
+            if (sort.length < 0) {
+                $("#sort").val("0")
+            }
+
             if ($("#name").val() != null || $("#name").val() != "") {
                 $.ajax({
                     type: "POST",
@@ -330,6 +351,11 @@
         });
 
         $('#submitExtend').click(function () {
+            const goodsId = $("#goodsNo").val();
+            if (goodsId.length < 1) {
+                alert('请先提交商品基础信息！');
+                return false;
+            }
             $.ajax({
                 type: "POST",
                 data: $('#extendForm').serialize(),
@@ -348,6 +374,11 @@
         });
 
         $('#submitDetail').click(function () {
+            const goodsId = $("#goodsNo").val();
+            if (goodsId.length < 1) {
+                alert('请先提交商品基础信息！');
+                return false;
+            }
             $.ajax({
                 type: "POST",
                 data: $('#detailForm').serialize(),
