@@ -6,11 +6,11 @@
     <parent>
         <groupId>com.fuint</groupId>
         <artifactId>fuint-framework</artifactId>
-        <version>0.0.2-SNAPSHOT</version>
+        <version>1.0.0-RELEASE</version>
     </parent>
     <groupId>com.fuint</groupId>
     <artifactId>fuint-component</artifactId>
-    <version>0.0.2-SNAPSHOT</version>
+    <version>1.0.0-RELEASE</version>
     <name>fuint-component</name>
     <url>http://maven.apache.org</url>
     <dependencies>

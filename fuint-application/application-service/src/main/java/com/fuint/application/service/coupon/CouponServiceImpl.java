@@ -17,6 +17,7 @@ import com.fuint.application.enums.StatusEnum;
 import com.fuint.application.enums.UserCouponStatusEnum;
 import com.fuint.application.enums.SendWayEnum;
 import com.fuint.application.service.member.MemberService;
+import com.fuint.application.service.confirmlog.ConfirmLogService;
 import com.fuint.application.ResponseObject;
 import com.fuint.application.service.sms.SendSmsInterface;
 import com.fuint.application.util.CommonUtil;
@@ -58,6 +59,9 @@ public class CouponServiceImpl extends BaseService implements CouponService {
 
     @Autowired
     private SendSmsInterface sendSmsService;
+
+    @Autowired
+    private ConfirmLogService confirmLogService;
 
     @Autowired
     private MtUserCouponRepository userCouponRepository;
@@ -523,10 +527,10 @@ public class CouponServiceImpl extends BaseService implements CouponService {
     public String useCoupon(Integer userCouponId, Integer userId, Integer storeId, Integer orderId, BigDecimal amount, String remark) throws BusinessCheckException {
         MtUserCoupon userCoupon = userCouponRepository.findOne(userCouponId.intValue());
 
-        if (null == userCoupon) {
+        if (userCoupon == null) {
             throw new BusinessCheckException("该卡券不存在！");
         } else if (!userCoupon.getStatus().equals(UserCouponStatusEnum.UNUSED.getKey()) && !userCoupon.getStatus().equals(UserCouponStatusEnum.UNSEND.getKey())) {
-            throw new BusinessCheckException("该卡券状态有误，可能已使用或已过期");
+            throw new BusinessCheckException("该卡券状态有误，可能已使用或已过期！");
         }
 
         MtStore mtStore = null;
@@ -604,8 +608,8 @@ public class CouponServiceImpl extends BaseService implements CouponService {
             userCoupon.setBalance(newBalance);
         } else if (couponInfo.getType().equals(CouponTypeEnum.TIMER.getKey())) {
             // 集次卡核销，增加核销次数至满
-            int confirmCount = 3;
-            if (confirmCount >= Integer.parseInt(couponInfo.getOutRule())) {
+            Long confirmCount = confirmLogService.getConfirmNum(userCouponId);
+            if ((confirmCount.intValue() + 1) >= Integer.parseInt(couponInfo.getOutRule())) {
                 userCoupon.setStatus(UserCouponStatusEnum.USED.getKey());
             }
         }
@@ -876,16 +880,16 @@ public class CouponServiceImpl extends BaseService implements CouponService {
         Date end = coupon.getEndTime();
         Date now = new Date();
 
-        // 已过期
+        // 未生效
         if (begin != null) {
             if (now.before(begin)) {
                 return false;
             }
         }
 
-        // 未生效
+        // 已过期
         if (end != null) {
-            if (end.before(now)) {
+            if (now.after(end)) {
                 return false;
             }
         }

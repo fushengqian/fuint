@@ -8,8 +8,8 @@
     <meta content="fsq_better" name="author" />
     <link rel="icon" href="<@sp.static/>/assets/favicon.ico">
     <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700" rel="stylesheet" />
-    <link href="<@sp.static/>/assets/plugins/cashier/vendor.min.css?v=1.7.8" rel="stylesheet" />
-    <link href="<@sp.static/>/assets/plugins/cashier/app.min.css?v=1.7.8" rel="stylesheet" />
+    <link href="<@sp.static/>/assets/plugins/cashier/vendor.min.css?v=1.7.9" rel="stylesheet" />
+    <link href="<@sp.static/>/assets/plugins/cashier/app.min.css?v=1.7.9" rel="stylesheet" />
 </head>
 <body class='pace-top'>
     <div id="app" class="app app-content-full-height app-without-sidebar app-without-header bg-white">
@@ -47,8 +47,8 @@
     <div class="pos-content">
         <div class="product-nav">
             <div class="col-md-6">
-                <input type="text" class="form-control goods-no" name="goodsNo" value="" placeholder="请输入商品条码"/>
-                <button type="button" class="btn btn-success add-goods-no"><i class="fa fa-cart-plus"></i>添加购物车</button>
+                <input type="text" class="form-control goods-no" id="goodsNo" name="goodsNo" value="" placeholder="请输入商品条码"/>
+                <button id="addCartByCode" type="button" class="btn btn-success add-goods-no"><i class="fa fa-cart-plus"></i>添加购物车</button>
             </div>
             <div class="col-md-6">
                 <button type="button" class="btn btn-danger clear-cart"><i class="fa fa-trash"></i>清空购物车</button>
@@ -181,7 +181,7 @@
             <div class="price">￥<span id="totalPrice">0.00</span></div>
         </div>
         <div class="btn-row">
-            <a href="javascript:;" class="btn btn-success"><i class="fa fa-file-invoice-dollar fa-fw fa-lg"></i> 挂单</a>
+            <a id="noGoodsPay" href="javascript:;" class="btn btn-success"><i class="fa fa-file-invoice-dollar fa-fw fa-lg"></i> 无商品收款 </a>
             <a id="submitCheck" href="javascript:;" class="btn btn-danger"><i class="fa fa-check fa-fw fa-lg"></i> 提交结算 </a>
         </div>
     </div>
@@ -331,7 +331,7 @@
                                  <svg t="1649925318920" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="2605" width="32" height="32"><path d="M337.387283 341.82659c-17.757225 0-35.514451 11.83815-35.514451 29.595375s17.757225 29.595376 35.514451 29.595376 29.595376-11.83815 29.595376-29.595376c0-18.49711-11.83815-29.595376-29.595376-29.595375zM577.849711 513.479769c-11.83815 0-22.936416 12.578035-22.936416 23.6763 0 12.578035 11.83815 23.676301 22.936416 23.676301 17.757225 0 29.595376-11.83815 29.595376-23.676301s-11.83815-23.676301-29.595376-23.6763zM501.641618 401.017341c17.757225 0 29.595376-12.578035 29.595376-29.595376 0-17.757225-11.83815-29.595376-29.595376-29.595375s-35.514451 11.83815-35.51445 29.595375 17.757225 29.595376 35.51445 29.595376zM706.589595 513.479769c-11.83815 0-22.936416 12.578035-22.936416 23.6763 0 12.578035 11.83815 23.676301 22.936416 23.676301 17.757225 0 29.595376-11.83815 29.595376-23.676301s-11.83815-23.676301-29.595376-23.6763z" fill="#28C445" p-id="2606"></path><path d="M510.520231 2.959538C228.624277 2.959538 0 231.583815 0 513.479769s228.624277 510.520231 510.520231 510.520231 510.520231-228.624277 510.520231-510.520231-228.624277-510.520231-510.520231-510.520231zM413.595376 644.439306c-29.595376 0-53.271676-5.919075-81.387284-12.578034l-81.387283 41.433526 22.936416-71.768786c-58.450867-41.433526-93.965318-95.445087-93.965317-159.815029 0-113.202312 105.803468-201.988439 233.803468-201.98844 114.682081 0 216.046243 71.028902 236.023121 166.473989-7.398844-0.739884-14.797688-1.479769-22.196532-1.479769-110.982659 1.479769-198.289017 85.086705-198.289017 188.67052 0 17.017341 2.959538 33.294798 7.398844 49.572255-7.398844 0.739884-15.537572 1.479769-22.936416 1.479768z m346.265896 82.867052l17.757225 59.190752-63.630058-35.514451c-22.936416 5.919075-46.612717 11.83815-70.289017 11.83815-111.722543 0-199.768786-76.947977-199.768786-172.393063-0.739884-94.705202 87.306358-171.653179 198.289017-171.65318 105.803468 0 199.028902 77.687861 199.028902 172.393064 0 53.271676-34.774566 100.624277-81.387283 136.138728z" fill="#28C445" p-id="2607"></path></svg>
                                  微信支付
                              </div>
-                             <div class="pay-tool alipay" attr="ALIPAY" title="选择支付宝支付">
+                             <div class="pay-tool alipay hide" attr="ALIPAY" title="选择支付宝支付">
                                  <svg t="1649925405749" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="3423" width="32" height="32"><path d="M230.4 576.512c-12.288 9.728-25.088 24.064-28.672 41.984-5.12 24.576-1.024 55.296 22.528 79.872 28.672 29.184 72.704 37.376 91.648 38.912 51.2 3.584 105.984-22.016 147.456-50.688 16.384-11.264 44.032-34.304 70.144-69.632-59.392-30.72-133.632-64.512-212.48-61.44-40.448 1.536-69.632 9.728-90.624 20.992z m752.64 135.68c26.112-61.44 40.96-129.024 40.96-200.192C1024 229.888 794.112 0 512 0S0 229.888 0 512s229.888 512 512 512c170.496 0 321.536-83.968 414.72-211.968-88.064-43.52-232.96-115.712-322.56-159.232-42.496 48.64-105.472 97.28-176.64 118.272-44.544 13.312-84.992 18.432-126.976 9.728-41.984-8.704-72.704-28.16-90.624-47.616-9.216-10.24-19.456-22.528-27.136-37.888 0.512 1.024 1.024 2.048 1.024 3.072 0 0-4.608-7.68-7.68-19.456-1.536-6.144-3.072-11.776-3.584-17.92-0.512-4.096-0.512-8.704 0-12.8-0.512-7.68 0-15.872 1.536-24.064 4.096-20.48 12.8-44.032 35.328-65.536 49.152-48.128 114.688-50.688 148.992-50.176 50.176 0.512 138.24 22.528 211.968 48.64 20.48-43.52 33.792-90.112 41.984-121.344h-307.2v-33.28h157.696v-66.56H272.384V302.08h190.464V235.52c0-9.216 2.048-16.384 16.384-16.384h74.752V302.08h207.36v33.28h-207.36v66.56h165.888s-16.896 92.672-68.608 184.32c115.2 40.96 278.016 104.448 331.776 125.952z" fill="#06B4FD" p-id="3424"></path></svg>
                                  支付宝&nbsp;&nbsp;
                              </div>
@@ -366,7 +366,7 @@
                              <div class="desc-info">
                                  <div class="desc-head">备注：</div>
                                  <div class="desc-form">
-                                     <textarea rows="2" class="form-control" id="remark" name="remark" maxlength="500" placeholder="请输入备注信息"></textarea>
+                                      <textarea rows="2" class="form-control" id="remark" name="remark" maxlength="500" placeholder="请输入备注信息"></textarea>
                                  </div>
                              </div>
                              <div class="footer">
@@ -374,6 +374,7 @@
                                       <span class="discount-amount">优惠金额：￥<span class="amount" id="totalDiscount">0.00</span></span>
                                       <span class="pay-amount">实付金额：￥<span class="amount" id="payAmount">0.00</span></span>
                                       <input type="hidden" id="orderId" name="orderId" value="0"/>
+                                      <input type="hidden" id="checkType" name="checkType" value="goods"/>
                                   </div>
                                   <button type="button" data-bs-dismiss="modal" class="btn btn-default">取消</button>
                                   <button type="button" class="btn btn-danger" id="doCash">确认收款</button>
@@ -414,9 +415,36 @@
     </div>
     <!--弹框结算 end-->
 
-    <script src="<@sp.static/>/assets/plugins/cashier/vendor.min.js?v=1.7.8" type="text/javascript" charset="UTF-8"></script>
-    <script src="<@sp.static/>/assets/plugins/cashier/app.min.js?v=1.7.8" type="text/javascript" charset="UTF-8"></script>
-    <script src="<@sp.static/>/assets/plugins/cashier/pos.js?v=1.7.8" type="text/javascript" charset="UTF-8"></script>
-    <script src="<@sp.static/>/assets/plugins/jquery/jquery.fullscreen-min.js?v=1.7.8" type="text/javascript" charset="UTF-8"></script>
+    <!--弹框无商品收款 start-->
+    <div class="modal no-goods-pay fade" id="noGoodsModal" tabindex="-1" style="margin-top: 2rem;" role="dialog" aria-labelledby="noGoodsModal" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">无商品收款</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="pay-area">
+                         <div class="amount">
+                              <input type="text" class="form-control" id="noGoodsPayAmount" name="noGoodsPayAmount" placeholder="请输入收款金额"/>
+                              <div class="tip">（单位：元）</div>
+                         </div>
+                         <div class="remark">
+                              <textarea rows="5" class="form-control" id="noGoodsPayRemark" name="noGoodsPayRemark" maxlength="500" placeholder="请输入备注信息"></textarea>
+                         </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                     <button type="button" data-bs-dismiss="modal" class="btn btn-default">取消</button>
+                     <button type="button" class="btn btn-success" id="doNoGoodsPay">确定收款</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--弹框无商品收款 end-->
+    <script src="<@sp.static/>/assets/plugins/cashier/vendor.min.js?v=1.7.9" type="text/javascript" charset="UTF-8"></script>
+    <script src="<@sp.static/>/assets/plugins/cashier/app.min.js?v=1.7.9" type="text/javascript" charset="UTF-8"></script>
+    <script src="<@sp.static/>/js/layer/layer.js" type="text/javascript" charset="UTF-8"></script>
+    <script src="<@sp.static/>/assets/plugins/cashier/pos.js?v=1.7.9" type="text/javascript" charset="UTF-8"></script>
+    <script src="<@sp.static/>/assets/plugins/jquery/jquery.fullscreen-min.js?v=1.7.9" type="text/javascript" charset="UTF-8"></script>
 </body>
 </html>

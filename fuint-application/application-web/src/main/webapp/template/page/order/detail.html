@@ -47,6 +47,22 @@
                         <span class="control-label">￥<#if orderInfo.discount gt 0>${orderInfo.discount}<#else>0.00</#if></span>
                     </div>
                     <div class="col-md-4">
+                        <span class="head">支付方式：</span>
+                        <#if orderInfo.payType == 'JSAPI' && orderInfo.payStatus == 'B'>
+                        <span class="control-label">手机微信支付</span>
+                        <#elseif orderInfo.payType == 'MICROPAY' && orderInfo.payStatus == 'B'>
+                        <span class="control-label">微信扫码支付</span>
+                        <#elseif orderInfo.payType == 'ALIPAY' && orderInfo.payStatus == 'B'>
+                        <span class="control-label">手机支付宝支付</span>
+                        <#elseif orderInfo.payType == 'CASH' && orderInfo.payStatus == 'B'>
+                        <span class="control-label">现金</span>
+                        <#else>
+                        --
+                        </#if>
+                    </div>
+                </div>
+                <div class="data-rows">
+                    <div class="col-md-4">
                         <span class="head">支付时间：</span>
                         <span class="control-label"><#if orderInfo.payTime>${orderInfo.payTime}<#else>--</#if></span>
                     </div>

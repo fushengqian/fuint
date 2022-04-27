@@ -161,6 +161,10 @@ public class homeController {
      */
     @RequestMapping(value = "/confirmCoupon")
     public String confirmCoupon(HttpServletRequest request, HttpServletResponse response, Model model) {
+        // 核销码
+        String code = request.getParameter("code") == null ? "": request.getParameter("code");
+        model.addAttribute("code", code);
+
         return "home/confirmCoupon";
     }
 

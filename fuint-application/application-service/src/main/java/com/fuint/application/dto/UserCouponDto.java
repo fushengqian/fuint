@@ -41,7 +41,7 @@ public class UserCouponDto implements Serializable {
     private String useRule;
 
     /**
-     * 编码
+     * 核销编码
      * */
     private String code;
 

@@ -6,9 +6,10 @@
     <parent>
         <groupId>com.fuint</groupId>
         <artifactId>fuint-framework</artifactId>
-        <version>0.0.2-SNAPSHOT</version>
+        <version>1.0.0-RELEASE</version>
     </parent>
     <artifactId>fuint-parent</artifactId>
+    <version>1.0.0-RELEASE</version>
     <packaging>pom</packaging>
 
     <dependencies>

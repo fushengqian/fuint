@@ -24,6 +24,11 @@ public class MyCouponDto implements Serializable {
     private String name;
 
     /**
+     * 核销编码
+     */
+    private String code;
+
+    /**
      * 卡券类型
      * */
     private String type;
@@ -107,6 +112,13 @@ public class MyCouponDto implements Serializable {
         this.name = name;
     }
 
+    public String getCode(){
+        return code;
+    }
+    public void setCode(String code){
+        this.code=code;
+    }
+
     public String getType() {
         return type;
     }
@@ -124,7 +136,6 @@ public class MyCouponDto implements Serializable {
     public Integer getCouponId() {
         return couponId;
     }
-
     public void setCouponId(Integer couponId) {
         this.couponId = couponId;
     }

@@ -29066,7 +29066,6 @@ code {
     flex: 1
 }
 
-
 .modal.modal-pos-check .pay-check {
     padding: 1rem;
     min-height: 480px;
@@ -29167,7 +29166,6 @@ code {
 .modal.modal-pos-check .pay-check .main-info .footer .amount-info .discount-amount .amount {
     font-size: 1.4rem;
 }
-
 .modal.modal-pos-check .pay-check .user-info {
     float: left;
     width: 20%;
@@ -29204,7 +29202,27 @@ code {
     border: #00acac 1px dashed;
     padding: 5px;
 }
-
+.modal.no-goods-pay .pay-area {
+    padding: 1.5rem;
+}
+.modal.no-goods-pay .pay-area .amount{
+    margin-bottom: 1rem;
+    height: 2.5rem;
+}
+.modal.no-goods-pay .pay-area .amount input{
+    width: 70%;
+    line-height: 2rem;
+    float: left;
+    border: #00acac solid 1px;
+}
+.modal.no-goods-pay .pay-area .amount .tip{
+    color: #888;
+    float: left;
+    margin-top: .8rem;
+}
+.modal.no-goods-pay .pay-area textarea{
+    border: #00acac solid 1px;
+}
 .pos-kitchen {
     min-height: 100%;
     padding-top: 52px;

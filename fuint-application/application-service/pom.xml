@@ -6,7 +6,7 @@
     <parent>
         <groupId>com.fuint.application</groupId>
         <artifactId>fuint-application</artifactId>
-        <version>0.0.2-SNAPSHOT</version>
+        <version>1.0.0-RELEASE</version>
     </parent>
     <groupId>com.fuint.application</groupId>
     <artifactId>application-service</artifactId>
@@ -39,7 +39,7 @@
         <dependency>
             <groupId>com.fuint</groupId>
             <artifactId>fuint-cache</artifactId>
-            <version>0.0.2-SNAPSHOT</version>
+            <version>1.0.0-RELEASE</version>
         </dependency>
         <dependency>
             <groupId>org.quartz-scheduler</groupId>

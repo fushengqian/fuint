@@ -11,13 +11,13 @@
 <script src="<@sp.static/>/js/jquery/ui/jquery-ui.min.js?v=1.0.0" type="text/javascript" charset="UTF-8"></script>
 <link href="<@sp.static/>/js/jquery/ui/jquery-ui.min.css?v=1.0.0" rel="stylesheet" type="text/css"/>
 <!-- layer -->
-<script src="<@sp.static/>/js/layer/layer.js?v=1.7.8" type="text/javascript" charset="UTF-8"></script>
+<script src="<@sp.static/>/js/layer/layer.js?v=1.7.9" type="text/javascript" charset="UTF-8"></script>
 <!--工具类-->
-<script src="<@sp.static/>/js/custom/util.js?v=1.7.8" type="text/javascript" charset="UTF-8"></script>
+<script src="<@sp.static/>/js/custom/util.js?v=1.7.9" type="text/javascript" charset="UTF-8"></script>
 
-<script src="<@sp.static/>/js/custom/map.js?v=1.7.8" type="text/javascript" charset="UTF-8"></script>
+<script src="<@sp.static/>/js/custom/map.js?v=1.7.9" type="text/javascript" charset="UTF-8"></script>
 <!-- 消息框 -->
-<script src="<@sp.static/>/js/custom/message.js?v=1.7.8" type="text/javascript" charset="UTF-8"></script>
+<script src="<@sp.static/>/js/custom/message.js?v=1.7.9" type="text/javascript" charset="UTF-8"></script>
 <!-- 发送-->
-<script src="<@sp.static/>/js/custom/send.js?v=1.7.8" type="text/javascript" charset="UTF-8"></script>
+<script src="<@sp.static/>/js/custom/send.js?v=1.7.9" type="text/javascript" charset="UTF-8"></script>
 </#macro>

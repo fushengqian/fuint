@@ -17,11 +17,19 @@ import java.util.List;
 public interface MtConfirmLogRepository extends BaseRepository<MtConfirmLog, Integer> {
 
    /**
+    * 获取核销次数
+    *
+    * @return
+    */
+   @Query("SELECT count(t.id) as num FROM MtConfirmLog t where t.userCouponId =:userCouponId and t.status = 'A'")
+   Long getConfirmNum(@Param("userCouponId") Integer userCouponId);
+
+   /**
     * 获取核销总数
     *
     * @return
     */
-   @Query("SELECT count(t.id) as num FROM MtConfirmLog t where t.createTime <= :endTime and t.createTime >= :beginTime")
+   @Query("SELECT count(t.id) as num FROM MtConfirmLog t where t.createTime <=:endTime and t.createTime >=:beginTime")
    Long getConfirmLogCount(@Param("beginTime") Date beginTime, @Param("endTime") Date endTime);
 
    /**

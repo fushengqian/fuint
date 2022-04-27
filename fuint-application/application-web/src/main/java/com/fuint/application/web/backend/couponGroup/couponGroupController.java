@@ -237,6 +237,7 @@ public class couponGroupController {
         PaginationRequest requestName = RequestHandler.buildPaginationRequest(request, model);
         requestName.getSearchParams().put("EQ_name", reqCouponGroupDto.getName());
         PaginationResponse<MtCouponGroup> dataName = couponGroupService.queryCouponGroupListByPagination(requestName);
+
         if (dataName.getContent().size() > 0) {
             throw new BusinessCheckException("该分组名称已存在，请修改后提交");
         }
@@ -369,7 +370,7 @@ public class couponGroupController {
         }
 
         MtSendLog sendLog = sendLogService.querySendLogById(id);
-        if (null == sendLog) {
+        if (sendLog == null) {
             reqResult.setResult(false);
             reqResult.setMsg("系统参数有误！");
             return reqResult;
@@ -393,7 +394,7 @@ public class couponGroupController {
      * */
     @RequiresPermissions("backend/couponGroup/quickSearchInit")
     @RequestMapping(value = "/quickSearchInit")
-    public String quickSearchInit(HttpServletRequest request, Model model) throws BusinessCheckException {
+    public String quickSearchInit(HttpServletRequest request, Model model) {
         return "components/groupQuickSearch";
     }
 

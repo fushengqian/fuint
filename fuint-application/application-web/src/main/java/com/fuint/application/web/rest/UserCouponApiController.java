@@ -156,8 +156,8 @@ public class UserCouponApiController extends BaseController {
 
             // 如果是集次卡，获取核销次数
             if (couponInfo.getType().equals(CouponTypeEnum.TIMER.getKey())) {
-                Integer confirmCount = confirmLogService.getConfirmNum(userCouponId);
-                result.setConfirmCount(confirmCount);
+                Long confirmCount = confirmLogService.getConfirmNum(userCouponId);
+                result.setConfirmCount(confirmCount.intValue());
             }
 
             responseObject = getSuccessResult(result);

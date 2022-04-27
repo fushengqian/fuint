@@ -126,7 +126,7 @@
                 <td>
                     <!--未使用、待领取-->
                     <#if ct.status == "A" || ct.status == "E" >
-                    <a class="label label-success small-btn" href="javascript:confirmerCoupon('${ct.id}')"  title="手动核销"><i class="fa fa-adjust"></i>核销</a>
+                    <a class="label label-success small-btn" href="javascript:;" onclick="getData('${rc.contextPath}/backend/home/confirmCoupon?code=${ct.code}', 'displayArea')" title="手动核销"><i class="fa fa-adjust"></i>核销</a>
                     <a class="label label-danger small-btn" href="javascript:getConfirmData('确定作废该卡券？作废后该操作不可撤回，请确认！','${rc.contextPath}/backend/coupon/deleteUserCoupon/${ct.id}', 'displayArea')"><i class="fa fa-trash"></i>作废</a>
                     <#else>
                     --

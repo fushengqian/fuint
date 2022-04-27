@@ -241,6 +241,11 @@ public class goodsController {
     @RequestMapping(value = "/save", method = RequestMethod.POST)
     @ResponseBody
     public ReqResult saveHandler(HttpServletRequest request, HttpServletResponse response, Model model) throws BusinessCheckException {
+        ShiroUser shiroUser = ShiroUserHelper.getCurrentShiroUser();
+        if (shiroUser == null) {
+            return null;
+        }
+
         String goodsId = request.getParameter("goodsId") == null ? "0" : request.getParameter("goodsId");
         if (StringUtils.isEmpty(goodsId)) {
             goodsId = "0";
@@ -249,24 +254,20 @@ public class goodsController {
         String name = CommonUtil.replaceXSS(request.getParameter("name"));
         String description = request.getParameter("editorValue") == null ? "" : request.getParameter("editorValue");
         String images[] = request.getParameterValues("image") == null ? new String[0] : request.getParameterValues("image");
-        String sort = StringUtils.isEmpty(request.getParameter("sort")) ? "0" : request.getParameter("sort");
-        String stock = StringUtils.isEmpty(request.getParameter("stock")) ? "0" : request.getParameter("stock");
-        String status = StringUtils.isEmpty(request.getParameter("status")) ? StatusEnum.ENABLED.getKey() : request.getParameter("status");
+        String sort = request.getParameter("sort") == null ? "" : request.getParameter("sort");
+        String stock = request.getParameter("stock") == null ? "" : request.getParameter("stock");
+        String status = request.getParameter("status") == null ? "" : request.getParameter("status");
         String goodsNo = request.getParameter("goodsNo") == null ? "" : request.getParameter("goodsNo");
-        String price = StringUtils.isEmpty(request.getParameter("price")) ? "0" : request.getParameter("price");
-        String linePrice = StringUtils.isEmpty(request.getParameter("linePrice")) ? "0" : request.getParameter("linePrice");
-        String weight = StringUtils.isEmpty(request.getParameter("weight")) ? "0" : request.getParameter("weight");
+        String price = request.getParameter("price") == null ? "" : request.getParameter("price");
+        String linePrice = request.getParameter("linePrice") == null ? "" : request.getParameter("linePrice");
+        String weight = request.getParameter("weight") == null ? "" : request.getParameter("weight");
         Integer initSale = request.getParameter("initSale") == null ? 0 : Integer.parseInt(request.getParameter("initSale"));
         String salePoint = request.getParameter("salePoint") == null ? "" : request.getParameter("salePoint");
-        String canUsePoint = StringUtils.isEmpty(request.getParameter("canUsePoint")) ? "N" : request.getParameter("canUsePoint");
-        String isMemberDiscount = StringUtils.isEmpty(request.getParameter("isMemberDiscount")) ? "N" : request.getParameter("isMemberDiscount");
-        String isSingleSpec = StringUtils.isEmpty(request.getParameter("isSingleSpec")) ? "Y" : request.getParameter("isSingleSpec");
+        String canUsePoint = request.getParameter("canUsePoint") == null ? "" : request.getParameter("canUsePoint");
+        String isMemberDiscount = request.getParameter("isMemberDiscount") == null ? "" : request.getParameter("isMemberDiscount");
+        String isSingleSpec = request.getParameter("isSingleSpec") == null ? "" : request.getParameter("isSingleSpec");
         Integer cateId = request.getParameter("cateId") == null ? 0 : Integer.parseInt(request.getParameter("cateId"));
         Integer storeId = request.getParameter("storeId") == null ? 0 : Integer.parseInt(request.getParameter("storeId"));
-
-        if (StringUtils.isEmpty(sort)) {
-            sort = "0";
-        }
 
         // 去除空值
         if (images.length > 0) {
@@ -382,23 +383,31 @@ public class goodsController {
         info.setName(name);
         info.setGoodsNo(goodsNo);
         info.setIsSingleSpec(isSingleSpec);
-        info.setStock(Integer.parseInt(stock));
-        info.setDescription(description);
-        info.setStoreId(storeId);
+        if (StringUtils.isNotEmpty(stock)) {
+            info.setStock(Integer.parseInt(stock));
+        }
+        if (StringUtils.isNotEmpty(description)) {
+            info.setDescription(description);
+        }
+        if (storeId != null) {
+            info.setStoreId(storeId);
+        }
         if (images.length > 0) {
             info.setLogo(images[0]);
         }
         if (StringUtils.isNotEmpty(sort)) {
             info.setSort(Integer.parseInt(sort));
         }
-        info.setStatus(status);
-        if (new BigDecimal(price).compareTo(new BigDecimal("0")) > 0) {
+        if (StringUtils.isNotEmpty(status)) {
+            info.setStatus(status);
+        }
+        if (StringUtils.isNotEmpty(price)) {
             info.setPrice(new BigDecimal(price));
         }
         if(minPrice.compareTo(new BigDecimal("0")) > 0) {
             info.setPrice(minPrice);
         }
-        if (new BigDecimal(linePrice).compareTo(new BigDecimal("0")) > 0) {
+        if (StringUtils.isNotEmpty(linePrice)) {
             info.setLinePrice(new BigDecimal(linePrice));
         }
         if(minLinePrice.compareTo(new BigDecimal("0")) > 0) {
@@ -407,11 +416,18 @@ public class goodsController {
         if (StringUtils.isNotEmpty(weight)) {
             info.setWeight(new BigDecimal(weight));
         }
-        info.setInitSale(initSale);
-        info.setSalePoint(salePoint);
-        info.setCanUsePoint(canUsePoint);
-        info.setIsMemberDiscount(isMemberDiscount);
-
+        if (initSale > 0) {
+            info.setInitSale(initSale);
+        }
+        if (StringUtils.isNotEmpty(salePoint)) {
+            info.setSalePoint(salePoint);
+        }
+        if (StringUtils.isNotEmpty(canUsePoint)) {
+            info.setCanUsePoint(canUsePoint);
+        }
+        if (StringUtils.isNotEmpty(isMemberDiscount)) {
+            info.setIsMemberDiscount(isMemberDiscount);
+        }
         if (images.length > 0) {
             String imagesJson = JSONObject.toJSONString(images);
             info.setImages(imagesJson);

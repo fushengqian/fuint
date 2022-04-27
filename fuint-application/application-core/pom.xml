@@ -5,7 +5,7 @@
   <parent>
     <groupId>com.fuint.application</groupId>
     <artifactId>fuint-application</artifactId>
-    <version>0.0.2-SNAPSHOT</version>
+    <version>1.0.0-RELEASE</version>
   </parent>
   <groupId>com.fuint.application</groupId>
   <artifactId>application-core</artifactId>

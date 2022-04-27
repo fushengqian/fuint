@@ -476,6 +476,7 @@ public class OrderServiceImpl extends BaseService implements OrderService {
         dto.setOrderSn(orderInfo.getOrderSn());
         dto.setRemark(orderInfo.getRemark());
         dto.setType(orderInfo.getType());
+        dto.setPayType(orderInfo.getPayType());
         dto.setOrderMode(orderInfo.getOrderMode());
         dto.setCreateTime(DateUtil.formatDate(orderInfo.getCreateTime(), "yyyy.MM.dd HH:mm"));
         dto.setUpdateTime(DateUtil.formatDate(orderInfo.getUpdateTime(), "yyyy.MM.dd HH:mm"));
@@ -720,6 +721,12 @@ public class OrderServiceImpl extends BaseService implements OrderService {
 
         if (cartList.size() > 0) {
             for (MtCart cart : cartList) {
+                // 购物车商品信息
+                MtGoods mtGoodsInfo = goodsService.queryGoodsById(cart.getGoodsId());
+                if (mtGoodsInfo == null || !mtGoodsInfo.getStatus().equals(StatusEnum.ENABLED.getKey())) {
+                    continue;
+                }
+
                 totalNum = totalNum + cart.getNum();
                 ResCartDto cartDto = new ResCartDto();
                 cartDto.setId(cart.getId());
@@ -733,8 +740,6 @@ public class OrderServiceImpl extends BaseService implements OrderService {
                     cartDto.setSpecList(specList);
                 }
 
-                // 购物车商品信息
-                MtGoods mtGoodsInfo = goodsService.queryGoodsById(cart.getGoodsId());
                 if (StringUtils.isNotEmpty(mtGoodsInfo.getLogo()) && (mtGoodsInfo.getLogo().indexOf(basePath) == -1)) {
                     mtGoodsInfo.setLogo(basePath + mtGoodsInfo.getLogo());
                 }

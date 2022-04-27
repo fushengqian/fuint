@@ -1,7 +1,7 @@
 package com.fuint.application.service.confirmlog;
 
 import com.fuint.application.dao.entities.*;
-import com.fuint.application.dao.repositories.MtConfirmLogRepository;
+import com.fuint.application.dao.repositories.*;
 import com.fuint.application.service.coupon.CouponService;
 import com.fuint.application.service.store.StoreService;
 import com.fuint.application.service.member.MemberService;
@@ -9,8 +9,6 @@ import com.fuint.base.dao.pagination.PaginationRequest;
 import com.fuint.base.dao.pagination.PaginationResponse;
 import com.fuint.application.dto.ConfirmLogDto;
 import com.fuint.exception.BusinessCheckException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -26,8 +24,6 @@ import java.util.*;
  */
 @Service
 public class ConfirmLogServiceImpl implements ConfirmLogService {
-
-    private static final Logger log = LoggerFactory.getLogger(ConfirmLogServiceImpl.class);
 
     @Autowired
     private MtConfirmLogRepository confirmLogRepository;
@@ -85,15 +81,17 @@ public class ConfirmLogServiceImpl implements ConfirmLogService {
     }
 
     /**
-     * 获取卡券核销次数
+     * 获取卡券（集次卡）核销次数
      * @param userCouponId 会员卡券ID
      * @return
      * */
     @Override
-    public Integer getConfirmNum(Integer userCouponId) {
-        Map<String, Object> params = new HashMap<>();
-        params.put("EQ_UserCouponId", userCouponId);
-        return 0;
+    public Long getConfirmNum(Integer userCouponId) {
+        if (userCouponId > 0) {
+            return confirmLogRepository.getConfirmNum(userCouponId);
+        } else {
+            return 0L;
+        }
     }
 
     /**

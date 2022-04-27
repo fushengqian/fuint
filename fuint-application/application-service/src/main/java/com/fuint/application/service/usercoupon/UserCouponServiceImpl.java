@@ -303,6 +303,7 @@ public class UserCouponServiceImpl extends BaseService implements UserCouponServ
                 MyCouponDto dto = new MyCouponDto();
                 dto.setId(userCouponDto.getId());
                 dto.setName(couponInfo.getName());
+                dto.setCode(userCouponDto.getCode());
                 dto.setCouponId(couponInfo.getId());
                 dto.setUseRule(couponInfo.getDescription());
 
@@ -331,7 +332,7 @@ public class UserCouponServiceImpl extends BaseService implements UserCouponServ
 
                 // 优惠券tips
                 if (couponInfo.getType().equals(CouponTypeEnum.COUPON.getKey())) {
-                    if (Integer.parseInt(couponInfo.getOutRule()) > 0) {
+                    if (StringUtils.isNotEmpty(couponInfo.getOutRule()) && Integer.parseInt(couponInfo.getOutRule()) > 0) {
                         tips = "满" + couponInfo.getOutRule() + "可用";
                     } else {
                         tips = "无门槛券";
@@ -345,7 +346,7 @@ public class UserCouponServiceImpl extends BaseService implements UserCouponServ
 
                 // 集次卡tips
                 if (couponInfo.getType().equals(CouponTypeEnum.TIMER.getKey())) {
-                    Integer confirmNum = confirmLogService.getConfirmNum(userCouponDto.getId());
+                    Long confirmNum = confirmLogService.getConfirmNum(userCouponDto.getId());
                     tips = "已集"+ confirmNum +"次，需集满" + couponInfo.getOutRule() + "次";
                 }
 

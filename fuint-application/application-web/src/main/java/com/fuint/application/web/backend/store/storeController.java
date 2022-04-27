@@ -7,6 +7,7 @@ import com.fuint.base.dao.pagination.PaginationResponse;
 import com.fuint.base.service.account.TAccountService;
 import com.fuint.base.shiro.util.ShiroUserHelper;
 import com.fuint.base.util.RequestHandler;
+import com.fuint.base.shiro.ShiroUser;
 import com.fuint.exception.BusinessCheckException;
 import com.fuint.exception.BusinessRuntimeException;
 import com.fuint.util.StringUtil;
@@ -148,7 +149,13 @@ public class storeController {
     @RequiresPermissions("backend/store/active/{id}")
     @RequestMapping(value = "/active/{id}")
     public String activeStore(HttpServletRequest request, HttpServletResponse response, Model model, @PathVariable("id") Integer id) throws BusinessCheckException {
-        String operator = ShiroUserHelper.getCurrentShiroUser().getAcctName();
+        ShiroUser shiroUser = ShiroUserHelper.getCurrentShiroUser();
+        if (shiroUser == null) {
+            return "redirect:/login";
+        }
+
+        String operator = shiroUser.getAcctName();
+
         MtStore mtStore = storeRepository.findOne(id);
 
         if (mtStore == null) {
@@ -177,7 +184,12 @@ public class storeController {
     @RequiresPermissions("backend/store/delete/{id}")
     @RequestMapping(value = "/delete/{id}")
     public String delete(HttpServletRequest request, HttpServletResponse response, Model model, @PathVariable("id") Integer id) throws BusinessCheckException {
-        String operator = ShiroUserHelper.getCurrentShiroUser().getAcctName();
+        ShiroUser shiroUser = ShiroUserHelper.getCurrentShiroUser();
+        if (shiroUser == null) {
+            return "redirect:/login";
+        }
+
+        String operator = shiroUser.getAcctName();
 
         storeService.deleteStore(id, operator);
         ReqResult reqResult = new ReqResult();
@@ -210,6 +222,11 @@ public class storeController {
     @RequiresPermissions("backend/store/save")
     @RequestMapping(value = "/save", method = RequestMethod.POST)
     public String saveHandler(HttpServletRequest request, HttpServletResponse response, Model model) throws BusinessCheckException {
+        ShiroUser shiroUser = ShiroUserHelper.getCurrentShiroUser();
+        if (shiroUser == null) {
+            return "redirect:/login";
+        }
+
         MtStoreDto storeInfo = new MtStoreDto();
 
         String storeId = request.getParameter("storeId");
@@ -252,7 +269,7 @@ public class storeController {
             storeInfo.setId(Integer.parseInt(storeId));
         }
 
-        String operator = ShiroUserHelper.getCurrentShiroUser().getAcctName();
+        String operator = shiroUser.getAcctName();
         storeInfo.setOperator(operator);
 
         storeService.saveStore(storeInfo);

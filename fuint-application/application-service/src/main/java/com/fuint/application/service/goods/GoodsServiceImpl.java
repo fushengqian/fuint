@@ -125,7 +125,8 @@ public class GoodsServiceImpl implements GoodsService {
         }
         if (StringUtils.isNotEmpty(reqDto.getIsSingleSpec())) {
             mtGoods.setIsSingleSpec(reqDto.getIsSingleSpec());
-        } else {
+        }
+        if (reqDto.getId() <= 0 && StringUtils.isEmpty(reqDto.getIsSingleSpec())) {
             mtGoods.setIsSingleSpec("Y");
         }
         if (StringUtils.isNotEmpty(reqDto.getName())) {
@@ -152,8 +153,11 @@ public class GoodsServiceImpl implements GoodsService {
         if (StringUtils.isNotEmpty(reqDto.getGoodsNo())) {
             mtGoods.setGoodsNo(reqDto.getGoodsNo());
         }
-        if (reqDto.getSort() > 0) {
+        if (reqDto.getSort() != null) {
             mtGoods.setSort(reqDto.getSort());
+        }
+        if (reqDto.getId() == null && (mtGoods.getSort().equals("") || mtGoods.getSort() == null )) {
+            mtGoods.setSort(0);
         }
         if (reqDto.getPrice() != null) {
             mtGoods.setPrice(reqDto.getPrice());
@@ -164,10 +168,10 @@ public class GoodsServiceImpl implements GoodsService {
         if (reqDto.getWeight() != null) {
             mtGoods.setWeight(reqDto.getWeight());
         }
-        if (reqDto.getInitSale() > 0) {
+        if (reqDto.getInitSale() != null) {
             mtGoods.setInitSale(reqDto.getInitSale());
         }
-        if (reqDto.getStock() > 0) {
+        if (reqDto.getStock() != null) {
             mtGoods.setStock(reqDto.getStock());
         }
         if (StringUtils.isNotEmpty(reqDto.getSalePoint())) {
@@ -200,6 +204,9 @@ public class GoodsServiceImpl implements GoodsService {
     @Override
     public MtGoods queryGoodsById(Integer id) {
        MtGoods mtGoods = goodsRepository.findOne(id);
+       if (mtGoods == null) {
+           return null;
+       }
        MtGoods goodsInfo = new MtGoods();
        org.springframework.beans.BeanUtils.copyProperties(mtGoods, goodsInfo);
        return goodsInfo;

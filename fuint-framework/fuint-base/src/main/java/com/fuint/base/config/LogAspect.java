@@ -47,8 +47,8 @@ public class LogAspect {
     //Service层切点
     @Pointcut("@annotation(com.fuint.base.annoation.OperationServiceLog)")
     public void serviceAspect() {
+        // empty
     }
-
 
     /**
      * service 方法前调用
@@ -76,16 +76,28 @@ public class LogAspect {
 
             if (user != null) {
                 userName = user.getAcctName();
+
                 userAgent = user.getUserAgent();
+                if (userAgent.length() > 255) {
+                    userAgent = userAgent.substring(0, 255);
+                }
+
                 clientPort = user.getClientPort();
+
                 module = operationServiceLog.description();
-                url = user.getRequestURL().substring(0, 240);
-                userAgent = user.getUserAgent().substring(0, 200);
+                if (module.length() > 255) {
+                    module = module.substring(0, 255);
+                }
+
+                url = user.getRequestURL();
+                if (url.length() > 255) {
+                    url = url.substring(0, 255);
+                }
             }
 
             this.printOptLog();
         } catch (Exception e) {
-            LOGGER.error("操作日志记录失败：" + e.getMessage());
+            LOGGER.error("操作日志记录失败啦：" + e.getMessage());
         }
     }
 
@@ -99,9 +111,9 @@ public class LogAspect {
         hal.setActionTime(new Date());
         hal.setClientIp(clientIp);
         hal.setClientPort(clientPort);
-        hal.setUrl(url.substring(0, 240));
+        hal.setUrl(url);
         hal.setTimeConsuming(endTimeMillis - startTimeMillis);
-        hal.setUserAgent(userAgent.substring(0, 220));
+        hal.setUserAgent(userAgent);
         if (StringUtils.isNotEmpty(module)) {
             this.tActionLogService.saveActionLog(hal);
         }

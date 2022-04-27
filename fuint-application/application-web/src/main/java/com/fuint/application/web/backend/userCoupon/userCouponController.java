@@ -46,6 +46,7 @@ import java.util.Map;
 @Controller
 @RequestMapping(value = "/backend/userCoupon")
 public class userCouponController {
+
     /**
      * 卡券分组服务接口
      */
@@ -64,6 +65,9 @@ public class userCouponController {
     @Autowired
     private StoreService storeService;
 
+    /**
+     * 后台用户接口
+     * */
     @Autowired
     private TAccountService accountService;
 

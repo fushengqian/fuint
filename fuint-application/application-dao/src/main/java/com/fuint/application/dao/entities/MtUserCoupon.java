@@ -28,7 +28,7 @@ public class MtUserCoupon implements Serializable{
     private Integer id;
 
     /**
-     * 编码
+     * 核销编码
      */
     @Column(name = "CODE", nullable = false, length = 20)
     private String code;

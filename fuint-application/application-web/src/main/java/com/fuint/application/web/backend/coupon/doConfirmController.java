@@ -8,6 +8,7 @@ import com.fuint.application.dto.ReqResult;
 import com.fuint.application.dto.UserCouponDto;
 import com.fuint.application.enums.CouponTypeEnum;
 import com.fuint.application.enums.UserCouponStatusEnum;
+import com.fuint.application.service.confirmlog.ConfirmLogService;
 import com.fuint.application.service.coupon.CouponService;
 import com.fuint.application.service.member.MemberService;
 import com.fuint.application.util.DateUtil;
@@ -18,8 +19,6 @@ import com.fuint.exception.BusinessRuntimeException;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import com.fuint.base.shiro.ShiroUser;
 import com.fuint.base.dao.entities.TAccount;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -41,8 +40,6 @@ import java.math.BigDecimal;
 @RequestMapping(value = "/backend/doConfirm")
 public class doConfirmController extends BaseController {
 
-    private static final Logger logger = LoggerFactory.getLogger(couponController.class);
-
     @Autowired
     private MtUserCouponRepository userCouponRepository;
 
@@ -60,6 +57,9 @@ public class doConfirmController extends BaseController {
 
     @Autowired
     private MemberService memberService;
+
+    @Autowired
+    private ConfirmLogService confirmLogService;
 
     /**
      * 核销页面
@@ -109,6 +109,9 @@ public class doConfirmController extends BaseController {
         userCouponInfo.setBalance(userCoupon.getBalance());
         userCouponInfo.setAmount(userCoupon.getAmount());
         userCouponInfo.setCode(userCoupon.getCode());
+        userCouponInfo.setUseRule(couponInfo.getOutRule());
+        Long confirmCount = confirmLogService.getConfirmNum(userCoupon.getId());
+        userCouponInfo.setConfirmCount(confirmCount.intValue());
 
         model.addAttribute("couponInfo", userCouponInfo);
         model.addAttribute("userInfo", userInfo);

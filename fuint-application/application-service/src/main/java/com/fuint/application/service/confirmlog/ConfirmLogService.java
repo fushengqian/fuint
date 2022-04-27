@@ -27,7 +27,7 @@ public interface ConfirmLogService {
      * @param userCouponId
      * @return
      * */
-    Integer getConfirmNum(Integer userCouponId) throws BusinessCheckException;
+    Long getConfirmNum(Integer userCouponId) throws BusinessCheckException;
 
     /**
      * 获取核销总数

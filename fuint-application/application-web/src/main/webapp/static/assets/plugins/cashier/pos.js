@@ -207,7 +207,7 @@ const doAddCart = function(goodsInfo, isRemote) {
     if (isRemote) {
         const cartId = remoteCart(goodsInfo);
         if (!cartId) {
-            alert('购物车操作失败！');
+            layer.alert('购物车操作失败！');
             return false;
         }
         goodsInfo.cartId = cartId
@@ -404,7 +404,8 @@ const queryMember = function() {
     $(document).on('click', '#queryMember', function() {
         const mobile = $("#queryMobile").val();
         if (mobile.length < 1) {
-            alert('请先输入会员手机号！');
+            layer.alert('请先输入会员手机号！');
+            return false;
         }
         $.ajax({
             type: "GET",
@@ -428,7 +429,7 @@ const queryMember = function() {
                     $("#memberPoint").text(member.point);
                     $("#memberBalance").text(member.balance);
                 } else {
-                    alert('会员信息查询失败！');
+                    layer.alert('会员信息查询失败！');
                     $("#memberId").val(0);
                     $("#memberInfo").css("display", "none");
                     $("#noMember").css("display", "block");
@@ -455,6 +456,12 @@ const submitCheck = function() {
 const doCash = function() {
     "use strict";
     $(document).on('click', '#doCash', function() {
+        const checkType = $("#checkType").val();
+        if (checkType === 'noGoods') {
+            noGoodsDoCash();
+            return false;
+        }
+
         let cartIds = [];
         $('.pos-table').find('.cart-item').each(function() {
             const cartId = $(this).find("input[name='cartId']").val();
@@ -464,7 +471,7 @@ const doCash = function() {
         })
 
         if (cartIds.length < 1) {
-            alert("请先添加购物车！");
+            layer.alert("请先添加购物车！");
             return false
         }
 
@@ -496,8 +503,8 @@ const doCash = function() {
             url: serverBase + "/rest/settlement/submit",
             success: function (data) {
                 if (data.data) {
-                    $("#payAmount").text(data.data.orderInfo.amount);
-                    $("#doPayAmount").text(data.data.orderInfo.payAmount);
+                    $("#payAmount").text(data.data.orderInfo.amount.toFixed(2));
+                    $("#doPayAmount").text(data.data.orderInfo.payAmount.toFixed(2));
                     $("#orderId").val(data.data.orderInfo.id);
                     $('#modalPosCheck').modal('hide');
                     if (parseFloat(data.data.orderInfo.payAmount) > 0 && data.data.orderInfo.payType !== 'CASH') {
@@ -514,6 +521,64 @@ const doCash = function() {
                 }
             }
         })
+    })
+}
+
+// 无商品收款确认
+const noGoodsDoCash = function() {
+    const payAmount = $("#payAmount").text();
+    const totalDiscount = $("#totalDiscount").text();
+
+    // 支付方式
+    let payTool = 'wechat';
+    $(".pay-tool").each(function() {
+        if ($(this).hasClass("active")) {
+            payTool = $(this).attr("attr");
+        }
+    })
+
+    // 收银备注
+    let remark = $("#remark").val();
+    if (remark.length < 1) {
+        remark = "收银台收款";
+    }
+
+    $("#doCash").attr("disabled", "disabled");
+
+    $.ajax({
+        type: "POST",
+        dataType: "json",
+        contentType: 'application/json;charset=UTF-8',
+        data: JSON.stringify({"payAmount": payAmount, "cashierPayAmount": payAmount, "cashierDiscountAmount": totalDiscount, "type": "payment", "userId": $("#memberId").val(), "payType": payTool, "remark": remark}),
+        url: serverBase + "/rest/settlement/submit",
+        success: function (data) {
+            if (data.data) {
+                $("#checkType").val("goods");
+
+                $('#modalPosCheck').modal('hide');
+
+                $("#payAmount").text(data.data.orderInfo.amount.toFixed(2));
+                $("#doPayAmount").text(data.data.orderInfo.payAmount.toFixed(2));
+                $("#orderId").val(data.data.orderInfo.id);
+
+                if (parseFloat(data.data.orderInfo.payAmount) > 0 && data.data.orderInfo.payType !== 'CASH') {
+                    $('#cashCodeModal').modal('show');
+                }
+
+                // 现金支付成功
+                if (data.data.orderInfo.payType === 'CASH') {
+                    $("#completePay").click();
+                    $('#paySuccessModal').modal('show');
+                }
+
+                $("#doCash").removeAttr("disabled");
+
+                return true;
+            } else {
+                layer.alert(data.message);
+                return false;
+            }
+        }
     })
 }
 
@@ -553,7 +618,7 @@ const takeDiscount = function() {
             if (verify && parseFloat(discount) <= 10) {
                 calculatePayAmount();
             } else {
-                alert('输入折扣格式有误，正数且最多保留两位小数！');
+                layer.alert('输入折扣格式有误，正数且最多保留两位小数！');
                 $("#discount").val("");
             }
         }
@@ -575,7 +640,7 @@ const takeReduce = function() {
             if (verify && parseFloat(reduce) <= parseFloat(payAmount)) {
                 calculatePayAmount();
             } else {
-                alert('输入立减金额格式有误！');
+                layer.alert('输入立减金额格式有误！');
                 $("#reduce").val("");
             }
         }
@@ -584,9 +649,16 @@ const takeReduce = function() {
 
 // 计算支付金额
 const calculatePayAmount = function() {
+    const checkType = $("#checkType").val();
     const discount = $("#discount").val();
     const reduce = $("#reduce").val();
     let totalPrice = $("#totalPrice").text();
+
+    // 无商品结算
+    if (checkType === 'noGoods') {
+        totalPrice = $("#noGoodsPayAmount").val();
+    }
+
     let payAmount = totalPrice
 
     // 折扣
@@ -604,11 +676,67 @@ const calculatePayAmount = function() {
     }
 
     // 实付金额
-    $("#payAmount").text(payAmount);
+    $("#payAmount").text(payAmount.toFixed(2));
 
     // 总优惠金额
     const totalDiscount = parseFloat(totalPrice) - parseFloat(payAmount);
-    $("#totalDiscount").text(totalDiscount)
+    $("#totalDiscount").text(totalDiscount.toFixed(2))
+}
+
+// 点击无商品收款
+const noGoodsPay = function() {
+    "use strict";
+    $(document).on('click', '#noGoodsPay', function() {
+        $("#noGoodsPayAmount").val("");
+        $("#noGoodsPayRemark").val("");
+        $("#discount").val("");
+        $("#reduce").val("");
+        $('#noGoodsModal').modal('show');
+    });
+}
+// 点击确认无商品收款
+const doNoGoodsPay = function() {
+    "use strict";
+    $(document).on('click', '#doNoGoodsPay', function() {
+        // 结算类型为无商品结算
+        $("#checkType").val("noGoods");
+
+        // 实付金额
+        const payAmount = $("#noGoodsPayAmount").val();
+        if (payAmount.length < 1) {
+            layer.alert("请先输入收款金额！");
+            return false;
+        }
+
+        const regex = /^(0|[1-9]\d*)(\s|$|.\d{1,2}\b)/;
+        const verify = regex.test(payAmount);
+        if (!verify) {
+            layer.alert("输入收款金额有误！");
+            return false;
+        }
+
+        $("#payAmount").text(payAmount);
+
+        const noGoodsPayRemark = $("#noGoodsPayRemark").val();
+        $("#remark").val(noGoodsPayRemark);
+
+        $('#noGoodsModal').modal('hide');
+        $('#modalPosCheck').modal('show');
+    });
+}
+
+// 扫码添加购物车
+const addCartByCode = function() {
+    "use strict";
+    $(document).on('click', '#addCartByCode', function() {
+        const goodsNo = $("#goodsNo").val();
+        if (goodsNo.length < 1) {
+            layer.alert("请先输入商品条码！");
+            return false;
+        }
+
+
+    });
 }
 
 $(document).ready(function() {
@@ -633,4 +761,7 @@ $(document).ready(function() {
     takeDiscount();
     takeReduce();
     completePay();
+    noGoodsPay();
+    doNoGoodsPay();
+    addCartByCode();
 });
