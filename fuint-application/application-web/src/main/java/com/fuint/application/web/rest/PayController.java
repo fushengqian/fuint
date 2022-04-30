@@ -7,6 +7,7 @@ import com.fuint.application.dto.CouponDto;
 import com.fuint.application.dto.UserOrderDto;
 import com.fuint.application.enums.OrderStatusEnum;
 import com.fuint.application.enums.SettingTypeEnum;
+import com.fuint.application.service.member.MemberService;
 import com.fuint.application.service.order.OrderService;
 import com.fuint.application.service.setting.SettingService;
 import com.fuint.application.service.token.TokenService;
@@ -14,6 +15,8 @@ import com.fuint.application.service.usercoupon.UserCouponService;
 import com.fuint.application.service.usergrade.UserGradeService;
 import com.fuint.application.service.weixin.WeixinService;
 import com.fuint.application.util.CommonUtil;
+import com.fuint.base.shiro.ShiroUser;
+import com.fuint.base.shiro.util.ShiroUserHelper;
 import com.fuint.exception.BusinessCheckException;
 import com.fuint.application.BaseController;
 import jodd.util.StringUtil;
@@ -54,6 +57,12 @@ public class PayController extends BaseController {
      * */
     @Autowired
     private OrderService orderService;
+
+    /**
+     * 会员服务接口
+     * */
+    @Autowired
+    private MemberService memberService;
 
     @Autowired
     private TokenService tokenService;
@@ -135,16 +144,27 @@ public class PayController extends BaseController {
         MtUser userInfo = tokenService.getUserInfoByToken(userToken);
 
         String orderId = request.getParameter("orderId");
+        String authCode = request.getParameter("authCode");
         if (StringUtil.isEmpty(orderId)) {
             return getFailureResult(2000, "订单不能为空");
         }
 
         MtOrder orderInfo = orderRepository.findOne(Integer.parseInt(orderId));
+
+        // 收银员操作
+        ShiroUser shiroUser = ShiroUserHelper.getCurrentShiroUser();
+        if (userInfo == null && shiroUser != null && orderInfo != null) {
+            userInfo = memberService.queryMemberById(orderInfo.getUserId());
+        }
+
         String ip = CommonUtil.getIPFromHttpRequest(request);
         // 实付金额 = 总金额 - 优惠金额 - 积分金额
         BigDecimal realPayAmount = orderInfo.getAmount().subtract(new BigDecimal(orderInfo.getDiscount().toString())).subtract(new BigDecimal(orderInfo.getPointAmount().toString()));
         BigDecimal pay = realPayAmount.multiply(new BigDecimal("100"));
-        ResponseObject paymentInfo = weixinService.createPrepayOrder(userInfo, orderInfo, (pay.intValue()), "", 0, ip);
+        ResponseObject paymentInfo = weixinService.createPrepayOrder(userInfo, orderInfo, (pay.intValue()), authCode, 0, ip);
+        if (paymentInfo.getData() == null) {
+            return getFailureResult(201, "抱歉，发起支付失败啦！");
+        }
 
         Map<String, Object> outParams = new HashMap();
 

@@ -8,6 +8,7 @@ import com.fuint.application.util.TimeUtils;
 import com.fuint.cache.redis.RedisTemplate;
 import com.fuint.exception.BusinessCheckException;
 import nl.bitwalker.useragentutils.UserAgent;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.fuint.application.dao.entities.MtUser;
 import org.springframework.stereotype.Service;
@@ -79,6 +80,10 @@ public class TokenService {
      * 通过登录token获取用户登录信息
      * */
     public MtUser getUserInfoByToken(String token) throws BusinessCheckException {
+        if (token == null || StringUtils.isEmpty(token)) {
+            return null;
+        }
+
         MtUser mtUser = null;
         try {
             if (this.redisTemplate.exists(token)) {
@@ -96,10 +101,12 @@ public class TokenService {
            if (!mtUser.getStatus().equals(StatusEnum.ENABLED.getKey())) {
                return null;
            }
+
            Date lastUpdateTime = mtUser.getUpdateTime();
            Long timestampLast = Long.valueOf(TimeUtils.date2timeStamp(lastUpdateTime));
            Long timestampNow = System.currentTimeMillis()/1000;
            Long minute = timestampNow - timestampLast;
+
            // 5分钟更新一次
            if (minute >= 300) {
                userRepository.updateActiveTime(mtUser.getId(), new Date());

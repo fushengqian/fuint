@@ -44,6 +44,14 @@ public interface GoodsService {
     MtGoods queryGoodsById(Integer id) throws BusinessCheckException;
 
     /**
+     * 根据编码获取商品信息
+     *
+     * @param goodsNo
+     * @throws BusinessCheckException
+     */
+    MtGoods queryGoodsByGoodsNo(String goodsNo) throws BusinessCheckException;
+
+    /**
      * 根据条码获取sku信息
      *
      * @param skuNo skuNo

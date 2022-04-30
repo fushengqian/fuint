@@ -735,8 +735,57 @@ const addCartByCode = function() {
             return false;
         }
 
-
+        $.ajax({
+            type: "GET",
+            dataType: "json",
+            contentType: 'application/json;charset=UTF-8',
+            url: serverBase + "/rest/goodsApi/getGoodsInfoBySkuNo?skuNo=" + goodsNo,
+            success: function (data) {
+                if (data.data) {
+                    let goodsInfo = data.data.goodsInfo;
+                    goodsInfo.skuId = data.data.skuId;
+                    goodsInfo.buyNum = 1;
+                    goodsInfo.goodsId = goodsInfo.id;
+                    doAddCart(goodsInfo, true);
+                } else {
+                    layer.alert("加入购物车失败：" + data.message);
+                    return false;
+                }
+            }
+        })
     });
+}
+
+// 发起支付
+const doSubmitToPay = function(qrCode) {
+    $("#payNotice").text("请使用扫码枪，扫码收款！");
+
+    if (qrCode.length < 1) {
+        layer.alert("支付失败，请重新扫码！");
+        return false;
+    }
+
+    const orderId = $("#orderId").val();
+    if (orderId.length < 1) {
+        layer.alert("抱歉，支付出错啦！");
+        return false;
+    }
+
+    $.ajax({
+        type: "GET",
+        dataType: "json",
+        contentType: 'application/json;charset=UTF-8',
+        url: serverBase + "/rest/pay/doPay?orderId=" + orderId + '&authCode=' + qrCode,
+        success: function (data) {
+            if (data.data) {
+                $("#payNotice").text("会员支付中，请等待...");
+                return true;
+            } else {
+                layer.alert(data.message);
+                return false;
+            }
+        }
+    })
 }
 
 $(document).ready(function() {
@@ -765,3 +814,28 @@ $(document).ready(function() {
     doNoGoodsPay();
     addCartByCode();
 });
+
+// 监听扫码枪的输入
+window.onload = function (e) {
+    let qrCode = "";
+    let lastTime, nextTime;
+    let lastCode, nextCode;
+    document.onkeypress = function (e) {
+        nextCode = e.which;
+        nextTime = new Date().getTime();
+        if (lastCode != null && lastTime != null && nextTime - lastTime <= 30) {
+            qrCode += String.fromCharCode(lastCode);
+        } else if (lastCode != null && lastTime != null && nextTime - lastTime > 100) {
+            qrCode = '';
+        }
+        lastCode = nextCode;
+        lastTime = nextTime;
+    }
+    this.onkeypress = function (e) {
+        // 监听回车
+        if (e.which == 13) {
+            doSubmitToPay(qrCode);
+            qrCode = "";
+        }
+    }
+}

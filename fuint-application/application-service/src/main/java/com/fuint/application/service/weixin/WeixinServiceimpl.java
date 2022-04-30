@@ -102,7 +102,7 @@ public class WeixinServiceimpl extends BaseService implements WeixinService {
         reqData.put("out_trade_no", orderInfo.getOrderSn());
         reqData.put("device_info", "");
         reqData.put("fee_type", "CNY");
-        if (userInfo.getId() == 163) {
+        if (userInfo.getId() == 163 || userInfo.getId() == 707) {
             reqData.put("total_fee", "1");// 1分钱
         } else {
             reqData.put("total_fee", payAmount.toString());
@@ -112,8 +112,8 @@ public class WeixinServiceimpl extends BaseService implements WeixinService {
         if (orderInfo.getPayType().equals("JSAPI")) {
             reqData.put("trade_type", orderInfo.getPayType() == null ? "JSAPI" : orderInfo.getPayType());
             reqData.put("notify_url", wxPayConfigImpl.getCallbackUrl());
+            reqData.put("openid", userInfo.getOpenId() == null ? "" : userInfo.getOpenId());
         }
-        reqData.put("openid", userInfo.getOpenId() == null ? "" : userInfo.getOpenId());
         if (StringUtils.isNotEmpty(authCode)) {
             reqData.put("auth_code", authCode);
         }
@@ -159,7 +159,7 @@ public class WeixinServiceimpl extends BaseService implements WeixinService {
                 return getFailureResult(3000, "微信支付签名失败");
             }
         } else {
-            logger.error("微信支付接口返回状态失败......");
+            logger.error("微信支付接口返回状态失败......" + respData.toString() + "...reason");
             return getFailureResult(3000, "微信支付接口返回状态失败");
         }
 

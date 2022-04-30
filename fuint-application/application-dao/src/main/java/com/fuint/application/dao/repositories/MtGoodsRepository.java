@@ -18,10 +18,18 @@ public interface MtGoodsRepository extends BaseRepository<MtGoods, Integer> {
 
     /**
      * 获取店铺商品列表
-     *
+     * @param storeId
      * @return
      * */
     @Query("select t from MtGoods t where t.storeId = 0 or t.storeId = :storeId AND t.status = 'A' order by t.sort asc")
     List<MtGoods> getStoreGoodsList(@Param("storeId") Integer storeId);
+
+    /**
+     * 根据编码获取商品信息
+     * @param goodsNo
+     * @return
+     * */
+    @Query("select t from MtGoods t where t.goodsNo =:goodsNo AND t.status = 'A'")
+    MtGoods getByGoodsNo(@Param("goodsNo") String goodsNo);
 }
 

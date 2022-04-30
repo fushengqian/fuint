@@ -245,4 +245,41 @@ public class GoodsApiController extends BaseController {
 
         return getSuccessResult(goodsDetailDto);
     }
+
+    /**
+     * 通过sku编码获取商品信息
+     * */
+    @RequestMapping(value = "/getGoodsInfoBySkuNo", method = RequestMethod.GET)
+    @CrossOrigin
+    public ResponseObject getGoodsInfoBySkuNo(HttpServletRequest request) throws BusinessCheckException, InvocationTargetException, IllegalAccessException {
+        String skuNo = request.getParameter("skuNo") == null ? "" : request.getParameter("skuNo");
+        if (StringUtils.isEmpty(skuNo)) {
+            return getFailureResult(201, "商品编码不能为空");
+        }
+
+        Integer goodsId = 0;
+        Integer skuId = 0;
+        MtGoodsSku mtGoodsSku = goodsService.getSkuInfoBySkuNo(skuNo);
+        if (mtGoodsSku == null) {
+            MtGoods mtGoods = goodsService.queryGoodsByGoodsNo(skuNo);
+            if (mtGoods != null) {
+                goodsId = mtGoods.getId();
+            }
+        } else {
+            goodsId = mtGoodsSku.getGoodsId();
+            skuId = mtGoodsSku.getId();
+        }
+
+        if (goodsId > 0) {
+            GoodsDto goodsDto = goodsService.getGoodsDetail(goodsId, false);
+
+            Map<String, Object> data = new HashMap();
+            data.put("skuId", skuId);
+            data.put("goodsInfo", goodsDto);
+
+            return getSuccessResult(data);
+        } else {
+            return getFailureResult(201, "未查询到商品信息");
+        }
+    }
 }
