@@ -44,9 +44,9 @@ const getCartList = function(isUpdateList) {
                     $('.pos-table').find('.cart-item').remove();
                     $('.no-cart').removeClass("fade");
                 }
-                $("#totalPrice").text(data.data.totalPrice);
+                $("#totalPrice").text(parseFloat(data.data.totalPrice).toFixed(2));
                 $("#totalNum").text(data.data.totalNum + "件");
-                $("#payAmount").text(data.data.totalPrice);
+                $("#payAmount").text(parseFloat(data.data.totalPrice).toFixed(2));
             }
         }
     })
@@ -439,6 +439,17 @@ const queryMember = function() {
     });
 }
 
+// 取消会员
+const cancelMember = function() {
+    "use strict";
+    $(document).on('click', '#cancelMember', function() {
+        $("#memberInfo").css("display", "none");
+        $("#noMember").css("display", "block");
+        $("#queryMobile").val("");
+        $("#memberId").val("");
+    })
+}
+
 // 提交结算
 const submitCheck = function() {
     "use strict";
@@ -448,6 +459,7 @@ const submitCheck = function() {
         $("#noMember").css("display", "block");
         $("#memberId").val(0);
         $("#queryMobile").val("");
+        $("#checkType").val("goods");
         calculatePayAmount();
     });
 }
@@ -543,13 +555,17 @@ const noGoodsDoCash = function() {
         remark = "收银台收款";
     }
 
+    if (payAmount == "" || parseFloat(payAmount) < 0.01) {
+        return false;
+    }
+
     $("#doCash").attr("disabled", "disabled");
 
     $.ajax({
         type: "POST",
         dataType: "json",
         contentType: 'application/json;charset=UTF-8',
-        data: JSON.stringify({"payAmount": payAmount, "cashierPayAmount": payAmount, "cashierDiscountAmount": totalDiscount, "type": "payment", "userId": $("#memberId").val(), "payType": payTool, "remark": remark}),
+        data: JSON.stringify({"payAmount": payAmount, "orderId": $("#orderId").val(), "cashierPayAmount": payAmount, "cashierDiscountAmount": totalDiscount, "type": "payment", "userId": $("#memberId").val(), "payType": payTool, "remark": remark}),
         url: serverBase + "/rest/settlement/submit",
         success: function (data) {
             if (data.data) {
@@ -636,8 +652,7 @@ const takeReduce = function() {
         }
         if (reduce.length > 0) {
             const verify = regex.test(reduce);
-            const payAmount = $("#totalPrice").text();
-            if (verify && parseFloat(reduce) <= parseFloat(payAmount)) {
+            if (verify) {
                 calculatePayAmount();
             } else {
                 layer.alert('输入立减金额格式有误！');
@@ -660,6 +675,10 @@ const calculatePayAmount = function() {
     }
 
     let payAmount = totalPrice
+    if (payAmount == "") {
+        payAmount = 0;
+        totalPrice = 0;
+    }
 
     // 折扣
     if (discount.length > 0) {
@@ -676,10 +695,11 @@ const calculatePayAmount = function() {
     }
 
     // 实付金额
-    $("#payAmount").text(payAmount.toFixed(2));
+    $("#payAmount").text(parseFloat(payAmount).toFixed(2));
 
     // 总优惠金额
     const totalDiscount = parseFloat(totalPrice) - parseFloat(payAmount);
+
     $("#totalDiscount").text(totalDiscount.toFixed(2))
 }
 
@@ -694,6 +714,7 @@ const noGoodsPay = function() {
         $('#noGoodsModal').modal('show');
     });
 }
+
 // 点击确认无商品收款
 const doNoGoodsPay = function() {
     "use strict";
@@ -715,7 +736,7 @@ const doNoGoodsPay = function() {
             return false;
         }
 
-        $("#payAmount").text(payAmount);
+        $("#payAmount").text(parseFloat(payAmount).toFixed(2));
 
         const noGoodsPayRemark = $("#noGoodsPayRemark").val();
         $("#remark").val(noGoodsPayRemark);
@@ -788,6 +809,78 @@ const doSubmitToPay = function(qrCode) {
     })
 }
 
+// 点击切换tab选项
+const switchTabs = function() {
+    "use strict";
+    $(document).on('click', '.switchTab', function() {
+        let tab = $(this).attr("attr");
+        if (tab === 'order') {
+            // 获取最近的订单列表
+            $.ajax({
+                type: "GET",
+                dataType: "json",
+                contentType: 'application/json;charset=UTF-8',
+                url: serverBase + "/backend/order/latest",
+                success: function (data) {
+                    if (data.data) {
+                        if (data.data.goodsList) {
+                            $(".no-order").css("display", "none");
+                            $(".order-list").css("display", "block");
+                            $(".real-order-item").remove();
+                            data.data.goodsList.content.forEach(function(item) {
+                                $('#orderItem').find('.order-item').addClass('real-order-item');
+                                $('#orderItem').find('.no').text(item.orderSn);
+                                $('#orderItem').find('.amount').text(parseFloat(item.amount).toFixed(2));
+                                $('#orderItem').find('.member').text(item.userInfo.name + ' '+ item.userInfo.mobile);
+                                $('#orderItem').find('.order-time').text(item.updateTime.substr(10, 8));
+                                $('#orderItem').find('.order-status').text(item.statusText).attr("attr", item.id);
+                                if (item.payStatus == 'B') {
+                                    $('#orderItem').find('.order-status').removeClass("btn-danger").addClass("btn-success");
+                                } else {
+                                    $('#orderItem').find('.order-status').removeClass("btn-success").addClass("btn-danger");
+                                }
+                                let html = $("#orderItem").html();
+                                $('.order-list').append(html);
+                                $('#orderItem').find('.order-item').removeClass('real-order-item');
+                            })
+                        }
+                        return true;
+                    } else {
+                        return false;
+                    }
+                }
+            })
+        }
+    });
+}
+
+// 点击订单支付
+const orderPay = function() {
+    "use strict";
+    $(document).on('click', '.order-status', function () {
+        $("#checkType").val("noGoods");
+        const orderId = $(this).attr("attr");
+        $.ajax({
+            type: "GET",
+            dataType: "json",
+            contentType: 'application/json;charset=UTF-8',
+            url: serverBase + "/backend/order/info/" + orderId,
+            success: function (data) {
+                if (data.data.orderInfo) {
+                    const orderInfo = data.data.orderInfo;
+                    if (orderInfo.status == 'A') {
+                        $("#payAmount").text(parseFloat(orderInfo.amount).toFixed(2));
+                        $("#doPayAmount").text(parseFloat(orderInfo.amount).toFixed(2));
+                        $("#orderId").val(orderId);
+                        $("#noGoodsPayAmount").val(parseFloat(orderInfo.amount).toFixed(2));
+                        $('#modalPosCheck').modal('show');
+                    }
+                }
+            }
+        });
+    })
+}
+
 $(document).ready(function() {
     handleFilter();
     getCartList(true);
@@ -806,6 +899,7 @@ $(document).ready(function() {
     selectPayTool();
     submitCheck();
     queryMember();
+    cancelMember();
     doCash();
     takeDiscount();
     takeReduce();
@@ -813,6 +907,8 @@ $(document).ready(function() {
     noGoodsPay();
     doNoGoodsPay();
     addCartByCode();
+    switchTabs();
+    orderPay();
 });
 
 // 监听扫码枪的输入

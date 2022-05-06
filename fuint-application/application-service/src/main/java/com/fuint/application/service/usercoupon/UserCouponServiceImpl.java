@@ -122,7 +122,7 @@ public class UserCouponServiceImpl extends BaseService implements UserCouponServ
         }
 
         // 积分不足以领取
-        if (couponInfo.getPoint() > 0) {
+        if (couponInfo.getPoint() != null && couponInfo.getPoint() > 0) {
             if (userInfo.getPoint() < couponInfo.getPoint()) {
                 throw new BusinessCheckException(Message.POINT_LIMIT);
             }
@@ -161,7 +161,7 @@ public class UserCouponServiceImpl extends BaseService implements UserCouponServ
         }
 
         // 是否需要扣除相应积分
-        if (couponInfo.getPoint() > 0) {
+        if (couponInfo.getPoint() != null && couponInfo.getPoint() > 0) {
             MtPoint reqPointDto = new MtPoint();
             reqPointDto.setUserId(userId);
             reqPointDto.setAmount(-couponInfo.getPoint());
@@ -188,12 +188,12 @@ public class UserCouponServiceImpl extends BaseService implements UserCouponServ
         }
 
         MtCoupon couponInfo = couponService.queryCouponById(couponId);
-        if (null == couponInfo) {
+        if (couponInfo == null) {
             throw new BusinessCheckException(Message.COUPON_NOT_EXIST);
         }
 
         MtUser userInfo = memberService.queryMemberById(userId);
-        if (null == userInfo) {
+        if (userInfo == null) {
             throw new BusinessCheckException(Message.USER_NOT_EXIST);
         }
 

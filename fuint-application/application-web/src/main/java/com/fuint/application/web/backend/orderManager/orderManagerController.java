@@ -26,6 +26,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import javax.servlet.http.HttpServletRequest;
+import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -39,6 +41,7 @@ import java.util.Map;
 @Controller
 @RequestMapping(value = "/backend/order")
 public class orderManagerController {
+
     /**
      * 订单服务接口
      * */
@@ -61,6 +64,11 @@ public class orderManagerController {
     @RequiresPermissions("backend/order/list")
     @RequestMapping(value = "/list")
     public String list(HttpServletRequest request, Model model) throws BusinessCheckException {
+        ShiroUser shiroUser = ShiroUserHelper.getCurrentShiroUser();
+        if (shiroUser == null) {
+            return "redirect:/login";
+        }
+
         PaginationRequest paginationRequest = RequestHandler.buildPaginationRequest(request, model);
         Map<String, Object> params = paginationRequest.getSearchParams();
 
@@ -74,8 +82,8 @@ public class orderManagerController {
         param.put("userId", params.get("EQ_userId"));
         param.put("mobile", params.get("EQ_mobile"));
         param.put("storeId", params.get("EQ_storeId"));
+        param.put("orderMode", params.get("EQ_orderMode"));
 
-        ShiroUser shiroUser = ShiroUserHelper.getCurrentShiroUser();
         TAccount account = accountService.findAccountById(shiroUser.getId());
         Integer storeId = account.getStoreId();
         if (storeId > 0) {
@@ -106,6 +114,11 @@ public class orderManagerController {
     @RequiresPermissions("backend/order/detail/{orderId}")
     @RequestMapping(value = "/detail/{orderId}")
     public String detail(HttpServletRequest request, Model model, @PathVariable("orderId") Integer orderId) throws BusinessCheckException {
+        ShiroUser shiroUser = ShiroUserHelper.getCurrentShiroUser();
+        if (shiroUser == null) {
+            return "redirect:/login";
+        }
+
         UserOrderDto orderInfo = orderService.getOrderById(orderId);
         model.addAttribute("orderInfo", orderInfo);
 
@@ -128,6 +141,7 @@ public class orderManagerController {
         if (orderId < 0) {
             ReqResult reqResult = new ReqResult();
             reqResult.setCode("0");
+            reqResult.setMsg("系统出错啦，订单ID不能为空");
             reqResult.setResult(false);
             return reqResult;
         }
@@ -151,6 +165,139 @@ public class orderManagerController {
         reqResult.setCode("1");
         reqResult.setResult(true);
         reqResult.setMsg("执行成功");
+
+        return reqResult;
+    }
+
+    /**
+     * 修改订单
+     * @param request  HttpServletRequest对象
+     * @return
+     * */
+    @RequiresPermissions("backend/order/modify")
+    @RequestMapping(value = "/modify")
+    @ResponseBody
+    public ReqResult modify(HttpServletRequest request) throws BusinessCheckException {
+        Integer orderId = request.getParameter("orderId") == null ? 0 : Integer.parseInt(request.getParameter("orderId"));
+        String status = request.getParameter("status") == null ? "" : request.getParameter("status");
+        String amount = request.getParameter("amount") == null ? "" : request.getParameter("amount");
+        String discount = request.getParameter("discount") == null ? "" : request.getParameter("discount");
+        String remark = request.getParameter("remark") == null ? "" : request.getParameter("remark");
+
+        ShiroUser shiroUser = ShiroUserHelper.getCurrentShiroUser();
+        if (shiroUser == null) {
+            ReqResult reqResult = new ReqResult();
+            reqResult.setCode("0");
+            reqResult.setMsg("登录信息已失效，请重新登录");
+            reqResult.setResult(false);
+            return reqResult;
+        }
+
+        if (orderId < 0) {
+            ReqResult reqResult = new ReqResult();
+            reqResult.setCode("0");
+            reqResult.setMsg("系统出错啦，订单ID不能为空");
+            reqResult.setResult(false);
+            return reqResult;
+        }
+
+        OrderDto orderDto = new OrderDto();
+        orderDto.setId(orderId);
+        orderDto.setOperator(shiroUser.getAcctName());
+        if (StringUtils.isNotEmpty(status)) {
+            orderDto.setStatus(status);
+        }
+
+        if (StringUtils.isNotEmpty(amount)) {
+            orderDto.setAmount(new BigDecimal(amount));
+        }
+
+        if (StringUtils.isNotEmpty(discount)) {
+            orderDto.setDiscount(new BigDecimal(discount));
+        }
+
+        if (StringUtils.isNotEmpty(remark)) {
+            orderDto.setRemark(remark);
+        }
+
+        try {
+            orderService.updateOrder(orderDto);
+        } catch (BusinessCheckException e) {
+
+        }
+
+        ReqResult reqResult = new ReqResult();
+        reqResult.setCode("1");
+        reqResult.setResult(true);
+        reqResult.setMsg("订单修改成功");
+
+        return reqResult;
+    }
+
+    /**
+     * 最新订单列表查询
+     * @param request  HttpServletRequest对象
+     * @return
+     */
+    @RequiresPermissions("backend/order/latest")
+    @RequestMapping(value = "/latest")
+    @ResponseBody
+    public ReqResult latest(HttpServletRequest request) throws BusinessCheckException {
+        Integer pageSize = request.getParameter("pageSize") == null ? 10 : Integer.parseInt(request.getParameter("pageSize"));
+        Integer page = request.getParameter("page") == null ? 1 : Integer.parseInt(request.getParameter("page"));
+        ShiroUser shiroUser = ShiroUserHelper.getCurrentShiroUser();
+
+        ReqResult reqResult = new ReqResult();
+        reqResult.setCode("200");
+        if (shiroUser == null) {
+            Map<String, Object> data = new HashMap();
+            data.put("goodsList", new ArrayList<>());
+            reqResult.setData(data);
+            return reqResult;
+        }
+
+        Map<String, Object> param = new HashMap<>();
+        param.put("pageNumber", page);
+        param.put("pageSize", pageSize);
+
+        TAccount account = accountService.findAccountById(shiroUser.getId());
+        Integer storeId = account.getStoreId();
+        if (storeId > 0) {
+            param.put("storeId", storeId.toString());
+        }
+
+        ResponseObject response = orderService.getUserOrderList(param);
+
+        Map<String, Object> data = new HashMap();
+        data.put("goodsList", response.getData());
+
+        reqResult.setData(data);
+        return reqResult;
+    }
+
+    /**
+     * 订单信息
+     * @return
+     * */
+    @RequiresPermissions("backend/order/info/{orderId}")
+    @RequestMapping(value = "/info/{orderId}")
+    @ResponseBody
+    public ReqResult info(@PathVariable("orderId") Integer orderId) throws BusinessCheckException {
+        ShiroUser shiroUser = ShiroUserHelper.getCurrentShiroUser();
+
+        ReqResult reqResult = new ReqResult();
+        reqResult.setCode("200");
+        if (shiroUser == null) {
+            Map<String, Object> data = new HashMap();
+            data.put("orderInfo", null);
+            reqResult.setData(data);
+            return reqResult;
+        }
+
+        UserOrderDto orderInfo = orderService.getOrderById(orderId);
+        Map<String, Object> data = new HashMap();
+        data.put("orderInfo", orderInfo);
+        reqResult.setData(data);
 
         return reqResult;
     }

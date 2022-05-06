@@ -52,7 +52,6 @@
             </div>
             <div class="col-md-6">
                 <button type="button" class="btn btn-danger clear-cart"><i class="fa fa-trash"></i>清空购物车</button>
-                <button type="button" class="btn btn-danger member-info"><i class="fa fa-user"></i>选择会员</button>
             </div>
         </div>
         <div class="pos-content-container" data-scrollbar="true" data-height="100%" data-skip-mobile="true">
@@ -91,10 +90,10 @@
     </div>
     <div class="pos-sidebar-nav">
         <ul class="nav nav-tabs nav-fill">
-            <li class="nav-item">
+            <li class="nav-item switchTab" attr="cart">
                 <a class="nav-link active" href="javascript:;" data-bs-toggle="tab" data-bs-target="#newOrderTab">购物车</a>
             </li>
-            <li class="nav-item">
+            <li class="nav-item switchTab" attr="order">
                 <a class="nav-link" href="javascript:;" data-bs-toggle="tab" data-bs-target="#orderHistoryTab">订单列表</a>
             </li>
         </ul>
@@ -131,7 +130,7 @@
                 </div>
                 <div class="col-3 total-price">
                     <div>￥<span id="cartGoodsTotalPrice">0.00</span></div>
-                     <i class="fa fa-trash remove-cart" title="移出购物车"></i>
+                    <i class="fa fa-trash remove-cart" title="移出购物车"></i>
                 </div>
                 <div class="pos-remove-confirmation" style="display: none;">
                     <svg width="2em" height="2em" viewBox="0 0 16 16" class="me-2" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
@@ -144,7 +143,7 @@
                 </div>
             </div>
             </div>
-            <div class="no-cart h-100 d-flex align-items-center justify-content-center text-center p-20">
+            <div class="no-cart">
                 <div>
                     <div class="mb-3 mt-n5">
                         <svg width="6em" height="6em" viewBox="0 0 16 16" class="text-gray-300" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
@@ -158,15 +157,30 @@
         </div>
         </div>
         <div class="tab-pane fade h-100" id="orderHistoryTab">
-            <div class="no-order h-100 d-flex align-items-center justify-content-center text-center p-20">
-                <div>
-                    <div class="mb-3 mt-n5">
+            <div class="no-order">
+                <div class="order-empty-icon">
+                    <div class="empty-icon">
                         <svg width="6em" height="6em" viewBox="0 0 16 16" class="text-gray-300" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                             <path fill-rule="evenodd" d="M14 5H2v9a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1V5zM1 4v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V4H1z" />
                             <path d="M8 1.5A2.5 2.5 0 0 0 5.5 4h-1a3.5 3.5 0 1 1 7 0h-1A2.5 2.5 0 0 0 8 1.5z" />
                         </svg>
                     </div>
-                    <h5>暂无订单信息</h5>
+                    <div class="empty-tips">暂无订单信息</div>
+                </div>
+            </div>
+            <div class="order-list">
+                <div id="orderItem" style="display: none">
+                    <div class="order-item">
+                         <div class="col-9 left-side">
+                             <div class="order-no"><label>订单号：</label><span class="no">-</span></div>
+                             <div class="order-amount"><label>订单金额：</label>￥<span class="amount">0.00</span></div>
+                             <div class="order-member"><label>会员信息：</label><span class="member">-</span></div>
+                         </div>
+                         <div class="col-3 right-side">
+                              <button attr="0" class="btn btn-danger small-btn order-status">结算</button>
+                              <div class="order-time"></div>
+                         </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -385,7 +399,10 @@
                              <div class="info">
                                   <div class="condition">
                                       <input type="text" class="form-control" id="queryMobile" name="queryMobile" clearable placeholder="请输入会员手机号" />
-                                      <button type="button" id="queryMember" class="btn btn-danger">查询</button>
+                                      <div class="do-query">
+                                          <button type="button" id="cancelMember" class="btn btn-default">取消</button>
+                                          <button type="button" id="queryMember" class="btn btn-danger">查询</button>
+                                      </div>
                                   </div>
                                   <div class="member" id="memberInfo" style="display: none">
                                       <input type="hidden" id="memberId" name="memberId" value="0"/>
@@ -425,10 +442,11 @@
                 <div class="modal-body">
                     <div class="pay-area">
                          <div class="amount">
+                              <div class="star">*</div>
                               <input type="text" class="form-control" id="noGoodsPayAmount" name="noGoodsPayAmount" placeholder="请输入收款金额"/>
                               <div class="tip">（单位：元）</div>
                          </div>
-                         <div class="remark">
+                         <div class="remark" style="margin-left: 8px;">
                               <textarea rows="5" class="form-control" id="noGoodsPayRemark" name="noGoodsPayRemark" maxlength="500" placeholder="请输入备注信息"></textarea>
                          </div>
                     </div>

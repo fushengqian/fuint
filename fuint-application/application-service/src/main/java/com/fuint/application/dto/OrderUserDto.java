@@ -10,6 +10,11 @@ import java.io.Serializable;
 public class OrderUserDto implements Serializable {
 
     /**
+     * 会员ID
+     * */
+    private Integer id;
+
+    /**
      * 姓名
      */
     private String name;
@@ -33,6 +38,13 @@ public class OrderUserDto implements Serializable {
      * 地址
      * */
     private String address;
+
+    public Integer getId() {
+        return id;
+    }
+    public void setId(Integer id) {
+        this.id = id;
+    }
 
     public String getName() {
         return name;

@@ -120,6 +120,7 @@ public class OrderServiceImpl extends BaseService implements OrderService {
         String type =  paramMap.get("type") == null ? "": paramMap.get("type").toString();
         String orderSn =  paramMap.get("orderSn") == null ? "": paramMap.get("orderSn").toString();
         String mobile =  paramMap.get("mobile") == null ? "": paramMap.get("mobile").toString();
+        String orderMode =  paramMap.get("orderMode") == null ? "": paramMap.get("orderMode").toString();
 
         if (dataType.equals("pay")) {
             status = OrderStatusEnum.CREATED.getKey();// 待支付
@@ -157,6 +158,9 @@ public class OrderServiceImpl extends BaseService implements OrderService {
         if (StringUtils.isNotEmpty(type)) {
             searchParams.put("EQ_type", type);
         }
+        if (StringUtils.isNotEmpty(orderMode)) {
+            searchParams.put("EQ_orderMode", orderMode);
+        }
 
         paginationRequest.setSearchParams(searchParams);
         paginationRequest.setSortColumn(new String[]{"createTime desc", "status asc"});
@@ -182,18 +186,20 @@ public class OrderServiceImpl extends BaseService implements OrderService {
     }
 
     /**
-     * 创建订单
+     * 保存订单信息
      *
      * @param orderDto
      * @throws BusinessCheckException
      */
     @Override
     @Transactional
-    @OperationServiceLog(description = "创建订单")
-    public MtOrder createOrder(OrderDto orderDto) throws BusinessCheckException {
-        MtOrder MtOrder = new MtOrder();
-        if (null != orderDto.getId()) {
-            MtOrder.setId(MtOrder.getId());
+    @OperationServiceLog(description = "保存订单信息")
+    public MtOrder saveOrder(OrderDto orderDto) throws BusinessCheckException {
+        MtOrder MtOrder;
+        if (null != orderDto.getId() && orderDto.getId() > 0) {
+            MtOrder = orderRepository.findOne(orderDto.getId());
+        } else {
+            MtOrder = new MtOrder();
         }
 
         // 检查店铺是否已被禁用
@@ -203,9 +209,13 @@ public class OrderServiceImpl extends BaseService implements OrderService {
                 orderDto.setStoreId(0);
             }
         }
-
-        String orderSn = CommonUtil.createOrderSN(orderDto.getUserId()+"");
-        MtOrder.setOrderSn(orderSn);
+        String orderSn;
+        if (orderDto.getId() == null) {
+            orderSn = CommonUtil.createOrderSN(orderDto.getUserId() + "");
+            MtOrder.setOrderSn(orderSn);
+        } else {
+            orderSn = MtOrder.getOrderSn();
+        }
         MtOrder.setUserId(orderDto.getUserId());
         MtOrder.setStoreId(orderDto.getStoreId());
         MtOrder.setCouponId(orderDto.getCouponId());
@@ -412,7 +422,7 @@ public class OrderServiceImpl extends BaseService implements OrderService {
     public MtOrder updateOrder(OrderDto orderDto) throws BusinessCheckException {
         MtOrder MtOrder = orderRepository.findOne(orderDto.getId());
         if (null == MtOrder || StatusEnum.DISABLE.getKey().equals(MtOrder.getStatus())) {
-            logger.error("该订单状态异常");
+            logger.error("修改订单状态异常：" + orderDto.toString());
             throw new BusinessCheckException("该订单状态异常");
         }
 
@@ -425,6 +435,14 @@ public class OrderServiceImpl extends BaseService implements OrderService {
 
         if (null != orderDto.getStatus()) {
             MtOrder.setStatus(orderDto.getStatus());
+            // 订单状态为已支付，修改支付状态
+            if (orderDto.getStatus().equals(OrderStatusEnum.PAID.getKey())) {
+                orderDto.setPayStatus(PayStatusEnum.SUCCESS.getKey());
+                orderDto.setPayTime(new Date());
+            }
+            if (orderDto.getStatus().equals(OrderStatusEnum.CANCEL.getKey()) || orderDto.getStatus().equals(OrderStatusEnum.CREATED.getKey())) {
+                orderDto.setPayStatus(PayStatusEnum.WAIT.getKey());
+            }
         }
 
         if (null != orderDto.getPayAmount()) {
@@ -528,6 +546,7 @@ public class OrderServiceImpl extends BaseService implements OrderService {
         OrderUserDto userInfo = new OrderUserDto();
         MtUser user = memberService.queryMemberById(orderInfo.getUserId());
         if (user != null) {
+            userInfo.setId(user.getId());
             userInfo.setName(user.getName());
             userInfo.setMobile(user.getMobile());
             userInfo.setCardNo(user.getCarNo());

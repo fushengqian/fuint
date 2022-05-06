@@ -57,7 +57,7 @@
                     </select>
                 </div>
                 <div class="col-md-3 item">
-                    <select class="form-control" name="EQ_status" id="EQ_orderMode">
+                    <select class="form-control" name="EQ_orderMode" id="EQ_orderMode">
                         <option value="">配送方式</option>
                         <option value="express" <#if params.EQ_orderMode == 'express'>selected</#if>>物流配送</option>
                         <option value="express" <#if params.EQ_orderMode == 'oneself'>selected</#if>>门店自提</option>
@@ -67,6 +67,7 @@
             <div class="search-rows">
                 <div class="col-md-3 item" style="float: right;text-align: right">
                      <button type="button" class="btn btn-sm btn-success" onclick="postDataByForm('backend/order/list','displayArea','orderForm')"><i class="fa fa-search"></i>查询</button>
+                     <button type="button" class="btn btn-sm btn-danger" onclick="toCreateOrder()"><i class="fa fa-cart-plus"></i>下单</button>
                 </div>
             </div>
         </form>
@@ -125,8 +126,9 @@
                              <span class="status-normal">${ct.statusText}</span>
                         </td>
                         <td>
-                            <a class="label label-success small-btn" href="javascript:getData('${rc.contextPath}/backend/order/detail/${ct.id}', 'displayArea');" title="查看"><i class="fa fa-eye"></i>查看</a>
-                            <#if ct.type=='goods'>
+                            <a class="label label-success small-btn" href="javascript:getData('${rc.contextPath}/backend/order/detail/${ct.id}', 'displayArea');" title="查看详情"><i class="fa fa-eye"></i>详情</a>
+                            <a class="label label-success small-btn" href="javascript:modifyOrder('${ct.orderSn}', '${ct.id}', '${ct.amount}', '${ct.discount}', '${ct.status}', '${ct.remark}');" title="修改"><i class="fa fa-edit"></i>修改</a>
+                            <#if ct.type == 'goods' && ct.orderMode == 'express'>
                                  <#if ct.status=='B'><a class="label label-danger small-btn" href="javascript:doDelivered(${ct.id});" title="发货"><i class="fa fa-eye"></i>发货</a></#if>
                             </#if>
                         </td>
@@ -140,20 +142,125 @@
         </table>
     </div>
 </div>
+
+<!--弹框修改订单 start-->
+<div class="modal fade" id="modifyModal" tabindex="-1" role="dialog" aria-labelledby="modifyModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">修改订单信息</h4>
+            </div>
+            <div class="modal-body">
+                <div class="order-info">
+                    <form class="form-horizontal" id="modifyOrderForm" name="modifyOrderForm" method="post">
+                        <div class="form-group">
+                            <label class="col-md-3 control-label">订单号：</label>
+                            <div class="col-md-5">
+                                <input type="text" id="orderSn" class="form-control" disabled name="orderSn" placeholder="订单号">
+                                <input type="hidden" id="orderId" class="form-control" name="orderId" placeholder="订单号">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-3 control-label">总金额：</label>
+                            <div class="col-md-5">
+                                <input type="text" id="orderAmount" class="form-control" name="orderAmount" placeholder="订单总金额">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-3 control-label">优惠金额：</label>
+                            <div class="col-md-5">
+                                <input type="text" id="orderDiscount" class="form-control" name="orderDiscount" placeholder="订单优惠金额">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-3 control-label">订单状态：</label>
+                            <div class="col-md-3">
+                                <select class="form-control" id="orderStatus" name="orderStatus">
+                                    <option value="A">未支付</option>
+                                    <option value="B">已支付</option>
+                                    <option value="C">已取消</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-3 control-label">备注信息：</label>
+                            <div class="col-md-7">
+                                 <textarea rows="5" class="form-control" id="orderRemark" name="orderRemark" maxlength="500" placeholder="请输入订单备注信息"></textarea>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" data-dismiss="modal" class="btn btn-default">取消</button>
+                <button type="button" class="btn btn-success" id="doModifyOrder" onclick="doModifyOrder()">提交</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--弹框修改订单 end-->
+
 <@sp.pagination recordBean=paginationResponse action="${rc.contextPath}/backend/order/list" formName="orderForm"/>
 <script type="application/javascript">
+
+    // 前往收银下单页面
+    function toCreateOrder() {
+        window.open("${rc.contextPath}/backend/cashier/index")
+    }
+
+    /**
+     * 修改订单
+     * */
+    function modifyOrder(orderSn, orderId, amount, discount, status, remark) {
+        $("#orderSn").val(orderSn);
+        $("#orderId").val(orderId);
+        $("#orderAmount").val(amount);
+        $("#orderDiscount").val(discount);
+        $("#orderStatus").val(status);
+        $("#orderRemark").val(remark);
+
+        $('#modifyModal').modal('show');
+    }
+
+    /**
+     * 确认修改订单
+     * */
+    function doModifyOrder() {
+        let orderId = $("#orderId").val();
+        let amount = $("#orderAmount").val();
+        let discount = $("#orderDiscount").val();
+        let status = $("#orderStatus").val();
+        let remark = $("#orderRemark").val();
+
+        $.ajax({
+            type: "POST",
+            data: { "orderId": orderId, "amount": amount, "discount": discount, "status": status, "remark": remark },
+            url: "${rc.contextPath}/backend/order/modify",
+            success: function (data) {
+                if (data.result) {
+                    layer.alert('恭喜，订单修改成功！');
+                    return;
+                } else {
+                    layer.alert('提交失败：' + data.data.msg);
+                    return;
+                }
+            }
+        })
+
+        $('#modifyModal').modal('hide');
+    }
+
     /**
      * 确定发货
-     * @param orderId
      */
     function doDelivered(orderId) {
-        var html = '<div style="margin-bottom:10px;"><span><i style="color:red;margin-right:5px;">*</i>物流公司：</span><input type="text" id="expressCompany" placeholder="请填写物流公司名称" name="expressCompany" value=""/></div>'+
+        let html = '<div style="margin-bottom:10px;"><span><i style="color:red;margin-right:5px;">*</i>物流公司：</span><input type="text" id="expressCompany" placeholder="请填写物流公司名称" name="expressCompany" value=""/></div>'+
                    '<div><span><i style="color:red;margin-right:5px;">*</i>快递单号：</span><input id="expressNo" type="text" name="expressNo" placeholder="请填写快递单号" value=""/></div>';
         layer.confirm(html, {
             btn: ['确定', '取消'], title: '填写物流信息'
         }, function () {
-            var expressCompany = $("#expressCompany").val();
-            var expressNo = $("#expressNo").val();
+            let expressCompany = $("#expressCompany").val();
+            let expressNo = $("#expressNo").val();
 
             if (expressCompany.length < 1 || expressNo.length < 1) {
                 layer.alert("物流单号和物流公司不能为空！");

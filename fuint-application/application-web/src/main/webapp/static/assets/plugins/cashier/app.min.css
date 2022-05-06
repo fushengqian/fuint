@@ -27942,12 +27942,12 @@ code {
 }
 
 .pos-counter .pos-counter-body .pos-counter-sidebar .pos-sidebar-body .pos-table {
-    padding: 0 25px
+    padding: 0px 25px
 }
 
 .pos-counter .pos-counter-body .pos-counter-sidebar .pos-sidebar-body .pos-table .pos-table-row {
     padding: 15px 0;
-    margin: 0;
+    margin: 0px;
     position: relative
 }
 
@@ -29184,9 +29184,9 @@ code {
     border-bottom: #ccc solid 1px;
     height: 5rem;
 }
-.modal.modal-pos-check .pay-check .user-info .condition .btn {
+.modal.modal-pos-check .pay-check .user-info .condition .do-query {
+    text-align: right;
     margin-top: 5px;
-    float: right;
 }
 .modal.modal-pos-check .pay-check .user-info .member {
     margin-top: 1rem;
@@ -29208,6 +29208,13 @@ code {
 .modal.no-goods-pay .pay-area .amount{
     margin-bottom: 1rem;
     height: 2.5rem;
+}
+.modal.no-goods-pay .pay-area .amount .star{
+    float:left;
+    margin-top: 15px;
+    margin-right: 2px;
+    color: red;
+    font-weight: bold;
 }
 .modal.no-goods-pay .pay-area .amount input{
     width: 70%;
@@ -29233,8 +29240,46 @@ code {
 .no-cart,.no-order {
     color: #888;
     font-size: .6rem;
+    text-align: center;
+    align-items: center;
+    display: block;
+    padding-top: 10rem;
 }
-
+.no-cart,.no-order .empty-tips {
+    margin-top: 1rem;
+    font-size: .9rem;
+}
+.order-list {
+    color: #888;
+    font-size: .8rem;
+    display: none;
+}
+.order-list .order-item {
+    border-bottom: 1px #cccccc solid;
+    height: 96px;
+    padding: 20px 10px 20px 10px;
+}
+.order-list .order-item .left-side {
+    float: left;
+    height: 60px;
+}
+.order-list .order-item .left-side label{
+    width: 68px;
+    text-align: right;
+}
+.order-list .order-item .right-side {
+    float: left;
+}
+.order-list .order-item .order-time {
+    margin-top: 5px;
+}
+.order-list .order-item .small-btn {
+    width: 65px;
+    display: block;
+    margin-top: 10px;
+    height: 30px;
+    padding-top: 5px;
+}
 .pos-kitchen .pos-kitchen-header {
     background: var(--app-component-bg);
     padding: .61875rem 1.640625rem;

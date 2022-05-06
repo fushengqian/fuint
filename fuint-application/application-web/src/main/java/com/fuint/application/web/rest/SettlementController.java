@@ -133,13 +133,14 @@ public class SettlementController extends BaseController {
         String payType = param.get("payType") == null ? "JSAPI" : param.get("payType").toString();
         String authCode = param.get("authCode") == null ? "" : param.get("authCode").toString();
         Integer storeId = request.getHeader("storeId") == null ? 0 : Integer.parseInt(request.getHeader("storeId"));
-        Integer userId = param.get("userId") == null ? 0 : Integer.parseInt(param.get("userId").toString()); // 指定下单会员 eg:收银功能
+        Integer userId = param.get("userId") == null ? 0 : (StringUtils.isNotEmpty(param.get("userId").toString()) ? Integer.parseInt(param.get("userId").toString()) : 0); // 指定下单会员 eg:收银功能
         String cashierPayAmount = param.get("cashierPayAmount") == null ? "" : param.get("cashierPayAmount").toString(); // 收银台实付金额
         String cashierDiscountAmount = param.get("cashierDiscountAmount") == null ? "" : param.get("cashierDiscountAmount").toString(); // 收银台优惠金额
         Integer goodsId = param.get("goodsId") == null ? 0 : Integer.parseInt(param.get("goodsId").toString()); // 立即购买商品ID
         Integer skuId = param.get("skuId") == null ? 0 : Integer.parseInt(param.get("skuId").toString()); // 立即购买商品skuId
         Integer buyNum = param.get("buyNum") == null ? 1 : Integer.parseInt(param.get("buyNum").toString()); // 立即购买商品数量
         String orderMode = param.get("orderMode") == null ? "" : param.get("orderMode").toString(); // 订单模式(配送or自取)
+        Integer orderId = param.get("orderId") == null ? null : Integer.parseInt(param.get("orderId").toString()); // 订单ID
 
         if (userId <= 0) {
             userId = userInfo.getId();
@@ -155,6 +156,7 @@ public class SettlementController extends BaseController {
 
         // 生成订单数据
         OrderDto orderDto = new OrderDto();
+        orderDto.setId(orderId);
         orderDto.setRemark(remark);
         orderDto.setUserId(userId);
         orderDto.setStoreId(storeId);
@@ -259,7 +261,7 @@ public class SettlementController extends BaseController {
         }
 
         // 生成订单
-        MtOrder orderInfo = orderService.createOrder(orderDto);
+        MtOrder orderInfo = orderService.saveOrder(orderDto);
         param.put("orderId", orderInfo.getId());
 
         // 收银台实付金额、优惠金额

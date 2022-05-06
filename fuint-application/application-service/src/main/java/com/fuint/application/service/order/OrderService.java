@@ -32,7 +32,7 @@ public interface OrderService {
      * @param reqDto
      * @throws BusinessCheckException
      */
-    MtOrder createOrder(OrderDto reqDto) throws BusinessCheckException;
+    MtOrder saveOrder(OrderDto reqDto) throws BusinessCheckException;
 
     /**
      * 根据ID获取订单
