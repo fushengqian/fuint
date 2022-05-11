@@ -1,6 +1,7 @@
 package com.fuint.application.web.backend.content;
 
 import com.fuint.application.dto.BannerDto;
+import com.fuint.application.service.setting.SettingService;
 import com.fuint.base.dao.pagination.PaginationRequest;
 import com.fuint.base.dao.pagination.PaginationResponse;
 import com.fuint.base.shiro.util.ShiroUserHelper;
@@ -15,7 +16,6 @@ import com.fuint.application.util.CommonUtil;
 import org.apache.commons.lang.StringUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -23,7 +23,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
 /**
@@ -43,7 +42,7 @@ public class BannerController {
     private BannerService bannerService;
 
     @Autowired
-    private Environment env;
+    private SettingService settingService;
 
     /**
      * banner信息列表查询
@@ -76,7 +75,7 @@ public class BannerController {
             }
         }
 
-        String imagePath = env.getProperty("images.upload.url");
+        String imagePath = settingService.getUploadBasePath();
 
         paginationRequest.setSearchParams(params);
         PaginationResponse<MtBanner> paginationResponse = bannerService.queryBannerListByPagination(paginationRequest);
@@ -221,7 +220,7 @@ public class BannerController {
         MtBanner info = bannerService.queryBannerById(id);
         model.addAttribute("info", info);
 
-        String imagePath = env.getProperty("images.upload.url");
+        String imagePath = settingService.getUploadBasePath();
         model.addAttribute("imagePath", imagePath);
 
         return "banner/edit";

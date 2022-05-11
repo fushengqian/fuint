@@ -82,13 +82,20 @@ public class StoreServiceImpl implements StoreService {
 
         mtStore.setDescription(storeDto.getDescription());
         mtStore.setPhone(storeDto.getPhone());
+
+        if (storeDto.getIsDefault() != null) {
+            if (storeDto.getIsDefault().equals("Y")) {
+                storeRepository.resetDefaultStore();
+            }
+        }
+
         mtStore.setIsDefault(storeDto.getIsDefault());
         mtStore.setAddress(storeDto.getAddress());
         mtStore.setHours(storeDto.getHours());
+        mtStore.setLatitude(storeDto.getLatitude());
+        mtStore.setLongitude(storeDto.getLongitude());
 
-        mtStore = storeRepository.save(mtStore);
-
-        return mtStore;
+        return storeRepository.save(mtStore);
     }
 
     /**

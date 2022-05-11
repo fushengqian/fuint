@@ -34,4 +34,10 @@ public interface SettingService {
      * @throws BusinessCheckException
      */
     MtSetting querySettingByName(String name) throws BusinessCheckException;
+
+    /**
+     * 获取系统上传文件的根路径
+     * @return 本地配置或阿里云的oss域名
+     * */
+    String getUploadBasePath();
 }

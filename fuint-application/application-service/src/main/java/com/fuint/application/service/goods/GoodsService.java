@@ -9,7 +9,6 @@ import com.fuint.base.dao.pagination.PaginationResponse;
 import com.fuint.exception.BusinessCheckException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
-import java.util.Map;
 
 /**
  * 商品业务接口
@@ -38,7 +37,7 @@ public interface GoodsService {
     /**
      * 根据ID获取商品信息
      *
-     * @param id ID
+     * @param  id 商品ID
      * @throws BusinessCheckException
      */
     MtGoods queryGoodsById(Integer id) throws BusinessCheckException;
@@ -75,11 +74,6 @@ public interface GoodsService {
      * @throws BusinessCheckException
      */
     void deleteGoods(Integer id, String operator) throws BusinessCheckException;
-
-    /**
-     * 根据条件查询商品
-     * */
-    List<MtGoods> queryGoodsListByParams(Map<String, Object> params) throws BusinessCheckException;
 
     /**
      * 获取店铺的商品列表

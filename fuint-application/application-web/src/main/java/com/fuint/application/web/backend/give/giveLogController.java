@@ -5,7 +5,6 @@ import com.fuint.base.service.account.TAccountService;
 import com.fuint.base.shiro.ShiroUser;
 import com.fuint.base.shiro.util.ShiroUserHelper;
 import com.fuint.exception.BusinessCheckException;
-import com.fuint.util.DateUtil;
 import com.fuint.application.dao.entities.*;
 import com.fuint.application.dao.repositories.MtCouponGroupRepository;
 import com.fuint.application.dao.repositories.MtCouponRepository;
@@ -33,7 +32,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.HashMap;
 import java.util.Map;
@@ -70,11 +68,6 @@ public class giveLogController extends BaseController{
     private MtCouponRepository couponRepository;
 
     /**
-     * 上次执行搜索全量索引的时间
-     */
-    private Date lastIndexTime = null;
-
-    /**
      * 转赠列表查询
      *
      * @param request  HttpServletRequest对象
@@ -85,12 +78,11 @@ public class giveLogController extends BaseController{
     @RequiresPermissions("backend/give/index")
     @RequestMapping(value = "/index")
     public String index(HttpServletRequest request, HttpServletResponse response, Model model) throws BusinessCheckException {
-        if (lastIndexTime != null) {
-            long diff = DateUtil.getDiffSeconds(new Date(), lastIndexTime);
-            model.addAttribute("isDisable", diff < 30 ? "disable" : "");
+        ShiroUser shiroUser = ShiroUserHelper.getCurrentShiroUser();
+        if (shiroUser == null) {
+            return "redirect:/login";
         }
 
-        ShiroUser shiroUser = ShiroUserHelper.getCurrentShiroUser();
         TAccount account = accountService.findAccountById(shiroUser.getId());
         Integer storeId = account.getStoreId();
         model.addAttribute("storeId", storeId);
@@ -160,21 +152,23 @@ public class giveLogController extends BaseController{
         for (MtGiveItem item : itemList) {
             MtGive giveInfo = giveService.queryGiveById(giveId.longValue());
             MtUserCoupon userCouponInfo = userCouponRepository.findOne(item.getUserCouponId());
-            MtCouponGroup groupInfo = couponGroupRepository.findOne(userCouponInfo.getGroupId());
-            MtCoupon couponInfo = couponRepository.findOne(userCouponInfo.getCouponId());
-
-            GiveItemDto dto = new GiveItemDto();
-            dto.setId(item.getId());
-            dto.setMobile(giveInfo.getUserMobile());
-            dto.setUserMobile(giveInfo.getMobile());
-            dto.setGroupId(userCouponInfo.getGroupId());
-            dto.setGroupName(groupInfo.getName());
-            dto.setCouponId(userCouponInfo.getCouponId());
-            dto.setCouponName(couponInfo.getName());
-            dto.setMoney(userCouponInfo.getAmount());
-            dto.setCreateTime(item.getCreateTime());
-
-            dataList.add(dto);
+            if (userCouponInfo != null) {
+                MtCouponGroup groupInfo = couponGroupRepository.findOne(userCouponInfo.getGroupId());
+                MtCoupon couponInfo = couponRepository.findOne(userCouponInfo.getCouponId());
+                if (groupInfo != null && couponInfo != null) {
+                    GiveItemDto dto = new GiveItemDto();
+                    dto.setId(item.getId());
+                    dto.setMobile(giveInfo.getUserMobile());
+                    dto.setUserMobile(giveInfo.getMobile());
+                    dto.setGroupId(userCouponInfo.getGroupId());
+                    dto.setGroupName(groupInfo.getName());
+                    dto.setCouponId(userCouponInfo.getCouponId());
+                    dto.setCouponName(couponInfo.getName());
+                    dto.setMoney(userCouponInfo.getAmount());
+                    dto.setCreateTime(item.getCreateTime());
+                    dataList.add(dto);
+                }
+            }
         }
 
         model.addAttribute("itemList", dataList);

@@ -63,6 +63,10 @@ public class homeController {
         Date endTime = DateUtil.getDayEnd();
 
         ShiroUser shiroUser = ShiroUserHelper.getCurrentShiroUser();
+        if (shiroUser == null) {
+            return "redirect:/login";
+        }
+
         TAccount account = accountService.findAccountById(shiroUser.getId());
         Integer storeId = account.getStoreId();
 
@@ -113,6 +117,10 @@ public class homeController {
         String tag = request.getParameter("tag") == null ? "order,user_active" : request.getParameter("tag");
 
         ShiroUser shiroUser = ShiroUserHelper.getCurrentShiroUser();
+        if (shiroUser == null) {
+            return null;
+        }
+
         TAccount account = accountService.findAccountById(shiroUser.getId());
         Integer storeId = account.getStoreId();
 

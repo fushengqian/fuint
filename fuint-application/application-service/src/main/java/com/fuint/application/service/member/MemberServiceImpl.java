@@ -95,7 +95,13 @@ public class MemberServiceImpl implements MemberService {
                 if (account != null) {
                     if (account.getStaffId() > 0) {
                         MtStaff staff = staffService.queryStaffById(account.getStaffId());
-                        mtUser = this.queryMemberById(staff.getUserId());
+                        if (staff != null) {
+                            mtUser = this.queryMemberById(staff.getUserId());
+                            if (mtUser.getStoreId() == null || mtUser.getStoreId() <= 0) {
+                                mtUser.setStoreId(staff.getStoreId());
+                                userRepository.save(mtUser);
+                            }
+                        }
                     }
                 }
             }

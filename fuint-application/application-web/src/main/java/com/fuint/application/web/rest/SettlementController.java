@@ -127,7 +127,7 @@ public class SettlementController extends BaseController {
         String selectNum = param.get("selectNum") == null ? "" : param.get("selectNum").toString(); // 预存卡必填
         String remark = param.get("remark") == null ? "" : param.get("remark").toString();
         String type = param.get("type") == null ? "" : param.get("type").toString();
-        String payAmount = param.get("payAmount") == null ? "" : param.get("payAmount").toString(); // 支付金额
+        String payAmount = param.get("payAmount") == null ? "0" : StringUtils.isEmpty(param.get("payAmount").toString()) ? "0" : param.get("payAmount").toString(); // 支付金额
         Integer usePoint = param.get("usePoint") == null ? 0 : Integer.parseInt(param.get("usePoint").toString());
         Integer couponId = param.get("couponId") == null ? 0 : Integer.parseInt(param.get("couponId").toString());
         String payType = param.get("payType") == null ? "JSAPI" : param.get("payType").toString();

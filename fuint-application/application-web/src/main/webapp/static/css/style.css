@@ -343,12 +343,34 @@ p, h1, h2, h3, h4, input {
 }
 .add-goods-image {
     margin: 6px 20px 10px 0px;
-    color: blue;
     cursor: pointer;
     width: 100px;
 }
 .upload-item {
     margin-bottom: 10px;
+    padding-top: 10px;
+    padding-left: 10px;
+    border: 1px #ccc solid;
+    border-radius: 3px;
+    position: relative;
+}
+.upload-item .image {
+    border:1px solid #ccc;
+    border-radius:1px;
+    width: 120px;
+    height: 80px;
+}
+.upload-item .tip {
+    color: #cccccc;
+    margin-top: 2px;
+    margin-bottom: 5px;
+}
+.upload-item .delete {
+    cursor: pointer;
+    font-size: 12px;
+    position: absolute;
+    top: 0px;
+    right: 0px;
 }
 .goods-spec-type {
     margin-top: 8px;

@@ -43,6 +43,16 @@ public class MtStoreDto implements Serializable {
     private String hours;
 
     /**
+     * 经度
+     */
+    private String latitude;
+
+    /**
+     * 纬度
+     */
+    private String longitude;
+
+    /**
      * 备注信息
      */
     private String description;
@@ -108,6 +118,18 @@ public class MtStoreDto implements Serializable {
     }
     public void setHours(String hours){
         this.hours=hours;
+    }
+    public String getLatitude(){
+        return latitude;
+    }
+    public void setLatitude(String latitude){
+        this.latitude=latitude;
+    }
+    public String getLongitude(){
+        return longitude;
+    }
+    public void setLongitude(String longitude){
+        this.longitude=longitude;
     }
     public String getDescription(){
         return description;

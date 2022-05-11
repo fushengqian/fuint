@@ -41,6 +41,7 @@ public class SystemController extends BaseController {
     @CrossOrigin
     public ResponseObject config(HttpServletRequest request) throws BusinessCheckException {
         String userToken = request.getHeader("Access-Token");
+        String storeId = request.getHeader("storeId") == null ? "" : request.getHeader("storeId");
         String latitude = request.getHeader("latitude") == null ? "" : request.getHeader("latitude");
         String longitude = request.getHeader("longitude") == null ? "" : request.getHeader("longitude");
 
@@ -54,6 +55,12 @@ public class SystemController extends BaseController {
             }
         }
 
+        // 未登录先切换的店铺
+        if (userInfo == null && StringUtils.isNotEmpty(storeId)) {
+            storeInfo = storeService.queryStoreById(Integer.parseInt(storeId));
+        }
+
+        // 检查店铺是否已关闭
         if (storeInfo != null) {
             if (!storeInfo.getStatus().equals(StatusEnum.ENABLED.getKey())) {
                 storeInfo = null;
@@ -68,7 +75,7 @@ public class SystemController extends BaseController {
             }
         }
 
-        // 取系统默认的
+        // 最后取系统默认的
         if (storeInfo == null) {
             Map<String, Object> params = new HashMap<>();
             params.put("EQ_status", StatusEnum.ENABLED.getKey());

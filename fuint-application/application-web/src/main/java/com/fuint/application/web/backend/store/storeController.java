@@ -237,6 +237,8 @@ public class storeController {
         String isDefault = CommonUtil.replaceXSS(request.getParameter("isDefault"));
         String address = CommonUtil.replaceXSS(request.getParameter("address"));
         String hours = CommonUtil.replaceXSS(request.getParameter("hours"));
+        String latitude = CommonUtil.replaceXSS(request.getParameter("latitude"));
+        String longitude = CommonUtil.replaceXSS(request.getParameter("longitude"));
 
         storeInfo.setName(storeName);
         storeInfo.setContact(ContactName);
@@ -245,6 +247,8 @@ public class storeController {
         storeInfo.setIsDefault(isDefault);
         storeInfo.setAddress(address);
         storeInfo.setHours(hours);
+        storeInfo.setLatitude(latitude);
+        storeInfo.setLongitude(longitude);
 
         if (StringUtils.isEmpty(storeName)) {
             throw new BusinessRuntimeException("店铺名称不能为空");

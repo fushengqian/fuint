@@ -62,6 +62,18 @@ public class MtStore implements Serializable{
     @Column(name = "HOURS", length = 100)
     private String hours;
 
+    /**
+     * 经度
+     */
+    @Column(name = "LATITUDE", length = 30)
+    private String latitude;
+
+    /**
+     * 纬度
+     */
+    @Column(name = "LONGITUDE", length = 30)
+    private String longitude;
+
    /**
     * 备注信息 
     */ 
@@ -139,6 +151,18 @@ public class MtStore implements Serializable{
     }
     public void setHours(String hours){
         this.hours=hours;
+    }
+    public String getLatitude(){
+        return latitude;
+    }
+    public void setLatitude(String latitude){
+        this.latitude=latitude;
+    }
+    public String getLongitude(){
+        return longitude;
+    }
+    public void setLongitude(String longitude){
+        this.longitude=longitude;
     }
     public String getDescription(){
         return description;

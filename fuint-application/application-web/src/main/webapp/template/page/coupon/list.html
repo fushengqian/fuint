@@ -72,19 +72,19 @@
                             <td>
                                 <#if ct.status == "A">
                                 <span class="status-active">有效</span>
+                                <#elseif ct.status == "C">
+                                <span class="status-disabled">过期</span>
+                                <#elseif ct.status == "D">
+                                <span class="status-disabled">删除</span>
                                 <#else>
                                 <span class="status-disabled">无效</span>
                                 </#if>
                             </td>
                             <td>
-                                <#if ct.status == "D">
-                                    <span><span class="status-disabled">已删除</span></span>
-                                <#else>
-                                    <a class="label label-success small-btn" href="javascript:void(0)" onclick="javascript:getData('${rc.contextPath}/backend/coupon/couponEditInit/${ct.id}','displayArea')"><i class="fa fa-edit" title="编辑"></i>编辑</a>
-                                    <a class="label label-danger small-btn" href="javascript:removeCoupon('${ct.id}')"><i title="删除" class="fa fa-trash"></i>删除</a>
-                                    <a class="label label-success small-btn" href="javascript:sendCoupon('${ct.id}');" title="发券"><i class="fa fa-plus"></i>发券</a>
-                                    <a class="label label-success small-btn" href="javascript:void(0)" onclick="javascript:getData('${rc.contextPath}/backend/userCoupon/list/?EQ_couponId=${ct.id}', 'displayArea')"><i class="fa fa-list" title="明细"></i>明细</a>
-                                </#if>
+                                <#if ct.status != "D"><a class="label label-success small-btn" href="javascript:void(0)" onclick="javascript:getData('${rc.contextPath}/backend/coupon/couponEditInit/${ct.id}','displayArea')"><i class="fa fa-edit" title="编辑"></i>编辑</a></#if>
+                                <#if ct.status != "D"><a class="label label-danger small-btn" href="javascript:removeCoupon('${ct.id}')"><i title="删除" class="fa fa-trash"></i>删除</a></#if>
+                                <#if ct.status == "A"><a class="label label-success small-btn" href="javascript:sendCoupon('${ct.id}');" title="发券"><i class="fa fa-plus"></i>发券</a></#if>
+                                <a class="label label-success small-btn" href="javascript:void(0)" onclick="javascript:getData('${rc.contextPath}/backend/userCoupon/list/?EQ_couponId=${ct.id}', 'displayArea')"><i class="fa fa-list" title="明细"></i>明细</a>
                             </td>
                         </tr>
                 </#list>

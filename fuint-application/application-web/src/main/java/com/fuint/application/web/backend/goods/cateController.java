@@ -1,5 +1,6 @@
 package com.fuint.application.web.backend.goods;
 
+import com.fuint.application.service.setting.SettingService;
 import com.fuint.application.util.CommonUtil;
 import com.fuint.exception.BusinessCheckException;
 import com.fuint.base.shiro.util.ShiroUserHelper;
@@ -8,7 +9,6 @@ import com.fuint.application.dto.*;
 import com.fuint.application.service.goods.CateService;
 import org.apache.commons.lang.StringUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
-import org.springframework.core.env.Environment;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -37,7 +37,7 @@ public class cateController {
     private CateService cateService;
 
     @Autowired
-    private Environment env;
+    private SettingService settingService;
 
     /**
      * 查询列表
@@ -54,7 +54,7 @@ public class cateController {
         PaginationRequest paginationRequest = RequestHandler.buildPaginationRequest(request, model);
         PaginationResponse<MtGoodsCate> paginationResponse = cateService.queryCateListByPagination(paginationRequest);
 
-        String imagePath = env.getProperty("images.upload.url");
+        String imagePath = settingService.getUploadBasePath();
 
         model.addAttribute("paginationResponse", paginationResponse);
         model.addAttribute("imagePath", imagePath);
@@ -144,7 +144,7 @@ public class cateController {
 
         model.addAttribute("info", mtCate);
 
-        String imagePath = env.getProperty("images.upload.url");
+        String imagePath = settingService.getUploadBasePath();
         model.addAttribute("imagePath", imagePath);
 
         return "goods/cate/edit";

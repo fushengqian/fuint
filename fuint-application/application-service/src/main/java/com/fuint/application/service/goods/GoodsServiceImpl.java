@@ -7,10 +7,10 @@ import com.fuint.application.dao.repositories.MtGoodsSpecRepository;
 import com.fuint.application.dto.ConfirmLogDto;
 import com.fuint.application.dto.GoodsDto;
 import com.fuint.application.dto.GoodsSpecValueDto;
+import com.fuint.application.service.setting.SettingService;
 import com.fuint.application.service.store.StoreService;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang.StringUtils;
-import org.springframework.core.env.Environment;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -23,6 +23,7 @@ import com.fuint.application.enums.StatusEnum;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import java.math.BigDecimal;
 import java.util.*;
 
 /**
@@ -44,7 +45,7 @@ public class GoodsServiceImpl implements GoodsService {
     private MtGoodsSkuRepository goodsSkuRepository;
 
     @Autowired
-    private Environment env;
+    private SettingService settingService;
 
     @Autowired
     private CateService cateService;
@@ -65,7 +66,7 @@ public class GoodsServiceImpl implements GoodsService {
         List<GoodsDto> content = new ArrayList<>();
         List<MtGoods> dataList = paginationResponse.getContent();
 
-        String basePath = env.getProperty("images.upload.url");
+        String basePath = settingService.getUploadBasePath();
 
         for (MtGoods mtGoods : dataList) {
             MtGoodsCate cateInfo = null;
@@ -108,7 +109,7 @@ public class GoodsServiceImpl implements GoodsService {
     }
 
     /**
-     * 添加商品
+     * 保存商品信息
      *
      * @param reqDto
      * @throws BusinessCheckException
@@ -162,8 +163,14 @@ public class GoodsServiceImpl implements GoodsService {
         if (reqDto.getPrice() != null) {
             mtGoods.setPrice(reqDto.getPrice());
         }
+        if (reqDto.getPrice() == null && reqDto.getId() <= 0) {
+            mtGoods.setPrice(new BigDecimal("0.00"));
+        }
         if (reqDto.getLinePrice() != null) {
             mtGoods.setLinePrice(reqDto.getLinePrice());
+        }
+        if (reqDto.getLinePrice() == null && reqDto.getId() <= 0) {
+            mtGoods.setLinePrice(new BigDecimal("0.00"));
         }
         if (reqDto.getWeight() != null) {
             mtGoods.setWeight(reqDto.getWeight());
@@ -176,6 +183,9 @@ public class GoodsServiceImpl implements GoodsService {
         }
         if (StringUtils.isNotEmpty(reqDto.getSalePoint())) {
             mtGoods.setSalePoint(reqDto.getSalePoint());
+        }
+        if (StringUtils.isEmpty(reqDto.getSalePoint()) && reqDto.getId() <= 0) {
+            reqDto.setSalePoint("");
         }
         if (StringUtils.isNotEmpty(reqDto.getCanUsePoint())) {
             mtGoods.setCanUsePoint(reqDto.getCanUsePoint());
@@ -273,7 +283,7 @@ public class GoodsServiceImpl implements GoodsService {
             }
         }
 
-        String basePath = env.getProperty("images.upload.url");
+        String basePath = settingService.getUploadBasePath();
         if (StringUtils.isNotEmpty(goodsInfo.getLogo())) {
             goodsInfo.setLogo(basePath + goodsInfo.getLogo());
         }
@@ -321,16 +331,6 @@ public class GoodsServiceImpl implements GoodsService {
         cateInfo.setUpdateTime(new Date());
 
         goodsRepository.save(cateInfo);
-    }
-
-    @Override
-    public List<MtGoods> queryGoodsListByParams(Map<String, Object> params) {
-        Specification<MtGoods> specification = goodsRepository.buildSpecification(params);
-
-        Sort sort = new Sort(Sort.Direction.DESC, "createTime");
-        List<MtGoods> result = goodsRepository.findAll(specification, sort);
-
-        return result;
     }
 
     @Override

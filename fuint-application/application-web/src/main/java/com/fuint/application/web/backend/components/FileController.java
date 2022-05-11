@@ -1,9 +1,12 @@
 package com.fuint.application.web.backend.components;
 
+import com.fuint.application.service.setting.SettingService;
 import com.fuint.application.util.CommonUtil;
 import com.fuint.application.util.DateUtil;
 import com.fuint.application.util.JsonUtil;
+import com.fuint.application.util.AliyunOssUtil;
 import com.fuint.application.web.backend.util.JSONUtil;
+import com.aliyun.oss.OSS;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,6 +43,9 @@ public class FileController {
 
     @Autowired
     private Environment env;
+
+    @Autowired
+    private SettingService settingService;
 
     /**
      * 上传文件
@@ -117,24 +123,42 @@ public class FileController {
         //保存文件
         try {
             String fileName = saveFile(file, request);
-
-            String baseImage = env.getProperty("images.upload.url");
-
+            String baseImage = settingService.getUploadBasePath();
             String filePath = baseImage + fileName;
+            String url = filePath;
+
+            // 上传阿里云oss
+            String mode = env.getProperty("aliyun.oss.mode");
+            if (mode.equals("1")) { // 检查是否开启上传
+                String endpoint = env.getProperty("aliyun.oss.endpoint");
+                String accessKeyId = env.getProperty("aliyun.oss.accessKeyId");
+                String accessKeySecret = env.getProperty("aliyun.oss.accessKeySecret");
+                String bucketName = env.getProperty("aliyun.oss.bucketName");
+                String folder = env.getProperty("aliyun.oss.folder");
+                String domain = env.getProperty("aliyun.oss.domain");
+
+                OSS ossClient = AliyunOssUtil.getOSSClient(accessKeyId, accessKeySecret, endpoint);
+                WebApplicationContext webApplicationContext = ContextLoader.getCurrentWebApplicationContext();
+                ServletContext servletContext = webApplicationContext.getServletContext();
+                String pathRoot = servletContext.getRealPath("");
+                File ossFile = new File(pathRoot + fileName);
+                fileName = AliyunOssUtil.upload(ossClient, ossFile, bucketName, folder);
+                filePath = domain + fileName;
+                url = filePath;
+            }
             
             resultMap.put("status", "success");
             resultMap.put("filePath", filePath);
             resultMap.put("fileName", fileName);
-
             resultMap.put("state", "SUCCESS");
             resultMap.put("original", file.getOriginalFilename());
             resultMap.put("size", file.getSize()+"");
             resultMap.put("title", fileName);
             resultMap.put("type", file.getContentType());
-            resultMap.put("url", filePath);
+            resultMap.put("url", url);
         } catch (Exception e) {
             resultMap.put("status", "error");
-            resultMap.put("message", "上传失败");
+            resultMap.put("message", "上传失败，请检查上传配置！");
         }
 
         String resultJason = JSONUtil.toJSonString(resultMap);

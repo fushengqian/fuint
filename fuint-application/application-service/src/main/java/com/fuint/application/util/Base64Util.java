@@ -11,10 +11,11 @@ import java.util.Base64;
  * Site https://www.fuint.cn
  */
 public class Base64Util {
+
     private static final Logger logger = LoggerFactory.getLogger(Base64Util.class);
-    private static final String CHARSET = "UTF-8";
 
     public Base64Util() {
+        // empty
     }
 
     public static byte[] baseEncode(byte[] bytes) {

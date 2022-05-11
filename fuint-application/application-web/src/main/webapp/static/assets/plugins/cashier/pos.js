@@ -516,7 +516,10 @@ const doCash = function() {
             success: function (data) {
                 if (data.data) {
                     $("#payAmount").text(data.data.orderInfo.amount.toFixed(2));
-                    $("#doPayAmount").text(data.data.orderInfo.payAmount.toFixed(2));
+
+                    const doPayAmount = parseFloat(data.data.orderInfo.amount) - parseFloat(data.data.orderInfo.discount);
+                    $("#doPayAmount").text(doPayAmount.toFixed(2));
+
                     $("#orderId").val(data.data.orderInfo.id);
                     $('#modalPosCheck').modal('hide');
                     if (parseFloat(data.data.orderInfo.payAmount) > 0 && data.data.orderInfo.payType !== 'CASH') {
@@ -574,7 +577,10 @@ const noGoodsDoCash = function() {
                 $('#modalPosCheck').modal('hide');
 
                 $("#payAmount").text(data.data.orderInfo.amount.toFixed(2));
-                $("#doPayAmount").text(data.data.orderInfo.payAmount.toFixed(2));
+
+                const doPayAmount = parseFloat(data.data.orderInfo.amount) - parseFloat(data.data.orderInfo.discount);
+                $("#doPayAmount").text(doPayAmount.toFixed(2));
+
                 $("#orderId").val(data.data.orderInfo.id);
 
                 if (parseFloat(data.data.orderInfo.payAmount) > 0 && data.data.orderInfo.payType !== 'CASH') {
@@ -870,7 +876,10 @@ const orderPay = function() {
                     const orderInfo = data.data.orderInfo;
                     if (orderInfo.status == 'A') {
                         $("#payAmount").text(parseFloat(orderInfo.amount).toFixed(2));
-                        $("#doPayAmount").text(parseFloat(orderInfo.amount).toFixed(2));
+
+                        const doPayAmount = parseFloat(orderInfo.amount) - parseFloat(orderInfo.discount);
+                        $("#doPayAmount").text(doPayAmount.toFixed(2));
+
                         $("#orderId").val(orderId);
                         $("#noGoodsPayAmount").val(parseFloat(orderInfo.amount).toFixed(2));
                         $('#modalPosCheck').modal('show');

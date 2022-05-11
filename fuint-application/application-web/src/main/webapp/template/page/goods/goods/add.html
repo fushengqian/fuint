@@ -58,27 +58,29 @@
                     </div>
                     <div class="form-group">
                         <label class="col-md-3 control-label"><span class="requiredstar">* </span>商品图片：</label>
-                        <div class="col-md-9">
+                        <div class="col-md-4">
                             <div class="upload-list">
                                 <#if images ? size gt 0>
                                 <#list images as img>
                                 <div class="upload-item">
-                                    <img name="image${img_index+1}" class="m-r-20 m-b-10" id="image${img_index+1}" src="${imagePath}${img}" style="border:1px solid #ccc;border-radius:1px;width: 120px;height: 80px;">
+                                    <img name="image${img_index+1}" class="image" id="image${img_index+1}" src="${imagePath}${img}">
                                     <input type="file" name="picture${img_index+1}" id="picture${img_index+1}" style="display: inline-block" onchange="ajaxFileUpload('${img_index+1}', '${rc.contextPath}/backend');">
-                                    <div style="color:#cccccc;margin-bottom: 10px;">（格式：jpeg/jpg/png）</div>
-                                    <input type="text" type="hidden" placeholder="存储路径" class="form-control" name="image" id="filePath${img_index+1}" value="${img}" onchange="changeImagePath('<@mh.static/>', '${img_index+1}')">
+                                    <a class="label label-danger small-btn delete" href="javascript:void(0)" title="删除该图片"><i class="fa fa-remove"></i>删除</a>
+                                    <div class="tip">（格式：jpeg/jpg/png）</div>
+                                    <input type="hidden" placeholder="存储路径" name="image" id="filePath${img_index+1}" value="${img}" onchange="changeImagePath('<@mh.static/>', '${img_index+1}')">
                                 </div>
                                 </#list>
                                 <#else>
                                 <div class="upload-item">
-                                    <img name="image1" class="m-r-20 m-b-10" id="image1" src="<@mh.static/>/defaultImage/none.png" style="border:1px solid #ccc;border-radius:1px;width: 120px;height: 80px;">
+                                    <img name="image1" class="image" id="image1" src="<@mh.static/>/defaultImage/none.png">
                                     <input type="file" name="picture1" id="picture1" style="display: inline-block" onchange="ajaxFileUpload(1, '${rc.contextPath}/backend');">
-                                    <div style="color:#cccccc;margin-bottom: 10px;">（格式：jpeg/jpg/png）</div>
-                                    <input type="hidden" placeholder="存储路径" class="form-control" name="image" id="filePath1" value="" onchange="changeImagePath('<@mh.static/>', '1')">
+                                    <a class="label label-danger small-btn delete" href="javascript:void(0)" title="删除该图片"><i class="fa fa-remove"></i>删除</a>
+                                    <div class="tip">（格式：jpeg/jpg/png）</div>
+                                    <input type="hidden" placeholder="存储路径" name="image" id="filePath1" value="" onchange="changeImagePath('<@mh.static/>', '1')">
                                 </div>
                                 </#if>
                             </div>
-                            <div class="add-goods-image"><i class="fa fa-plus"></i>新增图片</div>
+                            <div class="add-goods-image btn btn-small btn-success"><i class="fa fa-plus"></i> 新增图片</div>
                         </div>
                     </div>
                     <div class="form-group">
@@ -91,8 +93,8 @@
                         <label class="col-md-3 control-label">状态：</label>
                         <div class="col-md-2">
                             <select class="form-control" name="status" id="status">
-                                <option value="A">上架</option>
-                                <option value="D">下架</option>
+                                <option <#if goods.status == 'A'>selected</#if> value="A">上架</option>
+                                <option <#if goods.status == 'D'>selected</#if> value="D">下架</option>
                             </select>
                         </div>
                     </div>
@@ -412,7 +414,7 @@
         });
 
         $('.nav-item').click(function() {
-            var id = $(this).attr("id");
+            let id = $(this).attr("id");
             $(this).parent().find('a').removeClass("active");
             $(this).find('a', 0).addClass("active");
             $(".tab-pane").removeClass("active show").addClass("fade");
@@ -420,7 +422,7 @@
         });
 
         $('.spec-type').change(function() {
-            var isSingle = $('input:radio[name=isSingleSpec]:checked').val();
+            let isSingle = $('input:radio[name=isSingleSpec]:checked').val();
             if (isSingle == 'Y') {
                $('.multi-spec').css('display', 'none');
                $('.single-spec').css('display', 'block');
@@ -430,16 +432,23 @@
             }
         });
 
+        // 新增图片
         $('.add-goods-image').click(function() {
-            var num = $(this).parent().find(".upload-item").length + 1;
-            var item = '<div class="upload-item">\n' +
-                       '<img name="image'+num+'" class="m-r-20 m-b-10" id="image'+num+'" src="<@mh.static/>/defaultImage/image.png" style="border:1px solid #ccc;border-radius:1px;width: 120px;height: 80px;">\n' +
+            let num = $(this).parent().find(".upload-item").length + 1;
+            let item = '<div class="upload-item">\n' +
+                       '<img name="image'+num+'" class="image" id="image'+num+'" src="<@mh.static/>/defaultImage/none.png">\n' +
                        '<input type="file" name="picture'+num+'" id="picture'+num+'" style="display: inline-block" onchange="ajaxFileUpload('+num+', \'${rc.contextPath}/backend\');">\n' +
-                       '<div style="color:#cccccc;margin-bottom: 10px;">（格式：jpeg/jpg/png）</div>\n' +
-                       '<input type="text" type="hidden" placeholder="存储路径" class="form-control" name="image" id="filePath'+num+'" value="" onchange="changeImagePath(\'<@mh.static/>\', '+num+')">\n' +
+                       '<a class="label label-danger small-btn delete" href="javascript:void(0)" title="删除该图片"><i class="fa fa-remove"></i>删除</a>' +
+                       '<div class="tip">（格式：jpeg/jpg/png）</div>\n' +
+                       '<input type="hidden" placeholder="存储路径" name="image" id="filePath'+num+'" value="" onchange="changeImagePath(\'<@mh.static/>\', '+num+')">\n' +
                        '</div>';
             $(this).parent().find(".upload-list", 0).append(item);
         });
+
+        // 删除商品的图片
+        $(document).on('click', '.delete', function () {
+            $(this).parent().remove();
+        })
 
         $('#extendForm').validate({
             rules: {},

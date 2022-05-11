@@ -1,6 +1,7 @@
 package com.fuint.application.service.coupon;
 
 import com.fuint.application.dto.CouponDto;
+import com.fuint.application.service.setting.SettingService;
 import com.fuint.application.service.usercoupon.UserCouponService;
 import com.fuint.base.annoation.OperationServiceLog;
 import com.fuint.base.dao.pagination.PaginationRequest;
@@ -28,7 +29,6 @@ import com.fuint.application.BaseService;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -79,7 +79,7 @@ public class CouponServiceImpl extends BaseService implements CouponService {
     private MtCouponGoodsRepository mtCouponGoodsRepository;
 
     @Autowired
-    private Environment env;
+    private SettingService settingService;
 
     /**
      * 分页查询券列表
@@ -344,10 +344,30 @@ public class CouponServiceImpl extends BaseService implements CouponService {
         paginationRequest.setSortColumn(new String[]{"id desc", "groupId desc"});
 
         PaginationResponse<MtCoupon> paginationResponse = couponRepository.findResultsByPagination(paginationRequest);
-
         List<MtCoupon> dataList = paginationResponse.getContent();
+
+        // 处理已过期
+        int expireNum = 0;
+        for (MtCoupon coupon : dataList) {
+            if (coupon.getEndTime().before(new Date())) {
+                coupon.setStatus(StatusEnum.EXPIRED.getKey());
+                coupon.setUpdateTime(new Date());
+                couponRepository.save(coupon);
+                expireNum++;
+            }
+        }
+
+        // 重新获取
+        if (expireNum > 0) {
+            paginationRequest.setCurrentPage(pageNumber);
+            paginationRequest.setSearchParams(searchParams);
+            paginationRequest.setSortColumn(new String[]{"id desc", "groupId desc"});
+            paginationResponse = couponRepository.findResultsByPagination(paginationRequest);
+            dataList = paginationResponse.getContent();
+        }
+
         List<CouponDto> content = new ArrayList<>();
-        String baseImage = env.getProperty("images.upload.url");
+        String baseImage = settingService.getUploadBasePath();
         for (int i = 0; i < dataList.size(); i++) {
             CouponDto item = new CouponDto();
             BeanUtils.copyProperties(dataList.get(i), item);
@@ -472,6 +492,7 @@ public class CouponServiceImpl extends BaseService implements CouponService {
                 param.put("userId", mtUser.getId());
                 param.put("param", storeParams);
                 param.put("orderId", 0);
+
                 userCouponService.preStore(param);
             }
             return;

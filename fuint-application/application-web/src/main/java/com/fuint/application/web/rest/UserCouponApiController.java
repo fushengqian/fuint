@@ -4,6 +4,7 @@ import com.fuint.application.dao.entities.MtStaff;
 import com.fuint.application.dto.UserCouponDto;
 import com.fuint.application.enums.CouponTypeEnum;
 import com.fuint.application.enums.UserCouponStatusEnum;
+import com.fuint.application.service.setting.SettingService;
 import com.fuint.application.service.staff.StaffService;
 import com.fuint.application.service.confirmlog.ConfirmLogService;
 import com.fuint.application.util.DateUtil;
@@ -23,7 +24,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
 import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import java.io.ByteArrayOutputStream;
@@ -61,7 +61,7 @@ public class UserCouponApiController extends BaseController {
     private StaffService staffService;
 
     @Autowired
-    private Environment env;
+    private SettingService settingService;
 
     /**
      * 查询会员卡券详情
@@ -139,7 +139,7 @@ public class UserCouponApiController extends BaseController {
             result.setName(couponInfo.getName());
             result.setQrCode(qrCode);
 
-            String baseImage = env.getProperty("images.upload.url");
+            String baseImage = settingService.getUploadBasePath();
             result.setImage(baseImage + couponInfo.getImage());
 
             result.setId(userCouponId);

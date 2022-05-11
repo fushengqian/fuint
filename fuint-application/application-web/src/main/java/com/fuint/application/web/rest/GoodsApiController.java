@@ -10,6 +10,7 @@ import com.fuint.application.dto.*;
 import com.fuint.application.enums.StatusEnum;
 import com.fuint.application.service.goods.GoodsService;
 import com.fuint.application.service.goods.CateService;
+import com.fuint.application.service.setting.SettingService;
 import com.fuint.base.dao.pagination.PaginationRequest;
 import com.fuint.base.dao.pagination.PaginationResponse;
 import com.fuint.exception.BusinessCheckException;
@@ -19,7 +20,6 @@ import jodd.util.StringUtil;
 import org.apache.commons.collections.map.HashedMap;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
 import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import java.lang.reflect.InvocationTargetException;
@@ -51,7 +51,7 @@ public class GoodsApiController extends BaseController {
     private CateService cateService;
 
     @Autowired
-    private Environment env;
+    private SettingService settingService;
 
     /**
      * 获取商品分类列表
@@ -67,7 +67,7 @@ public class GoodsApiController extends BaseController {
 
         List<MtGoods> goodsList = goodsService.getStoreGoodsList(storeId);
 
-        String baseImage = env.getProperty("images.upload.url");
+        String baseImage = settingService.getUploadBasePath();
         if (goodsList.size() > 0) {
             for (MtGoods goods : goodsList) {
                 goods.setLogo(baseImage + goods.getLogo());
@@ -164,7 +164,7 @@ public class GoodsApiController extends BaseController {
 
         List<String> images = JSONObject.parseArray(goodsDto.getImages(), String.class);
         List<String> imageList = new ArrayList<>();
-        String baseImage = env.getProperty("images.upload.url");
+        String baseImage = settingService.getUploadBasePath();
         for (String image : images) {
             imageList.add((baseImage + image));
         }

@@ -203,12 +203,13 @@ public class OrderServiceImpl extends BaseService implements OrderService {
         }
 
         // 检查店铺是否已被禁用
-        if (orderDto.getStoreId() != null) {
+        if (orderDto.getStoreId() != null && orderDto.getStoreId() > 0) {
             MtStore storeInfo = storeService.queryStoreById(orderDto.getStoreId());
             if (!storeInfo.getStatus().equals(StatusEnum.ENABLED.getKey())) {
                 orderDto.setStoreId(0);
             }
         }
+
         String orderSn;
         if (orderDto.getId() == null) {
             orderSn = CommonUtil.createOrderSN(orderDto.getUserId() + "");
@@ -499,13 +500,29 @@ public class OrderServiceImpl extends BaseService implements OrderService {
         dto.setCreateTime(DateUtil.formatDate(orderInfo.getCreateTime(), "yyyy.MM.dd HH:mm"));
         dto.setUpdateTime(DateUtil.formatDate(orderInfo.getUpdateTime(), "yyyy.MM.dd HH:mm"));
         dto.setAmount(orderInfo.getAmount());
-        dto.setPayAmount(orderInfo.getPayAmount());
-        dto.setDiscount(orderInfo.getDiscount());
-        dto.setPointAmount(orderInfo.getPointAmount());
+        if (orderInfo.getPayAmount() != null) {
+            dto.setPayAmount(orderInfo.getPayAmount());
+        } else {
+            dto.setPayAmount(new BigDecimal("0"));
+        }
+        if (orderInfo.getDiscount() != null) {
+            dto.setDiscount(orderInfo.getDiscount());
+        } else {
+            dto.setDiscount(new BigDecimal("0"));
+        }
+        if (orderInfo.getPointAmount() != null) {
+            dto.setPointAmount(orderInfo.getPointAmount());
+        } else {
+            dto.setPointAmount(new BigDecimal("0"));
+        }
         dto.setStatus(orderInfo.getStatus());
         dto.setParam(orderInfo.getParam());
         dto.setPayStatus(orderInfo.getPayStatus());
-        dto.setUsePoint(orderInfo.getUsePoint());
+        if (orderInfo.getUsePoint() != null) {
+            dto.setUsePoint(orderInfo.getUsePoint());
+        } else {
+            dto.setUsePoint(0);
+        }
         if (orderInfo.getPayTime() != null) {
             dto.setPayTime(DateUtil.formatDate(orderInfo.getPayTime(), "yyyy.MM.dd HH:mm"));
         }
@@ -556,7 +573,7 @@ public class OrderServiceImpl extends BaseService implements OrderService {
 
         List<OrderGoodsDto> goodsList = new ArrayList<>();
 
-        String baseImage = env.getProperty("images.upload.url");
+        String baseImage = settingService.getUploadBasePath();
 
         // 预存卡的订单
         if (orderInfo.getType().equals(OrderTypeEnum.PRESTORE.getKey())) {
@@ -734,7 +751,7 @@ public class OrderServiceImpl extends BaseService implements OrderService {
         MtUser userInfo = memberService.queryMemberById(userId);
 
         List<ResCartDto> cartDtoList = new ArrayList<>();
-        String basePath = env.getProperty("images.upload.url");
+        String basePath = settingService.getUploadBasePath();
         Integer totalNum = 0;
         BigDecimal totalPrice = new BigDecimal("0");
 
@@ -870,7 +887,7 @@ public class OrderServiceImpl extends BaseService implements OrderService {
         BigDecimal payPrice = totalPrice.subtract(couponAmount);
 
         // 可用积分、可用积分金额
-        Integer myPoint = userInfo.getPoint();
+        Integer myPoint = userInfo.getPoint() == null ? 0 : userInfo.getPoint();
         Integer usePoint = 0;
         BigDecimal usePointAmount = new BigDecimal("0");
         MtSetting setting = settingService.querySettingByName(PointSettingEnum.EXCHANGE_NEED_POINT.getKey());

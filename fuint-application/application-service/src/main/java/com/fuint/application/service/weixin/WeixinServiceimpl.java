@@ -58,6 +58,7 @@ import java.security.Security;
  */
 @Service
 public class WeixinServiceimpl extends BaseService implements WeixinService {
+
     private static final Logger logger = LoggerFactory.getLogger(WeixinServiceimpl.class);
 
     @Resource

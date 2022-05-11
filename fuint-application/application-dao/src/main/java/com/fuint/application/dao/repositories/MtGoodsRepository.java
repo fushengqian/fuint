@@ -21,7 +21,7 @@ public interface MtGoodsRepository extends BaseRepository<MtGoods, Integer> {
      * @param storeId
      * @return
      * */
-    @Query("select t from MtGoods t where t.storeId = 0 or t.storeId = :storeId AND t.status = 'A' order by t.sort asc")
+    @Query("select t from MtGoods t where (t.storeId = 0 OR t.storeId = :storeId) AND t.status = 'A' order by t.sort ASC")
     List<MtGoods> getStoreGoodsList(@Param("storeId") Integer storeId);
 
     /**

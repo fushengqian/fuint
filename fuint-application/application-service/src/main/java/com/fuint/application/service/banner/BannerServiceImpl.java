@@ -3,6 +3,7 @@ package com.fuint.application.service.banner;
 import com.fuint.application.dao.entities.MtBanner;
 import com.fuint.application.dao.repositories.MtBannerRepository;
 import com.fuint.application.dto.BannerDto;
+import com.fuint.application.service.setting.SettingService;
 import com.fuint.base.annoation.OperationServiceLog;
 import com.fuint.base.dao.pagination.PaginationRequest;
 import com.fuint.base.dao.pagination.PaginationResponse;
@@ -36,7 +37,7 @@ public class BannerServiceImpl implements BannerService {
     private MtBannerRepository bannerRepository;
 
     @Autowired
-    private Environment env;
+    private SettingService settingService;
 
     /**
      * 分页查询Banner列表
@@ -58,11 +59,12 @@ public class BannerServiceImpl implements BannerService {
      */
     @Override
     @OperationServiceLog(description = "添加Banner")
-    public MtBanner addBanner(BannerDto bannerDto) throws BusinessCheckException {
+    public MtBanner addBanner(BannerDto bannerDto) {
         MtBanner mtBanner = new MtBanner();
         if (null != bannerDto.getId()) {
             mtBanner.setId(bannerDto.getId());
         }
+
         mtBanner.setTitle(bannerDto.getTitle());
         mtBanner.setUrl(bannerDto.getUrl());
         mtBanner.setStatus(StatusEnum.ENABLED.getKey());
@@ -90,7 +92,7 @@ public class BannerServiceImpl implements BannerService {
      * @throws BusinessCheckException
      */
     @Override
-    public MtBanner queryBannerById(Integer id) throws BusinessCheckException {
+    public MtBanner queryBannerById(Integer id) {
         return bannerRepository.findOne(id);
     }
 
@@ -103,7 +105,7 @@ public class BannerServiceImpl implements BannerService {
      */
     @Override
     @OperationServiceLog(description = "删除Banner")
-    public void deleteBanner(Integer id, String operator) throws BusinessCheckException {
+    public void deleteBanner(Integer id, String operator) {
         MtBanner MtBanner = this.queryBannerById(id);
         if (null == MtBanner) {
             return;
@@ -154,7 +156,7 @@ public class BannerServiceImpl implements BannerService {
         Specification<MtBanner> specification = bannerRepository.buildSpecification(param);
         Sort sort = new Sort(Sort.Direction.DESC, "createTime");
         List<MtBanner> result = bannerRepository.findAll(specification, sort);
-        String baseImage = env.getProperty("images.upload.url");
+        String baseImage = settingService.getUploadBasePath();
 
         if (result.size() > 0) {
             for (MtBanner banner : result) {

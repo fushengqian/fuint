@@ -6,6 +6,7 @@ import com.fuint.application.dao.entities.MtUserCoupon;
 import com.fuint.application.dao.repositories.MtUserCouponRepository;
 import com.fuint.application.dto.CouponDto;
 import com.fuint.application.service.coupon.CouponService;
+import com.fuint.application.service.setting.SettingService;
 import com.fuint.application.service.token.TokenService;
 import com.fuint.application.service.usercoupon.UserCouponService;
 import com.fuint.application.util.DateUtil;
@@ -15,7 +16,6 @@ import com.fuint.application.BaseController;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
 import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import java.lang.reflect.InvocationTargetException;
@@ -55,7 +55,7 @@ public class CouponApiController extends BaseController {
     private TokenService tokenService;
 
     @Autowired
-    private Environment env;
+    private SettingService settingService;
 
     /**
      * 获取列表数据
@@ -142,7 +142,7 @@ public class CouponApiController extends BaseController {
             }
         }
 
-        String baseImage = env.getProperty("images.upload.url");
+        String baseImage = settingService.getUploadBasePath();
         dto.setImage(baseImage + couponInfo.getImage());
 
         String effectiveDate = DateUtil.formatDate(couponInfo.getBeginTime(), "yyyy.MM.dd") + " - " + DateUtil.formatDate(couponInfo.getEndTime(), "yyyy.MM.dd");

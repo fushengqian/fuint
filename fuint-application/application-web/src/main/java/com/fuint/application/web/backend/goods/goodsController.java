@@ -6,6 +6,7 @@ import com.fuint.application.dao.repositories.MtGoodsSpecRepository;
 import com.fuint.application.dao.repositories.MtGoodsSkuRepository;
 import com.fuint.application.enums.StatusEnum;
 import com.fuint.application.service.goods.CateService;
+import com.fuint.application.service.setting.SettingService;
 import com.fuint.application.service.store.StoreService;
 import com.fuint.application.util.CommonUtil;
 import com.fuint.base.dao.entities.TAccount;
@@ -19,7 +20,6 @@ import com.fuint.application.dto.GoodsSpecItemDto;
 import com.fuint.application.service.goods.GoodsService;
 import org.apache.commons.lang.StringUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
-import org.springframework.core.env.Environment;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.web.bind.annotation.*;
@@ -76,7 +76,7 @@ public class goodsController {
     private MtGoodsSkuRepository goodskuRepository;
 
     @Autowired
-    private Environment env;
+    private SettingService settingService;
 
     /**
      * 查询列表
@@ -91,6 +91,10 @@ public class goodsController {
     @RequiresPermissions("/backend/goods/goods/list")
     public String queryList(HttpServletRequest request, HttpServletResponse response, Model model) throws BusinessCheckException {
         ShiroUser shiroUser = ShiroUserHelper.getCurrentShiroUser();
+        if (shiroUser == null) {
+            return "redirect:/login";
+        }
+
         TAccount account = accountService.findAccountById(shiroUser.getId());
         Integer storeId = account.getStoreId();
 
@@ -102,7 +106,7 @@ public class goodsController {
 
         PaginationResponse<GoodsDto> paginationResponse = goodsService.queryGoodsListByPagination(paginationRequest);
 
-        String imagePath = env.getProperty("images.upload.url");
+        String imagePath = settingService.getUploadBasePath();
 
         model.addAttribute("paginationResponse", paginationResponse);
         model.addAttribute("imagePath", imagePath);
@@ -199,7 +203,7 @@ public class goodsController {
         List<MtGoodsCate> cateList = cateService.queryCateListByParams(param);
         model.addAttribute("cateList", cateList);
 
-        String imagePath = env.getProperty("images.upload.url");
+        String imagePath = settingService.getUploadBasePath();
         model.addAttribute("imagePath", imagePath);
 
         String specData = JSONObject.toJSONString(specArr);
@@ -283,7 +287,7 @@ public class goodsController {
         Enumeration skuMap = request.getParameterNames();
         List<String> dataArr = new ArrayList<>();
         List<String> item = new ArrayList<>();
-        String imagePath = env.getProperty("images.upload.url");
+        String imagePath = settingService.getUploadBasePath();
 
         while (skuMap.hasMoreElements()) {
             String paramName = (String)skuMap.nextElement();

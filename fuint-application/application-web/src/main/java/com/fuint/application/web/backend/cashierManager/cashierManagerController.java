@@ -6,6 +6,7 @@ import com.fuint.application.dao.entities.MtStore;
 import com.fuint.application.enums.StatusEnum;
 import com.fuint.application.service.goods.CateService;
 import com.fuint.application.service.goods.GoodsService;
+import com.fuint.application.service.setting.SettingService;
 import com.fuint.application.service.store.StoreService;
 import com.fuint.base.dao.entities.TAccount;
 import com.fuint.base.service.account.TAccountService;
@@ -14,7 +15,6 @@ import com.fuint.base.shiro.util.ShiroUserHelper;
 import com.fuint.exception.BusinessCheckException;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -58,7 +58,7 @@ public class cashierManagerController {
     private StoreService storeService;
 
     @Autowired
-    private Environment env;
+    private SettingService settingService;
 
     /**
      * 收银台首页
@@ -83,7 +83,6 @@ public class cashierManagerController {
         List<MtGoodsCate> cateList = cateService.queryCateListByParams(param);
         model.addAttribute("cateList", cateList);
 
-        Map<String, Object> goodsParam = new HashMap<>();
         param.put("EQ_status", StatusEnum.ENABLED.getKey());
         List<MtGoods> goodsList = goodsService.getStoreGoodsList(storeId);
         model.addAttribute("goodsList", goodsList);
@@ -93,7 +92,7 @@ public class cashierManagerController {
         MtStore storeInfo = storeService.queryStoreById(storeId);
         model.addAttribute("storeInfo", storeInfo);
 
-        String imagePath = env.getProperty("images.upload.url");
+        String imagePath = settingService.getUploadBasePath();
         model.addAttribute("imagePath", imagePath);
 
         return "cashier/index";

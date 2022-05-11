@@ -70,7 +70,6 @@
     <orderEntry type="library" name="Maven: org.apache.poi:poi-ooxml:3.14" level="project" />
     <orderEntry type="library" name="Maven: org.apache.poi:poi-ooxml-schemas:3.14" level="project" />
     <orderEntry type="library" name="Maven: org.apache.xmlbeans:xmlbeans:2.6.0" level="project" />
-    <orderEntry type="library" name="Maven: stax:stax-api:1.0.1" level="project" />
     <orderEntry type="library" name="Maven: com.github.virtuald:curvesapi:1.03" level="project" />
     <orderEntry type="library" name="Maven: javax.cache:cache-api:1.0.0" level="project" />
     <orderEntry type="library" name="Maven: com.fuint:fuint-cache:1.0.0-RELEASE" level="project" />
@@ -113,6 +112,14 @@
     <orderEntry type="library" name="Maven: javax.activation:javax.activation-api:1.2.0" level="project" />
     <orderEntry type="library" name="Maven: org.jacoco:org.jacoco.agent:runtime:0.8.3" level="project" />
     <orderEntry type="library" name="Maven: org.ini4j:ini4j:0.5.4" level="project" />
+    <orderEntry type="library" name="Maven: com.aliyun.oss:aliyun-sdk-oss:3.10.2" level="project" />
+    <orderEntry type="library" name="Maven: org.jdom:jdom2:2.0.6" level="project" />
+    <orderEntry type="library" name="Maven: org.codehaus.jettison:jettison:1.1" level="project" />
+    <orderEntry type="library" name="Maven: stax:stax-api:1.0.1" level="project" />
+    <orderEntry type="library" name="Maven: com.aliyun:aliyun-java-sdk-ram:3.0.0" level="project" />
+    <orderEntry type="library" name="Maven: com.aliyun:aliyun-java-sdk-sts:3.0.0" level="project" />
+    <orderEntry type="library" name="Maven: com.aliyun:aliyun-java-sdk-ecs:4.2.0" level="project" />
+    <orderEntry type="library" name="Maven: com.aliyun:aliyun-java-sdk-kms:2.7.0" level="project" />
     <orderEntry type="library" name="Maven: com.squareup.okhttp3:okhttp:3.8.1" level="project" />
     <orderEntry type="library" name="Maven: com.squareup.okio:okio:1.13.0" level="project" />
     <orderEntry type="library" name="Maven: org.bouncycastle:bcprov-jdk15on:1.65" level="project" />

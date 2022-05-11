@@ -6,6 +6,7 @@ import com.fuint.application.dao.entities.MtUser;
 import com.fuint.application.enums.StatusEnum;
 import com.fuint.application.service.coupon.CouponService;
 import com.fuint.application.service.goods.GoodsService;
+import com.fuint.application.service.setting.SettingService;
 import com.fuint.application.service.token.TokenService;
 import com.fuint.exception.BusinessCheckException;
 import com.fuint.application.ResponseObject;
@@ -58,7 +59,7 @@ public class PageController extends BaseController {
     private TokenService tokenService;
 
     @Autowired
-    private Environment env;
+    private SettingService settingService;
 
     /**
      * 获取页面数据
@@ -79,7 +80,7 @@ public class PageController extends BaseController {
         List<MtBanner> bannerData = bannerService.queryBannerListByParams(param);
 
         List<MtGoods> goodsData = goodsService.getStoreGoodsList(storeId);
-        String baseImage = env.getProperty("images.upload.url");
+        String baseImage = settingService.getUploadBasePath();
         if (goodsData.size() > 0) {
             for (MtGoods goods : goodsData) {
                 goods.setLogo(baseImage + goods.getLogo());

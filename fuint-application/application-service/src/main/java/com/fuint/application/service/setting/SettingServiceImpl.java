@@ -6,9 +6,8 @@ import com.fuint.application.enums.StatusEnum;
 import com.fuint.base.annoation.OperationServiceLog;
 import com.fuint.exception.BusinessCheckException;
 import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import java.util.Date;
 import java.util.List;
@@ -22,7 +21,8 @@ import java.util.List;
 @Service
 public class SettingServiceImpl implements SettingService {
 
-    private static final Logger log = LoggerFactory.getLogger(SettingServiceImpl.class);
+    @Autowired
+    private Environment env;
 
     @Autowired
     private MtSettingRepository settingRepository;
@@ -58,7 +58,7 @@ public class SettingServiceImpl implements SettingService {
             }
             return settingRepository.save(info);
         } else {
-            // 创建
+            // 创建配置
             reqDto.setCreateTime(new Date());
             reqDto.setStatus(StatusEnum.ENABLED.getKey());
             return settingRepository.save(reqDto);
@@ -87,5 +87,27 @@ public class SettingServiceImpl implements SettingService {
     public MtSetting querySettingByName(String name) {
         MtSetting setting = settingRepository.querySettingByName(name);
         return setting;
+    }
+
+    /**
+     * 获取系统上传的根路径
+     * */
+    @Override
+    public String getUploadBasePath() {
+        String basePath = env.getProperty("images.upload.url");
+
+        String mode = env.getProperty("aliyun.oss.mode");
+        if (mode == null) {
+            return basePath;
+        } else {
+            if (mode.equals("1")) {
+                String domain = env.getProperty("aliyun.oss.domain");
+                if (StringUtils.isNotEmpty(domain)) {
+                    basePath = domain;
+                }
+            }
+        }
+
+        return basePath;
     }
 }

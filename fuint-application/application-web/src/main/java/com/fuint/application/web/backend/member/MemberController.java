@@ -87,8 +87,12 @@ public class MemberController {
             }
         }
 
-        ShiroUser shirouser = ShiroUserHelper.getCurrentShiroUser();
-        TAccount account = accountService.findAccountById(shirouser.getId());
+        ShiroUser shiroUser = ShiroUserHelper.getCurrentShiroUser();
+        if (shiroUser == null) {
+            return "redirect:/login";
+        }
+
+        TAccount account = accountService.findAccountById(shiroUser.getId());
         Integer storeId = account.getStoreId();
         if (storeId > 0) {
             params.put("EQ_storeId", storeId.toString());

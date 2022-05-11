@@ -13,6 +13,7 @@ import com.fuint.application.service.coupon.CouponService;
 import com.fuint.application.service.coupongroup.CouponGroupService;
 import com.fuint.application.service.member.MemberService;
 import com.fuint.application.service.point.PointService;
+import com.fuint.application.service.setting.SettingService;
 import com.fuint.application.service.store.StoreService;
 import com.fuint.application.util.DateUtil;
 import com.fuint.application.util.SeqUtil;
@@ -25,7 +26,6 @@ import com.fuint.application.BaseService;
 import org.apache.commons.collections.map.HashedMap;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -65,7 +65,7 @@ public class UserCouponServiceImpl extends BaseService implements UserCouponServ
     private StoreService storeService;
 
     @Autowired
-    private Environment env;
+    private SettingService settingService;
 
     /**
      * 分页查询券列表
@@ -308,7 +308,7 @@ public class UserCouponServiceImpl extends BaseService implements UserCouponServ
                 dto.setUseRule(couponInfo.getDescription());
 
                 String image = couponInfo.getImage();
-                String baseImage = env.getProperty("images.upload.url");
+                String baseImage = settingService.getUploadBasePath();
                 dto.setImage(baseImage + image);
                 dto.setStatus(userCouponDto.getStatus());
                 dto.setAmount(userCouponDto.getAmount());

@@ -5,6 +5,7 @@ import com.fuint.application.dto.*;
 import com.fuint.application.enums.CouponTypeEnum;
 import com.fuint.application.service.goods.GoodsService;
 import com.fuint.application.service.member.MemberService;
+import com.fuint.application.service.setting.SettingService;
 import com.fuint.application.service.sms.SendSmsInterface;
 import com.fuint.base.dao.entities.TAccount;
 import com.fuint.base.service.account.TAccountService;
@@ -24,7 +25,6 @@ import com.fuint.application.service.sendlog.SendLogService;
 import org.apache.commons.lang.StringUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -100,7 +100,7 @@ public class couponController extends BaseController {
     private MtCouponGoodsRepository mtCouponGoodsRepository;
 
     @Autowired
-    private Environment env;
+    private SettingService settingService;
 
     /**
      * 上次执行搜索全量索引的时间
@@ -218,7 +218,7 @@ public class couponController extends BaseController {
             groupTotal = groupInfo.getTotal();
         }
 
-        String baseImage = env.getProperty("images.upload.url");
+        String baseImage = settingService.getUploadBasePath();
 
         model.addAttribute("baseImage", baseImage);
         model.addAttribute("groupTotal", groupTotal);
@@ -321,7 +321,7 @@ public class couponController extends BaseController {
     public String couponEditInit(HttpServletRequest request, HttpServletResponse response, Model model, @PathVariable("id") Integer id) throws BusinessCheckException {
         MtCoupon mtCouponInfo = couponService.queryCouponById(id);
 
-        String baseImage = env.getProperty("images.upload.url");
+        String baseImage = settingService.getUploadBasePath();
         model.addAttribute("baseImage", baseImage);
         model.addAttribute("couponInfo", mtCouponInfo);
 

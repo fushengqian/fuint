@@ -21,13 +21,13 @@
                     <img name="image1" class="m-r-20 m-b-10" id="image1" src="${imagePath}${info.logo}" style="border:1px solid #ccc;border-radius:1px;width: 120px;height: 80px;">
                     <input type="file" name="picture1" id="picture1" style="display: inline-block" onchange="ajaxFileUpload(1,'${rc.contextPath}/backend');">
                     <div style="color:#cccccc;margin-bottom: 10px;">（格式：jpeg/jpg/png，大小：540x300）</div>
-                    <input type="text" placeholder="图片路径" class="form-control" name="image" id="filePath1" value="${info.logo}" onchange="changeImagePath('<@mh.static/>', '1')">
+                    <input type="hidden" placeholder="图片路径" class="form-control" name="image" id="filePath1" value="${info.logo}" onchange="changeImagePath('<@mh.static/>', '1')">
                 </div>
             </div>
             <div class="form-group">
                 <label class="col-md-3 control-label"><span class="requiredstar">* </span>排序：</label>
                 <div class="col-md-3">
-                    <input type="text" id="sort" class="form-control" name="sort" value="${info.sort}" placeholder="排序，正整数" rangelength="1, 100">
+                     <input type="text" id="sort" class="form-control" name="sort" value="${info.sort}" placeholder="排序，正整数" rangelength="1, 100">
                 </div>
             </div>
             <div class="form-group">
