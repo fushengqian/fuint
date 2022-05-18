@@ -247,14 +247,21 @@ public class UserCouponServiceImpl extends BaseService implements UserCouponServ
         String couponId = paramMap.get("couponId") == null ? "" : paramMap.get("couponId").toString();
         String code = paramMap.get("code") == null ? "" : paramMap.get("code").toString();
 
-        // 处理已过期，置为过期
+        // 处理已失效
         if (pageNumber <= 1 && StringUtils.isNotEmpty(userId)) {
             List<String> statusList = Arrays.asList(UserCouponStatusEnum.UNUSED.getKey());
             List<MtUserCoupon> data = userCouponRepository.getUserCouponList(Integer.parseInt(userId), statusList);
             for (MtUserCoupon uc : data) {
                 MtCoupon coupon = couponService.queryCouponById(uc.getCouponId());
+                // 已过期
                 if (coupon.getEndTime().before(new Date())) {
                     uc.setStatus(StatusEnum.EXPIRED.getKey());
+                    uc.setUpdateTime(new Date());
+                    userCouponRepository.save(uc);
+                }
+                // 已删除
+                if (coupon.getStatus().equals(StatusEnum.DISABLE.getKey())) {
+                    uc.setStatus(UserCouponStatusEnum.DISABLE.getKey());
                     uc.setUpdateTime(new Date());
                     userCouponRepository.save(uc);
                 }

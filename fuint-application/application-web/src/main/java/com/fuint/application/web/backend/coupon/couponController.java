@@ -159,6 +159,10 @@ public class couponController extends BaseController {
         if (dataList.size() > 0) {
             for (MtCoupon coupon : dataList) {
                 MtCouponGroup groupInfo = couponGroupRepository.findOne(coupon.getGroupId());
+                if (groupInfo == null) {
+                    continue;
+                }
+
                 MtCouponGroup g = new MtCouponGroup();
                 g.setId(groupInfo.getId());
                 g.setName(groupInfo.getName());
@@ -174,6 +178,7 @@ public class couponController extends BaseController {
                     groupMap.add(g);
                 }
 
+                // 可用店铺
                 String storeName = "";
                 String storeIds = coupon.getStoreIds();
                 if (StringUtils.isNotEmpty(storeIds)) {
@@ -181,7 +186,9 @@ public class couponController extends BaseController {
                     if (list.length > 0) {
                         for (String id : list) {
                             MtStore store = storeService.queryStoreById(Integer.parseInt(id));
-                            storeName = storeName.length() > 0 ? storeName + ','+ store.getName() : store.getName();
+                            if (store != null) {
+                                storeName = storeName.length() > 0 ? storeName + ',' + store.getName() : store.getName();
+                            }
                         }
                     }
                 }

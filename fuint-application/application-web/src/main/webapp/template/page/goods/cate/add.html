@@ -26,7 +26,7 @@
             <div class="form-group">
                 <label class="col-md-3 control-label"><span class="requiredstar">* </span>排序：</label>
                 <div class="col-md-3">
-                    <input type="text" id="sort" class="form-control" name="sort" placeholder="排序，正整数" rangelength="1, 10" value="0">
+                    <input type="text" id="sort" class="form-control" name="sort" placeholder="排序，正整数" required rangelength="1, 10" value="0">
                 </div>
             </div>
             <div class="form-group">
@@ -48,7 +48,7 @@
 <script type="application/javascript">
     $(function () {
         $('#submitButton').click(function () {
-            if ($("#name").val() != null || $("#name").val() != "") {
+            if ($("#name").val() != null && $("#name").val() != "") {
                 $('#cateForm').submit();
             }
         });
