@@ -28,6 +28,20 @@ public class SettingServiceImpl implements SettingService {
     private MtSettingRepository settingRepository;
 
     /**
+     * 删除配置
+     *
+     * @param  name
+     * @throws BusinessCheckException
+     */
+    public void removeSetting(String name) {
+        MtSetting info = this.querySettingByName(name);
+        if (info != null) {
+            settingRepository.delete(info.getId());
+        }
+        return;
+    }
+
+    /**
      * 保存配置
      *
      * @param reqDto

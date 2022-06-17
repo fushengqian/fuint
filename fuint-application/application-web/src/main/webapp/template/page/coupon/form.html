@@ -502,14 +502,14 @@
     }
 
     // 添加预存规则
-     function addInRuleDiv() {
+    function addInRuleDiv() {
         var deleteBtn = "<div class='col-md-1 deleteInRule'>"+
                         "<a class='btn btn-danger btn-icon btn-circle' onclick='javascript:deleteInRuleDiv(this);' title='删除'><i class='fa fa-times'></i></a>"+
                         "</div>";
         var inRuleDiv = "<div class='form-group inRuleItem'>"+$('.inRuleItem').eq(0).html()+ deleteBtn +"</div>";
 
         $("#inRuleDiv").append(inRuleDiv);
-     }
+    }
 
     // 删除预存规则
     function deleteInRuleDiv(obj) {

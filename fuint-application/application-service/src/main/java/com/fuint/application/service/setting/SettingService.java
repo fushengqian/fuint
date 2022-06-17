@@ -11,6 +11,15 @@ import java.util.List;
  * Site https://www.fuint.cn
  */
 public interface SettingService {
+
+    /**
+     * 删除配置
+     *
+     * @param  name
+     * @throws BusinessCheckException
+     */
+    void removeSetting(String name) throws BusinessCheckException;
+
     /**
      * 保存配置
      *

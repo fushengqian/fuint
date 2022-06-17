@@ -7,8 +7,10 @@ import com.fuint.application.enums.PointSettingEnum;
 import com.fuint.application.enums.SettingTypeEnum;
 import com.fuint.application.service.point.PointService;
 import com.fuint.application.service.setting.SettingService;
+import com.fuint.application.util.CommonUtil;
 import com.fuint.base.dao.pagination.PaginationRequest;
 import com.fuint.base.dao.pagination.PaginationResponse;
+import com.fuint.base.shiro.ShiroUser;
 import com.fuint.base.shiro.util.ShiroUserHelper;
 import com.fuint.base.util.RequestHandler;
 import com.fuint.exception.BusinessCheckException;
@@ -59,6 +61,11 @@ public class pointController {
     @RequiresPermissions("backend/point/index")
     @RequestMapping(value = "/index")
     public String index(HttpServletRequest request, Model model) throws BusinessCheckException {
+        ShiroUser shiroUser = ShiroUserHelper.getCurrentShiroUser();
+        if (shiroUser == null) {
+            return "redirect:/login";
+        }
+
         PaginationRequest paginationRequest = RequestHandler.buildPaginationRequest(request, model);
 
         PaginationResponse<PointDto> paginationResponse = pointService.queryPointListByPagination(paginationRequest);
@@ -79,6 +86,11 @@ public class pointController {
     @RequiresPermissions("backend/point/setting")
     @RequestMapping(value = "/setting")
     public String editInit(HttpServletRequest request, HttpServletResponse response, Model model) throws BusinessCheckException {
+        ShiroUser shiroUser = ShiroUserHelper.getCurrentShiroUser();
+        if (shiroUser == null) {
+            return "redirect:/login";
+        }
+
         List<MtSetting> settingList = settingService.getSettingList(SettingTypeEnum.POINT.getKey());
 
         for (MtSetting setting : settingList) {
@@ -115,6 +127,13 @@ public class pointController {
         String exchangeNeedPoint = request.getParameter("exchangeNeedPoint") != null ? request.getParameter("exchangeNeedPoint") : "0";
         String rechargePointSpeed = request.getParameter("rechargePointSpeed") != null ? request.getParameter("rechargePointSpeed") : "1";
 
+        ReqResult reqResult = new ReqResult();
+        if (!CommonUtil.isNumeric(pointNeedConsume) || !CommonUtil.isNumeric(exchangeNeedPoint) || !CommonUtil.isNumeric(rechargePointSpeed)) {
+            reqResult.setResult(false);
+            reqResult.setMsg("输入参数有误！");
+            return reqResult;
+        }
+
         String operator = ShiroUserHelper.getCurrentShiroUser().getAcctName();
 
         PointSettingEnum[] settingList = PointSettingEnum.values();
@@ -141,9 +160,7 @@ public class pointController {
             settingService.saveSetting(info);
         }
 
-        ReqResult reqResult = new ReqResult();
         reqResult.setResult(true);
-
         return reqResult;
     }
 }

@@ -205,13 +205,15 @@ public class OrderServiceImpl extends BaseService implements OrderService {
         // 检查店铺是否已被禁用
         if (orderDto.getStoreId() != null && orderDto.getStoreId() > 0) {
             MtStore storeInfo = storeService.queryStoreById(orderDto.getStoreId());
-            if (!storeInfo.getStatus().equals(StatusEnum.ENABLED.getKey())) {
-                orderDto.setStoreId(0);
+            if (storeInfo != null) {
+                if (!storeInfo.getStatus().equals(StatusEnum.ENABLED.getKey())) {
+                    orderDto.setStoreId(0);
+                }
             }
         }
 
         String orderSn;
-        if (orderDto.getId() == null) {
+        if (orderDto.getId() == null || orderDto.getId() < 1) {
             orderSn = CommonUtil.createOrderSN(orderDto.getUserId() + "");
             MtOrder.setOrderSn(orderSn);
         } else {
@@ -470,7 +472,26 @@ public class OrderServiceImpl extends BaseService implements OrderService {
             MtOrder.setExpressInfo(JSONObject.toJSONString(orderDto.getExpressInfo()));
         }
 
+        if (null != orderDto.getRemark()) {
+            MtOrder.setRemark(orderDto.getRemark());
+        }
+
         return orderRepository.save(MtOrder);
+    }
+
+    @Override
+    @Transactional
+    @OperationServiceLog(description = "支付订单")
+    public boolean setOrderPayed(Integer orderId) throws BusinessCheckException {
+        OrderDto reqDto = new OrderDto();
+        reqDto.setId(orderId);
+        reqDto.setStatus(OrderStatusEnum.PAID.getKey());
+        reqDto.setPayStatus(PayStatusEnum.SUCCESS.getKey());
+        reqDto.setPayTime(new Date());
+        reqDto.setUpdateTime(new Date());
+        this.updateOrder(reqDto);
+
+        return true;
     }
 
     @Override

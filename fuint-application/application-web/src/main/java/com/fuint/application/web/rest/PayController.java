@@ -6,7 +6,9 @@ import com.fuint.application.dao.repositories.MtOrderRepository;
 import com.fuint.application.dto.CouponDto;
 import com.fuint.application.dto.UserOrderDto;
 import com.fuint.application.enums.OrderStatusEnum;
+import com.fuint.application.enums.PayTypeEnum;
 import com.fuint.application.enums.SettingTypeEnum;
+import com.fuint.application.service.balance.BalanceService;
 import com.fuint.application.service.member.MemberService;
 import com.fuint.application.service.order.OrderService;
 import com.fuint.application.service.setting.SettingService;
@@ -77,6 +79,9 @@ public class PayController extends BaseController {
     UserGradeService userGradeService;
 
     @Autowired
+    private BalanceService balanceService;
+
+    @Autowired
     private MtOrderRepository orderRepository;
 
     /**
@@ -141,6 +146,7 @@ public class PayController extends BaseController {
     @CrossOrigin
     public ResponseObject doPay(HttpServletRequest request) throws BusinessCheckException{
         String userToken = request.getHeader("Access-Token");
+        String payType = request.getParameter("payType") == null ? PayTypeEnum.JSAPI.getKey() : request.getParameter("payType");
         MtUser userInfo = tokenService.getUserInfoByToken(userToken);
 
         String orderId = request.getParameter("orderId");
@@ -157,21 +163,40 @@ public class PayController extends BaseController {
             userInfo = memberService.queryMemberById(orderInfo.getUserId());
         }
 
-        String ip = CommonUtil.getIPFromHttpRequest(request);
+        Object payment = null;
+
         // 实付金额 = 总金额 - 优惠金额 - 积分金额
         BigDecimal realPayAmount = orderInfo.getAmount().subtract(new BigDecimal(orderInfo.getDiscount().toString())).subtract(new BigDecimal(orderInfo.getPointAmount().toString()));
-        BigDecimal pay = realPayAmount.multiply(new BigDecimal("100"));
-        ResponseObject paymentInfo = weixinService.createPrepayOrder(userInfo, orderInfo, (pay.intValue()), authCode, 0, ip);
-        if (paymentInfo.getData() == null) {
-            return getFailureResult(201, "抱歉，发起支付失败啦！");
+
+        if (payType.equals(PayTypeEnum.BALANCE.getKey())) {
+            // 余额支付
+            MtBalance balance = new MtBalance();
+            balance.setMobile(userInfo.getMobile());
+            balance.setOrderSn(orderInfo.getOrderSn());
+            balance.setUserId(userInfo.getId());
+            balance.setAmount(realPayAmount.subtract(realPayAmount).subtract(realPayAmount));
+            boolean isPay = balanceService.addBalance(balance);
+            if (isPay) {
+                orderInfo = orderRepository.findOne(Integer.parseInt(orderId));
+            } else {
+                return getFailureResult(5001);
+            }
+        } else {
+            String ip = CommonUtil.getIPFromHttpRequest(request);
+            BigDecimal pay = realPayAmount.multiply(new BigDecimal("100"));
+            orderInfo.setPayType(payType);
+            ResponseObject paymentInfo = weixinService.createPrepayOrder(userInfo, orderInfo, (pay.intValue()), authCode, 0, ip);
+            if (paymentInfo.getData() == null) {
+                return getFailureResult(201, "抱歉，发起支付失败啦！");
+            }
+            payment = paymentInfo.getData();
         }
 
         Map<String, Object> outParams = new HashMap();
-
         outParams.put("isCreated", true);
-        outParams.put("payType", "wechat");
+        outParams.put("payType", payType);
         outParams.put("orderInfo", orderInfo);
-        outParams.put("payment", paymentInfo.getData());
+        outParams.put("payment", payment);
 
         ResponseObject responseObject = getSuccessResult(outParams);
 

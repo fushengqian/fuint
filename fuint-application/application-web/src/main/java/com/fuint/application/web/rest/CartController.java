@@ -10,6 +10,8 @@ import com.fuint.application.service.goods.GoodsService;
 import com.fuint.application.service.member.MemberService;
 import com.fuint.application.service.order.OrderService;
 import com.fuint.application.service.token.TokenService;
+import com.fuint.base.shiro.ShiroUser;
+import com.fuint.base.shiro.util.ShiroUserHelper;
 import com.fuint.exception.BusinessCheckException;
 import com.fuint.application.ResponseObject;
 import com.fuint.application.BaseController;
@@ -86,6 +88,11 @@ public class CartController extends BaseController {
 
         if (mtUser == null) {
             mtUser = memberService.getCurrentUserInfo(userId);
+        }
+
+        ShiroUser shiroUser = ShiroUserHelper.getCurrentShiroUser();
+        if (shiroUser != null && mtUser == null) {
+            return getFailureResult(4000);
         }
 
         if (mtUser == null) {

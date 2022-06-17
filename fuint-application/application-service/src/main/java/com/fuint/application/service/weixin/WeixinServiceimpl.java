@@ -3,6 +3,7 @@ package com.fuint.application.service.weixin;
 import com.fuint.application.BaseService;
 import com.fuint.application.dao.entities.*;
 import com.fuint.application.dto.OrderDto;
+import com.fuint.application.dto.SubMessageDto;
 import com.fuint.application.dto.UserOrderDto;
 import com.fuint.application.enums.OrderStatusEnum;
 import com.fuint.application.enums.OrderTypeEnum;
@@ -16,13 +17,16 @@ import com.fuint.application.service.setting.SettingService;
 import com.fuint.application.service.point.PointService;
 import com.fuint.application.service.usergrade.UserGradeService;
 import com.fuint.application.util.TimeUtils;
+import com.fuint.cache.redis.RedisTemplate;
 import com.fuint.exception.BusinessCheckException;
 import com.github.wxpay.sdk.WXPay;
 import com.github.wxpay.sdk.WXPayUtil;
 import com.fuint.application.config.WXPayConfigImpl;
 import com.fuint.application.ResponseObject;
 import org.apache.commons.lang.StringUtils;
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.JSONArray;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,10 +42,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.math.BigDecimal;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Arrays;
+import java.util.*;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import com.sun.org.apache.xerces.internal.impl.dv.util.Base64;
 import javax.crypto.Cipher;
@@ -80,13 +81,47 @@ public class WeixinServiceimpl extends BaseService implements WeixinService {
     private OpenGiftService openGiftService;
 
     @Autowired
-    UserGradeService userGradeService;
+    private UserGradeService userGradeService;
 
     @Autowired
     private MemberService memberService;
 
     @Autowired
+    private RedisTemplate redisTemplate;
+
+    @Autowired
     private Environment env;
+
+    @Override
+    public String getAccessToken() {
+        String wxAppId = env.getProperty("weixin.pay.appId");
+        String wxAppSecret = env.getProperty("weixin.pay.appSecret");
+        String wxTokenUrl = env.getProperty("weixin.token.url");
+
+        String url = String.format(wxTokenUrl, wxAppId, wxAppSecret);
+        String token = "";
+
+        if (redisTemplate.exists("WX_ACCESS_TOKEN")) {
+            token = redisTemplate.get("WX_ACCESS_TOKEN", String.class);
+        }
+
+        if (token == null || StringUtils.isEmpty(token)) {
+            try {
+                String response = HttpRESTDataClient.requestGet(url);
+                JSONObject json = (JSONObject) JSONObject.parse(response);
+                if (!json.containsKey("errcode")) {
+                    redisTemplate.set("WX_ACCESS_TOKEN", json.get("access_token"), 7200);
+                    token = (String) json.get("access_token");
+                } else {
+                    logger.error("获取微信accessToken出错：" + json.get("errmsg"));
+                }
+            } catch (Exception e) {
+                logger.error("获取微信accessToken异常：" + e.getMessage());
+            }
+        }
+
+        return token;
+    }
 
     @Override
     public ResponseObject createPrepayOrder(MtUser userInfo, MtOrder orderInfo, Integer payAmount, String authCode, Integer giveAmount, String ip) throws BusinessCheckException {
@@ -124,6 +159,7 @@ public class WeixinServiceimpl extends BaseService implements WeixinService {
         OrderDto reqDto = new OrderDto();
         reqDto.setId(orderInfo.getId());
         reqDto.setPayAmount(payAmount1);
+        reqDto.setPayType(orderInfo.getPayType());
         orderService.updateOrder(reqDto);
 
         Map<String, String> respData = this.unifiedOrder(reqData);
@@ -309,7 +345,7 @@ public class WeixinServiceimpl extends BaseService implements WeixinService {
     }
 
     @Override
-    public JSONObject wxLogin(String code) {
+    public JSONObject getWxProfile(String code) {
         String wxAppId = env.getProperty("weixin.pay.appId");
         String wxAppSecret = env.getProperty("weixin.pay.appSecret");
         String wxAccessUrl = env.getProperty("weixin.access.url");
@@ -366,6 +402,57 @@ public class WeixinServiceimpl extends BaseService implements WeixinService {
         }
 
         return null;
+    }
+
+    /**
+     * 获取小程序订阅消息模型列表
+     * */
+    @Override
+    public List<SubMessageDto> getSubMessageTemplateList() {
+        String url = "https://api.weixin.qq.com/wxaapi/newtmpl/gettemplate?access_token=" + this.getAccessToken();
+
+        List<SubMessageDto> dataList = new ArrayList<>();
+
+        try {
+            String response = HttpRESTDataClient.requestGet(url);
+            JSONObject json = (JSONObject) JSONObject.parse(response);
+            JSONArray jsonArray = json.getJSONArray("data");
+            if (jsonArray.size() > 0) {
+                for (int i = 0; i < jsonArray.size(); i++) {
+                     JSONObject obj = jsonArray.getJSONObject(i);
+                     SubMessageDto item = new SubMessageDto();
+                     item.setTitle(obj.get("title").toString());
+                     item.setContent(obj.get("example").toString());
+                     item.setTemplateId(obj.get("priTmplId").toString());
+                     dataList.add(item);
+                }
+            }
+        } catch (Exception e) {
+            logger.error("获取订阅消息模板出错：" + e.getMessage());
+        }
+
+        return dataList;
+    }
+
+    /**
+     * 创建微信小程序订阅消息模板
+     * */
+    @Override
+    public String addSubMessageTemplate(Map<String, Object> reqData) {
+        String url = "https://api.weixin.qq.com/wxaapi/newtmpl/addtemplate?access_token=" + this.getAccessToken();
+        String templateId = "";
+        try {
+            String reqDataJson = JSON.toJSONString(reqData);
+            String response = HttpRESTDataClient.requestPost(url, "application/json; charset=utf-8", reqDataJson);
+            JSONObject json = (JSONObject) JSONObject.parse(response);
+            if (json.get("errmsg").equals("ok")) {
+                templateId = json.get("priTmplId").toString();
+            }
+        } catch (Exception e) {
+            logger.error("创建订阅消息模板出错：" + e.getMessage());
+        }
+
+        return templateId;
     }
 
     private Map<String, String> unifiedOrder(Map<String, String> reqData) {

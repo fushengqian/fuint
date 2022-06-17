@@ -191,7 +191,7 @@ public class MemberServiceImpl implements MemberService {
      * @throws BusinessCheckException
      */
     @Override
-    @OperationServiceLog(description = "编辑会员")
+    @OperationServiceLog(description = "更新会员信息")
     @Transactional
     public MtUser updateMember(MtUser mtUser) throws BusinessCheckException {
         mtUser.setUpdateTime(new Date());

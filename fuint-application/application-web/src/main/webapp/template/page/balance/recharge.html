@@ -1,0 +1,82 @@
+<link href="<@sp.static/>/assets/plugins/bootstrap/css/bootstrap.min.css?v=1.7.9" rel="stylesheet"/>
+<link href="<@sp.static/>/assets/css/style.min.css?v=1.7.9" rel="stylesheet"/>
+<link href="<@sp.static/>/css/style.css?v=1.7.9" rel="stylesheet"/>
+<link href="<@sp.static/>/assets/plugins/datatables/css/data-table.css?v=1.7.9" rel="stylesheet"/>
+<div style="overflow: auto; height: 450px; position: relative; margin: 8px;">
+    <div class="panel panel-inverse" data-sortable-id="form-stuff-5">
+        <div class="panel-body">
+            <form class="form-horizontal do-confirm-form" id="confirmForm" name="confirmForm" action="" method="post">
+                <input type="hidden" id="userId" name="userId" value="${userInfo.id}">
+                <div class="form-group m-l-10">
+                    <label class="col-md-2 control-label">会员信息</label>
+                    <div class="col-md-8 c-info">
+                        <span class="form-control info">${userInfo.name} <#if userInfo.mobile> ${userInfo.mobile[0..2]}*****${userInfo.mobile[userInfo.mobile?length-4..userInfo.mobile?length-1]}</#if>
+                        <#if userInfo.status == 'A'><span style="display: inline" class="status-active">正常</span><#else><span style="display: inline" class="status-disabled">禁用</span></#if></span>
+                    </div>
+                </div>
+                <div class="form-group m-l-10">
+                    <label class="col-md-2 control-label">可用余额</label>
+                    <div class="col-md-8">
+                        <input type="text" class="form-control remark" id="balance" disabled name="balance" placeholder="可用余额" value="${userInfo.balance}元">
+                    </div>
+                </div>
+                <div class="form-group m-l-10">
+                    <label class="col-md-2 control-label"><span style="color:red;">*</span>充值金额</label>
+                    <div class="col-md-8">
+                        <input type="text" class="form-control remark" id="amount" name="amount" placeholder="充值金额，单位：元" value="">
+                    </div>
+                </div>
+                <div class="form-group m-l-10">
+                    <label class="col-md-2 control-label">充值备注</label>
+                    <div class="col-md-8">
+                        <input type="text" class="form-control remark" id="remark" name="remark" placeholder="充值备注" value="">
+                    </div>
+                </div>
+                <div class="form-group m-l-10">
+                    <label class="col-md-2 control-label"></label>
+                    <div class="col-md-10">
+                         <button type="button" id="submitButton" class="btn btn-sm btn-danger">确认</button>
+                    </div>
+                </div>
+            </form>
+     </div>
+    </div>
+</div>
+<script src="<@sp.static/>/js/jquery/jquery-3.0.0.min.js?v=1.7.9" type="text/javascript" charset="UTF-8"></script>
+<script src="<@sp.static/>/js/jquery/validation/jquery.validate.min.js?v=1.7.9" type="text/javascript" charset="UTF-8"></script>
+<script src="<@sp.static/>/assets/plugins/jquery-ui/ui/minified/jquery-ui.min.js?v=1.7.9"></script>
+<script src="<@sp.static/>/assets/plugins/bootstrap/js/bootstrap.min.js?v=1.7.9"></script>
+<script src="<@sp.static/>/js/layer/layer.js?v=1.7.9" type="text/javascript" charset="UTF-8"></script>
+<script src="<@sp.static/>/js/custom/util.js?v=1.7.9" type="text/javascript" charset="UTF-8"></script>
+<script src="<@sp.static/>/js/custom/message.js?v=1.7.9" type="text/javascript" charset="UTF-8"></script>
+<script src="<@sp.static/>/js/custom/send.js?v=1.7.9" type="text/javascript" charset="UTF-8"></script>
+<script type="text/javascript" language="JavaScript">
+    $(function () {
+        $('#submitButton').click(function () {
+            layer.confirm('您确定提交充值吗？', {
+                btn: ['确定', '取消']
+            }, function () {
+                $.ajax({
+                    type: "POST",
+                    data:{"userId": $("#userId").val(), "amount": $("#amount").val(), "remark": $("#remark").val()},
+                    url: "${rc.contextPath}/backend/balance/doRecharge",
+                    success: function (data) {
+                        if (data.result) {
+                            layer.alert("恭喜，充值成功！");
+                            $('#amount').val("");
+                            $('#remark').val("");
+                            $('#balance').val(data.data.userInfo.balance + '元');
+                            return;
+                        } else {
+                            layer.alert(data.msg);
+                            return;
+                        }
+                    }
+                })
+                $.close();
+            }, function () {
+                $.close();
+            });
+        });
+    })
+</script>

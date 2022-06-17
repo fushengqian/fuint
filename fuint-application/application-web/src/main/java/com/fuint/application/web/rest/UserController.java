@@ -1,5 +1,6 @@
 package com.fuint.application.web.rest;
 
+import com.alibaba.fastjson.JSONObject;
 import com.fuint.application.dao.entities.*;
 import com.fuint.application.dto.AssetDto;
 import com.fuint.application.enums.*;
@@ -9,7 +10,10 @@ import com.fuint.application.service.setting.SettingService;
 import com.fuint.application.service.usercoupon.UserCouponService;
 import com.fuint.application.service.coupon.CouponService;
 import com.fuint.application.service.usergrade.UserGradeService;
+import com.fuint.application.service.weixin.WeixinService;
+import com.fuint.application.util.Base64Util;
 import com.fuint.application.util.DateUtil;
+import com.fuint.application.util.QRCodeUtil;
 import com.fuint.base.dao.pagination.PaginationRequest;
 import com.fuint.base.dao.pagination.PaginationResponse;
 import com.fuint.base.util.RequestHandler;
@@ -17,10 +21,15 @@ import com.fuint.exception.BusinessCheckException;
 import com.fuint.application.ResponseObject;
 import com.fuint.application.BaseController;
 import com.fuint.application.service.token.TokenService;
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
+import java.io.ByteArrayOutputStream;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -35,6 +44,8 @@ import java.util.Map;
 @RestController
 @RequestMapping(value = "/rest/user")
 public class UserController extends BaseController {
+
+    private static final Logger logger = LoggerFactory.getLogger(UserController.class);
 
     @Autowired
     private TokenService tokenService;
@@ -57,6 +68,9 @@ public class UserController extends BaseController {
     @Autowired
     private SettingService settingService;
 
+    @Autowired
+    private WeixinService weixinService;
+
     /**
      * 获取会员信息
      */
@@ -71,7 +85,6 @@ public class UserController extends BaseController {
             gradeInfo = memberService.queryMemberGradeByGradeId(Integer.parseInt(userInfo.getGradeId()));
         }
 
-        // 如果已购买，则返回空
         List<MtUserGrade> memberGrade = userGradeService.getPayUserGradeList(userInfo);
         Map<String, Object> outParams = new HashMap<>();
         outParams.put("userInfo", userInfo);
@@ -185,6 +198,48 @@ public class UserController extends BaseController {
     }
 
     /**
+     * 保存会员信息
+     */
+    @RequestMapping(value = "/saveInfo", method = RequestMethod.POST)
+    @CrossOrigin
+    public ResponseObject saveInfo(HttpServletRequest request, @RequestBody Map<String, Object> param) throws BusinessCheckException {
+        String token = request.getHeader("Access-Token");
+        String name = param.get("name") == null ? "" : param.get("name").toString();
+        String birthday = param.get("birthday") == null ? "" : param.get("birthday").toString();
+        Integer sex = param.get("sex") == null ? 1 : Integer.parseInt(param.get("sex").toString());
+        String code = param.get("code") == null ? "" : param.get("code").toString();
+        String mobile = "";
+        MtUser mtUser = tokenService.getUserInfoByToken(token);
+        if (mtUser == null) {
+            return getFailureResult(1001);
+        }
+
+        if (StringUtils.isNotEmpty(code)) {
+            JSONObject loginInfo = weixinService.getWxProfile(code);
+            if (loginInfo != null) {
+                mobile = weixinService.getPhoneNumber(param.get("encryptedData").toString(), loginInfo.get("session_key").toString(), param.get("iv").toString());
+            }
+        }
+
+        mtUser = memberService.queryMemberById(mtUser.getId());
+        if (StringUtils.isNotEmpty(name)) {
+            mtUser.setName(name);
+        }
+        if (sex.equals(1) || sex.equals(0)) {
+            mtUser.setSex(sex);
+        }
+        if (StringUtils.isNotEmpty(birthday)) {
+            mtUser.setBirthday(birthday);
+        }
+        if (StringUtils.isNotEmpty(mobile)) {
+            mtUser.setMobile(mobile);
+        }
+
+        MtUser userInfo = memberService.updateMember(mtUser);
+        return getSuccessResult(userInfo);
+    }
+
+    /**
      * 设置会员默认店铺
      */
     @RequestMapping(value = "/defaultStore", method = RequestMethod.GET)
@@ -200,6 +255,43 @@ public class UserController extends BaseController {
         }
 
         Map<String, Object> outParams = new HashMap<>();
+        return getSuccessResult(outParams);
+    }
+
+    /**
+     * 获取会员码
+     * */
+    @RequestMapping(value = "/qrCode", method = RequestMethod.GET)
+    @CrossOrigin
+    public ResponseObject qrCode(HttpServletRequest request) throws BusinessCheckException, InvocationTargetException, IllegalAccessException {
+        String userToken = request.getHeader("Access-Token");
+        MtUser mtUser = tokenService.getUserInfoByToken(userToken);
+
+        if (mtUser == null) {
+            return getFailureResult(1001);
+        }
+
+        String qrCode = "";
+        try {
+            // 生成并输出二维码
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+
+            String content = mtUser.getUserNo();
+
+            QRCodeUtil.createQrCode(out, content, 800, 800, "png", "");
+
+            // 对数据进行Base64编码
+            qrCode = new String(Base64Util.baseEncode(out.toByteArray()), "UTF-8");
+
+            qrCode = "data:image/jpg;base64," + qrCode;
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+        }
+
+        Map<String, Object> outParams = new HashMap<>();
+        outParams.put("qrCode", qrCode);
+        outParams.put("userInfo", mtUser);
+
         return getSuccessResult(outParams);
     }
 }

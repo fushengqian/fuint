@@ -1,21 +1,24 @@
 <h1 class="page-header">
-    <small>积分明细</small>
+    <small>余额明细</small>
 </h1>
 <hr/>
 <div class="panel panel-inverse" data-sortable-id="form-stuff-5">
     <div class="panel-heading">
-        <h4 class="panel-title">积分明细查询</h4>
+        <h4 class="panel-title">余额明细查询</h4>
     </div>
     <div class="panel-body">
-        <form id="pointForm" name="pointForm" method="post" class="form-inline">
+        <form id="balanceForm" name="balanceForm" method="post" class="form-inline">
             <div class="form-group m-r-10">
                 <input type="text" class="form-control" name="EQ_userId" value="${EQ_userId}" placeholder="会员ID">
+            </div>
+            <div class="form-group m-r-10">
+                <input type="text" class="form-control" name="EQ_mobile" value="${EQ_mobile}" placeholder="会员手机号">
             </div>
             <div class="form-group m-r-10">
                 <input type="text" class="form-control" name="LIKE_description" value="${LIKE_description}" placeholder="关键字">
             </div>
             <button type="button" class="btn btn-sm btn-success"
-                    onclick="postDataByForm('backend/point/index','displayArea','pointForm')"><i class="fa fa-search"></i>查询
+                    onclick="postDataByForm('backend/balance/list','displayArea','balanceForm')"><i class="fa fa-search"></i>查询
             </button>
         </form>
     </div>
@@ -23,7 +26,7 @@
 <hr/>
 <div class="panel panel-inverse" data-sortable-id="table-basic-4">
     <div class="panel-heading">
-        <h4 class="panel-title">积分明细列表</h4>
+        <h4 class="panel-title">余额明细列表</h4>
     </div>
     <div class="panel-body">
         <table class="table table-striped table-bordered">
@@ -31,6 +34,7 @@
             <tr>
                 <th>ID</th>
                 <th>会员ID</th>
+                <th>手机号</th>
                 <th>会员名称</th>
                 <th>变动数量</th>
                 <th>备注说明</th>
@@ -44,6 +48,7 @@
                     <tr>
                         <td>${ct.id}</td>
                         <td>${ct.userId}</td>
+                        <td> <#if ct.userInfo.mobile>${ct.userInfo.mobile}<#else>-</#if></td>
                         <td>${ct.userInfo.name}</td>
                         <td><#if ct.amount gt 0><span style="color:#52c41a;">+${ct.amount}</span><#else><span style="color:#f5222d;">${ct.amount}</span></#if></td>
                         <td>${ct.description}</td>
@@ -70,4 +75,4 @@
 <!-- recordBean 分页查询结果Bean
      action 分页请求URL
      formName 分页需要的查询参数的表单名称 -->
-<@sp.pagination recordBean=paginationResponse action="${rc.contextPath}/backend/point/index" formName="pointForm"/>
+<@sp.pagination recordBean=paginationResponse action="${rc.contextPath}/backend/balance/list" formName="balanceForm"/>

@@ -8,7 +8,9 @@ package com.fuint.application.enums;
  */
 public enum SettingTypeEnum {
     POINT("point", "积分配置"),
-    USER("user", "会员配置");
+    BALANCE("balance", "积分配置"),
+    USER("user", "会员配置"),
+    SUB_MESSAGE("sub_message", "订阅消息");
 
     private String key;
 
@@ -37,7 +39,7 @@ public enum SettingTypeEnum {
 
     // 普通方法，通过key获取value
     public static String getValue(String k) {
-        for (SendWayEnum c : SendWayEnum.values()) {
+        for (SettingTypeEnum c : SettingTypeEnum.values()) {
             if (c.getKey().equals(k)) {
                 return c.getValue();
             }
@@ -47,7 +49,7 @@ public enum SettingTypeEnum {
 
     // 普通方法，通过Value获取key
     public static String getKey(String v) {
-        for (SendWayEnum c : SendWayEnum.values()) {
+        for (SettingTypeEnum c : SettingTypeEnum.values()) {
             if (c.getValue() == v) {
                 return c.getKey();
             }

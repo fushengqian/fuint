@@ -37,7 +37,7 @@ public interface OrderService {
     /**
      * 根据ID获取订单
      *
-     * @param id ID
+     * @param id
      * @throws BusinessCheckException
      */
     UserOrderDto getOrderById(Integer id) throws BusinessCheckException;
@@ -56,6 +56,13 @@ public interface OrderService {
      * @throws BusinessCheckException
      * */
     MtOrder updateOrder(OrderDto reqDto) throws BusinessCheckException;
+
+    /**
+     * 把订单置为已支付
+     * @param orderId
+     * @return
+     * */
+    boolean setOrderPayed(Integer orderId) throws BusinessCheckException;
 
     /**
      * 根据条件搜索订单

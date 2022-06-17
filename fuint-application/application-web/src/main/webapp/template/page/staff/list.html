@@ -48,7 +48,7 @@
         <table class="table table-striped table-bordered">
             <thead>
             <tr>
-                <th>ID</th>
+                <th>员工ID</th>
                 <th>姓名</th>
                 <th>手机号</th>
                 <th>所属店铺</th>
@@ -72,7 +72,7 @@
                         <td>
                             <a class="label label-success small-btn" href="javascript:getData('${rc.contextPath}/backend/staff/staffEditInit/${ct.id}','displayArea')"><i class="fa fa-edit"></i>编辑</a>
                             <#if ct.auditedStatus == "A">
-                            <a class="label label-danger small-btn" href="javascript:getConfirmData('确定删除吗?','${rc.contextPath}/backend/staff/unaudited/${ct.id}','displayArea');"><i class="fa fa-remove"></i>删除</a>
+                            <a class="label label-danger small-btn" href="javascript:getConfirmData('确定删除吗?','${rc.contextPath}/backend/staff/unaudited/${ct.id}','displayArea');"><i class="fa fa-remove"></i>禁用</a>
                             <#elseif ct.auditedStatus == "U">
                             <a class="label label-success small-btn" href="javascript:getConfirmData('确定审核通过吗?','${rc.contextPath}/backend/staff/audited/${ct.id}','displayArea');"><i class="fa fa-file-text"></i>审核</a>
                             <a class="label label-success small-btn" href="javascript:getConfirmData('确定审核不通过吗?','${rc.contextPath}/backend/staff/unaudited/${ct.id}','displayArea');"><i class="fa fa-trash"></i>拒绝</a>

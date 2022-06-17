@@ -131,6 +131,10 @@ public class CouponApiController extends BaseController {
             couponInfo = couponService.queryCouponById(couponId);
         }
 
+        if (couponInfo.getId() == null) {
+            return getFailureResult(201);
+        }
+
         CouponDto dto = new CouponDto();
         BeanUtils.copyProperties(dto, couponInfo);
 

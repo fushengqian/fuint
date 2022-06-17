@@ -104,6 +104,7 @@ public class goodsController {
             paginationRequest.getSearchParams().put("EQ_storeId", storeId.toString());
         }
 
+        paginationRequest.setSortColumn(new String[]{"status asc", "updateTime desc"});
         PaginationResponse<GoodsDto> paginationResponse = goodsService.queryGoodsListByPagination(paginationRequest);
 
         String imagePath = settingService.getUploadBasePath();

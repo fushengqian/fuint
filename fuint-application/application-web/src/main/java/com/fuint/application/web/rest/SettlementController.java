@@ -1,9 +1,11 @@
 package com.fuint.application.web.rest;
 
+import com.fuint.application.PropertiesUtil;
 import com.fuint.application.dao.entities.*;
 import com.fuint.application.dao.repositories.MtOrderRepository;
 import com.fuint.application.dto.OrderDto;
 import com.fuint.application.enums.*;
+import com.fuint.application.service.balance.BalanceService;
 import com.fuint.application.service.coupon.CouponService;
 import com.fuint.application.service.order.OrderService;
 import com.fuint.application.service.member.MemberService;
@@ -23,7 +25,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -85,6 +86,12 @@ public class SettlementController extends BaseController {
     @Autowired
     private SettingService settingService;
 
+    /**
+     * 余额服务接口
+     * */
+    @Autowired
+    private BalanceService balanceService;
+
     @Autowired
     private MtOrderRepository orderRepository;
 
@@ -126,11 +133,11 @@ public class SettlementController extends BaseController {
         Integer targetId = param.get("targetId") == null ? 0 : Integer.parseInt(param.get("targetId").toString()); // 预存卡、升级等级必填
         String selectNum = param.get("selectNum") == null ? "" : param.get("selectNum").toString(); // 预存卡必填
         String remark = param.get("remark") == null ? "" : param.get("remark").toString();
-        String type = param.get("type") == null ? "" : param.get("type").toString();
+        String type = param.get("type") == null ? "" : param.get("type").toString(); // 订单类型
         String payAmount = param.get("payAmount") == null ? "0" : StringUtils.isEmpty(param.get("payAmount").toString()) ? "0" : param.get("payAmount").toString(); // 支付金额
         Integer usePoint = param.get("usePoint") == null ? 0 : Integer.parseInt(param.get("usePoint").toString());
         Integer couponId = param.get("couponId") == null ? 0 : Integer.parseInt(param.get("couponId").toString());
-        String payType = param.get("payType") == null ? "JSAPI" : param.get("payType").toString();
+        String payType = param.get("payType") == null ? PayTypeEnum.JSAPI.getKey() : param.get("payType").toString();
         String authCode = param.get("authCode") == null ? "" : param.get("authCode").toString();
         Integer storeId = request.getHeader("storeId") == null ? 0 : Integer.parseInt(request.getHeader("storeId"));
         Integer userId = param.get("userId") == null ? 0 : (StringUtils.isNotEmpty(param.get("userId").toString()) ? Integer.parseInt(param.get("userId").toString()) : 0); // 指定下单会员 eg:收银功能
@@ -315,41 +322,42 @@ public class SettlementController extends BaseController {
         BigDecimal realPayAmount = orderInfo.getAmount().subtract(new BigDecimal(orderInfo.getDiscount().toString())).subtract(new BigDecimal(orderInfo.getPointAmount().toString()));
 
         ResponseObject paymentInfo = null;
+        String errorMessage = "";
 
         // 应付金额大于0才提交微信支付
         if (realPayAmount.compareTo(new BigDecimal("0")) > 0) {
-            if (payType.equals("CASH") && StringUtils.isNotEmpty(operator)) {
+            if (payType.equals(PayTypeEnum.CASH.getKey()) && StringUtils.isNotEmpty(operator)) {
                 // 收银台现金支付，更新为已支付
-                OrderDto reqDto = new OrderDto();
-                reqDto.setId(orderInfo.getId());
-                reqDto.setStatus(OrderStatusEnum.PAID.getKey());
-                reqDto.setPayStatus(PayStatusEnum.SUCCESS.getKey());
-                reqDto.setPayTime(new Date());
-                reqDto.setUpdateTime(new Date());
-                orderService.updateOrder(reqDto);
+                orderService.setOrderPayed(orderInfo.getId());
+            } else if(payType.equals(PayTypeEnum.BALANCE.getKey())) {
+                // 余额支付
+                MtBalance balance = new MtBalance();
+                balance.setMobile(userInfo.getMobile());
+                balance.setOrderSn(orderInfo.getOrderSn());
+                balance.setUserId(userInfo.getId());
+                balance.setAmount(realPayAmount.subtract(realPayAmount).subtract(realPayAmount));
+                boolean isPay = balanceService.addBalance(balance);
+                if (isPay) {
+                    orderService.setOrderPayed(orderInfo.getId());
+                } else {
+                    errorMessage = PropertiesUtil.getResponseErrorMessageByCode(5001);
+                }
             } else {
                 BigDecimal wxPayAmount = realPayAmount.multiply(new BigDecimal("100"));
-                // 扫码支付，先返回不处理，后面拿到支付二维码再处理
-                if (payType.equals("MICROPAY") && StringUtils.isEmpty(authCode)) {
+                // 微信扫码支付，先返回不处理，后面拿到支付二维码再处理
+                if (payType.equals(PayTypeEnum.MICROPAY.getKey()) && StringUtils.isEmpty(authCode)) {
                     Map<String, String> data = new HashMap<>();
                     paymentInfo = getSuccessResult(data);
                 } else {
                     paymentInfo = weixinService.createPrepayOrder(userInfo, orderInfo, (wxPayAmount.intValue()), authCode, 0, ip);
                 }
                 if (paymentInfo.getData() == null) {
-                    return getFailureResult(3000);
+                    errorMessage = PropertiesUtil.getResponseErrorMessageByCode(3000);
                 }
             }
         } else {
             // 应付金额是0，直接更新为已支付
-            OrderDto reqDto = new OrderDto();
-            reqDto.setId(orderInfo.getId());
-            reqDto.setStatus(OrderStatusEnum.PAID.getKey());
-            reqDto.setPayStatus(PayStatusEnum.SUCCESS.getKey());
-            reqDto.setPayAmount(new BigDecimal("0.00"));
-            reqDto.setPayTime(new Date());
-            reqDto.setUpdateTime(new Date());
-            orderService.updateOrder(reqDto);
+            orderService.setOrderPayed(orderInfo.getId());
         }
 
         Map<String, Object> outParams = new HashMap();
@@ -358,14 +366,18 @@ public class SettlementController extends BaseController {
 
         if (paymentInfo != null) {
             outParams.put("payment", paymentInfo.getData());
-            outParams.put("payType", "wechat");
+            outParams.put("payType", PayTypeEnum.JSAPI.getKey());
         } else {
             outParams.put("payment", null);
-            outParams.put("payType", "balance");
+            outParams.put("payType", "BALANCE");
         }
 
         ResponseObject responseObject = getSuccessResult(outParams);
 
-        return getSuccessResult(responseObject.getData());
+        if (StringUtils.isNotEmpty(errorMessage)) {
+            return getSuccessResult(errorMessage, responseObject.getData());
+        } else {
+            return getSuccessResult(responseObject.getData());
+        }
     }
 }

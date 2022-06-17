@@ -1,0 +1,48 @@
+<h1 class="page-header">
+    <small>微信小程序订阅消息</small>
+</h1>
+<hr/>
+<div class="panel panel-inverse" data-sortable-id="table-basic-4">
+    <div class="panel-heading">
+        <h4 class="panel-title">订阅消息设置</h4>
+    </div>
+    <div class="panel-body">
+        <table class="table table-striped table-bordered">
+            <thead>
+            <tr>
+                <th>消息类型</th>
+                <th>消息示例</th>
+                <th>状态</th>
+                <th>操作</th>
+            </tr>
+            </thead>
+            <tbody>
+            <#if dataList>
+                <#list dataList as ct>
+                <tr>
+                    <td>${ct.title}</td>
+                    <td><#if ct.content>${ct.content}<#else>--</#if></td>
+                    <td>
+                        <#if ct.status == "A">
+                        <span class="status-active">已启用</span>
+                        <#else>
+                        <span class="status-disabled">未启用</span>
+                        </#if>
+                    </td>
+                    <td>
+                        <#if ct.status == "A">
+                        <a class="label label-danger small-btn" href="javascript:getConfirmData('您确定要禁用吗?','${rc.contextPath}/backend/subMessage/doRemove/${ct.key}','displayArea')"><i class="fa fa-lock"></i>禁用</a>
+                        <#else>
+                        <a class="label label-success small-btn" href="javascript:getConfirmData('您确定要激活吗?','${rc.contextPath}/backend/subMessage/doActive/${ct.key}','displayArea')"><i class="fa fa-edit"></i>启用</a>
+                        </#if>
+                    </td>
+                </tr>
+                </#list>
+            <#else>
+            <tr class="gradeA even" role="row">
+                <td colspan="12" class="text-center">没有符合条件的数据！</td>
+            </tr>
+        </#if>
+        </table>
+    </div>
+</div>

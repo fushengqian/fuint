@@ -17,6 +17,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.regex.Pattern;
+import java.util.regex.Matcher;
 
 /**
  * Created by FSQ
@@ -24,6 +25,24 @@ import java.util.regex.Pattern;
  * Site https://www.fuint.cn
  */
 public class CommonUtil {
+
+    /**
+     * 判断是否数字
+     * */
+    public static boolean isNumeric(String str) {
+        if (StringUtils.isEmpty(str)) {
+            return false;
+        }
+
+        Pattern pattern = Pattern.compile("[0-9]*\\.?[0-9]+");
+        Matcher isNum = pattern.matcher(str);
+
+        if (!isNum.matches()) {
+            return false;
+        }
+
+        return true;
+    }
 
     /**
      * 生成随机会员号(13位数)

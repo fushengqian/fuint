@@ -1,7 +1,10 @@
 package com.fuint.application.web.rest;
 
 import com.fuint.application.dao.entities.MtMessage;
+import com.fuint.application.dao.entities.MtSetting;
+import com.fuint.application.enums.SettingTypeEnum;
 import com.fuint.application.service.message.MessageService;
+import com.fuint.application.service.setting.SettingService;
 import com.fuint.exception.BusinessCheckException;
 import com.fuint.application.service.token.TokenService;
 import org.apache.commons.lang.StringUtils;
@@ -15,7 +18,9 @@ import com.fuint.application.ResponseObject;
 import com.fuint.application.dao.entities.MtUser;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -35,6 +40,12 @@ public class MessageController extends BaseController {
      */
     @Autowired
     private MessageService messageService;
+
+    /**
+     * 配置服务接口
+     * */
+    @Autowired
+    private SettingService settingService;
 
     /**
      * Token服务接口
@@ -92,6 +103,48 @@ public class MessageController extends BaseController {
         messageService.readMessage(msgId);
 
         ResponseObject responseObject = getSuccessResult(true);
+        return getSuccessResult(responseObject.getData());
+    }
+
+    /**
+     * 微信推送消息
+     */
+    @RequestMapping(value = "/wxPush", method = RequestMethod.GET)
+    @CrossOrigin
+    public ResponseObject wxPush(HttpServletRequest request) throws BusinessCheckException {
+        String token = request.getHeader("Access-Token");
+        MtUser mtUser = tokenService.getUserInfoByToken(token);
+
+        Integer msgId =  request.getParameter("msgId") == null ? 0 :Integer.parseInt(request.getParameter("msgId"));
+
+        if (null == mtUser) {
+            return getSuccessResult(false);
+        }
+
+        messageService.readMessage(msgId);
+
+        ResponseObject responseObject = getSuccessResult(true);
+        return getSuccessResult(responseObject.getData());
+    }
+
+    /**
+     * 微信订阅消息模板
+     */
+    @RequestMapping(value = "/getSubTemplate", method = RequestMethod.GET)
+    @CrossOrigin
+    public ResponseObject getSubTemplate(HttpServletRequest request) throws BusinessCheckException {
+        String keys =  request.getParameter("keys") == null ? "" :request.getParameter("keys");
+
+        List<String> dataList = new ArrayList<>();
+
+        List<MtSetting> settingList = settingService.getSettingList(SettingTypeEnum.SUB_MESSAGE.getKey());
+        for (MtSetting mtSetting : settingList) {
+            if (keys.indexOf(mtSetting.getName()) >= 0) {
+                dataList.add(mtSetting.getValue());
+            }
+        }
+
+        ResponseObject responseObject = getSuccessResult(dataList);
         return getSuccessResult(responseObject.getData());
     }
 }

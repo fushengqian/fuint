@@ -207,7 +207,6 @@ const doAddCart = function(goodsInfo, isRemote) {
     if (isRemote) {
         const cartId = remoteCart(goodsInfo);
         if (!cartId) {
-            layer.alert('购物车操作失败！');
             return false;
         }
         goodsInfo.cartId = cartId
@@ -391,6 +390,8 @@ const remoteCart = function(goodsInfo, action = '+') {
            if (data.data) {
                cartId = data.data.cartId
                getCartList(false);
+           } else {
+               layer.alert('错误：' + data.message);
            }
         }
     })

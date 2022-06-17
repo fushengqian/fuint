@@ -29,7 +29,7 @@ public class MtSetting implements Serializable{
    /**
     * 类型 
     */ 
-    @Column(name = "TYPE", nullable = false, length = 10)
+    @Column(name = "TYPE", nullable = false, length = 30)
     private String type;
 
    /**

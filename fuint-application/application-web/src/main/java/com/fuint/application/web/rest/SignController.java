@@ -61,7 +61,7 @@ public class SignController extends BaseController {
         JSONObject paramsObj = new JSONObject(param);
 
         JSONObject userInfo = paramsObj.getJSONObject("userInfo");
-        JSONObject loginInfo = weixinService.wxLogin(param.get("code").toString());
+        JSONObject loginInfo = weixinService.getWxProfile(param.get("code").toString());
         if (loginInfo == null) {
             return getFailureResult(0, "微信登录失败");
         }

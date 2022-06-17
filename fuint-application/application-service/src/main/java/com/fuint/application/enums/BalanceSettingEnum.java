@@ -1,22 +1,19 @@
 package com.fuint.application.enums;
 
 /**
- * 积分配置项枚举
+ * 充值配置项枚举
  * Created by FSQ
  * Contact wx fsq_better
  * Site https://www.fuint.cn
  */
-public enum PointSettingEnum {
-    POINT_NEED_CONSUME("pointNeedConsume", "返1积分所需消费金额"),
-    CAN_USE_AS_MONEY("canUsedAsMoney", "是否可当作现金使用"),
-    EXCHANGE_NEED_POINT("exchangeNeedPoint", "多少积分可抵扣1元现金"),
-    RECHARGE_POINT_SPEED("rechargePointSpeed", "充值返积分倍数");
+public enum BalanceSettingEnum {
+    RECHARGE_RULE("rechargeRule", "充值规则");
 
     private String key;
 
     private String value;
 
-    PointSettingEnum(String key, String value) {
+    BalanceSettingEnum(String key, String value) {
         this.key = key;
         this.value = value;
     }
@@ -39,7 +36,7 @@ public enum PointSettingEnum {
 
     // 普通方法，通过key获取value
     public static String getValue(String k) {
-        for (PointSettingEnum c : PointSettingEnum.values()) {
+        for (BalanceSettingEnum c : BalanceSettingEnum.values()) {
             if (c.getKey().equals(k)) {
                 return c.getValue();
             }
@@ -49,7 +46,7 @@ public enum PointSettingEnum {
 
     // 普通方法，通过Value获取key
     public static String getKey(String v) {
-        for (PointSettingEnum c : PointSettingEnum.values()) {
+        for (BalanceSettingEnum c : BalanceSettingEnum.values()) {
             if (c.getValue() == v) {
                 return c.getKey();
             }

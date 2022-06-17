@@ -38,7 +38,7 @@ public enum UserSettingEnum {
 
     // 普通方法，通过key获取value
     public static String getValue(String k) {
-        for (SendWayEnum c : SendWayEnum.values()) {
+        for (UserSettingEnum c : UserSettingEnum.values()) {
             if (c.getKey().equals(k)) {
                 return c.getValue();
             }
@@ -48,7 +48,7 @@ public enum UserSettingEnum {
 
     // 普通方法，通过Value获取key
     public static String getKey(String v) {
-        for (SendWayEnum c : SendWayEnum.values()) {
+        for (UserSettingEnum c : UserSettingEnum.values()) {
             if (c.getValue() == v) {
                 return c.getKey();
             }

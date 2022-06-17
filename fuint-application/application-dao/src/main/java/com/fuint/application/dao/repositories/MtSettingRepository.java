@@ -18,7 +18,7 @@ public interface MtSettingRepository extends BaseRepository<MtSetting, Integer> 
    @Query("select t from MtSetting t where t.type = :type")
    List<MtSetting> querySettingByType(@Param("type") String type);
 
-   @Query("select t from MtSetting t where t.name = :name and t.status = 'A'")
+   @Query("select t from MtSetting t where t.name = :name")
    MtSetting querySettingByName(@Param("name") String name);
 }
 

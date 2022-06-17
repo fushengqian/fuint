@@ -9,6 +9,7 @@ import java.io.Serializable;
  * Site https://www.fuint.cn
  */
 public class UploadResult implements Serializable{
+
     /**
      * 结果状态(success,fail)
      */

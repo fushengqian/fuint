@@ -325,6 +325,7 @@ p, h1, h2, h3, h4, input {
     display: block;
     text-align: center;
     width: 45px;
+    cursor: pointer;
 }
 .active-tips {
     color: #555;

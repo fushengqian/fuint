@@ -1,0 +1,110 @@
+<h1 class="page-header">
+    <small>充值设置</small>
+</h1>
+<hr/>
+<div class="panel panel-inverse" data-sortable-id="form-stuff-1">
+    <div class="panel-heading">
+        <h4 class="panel-title">充值规则设置</h4>
+    </div>
+    <div class="panel-body">
+        <form class="form-horizontal" id="settingForm" name="settingForm" method="post">
+            <div class="form-group">
+                <label class="col-md-3 control-label"><span class="requiredstar">*</span>开启充值：</label>
+                <div class="col-md-2">
+                    <select class="form-control" name="status" id="status">
+                        <option <#if (status == 'A')>selected</#if> value="A">开启</option>
+                        <option <#if (status == 'D')>selected</#if> value="D">关闭</option>
+                    </select>
+                </div>
+            </div>
+            <div id="ruleDiv">
+                <#if rechargeRuleList?size gt 0>
+                    <#list rechargeRuleList as ct>
+                    <div class="form-group rechargeItem">
+                        <label class="col-md-3 control-label"></label>
+                        <div class="col-md-5">
+                            <div class="input-group input-daterange">
+                                <input type="text" class="form-control" autocomplete="off" name="rechargeAmount" value="${ct.rechargeAmount}" placeholder="充值金额，单位：元">
+                                <span class="input-group-addon">赠送</span>
+                                <input type="text" class="form-control" autocomplete="off" name="giveAmount" value="${ct.giveAmount}" placeholder="赠送金额，单位：元">
+                            </div>
+                        </div>
+                        <div class='col-md-1 deleteInRule'>
+                            <a class='btn btn-danger btn-icon btn-circle' onclick='javascript:deleteRule(this);' title='删除'><i class='fa fa-times'></i></a>
+                        </div>
+                    </div>
+                    </#list>
+                <#else>
+                    <div class="form-group rechargeItem">
+                        <label class="col-md-3 control-label"></label>
+                        <div class="col-md-5">
+                            <div class="input-group input-daterange">
+                                <input type="text" class="form-control" autocomplete="off" name="rechargeAmount" placeholder="充值金额，单位：元">
+                                <span class="input-group-addon">赠送</span>
+                                <input type="text" class="form-control" autocomplete="off" name="giveAmount" placeholder="赠送金额，单位：元">
+                            </div>
+                        </div>
+                        <div class='col-md-1 deleteInRule'>
+                            <a class='btn btn-danger btn-icon btn-circle' onclick='javascript:deleteRule(this);' title='删除'><i class='fa fa-times'></i></a>
+                        </div>
+                    </div>
+                </#if>
+            </div>
+            <div class="form-group">
+                <label class="col-md-3 control-label"></label>
+                <div class="col-md-1">
+                    <a id="addRule" class="btn btn-success btn-icon btn-circle" onclick="javascript:addRule();" title="添加规则"><i class="fa fa-plus"></i></a>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-md-3 control-label"></label>
+                <div class="col-md-3">
+                    <button type="button" id="submitButton" class="btn btn-sm btn-success">提交</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<script type="application/javascript">
+    $(function () {
+        $('#submitButton').click(function () {
+            $.ajax({
+                type: "POST",
+                data: $("#settingForm").serializeArray(),
+                url: "${rc.contextPath}/backend/balance/saveSetting",
+                success: function (data) {
+                    if (data.result) {
+                        layer.alert("恭喜，保存成功！");
+                        return;
+                    } else {
+                        layer.alert("抱歉，保存失败：" + data.msg);
+                        return;
+                    }
+                }
+            })
+        })
+    });
+
+    // 添加规则
+    function addRule() {
+        const inRuleDiv = "<div class=\"form-group rechargeItem\">\n" +
+            "                    <label class=\"col-md-3 control-label\"></label>\n" +
+            "                    <div class=\"col-md-5\">\n" +
+            "                        <div class=\"input-group input-daterange\">\n" +
+            "                            <input type=\"text\" class=\"form-control\" autocomplete=\"off\" name=\"rechargeAmount\" placeholder=\"充值金额，单位：元\">\n" +
+            "                            <span class=\"input-group-addon\">赠送</span>\n" +
+            "                            <input type=\"text\" class=\"form-control\" autocomplete=\"off\" name=\"giveAmount\" placeholder=\"赠送金额，单位：元\">\n" +
+            "                        </div>\n" +
+            "                    </div>\n" +
+            "                    <div class='col-md-1 deleteInRule'>\n" +
+            "                        <a class='btn btn-danger btn-icon btn-circle' onclick='javascript:deleteRule(this);' title='删除'><i class='fa fa-times'></i></a>\n" +
+            "                    </div>\n" +
+            "                </div>";
+        $("#ruleDiv").append(inRuleDiv);
+    }
+    // 删除规则
+    function deleteRule(obj) {
+        $(obj).parent().parent().remove();
+    }
+</script>
+

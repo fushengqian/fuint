@@ -80,7 +80,10 @@
                         <td><#if (ct.mobile)>${ct.mobile[0..2]}*****${ct.mobile[ct.mobile?length-3..ct.mobile?length-1]}<#else>-</#if></td>
                         <td>${ct.name}</td>
                         <td><#if (ct.birthday)>${ct.birthday}<#else>-</#if></td>
-                        <td><#if (ct.balance > 0)>${ct.balance}<#else>0.0</#if></td>
+                        <td>
+                            <p style="color:red;"><#if (ct.balance > 0)>${ct.balance}<#else>0.0</#if></p>
+                            <p class="status-normal" onclick="doRecharge(${ct.id})">充值</p>
+                        </td>
                         <td><#if (ct.point)>${ct.point}<#else>0</#if></td>
                         <td>
                         <#if ct.status == "A">
@@ -113,3 +116,9 @@
      action 分页请求URL
      formName 分页需要的查询参数的表单名称 -->
 <@sp.pagination recordBean=paginationResponse action="${rc.contextPath}/backend/member/queryList" formName="memberForm"/>
+<script type="application/javascript">
+    // 会员充值
+    function doRecharge(userId) {
+        alterpage('${rc.contextPath}/backend/balance/recharge?userId=' + userId, "会员充值");
+    }
+</script>

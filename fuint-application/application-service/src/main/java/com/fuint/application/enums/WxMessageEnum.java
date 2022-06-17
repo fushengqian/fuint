@@ -1,22 +1,24 @@
 package com.fuint.application.enums;
 
 /**
- * 积分配置项枚举
+ * 微信订阅消息枚举
  * Created by FSQ
  * Contact wx fsq_better
  * Site https://www.fuint.cn
  */
-public enum PointSettingEnum {
-    POINT_NEED_CONSUME("pointNeedConsume", "返1积分所需消费金额"),
-    CAN_USE_AS_MONEY("canUsedAsMoney", "是否可当作现金使用"),
-    EXCHANGE_NEED_POINT("exchangeNeedPoint", "多少积分可抵扣1元现金"),
-    RECHARGE_POINT_SPEED("rechargePointSpeed", "充值返积分倍数");
+public enum WxMessageEnum {
+    DELIVER_GOODS("deliverGoods", "订单发货提醒"),
+    COUPON_EXPIRE("couponExpire", "卡券到期提醒"),
+    COUPON_ARRIVAL("couponArrival", "卡券到账提醒"),
+    BALANCE_CHANGE("balanceChange", "余额变动提醒"),
+    COUPON_CONFIRM("couponConfirm", "卡券核销提醒"),
+    POINT_CHANGE("pointChange", "积分变更提醒");
 
     private String key;
 
     private String value;
 
-    PointSettingEnum(String key, String value) {
+    WxMessageEnum(String key, String value) {
         this.key = key;
         this.value = value;
     }
@@ -39,7 +41,7 @@ public enum PointSettingEnum {
 
     // 普通方法，通过key获取value
     public static String getValue(String k) {
-        for (PointSettingEnum c : PointSettingEnum.values()) {
+        for (WxMessageEnum c : WxMessageEnum.values()) {
             if (c.getKey().equals(k)) {
                 return c.getValue();
             }
@@ -49,7 +51,7 @@ public enum PointSettingEnum {
 
     // 普通方法，通过Value获取key
     public static String getKey(String v) {
-        for (PointSettingEnum c : PointSettingEnum.values()) {
+        for (WxMessageEnum c : WxMessageEnum.values()) {
             if (c.getValue() == v) {
                 return c.getKey();
             }
