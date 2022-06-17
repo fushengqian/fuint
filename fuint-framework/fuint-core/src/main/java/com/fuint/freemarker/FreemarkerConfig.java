@@ -17,7 +17,6 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerView;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver;
-
 import javax.servlet.ServletContext;
 import java.io.File;
 import java.io.IOException;
@@ -27,7 +26,7 @@ import java.util.Map;
 import java.util.Properties;
 
 /**
- * freemarket 配置
+ * freemarker 配置
  *
  * Created by FSQ
  * Contact wx fsq_better
@@ -70,6 +69,7 @@ public class FreemarkerConfig {
             WebappTemplateLoader pages = new WebappTemplateLoader(context, env.getProperty("freemarker.templatePath"));
             pages.setURLConnectionUsesCaches(false);
             pages.setAttemptFileAccess(false);
+
             FileTemplateLoader macro = new FileTemplateLoader(new File(env.getProperty("freemarker.macroPath")));
             MultiTemplateLoader mtl = new MultiTemplateLoader(new TemplateLoader[]{pages, macro});
             configuration.setTemplateLoader(mtl);

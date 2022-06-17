@@ -106,7 +106,7 @@ public class TAccount implements Serializable {
     private int storeId;
 
     /**
-     * 员工d
+     * 员工ID
      */
     @Column(name = "staff_id")
     private int staffId;

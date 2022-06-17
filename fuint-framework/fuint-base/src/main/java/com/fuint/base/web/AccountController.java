@@ -27,10 +27,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 /**
- * 用户管理 - Controller
- *
- * @author fsq
- * @version $Id: AccountController.java
+ * 管理员管理 - Controller
  */
 @Controller
 @RequestMapping(value = "/user")
@@ -82,6 +79,7 @@ public class AccountController {
     @RequestMapping(value = "/add", method = RequestMethod.GET)
     public String addAccount(HttpServletRequest request, HttpServletResponse response, Model model) {
         model.addAttribute("platforms", tPlatformService.getPlatforms());
+
         return "account/account_add";
     }
 
@@ -98,6 +96,7 @@ public class AccountController {
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     public String addAccountHandler(HttpServletRequest request, HttpServletResponse response, Model model) throws BusinessCheckException {
         String params = request.getParameter("params");//获取角色所分配的菜单
+
         List<TDuty> duties = null;
         if (StringUtil.isNotBlank(params)) {
             String[] dutyIds = params.split(",");
@@ -106,7 +105,9 @@ public class AccountController {
                 throw new BusinessCheckException("分配的角色不存在.");
             }
         }
+
         htAccountServiceImpl.addAccount((TAccount) RequestHandler.createBean(request, new TAccount()), duties, request.getParameter("platform"));
+
         return "redirect:/user/query";
     }
 
