@@ -37,7 +37,7 @@
         <jboss-logging.version>3.2.1.Final</jboss-logging.version>
         <redisson.version>3.1.0</redisson.version>
         <jedis.version>2.9.0</jedis.version>
-        <fastjson.version>1.2.17</fastjson.version>
+        <fastjson.version>1.2.83</fastjson.version>
         <cglib.version>3.2.4</cglib.version>
         <fuintframework.version>1.0.0-RELEASE</fuintframework.version>
     </properties>
