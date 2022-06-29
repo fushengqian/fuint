@@ -14,8 +14,6 @@ import org.springframework.scheduling.annotation.EnableScheduling;
  */
 @Configuration
 @ComponentScan(basePackages = {"com.*"}, excludeFilters = @ComponentScan.Filter(type = FilterType.REGEX, pattern = {"com.*.*.web.*"}))
-@PropertySource(value = {"classpath:config/application.properties"})
-@PropertySource("file:${env.properties.path}/${env.level}/application.properties")
 
 @EnableScheduling
 @EnableAspectJAutoProxy(proxyTargetClass = true)
