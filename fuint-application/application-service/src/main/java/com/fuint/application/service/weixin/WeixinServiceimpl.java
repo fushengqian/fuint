@@ -261,6 +261,7 @@ public class WeixinServiceimpl extends BaseService implements WeixinService {
                 reqPointDto.setUserId(orderInfo.getUserId());
                 reqPointDto.setOrderSn(orderInfo.getOrderSn());
                 reqPointDto.setDescription("支付￥"+orderInfo.getPayAmount()+"返"+pointNum+"积分");
+                reqPointDto.setOperator("系统");
                 pointService.addPoint(reqPointDto);
             }
         }

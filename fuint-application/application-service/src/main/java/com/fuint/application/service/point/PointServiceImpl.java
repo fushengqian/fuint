@@ -10,6 +10,7 @@ import com.fuint.application.service.member.MemberService;
 import com.fuint.base.dao.pagination.PaginationRequest;
 import com.fuint.base.dao.pagination.PaginationResponse;
 import com.fuint.exception.BusinessCheckException;
+import com.fuint.util.StringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,6 +66,7 @@ public class PointServiceImpl implements PointService {
             item.setUserId(point.getUserId());
             item.setUserInfo(userInfo);
             item.setOrderSn(point.getOrderSn());
+            item.setOperator(point.getOperator());
             item.setStatus(point.getStatus());
             content.add(item);
         }
@@ -94,14 +96,85 @@ public class PointServiceImpl implements PointService {
         mtPoint.setCreateTime(new Date());
         mtPoint.setUpdateTime(new Date());
 
+        if (mtPoint.getOperator() != null) {
+            mtPoint.setOperator(mtPoint.getOperator());
+        }
+
+        if (mtPoint.getOrderSn() != null) {
+            mtPoint.setOrderSn(mtPoint.getOrderSn());
+        }
+
         MtUser user = userRepository.findOne(mtPoint.getUserId());
         Integer newAmount = user.getPoint() + mtPoint.getAmount();
         if (newAmount < 0) {
-           return;
+            return;
         }
         user.setPoint(newAmount);
 
         userRepository.save(user);
         pointRepository.save(mtPoint);
+    }
+
+    /**
+     * 转赠积分
+     *
+     * @param userId
+     * @param mobile
+     * @param amount
+     * @param remark
+     * @return boolean
+     */
+    @Override
+    @Transactional
+    public boolean doGift(Integer userId, String mobile, Integer amount, String remark) throws BusinessCheckException {
+        if (userId < 0 || StringUtil.isEmpty(mobile) || amount <= 0) {
+            return false;
+        }
+
+        MtUser userInfo = memberService.queryMemberById(userId);
+        MtUser fUserInfo = memberService.queryMemberByMobile(mobile);
+        // 自动注册会员
+        if (fUserInfo == null) {
+            fUserInfo = memberService.addMemberByMobile(mobile);
+        }
+
+        Integer newAmount = fUserInfo.getPoint() + amount;
+        if (newAmount < 0) {
+            return false;
+        }
+        fUserInfo.setPoint(newAmount);
+
+        Integer myNewAmount = userInfo.getPoint() - amount;
+        if (myNewAmount < 0) {
+            return false;
+        }
+        userInfo.setPoint(myNewAmount);
+
+        userRepository.save(fUserInfo);
+        userRepository.save(userInfo);
+
+        MtPoint fMtPoint = new MtPoint();
+        fMtPoint.setStatus(StatusEnum.ENABLED.getKey());
+        fMtPoint.setAmount(amount);
+        fMtPoint.setCreateTime(new Date());
+        fMtPoint.setUpdateTime(new Date());
+        fMtPoint.setOperator(userInfo.getName());
+        fMtPoint.setOrderSn("");
+        fMtPoint.setDescription(remark);
+        fMtPoint.setUserId(fUserInfo.getId());
+        pointRepository.save(fMtPoint);
+
+        MtPoint mtPoint = new MtPoint();
+        mtPoint.setUserId(userId);
+        mtPoint.setAmount(-amount);
+        mtPoint.setStatus(StatusEnum.ENABLED.getKey());
+        mtPoint.setCreateTime(new Date());
+        mtPoint.setUpdateTime(new Date());
+        mtPoint.setOperator(userInfo.getName());
+        mtPoint.setOrderSn("");
+        mtPoint.setDescription("转赠好友");
+        pointRepository.save(mtPoint);
+
+        return true;
     }
 }

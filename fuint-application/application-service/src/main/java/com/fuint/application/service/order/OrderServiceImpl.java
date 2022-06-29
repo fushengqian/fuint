@@ -164,6 +164,7 @@ public class OrderServiceImpl extends BaseService implements OrderService {
 
         paginationRequest.setSearchParams(searchParams);
         paginationRequest.setSortColumn(new String[]{"createTime desc", "status asc"});
+        paginationRequest.getSearchParams().put("NQ_status", OrderStatusEnum.DELETED.getKey());
         PaginationResponse<MtOrder> paginationResponse = orderRepository.findResultsByPagination(paginationRequest);
 
         List<UserOrderDto> dataList = new ArrayList<>();
@@ -261,6 +262,7 @@ public class OrderServiceImpl extends BaseService implements OrderService {
                 reqPointDto.setAmount(-orderDto.getUsePoint());
                 reqPointDto.setOrderSn(orderSn);
                 reqPointDto.setDescription("支付扣除" + orderDto.getUsePoint() + "积分");
+                reqPointDto.setOperator("");
                 pointService.addPoint(reqPointDto);
             } catch (BusinessCheckException e) {
                 logger.error("扣减会员积分出错：" + e.getMessage());
@@ -399,6 +401,28 @@ public class OrderServiceImpl extends BaseService implements OrderService {
     public UserOrderDto getOrderById(Integer id) throws BusinessCheckException {
         MtOrder orderInfo = orderRepository.findOne(id);
         return this.getOrderDetail(orderInfo, true);
+    }
+
+    /**
+     * 根据订单ID删除
+     *
+     * @param id       ID
+     * @param operator 操作人
+     * @throws BusinessCheckException
+     */
+    @Override
+    @OperationServiceLog(description = "删除订单")
+    public void deleteOrder(Integer id, String operator) {
+        MtOrder mtOrder = orderRepository.findOne(id);
+        if (mtOrder == null) {
+            return;
+        }
+
+        mtOrder.setStatus(OrderStatusEnum.DELETED.getKey());
+        mtOrder.setUpdateTime(new Date());
+        mtOrder.setOperator(operator);
+
+        orderRepository.save(mtOrder);
     }
 
     /**

@@ -229,6 +229,8 @@ public class RefundServiceImpl extends BaseService implements RefundService {
             reqPointDto.setUserId(orderInfo.getUserId());
             reqPointDto.setAmount(orderInfo.getUsePoint());
             reqPointDto.setDescription("售后订单" + orderInfo.getOrderSn() + "退回"+ orderInfo.getUsePoint() +"积分");
+            reqPointDto.setOrderSn(orderInfo.getOrderSn());
+            reqPointDto.setOperator("");
             pointService.addPoint(reqPointDto);
         }
 

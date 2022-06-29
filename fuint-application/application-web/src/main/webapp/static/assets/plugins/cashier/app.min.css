@@ -28169,14 +28169,15 @@ code {
 
 .pos-customer .pos-menu .logo .logo-img {
     text-align: center;
-    height: 46px
+    height: 52px
 }
 
 .pos-customer .pos-menu .logo .logo-text {
     font-size: .975rem;
     font-weight: 600;
     letter-spacing: 1px;
-    margin-top: .3121875rem
+    margin-top: .3121875rem;
+    color: #666666;
 }
 
 .pos-customer .pos-menu .logo img {
@@ -29096,9 +29097,10 @@ code {
     justity-content:center;
     border-radius: 5px;
     background: #FFFFFF;
+    color: #666666;
 }
 .modal.modal-pos-check .pay-check .pay-type-info .active{
-    border: .1rem solid #00acac;
+    border: .15rem solid #00acac;
     background: #rgba(233, 236, 239, .9);
 }
 .modal.modal-pos-check .pay-check .pay-type-info .weixin {
@@ -29204,6 +29206,7 @@ code {
 }
 .modal.no-goods-pay .pay-area {
     padding: 1.5rem;
+    color: #666666;
 }
 .modal.no-goods-pay .pay-area .amount{
     margin-bottom: 1rem;

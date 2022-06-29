@@ -51,6 +51,11 @@ public class PointDto implements Serializable {
     private String description;
 
     /**
+     * 最后操作人
+     */
+    private String operator;
+
+    /**
      * 状态，A正常；D作废
      */
     private String status;
@@ -125,6 +130,14 @@ public class PointDto implements Serializable {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public String getOperator(){
+        return operator;
+    }
+
+    public void setOperator(String operator){
+        this.operator=operator;
     }
 }
 

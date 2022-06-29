@@ -2,6 +2,7 @@
 <configuration scan="true" scanPeriod="60 seconds" debug="false" level="DEBUG">
     <!-- 配置文件路径 -->
     <property resource="config/application.properties" />
+    <property file="${env.properties.path}/${env.level}/application.properties" />
     <!-- 控制台输出日志 -->
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>

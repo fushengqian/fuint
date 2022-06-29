@@ -296,6 +296,14 @@ p, h1, h2, h3, h4, input {
 .do-confirm-form .remark {
     border: #00acac 1px solid;;
 }
+.do-confirm-form .type-option {
+    margin-top: 15px;
+}
+.do-confirm-form .type-option .item {
+    margin-right: 20px;
+    font-weight: 500;
+    cursor: pointer;
+}
 .status-active {
     color: #52c41a;
     background: #f6ffed;
@@ -325,6 +333,18 @@ p, h1, h2, h3, h4, input {
     display: block;
     text-align: center;
     width: 45px;
+    cursor: pointer;
+}
+.operate-btn {
+    color: #ffffff;
+    background: #00acac;
+    border: #00acac solid 1px;
+    font-size: 12px;
+    padding: 1px;
+    border-radius: 3px;
+    display: block;
+    text-align: center;
+    width: 40px;
     cursor: pointer;
 }
 .active-tips {
@@ -462,6 +482,14 @@ p, h1, h2, h3, h4, input {
     float: left;
     width: 44px;
     height: 44px;
+}
+.iframe-base {
+    margin: 0px;
+    background: red;
+}
+.iframe-base .iframe-panel{
+    padding: 30px 10px 10px 10px;
+    background: #FFFFFF;
 }
 @media (max-width: 1328px){
     .product-header{

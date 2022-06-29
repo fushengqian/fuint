@@ -43,6 +43,15 @@ public interface OrderService {
     UserOrderDto getOrderById(Integer id) throws BusinessCheckException;
 
     /**
+     * 根据订单ID删除
+     *
+     * @param id       ID
+     * @param operator 操作人
+     * @throws BusinessCheckException
+     */
+    void deleteOrder(Integer id, String operator) throws BusinessCheckException;
+
+    /**
      * 根据订单号获取订单
      *
      * @param orderSn

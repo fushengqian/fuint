@@ -89,7 +89,9 @@ public class storeController {
             }
         }
 
+        params.put("NQ_status", StatusEnum.DISABLE.getKey());
         paginationRequest.setSearchParams(params);
+        paginationRequest.setSortColumn(new String[]{"status asc", "isDefault desc"});
         PaginationResponse<MtStore> paginationResponse = storeService.queryStoreListByPagination(paginationRequest);
 
         model.addAttribute("paginationResponse", paginationResponse);
@@ -174,24 +176,23 @@ public class storeController {
         return "redirect:/backend/store/queryList";
     }
     /**
-     * 删除店铺
+     * 禁用、删除店铺
      *
      * @param request
-     * @param response
-     * @param model
      * @return
      */
     @RequiresPermissions("backend/store/delete/{id}")
     @RequestMapping(value = "/delete/{id}")
-    public String delete(HttpServletRequest request, HttpServletResponse response, Model model, @PathVariable("id") Integer id) throws BusinessCheckException {
+    public String delete(HttpServletRequest request, @PathVariable("id") Integer id) throws BusinessCheckException {
+        String status = request.getParameter("status") != null ? request.getParameter("status"): StatusEnum.ENABLED.getKey();
+
         ShiroUser shiroUser = ShiroUserHelper.getCurrentShiroUser();
         if (shiroUser == null) {
             return "redirect:/login";
         }
 
         String operator = shiroUser.getAcctName();
-
-        storeService.deleteStore(id, operator);
+        storeService.updateStatus(id, operator, status);
         ReqResult reqResult = new ReqResult();
 
         reqResult.setResult(true);

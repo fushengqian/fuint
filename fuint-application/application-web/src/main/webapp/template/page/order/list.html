@@ -24,7 +24,6 @@
                      <input type="text" class="form-control" name="EQ_orderSn" value="${EQ_orderSn}" placeholder="订单号">
                 </div>
             </div>
-
             <div class="search-rows">
                 <div class="col-md-3 item">
                     <select class="form-control" name="EQ_type" id="EQ_type">
@@ -131,6 +130,7 @@
                             <#if ct.type == 'goods' && ct.orderMode == 'express'>
                                  <#if ct.status=='B'><a class="label label-danger small-btn" href="javascript:doDelivered(${ct.id});" title="发货"><i class="fa fa-eye"></i>发货</a></#if>
                             </#if>
+                            <a class="label label-danger small-btn" href="javascript:getConfirmData('您确定要删除该订单吗?','${rc.contextPath}/backend/order/delete/${ct.id}','displayArea')" title="删除"><i class="fa fa-remove"></i>删除</a>
                         </td>
                     </tr>
                 </#list>

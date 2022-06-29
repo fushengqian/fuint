@@ -1,9 +1,11 @@
 package com.fuint.application.web.backend.content;
 
 import com.fuint.application.dto.BannerDto;
+import com.fuint.application.enums.StatusEnum;
 import com.fuint.application.service.setting.SettingService;
 import com.fuint.base.dao.pagination.PaginationRequest;
 import com.fuint.base.dao.pagination.PaginationResponse;
+import com.fuint.base.shiro.ShiroUser;
 import com.fuint.base.shiro.util.ShiroUserHelper;
 import com.fuint.base.util.RequestHandler;
 import com.fuint.exception.BusinessCheckException;
@@ -77,6 +79,8 @@ public class BannerController {
 
         String imagePath = settingService.getUploadBasePath();
 
+        params.put("NQ_status", StatusEnum.DISABLE.getKey());
+
         paginationRequest.setSearchParams(params);
         PaginationResponse<MtBanner> paginationResponse = bannerService.queryBannerListByPagination(paginationRequest);
 
@@ -130,20 +134,18 @@ public class BannerController {
     /**
      * 删除banner
      *
-     * @param request
-     * @param response
-     * @param model
      * @return
      */
     @RequiresPermissions("backend/banner/delete/{id}")
     @RequestMapping(value = "/delete/{id}")
-    public String delete(HttpServletRequest request, HttpServletResponse response, Model model, @PathVariable("id") Integer id) throws BusinessCheckException {
-        String operator;
-        try {
-            operator = ShiroUserHelper.getCurrentShiroUser().getAcctName();
-        } catch (Exception e) {
-            operator = "sysadmin";
+    public String delete(@PathVariable("id") Integer id) throws BusinessCheckException {
+        ShiroUser shiroUser = ShiroUserHelper.getCurrentShiroUser();
+
+        if (shiroUser == null) {
+            return "redirect:/login";
         }
+
+        String operator = shiroUser.getAcctName();
 
         bannerService.deleteBanner(id, operator);
         ReqResult reqResult = new ReqResult();

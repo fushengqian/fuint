@@ -13,8 +13,6 @@ import com.fuint.application.service.staff.StaffService;
 import com.fuint.application.util.CommonUtil;
 import org.apache.commons.lang.StringUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -32,7 +30,6 @@ import java.util.*;
 @Controller
 @RequestMapping(value = "/backend/staff")
 public class staffManagerController {
-    private static final Logger logger = LoggerFactory.getLogger(staffManagerController.class);
 
     /**
      * 员工接口
@@ -73,7 +70,9 @@ public class staffManagerController {
             paramsStore.put("EQ_storeId", storeId);
         }
 
+        params.put("NQ_auditedStatus", StatusEnum.DISABLE.getKey());
         paginationRequest.setSearchParams(params);
+        paginationRequest.setSortColumn(new String[]{"auditedStatus asc", "id asc"});
         PaginationResponse<MtStaff> paginationResponse = staffService.queryStaffListByPagination(paginationRequest);
         for (MtStaff m : paginationResponse.getContent()) {
             MtStore mtStore = storeService.queryStoreById(m.getStoreId());
@@ -91,31 +90,19 @@ public class staffManagerController {
     }
 
     /**
-     * 审核通过
+     * 审核
      * @return
      */
-    @RequiresPermissions("backend/staff/audited/{id}")
-    @RequestMapping(value = "/audited/{id}")
-    public String audited(@PathVariable("id") Long id) throws BusinessCheckException {
+    @RequiresPermissions("backend/staff/updateStatus")
+    @RequestMapping(value = "/updateStatus")
+    public String updateStatus(HttpServletRequest request) throws BusinessCheckException {
+        String status = request.getParameter("status") != null ? request.getParameter("status"): StatusEnum.ENABLED.getKey();
+        Integer id = request.getParameter("id") == null ? 0 : Integer.parseInt(request.getParameter("id"));
+
         List<Integer> ids = new ArrayList<>();
         ids.add(id.intValue());
 
-        staffService.updateAuditedStatus(ids, StatusEnum.ENABLED.getKey());
-
-        return "redirect:/backend/staff/queryList";
-    }
-
-    /**
-     * 审核不通过
-     * @return
-     */
-    @RequiresPermissions("backend/staff/unaudited/{id}")
-    @RequestMapping(value = "/unaudited/{id}")
-    public String unaudited(@PathVariable("id") Long id) throws BusinessCheckException {
-        List<Integer> ids = new ArrayList<>();
-        ids.add(id.intValue());
-
-        staffService.updateAuditedStatus(ids, StatusEnum.DISABLE.getKey());
+        staffService.updateAuditedStatus(ids, status);
 
         return "redirect:/backend/staff/queryList";
     }
@@ -144,8 +131,8 @@ public class staffManagerController {
      */
     @RequiresPermissions("backend/staff/staffEditInit/{id}")
     @RequestMapping(value = "/staffEditInit/{id}")
-    public String staffEditInit(Model model, @PathVariable("id") Integer id) throws BusinessCheckException {
-        MtStaff mtStaff = staffService.queryStaffById(id);
+    public String staffEditInit(Model model, @PathVariable("id") Long id) throws BusinessCheckException {
+        MtStaff mtStaff = staffService.queryStaffById(id.intValue());
 
         Map<String, Object> params_store = new HashMap<>();
         params_store.put("EQ_status", StatusEnum.ENABLED.getKey());

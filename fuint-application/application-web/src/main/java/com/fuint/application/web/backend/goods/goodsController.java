@@ -104,6 +104,7 @@ public class goodsController {
             paginationRequest.getSearchParams().put("EQ_storeId", storeId.toString());
         }
 
+        paginationRequest.getSearchParams().put("NQ_status", StatusEnum.DISABLE.getKey());
         paginationRequest.setSortColumn(new String[]{"status asc", "updateTime desc"});
         PaginationResponse<GoodsDto> paginationResponse = goodsService.queryGoodsListByPagination(paginationRequest);
 
@@ -126,18 +127,20 @@ public class goodsController {
      */
     @RequiresPermissions("backend/goods/goods/delete")
     @RequestMapping(value = "/delete/{id}")
-    @ResponseBody
-    public ReqResult delete(HttpServletRequest request, HttpServletResponse response, Model model, @PathVariable("id") Integer id) throws BusinessCheckException {
-        List<Integer> ids = new ArrayList<>();
-        ids.add(id);
+    public String delete(HttpServletRequest request, HttpServletResponse response, Model model, @PathVariable("id") Integer id) throws BusinessCheckException {
+        ShiroUser shiroUser = ShiroUserHelper.getCurrentShiroUser();
 
-        String operator = ShiroUserHelper.getCurrentShiroUser().getAcctName();
+        if (shiroUser == null) {
+            return "redirect:/login";
+        }
+
+        String operator = shiroUser.getAcctName();
         goodsService.deleteGoods(id, operator);
 
         ReqResult reqResult = new ReqResult();
         reqResult.setResult(true);
 
-        return reqResult;
+        return "redirect:/backend/goods/goods/list";
     }
 
     /**

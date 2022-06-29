@@ -52,12 +52,12 @@ public interface TAccountService {
     void addAccount(TAccount htAccount, List<TDuty> duties,String platform) throws BusinessCheckException;
 
     /**
-     * 删除账户
+     * 禁用账户
      *
      * @param accountKey 账户编码
      * @throws BusinessCheckException
      */
-    void deleteAccount(String accountKey) throws BusinessCheckException;
+    void removeAccount(String accountKey, String isDelete) throws BusinessCheckException;
 
     /**
      * 根据账户获取账户实体

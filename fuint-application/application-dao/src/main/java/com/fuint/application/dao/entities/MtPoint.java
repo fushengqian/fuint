@@ -62,6 +62,12 @@ public class MtPoint implements Serializable{
     @Column(name = "DESCRIPTION", length = 200)
     private String description;
 
+    /**
+     * 最后操作人
+     */
+    @Column(name = "OPERATOR", length = 30)
+    private String operator;
+
    /**
     * 状态，A正常；D作废 
     */ 
@@ -109,6 +115,12 @@ public class MtPoint implements Serializable{
     }
     public void setDescription(String description){
     this.description=description;
+    }
+    public String getOperator(){
+        return operator;
+    }
+    public void setOperator(String operator){
+        this.operator=operator;
     }
     public String getStatus(){
         return status;

@@ -151,6 +151,9 @@ public class couponController extends BaseController {
     @RequiresPermissions("/backend/coupon/queryList")
     public String queryList(HttpServletRequest request, HttpServletResponse response, Model model) throws BusinessCheckException {
         PaginationRequest paginationRequest = RequestHandler.buildPaginationRequest(request, model);
+
+        paginationRequest.getSearchParams().put("NQ_status", StatusEnum.DISABLE.getKey());
+        paginationRequest.setSortColumn(new String[]{"status asc", "createTime asc"});
         PaginationResponse<MtCoupon> paginationResponse = couponService.queryCouponListByPagination(paginationRequest);
         List<MtCoupon> dataList = paginationResponse.getContent();
         List<ContentDto> storeMap = new ArrayList<>();

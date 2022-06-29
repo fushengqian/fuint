@@ -529,21 +529,22 @@ function getDateForStringDate(strDate){
     return new Date(s1[0],s1[1]-1,s1[2]);
 }
 
-function alterpage(url, title,width,height,callback){
+function alterpage(url, title, width, height, callback){
     if (width == "" || width == undefined || width == null){
         width = '1000px';
     }
     if (height == "" || height == undefined || height == null){
-        height = '400px';
+        height = '500px';
     }
-    var layerIndex = layer.open({
+
+    let layerIndex = layer.open({
         type: 2,
         title: title,
         area: [width, height],
         fix: true,
         content: [url, 'no'],
-        success:function(layero,index){
-            layer.iframeAuto(layerIndex);
+        success:function(layero, index){
+            layer.iframeAuto(index);
         },
         end:function(){
             if($.isFunction(callback)){

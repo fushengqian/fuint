@@ -523,14 +523,18 @@ const doCash = function() {
 
                     $("#orderId").val(data.data.orderInfo.id);
                     $('#modalPosCheck').modal('hide');
-                    if (parseFloat(data.data.orderInfo.payAmount) > 0 && data.data.orderInfo.payType !== 'CASH') {
+                    if (parseFloat(data.data.orderInfo.payAmount) > 0 && data.data.orderInfo.payType == 'MICROPAY') {
                         $('#cashCodeModal').modal('show');
                     }
 
-                    // 现金支付成功
-                    if (data.data.orderInfo.payType === 'CASH') {
-                        $("#completePay").click();
-                        $('#paySuccessModal').modal('show');
+                    // 现金、余额支付成功
+                    if ((data.data.orderInfo.payType === 'CASH' || data.data.orderInfo.payType === 'BALANCE')) {
+                        if (data.data.orderInfo.payStatus == 'B') {
+                            $("#completePay").click();
+                            $('#paySuccessModal').modal('show');
+                        } else {
+                            layer.alert(data.message);
+                        }
                     }
 
                     $("#doCash").removeAttr("disabled");
@@ -584,14 +588,18 @@ const noGoodsDoCash = function() {
 
                 $("#orderId").val(data.data.orderInfo.id);
 
-                if (parseFloat(data.data.orderInfo.payAmount) > 0 && data.data.orderInfo.payType !== 'CASH') {
+                if (parseFloat(data.data.orderInfo.payAmount) > 0 && data.data.orderInfo.payType == 'MICROPAY') {
                     $('#cashCodeModal').modal('show');
                 }
 
-                // 现金支付成功
-                if (data.data.orderInfo.payType === 'CASH') {
-                    $("#completePay").click();
-                    $('#paySuccessModal').modal('show');
+                // 现金、余额支付成功
+                if ((data.data.orderInfo.payType === 'CASH' || data.data.orderInfo.payType === 'BALANCE')) {
+                    if (data.data.orderInfo.payStatus == 'B') {
+                        $("#completePay").click();
+                        $('#paySuccessModal').modal('show');
+                    } else {
+                        layer.alert(data.message);
+                    }
                 }
 
                 $("#doCash").removeAttr("disabled");

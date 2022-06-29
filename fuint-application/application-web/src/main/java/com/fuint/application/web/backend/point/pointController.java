@@ -1,10 +1,13 @@
 package com.fuint.application.web.backend.point;
 
+import com.fuint.application.dao.entities.MtPoint;
 import com.fuint.application.dao.entities.MtSetting;
+import com.fuint.application.dao.entities.MtUser;
 import com.fuint.application.dto.PointDto;
 import com.fuint.application.dto.ReqResult;
 import com.fuint.application.enums.PointSettingEnum;
 import com.fuint.application.enums.SettingTypeEnum;
+import com.fuint.application.service.member.MemberService;
 import com.fuint.application.service.point.PointService;
 import com.fuint.application.service.setting.SettingService;
 import com.fuint.application.util.CommonUtil;
@@ -14,6 +17,8 @@ import com.fuint.base.shiro.ShiroUser;
 import com.fuint.base.shiro.util.ShiroUserHelper;
 import com.fuint.base.util.RequestHandler;
 import com.fuint.exception.BusinessCheckException;
+import org.apache.commons.collections.map.HashedMap;
+import org.apache.commons.lang.StringUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,6 +57,12 @@ public class pointController {
     private PointService pointService;
 
     /**
+     * 会员服务接口
+     * */
+    @Autowired
+    private MemberService memberService;
+
+    /**
      * 积分明细列表查询
      *
      * @param request  HttpServletRequest对象
@@ -67,6 +78,16 @@ public class pointController {
         }
 
         PaginationRequest paginationRequest = RequestHandler.buildPaginationRequest(request, model);
+
+        String mobile = request.getParameter("mobile") == null ? "" : request.getParameter("mobile");
+        if (StringUtils.isNotEmpty(mobile)) {
+            MtUser userInfo = memberService.queryMemberByMobile(mobile);
+            if (userInfo != null) {
+                Map<String, Object> searchParams = new HashedMap();
+                searchParams.put("EQ_userId", userInfo.getId()+"");
+                paginationRequest.setSearchParams(searchParams);
+            }
+        }
 
         PaginationResponse<PointDto> paginationResponse = pointService.queryPointListByPagination(paginationRequest);
 
@@ -161,6 +182,85 @@ public class pointController {
         }
 
         reqResult.setResult(true);
+        return reqResult;
+    }
+
+    /**
+     * 充值页面
+     *
+     * @param request  HttpServletRequest对象
+     * @param model    SpringFramework Model对象
+     * @return 充值页面
+     */
+    @RequiresPermissions("backend/point/recharge")
+    @RequestMapping(value = "/recharge")
+    public String recharge(HttpServletRequest request, Model model) throws BusinessCheckException {
+        Integer userId = request.getParameter("userId") == null ? 0 : Integer.parseInt(request.getParameter("userId"));
+
+        MtUser userInfo = memberService.queryMemberById(userId);
+
+        model.addAttribute("userInfo", userInfo);
+
+        return "point/recharge";
+    }
+
+    /**
+     * 提交充值
+     *
+     * @param request  HttpServletRequest对象
+     */
+    @RequiresPermissions("backend/point/doRecharge")
+    @RequestMapping(value = "/doRecharge", method = RequestMethod.POST)
+    @ResponseBody
+    public ReqResult doRecharge(HttpServletRequest request) throws BusinessCheckException {
+        String amount = request.getParameter("amount") == null ? "0" : request.getParameter("amount");
+        String remark = request.getParameter("remark") == null ? "后台充值" : request.getParameter("remark");
+        Integer userId = request.getParameter("userId") == null ? 0 : Integer.parseInt(request.getParameter("userId"));
+        Integer type = request.getParameter("type") == null ? 1 : Integer.parseInt(request.getParameter("type"));
+        ShiroUser shiroUser = ShiroUserHelper.getCurrentShiroUser();
+
+        ReqResult reqResult = new ReqResult();
+
+        if (!CommonUtil.isNumeric(amount)) {
+            reqResult.setCode("201");
+            reqResult.setResult(false);
+            reqResult.setMsg("充值积分必须是数字！");
+        }
+
+        if (shiroUser == null) {
+            reqResult.setCode("201");
+            reqResult.setResult(false);
+            reqResult.setMsg("请重新登录！");
+        }
+
+        if (userId < 1) {
+            reqResult.setCode("201");
+            reqResult.setResult(false);
+            reqResult.setMsg("充值会员信息不能为空！");
+        }
+
+        String operator = shiroUser.getAcctName();
+
+        MtPoint mtPoint = new MtPoint();
+        if (type == 2) {
+            // 扣减
+            mtPoint.setAmount(Integer.parseInt(amount) - (Integer.parseInt(amount)) * 2);
+        } else {
+            mtPoint.setAmount(Integer.parseInt(amount));
+        }
+        mtPoint.setDescription(remark);
+        mtPoint.setUserId(userId);
+        mtPoint.setOperator(operator);
+        mtPoint.setOrderSn("");
+
+        pointService.addPoint(mtPoint);
+        MtUser userInfo = memberService.queryMemberById(userId);
+
+        reqResult.setResult(true);
+        Map<String, Object> data = new HashMap();
+        data.put("userInfo", userInfo);
+        reqResult.setData(data);
+
         return reqResult;
     }
 }

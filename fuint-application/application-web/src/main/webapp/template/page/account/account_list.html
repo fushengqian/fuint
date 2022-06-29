@@ -76,6 +76,7 @@
                             <#if ct.accountStatus == 1>
                             <a class="label label-danger small-btn" href="javascript:getConfirmData('确定禁用该账户吗?','${rc.contextPath}/user/delete/${ct.accountKey}','displayArea')"><i class="fa fa-lock"></i>禁用</a>
                             <#else>
+                            <a class="label label-danger small-btn" href="javascript:getConfirmData('确定删除该账户吗？删除将不可恢复！','${rc.contextPath}/user/delete/${ct.accountKey}?delete=1','displayArea')"><i class="fa fa-remove"></i>删除</a>
                             </#if>
                             <a class="label label-success small-btn" href="javascript:getData('${rc.contextPath}/user/edit/${ct.accountKey}','displayArea')"><i class="fa fa-edit"></i>编辑</a>
                         </td>

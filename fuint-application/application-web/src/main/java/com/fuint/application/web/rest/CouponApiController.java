@@ -137,10 +137,11 @@ public class CouponApiController extends BaseController {
 
         CouponDto dto = new CouponDto();
         BeanUtils.copyProperties(dto, couponInfo);
+        dto.setIsReceive(false);
 
         if (null != mtUser) {
             List<MtUserCoupon> userCoupon = userCouponService.getUserCouponDetail(mtUser.getId(), couponId);
-            if (userCoupon.size() > 0) {
+            if (userCoupon.size() >= couponInfo.getLimitNum() && couponInfo.getLimitNum() > 0) {
                 dto.setIsReceive(true);
                 dto.setUserCouponId(userCoupon.get(0).getId());
             }

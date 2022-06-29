@@ -9,14 +9,13 @@
     <div class="panel-body">
         <form id="bannerForm" name="bannerForm" method="post" class="form-inline">
             <div class="form-group m-r-10">
-                <input type="text" class="form-control" name="LIKE_title" value="${params.LIKE_title}"
-                       placeholder="标题">
+                <input type="text" class="form-control" name="LIKE_title" value="${params.LIKE_title}" placeholder="标题">
             </div>
             <div class="form-group m-r-10">
                 <select class="form-control" name="EQ_status" id="EQ_status">
                     <option value="">状态</option>
                      <option value="A" <#if params.EQ_status== "A"> selected</#if>>激活</option>
-                     <option value="D" <#if params.EQ_status== "D"> selected</#if>>禁用</option>
+                     <option value="N" <#if params.EQ_status== "N"> selected</#if>>禁用</option>
                 </select>
             </div>
             <button type="button" class="btn btn-sm btn-success m-r-5"
@@ -63,6 +62,7 @@
                         <td>${ct.createTime}</td>
                         <td>
                             <a class="label label-success small-btn" href="javascript:getData('${rc.contextPath}/backend/banner/editInit/${ct.id}','displayArea')"><i class="fa fa-edit"></i>编辑</a>
+                            <a class="label label-danger small-btn" href="javascript:getConfirmData('您确定要删除该条数据吗?','${rc.contextPath}/backend/banner/delete/${ct.id}','displayArea')" title="删除"><i class="fa fa-remove"></i>删除</a>
                         </td>
                     </tr>
                 </#list>

@@ -140,13 +140,13 @@ public class StaffServiceImpl implements StaffService {
     }
 
     /**
-     * 审核更改状态(置为禁用或通过)
+     * 审核更改状态
      *
      * @param ids
      * @throws BusinessCheckException
      */
     @Override
-    @OperationServiceLog(description = "员工审核更改状态")
+    @OperationServiceLog(description = "更改员工状态")
     public Integer updateAuditedStatus(List<Integer> ids, String statusEnum) throws BusinessCheckException {
         Integer i = 0;
         Boolean flag = false;

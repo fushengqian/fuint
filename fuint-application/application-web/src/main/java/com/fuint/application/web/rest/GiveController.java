@@ -76,7 +76,6 @@ public class GiveController extends BaseController {
             } else {
                 return getFailureResult(3002, "验证码有误");
             }*/
-
             ResponseObject result = giveService.addGive(param);
 
             return getSuccessResult(result.getData());

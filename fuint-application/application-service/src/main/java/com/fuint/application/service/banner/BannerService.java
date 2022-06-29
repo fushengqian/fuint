@@ -15,6 +15,7 @@ import java.util.Map;
  * Site https://www.fuint.cn
  */
 public interface BannerService {
+
     /**
      * 分页查询列表
      *
@@ -40,7 +41,7 @@ public interface BannerService {
     MtBanner queryBannerById(Integer id) throws BusinessCheckException;
 
     /**
-     * 根据Banner ID 删除信息
+     * 根据Banner ID 删除
      *
      * @param id       ID
      * @param operator 操作人

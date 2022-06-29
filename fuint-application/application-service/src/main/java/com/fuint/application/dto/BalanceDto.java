@@ -57,6 +57,11 @@ public class BalanceDto implements Serializable {
      */
     private String status;
 
+    /**
+     * 最后操作人
+     */
+    private String operator;
+
     public Integer getId() {
         return id;
     }
@@ -127,6 +132,14 @@ public class BalanceDto implements Serializable {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public String getOperator(){
+        return operator;
+    }
+
+    public void setOperator(String operator){
+        this.operator=operator;
     }
 }
 

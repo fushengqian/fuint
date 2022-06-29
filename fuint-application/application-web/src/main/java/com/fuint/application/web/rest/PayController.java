@@ -93,11 +93,6 @@ public class PayController extends BaseController {
         String userToken = request.getHeader("Access-Token");
         MtUser mtUser = tokenService.getUserInfoByToken(userToken);
 
-        Integer userPoint = 0;
-        if (mtUser != null) {
-            userPoint = mtUser.getPoint();
-        }
-
         Map<String, Object> outParams = new HashMap<>();
 
         List<MtSetting> settingList = settingService.getSettingList(SettingTypeEnum.POINT.getKey());
@@ -124,14 +119,22 @@ public class PayController extends BaseController {
         BigDecimal payDiscount = new BigDecimal("1");
         if (mtUser != null) {
             MtUserGrade userGrade = userGradeService.queryUserGradeById(Integer.parseInt(mtUser.getGradeId()));
-            if (userGrade.getDiscount() > 0) {
-                payDiscount = new BigDecimal(userGrade.getDiscount()).divide(new BigDecimal("10"));
+            if (userGrade != null) {
+                if (userGrade.getDiscount() > 0) {
+                    payDiscount = new BigDecimal(userGrade.getDiscount()).divide(new BigDecimal("10"));
+                }
             }
+        }
+
+        // 可用积分
+        Integer canUsePointAmount = 0;
+        if (mtUser != null && canUsedAsMoney.equals("true")) {
+            canUsePointAmount = mtUser.getPoint();
         }
 
         outParams.put("canUsedAsMoney", canUsedAsMoney);
         outParams.put("exchangeNeedPoint", exchangeNeedPoint);
-        outParams.put("canUsePointAmount", userPoint);
+        outParams.put("canUsePointAmount", canUsePointAmount);
         outParams.put("canUseCouponInfo", canUseCouponInfo);
         outParams.put("canUseCouponInfo", canUseCouponInfo);
         outParams.put("payDiscount", payDiscount);

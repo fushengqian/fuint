@@ -49,7 +49,6 @@ public class StoreServiceImpl implements StoreService {
      */
     @Override
     public PaginationResponse<MtStore> queryStoreListByPagination(PaginationRequest paginationRequest) {
-        paginationRequest.setSortColumn(new String[]{"status asc", "id asc"});
         PaginationResponse<MtStore> paginationResponse = storeRepository.findResultsByPagination(paginationRequest);
         return paginationResponse;
     }
@@ -72,7 +71,6 @@ public class StoreServiceImpl implements StoreService {
 
         mtStore.setName(storeDto.getName());
         mtStore.setContact(storeDto.getContact());
-        mtStore.setStatus(StatusEnum.ENABLED.getKey());
         mtStore.setOperator(storeDto.getOperator());
 
         mtStore.setUpdateTime(new Date());
@@ -165,25 +163,26 @@ public class StoreServiceImpl implements StoreService {
     }
 
     /**
-     * 禁用店铺
+     * 更新店铺状态
      *
      * @param id       店铺ID
      * @param operator 操作人
+     * @param status   状态
      * @throws BusinessCheckException
      */
     @Override
-    @OperationServiceLog(description = "禁用店铺")
-    public void deleteStore(Integer id, String operator) throws BusinessCheckException {
-        MtStore MtStore = this.queryStoreById(id);
-        if (null == MtStore) {
+    @OperationServiceLog(description = "更新店铺状态")
+    public void updateStatus(Integer id, String operator, String status) throws BusinessCheckException {
+        MtStore mtStore = this.queryStoreById(id);
+        if (null == mtStore) {
             throw new BusinessCheckException("该店铺不存在.");
         }
 
-        MtStore.setStatus(StatusEnum.DISABLE.getKey());
-        MtStore.setUpdateTime(new Date());
-        MtStore.setOperator(operator);
+        mtStore.setStatus(status);
+        mtStore.setUpdateTime(new Date());
+        mtStore.setOperator(operator);
 
-        storeRepository.save(MtStore);
+        storeRepository.save(mtStore);
     }
 
     @Override

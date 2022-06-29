@@ -66,6 +66,7 @@ public class BalanceServiceImpl implements BalanceService {
             item.setUserInfo(userInfo);
             item.setOrderSn(mtBalance.getOrderSn());
             item.setStatus(mtBalance.getStatus());
+            item.setOperator(mtBalance.getOperator());
             content.add(item);
         }
 

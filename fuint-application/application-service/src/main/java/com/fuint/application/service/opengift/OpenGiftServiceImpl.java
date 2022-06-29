@@ -267,6 +267,7 @@ public class OpenGiftServiceImpl extends BaseService implements OpenGiftService 
                    reqPointDto.setUserId(userId);
                    reqPointDto.setAmount(item.getPoint());
                    reqPointDto.setDescription("开卡赠送"+ item.getPoint() +"积分");
+                   reqPointDto.setOperator("系统");
                    pointService.addPoint(reqPointDto);
                    totalPoint = totalPoint + item.getPoint();
                }

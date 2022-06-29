@@ -9,22 +9,20 @@
     <div class="panel-body">
         <form id="storeForm" name="storeForm" method="post" class="form-inline">
             <div class="form-group m-r-10">
-                <input type="text" class="form-control" name="LIKE_name" value="${params.LIKE_name}"
-                       placeholder="店铺名称">
+                <input type="text" class="form-control" name="LIKE_name" value="${params.LIKE_name}" placeholder="店铺名称">
             </div>
             <div class="form-group m-r-10">
-                <input type="text" class="form-control" name="EQ_id" value="${params.EQ_id}"
-                       placeholder="店铺编号">
+                <input type="text" class="form-control" name="EQ_id" value="${params.EQ_id}" placeholder="店铺ID">
             </div>
             <div class="form-group m-r-10">
                 <select class="form-control" name="EQ_status" id="EQ_status">
                     <option value="">状态</option>
                      <option value="A" <#if params.EQ_status== "A"> selected</#if>>激活</option>
-                     <option value="D" <#if params.EQ_status== "D"> selected</#if>>禁用</option>
+                     <option value="N" <#if params.EQ_status== "N"> selected</#if>>禁用</option>
                 </select>
             </div>
             <button type="button" class="btn btn-sm btn-success m-r-5"
-                    onclick="postDataByForm('backend/store/queryList','displayArea','storeForm')"><i class="fa fa-search"></i>查 询
+                    onclick="postDataByForm('backend/store/queryList','displayArea','storeForm')"><i class="fa fa-search"></i>查询
             </button>
             <button type="button" class="btn btn-sm btn-danger m-r-5"
                onclick="getData('${rc.contextPath}/backend/store/add','displayArea')"><i class="fa fa-plus"></i>新增店铺</button>
@@ -58,27 +56,28 @@
                         <td>${ct.name}</td>
                         <td>
                             <#if ct.isDefault == "Y">
-                            <span class="status-active">是</span>
+                            <span style="color:#f5222d;">是</span>
                             <#else>
-                            <span class="status-disabled">否</span>
+                            <span>否</span>
                             </#if>
                         </td>
                         <td>${ct.contact}</td>
                         <td>${ct.phone}</td>
                         <td>
                             <#if ct.status == "A">
-                            <span class="status-active">已激活</span>
+                            <span class="status-active">激活</span>
                             <#else>
-                            <span class="status-disabled">已禁用</span>
+                            <span class="status-disabled">禁用</span>
                            </#if>
                         </td>
                         <td>${ct.createTime}</td>
                         <td>
                             <a class="label label-success small-btn" href="javascript:getData('${rc.contextPath}/backend/store/storeEditInit/${ct.id}','displayArea')"><i class="fa fa-edit"></i>编辑</a>
                             <#if ct.status == "A">
-                            <a class="label label-danger small-btn" href="javascript:getConfirmData('确定禁用该店铺吗?','${rc.contextPath}/backend/store/delete/${ct.id}','displayArea')"><i class="fa fa-lock"></i>禁用</a>
-                            <#else>
-                            <a class="label label-success small-btn" href="javascript:getConfirmData('确定激活该店铺吗?','${rc.contextPath}/backend/store/active/${ct.id}','displayArea')"><i class="fa fa-eye"></i>启用</a>
+                            <a class="label label-danger small-btn" href="javascript:getConfirmData('您确定禁用该店铺吗?','${rc.contextPath}/backend/store/delete/${ct.id}?status=N','displayArea')"><i class="fa fa-lock"></i>禁用</a>
+                            <#elseif ct.status == "N">
+                            <a class="label label-success small-btn" href="javascript:getConfirmData('您确定启用该店铺吗?','${rc.contextPath}/backend/store/active/${ct.id}','displayArea')"><i class="fa fa-check-square-o"></i>启用</a>
+                            <a class="label label-danger small-btn" href="javascript:getConfirmData('您确定删除该店铺吗？删除将不可恢复！','${rc.contextPath}/backend/store/delete/${ct.id}?status=D','displayArea')"><i class="fa fa-eye"></i>删除</a>
                             </#if>
                         </td>
                     </tr>

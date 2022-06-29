@@ -54,7 +54,7 @@ public class ShiroUserServiceImpl implements ShiroUserService {
                 logger.info("账户{}被锁定!", accountName);
                 throw new LockedAccountException(); //帐号锁定
             }
-            if (user.getAccountStatus() == 0 || user.getIsActive() == 0) {
+            if (user.getAccountStatus() != 1 || user.getIsActive() == 0) {
                 logger.info("账户{}无效!status={},activeStatus={}", accountName, user.getAccountStatus(), user.getIsActive());
                 throw new AccountInvalidException();
             }

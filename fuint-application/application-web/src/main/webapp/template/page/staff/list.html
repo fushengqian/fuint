@@ -1,5 +1,5 @@
 <h1 class="page-header">
-    <small>员工管理</small>
+    <small>店铺员工管理</small>
 </h1>
 <hr/>
 <div class="panel panel-inverse" data-sortable-id="form-stuff-5">
@@ -30,8 +30,9 @@
             <div class="form-group m-r-10">
                 <select class="form-control" name="EQ_auditedStatus" id="EQ_auditedStatus">
                     <option value="" <#if ""== params.EQ_auditedStatus>selected</#if>>全部</option>
-                    <option value="U" <#if "U"== params.EQ_auditedStatus>selected</#if>>待审核</option>
-                    <option value="A" <#if "A"== params.EQ_auditedStatus>selected</#if>>已审核</option>
+                    <option value="N" <#if "N"== params.EQ_auditedStatus>selected</#if>>禁用</option>
+                    <option value="U" <#if "U"== params.EQ_auditedStatus>selected</#if>>待审</option>
+                    <option value="A" <#if "A"== params.EQ_auditedStatus>selected</#if>>激活</option>
                  </select>
             </div>
             <button type="button" class="btn btn-sm btn-success m-r-5" onclick="postDataByForm('backend/staff/queryList','displayArea','staffForm')"><i class="fa fa-search"></i>查询</button>
@@ -72,10 +73,10 @@
                         <td>
                             <a class="label label-success small-btn" href="javascript:getData('${rc.contextPath}/backend/staff/staffEditInit/${ct.id}','displayArea')"><i class="fa fa-edit"></i>编辑</a>
                             <#if ct.auditedStatus == "A">
-                            <a class="label label-danger small-btn" href="javascript:getConfirmData('确定删除吗?','${rc.contextPath}/backend/staff/unaudited/${ct.id}','displayArea');"><i class="fa fa-remove"></i>禁用</a>
-                            <#elseif ct.auditedStatus == "U">
-                            <a class="label label-success small-btn" href="javascript:getConfirmData('确定审核通过吗?','${rc.contextPath}/backend/staff/audited/${ct.id}','displayArea');"><i class="fa fa-file-text"></i>审核</a>
-                            <a class="label label-success small-btn" href="javascript:getConfirmData('确定审核不通过吗?','${rc.contextPath}/backend/staff/unaudited/${ct.id}','displayArea');"><i class="fa fa-trash"></i>拒绝</a>
+                            <a class="label label-danger small-btn" href="javascript:getConfirmData('您确定禁用吗?','${rc.contextPath}/backend/staff/updateStatus?id=${ct.id}&status=N','displayArea');"><i class="fa fa-lock"></i>禁用</a>
+                            <#elseif ct.auditedStatus == "N">
+                            <a class="label label-danger small-btn" href="javascript:getConfirmData('您确定删除吗？删除将不可恢复！', '${rc.contextPath}/backend/staff/updateStatus?id=${ct.id}&status=D','displayArea');"><i class="fa fa-remove"></i>删除</a>
+                            <a class="label label-success small-btn" href="javascript:getConfirmData('您确定要激活吗?','${rc.contextPath}/backend/staff/updateStatus?id=${ct.id}','displayArea');"><i class="fa fa-check-square-o"></i>激活</a>
                             </#if>
                         </td>
                     </tr>

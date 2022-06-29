@@ -138,7 +138,7 @@ public class CouponServiceImpl extends BaseService implements CouponService {
             coupon.setLimitNum(reqCouponDto.getLimitNum());
         }
         if (coupon.getLimitNum() == null) {
-            coupon.setLimitNum(0);
+            coupon.setLimitNum(1);
         }
         if (reqCouponDto.getReceiveCode() != null) {
             coupon.setReceiveCode(reqCouponDto.getReceiveCode());
@@ -371,7 +371,7 @@ public class CouponServiceImpl extends BaseService implements CouponService {
         for (int i = 0; i < dataList.size(); i++) {
             CouponDto item = new CouponDto();
             BeanUtils.copyProperties(dataList.get(i), item);
-
+            item.setIsReceive(false);
             item.setImage(baseImage + item.getImage());
 
             // 是否领取，且领取量大于限制数

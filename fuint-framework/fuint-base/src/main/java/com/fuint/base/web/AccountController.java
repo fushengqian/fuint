@@ -1,6 +1,5 @@
 /**
- * fuint.cn Inc.
- * Copyright (c) 2019-2022 All Rights Reserved.
+ * @author fsq
  */
 package com.fuint.base.web;
 
@@ -122,8 +121,7 @@ public class AccountController {
      */
     @RequiresPermissions("user/edit")
     @RequestMapping(value = "/edit/{accountkey}", method = RequestMethod.GET)
-    public String editAccount(HttpServletRequest request, HttpServletResponse response,
-                              Model model, @PathVariable("accountkey") String accountkey) {
+    public String editAccount(HttpServletRequest request, HttpServletResponse response, Model model, @PathVariable("accountkey") String accountkey) {
         TAccount tAccount = htAccountServiceImpl.findAccountByKey(accountkey);
         if (tAccount != null) {
             List<Long> dutyIds = htAccountServiceImpl.getDutyIdsByAccountId(tAccount.getId());
@@ -154,13 +152,11 @@ public class AccountController {
      */
     @RequiresPermissions("user/edit")
     @RequestMapping(value = "/edit/{acctId}", method = RequestMethod.POST)
-    public String editAccountHandler(HttpServletRequest request, HttpServletResponse response,
-                                     Model model, @PathVariable("acctId") Long acctId) throws BusinessCheckException {
-        TAccount tAccount = (TAccount) RequestHandler.createBean(request,
-                new TAccount());
+    public String editAccountHandler(HttpServletRequest request, HttpServletResponse response, Model model, @PathVariable("acctId") Long acctId) throws BusinessCheckException {
+        TAccount tAccount = (TAccount) RequestHandler.createBean(request, new TAccount());
         tAccount.setId(acctId);
 
-        String params = request.getParameter("params");//获取角色所分配的菜单
+        String params = request.getParameter("params"); //获取角色所分配的菜单
         List<TDuty> duties = null;
         if (StringUtil.isNotBlank(params)) {
             String[] sourceIds = params.split(",");
@@ -175,7 +171,7 @@ public class AccountController {
     }
 
     /**
-     * 删除账户信息
+     * 禁用、删除账户信息
      *
      * @param request    HttpServletRequest对象
      * @param response   HttpServletResponse对象
@@ -186,18 +182,21 @@ public class AccountController {
      */
     @RequiresPermissions("user/delete")
     @RequestMapping(value = "/delete/{accountkey}", method = RequestMethod.GET)
-    public String deleteAccount(HttpServletRequest request, HttpServletResponse response,
-                                Model model, @PathVariable("accountkey") String accountkey)
-            throws BusinessCheckException {
+    public String deleteAccount(HttpServletRequest request, HttpServletResponse response, Model model, @PathVariable("accountkey") String accountkey) throws BusinessCheckException {
+        String isDelete = request.getParameter("delete") != null ? request.getParameter("delete") : ""; // 彻底删除
         TAccount tAccount = htAccountServiceImpl.findAccountByKey(accountkey);
-        if(tAccount == null){
+
+        if (tAccount == null) {
             throw new BusinessCheckException("账户不存在.");
         }
+
         ShiroUser shiroUser = ShiroUserHelper.getCurrentShiroUser();
-        if(StringUtil.equals(shiroUser.getAcctName(),tAccount.getAccountName())){
+        if (StringUtil.equals(shiroUser.getAcctName(),tAccount.getAccountName())){
             throw new BusinessCheckException("您不能删除自己.");
         }
-        htAccountServiceImpl.deleteAccount(accountkey);//删除账户
+
+        htAccountServiceImpl.removeAccount(accountkey, isDelete);
+        
         return "redirect:/user/query";
     }
 
@@ -212,9 +211,7 @@ public class AccountController {
      * @throws BusinessCheckException
      */
     @RequestMapping(value = "/profile/{accountkey}", method = RequestMethod.GET)
-    public String profileAccount(HttpServletRequest request, HttpServletResponse response,
-                                 Model model, @PathVariable("accountkey") String accountkey)
-            throws BusinessCheckException {
+    public String profileAccount(HttpServletRequest request, HttpServletResponse response, Model model, @PathVariable("accountkey") String accountkey) throws BusinessCheckException {
         return "account/account_profile";
     }
 
@@ -225,8 +222,7 @@ public class AccountController {
      */
     @RequiresPermissions("user/editpwdinit")
     @RequestMapping(value = "/editpwdinit", method = RequestMethod.GET)
-    public String editpwdinit(HttpServletRequest request, HttpServletResponse response,
-                              Model model) {
+    public String editpwdinit(HttpServletRequest request, HttpServletResponse response, Model model) {
         return "account/account_update_pwd";
     }
 
@@ -237,8 +233,7 @@ public class AccountController {
      */
     @RequiresPermissions("user/editpwd")
     @RequestMapping(value = "/editpwd", method = RequestMethod.POST)
-    public String editpwd(HttpServletRequest request, HttpServletResponse response,
-                          Model model) {
+    public String editpwd(HttpServletRequest request, HttpServletResponse response, Model model) {
         ShiroUser shiroUser = ShiroUserHelper.getCurrentShiroUser();
         TAccount tAccount = htAccountServiceImpl.findAccountById(shiroUser.getId());
         tAccount = (TAccount) RequestHandler.createBean(request, tAccount);

@@ -17,7 +17,8 @@ import java.util.Date;
  */
 @Entity 
 @Table(name = "mt_setting")
-public class MtSetting implements Serializable{
+public class MtSetting implements Serializable {
+
    /**
     * 自增ID 
     */ 

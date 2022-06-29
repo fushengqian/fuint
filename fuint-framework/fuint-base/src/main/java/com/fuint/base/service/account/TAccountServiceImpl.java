@@ -4,10 +4,8 @@
  */
 package com.fuint.base.service.account;
 
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+
 import com.fuint.base.annoation.OperationServiceLog;
 import com.fuint.base.dao.entities.*;
 import com.fuint.base.dao.pagination.PaginationRequest;
@@ -68,6 +66,9 @@ public class TAccountServiceImpl implements TAccountService {
 
     @Override
     public PaginationResponse<TAccount> findAccountsByPagination(PaginationRequest paginationRequest) {
+        Map<String, Object> params = paginationRequest.getSearchParams();
+        params.put("NQ_accountStatus", AccountEnum.ACCOUNT_DELETE + "");
+        paginationRequest.setSearchParams(params);
         return tAccountRepository.findResultsByPagination(paginationRequest);
     }
 
@@ -144,17 +145,24 @@ public class TAccountServiceImpl implements TAccountService {
 
 
     @Override
-    @OperationServiceLog(description = "删除用户")
+    @OperationServiceLog(description = "禁用用户")
     @Transactional
-    public void deleteAccount(String accountKey) throws BusinessCheckException {
+    public void removeAccount(String accountKey, String isDelete) throws BusinessCheckException {
         if (StringUtil.isBlank(accountKey)) {
             throw new BusinessCheckException("账户编码不能为空");
         }
+
         TAccount taccount = tAccountRepository.findByAccountKey(accountKey);
         if (taccount == null) {
             throw new BusinessCheckException("账户不存在");
         }
-        taccount.setAccountStatus(AccountEnum.ACCOUNT_NO_VALID);
+
+        if (StringUtil.isNotEmpty(isDelete)) {
+            taccount.setAccountStatus(AccountEnum.ACCOUNT_DELETE);
+        } else {
+            taccount.setAccountStatus(AccountEnum.ACCOUNT_NO_VALID);
+        }
+
         this.tAccountRepository.merge(taccount);
     }
 

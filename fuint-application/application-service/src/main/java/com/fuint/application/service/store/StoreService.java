@@ -67,13 +67,14 @@ public interface StoreService {
     MtStoreDto queryStoreDtoById(Integer id) throws BusinessCheckException, InvocationTargetException, IllegalAccessException;
 
     /**
-     * 根据店铺ID 删除店铺信息
+     * 更新店铺状态
      *
      * @param id       店铺ID
      * @param operator 操作人
+     * @param status   状态
      * @throws BusinessCheckException
      */
-    void deleteStore(Integer id, String operator) throws BusinessCheckException;
+    void updateStatus(Integer id, String operator, String status) throws BusinessCheckException;
 
     /**
      * 根据条件查询店铺

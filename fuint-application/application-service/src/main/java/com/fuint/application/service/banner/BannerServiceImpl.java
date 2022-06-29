@@ -13,7 +13,6 @@ import com.fuint.application.enums.StatusEnum;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
@@ -46,7 +45,7 @@ public class BannerServiceImpl implements BannerService {
      * @return
      */
     @Override
-    public PaginationResponse<MtBanner> queryBannerListByPagination(PaginationRequest paginationRequest) throws BusinessCheckException {
+    public PaginationResponse<MtBanner> queryBannerListByPagination(PaginationRequest paginationRequest) {
         PaginationResponse<MtBanner> paginationResponse = bannerRepository.findResultsByPagination(paginationRequest);
         return paginationResponse;
     }

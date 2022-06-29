@@ -29,4 +29,15 @@ public interface PointService {
      * @throws BusinessCheckException
      */
     void addPoint(MtPoint reqPointDto) throws BusinessCheckException;
+
+    /**
+     * 转赠积分
+     *
+     * @param userId
+     * @param mobile
+     * @param amount
+     * @param remark
+     * @throws BusinessCheckException
+     */
+    boolean doGift(Integer userId, String mobile, Integer amount, String remark) throws BusinessCheckException;
 }

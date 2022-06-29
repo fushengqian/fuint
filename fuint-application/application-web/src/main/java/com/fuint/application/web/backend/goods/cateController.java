@@ -1,7 +1,9 @@
 package com.fuint.application.web.backend.goods;
 
+import com.fuint.application.enums.StatusEnum;
 import com.fuint.application.service.setting.SettingService;
 import com.fuint.application.util.CommonUtil;
+import com.fuint.base.shiro.ShiroUser;
 import com.fuint.exception.BusinessCheckException;
 import com.fuint.base.shiro.util.ShiroUserHelper;
 import com.fuint.application.dao.entities.*;
@@ -40,7 +42,7 @@ public class cateController {
     private SettingService settingService;
 
     /**
-     * 查询列表
+     * 商品分类列表
      *
      * @param request
      * @param response
@@ -52,6 +54,8 @@ public class cateController {
     @RequiresPermissions("/backend/goods/cate/list")
     public String queryList(HttpServletRequest request, HttpServletResponse response, Model model) throws BusinessCheckException {
         PaginationRequest paginationRequest = RequestHandler.buildPaginationRequest(request, model);
+        paginationRequest.getSearchParams().put("NQ_status", StatusEnum.DISABLE.getKey());
+        paginationRequest.setSortColumn(new String[]{"status asc", "createTime asc"});
         PaginationResponse<MtGoodsCate> paginationResponse = cateService.queryCateListByPagination(paginationRequest);
 
         String imagePath = settingService.getUploadBasePath();
@@ -72,17 +76,20 @@ public class cateController {
      */
     @RequiresPermissions("backend/goods/cate/delete")
     @RequestMapping(value = "/delete/{id}")
-    @ResponseBody
-    public ReqResult delete(HttpServletRequest request, HttpServletResponse response, Model model, @PathVariable("id") Integer id) throws BusinessCheckException {
-        List<Integer> ids = new ArrayList<>();
-        ids.add(id);
+    public String delete(HttpServletRequest request, HttpServletResponse response, Model model, @PathVariable("id") Integer id) throws BusinessCheckException {
+        ShiroUser shiroUser = ShiroUserHelper.getCurrentShiroUser();
 
-        String operator = ShiroUserHelper.getCurrentShiroUser().getAcctName();
+        if (shiroUser == null) {
+            return "redirect:/login";
+        }
+
+        String operator = shiroUser.getAcctName();
         cateService.deleteCate(id, operator);
 
         ReqResult reqResult = new ReqResult();
         reqResult.setResult(true);
-        return reqResult;
+
+        return "redirect:/backend/goods/cate/list";
     }
 
     /**

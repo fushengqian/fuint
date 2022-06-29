@@ -34,7 +34,7 @@
                     </select>
                 </div>
                 <div class="col-md-6 item">
-                     <button type="button" class="btn btn-sm btn-success" onclick="postDataByForm('backend/member/queryList','displayArea','memberForm')"><i class="fa fa-search"></i>查询</button>
+                     <button type="button" id="doSearch" class="btn btn-sm btn-success" onclick="postDataByForm('backend/member/queryList','displayArea','memberForm')"><i class="fa fa-search"></i>查询</button>
                      <button type="button" class="btn btn-sm btn-danger" onclick="getData('${rc.contextPath}/backend/member/add','displayArea')"><i class="fa fa-plus"></i>新增会员</button>
                 </div>
             </div>
@@ -82,9 +82,12 @@
                         <td><#if (ct.birthday)>${ct.birthday}<#else>-</#if></td>
                         <td>
                             <p style="color:red;"><#if (ct.balance > 0)>${ct.balance}<#else>0.0</#if></p>
-                            <p class="status-normal" onclick="doRecharge(${ct.id})">充值</p>
+                            <p class="operate-btn" onclick="doRecharge(${ct.id})">充值</p>
                         </td>
-                        <td><#if (ct.point)>${ct.point}<#else>0</#if></td>
+                        <td>
+                            <p><#if (ct.point)>${ct.point}<#else>0</#if></p>
+                            <p class="operate-btn" onclick="doPoint(${ct.id})">变更</p>
+                        </td>
                         <td>
                         <#if ct.status == "A">
                             <span class="status-active">激活</span>
@@ -119,6 +122,10 @@
 <script type="application/javascript">
     // 会员充值
     function doRecharge(userId) {
-        alterpage('${rc.contextPath}/backend/balance/recharge?userId=' + userId, "会员充值");
+        alterpage('${rc.contextPath}/backend/balance/recharge?userId=' + userId, "会员余额变更");
+    }
+    // 积分充值
+    function doPoint(userId) {
+        alterpage('${rc.contextPath}/backend/point/recharge?userId=' + userId, "会员积分变更");
     }
 </script>

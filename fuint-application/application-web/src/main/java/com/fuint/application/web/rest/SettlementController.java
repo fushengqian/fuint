@@ -175,7 +175,14 @@ public class SettlementController extends BaseController {
         orderDto.setOperator(operator);
         orderDto.setPayType(payType);
         orderDto.setCouponId(0);
-        orderDto.setUsePoint(usePoint);
+
+        MtSetting pointSetting = settingService.querySettingByName(PointSettingEnum.CAN_USE_AS_MONEY.getKey());
+        if (pointSetting != null && pointSetting.getValue().equals("true")) {
+            orderDto.setUsePoint(usePoint);
+        } else {
+            orderDto.setUsePoint(0);
+        }
+
         orderDto.setPointAmount(new BigDecimal("0"));
         orderDto.setDiscount(new BigDecimal("0"));
         orderDto.setPayAmount(new BigDecimal("0"));

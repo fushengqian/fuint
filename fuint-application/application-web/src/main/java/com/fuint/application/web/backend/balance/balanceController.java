@@ -58,6 +58,9 @@ public class balanceController {
     @Autowired
     private BalanceService balanceService;
 
+    /**
+     * 会员服务接口
+     * */
     @Autowired
     private MemberService memberService;
 
@@ -100,7 +103,7 @@ public class balanceController {
     }
 
     /**
-     * 提交保存
+     * 提交充值
      *
      * @param request  HttpServletRequest对象
      * @param response HttpServletResponse对象
@@ -113,6 +116,8 @@ public class balanceController {
         String amount = request.getParameter("amount") == null ? "0" : request.getParameter("amount");
         String remark = request.getParameter("remark") == null ? "后台充值" : request.getParameter("remark");
         Integer userId = request.getParameter("userId") == null ? 0 : Integer.parseInt(request.getParameter("userId"));
+        Integer type = request.getParameter("type") == null ? 1 : Integer.parseInt(request.getParameter("type"));
+
         ShiroUser shiroUser = ShiroUserHelper.getCurrentShiroUser();
 
         ReqResult reqResult = new ReqResult();
@@ -138,7 +143,13 @@ public class balanceController {
         String operator = shiroUser.getAcctName();
 
         MtBalance mtBalance = new MtBalance();
-        mtBalance.setAmount(new BigDecimal(amount));
+
+        if (type == 2) {
+            // 扣减
+            mtBalance.setAmount(new BigDecimal(amount).subtract(new BigDecimal(amount).multiply(new BigDecimal("2"))));
+        } else {
+            mtBalance.setAmount(new BigDecimal(amount));
+        }
         mtBalance.setDescription(remark);
         mtBalance.setUserId(userId);
         mtBalance.setOperator(operator);

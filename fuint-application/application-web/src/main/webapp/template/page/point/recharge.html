@@ -2,8 +2,9 @@
 <link href="<@sp.static/>/assets/css/style.min.css?v=1.8.1" rel="stylesheet"/>
 <link href="<@sp.static/>/css/style.css?v=1.8.1" rel="stylesheet"/>
 <link href="<@sp.static/>/assets/plugins/datatables/css/data-table.css?v=1.8.1" rel="stylesheet"/>
+
 <div class="iframe-base">
-    <div class="iframe-panel" data-sortable-id="form-stuff-5">
+    <div class="iframe-panel">
         <div class="panel-body">
             <form class="form-horizontal do-confirm-form" id="confirmForm" name="confirmForm" action="" method="post">
                 <input type="hidden" id="userId" name="userId" value="${userInfo.id}">
@@ -15,9 +16,9 @@
                     </div>
                 </div>
                 <div class="form-group m-l-10">
-                    <label class="col-md-2 control-label">可用余额</label>
+                    <label class="col-md-2 control-label">可用积分</label>
                     <div class="col-md-8">
-                        <input type="text" class="form-control remark" id="balance" disabled name="balance" placeholder="可用余额" value="${userInfo.balance}元">
+                        <input type="text" class="form-control" id="point" disabled name="point" placeholder="可用积分" value="${userInfo.point}分">
                     </div>
                 </div>
                 <div class="form-group m-l-10">
@@ -30,9 +31,9 @@
                     </div>
                 </div>
                 <div class="form-group m-l-10">
-                    <label class="col-md-2 control-label"><span style="color:red;">*</span>变更金额</label>
+                    <label class="col-md-2 control-label"><span style="color:red;">*</span>变更数量</label>
                     <div class="col-md-8">
-                        <input type="text" class="form-control remark" id="amount" name="amount" placeholder="变更金额，单位：元" value="">
+                        <input type="text" class="form-control remark" id="amount" name="amount" placeholder="充值积分，单位：分" value="">
                     </div>
                 </div>
                 <div class="form-group m-l-10">
@@ -62,33 +63,34 @@
 <script src="<@sp.static/>/js/custom/send.js?v=1.8.1" type="text/javascript" charset="UTF-8"></script>
 <script type="text/javascript" language="JavaScript">
     $(function () {
-        $('#submitButton').click(function() {
+        $('#submitButton').click(function () {
             let amount = $("#amount").val();
             if (amount.length < 1) {
-                layer.alert("请先输入变更金额！");
+                layer.alert("请先输入积分变更数量！");
                 return false;
             }
 
-            if (amount <= 0) {
-                layer.alert("变更金额格式有误！");
+            if (amount < 1) {
+                layer.alert("积分变更数量格式有误！");
                 return false;
             }
 
-            layer.confirm('您确定提交余额变更吗？', {
+            layer.confirm('您确定提交积分变更吗？', {
                 btn: ['确定', '取消']
             }, function () {
                 $.ajax({
                     type: "POST",
                     data:{"userId": $("#userId").val(), "amount": $("#amount").val(), "type": $("input[name='type']:checked").val(), "remark": $("#remark").val()},
-                    url: "${rc.contextPath}/backend/balance/doRecharge",
+                    url: "${rc.contextPath}/backend/point/doRecharge",
                     success: function (data) {
                         if (data.result) {
-                            layer.alert("恭喜，余额变更成功！");
-                            $('#amount').val("");
-                            $('#remark').val("");
-                            $('#balance').val(data.data.userInfo.balance + '元');
-                            parent.$("#doSearch").click();
-                            $('#submitCancel').click()
+                            layer.alert("恭喜，积分变更成功！", function(){
+                                $('#amount').val("");
+                                $('#remark').val("");
+                                $('#point').val(data.data.userInfo.point + '分');
+                                parent.$("#doSearch").click();
+                                $('#submitCancel').click()
+                            });
                             return;
                         } else {
                             layer.alert(data.msg);

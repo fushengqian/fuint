@@ -14,6 +14,7 @@ import java.util.Map;
  * Site https://www.fuint.cn
  */
 public interface CateService {
+
     /**
      * 分页查询列表
      *

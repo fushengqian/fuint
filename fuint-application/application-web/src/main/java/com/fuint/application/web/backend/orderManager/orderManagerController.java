@@ -26,11 +26,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * 订单管理controller
@@ -70,6 +68,8 @@ public class orderManagerController {
         }
 
         PaginationRequest paginationRequest = RequestHandler.buildPaginationRequest(request, model);
+        paginationRequest.getSearchParams().put("NQ_status", OrderStatusEnum.DELETED.getKey());
+        paginationRequest.setSortColumn(new String[]{"status asc", "createTime desc"});
         Map<String, Object> params = paginationRequest.getSearchParams();
 
         Map<String, Object> param = new HashMap<>();
@@ -300,5 +300,32 @@ public class orderManagerController {
         reqResult.setData(data);
 
         return reqResult;
+    }
+
+    /**
+     * 删除订单
+     *
+     * @param request
+     * @param response
+     * @param model
+     * @return
+     */
+    @RequiresPermissions("backend/order/delete")
+    @RequestMapping(value = "/delete/{id}")
+    public String delete(HttpServletRequest request, HttpServletResponse response, Model model, @PathVariable("id") Integer id) throws BusinessCheckException {
+        ShiroUser shiroUser = ShiroUserHelper.getCurrentShiroUser();
+
+        if (shiroUser == null) {
+            return "redirect:/login";
+        }
+
+        String operator = shiroUser.getAcctName();
+
+        orderService.deleteOrder(id, operator);
+
+        ReqResult reqResult = new ReqResult();
+        reqResult.setResult(true);
+
+        return "redirect:/backend/order/list";
     }
 }

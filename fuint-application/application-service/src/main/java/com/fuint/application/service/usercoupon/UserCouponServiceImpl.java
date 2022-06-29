@@ -166,6 +166,7 @@ public class UserCouponServiceImpl extends BaseService implements UserCouponServ
             reqPointDto.setUserId(userId);
             reqPointDto.setAmount(-couponInfo.getPoint());
             reqPointDto.setDescription("领取"+ couponInfo.getName() + "扣除" +couponInfo.getPoint() +"积分");
+            reqPointDto.setOperator("");
             pointService.addPoint(reqPointDto);
         }
 
