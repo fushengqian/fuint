@@ -27,7 +27,7 @@
         <junit.version>4.12</junit.version>
         <jackson.version>2.7.5</jackson.version>
         <hibernateentity.version>5.0.9.Final</hibernateentity.version>
-        <jpa.version>1.7.3.RELEASE</jpa.version>
+        <jpa.version>1.11.23.RELEASE</jpa.version>
         <logbackspring.version>0.1.4</logbackspring.version>
         <commonscode.version>1.10</commonscode.version>
         <freemarker.version>2.3.23</freemarker.version>
