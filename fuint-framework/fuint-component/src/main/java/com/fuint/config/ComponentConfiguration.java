@@ -11,9 +11,10 @@ import java.util.Properties;
 
 /**
  * 组件配置
- * <p/>
+ *
  * Created by FSQ
  * Contact wx fsq_better
+ * Site https://www.fuint.cn
  */
 @Configuration
 public class ComponentConfiguration {
@@ -37,6 +38,4 @@ public class ComponentConfiguration {
         }
         return defaultKaptcha;
     }
-
-
 }

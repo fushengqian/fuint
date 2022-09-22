@@ -31,7 +31,7 @@ import java.util.Properties;
 /**
  * shiro认证服务配置类
  *
- * @author fsq
+ * @author FSQ
  * @version $Id: ShiroConfiguration.java
  */
 @Configuration

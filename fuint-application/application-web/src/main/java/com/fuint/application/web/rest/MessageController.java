@@ -1,5 +1,6 @@
 package com.fuint.application.web.rest;
 
+import com.alibaba.fastjson.JSONObject;
 import com.fuint.application.dao.entities.MtMessage;
 import com.fuint.application.dao.entities.MtSetting;
 import com.fuint.application.enums.SettingTypeEnum;
@@ -7,9 +8,7 @@ import com.fuint.application.service.message.MessageService;
 import com.fuint.application.service.setting.SettingService;
 import com.fuint.exception.BusinessCheckException;
 import com.fuint.application.service.token.TokenService;
-import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.fuint.util.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -18,10 +17,7 @@ import com.fuint.application.ResponseObject;
 import com.fuint.application.dao.entities.MtUser;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * 消息相关controller
@@ -33,10 +29,8 @@ import java.util.Map;
 @RequestMapping(value = "/rest/message")
 public class MessageController extends BaseController {
 
-    private static final Logger logger = LoggerFactory.getLogger(MyCouponController.class);
-
     /**
-     * 积分服务接口
+     * 消息服务接口
      */
     @Autowired
     private MessageService messageService;
@@ -63,7 +57,7 @@ public class MessageController extends BaseController {
     public ResponseObject getOne(HttpServletRequest request, HttpServletResponse response, Model model) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
 
-        if (StringUtils.isEmpty(token)) {
+        if (StringUtil.isEmpty(token)) {
             return getSuccessResult(false);
         }
 
@@ -111,20 +105,14 @@ public class MessageController extends BaseController {
      */
     @RequestMapping(value = "/wxPush", method = RequestMethod.GET)
     @CrossOrigin
-    public ResponseObject wxPush(HttpServletRequest request) throws BusinessCheckException {
-        String token = request.getHeader("Access-Token");
-        MtUser mtUser = tokenService.getUserInfoByToken(token);
+    public String wxPush(HttpServletRequest request) {
+        String echostr =  request.getParameter("echostr") == null ? "" : request.getParameter("echostr");
 
-        Integer msgId =  request.getParameter("msgId") == null ? 0 :Integer.parseInt(request.getParameter("msgId"));
-
-        if (null == mtUser) {
-            return getSuccessResult(false);
+        if (StringUtil.isNotEmpty(echostr)) {
+            return echostr;
         }
 
-        messageService.readMessage(msgId);
-
-        ResponseObject responseObject = getSuccessResult(true);
-        return getSuccessResult(responseObject.getData());
+        return "";
     }
 
     /**
@@ -140,7 +128,17 @@ public class MessageController extends BaseController {
         List<MtSetting> settingList = settingService.getSettingList(SettingTypeEnum.SUB_MESSAGE.getKey());
         for (MtSetting mtSetting : settingList) {
             if (keys.indexOf(mtSetting.getName()) >= 0) {
-                dataList.add(mtSetting.getValue());
+                try {
+                    JSONObject jsonObject = JSONObject.parseObject(mtSetting.getValue());
+                    if (jsonObject != null) {
+                        String templateId = jsonObject.get("templateId").toString();
+                        if (StringUtil.isNotEmpty(templateId)) {
+                            dataList.add(templateId);
+                        }
+                    }
+                } catch (Exception e) {
+                    // empty
+                }
             }
         }
 

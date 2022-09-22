@@ -11,7 +11,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 /**
  * 自定义密码尝试次数管理器
  * 
- * @author fsq
+ * @author FSQ
  * @version $Id: RetryLimitHashedCredentialsMatcher.java
  */
 public class RetryLimitHashedCredentialsMatcher extends HashedCredentialsMatcher {

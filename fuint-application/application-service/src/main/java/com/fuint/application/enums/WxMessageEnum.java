@@ -7,6 +7,7 @@ package com.fuint.application.enums;
  * Site https://www.fuint.cn
  */
 public enum WxMessageEnum {
+    ORDER_CREATED("orderCreated", "订单生成提醒"),
     DELIVER_GOODS("deliverGoods", "订单发货提醒"),
     COUPON_EXPIRE("couponExpire", "卡券到期提醒"),
     COUPON_ARRIVAL("couponArrival", "卡券到账提醒"),

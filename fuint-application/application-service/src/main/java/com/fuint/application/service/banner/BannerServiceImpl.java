@@ -133,14 +133,25 @@ public class BannerServiceImpl implements BannerService {
         }
 
         MtBanner.setId(bannerDto.getId());
-        MtBanner.setImage(bannerDto.getImage());
-        MtBanner.setTitle(bannerDto.getTitle());
-        MtBanner.setDescription(bannerDto.getDescription());
+        if (bannerDto.getImage() != null) {
+            MtBanner.setImage(bannerDto.getImage());
+        }
+        if (bannerDto.getTitle() != null) {
+            MtBanner.setTitle(bannerDto.getTitle());
+        }
+        if (bannerDto.getDescription() != null) {
+            MtBanner.setDescription(bannerDto.getDescription());
+        }
+        if (bannerDto.getOperator() != null) {
+            MtBanner.setOperator(bannerDto.getOperator());
+        }
+        if (bannerDto.getStatus() != null) {
+            MtBanner.setStatus(bannerDto.getStatus());
+        }
+        if (bannerDto.getUrl() != null) {
+            MtBanner.setUrl(bannerDto.getUrl());
+        }
         MtBanner.setUpdateTime(new Date());
-        MtBanner.setOperator(bannerDto.getOperator());
-        MtBanner.setStatus(bannerDto.getStatus());
-        MtBanner.setUrl(bannerDto.getUrl());
-        MtBanner.setOperator(bannerDto.getOperator());
 
         return bannerRepository.save(MtBanner);
     }

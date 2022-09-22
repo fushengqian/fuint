@@ -39,8 +39,7 @@ public class VerifyCodeServiceImpl implements VerifyCodeService {
      * @param verifycode
      * @throws BusinessCheckException
      */
-    public MtVerifyCode addVerifyCode(String mobile, String verifycode,Integer expireSecond) throws BusinessCheckException
-    {
+    public MtVerifyCode addVerifyCode(String mobile, String verifycode,Integer expireSecond) {
         if (null == expireSecond || expireSecond<0) {
             expireSecond=0;
         }
@@ -59,10 +58,10 @@ public class VerifyCodeServiceImpl implements VerifyCodeService {
 
             reqVerifyCodeDto.setAddtime(addTime);
 
-            //验证码过期时间2分钟
-            addTime.setTime(addTime.getTime()+2*60*1000);
-            Date expiretime = addTime;
-            reqVerifyCodeDto.setExpiretime(expiretime);
+            //验证码过期时间5分钟
+            addTime.setTime(addTime.getTime()+5*60*1000);
+            Date expireTime = addTime;
+            reqVerifyCodeDto.setExpiretime(expireTime);
         } catch (ParseException e) {
             throw new BusinessRuntimeException("日期转换异常" + e.getMessage());
         }
@@ -131,8 +130,8 @@ public class VerifyCodeServiceImpl implements VerifyCodeService {
      * @throws BusinessCheckException
      */
     public MtVerifyCode checkVerifyCode(String mobile, String verifycode) {
-        MtVerifyCode  reVerifyCode = null;
-        Date queryTime = new Date();
+        MtVerifyCode  reVerifyCode;
+        Date queryTime;
         try {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             String dt = sdf.format(new Date());

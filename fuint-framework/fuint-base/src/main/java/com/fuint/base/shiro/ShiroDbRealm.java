@@ -19,8 +19,9 @@ import org.springframework.context.annotation.Lazy;
 /**
  * shiro认证授权realm实现类
  *
- * @author fsq
- * @version $Id: ShiroDbRealm.java
+ * Created by FSQ
+ * Contact wx fsq_better
+ * Site https://www.fuint.cn
  */
 public class ShiroDbRealm extends AuthorizingRealm {
 

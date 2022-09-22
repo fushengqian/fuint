@@ -8,7 +8,7 @@ import com.fuint.base.util.RequestHandler;
 import com.fuint.exception.BusinessCheckException;
 import com.fuint.application.service.point.PointService;
 import com.fuint.application.service.token.TokenService;
-import org.apache.commons.lang.StringUtils;
+import com.fuint.util.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -52,7 +52,7 @@ public class PointsController extends BaseController {
     public ResponseObject list(HttpServletRequest request, HttpServletResponse response, Model model) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
 
-        if (StringUtils.isEmpty(token)) {
+        if (StringUtil.isEmpty(token)) {
             return getFailureResult(1001);
         }
 
@@ -83,7 +83,7 @@ public class PointsController extends BaseController {
     public ResponseObject doGive(HttpServletRequest request, @RequestBody Map<String, Object> param) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
 
-        if (StringUtils.isEmpty(token)) {
+        if (StringUtil.isEmpty(token)) {
             return getFailureResult(1001);
         }
 

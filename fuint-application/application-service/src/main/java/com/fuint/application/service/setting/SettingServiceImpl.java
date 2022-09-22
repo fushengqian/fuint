@@ -5,7 +5,7 @@ import com.fuint.application.dao.repositories.MtSettingRepository;
 import com.fuint.application.enums.StatusEnum;
 import com.fuint.base.annoation.OperationServiceLog;
 import com.fuint.exception.BusinessCheckException;
-import org.apache.commons.lang.StringUtils;
+import com.fuint.util.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
@@ -58,7 +58,7 @@ public class SettingServiceImpl implements SettingService {
             if (reqDto.getDescription() != null) {
                 info.setDescription(reqDto.getDescription());
             }
-            if (StringUtils.isNotEmpty(reqDto.getOperator())) {
+            if (StringUtil.isNotEmpty(reqDto.getOperator())) {
                 info.setOperator(reqDto.getOperator());
             }
             if (reqDto.getUpdateTime() != null) {
@@ -99,12 +99,12 @@ public class SettingServiceImpl implements SettingService {
      */
     @Override
     public MtSetting querySettingByName(String name) {
-        MtSetting setting = settingRepository.querySettingByName(name);
-        return setting;
+        return settingRepository.querySettingByName(name);
     }
 
     /**
      * 获取系统上传的根路径
+     * @return
      * */
     @Override
     public String getUploadBasePath() {
@@ -116,7 +116,7 @@ public class SettingServiceImpl implements SettingService {
         } else {
             if (mode.equals("1")) {
                 String domain = env.getProperty("aliyun.oss.domain");
-                if (StringUtils.isNotEmpty(domain)) {
+                if (StringUtil.isNotEmpty(domain)) {
                     basePath = domain;
                 }
             }

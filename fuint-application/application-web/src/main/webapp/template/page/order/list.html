@@ -273,10 +273,10 @@
                 url: "${rc.contextPath}/backend/order/delivered",
                 success: function (data) {
                     if (data.result) {
-                        layer.alert('发货成功！');
+                        layer.alert('恭喜，确认发货成功！');
                         return;
                     } else {
-                        layer.alert('抱歉，发货失败！');
+                        layer.alert('抱歉，确认发货失败！');
                         return;
                     }
                 }

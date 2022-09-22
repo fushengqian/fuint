@@ -1,5 +1,5 @@
-const serverBase = '/fuint-application';
-
+window.fuintBaseUrl = window.fuintBaseUrl ? window.fuintBaseUrl : ''
+const serverBase = fuintBaseUrl;
 let curGoodsInfo = null;
 
 // 左侧点击过滤商品类型
@@ -537,6 +537,9 @@ const doCash = function() {
                         }
                     }
 
+                    $("#doCash").removeAttr("disabled");
+                } else {
+                    layer.alert(data.message);
                     $("#doCash").removeAttr("disabled");
                 }
             }

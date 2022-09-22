@@ -13,8 +13,8 @@ import com.fuint.application.util.DateUtil;
 import com.fuint.exception.BusinessCheckException;
 import com.fuint.application.ResponseObject;
 import com.fuint.application.BaseController;
+import com.fuint.util.StringUtil;
 import org.apache.commons.beanutils.BeanUtils;
-import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
@@ -118,11 +118,15 @@ public class CouponApiController extends BaseController {
         String token = request.getHeader("Access-Token");
         MtUser mtUser = tokenService.getUserInfoByToken(token);
 
-        Integer couponId = param.get("couponId") == null ? 0 : Integer.parseInt(param.get("couponId").toString());
+        String couponIdStr = param.get("couponId") == null ? "0" : param.get("couponId").toString();
         String userCouponCode = param.get("userCouponCode") == null ? "" : param.get("userCouponCode").toString();
+        Integer couponId = 0;
+        if (StringUtil.isNotEmpty(couponIdStr)) {
+            couponId = Integer.parseInt(couponIdStr);
+        }
 
         MtCoupon couponInfo = new MtCoupon();
-        if (StringUtils.isNotEmpty(userCouponCode)) {
+        if (StringUtil.isNotEmpty(userCouponCode)) {
             MtUserCoupon userCouponInfo = userCouponRepository.findByCode(userCouponCode);
             if (userCouponInfo != null) {
                 couponInfo = couponService.queryCouponById(userCouponInfo.getCouponId());
@@ -131,7 +135,7 @@ public class CouponApiController extends BaseController {
             couponInfo = couponService.queryCouponById(couponId);
         }
 
-        if (couponInfo.getId() == null) {
+        if (couponInfo == null) {
             return getFailureResult(201);
         }
 

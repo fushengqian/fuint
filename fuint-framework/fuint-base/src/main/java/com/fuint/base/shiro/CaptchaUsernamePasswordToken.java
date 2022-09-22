@@ -4,9 +4,10 @@ import org.apache.shiro.authc.UsernamePasswordToken;
 
 /**
  * 用户 密码 验证码 token
- * <p/>
+ *
  * Created by FSQ
  * Contact wx fsq_better
+ * Site https://www.fuint.cn
  */
 public class CaptchaUsernamePasswordToken extends UsernamePasswordToken {
 

@@ -16,7 +16,7 @@ import com.fuint.application.service.coupongroup.CouponGroupService;
 import com.fuint.application.service.member.MemberService;
 import com.fuint.application.service.sms.SendSmsInterface;
 import org.apache.commons.collections.MapUtils;
-import org.apache.commons.lang.StringUtils;
+import com.fuint.util.StringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -133,39 +133,39 @@ public class GiveServiceImpl extends BaseService implements GiveService {
         StringBuffer queryStr = new StringBuffer();
         queryStr.append("SELECT * from mt_give t where t.status='A' ");
 
-        if (params.get("EQ_userMobile") != null && StringUtils.isNotEmpty(params.get("EQ_userMobile").toString())) {
+        if (params.get("EQ_userMobile") != null && StringUtil.isNotEmpty(params.get("EQ_userMobile").toString())) {
             queryStr.append(" and t.user_mobile like '%" + params.get("EQ_userMobile").toString().trim() + "%' ");
         }
 
-        if (params.get("EQ_mobile") != null && StringUtils.isNotEmpty(params.get("EQ_mobile").toString())) {
+        if (params.get("EQ_mobile") != null && StringUtil.isNotEmpty(params.get("EQ_mobile").toString())) {
             queryStr.append(" AND t.mobile ='" + params.get("EQ_mobile").toString().trim() + "'");
         }
 
-        if (params.get("EQ_userId") != null && StringUtils.isNotEmpty(params.get("EQ_userId").toString())) {
+        if (params.get("EQ_userId") != null && StringUtil.isNotEmpty(params.get("EQ_userId").toString())) {
             queryStr.append(" AND t.user_id ='" + params.get("EQ_userId").toString().trim() + "'");
         }
 
-        if (params.get("EQ_storeId") != null && StringUtils.isNotEmpty(params.get("EQ_storeId").toString())) {
+        if (params.get("EQ_storeId") != null && StringUtil.isNotEmpty(params.get("EQ_storeId").toString())) {
             queryStr.append(" AND t.store_id ='" + params.get("EQ_storeId").toString().trim() + "'");
         }
 
-        if (params.get("EQ_giveUserId") != null && StringUtils.isNotEmpty(params.get("EQ_giveUserId").toString())) {
+        if (params.get("EQ_giveUserId") != null && StringUtil.isNotEmpty(params.get("EQ_giveUserId").toString())) {
             queryStr.append(" AND t.give_user_id ='" + params.get("EQ_giveUserId").toString().trim() + "'");
         }
 
-        if (params.get("LIKE_groupIds") != null && StringUtils.isNotEmpty(params.get("LIKE_groupIds").toString())) {
+        if (params.get("LIKE_groupIds") != null && StringUtil.isNotEmpty(params.get("LIKE_groupIds").toString())) {
             queryStr.append(" AND find_in_set("+params.get("LIKE_groupIds").toString().trim()+", t.group_ids) > 0 ");
         }
 
-        if (params.get("LIKE_groupNames") != null && StringUtils.isNotEmpty(params.get("LIKE_groupNames").toString())) {
+        if (params.get("LIKE_groupNames") != null && StringUtil.isNotEmpty(params.get("LIKE_groupNames").toString())) {
             queryStr.append(" and t.group_names like '%" + params.get("LIKE_groupNames").toString().trim() + "%' ");
         }
 
-        if (params.get("LIKE_couponIds") != null && StringUtils.isNotEmpty(params.get("LIKE_couponIds").toString())) {
+        if (params.get("LIKE_couponIds") != null && StringUtil.isNotEmpty(params.get("LIKE_couponIds").toString())) {
             queryStr.append(" AND find_in_set("+params.get("LIKE_couponIds").toString().trim()+", t.coupon_ids) > 0 ");
         }
 
-        if (params.get("LIKE_couponNames") != null && StringUtils.isNotEmpty(params.get("LIKE_couponNames").toString())) {
+        if (params.get("LIKE_couponNames") != null && StringUtil.isNotEmpty(params.get("LIKE_couponNames").toString())) {
             queryStr.append(" and t.coupon_names like '%" + params.get("LIKE_couponNames").toString().trim() + "%' ");
         }
 
@@ -184,39 +184,39 @@ public class GiveServiceImpl extends BaseService implements GiveService {
         queryStr.append("select count(DISTINCT(t.id)) from mt_give t " +
                 "where t.status='A' ");
 
-        if (params.get("EQ_userMobile") != null && StringUtils.isNotEmpty(params.get("EQ_userMobile").toString())) {
+        if (params.get("EQ_userMobile") != null && StringUtil.isNotEmpty(params.get("EQ_userMobile").toString())) {
             queryStr.append(" and t.user_mobile like '%" + params.get("EQ_userMobile").toString().trim() + "%' ");
         }
 
-        if (params.get("EQ_mobile") != null && StringUtils.isNotEmpty(params.get("EQ_mobile").toString())) {
+        if (params.get("EQ_mobile") != null && StringUtil.isNotEmpty(params.get("EQ_mobile").toString())) {
             queryStr.append(" AND t.mobile ='" + params.get("EQ_mobile").toString().trim() + "'");
         }
 
-        if (params.get("EQ_userId") != null && StringUtils.isNotEmpty(params.get("EQ_userId").toString())) {
+        if (params.get("EQ_userId") != null && StringUtil.isNotEmpty(params.get("EQ_userId").toString())) {
             queryStr.append(" AND t.user_id ='" + params.get("EQ_userId").toString().trim() + "'");
         }
 
-        if (params.get("EQ_storeId") != null && StringUtils.isNotEmpty(params.get("EQ_storeId").toString())) {
+        if (params.get("EQ_storeId") != null && StringUtil.isNotEmpty(params.get("EQ_storeId").toString())) {
             queryStr.append(" AND t.store_id ='" + params.get("EQ_storeId").toString().trim() + "'");
         }
 
-        if (params.get("EQ_giveUserId") != null && StringUtils.isNotEmpty(params.get("EQ_giveUserId").toString())) {
+        if (params.get("EQ_giveUserId") != null && StringUtil.isNotEmpty(params.get("EQ_giveUserId").toString())) {
             queryStr.append(" AND t.give_user_id ='" + params.get("EQ_giveUserId").toString().trim() + "'");
         }
 
-        if (params.get("LIKE_groupIds") != null && StringUtils.isNotEmpty(params.get("LIKE_groupIds").toString())) {
+        if (params.get("LIKE_groupIds") != null && StringUtil.isNotEmpty(params.get("LIKE_groupIds").toString())) {
             queryStr.append(" AND find_in_set("+params.get("LIKE_groupIds").toString().trim()+", t.group_ids) > 0 ");
         }
 
-        if (params.get("LIKE_groupNames") != null && StringUtils.isNotEmpty(params.get("LIKE_groupNames").toString())) {
+        if (params.get("LIKE_groupNames") != null && StringUtil.isNotEmpty(params.get("LIKE_groupNames").toString())) {
             queryStr.append(" and t.group_names like '%" + params.get("LIKE_groupNames").toString().trim() + "%' ");
         }
 
-        if (params.get("LIKE_couponIds") != null && StringUtils.isNotEmpty(params.get("LIKE_couponIds").toString())) {
+        if (params.get("LIKE_couponIds") != null && StringUtil.isNotEmpty(params.get("LIKE_couponIds").toString())) {
             queryStr.append(" AND find_in_set("+params.get("LIKE_couponIds").toString().trim()+", t.coupon_ids) > 0 ");
         }
 
-        if (params.get("LIKE_couponNames") != null && StringUtils.isNotEmpty(params.get("LIKE_couponNames").toString())) {
+        if (params.get("LIKE_couponNames") != null && StringUtil.isNotEmpty(params.get("LIKE_couponNames").toString())) {
             queryStr.append(" and t.coupon_names like '%" + params.get("LIKE_couponNames").toString().trim() + "%' ");
         }
 
@@ -248,11 +248,11 @@ public class GiveServiceImpl extends BaseService implements GiveService {
         Integer userId = paramMap.get("userId") == null ? 0 : (Integer) paramMap.get("userId");
         Integer storeId = paramMap.get("storeId") == null ? 0 : (Integer) paramMap.get("storeId");
 
-        if (StringUtils.isEmpty(mobile) || mobile.length() > 11 || mobile.length() < 11) {
+        if (StringUtil.isEmpty(mobile) || mobile.length() > 11 || mobile.length() < 11) {
             throw new BusinessCheckException("转增对象手机号有误");
         }
 
-        if (StringUtils.isEmpty(couponId)) {
+        if (StringUtil.isEmpty(couponId)) {
             throw new BusinessCheckException("转增卡券不能为空");
         }
 
@@ -337,11 +337,11 @@ public class GiveServiceImpl extends BaseService implements GiveService {
         give.setMessage(message);
         give.setUserMobile(myUser.getMobile());
 
-        String couponIdsStr = StringUtils.join(couponIdList.toArray(), ",");
-        give.setGroupIds(StringUtils.join(groupIds.toArray(), ","));
-        give.setGroupNames(StringUtils.join(groupNames.toArray(), ","));
+        String couponIdsStr = StringUtil.join(couponIdList.toArray(), ",");
+        give.setGroupIds(StringUtil.join(groupIds.toArray(), ","));
+        give.setGroupNames(StringUtil.join(groupNames.toArray(), ","));
         give.setCouponIds(couponIdsStr);
-        give.setCouponNames(StringUtils.join(couponNames.toArray(), ","));
+        give.setCouponNames(StringUtil.join(couponNames.toArray(), ","));
 
         give.setStatus(StatusEnum.ENABLED.getKey());
 

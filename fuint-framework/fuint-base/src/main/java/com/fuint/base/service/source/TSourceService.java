@@ -9,8 +9,9 @@ import java.util.List;
 /**
  * 菜单管理服务接口
  *
- * @author fsq
- * @version $Id: TSourceService.java
+ * Created by FSQ
+ * Contact wx fsq_better
+ * Site https://www.fuint.cn
  */
 public interface TSourceService {
 

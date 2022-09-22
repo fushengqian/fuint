@@ -33,11 +33,13 @@ import javax.servlet.http.HttpServletResponse;
 /**
  * LoginController负责打开登录页面(GET请求)和登录出错页面(POST请求)，
  *
- * @author fsq
- * @version $Id: LoginController.java
+ * Created by FSQ
+ * Contact wx fsq_better
+ * Site https://www.fuint.cn
  */
 @Controller
 public class LoginController {
+
     /**
      * 日志
      */
@@ -87,6 +89,7 @@ public class LoginController {
             WebUtils.getAndClearSavedRequest(request);
             throw new ForbiddenException();
         }
+
         return "login";
     }
 

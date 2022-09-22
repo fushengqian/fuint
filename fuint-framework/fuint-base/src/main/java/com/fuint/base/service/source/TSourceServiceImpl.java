@@ -1,6 +1,5 @@
 package com.fuint.base.service.source;
 
-
 import com.fuint.base.annoation.OperationServiceLog;
 import com.fuint.base.dao.entities.TSource;
 import com.fuint.base.dao.pagination.PaginationRequest;
@@ -14,12 +13,12 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 
-
 /**
  * 菜单管理服务实现类
  *
- * @author fsq
- * @version $Id: TSourceServiceImpl.java
+ * Created by FSQ
+ * Contact wx fsq_better
+ * Site https://www.fuint.cn
  */
 @Service
 public class TSourceServiceImpl implements TSourceService {
@@ -82,6 +81,12 @@ public class TSourceServiceImpl implements TSourceService {
                 sourceTreeNode.setName(tSource.getName());
                 sourceTreeNode.setId(tSource.getId());
                 sourceTreeNode.setLevel(tSource.getLevel());
+                sourceTreeNode.setSort(tSource.getStyle());
+                sourceTreeNode.setPath(tSource.getPath());
+                sourceTreeNode.setIcon(tSource.getNewIcon());
+                sourceTreeNode.setIsMenu(tSource.getIsMenu());
+                sourceTreeNode.setStatus(tSource.getStatus());
+                sourceTreeNode.setPerms(tSource.getPath().replaceAll("/", ":"));
                 if (tSource.getParent() != null) {
                     sourceTreeNode.setpId(tSource.getParent().getId());
                 } else {

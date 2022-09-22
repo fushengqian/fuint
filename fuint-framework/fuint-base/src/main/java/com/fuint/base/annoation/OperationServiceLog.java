@@ -7,6 +7,7 @@ import java.lang.annotation.*;
  *
  * Created by FSQ
  * Contact wx fsq_better
+ * Site https://www.fuint.cn
  */
 @Target({ElementType.PARAMETER, ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)

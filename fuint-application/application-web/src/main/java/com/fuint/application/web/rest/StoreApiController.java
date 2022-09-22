@@ -4,7 +4,7 @@ import com.fuint.application.dao.entities.MtStore;
 import com.fuint.application.enums.StatusEnum;
 import com.fuint.application.service.store.StoreService;
 import com.fuint.exception.BusinessCheckException;
-import org.apache.commons.lang.StringUtils;
+import com.fuint.util.StringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,9 +44,9 @@ public class StoreApiController extends BaseController {
         String longitude = request.getHeader("longitude") == null ? "" : request.getHeader("longitude");
 
         List<MtStore> storeList;
-        if (StringUtils.isEmpty(latitude) || StringUtils.isEmpty(longitude)) {
+        if (StringUtil.isEmpty(latitude) || StringUtil.isEmpty(longitude)) {
             Map<String, Object> params = new HashMap<>();
-            if (StringUtils.isNotEmpty(keyword)) {
+            if (StringUtil.isNotEmpty(keyword)) {
                 params.put("LIKE_name", keyword);
             }
             params.put("EQ_status", StatusEnum.ENABLED.getKey());

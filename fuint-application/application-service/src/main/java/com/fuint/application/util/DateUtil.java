@@ -1,6 +1,6 @@
 package com.fuint.application.util;
 
-import org.apache.commons.lang.StringUtils;
+import com.fuint.util.StringUtil;
 import org.apache.commons.lang.time.DateFormatUtils;
 import org.apache.commons.lang.time.DateUtils;
 import java.util.GregorianCalendar;
@@ -32,7 +32,7 @@ public class DateUtil {
     }
 
     public static String formatDate(Date date, String pattern) {
-        if(StringUtils.isEmpty(pattern)) {
+        if(StringUtil.isEmpty(pattern)) {
             pattern = "yyyy-MM-dd";
         }
 
@@ -40,7 +40,7 @@ public class DateUtil {
     }
 
     public static String formatDate(Calendar calendar, String pattern) {
-        if(StringUtils.isEmpty(pattern)) {
+        if(StringUtil.isEmpty(pattern)) {
             pattern = "yyyy-MM-dd";
         }
 
@@ -48,11 +48,11 @@ public class DateUtil {
     }
 
     public static Date parseDate(String strDate) throws ParseException {
-        return StringUtils.isEmpty(strDate)?null: DateUtils.parseDate(strDate, PATTERNS);
+        return StringUtil.isEmpty(strDate)?null: DateUtils.parseDate(strDate, PATTERNS);
     }
 
     public static Date parseDate(String strDate, String... patterns) throws ParseException {
-        return StringUtils.isEmpty(strDate)?null:DateUtils.parseDate(strDate, patterns);
+        return StringUtil.isEmpty(strDate)?null:DateUtils.parseDate(strDate, patterns);
     }
 
     public static String getNow(String pattern) {

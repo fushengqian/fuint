@@ -12,9 +12,10 @@ import java.security.SecureRandom;
  * 支持SHA-1/MD5消息摘要的工具类.
  * 
  * 返回ByteSource，可进一步被编码为Hex, Base64或UrlSafeBase64
- * 
- * @author fsq
- * @version $Id: Digests.java
+ *
+ * Created by FSQ
+ * Contact wx fsq_better
+ * Site https://www.fuint.cn
  */
 public class Digests {
 

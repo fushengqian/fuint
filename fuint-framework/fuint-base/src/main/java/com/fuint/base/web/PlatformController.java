@@ -7,8 +7,6 @@ import com.fuint.base.service.platform.TPlatformService;
 import com.fuint.base.util.RequestHandler;
 import com.fuint.exception.BusinessCheckException;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -22,14 +20,14 @@ import java.util.Map;
 
 /**
  * 平台管理
+ *
  * Created by FSQ
  * Contact wx fsq_better
+ * Site https://www.fuint.cn
  */
 @Controller
 @RequestMapping("/platform")
 public class PlatformController {
-
-    private static final Logger logger = LoggerFactory.getLogger(PlatformController.class);
 
     @Autowired
     private TPlatformService tPlatformService;
@@ -38,13 +36,12 @@ public class PlatformController {
      * 平台列表查询
      *
      * @param request
-     * @param response
      * @param model
      * @return
      */
     @RequiresPermissions("platform/query")
     @RequestMapping(value = "/query")
-    public String platformList(HttpServletRequest request, HttpServletResponse response, Model model) {
+    public String platformList(HttpServletRequest request, Model model) {
         PaginationRequest paginationRequest = RequestHandler.buildPaginationRequest(request, model);
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("EQ_status", "1");

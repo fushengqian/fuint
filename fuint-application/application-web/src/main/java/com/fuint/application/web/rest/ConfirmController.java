@@ -9,7 +9,7 @@ import com.fuint.application.dao.repositories.MtUserCouponRepository;
 import com.fuint.application.service.coupon.CouponService;
 import com.fuint.application.service.token.TokenService;
 import com.fuint.application.service.staff.StaffService;
-import org.apache.commons.lang.StringUtils;
+import com.fuint.util.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import com.fuint.application.BaseController;
@@ -62,7 +62,7 @@ public class ConfirmController extends BaseController {
         String amount = (param.get("amount") == null || param.get("amount") == "") ? "0" : param.get("amount").toString();
         String remark = param.get("remark") == null ? "" : param.get("remark").toString();
 
-        if (StringUtils.isEmpty(token)) {
+        if (StringUtil.isEmpty(token)) {
             return getFailureResult(1001);
         }
 
@@ -100,7 +100,7 @@ public class ConfirmController extends BaseController {
                 }
 
                 String storeIdsStr = couponInfo.getStoreIds();
-                if (StringUtils.isNotEmpty(storeIdsStr)) {
+                if (StringUtil.isNotEmpty(storeIdsStr)) {
                     String[] storeIds = couponInfo.getStoreIds().split(",");
                     Boolean isSameStore = false;
                     for (String hid : storeIds) {

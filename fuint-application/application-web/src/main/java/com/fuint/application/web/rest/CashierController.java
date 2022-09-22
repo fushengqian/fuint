@@ -7,7 +7,7 @@ import com.fuint.base.shiro.util.ShiroUserHelper;
 import com.fuint.exception.BusinessCheckException;
 import com.fuint.application.ResponseObject;
 import com.fuint.application.BaseController;
-import org.apache.commons.lang.StringUtils;
+import com.fuint.util.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
@@ -34,7 +34,7 @@ public class CashierController extends BaseController {
     @CrossOrigin
     public ResponseObject memberInfo(HttpServletRequest request) throws BusinessCheckException {
         String mobile = request.getParameter("mobile") == null ? "" : request.getParameter("mobile");
-        if (StringUtils.isEmpty(mobile)) {
+        if (StringUtil.isEmpty(mobile)) {
             return getFailureResult(201);
         }
 

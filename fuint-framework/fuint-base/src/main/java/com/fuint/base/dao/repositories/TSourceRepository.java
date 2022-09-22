@@ -10,7 +10,7 @@ import java.util.List;
 /**
  * 菜单Repository服务接口
  *
- * @author fsq
+ * @author FSQ
  * @version $Id: TSourceRepository.java
  */
 @Repository("tSourceRepository")

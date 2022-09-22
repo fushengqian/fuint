@@ -11,7 +11,7 @@ import com.fuint.base.shiro.util.ShiroUserHelper;
 import com.fuint.base.util.RequestHandler;
 import com.fuint.exception.BusinessCheckException;
 import com.fuint.exception.BusinessRuntimeException;
-import org.apache.commons.lang.StringUtils;
+import com.fuint.util.StringUtil;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -126,13 +126,13 @@ public class openGiftController {
         String point = request.getParameter("point");
         String status = request.getParameter("status");
 
-        if (StringUtils.isEmpty(couponId)) {
+        if (StringUtil.isEmpty(couponId)) {
             throw new BusinessRuntimeException("卡券不能为空");
         }
-        if (StringUtils.isEmpty(couponNum)) {
+        if (StringUtil.isEmpty(couponNum)) {
             throw new BusinessRuntimeException("卡券数量不能为空");
         }
-        if (StringUtils.isEmpty(gradeId)) {
+        if (StringUtil.isEmpty(gradeId)) {
             throw new BusinessRuntimeException("会员等级不能为空");
         }
 
@@ -146,7 +146,7 @@ public class openGiftController {
         String operator = ShiroUserHelper.getCurrentShiroUser().getAcctName();
         reqDto.setOperator(operator);
 
-        if (StringUtils.isNotEmpty(id)) {
+        if (StringUtil.isNotEmpty(id)) {
             reqDto.setId(Integer.parseInt(id));
             openGiftService.updateOpenGift(reqDto);
         } else {

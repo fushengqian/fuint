@@ -5,7 +5,7 @@ import com.fuint.application.service.sms.SendSmsInterface;
 import com.fuint.application.service.verifycode.VerifyCodeService;
 import com.fuint.application.util.BizCodeGenerator;
 import com.fuint.captcha.service.CaptchaService;
-import org.apache.commons.lang.StringUtils;
+import com.fuint.util.StringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,6 +42,9 @@ public class SmsController extends BaseController {
     @Autowired
     private SendSmsInterface sendSmsService;
 
+    /**
+     * 图形验证码
+     * */
     @Autowired
     private CaptchaService captchaService;
 
@@ -55,7 +58,7 @@ public class SmsController extends BaseController {
     @CrossOrigin
     public ResponseObject sendVerifyCode(HttpServletRequest request, @RequestBody Map<String, Object> param) throws Exception {
         String captchaCode = param.get("captchaCode") == null ? "" : param.get("captchaCode").toString();
-        if (StringUtils.isEmpty(captchaCode)) {
+        if (StringUtil.isEmpty(captchaCode)) {
             return getFailureResult(1002,"图形验证码不能为空");
         }
         HttpSession session = request.getSession();
@@ -71,7 +74,7 @@ public class SmsController extends BaseController {
         }
 
         String mobile = param.get("mobile") == null ? "" : param.get("mobile").toString();
-        if (StringUtils.isEmpty(mobile)) {
+        if (StringUtil.isEmpty(mobile)) {
             return getFailureResult(1002,"手机号码不能为空");
         } else {
             if (!PhoneFormatCheckUtils.isChinaPhoneLegal(mobile)) {

@@ -15,7 +15,6 @@ import com.fuint.application.dao.entities.*;
 import com.fuint.application.dto.ReqResult;
 import com.fuint.application.service.banner.BannerService;
 import com.fuint.application.util.CommonUtil;
-import org.apache.commons.lang.StringUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -64,15 +63,15 @@ public class BannerController {
         Map<String, Object> params = paginationRequest.getSearchParams();
         if (params == null) {
             params = new HashMap<>();
-            if (StringUtils.isNotEmpty(bannerId)) {
+            if (StringUtil.isNotEmpty(bannerId)) {
                 params.put("EQ_id", bannerId);
             }
 
-            if (StringUtils.isNotEmpty(title)) {
+            if (StringUtil.isNotEmpty(title)) {
                 params.put("LIKE_title", title);
             }
 
-            if (StringUtils.isNotEmpty(status)) {
+            if (StringUtil.isNotEmpty(status)) {
                 params.put("EQ_status", status);
             }
         }

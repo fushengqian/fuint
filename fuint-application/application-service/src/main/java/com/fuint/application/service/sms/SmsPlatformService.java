@@ -36,15 +36,15 @@ import java.util.*;
 @Service
 public class SmsPlatformService {
 
-    private static final Logger logger = LoggerFactory.getLogger(SmsPlatformService.class);
-    @Autowired
-    private Environment env;
+     private static final Logger logger = LoggerFactory.getLogger(SmsPlatformService.class);
+     @Autowired
+     private Environment env;
 
-    @Autowired
-    private MtSmsSendedLogRepository mtSmsSendedLogRepository;
+     @Autowired
+     private MtSmsSendedLogRepository mtSmsSendedLogRepository;
 
-    @Autowired
-    private SmsTemplateService smsTemplateService;
+     @Autowired
+     private SmsTemplateService smsTemplateService;
 
      public static void main(String[] args) {
          SmsPlatformService sp=new SmsPlatformService();
@@ -58,7 +58,7 @@ public class SmsPlatformService {
     /**
      * 发送短信
      *
-     * @param phoneNo   短信发送手机号，多个手机号以英文半角逗号隔开，最多支持200个手机号
+     * @param phoneNo         短信发送手机号，多个手机号以英文半角逗号隔开，最多支持200个手机号
      * @param templateUname   短信模板英文名称
      * @return
      */
@@ -117,7 +117,7 @@ public class SmsPlatformService {
             CommonRequest request = new CommonRequest();
             request.setSysMethod(MethodType.POST);
             request.setSysDomain("dysmsapi.aliyuncs.com");
-            request.setSysVersion("2017-05-25");
+            request.setSysVersion("2022-08-03");
             request.setSysAction("SendSms");
             request.putQueryParameter("RegionId", "cn-hangzhou");
             request.putQueryParameter("PhoneNumbers", phoneNo);
@@ -138,7 +138,6 @@ public class SmsPlatformService {
 
             logger.info("sendMessage outParams:{}", res);
 
-            //log record 0919 add
             this.smsSendedLogRecord(phoneNo, smsContent);
 
             JSONObject resultJson = JSON.parseObject(res);
@@ -152,7 +151,6 @@ public class SmsPlatformService {
                 String[] sendIds = new String[phoneArray.length];
                 for (int i = 0; i < sendIds.length; i++) {
                     sendIds[i] = datas[i + 1];
-
                 }
                 resInfo.setSendIds(sendIds);
             }

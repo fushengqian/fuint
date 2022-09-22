@@ -7,22 +7,20 @@ import com.fuint.application.dao.entities.*;
 import com.fuint.application.dao.repositories.MtOpenGiftRepository;
 import com.fuint.application.dao.repositories.MtUserRepository;
 import com.fuint.application.dto.*;
+import com.fuint.application.enums.MessageEnum;
 import com.fuint.application.service.coupon.CouponService;
 import com.fuint.application.service.message.MessageService;
 import com.fuint.application.service.point.PointService;
 import com.fuint.application.service.usercoupon.UserCouponService;
 import com.fuint.application.service.usergrade.UserGradeService;
 import com.fuint.application.util.DateUtil;
+import com.fuint.util.StringUtil;
 import com.fuint.base.annoation.OperationServiceLog;
 import com.fuint.base.dao.pagination.PaginationRequest;
 import com.fuint.base.dao.pagination.PaginationResponse;
 import com.fuint.exception.BusinessCheckException;
-import com.fuint.exception.BusinessRuntimeException;
 import com.fuint.application.enums.StatusEnum;
 import org.apache.commons.collections.map.HashedMap;
-import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -32,8 +30,6 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -44,8 +40,6 @@ import java.util.*;
  */
 @Service
 public class OpenGiftServiceImpl extends BaseService implements OpenGiftService {
-
-    private static final Logger log = LoggerFactory.getLogger(OpenGiftServiceImpl.class);
 
     @Autowired
     private MtOpenGiftRepository openGiftRepository;
@@ -86,10 +80,11 @@ public class OpenGiftServiceImpl extends BaseService implements OpenGiftService 
         paginationRequest.setPageSize(pageSize);
 
         Map<String, Object> searchParams = new HashedMap();
-        if (StringUtils.isNotEmpty(couponId)) {
+        searchParams.put("NQ_status", StatusEnum.DISABLE.getKey());
+        if (StringUtil.isNotEmpty(couponId)) {
             searchParams.put("EQ_couponId", couponId);
         }
-        if (StringUtils.isNotEmpty(gradeId)) {
+        if (StringUtil.isNotEmpty(gradeId)) {
             searchParams.put("EQ_gradeId", gradeId);
         }
 
@@ -125,16 +120,8 @@ public class OpenGiftServiceImpl extends BaseService implements OpenGiftService 
     @Override
     @OperationServiceLog(description = "新增开卡赠礼")
     public MtOpenGift addOpenGift(MtOpenGift mtOpenGift) {
-        try {
-            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            String dt = format.format(new Date());
-            Date addTime = format.parse(dt);
-            mtOpenGift.setUpdateTime(addTime);
-            mtOpenGift.setCreateTime(addTime);
-        } catch (ParseException e) {
-            throw new BusinessRuntimeException("日期转换异常 " + e.getMessage());
-        }
-
+        mtOpenGift.setUpdateTime(new Date());
+        mtOpenGift.setCreateTime(new Date());
         return openGiftRepository.save(mtOpenGift);
     }
 
@@ -261,7 +248,7 @@ public class OpenGiftServiceImpl extends BaseService implements OpenGiftService 
            Integer totalPoint = 0;
             BigDecimal totalAmount = new BigDecimal("0");
            for(MtOpenGift item : openGiftList) {
-               // 叠加积分
+               // 加积分
                if (item.getPoint() > 0) {
                    MtPoint reqPointDto = new MtPoint();
                    reqPointDto.setUserId(userId);
@@ -289,9 +276,12 @@ public class OpenGiftServiceImpl extends BaseService implements OpenGiftService 
 
            // 弹框消息
            MtMessage msg = new MtMessage();
-           msg.setType("pop");
+           msg.setType(MessageEnum.POP_MSG.getKey());
            msg.setUserId(userId);
            msg.setTitle("温馨提示");
+           msg.setSendTime(new Date());
+           msg.setIsSend("Y");
+           msg.setParams("");
            if (totalAmount.compareTo(new BigDecimal("0")) > 0 && totalPoint > 0) {
                msg.setContent("系统赠送您价值￥" + totalAmount + "卡券和" + totalPoint + "积分，请注意查收！");
                messageService.addMessage(msg);

@@ -1,7 +1,3 @@
-/**
- * fuint.cn Inc.
- * Copyright (c) 2019-2022 All Rights Reserved.
- */
 package com.fuint.base.util;
 
 import com.fuint.base.dao.pagination.PaginationRequest;
@@ -19,8 +15,9 @@ import java.util.*;
 /**
  * 用户请求处理类
  *
- * @author fsq
- * @version $Id: RequestHandler.java
+ * Created by FSQ
+ * Contact wx fsq_better
+ * Site https://www.fuint.cn
  */
 public class RequestHandler {
 

@@ -5,7 +5,9 @@ package com.fuint.exception;
  *
  * This exception always been thrown on authentication error
  *
- * @author Harrison han
+ * Created by FSQ
+ * Contact wx fsq_better
+ * Site https://www.fuint.cn
  */
 public class UnauthorizedException extends HttpStatusException {
 

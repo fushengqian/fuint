@@ -71,7 +71,7 @@ public interface CouponGroupService {
     /**
      * 根据分组ID 获取券总价值
      *
-     * @param id       分组ID
+     * @param id 分组ID
      * @throws BusinessCheckException
      */
     BigDecimal getCouponMoney(Integer id) throws BusinessCheckException;
@@ -82,7 +82,7 @@ public interface CouponGroupService {
      * @param  id  分组ID
      * @throws BusinessCheckException
      * */
-    Integer getSendedNum(Integer id) throws BusinessCheckException;
+    Integer getSendNum(Integer id) throws BusinessCheckException;
 
     /**
      * 导入发券列表

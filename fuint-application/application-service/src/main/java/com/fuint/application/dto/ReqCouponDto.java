@@ -10,6 +10,7 @@ import java.util.Date;
  * Contact wx fsq_better
  */
 public class ReqCouponDto implements Serializable {
+
     /**
      * 券ID
      */

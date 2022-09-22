@@ -1,9 +1,8 @@
 package com.fuint.application.service.message;
 
 import com.fuint.application.dao.entities.MtMessage;
-import com.fuint.base.dao.pagination.PaginationRequest;
-import com.fuint.base.dao.pagination.PaginationResponse;
 import com.fuint.exception.BusinessCheckException;
+import java.util.List;
 
 /**
  * 消息业务接口
@@ -12,14 +11,6 @@ import com.fuint.exception.BusinessCheckException;
  * Site https://www.fuint.cn
  */
 public interface MessageService {
-
-    /**
-     * 分页查询消息列表
-     *
-     * @param paginationRequest
-     * @return
-     */
-    PaginationResponse<MtMessage> queryMessageListByPagination(PaginationRequest paginationRequest) throws BusinessCheckException;
 
     /**
      * 添加消息
@@ -32,10 +23,18 @@ public interface MessageService {
     /**
      * 置为已读
      *
-     * @param msg_id
+     * @param msgId
      * @throws BusinessCheckException
      */
-    void readMessage(Integer msg_id) throws BusinessCheckException;
+    void readMessage(Integer msgId) throws BusinessCheckException;
+
+    /**
+     * 置为发送
+     *
+     * @param  msgId
+     * @throws BusinessCheckException
+     */
+    void sendMessage(Integer msgId, boolean isRead) throws BusinessCheckException;
 
     /**
      * 获取最新一条未读消息
@@ -43,4 +42,10 @@ public interface MessageService {
      * @throws BusinessCheckException
      */
     MtMessage getOne(Integer userId) throws BusinessCheckException;
+
+    /**
+     * 获取需要发送的消息
+     * @throws BusinessCheckException
+     * */
+    List<MtMessage> getNeedSendList() throws BusinessCheckException;
 }

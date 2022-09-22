@@ -47,7 +47,7 @@ public class confirmLogController {
     private StoreService storeService;
 
     /**
-     * 后台员工账户服务接口
+     * 后台账户服务接口
      */
     @Autowired
     private TAccountService tAccountService;

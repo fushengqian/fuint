@@ -15,8 +15,10 @@ import java.util.*;
 
 /**
  * JavaBean转换工具类
+ *
  * Created by FSQ
  * Contact wx fsq_better
+ * Site https://www.fuint.cn
  */
 public class BeanUtil {
     private static final Logger logger = LoggerFactory.getLogger(BeanUtil.class);

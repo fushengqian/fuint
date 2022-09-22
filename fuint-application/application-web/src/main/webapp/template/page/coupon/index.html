@@ -1,3 +1,5 @@
+<link href="<@sp.static/>/assets/plugins/jquery-file-upload/css/jquery.fileupload.css" rel="stylesheet" />
+<link href="<@sp.static/>/assets/plugins/jquery-file-upload/css/jquery.fileupload-ui.css" rel="stylesheet" />
 <h1 class="page-header">
     <small><#if groupName>${groupName}-</#if>卡券列表</small>
 </h1>
@@ -48,6 +50,12 @@
                             class="btn btn-danger btn-sm"
                             onclick="getData('${rc.contextPath}/backend/coupon/add?groupId=${EQ_groupId}','displayArea')">
                         <i class="fa fa-plus"></i>新增卡券
+                    </button>
+                    <button type="button"
+                            class="btn btn-success btn-sm"
+                            onclick="batchSendCoupon();">
+                        <i class="fa fa-paste"></i>
+                        批量发券
                     </button>
                 </div>
             </div>
@@ -105,6 +113,60 @@
             })
         }, function () {
             $.close();
+        });
+    }
+
+    /**
+     * 选择文件
+     * */
+    function selectFile() {
+        $("#filePath").css("display", "block");
+        var value = $("#fileInput").val();
+        var index = value.lastIndexOf("\\");
+        value = value.substring(index + 1);
+        $("#filePath").val(value);
+    }
+
+    /**
+     * 批量发券
+     * */
+    function batchSendCoupon() {
+        var html = '<div>批量发券模板.xlsx &nbsp;&nbsp;<a style="color:#2a72b5;" target="_blank" href="${rc.contextPath}/backend/couponGroup/exportTemplate">下载</a></div>'+
+            '<div style="margin-bottom:10px;margin-top:8px;width:322px;"><input type="text" style="display: none;" class="form-control" id="filePath" name="filePath"/></div>'+
+            '<div><span class="btn btn-success fileinput-button">'+
+            '<i class="fa fa-plus"></i>'+
+            '<span>选择文件</span>'+
+            '<input type="file" onchange="selectFile();" id="fileInput" name="fileInput" accept="application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet">'+
+            '</span></div>';
+        layer.confirm(html, {
+            btn: ['上传并发送']
+        }, function () {
+            $.load();
+            var url = "${rc.contextPath}/backend/couponGroup/upload/";
+            $.ajaxFileUpload({
+                url: url,
+                secureuri: false,
+                fileElementId: "fileInput",
+                dataType: 'text',
+                success: function (result) {
+                    var resultJson = jQuery.parseJSON(result);
+                    $.close();
+                    if ("true" == resultJson.status) {
+                        var html = '<div>恭喜，批量发券成功！ &nbsp;&nbsp;<a style="color:#2a72b5;font-size: 12px;" href="javascript:getData(\'${rc.contextPath}/backend/userCoupon/list?EQ_uuid='+resultJson.batchCode+'\', \'displayArea\');">查看详情</a></div>';
+                        layer.confirm(html, {
+                            btn: ['确定']
+                        }, function () {
+                            $.close();
+                        });
+                    } else {
+                        layer.alert("上传错误,"+resultJson.message+",请修改后重新上传！");
+                    }
+                },
+                error: function (data, status, e) {
+                    $.close();
+                    $.error(e);
+                }
+            });
         });
     }
 

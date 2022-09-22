@@ -21,8 +21,9 @@ import org.springframework.transaction.annotation.Transactional;
 /**
  * 角色服务实现类
  *
- * @author Harrison Han
- * @version $Id: TDutyServiceImpl.java
+ * Created by FSQ
+ * Contact wx fsq_better
+ * Site https://www.fuint.cn
  */
 @Service
 public class TDutyServiceImpl implements TDutyService {

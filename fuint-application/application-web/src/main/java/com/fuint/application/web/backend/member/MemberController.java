@@ -5,6 +5,7 @@ import com.fuint.application.dao.entities.MtUserGrade;
 import com.fuint.application.enums.SettingTypeEnum;
 import com.fuint.application.enums.UserSettingEnum;
 import com.fuint.application.service.setting.SettingService;
+import com.fuint.application.service.usergrade.UserGradeService;
 import com.fuint.application.util.CommonUtil;
 import com.fuint.base.dao.entities.TAccount;
 import com.fuint.base.dao.pagination.PaginationRequest;
@@ -18,7 +19,7 @@ import com.fuint.exception.BusinessRuntimeException;
 import com.fuint.application.dao.entities.MtUser;
 import com.fuint.application.dto.ReqResult;
 import com.fuint.application.service.member.MemberService;
-import org.apache.commons.lang.StringUtils;
+import com.fuint.util.StringUtil;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -60,6 +61,12 @@ public class MemberController {
     private TAccountService accountService;
 
     /**
+     * 会员等级服务接口
+     * */
+    @Autowired
+    private UserGradeService userGradeService;
+
+    /**
      * 会员列表查询
      *
      * @param request  HttpServletRequest对象
@@ -75,14 +82,19 @@ public class MemberController {
         String name = request.getParameter("LIKE_name");
         String birthday = request.getParameter("LIKE_birthday");
         String userNo = request.getParameter("EQ_userNo");
+        String gradeId = request.getParameter("EQ_gradeId");
+        String orderBy = request.getParameter("orderBy") == null ? "" : request.getParameter("orderBy");
+        String regTime = request.getParameter("regTime") == null ? "" : request.getParameter("regTime");
+        String activeTime = request.getParameter("activeTime") == null ? "" : request.getParameter("activeTime");
+        String memberTime = request.getParameter("memberTime") == null ? "" : request.getParameter("memberTime");
 
         Map<String, Object> params = paginationRequest.getSearchParams();
         if (params == null) {
             params = new HashMap<>();
-            if (StringUtils.isNotEmpty(mobile)) {
+            if (StringUtil.isNotEmpty(mobile)) {
                 params.put("LIKE_mobile", mobile);
             }
-            if (StringUtils.isNotEmpty(name)) {
+            if (StringUtil.isNotEmpty(name)) {
                 params.put("LIKE_name", name);
             }
         }
@@ -98,6 +110,52 @@ public class MemberController {
             params.put("EQ_storeId", storeId.toString());
         }
 
+        // 注册时间比对
+        if (StringUtil.isNotEmpty(regTime)) {
+            String[] dateTime = regTime.split("~");
+            if (dateTime.length == 2) {
+                params.put("GTE_createTime", dateTime[0].trim() + ":00");
+                params.put("LTE_createTime", dateTime[1].trim() + ":00");
+            }
+        }
+
+        // 活跃时间比对
+        if (StringUtil.isNotEmpty(activeTime)) {
+            String[] dateTime = activeTime.split("~");
+            if (dateTime.length == 2) {
+                params.put("GTE_updateTime", dateTime[0].trim() + ":00");
+                params.put("LTE_updateTime", dateTime[1].trim() + ":00");
+            }
+        }
+
+        // 会员有效期比对
+        if (StringUtil.isNotEmpty(memberTime)) {
+            String[] dateTime = memberTime.split("~");
+            if (dateTime.length == 2) {
+                params.put("GTE_startTime", dateTime[0].trim() + ":00");
+                params.put("LTE_endTime", dateTime[1].trim() + ":00");
+            }
+        }
+
+        // 会员排序方式
+        if (StringUtil.isNotEmpty(orderBy)) {
+            if (orderBy.equals("balance")) {
+                paginationRequest.setSortColumn(new String[]{"balance desc"});
+            } else if (orderBy.equals("point")) {
+                paginationRequest.setSortColumn(new String[]{"point desc"});
+            } else if (orderBy.equals("memberGrade")) {
+                paginationRequest.setSortColumn(new String[]{"gradeId desc"});
+            } else if (orderBy.equals("payAmount")) {
+                paginationRequest.setSortColumn(new String[]{"balance desc"});
+            } else if (orderBy.equals("memberTime")) {
+                paginationRequest.setSortColumn(new String[]{"endTime desc", "gradeId desc"});
+                MtUserGrade defaultGrade = userGradeService.getInitUserGrade();
+                if (defaultGrade != null) {
+                    params.put("NQ_gradeId", defaultGrade.getId().toString());
+                }
+            }
+        }
+
         paginationRequest.setSearchParams(params);
         PaginationResponse<MtUser> paginationResponse = memberService.queryMemberListByPagination(paginationRequest);
 
@@ -106,10 +164,15 @@ public class MemberController {
 
         model.addAttribute("paginationResponse", paginationResponse);
         model.addAttribute("userGradeMap", userGradeMap);
+        model.addAttribute("orderBy", orderBy);
         model.addAttribute("LIKE_mobile", mobile);
         model.addAttribute("LIKE_name", name);
         model.addAttribute("EQ_userNo", userNo);
         model.addAttribute("LIKE_birthday", birthday);
+        model.addAttribute("EQ_gradeId", gradeId);
+        model.addAttribute("regTime", regTime);
+        model.addAttribute("activeTime", activeTime);
+        model.addAttribute("memberTime", memberTime);
 
         return "member/member_list";
     }
@@ -169,7 +232,7 @@ public class MemberController {
         Integer storeId = account.getStoreId();
         memberInfo.setStoreId(storeId);
 
-        if (StringUtils.isEmpty(memberInfo.getMobile())) {
+        if (StringUtil.isEmpty(memberInfo.getMobile())) {
             throw new BusinessRuntimeException("手机号码不能为空");
         } else {
             MtUser tempUser = null;
@@ -178,13 +241,12 @@ public class MemberController {
             } else {
                 memberInfo.setUpdateTime(new Date());
             }
-            if (null != tempUser) {
+            if (tempUser != null) {
                 throw new BusinessCheckException("该会员手机号码已经存在!");
             }
         }
 
         memberService.addMember(memberInfo);
-
         return "redirect:/backend/member/queryList";
     }
 
@@ -226,37 +288,46 @@ public class MemberController {
         if (memberInfo == null) {
             throw new BusinessCheckException("该会员不存在");
         }
-        if (StringUtils.isNotEmpty(param.getUserNo())) {
+        if (StringUtil.isNotEmpty(param.getUserNo())) {
             memberInfo.setUserNo(param.getUserNo());
         }
-        if (StringUtils.isEmpty(memberInfo.getUserNo())) {
+        if (StringUtil.isEmpty(memberInfo.getUserNo())) {
             memberInfo.setUserNo(CommonUtil.createUserNo());
         }
-        if (StringUtils.isNotEmpty(param.getName())) {
+        if (StringUtil.isNotEmpty(param.getName())) {
             memberInfo.setName(param.getName());
         }
-        if (StringUtils.isNotEmpty(param.getGradeId())) {
+        if (param.getSex() != null) {
+            memberInfo.setSex(param.getSex());
+        }
+        if (param.getStartTime() != null) {
+            memberInfo.setStartTime(param.getStartTime());
+        }
+        if (param.getEndTime() != null) {
+            memberInfo.setEndTime(param.getEndTime());
+        }
+        if (StringUtil.isNotEmpty(param.getGradeId())) {
             memberInfo.setGradeId(param.getGradeId());
         }
-        if (StringUtils.isNotEmpty(param.getMobile())) {
+        if (StringUtil.isNotEmpty(param.getMobile())) {
             memberInfo.setMobile(param.getMobile());
         }
-        if (StringUtils.isNotEmpty(param.getIdcard())) {
+        if (StringUtil.isNotEmpty(param.getIdcard())) {
             memberInfo.setIdcard(param.getIdcard());
         }
-        if (StringUtils.isNotEmpty(param.getBirthday())) {
+        if (StringUtil.isNotEmpty(param.getBirthday())) {
             memberInfo.setBirthday(param.getBirthday());
         }
         if (param.getPoint() != null) {
             memberInfo.setPoint(param.getPoint());
         }
-        if (StringUtils.isNotEmpty(param.getAddress())) {
+        if (StringUtil.isNotEmpty(param.getAddress())) {
             memberInfo.setAddress(param.getAddress());
         }
-        if (StringUtils.isNotEmpty(param.getStatus())) {
+        if (StringUtil.isNotEmpty(param.getStatus())) {
             memberInfo.setStatus(param.getStatus());
         }
-        if (StringUtils.isNotEmpty(param.getDescription())) {
+        if (StringUtil.isNotEmpty(param.getDescription())) {
             memberInfo.setDescription(param.getDescription());
         }
         String operator = ShiroUserHelper.getCurrentShiroUser().getAcctName();

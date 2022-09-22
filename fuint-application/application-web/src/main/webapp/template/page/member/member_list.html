@@ -9,33 +9,53 @@
     <div class="panel-body">
         <form id="memberForm" name="memberForm" method="post" class="form">
             <div class="search-rows">
-                <div class="col-md-3 item">
+                <div class="col-md-2 item">
                     <input type="text" class="form-control" name="EQ_id" value="${EQ_id}" placeholder="会员ID">
                 </div>
-                <div class="col-md-3 item">
+                <div class="col-md-2 item">
                     <input type="text" class="form-control" name="EQ_userNo" value="${EQ_userNo}" placeholder="会员号">
                 </div>
-                <div class="col-md-3 item">
+                <div class="col-md-2 item">
                     <input type="text" class="form-control" name="LIKE_name" value="${LIKE_name}" placeholder="会员名称">
                 </div>
-                <div class="col-md-3 item">
+                <div class="col-md-2 item">
                     <input type="text" class="form-control" name="LIKE_mobile" value="${LIKE_mobile}" placeholder="手机号码">
+                </div>
+                <div class="col-md-2 item">
+                    <input type="text" class="form-control" name="LIKE_birthday" value="${LIKE_birthday}" placeholder="生日,格式如:09-10">
+                </div>
+                <div class="col-md-2 item">
+                    <input type="text" class="form-control" id="regTime" name="regTime" value="${regTime}" placeholder="注册时间">
                 </div>
             </div>
             <div class="search-rows">
-                <div class="col-md-3 item">
-                    <input type="text" class="form-control" name="LIKE_birthday" value="${LIKE_birthday}" placeholder="生日">
+                <div class="col-md-2 item">
+                    <input type="text" class="form-control" id="activeTime" name="activeTime" value="${activeTime}" placeholder="活跃时间">
                 </div>
-                <div class="col-md-3 item">
-                    <select class="form-control" name="EQ_status" id="EQ_status">
-                        <option value="">状态</option>
-                        <option value="A" <#if params.EQ_status== 'A'>selected</#if>>激活</option>
-                        <option value="D" <#if params.EQ_status== 'D'>selected</#if>>禁用</option>
+                <div class="col-md-2 item">
+                    <select class="form-control" id="EQ_gradeId" name="EQ_gradeId">
+                        <option value="">会员等级</option>
+                        <#list userGradeMap as grade>
+                        <option <#if grade.id == EQ_gradeId>selected</#if> value="${grade.id}">${grade.name}</option>
+                        </#list>
                     </select>
                 </div>
-                <div class="col-md-6 item">
-                     <button type="button" id="doSearch" class="btn btn-sm btn-success" onclick="postDataByForm('backend/member/queryList','displayArea','memberForm')"><i class="fa fa-search"></i>查询</button>
-                     <button type="button" class="btn btn-sm btn-danger" onclick="getData('${rc.contextPath}/backend/member/add','displayArea')"><i class="fa fa-plus"></i>新增会员</button>
+                <div class="col-md-2 item">
+                    <select class="form-control" id="orderBy" name="orderBy">
+                        <option value="">默认排序</option>
+                        <option value="balance" <#if orderBy == 'balance'>selected</#if>>按余额</option>
+                        <option value="point" <#if orderBy == 'point'>selected</#if>>按积分</option>
+                        <option value="memberGrade" <#if orderBy == 'memberGrade'>selected</#if>>按会员等级</option>
+                        <option value="payAmount" <#if orderBy == 'payAmount'>selected</#if>>按消费额度</option>
+                        <option value="memberTime" <#if orderBy == 'memberTime'>selected</#if>>按会员有效期</option>
+                    </select>
+                </div>
+                <div class="col-md-2 item">
+                    <input type="text" class="form-control" id="memberTime" name="memberTime" value="${memberTime}" placeholder="会员有效期">
+                </div>
+                <div class="col-md-4 item">
+                    <button type="button" id="doSearch" class="btn btn-sm btn-success" onclick="postDataByForm('backend/member/queryList','displayArea','memberForm')"><i class="fa fa-search"></i>查询</button>
+                    <button type="button" class="btn btn-sm btn-danger" onclick="getData('${rc.contextPath}/backend/member/add','displayArea')"><i class="fa fa-plus"></i>新增会员</button>
                 </div>
             </div>
         </form>
@@ -59,7 +79,7 @@
                 <th>余额</th>
                 <th>积分</th>
                 <th>状态</th>
-                <th>创建时间</th>
+                <th>注册时间</th>
                 <th>活跃时间</th>
                 <th>操作</th>
             </tr>
@@ -119,7 +139,30 @@
      action 分页请求URL
      formName 分页需要的查询参数的表单名称 -->
 <@sp.pagination recordBean=paginationResponse action="${rc.contextPath}/backend/member/queryList" formName="memberForm"/>
+<script src="<@sp.static/>/assets/plugins/layui/layui.js?v=1.8.6" charset="UTF-8"></script>
+<link rel="stylesheet" type="text/css" href="<@sp.static/>/assets/plugins/layui/css/layui.css?v=1.8.6" charset="UTF-8"/>
 <script type="application/javascript">
+    layui.use('laydate', function(){
+        let laydate = layui.laydate;
+        laydate.render({
+            elem: '#regTime',
+            type: "datetime",
+            format: "yyyy-MM-dd HH:mm",
+            range: "~"
+        });
+        laydate.render({
+            elem: '#activeTime',
+            type: "datetime",
+            format: "yyyy-MM-dd HH:mm",
+            range: "~"
+        });
+        laydate.render({
+            elem: '#memberTime',
+            type: "datetime",
+            format: "yyyy-MM-dd HH:mm",
+            range: "~"
+        });
+    });
     // 会员充值
     function doRecharge(userId) {
         alterpage('${rc.contextPath}/backend/balance/recharge?userId=' + userId, "会员余额变更");

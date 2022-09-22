@@ -10,7 +10,7 @@ import java.util.List;
 /**
  * 角色Repository服务接口
  *
- * @author fsq
+ * @author FSQ
  * @version $Id: TDutyRepository.java
  */
 @Repository("tDutyRepository")

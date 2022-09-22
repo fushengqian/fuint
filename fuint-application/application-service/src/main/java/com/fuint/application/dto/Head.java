@@ -7,7 +7,7 @@ import java.io.Serializable;
  * Created by FSQ
  * Contact wx fsq_better
  */
-public class Head implements Serializable{
+public class Head implements Serializable {
 
     private static final long serialVersionUID = -4183589142746100110L;
     //服务编号，用于确定唯一的服务

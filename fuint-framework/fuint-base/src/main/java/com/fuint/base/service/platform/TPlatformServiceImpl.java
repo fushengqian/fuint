@@ -15,9 +15,10 @@ import java.util.List;
 
 /**
  * 平台信息接口服务类
- * <p/>
+ *
  * Created by FSQ
  * Contact wx fsq_better
+ * Site https://www.fuint.cn
  */
 @Service
 public class TPlatformServiceImpl implements TPlatformService {

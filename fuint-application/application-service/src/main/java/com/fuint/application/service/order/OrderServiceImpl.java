@@ -19,17 +19,16 @@ import com.fuint.application.service.store.StoreService;
 import com.fuint.application.service.usercoupon.UserCouponService;
 import com.fuint.application.util.CommonUtil;
 import com.fuint.application.util.DateUtil;
+import com.fuint.util.StringUtil;
 import com.fuint.base.annoation.OperationServiceLog;
 import com.fuint.base.dao.pagination.PaginationRequest;
 import com.fuint.base.dao.pagination.PaginationResponse;
 import com.fuint.exception.BusinessCheckException;
 import org.apache.commons.collections.map.HashedMap;
-import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -67,6 +66,12 @@ public class OrderServiceImpl extends BaseService implements OrderService {
     private MtOrderAddressRepository orderAddressRepository;
 
     @Autowired
+    private MtConfirmLogRepository confirmLogRepository;
+
+    @Autowired
+    private MtUserCouponRepository userCouponRepository;
+
+    @Autowired
     private MtGoodsSkuRepository goodsSkuRepository;
 
     @Autowired
@@ -98,9 +103,6 @@ public class OrderServiceImpl extends BaseService implements OrderService {
 
     @Autowired
     private StoreService storeService;
-
-    @Autowired
-    private Environment env;
 
     /**
      * 获取用户订单列表
@@ -135,30 +137,29 @@ public class OrderServiceImpl extends BaseService implements OrderService {
         paginationRequest.setPageSize(pageSize);
 
         Map<String, Object> searchParams = new HashedMap();
-
-        if (StringUtils.isNotEmpty(orderSn)) {
+        if (StringUtil.isNotEmpty(orderSn)) {
             searchParams.put("EQ_orderSn", orderSn);
         }
-        if (StringUtils.isNotEmpty(status)) {
+        if (StringUtil.isNotEmpty(status)) {
             searchParams.put("EQ_status", status);
         }
-        if (StringUtils.isNotEmpty(payStatus)) {
+        if (StringUtil.isNotEmpty(payStatus)) {
             searchParams.put("EQ_payStatus", payStatus);
         }
-        if (StringUtils.isNotEmpty(mobile)) {
+        if (StringUtil.isNotEmpty(mobile)) {
             MtUser userInfo = memberService.queryMemberByMobile(mobile);
             userId = userInfo.getId()+"";
         }
-        if (StringUtils.isNotEmpty(userId)) {
-            searchParams.put("EQ_userId", userId);
+        if (StringUtil.isNotEmpty(userId)) {
+            searchParams.put("EQ_userId", userId+"");
         }
-        if (StringUtils.isNotEmpty(storeId)) {
-            searchParams.put("EQ_storeId", storeId);
+        if (StringUtil.isNotEmpty(storeId)) {
+            searchParams.put("EQ_storeId", storeId+"");
         }
-        if (StringUtils.isNotEmpty(type)) {
+        if (StringUtil.isNotEmpty(type)) {
             searchParams.put("EQ_type", type);
         }
-        if (StringUtils.isNotEmpty(orderMode)) {
+        if (StringUtil.isNotEmpty(orderMode)) {
             searchParams.put("EQ_orderMode", orderMode);
         }
 
@@ -220,6 +221,7 @@ public class OrderServiceImpl extends BaseService implements OrderService {
         } else {
             orderSn = MtOrder.getOrderSn();
         }
+
         MtOrder.setUserId(orderDto.getUserId());
         MtOrder.setStoreId(orderDto.getStoreId());
         MtOrder.setCouponId(orderDto.getCouponId());
@@ -278,11 +280,14 @@ public class OrderServiceImpl extends BaseService implements OrderService {
         if (orderDto.getType().equals(OrderTypeEnum.GOOGS.getKey())) {
             Map<String, Object> param = new HashMap<>();
             param.put("EQ_status", StatusEnum.ENABLED.getKey());
-            if (StringUtils.isNotEmpty(orderDto.getCartIds())) {
+            if (StringUtil.isNotEmpty(orderDto.getCartIds())) {
                 param.put("IN_id", orderDto.getCartIds());
             }
             if (orderDto.getGoodsId() < 1) {
                 cartList = cartService.queryCartListByParams(param);
+                if (cartList.size() < 1) {
+                    throw new BusinessCheckException("生成订单失败，请稍后重试");
+                }
             } else {
                 // 直接购买
                 MtCart mtCart = new MtCart();
@@ -314,7 +319,7 @@ public class OrderServiceImpl extends BaseService implements OrderService {
             if (MtOrder.getCouponId() > 0 && (MtOrder.getDiscount().compareTo(new BigDecimal("0")) > 0)) {
                 String useCode = couponService.useCoupon(MtOrder.getCouponId(), MtOrder.getUserId(), MtOrder.getStoreId(), MtOrder.getId(), MtOrder.getDiscount(), "购物使用卡券");
                 // 卡券使用失败
-                if (StringUtils.isEmpty(useCode)) {
+                if (StringUtil.isEmpty(useCode)) {
                     MtOrder.setDiscount(new BigDecimal("0"));
                     MtOrder.setCouponId(0);
                 }
@@ -404,6 +409,72 @@ public class OrderServiceImpl extends BaseService implements OrderService {
     }
 
     /**
+     * 取消订单
+     * @param id 订单ID
+     * @return
+     * */
+    @Override
+    @Transactional
+    @OperationServiceLog(description = "取消订单")
+    public MtOrder cancelOrder(Integer id, String remark) throws BusinessCheckException {
+        MtOrder mtOrder = orderRepository.findOne(id);
+
+        if (mtOrder != null && mtOrder.getStatus().equals(OrderStatusEnum.CREATED.getKey()) && mtOrder.getPayStatus().equals(PayStatusEnum.WAIT.getKey())) {
+            if (StringUtil.isNotEmpty(remark)) {
+                mtOrder.setRemark(remark);
+            }
+
+            mtOrder.setStatus(OrderStatusEnum.CANCEL.getKey());
+            mtOrder = orderRepository.save(mtOrder);
+
+            // 返回积分
+            if (mtOrder.getPointAmount() != null && mtOrder.getUsePoint() > 0) {
+                MtPoint reqPointDto = new MtPoint();
+                reqPointDto.setUserId(mtOrder.getUserId());
+                reqPointDto.setAmount(mtOrder.getUsePoint());
+                reqPointDto.setDescription("订单取消" + mtOrder.getOrderSn() + "退回"+ mtOrder.getUsePoint() +"积分");
+                reqPointDto.setOrderSn(mtOrder.getOrderSn());
+                reqPointDto.setOperator("");
+                pointService.addPoint(reqPointDto);
+            }
+
+            // 返还卡券
+            List<MtConfirmLog> confirmLogList = confirmLogRepository.getOrderConfirmLogList(mtOrder.getId());
+            if (confirmLogList.size() > 0) {
+                for (MtConfirmLog log : confirmLogList) {
+                    MtCoupon couponInfo = couponService.queryCouponById(log.getCouponId());
+                    MtUserCoupon userCouponInfo = userCouponRepository.findOne(log.getUserCouponId());
+
+                    if (userCouponInfo != null) {
+                        // 优惠券直接置为未使用
+                        if (couponInfo.getType().equals(CouponTypeEnum.COUPON.getKey())) {
+                            userCouponInfo.setStatus(UserCouponStatusEnum.UNUSED.getKey());
+                            userCouponRepository.save(userCouponInfo);
+                        }
+
+                        // 预存卡把余额加回去
+                        if (couponInfo.getType().equals(CouponTypeEnum.PRESTORE.getKey())) {
+                            BigDecimal balance = userCouponInfo.getBalance();
+                            BigDecimal newBalance = balance.add(log.getAmount());
+                            if (newBalance.compareTo(userCouponInfo.getAmount()) <= 0) {
+                                userCouponInfo.setBalance(newBalance);
+                                userCouponInfo.setStatus(UserCouponStatusEnum.UNUSED.getKey());
+                            }
+                            userCouponRepository.save(userCouponInfo);
+                        }
+
+                        // 撤销核销记录
+                        log.setStatus(StatusEnum.DISABLE.getKey());
+                        confirmLogRepository.save(log);
+                    }
+                }
+            }
+        }
+
+        return mtOrder;
+    }
+
+    /**
      * 根据订单ID删除
      *
      * @param id       ID
@@ -434,6 +505,10 @@ public class OrderServiceImpl extends BaseService implements OrderService {
     @Override
     public UserOrderDto getOrderByOrderSn(String orderSn) throws BusinessCheckException {
         MtOrder orderInfo = orderRepository.findByOrderSn(orderSn);
+        if (orderInfo == null) {
+            return null;
+        }
+
         return this.getOrderDetail(orderInfo, true);
     }
 
@@ -675,7 +750,11 @@ public class OrderServiceImpl extends BaseService implements OrderService {
 
         // 配送地址
         if (orderInfo.getOrderMode().equals(OrderModeEnum.EXPRESS.getKey()) && needAddress) {
-            MtOrderAddress orderAddress = orderAddressRepository.getOrderAddress(orderInfo.getId());
+            List<MtOrderAddress> orderAddressList = orderAddressRepository.getOrderAddress(orderInfo.getId());
+            MtOrderAddress orderAddress = null;
+            if (orderAddressList.size() > 0) {
+                orderAddress = orderAddressList.get(0);
+            }
             if (orderAddress != null) {
                 AddressDto address = new AddressDto();
                 address.setId(orderAddress.getId());
@@ -710,7 +789,7 @@ public class OrderServiceImpl extends BaseService implements OrderService {
         }
 
         // 物流信息
-        if (StringUtils.isNotEmpty(orderInfo.getExpressInfo())) {
+        if (StringUtil.isNotEmpty(orderInfo.getExpressInfo())) {
             JSONObject express = JSONObject.parseObject(orderInfo.getExpressInfo());
             ExpressDto expressInfo = new ExpressDto();
             expressInfo.setExpressNo(express.get("expressNo").toString());
@@ -795,10 +874,17 @@ public class OrderServiceImpl extends BaseService implements OrderService {
     public Map<String, Object> calculateCartGoods(Integer userId, List<MtCart> cartList, Integer couponId, boolean isUsePoint) throws BusinessCheckException {
         MtUser userInfo = memberService.queryMemberById(userId);
 
+        // 设置是否不能用积分抵扣
+        MtSetting pointSetting = settingService.querySettingByName(PointSettingEnum.CAN_USE_AS_MONEY.getKey());
+        if (pointSetting != null && !pointSetting.getValue().equals("true")) {
+            isUsePoint = false;
+        }
+
         List<ResCartDto> cartDtoList = new ArrayList<>();
         String basePath = settingService.getUploadBasePath();
         Integer totalNum = 0;
         BigDecimal totalPrice = new BigDecimal("0");
+        BigDecimal totalCanUsePointAmount = new BigDecimal("0");
 
         if (cartList.size() > 0) {
             for (MtCart cart : cartList) {
@@ -821,7 +907,7 @@ public class OrderServiceImpl extends BaseService implements OrderService {
                     cartDto.setSpecList(specList);
                 }
 
-                if (StringUtils.isNotEmpty(mtGoodsInfo.getLogo()) && (mtGoodsInfo.getLogo().indexOf(basePath) == -1)) {
+                if (StringUtil.isNotEmpty(mtGoodsInfo.getLogo()) && (mtGoodsInfo.getLogo().indexOf(basePath) == -1)) {
                     mtGoodsInfo.setLogo(basePath + mtGoodsInfo.getLogo());
                 }
 
@@ -831,7 +917,7 @@ public class OrderServiceImpl extends BaseService implements OrderService {
                     BeanUtils.copyProperties(mtGoodsInfo, mtGoods);
                     MtGoodsSku mtGoodsSku = goodsSkuRepository.findOne(cart.getSkuId());
                     if (mtGoodsSku != null) {
-                        if (StringUtils.isNotEmpty(mtGoodsSku.getLogo()) && (mtGoodsSku.getLogo().indexOf(basePath) == -1)) {
+                        if (StringUtil.isNotEmpty(mtGoodsSku.getLogo()) && (mtGoodsSku.getLogo().indexOf(basePath) == -1)) {
                             mtGoods.setLogo(basePath + mtGoodsSku.getLogo());
                         }
                         if (mtGoodsSku.getWeight().compareTo(new BigDecimal("0")) > 0) {
@@ -848,6 +934,12 @@ public class OrderServiceImpl extends BaseService implements OrderService {
 
                 // 计算总价
                 totalPrice = totalPrice.add(cartDto.getGoodsInfo().getPrice().multiply(new BigDecimal(cart.getNum())));
+
+                // 累加可用积分去抵扣的金额
+                if (mtGoodsInfo.getCanUsePoint().equals("Y")) {
+                    totalCanUsePointAmount = totalCanUsePointAmount.add(cartDto.getGoodsInfo().getPrice().multiply(new BigDecimal(cart.getNum())));
+                }
+
                 cartDtoList.add(cartDto);
             }
         }
@@ -875,7 +967,7 @@ public class OrderServiceImpl extends BaseService implements OrderService {
                     // 优惠券
                     if (couponInfo.getType().equals(CouponTypeEnum.COUPON.getKey())) {
                         couponDto.setType(CouponTypeEnum.COUPON.getValue());
-                        if (StringUtils.isEmpty(couponInfo.getOutRule())) {
+                        if (StringUtil.isEmpty(couponInfo.getOutRule())) {
                             couponDto.setDescription("无使用门槛");
                             if (isEffective) {
                                 couponDto.setStatus(UserCouponStatusEnum.UNUSED.getKey());
@@ -937,10 +1029,14 @@ public class OrderServiceImpl extends BaseService implements OrderService {
         BigDecimal usePointAmount = new BigDecimal("0");
         MtSetting setting = settingService.querySettingByName(PointSettingEnum.EXCHANGE_NEED_POINT.getKey());
         if (myPoint > 0 && setting != null && isUsePoint) {
-            if (StringUtils.isNotEmpty(setting.getValue())) {
+            if (StringUtil.isNotEmpty(setting.getValue())) {
                 BigDecimal usePoints = new BigDecimal(myPoint);
                 usePointAmount = usePoints.divide(new BigDecimal(setting.getValue()));
                 usePoint = myPoint;
+                if (usePointAmount.compareTo(totalCanUsePointAmount) >= 0) {
+                    usePointAmount = totalCanUsePointAmount;
+                    usePoint = totalCanUsePointAmount.multiply(new BigDecimal(setting.getValue())).intValue();
+                }
             }
         }
 

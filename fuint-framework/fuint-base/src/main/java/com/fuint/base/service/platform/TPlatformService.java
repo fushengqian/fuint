@@ -9,9 +9,10 @@ import java.util.List;
 
 /**
  * 平台接口服务类
- * <p/>
+ *
  * Created by FSQ
  * Contact wx fsq_better
+ * Site https://www.fuint.cn
  */
 public interface TPlatformService {
 

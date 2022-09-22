@@ -7,16 +7,15 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
-import redis.clients.jedis.Jedis;
-
-
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * 缓存配置类
+ *
  * Created by FSQ
  * Contact wx fsq_better
+ * Site https://www.fuint.cn
  */
 @Configuration
 public class CacheConfig {

@@ -306,6 +306,11 @@
             </dependency>
             <dependency>
                 <groupId>com.fuint</groupId>
+                <artifactId>fuint-cache</artifactId>
+                <version>${fuintframework.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.fuint</groupId>
                 <artifactId>fuint-parent</artifactId>
                 <version>${fuintframework.version}</version>
             </dependency>

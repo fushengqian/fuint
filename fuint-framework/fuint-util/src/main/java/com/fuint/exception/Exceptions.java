@@ -7,9 +7,10 @@ import java.io.StringWriter;
  *  关于异常的工具类.
  * 
  * 参考了guava的Throwables。
- * 
- * @author fsq
- * @version $Id: Exceptions.java
+ *
+ * Created by FSQ
+ * Contact wx fsq_better
+ * Site https://www.fuint.cn
  */
 public class Exceptions {
 

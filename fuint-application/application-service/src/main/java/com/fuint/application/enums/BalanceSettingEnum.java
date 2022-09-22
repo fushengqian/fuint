@@ -7,7 +7,8 @@ package com.fuint.application.enums;
  * Site https://www.fuint.cn
  */
 public enum BalanceSettingEnum {
-    RECHARGE_RULE("rechargeRule", "充值规则");
+    RECHARGE_RULE("rechargeRule", "充值规则"),
+    RECHARGE_REMARK("rechargeRemark", "充值说明");
 
     private String key;
 

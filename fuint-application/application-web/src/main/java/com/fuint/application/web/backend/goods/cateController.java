@@ -9,7 +9,7 @@ import com.fuint.base.shiro.util.ShiroUserHelper;
 import com.fuint.application.dao.entities.*;
 import com.fuint.application.dto.*;
 import com.fuint.application.service.goods.CateService;
-import org.apache.commons.lang.StringUtils;
+import com.fuint.util.StringUtil;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +20,6 @@ import com.fuint.base.dao.pagination.PaginationResponse;
 import com.fuint.base.util.RequestHandler;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.*;
 
 /**
  * 商品分类管理controller
@@ -55,7 +54,7 @@ public class cateController {
     public String queryList(HttpServletRequest request, HttpServletResponse response, Model model) throws BusinessCheckException {
         PaginationRequest paginationRequest = RequestHandler.buildPaginationRequest(request, model);
         paginationRequest.getSearchParams().put("NQ_status", StatusEnum.DISABLE.getKey());
-        paginationRequest.setSortColumn(new String[]{"status asc", "createTime asc"});
+        paginationRequest.setSortColumn(new String[]{"sort asc", "status asc"});
         PaginationResponse<MtGoodsCate> paginationResponse = cateService.queryCateListByPagination(paginationRequest);
 
         String imagePath = settingService.getUploadBasePath();
@@ -119,7 +118,7 @@ public class cateController {
         String name = CommonUtil.replaceXSS(request.getParameter("name"));
         String description = CommonUtil.replaceXSS(request.getParameter("description"));
         String logo = CommonUtil.replaceXSS(request.getParameter("image"));
-        String sort = StringUtils.isNotEmpty(request.getParameter("sort")) ? request.getParameter("sort") : "1";
+        String sort = StringUtil.isNotEmpty(request.getParameter("sort")) ? request.getParameter("sort") : "1";
 
         MtGoodsCate info = new MtGoodsCate();
 

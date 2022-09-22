@@ -20,12 +20,10 @@ import com.fuint.base.util.RequestHandler;
 import com.fuint.exception.BusinessCheckException;
 import com.fuint.base.shiro.ShiroUser;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.util.StringUtils;
+import com.fuint.util.StringUtil;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -35,7 +33,7 @@ import java.math.BigDecimal;
 import java.util.*;
 
 /**
- * 充值管理controller
+ * 余额管理controller
  * Created by FSQ
  * Contact wx fsq_better
  * Site https://www.fuint.cn
@@ -43,8 +41,6 @@ import java.util.*;
 @Controller
 @RequestMapping(value = "/backend/balance")
 public class balanceController {
-
-    private static final Logger logger = LoggerFactory.getLogger(balanceController.class);
 
     /**
      * 配置服务接口
@@ -141,9 +137,7 @@ public class balanceController {
         }
 
         String operator = shiroUser.getAcctName();
-
         MtBalance mtBalance = new MtBalance();
-
         if (type == 2) {
             // 扣减
             mtBalance.setAmount(new BigDecimal(amount).subtract(new BigDecimal(amount).multiply(new BigDecimal("2"))));
@@ -156,7 +150,6 @@ public class balanceController {
         mtBalance.setOrderSn("");
 
         balanceService.addBalance(mtBalance);
-
         MtUser userInfo = memberService.queryMemberById(userId);
 
         reqResult.setResult(true);
@@ -181,6 +174,7 @@ public class balanceController {
         List<MtSetting> settingList = settingService.getSettingList(SettingTypeEnum.BALANCE.getKey());
 
         List<RechargeRuleDto> rechargeRuleList = new ArrayList<>();
+        String remark = "";
 
         if (settingList.size() > 0) {
             for (MtSetting setting : settingList) {
@@ -198,12 +192,14 @@ public class balanceController {
                               }
                          }
                      }
+                 } else if(setting.getName().equals(BalanceSettingEnum.RECHARGE_REMARK.getKey())) {
+                     remark = setting.getValue();
                  }
             }
         }
 
         model.addAttribute("rechargeRuleList", rechargeRuleList);
-
+        model.addAttribute("remark", remark);
         return "balance/setting";
     }
 
@@ -219,6 +215,7 @@ public class balanceController {
     @ResponseBody
     public ReqResult saveHandler(HttpServletRequest request, HttpServletResponse response, Model model) throws BusinessCheckException {
         String status = request.getParameter("status") == null ? StatusEnum.ENABLED.getKey() : request.getParameter("status");
+        String remark = request.getParameter("remark") == null ? "" : request.getParameter("remark");
         String rechargeAmountArr[] = request.getParameterValues("rechargeAmount") == null ? new String[0] : request.getParameterValues("rechargeAmount");
         String giveAmountArr[] = request.getParameterValues("giveAmount") == null ? new String[0] : request.getParameterValues("giveAmount");
 
@@ -259,7 +256,7 @@ public class balanceController {
         }
 
         String operator = ShiroUserHelper.getCurrentShiroUser().getAcctName();
-        if (StringUtils.isEmpty(operator)) {
+        if (StringUtil.isEmpty(operator)) {
             reqResult.setCode("201");
             reqResult.setResult(false);
             reqResult.setMsg("请重新登录！");
@@ -267,7 +264,6 @@ public class balanceController {
         }
 
         MtSetting setting = new MtSetting();
-
         setting.setType(SettingTypeEnum.BALANCE.getKey());
         setting.setName(BalanceSettingEnum.RECHARGE_RULE.getKey());
         setting.setValue(rechargeRule);
@@ -275,8 +271,18 @@ public class balanceController {
         setting.setStatus(status);
         setting.setOperator(operator);
         setting.setUpdateTime(new Date());
-
         settingService.saveSetting(setting);
+
+        // 保存充值说明
+        MtSetting settingRemark = new MtSetting();
+        settingRemark.setType(SettingTypeEnum.BALANCE.getKey());
+        settingRemark.setName(BalanceSettingEnum.RECHARGE_REMARK.getKey());
+        settingRemark.setValue(remark);
+        settingRemark.setDescription("");
+        settingRemark.setStatus(status);
+        settingRemark.setOperator(operator);
+        settingRemark.setUpdateTime(new Date());
+        settingService.saveSetting(settingRemark);
 
         reqResult.setResult(true);
 

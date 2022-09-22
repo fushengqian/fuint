@@ -33,6 +33,14 @@ public interface SmsTemplateService {
     MtSmsTemplate saveSmsTemplate(MtSmsTemplateDto reqSmsTemplateDto) throws BusinessCheckException;
 
     /**
+     * 删除短信模板
+     * @param id
+     * @param operator
+     * @return
+     * */
+    void deleteTemplate(Integer id, String operator) throws BusinessCheckException;
+
+    /**
      * 根据模板ID获取模板信息
      *
      * @param id ID

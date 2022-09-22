@@ -22,8 +22,9 @@ import java.util.List;
 /**
  * 角色管理控制类
  *
- * @author fsq
- * @version $Id: RoleController.java
+ * Created by FSQ
+ * Contact wx fsq_better
+ * Site https://www.fuint.cn
  */
 @Controller
 @RequestMapping("/duty")

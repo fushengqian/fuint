@@ -11,6 +11,7 @@ import java.util.List;
  * Contact wx fsq_better
  */
 public class UserOrderDto implements Serializable {
+
     /**
      * 自增ID
      */

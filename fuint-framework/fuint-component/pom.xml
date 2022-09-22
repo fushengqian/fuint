@@ -23,6 +23,10 @@
             <artifactId>fuint-util</artifactId>
         </dependency>
         <dependency>
+            <groupId>com.fuint</groupId>
+            <artifactId>fuint-cache</artifactId>
+        </dependency>
+        <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
         </dependency>
@@ -43,4 +47,16 @@
             <artifactId>freemarker</artifactId>
         </dependency>
     </dependencies>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 </project>

@@ -5,8 +5,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
+ * 控制器基类
+ *
  * Created by FSQ
  * Contact wx fsq_better
+ * Site https://www.fuint.cn
  */
 public class BaseController {
 

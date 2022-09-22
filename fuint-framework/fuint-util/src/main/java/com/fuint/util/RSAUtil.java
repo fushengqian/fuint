@@ -2,7 +2,6 @@ package com.fuint.util;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
@@ -18,13 +17,14 @@ import java.security.spec.X509EncodedKeySpec;
 import java.util.HashMap;
 import java.util.Map;
 
-//import org.apache.commons.io.FileUtils;
 
 /**
  * 数字签名工具类
  * 非对称加/解密(支持大数据)
  *
- * @author fsq
+ * Created by FSQ
+ * Contact wx fsq_better
+ * Site https://www.fuint.cn
  */
 public class RSAUtil {
     private static final Logger logger = LoggerFactory.getLogger(RSAUtil.class);

@@ -8,12 +8,11 @@ import com.fuint.application.dto.AddressDto;
 import com.fuint.application.enums.StatusEnum;
 import com.fuint.application.service.address.AddressService;
 import com.fuint.application.service.token.TokenService;
-import com.fuint.application.util.CommonUtil;
 import com.fuint.exception.BusinessCheckException;
 import com.fuint.application.ResponseObject;
 import com.fuint.application.BaseController;
 import org.apache.commons.beanutils.BeanUtils;
-import org.apache.commons.lang.StringUtils;
+import com.fuint.util.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import java.lang.reflect.InvocationTargetException;
 import org.springframework.web.bind.annotation.*;
@@ -51,7 +50,7 @@ public class AddressController extends BaseController {
     /**
      * 保存收货地址
      */
-    @RequestMapping(value = "/save")
+    @RequestMapping(value = "/save", method = RequestMethod.POST)
     @CrossOrigin
     public ResponseObject save(HttpServletRequest request, @RequestBody Map<String, Object> param) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
@@ -65,7 +64,7 @@ public class AddressController extends BaseController {
         String isDefault = param.get("isDefault") == null ? "" : param.get("isDefault").toString();
         Integer addressId = param.get("addressId") == null ? 0 : Integer.parseInt(param.get("addressId").toString());
 
-        if (StringUtils.isEmpty(token)) {
+        if (StringUtil.isEmpty(token)) {
             return getFailureResult(1001);
         }
 
@@ -95,7 +94,7 @@ public class AddressController extends BaseController {
     /**
      * 获取收货地址列表
      */
-    @RequestMapping(value = "/list")
+    @RequestMapping(value = "/list", method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject list(HttpServletRequest request) throws BusinessCheckException, InvocationTargetException, IllegalAccessException {
         String token = request.getHeader("Access-Token");
@@ -157,10 +156,14 @@ public class AddressController extends BaseController {
     /**
      * 获取收货地址详情
      */
-    @RequestMapping(value = "/detail")
+    @RequestMapping(value = "/detail", method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject detail(HttpServletRequest request) throws BusinessCheckException, InvocationTargetException, IllegalAccessException {
-        Integer addressId = request.getParameter("addressId") == null ? 0 : Integer.parseInt(request.getParameter("addressId"));
+        String addressIdStr = request.getParameter("addressId") == null ? "" : request.getParameter("addressId");
+        Integer addressId = 0;
+        if (StringUtil.isNotEmpty(addressIdStr)) {
+            addressId = Integer.parseInt(addressIdStr);
+        }
 
         String token = request.getHeader("Access-Token");
 
@@ -168,7 +171,7 @@ public class AddressController extends BaseController {
 
         MtUser mtUser = tokenService.getUserInfoByToken(token);
 
-        if (null == mtUser || StringUtils.isEmpty(token)) {
+        if (null == mtUser || StringUtil.isEmpty(token)) {
             return getFailureResult(1001);
         }
 

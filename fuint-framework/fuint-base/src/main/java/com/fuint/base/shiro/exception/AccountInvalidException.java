@@ -4,9 +4,10 @@ import org.apache.shiro.authc.AuthenticationException;
 
 /**
  * 账户无效异常
- * <p/>
+ *
  * Created by FSQ
  * Contact wx fsq_better
+ * Site https://www.fuint.cn
  */
 public class AccountInvalidException extends AuthenticationException {
 

@@ -9,6 +9,7 @@ import com.fuint.application.dao.repositories.MtRefundRepository;
 import com.fuint.application.dao.repositories.MtUserCouponRepository;
 import com.fuint.application.dto.*;
 import com.fuint.application.enums.*;
+import com.fuint.application.service.balance.BalanceService;
 import com.fuint.application.service.coupon.CouponService;
 import com.fuint.application.service.order.OrderService;
 import com.fuint.application.service.point.PointService;
@@ -16,6 +17,7 @@ import com.fuint.base.annoation.OperationServiceLog;
 import com.fuint.base.dao.pagination.PaginationRequest;
 import com.fuint.base.dao.pagination.PaginationResponse;
 import com.fuint.exception.BusinessCheckException;
+import com.fuint.util.StringUtil;
 import org.apache.commons.collections.map.HashedMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,7 +26,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.math.BigDecimal;
 import java.util.*;
 
@@ -67,13 +68,19 @@ public class RefundServiceImpl extends BaseService implements RefundService {
     private OrderService orderService;
 
     /**
+     * 余额服务接口
+     * */
+    @Autowired
+    private BalanceService balanceService;
+
+    /**
      * 分页查询售后订单列表
      *
      * @param  paginationRequest
      * @return
      */
     @Override
-    public PaginationResponse<MtRefund> getRefundListByPagination(PaginationRequest paginationRequest) throws BusinessCheckException {
+    public PaginationResponse<MtRefund> getRefundListByPagination(PaginationRequest paginationRequest) {
         PaginationResponse<MtRefund> paginationResponse = refundRepository.findResultsByPagination(paginationRequest);
         return paginationResponse;
     }
@@ -204,6 +211,15 @@ public class RefundServiceImpl extends BaseService implements RefundService {
             throw new BusinessCheckException("该售后订单状态异常");
         }
 
+        // 已经同意过了
+        if (refund.getStatus().equals(RefundStatusEnum.APPROVED.getKey())) {
+            if (StringUtil.isNotEmpty(refundDto.getRemark())) {
+                refund.setRemark(refundDto.getRemark());
+            }
+            MtRefund mtRefund = refundRepository.save(refund);
+            return mtRefund;
+        }
+
         refund.setId(refundDto.getId());
         refund.setUpdateTime(new Date());
 
@@ -222,6 +238,26 @@ public class RefundServiceImpl extends BaseService implements RefundService {
         reqDto.setId(orderInfo.getId());
         reqDto.setStatus(OrderStatusEnum.CANCEL.getKey());
         orderService.updateOrder(reqDto);
+
+        // 如果是余额支付，返还余额
+        if (orderInfo.getPayType().equals(PayTypeEnum.BALANCE.getKey())) {
+            List<MtBalance> balanceList = balanceService.getBalanceListByOrderSn(orderInfo.getOrderSn());
+            if (balanceList.size() > 0) {
+               for (MtBalance mtBalance : balanceList) {
+                   if (mtBalance.getAmount().compareTo(new BigDecimal("0")) < 0) {
+                       MtBalance balanceReq = new MtBalance();
+                       balanceReq.setUserId(orderInfo.getUserId());
+                       balanceReq.setOrderSn(orderInfo.getOrderSn());
+                       balanceReq.setMobile(orderInfo.getUserInfo().getMobile());
+                       balanceReq.setAmount(mtBalance.getAmount().negate());
+                       balanceReq.setStatus(StatusEnum.ENABLED.getKey());
+                       balanceReq.setCreateTime(new Date());
+                       balanceReq.setUpdateTime(new Date());
+                       balanceService.addBalance(balanceReq);
+                   }
+               }
+            }
+        }
 
         // 返还积分
         if (orderInfo.getUsePoint() != null && orderInfo.getUsePoint() > 0) {

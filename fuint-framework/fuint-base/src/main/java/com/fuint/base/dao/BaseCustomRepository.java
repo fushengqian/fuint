@@ -23,7 +23,7 @@ import java.util.Map;
 /**
  * 全局扩展repository实现
  *
- * @author fsq
+ * @author FSQ
  * @version $Id: BaseRepository.java
  */
 public class BaseCustomRepository<T, ID extends Serializable> extends SimpleJpaRepository<T, ID>

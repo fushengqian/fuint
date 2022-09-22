@@ -5,9 +5,13 @@ import java.util.Map;
 
 /**
  * 导出Excel文件DTO
- * Created by liuguofang on 2016/11/25.
+ *
+ * Created by FSQ
+ * Contact wx fsq_better
+ * Site https://www.fuint.cn
  */
 public class ExcelExportDto {
+
     /**
      * 模板文件名称
      */
@@ -17,10 +21,12 @@ public class ExcelExportDto {
      * 模板文件所在resource路径
      */
     private String srcPath;
+
     /**
      * 数据
      */
     private Map dataMap;
+
     /**
      * 输出流
      */

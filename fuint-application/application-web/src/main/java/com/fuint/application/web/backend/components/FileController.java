@@ -5,9 +5,9 @@ import com.fuint.application.util.CommonUtil;
 import com.fuint.application.util.DateUtil;
 import com.fuint.application.util.JsonUtil;
 import com.fuint.application.util.AliyunOssUtil;
+import com.fuint.util.StringUtil;
 import com.fuint.application.web.backend.util.JSONUtil;
 import com.aliyun.oss.OSS;
-import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -85,7 +85,7 @@ public class FileController {
 
         Map<String, String> resultMap = new HashMap<>();
         String originalFilename = file.getOriginalFilename();
-        if (StringUtils.isEmpty(originalFilename)) {
+        if (StringUtil.isEmpty(originalFilename)) {
             resultMap.put("status", "error");
             resultMap.put("message", "上传出错啦");
             return JSONUtil.toJSonString(resultMap);

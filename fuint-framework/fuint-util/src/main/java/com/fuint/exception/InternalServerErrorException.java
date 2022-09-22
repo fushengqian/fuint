@@ -3,7 +3,9 @@ package com.fuint.exception;
 /**
  * Exception for internal server error (e.g. i/o exception)
  *
- * @author Harrison han
+ * Created by FSQ
+ * Contact wx fsq_better
+ * Site https://www.fuint.cn
  */
 public class InternalServerErrorException extends HttpStatusException {
 

@@ -1,6 +1,6 @@
 package com.fuint.application.dao.generator;
 
-import org.apache.commons.lang.StringUtils;
+import com.fuint.util.StringUtil;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -28,7 +28,7 @@ public class GenEntityMysql {
     private String authorName = "FSQ";//作者名字
     private String contact = "fsq_better"; //作者微信
     private String site = "https://www.fuint.cn"; //官网
-    private String tableName = "mt_balance";//表名
+    private String tableName = "mt_xxx";//表名
 
     private List<String> colNames = new ArrayList<>(); // 列名数组
     private List<String> colTypes = new ArrayList<>(); //列名类型数组
@@ -206,7 +206,7 @@ public class GenEntityMysql {
      * @return
      */
     private String allLowerCase(String str) {
-        if (StringUtils.isEmpty(str)) {
+        if (StringUtil.isEmpty(str)) {
             return str;
         }
         return str.toLowerCase();
@@ -219,7 +219,7 @@ public class GenEntityMysql {
      * @return
      */
     private String[] splitName(String str) {
-        if (StringUtils.isEmpty(str)) {
+        if (StringUtil.isEmpty(str)) {
             return null;
         }
         return str.split("_");
@@ -232,7 +232,7 @@ public class GenEntityMysql {
      * @return
      */
     private String allInitialCapital(String tableName) {
-        if (StringUtils.isEmpty(tableName)) {
+        if (StringUtil.isEmpty(tableName)) {
             return null;
         }
         tableName = this.allLowerCase(tableName);
@@ -251,7 +251,7 @@ public class GenEntityMysql {
      * @return
      */
     private String secInitialCapital(String columnName) {
-        if (StringUtils.isEmpty(columnName)) {
+        if (StringUtil.isEmpty(columnName)) {
             return null;
         }
         columnName = this.allLowerCase(columnName);

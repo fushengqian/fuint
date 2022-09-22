@@ -13,8 +13,9 @@ import org.springframework.web.servlet.ModelAndView;
 /**
  * 全局异常处理类
  *
- * @author fsq
- * @version $Id: GlobalErrorHandler.java
+ * Created by FSQ
+ * Contact wx fsq_better
+ * Site https://www.fuint.cn
  */
 @ControllerAdvice
 public class GlobalErrorHandler {

@@ -10,7 +10,7 @@ import com.fuint.application.ResponseObject;
 import com.fuint.application.BaseController;
 import com.fuint.application.dao.entities.MtUser;
 import com.fuint.application.service.token.TokenService;
-import jodd.util.StringUtil;
+import com.fuint.util.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -40,7 +40,7 @@ public class OrderController extends BaseController {
     private OrderService orderService;
 
     /**
-     * 获取订单列表
+     * 获取我的订单列表
      */
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     @CrossOrigin
@@ -54,6 +54,7 @@ public class OrderController extends BaseController {
 
         param.put("userId", userInfo.getId());
         ResponseObject orderData = orderService.getUserOrderList(param);
+
         return getSuccessResult(orderData.getData());
     }
 
@@ -62,7 +63,7 @@ public class OrderController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.GET)
     @CrossOrigin
-    public ResponseObject detail(HttpServletRequest request) throws BusinessCheckException{
+    public ResponseObject detail(HttpServletRequest request) throws BusinessCheckException {
         String userToken = request.getHeader("Access-Token");
         MtUser mtUser = tokenService.getUserInfoByToken(userToken);
 
@@ -85,7 +86,7 @@ public class OrderController extends BaseController {
      */
     @RequestMapping(value = "/cancel", method = RequestMethod.GET)
     @CrossOrigin
-    public ResponseObject cancel(HttpServletRequest request) throws BusinessCheckException{
+    public ResponseObject cancel(HttpServletRequest request) throws BusinessCheckException {
         String userToken = request.getHeader("Access-Token");
         MtUser mtUser = tokenService.getUserInfoByToken(userToken);
 
@@ -103,10 +104,7 @@ public class OrderController extends BaseController {
             return getFailureResult(2000, "订单信息有误");
         }
 
-        OrderDto reqDto = new OrderDto();
-        reqDto.setId(Integer.parseInt(orderId));
-        reqDto.setStatus(OrderStatusEnum.CANCEL.getKey());
-        MtOrder orderInfo = orderService.updateOrder(reqDto);
+        MtOrder orderInfo = orderService.cancelOrder(order.getId(), "会员取消");
 
         return getSuccessResult(orderInfo);
     }

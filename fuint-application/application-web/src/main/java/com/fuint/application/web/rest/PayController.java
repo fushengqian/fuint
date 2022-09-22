@@ -21,14 +21,13 @@ import com.fuint.base.shiro.ShiroUser;
 import com.fuint.base.shiro.util.ShiroUserHelper;
 import com.fuint.exception.BusinessCheckException;
 import com.fuint.application.BaseController;
-import jodd.util.StringUtil;
+import com.fuint.util.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.Model;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.math.BigDecimal;
@@ -223,7 +222,7 @@ public class PayController extends BaseController {
             BigDecimal tranAmount = new BigDecimal(tranAmt).divide(new BigDecimal("100"));
 
             // 参数校验
-            if (StringUtils.isNotEmpty(orderSn) && StringUtils.isNotEmpty(tranAmt) && StringUtils.isNotEmpty(orderId)) {
+            if (StringUtil.isNotEmpty(orderSn) && StringUtil.isNotEmpty(tranAmt) && StringUtil.isNotEmpty(orderId)) {
                 UserOrderDto orderInfo = orderService.getOrderByOrderSn(orderSn);
                 if (orderInfo != null) {
                     // 订单金额

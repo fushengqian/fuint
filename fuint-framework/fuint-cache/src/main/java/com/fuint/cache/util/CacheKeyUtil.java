@@ -2,8 +2,10 @@ package com.fuint.cache.util;
 
 /**
  * 缓存key的集中生成策略
+ *
  * Created by FSQ
  * Contact wx fsq_better
+ * Site https://www.fuint.cn
  */
 public class CacheKeyUtil {
 

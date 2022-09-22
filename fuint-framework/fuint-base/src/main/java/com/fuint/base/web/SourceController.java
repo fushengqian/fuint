@@ -2,7 +2,6 @@ package com.fuint.base.web;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import com.fuint.base.dao.entities.TSource;
 import com.fuint.base.dao.pagination.PaginationResponse;
 import com.fuint.base.service.entities.TreeNode;
@@ -24,8 +23,9 @@ import java.util.List;
 /**
  * 菜单管理控制类
  *
- * @author fsq
- * @version $Id: HtSourceController.java
+ * Created by FSQ
+ * Contact wx fsq_better
+ * Site https://www.fuint.cn
  */
 @Controller
 @RequestMapping("/source")

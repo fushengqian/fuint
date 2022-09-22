@@ -21,9 +21,9 @@ import java.util.Properties;
 
 /**
  * spring data jpa 配置
- * <p/>
  * Created by FSQ
  * Contact wx fsq_better
+ * Site https://www.fuint.cn
  */
 @Configuration
 @EnableTransactionManagement
@@ -101,5 +101,4 @@ public class JpaConfig {
         }
         return dataSource;
     }
-
 }

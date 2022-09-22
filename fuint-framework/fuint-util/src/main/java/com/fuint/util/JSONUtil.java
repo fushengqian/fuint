@@ -9,8 +9,10 @@ import java.util.List;
 
 /**
  * JSON转换工具类[使用FastJSON实现]
+ *
  * Created by FSQ
  * Contact wx fsq_better
+ * Site https://www.fuint.cn
  */
 public class JSONUtil {
 

@@ -11,7 +11,7 @@ import org.springframework.stereotype.Repository;
 /**
  * 账户Repository
  * 
- * @author fsq
+ * @author FSQ
  * @version $Id: TAccountRepository.java
  */
 @Repository("tAccountRepository")

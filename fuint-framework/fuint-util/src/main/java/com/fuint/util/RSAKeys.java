@@ -1,6 +1,10 @@
 package com.fuint.util;
 /**
  * RSA公钥&私钥.
+ *
+ * Created by FSQ
+ * Contact wx fsq_better
+ * Site https://www.fuint.cn
  * */
 public interface RSAKeys {
     /**

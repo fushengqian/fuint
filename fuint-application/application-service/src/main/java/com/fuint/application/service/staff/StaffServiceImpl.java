@@ -15,6 +15,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -61,18 +63,27 @@ public class StaffServiceImpl implements StaffService {
     }
 
     /**
-     * 添加员工
+     * 保存员工信息
      *
      * @param reqStaffDto
      * @throws BusinessCheckException
      */
     @Override
-    @OperationServiceLog(description = "添加员工")
-    public MtStaff addStaff(MtStaff reqStaffDto) throws BusinessCheckException {
-        MtStaff mtStaff = new MtStaff();
-        Boolean smsFlag = Boolean.FALSE;
+    @OperationServiceLog(description = "保存员工信息")
+    @Transactional
+    public MtStaff saveStaff(MtStaff reqStaffDto) throws BusinessCheckException {
         reqStaffDto.setUpdateTime(new Date());
 
+        MtUser mtUser = memberService.queryMemberByMobile(reqStaffDto.getMobile());
+        if (mtUser == null) {
+            mtUser = new MtUser();
+            mtUser.setMobile(reqStaffDto.getMobile());
+            mtUser.setName(reqStaffDto.getRealName());
+            mtUser.setStoreId(reqStaffDto.getStoreId());
+            mtUser.setDescription("员工注册自动添加");
+            mtUser = memberService.addMember(mtUser);
+        }
+        reqStaffDto.setUserId(mtUser.getId());
         if (null == reqStaffDto.getId()) {
             reqStaffDto.setCreateTime(new Date());
             if (reqStaffDto.getAuditedStatus() == null) {
@@ -80,48 +91,11 @@ public class StaffServiceImpl implements StaffService {
             } else {
                 reqStaffDto.setAuditedStatus(reqStaffDto.getAuditedStatus());
             }
-        } else if(reqStaffDto.getAuditedStatus().equals(StatusEnum.ENABLED.getKey()) ) {
+        } else {
             Integer id = reqStaffDto.getId();
             MtStaff mtStaffTemp = staffRepository.findOne(id);
-
-            if (null == mtStaffTemp) {
-                throw new BusinessCheckException("员工信息异常");
-            }
-
-            // 关联userId
-            MtUser mtUser = new MtUser();
-            mtUser.setMobile(reqStaffDto.getMobile());
-            mtUser.setName(reqStaffDto.getRealName());
-            MtUser mtUser1 = memberService.queryMemberByMobile(reqStaffDto.getMobile());
-
-            if (mtUser1 == null) {
-                mtUser.setStoreId(reqStaffDto.getStoreId());
-                mtUser.setDescription("员工关联自动添加");
-                mtUser1 = memberService.addMember(mtUser);
-                smsFlag = Boolean.TRUE;
-            }
-
-            // 关联员工账户id
-            reqStaffDto.setUserId(mtUser1.getId());
-            reqStaffDto.setUpdateTime(new Date());
-            if (!mtStaffTemp.getAuditedStatus().equals(StatusEnum.ENABLED.getKey())) {
+            if (mtStaffTemp.getAuditedStatus().equals(StatusEnum.ENABLED.getKey())) {
                 reqStaffDto.setAuditedTime(new Date());
-            }
-
-            // 发送短信通知
-            if (smsFlag.equals(Boolean.TRUE)) {
-                MtStore mtStore = storeService.queryStoreById(reqStaffDto.getStoreId());
-                mtStaff.setStoreName(mtStore.getName());
-                List<String> mobileList = new ArrayList<String>();
-                mobileList.add(reqStaffDto.getMobile());
-                try {
-                    Map<String, String> params = new HashMap<>();
-                    params.put("name", reqStaffDto.getRealName());
-                    params.put("storeName", mtStaff.getStoreName());
-                    sendSmsService.sendSms("confirmer-authed", mobileList, params);
-                } catch (Exception e) {
-                    throw new BusinessCheckException("短信发送失败.");
-                }
             }
         }
 

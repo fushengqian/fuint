@@ -5,9 +5,10 @@ import java.security.NoSuchAlgorithmException;
 
 /**
  * MD5加密
- * 
- * @author fsq
- * @version $Id: Md5Encryptor.java
+ *
+ * Created by FSQ
+ * Contact wx fsq_better
+ * Site https://www.fuint.cn
  */
 public class Md5Encryptor {
 

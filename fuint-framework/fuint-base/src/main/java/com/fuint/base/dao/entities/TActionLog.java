@@ -12,7 +12,7 @@ import javax.persistence.Table;
 /**
  * 操作日志实体类
  *
- * @author fsq
+ * @author FSQ
  * @version $Id: TActionLog.java
  */
 @Entity

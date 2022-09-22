@@ -18,7 +18,8 @@ import java.util.Date;
  */
 @Entity 
 @Table(name = "mt_user_coupon")
-public class MtUserCoupon implements Serializable{
+public class MtUserCoupon implements Serializable {
+
    /**
     * 自增ID 
     */ 
@@ -109,6 +110,12 @@ public class MtUserCoupon implements Serializable{
     */ 
     @Column(name = "UPDATE_TIME")
     private Date updateTime;
+
+    /**
+     * 过期时间
+     */
+    @Column(name = "EXPIRE_TIME")
+    private Date expireTime;
 
    /**
     * UUID
@@ -217,6 +224,12 @@ public class MtUserCoupon implements Serializable{
     }
     public void setUpdateTime(Date updateTime){
         this.updateTime=updateTime;
+    }
+    public Date getExpireime(){
+        return expireTime;
+    }
+    public void setExpireime(Date expireTime){
+        this.expireTime=expireTime;
     }
     public String getUuid(){
         return uuid;

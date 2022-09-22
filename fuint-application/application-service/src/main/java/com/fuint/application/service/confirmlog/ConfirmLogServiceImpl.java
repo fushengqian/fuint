@@ -71,7 +71,7 @@ public class ConfirmLogServiceImpl implements ConfirmLogService {
             content.add(item);
         }
 
-        PageRequest pageRequest = new PageRequest((paginationRequest.getCurrentPage() +1), paginationRequest.getPageSize());
+        PageRequest pageRequest = new PageRequest((paginationRequest.getCurrentPage()), paginationRequest.getPageSize());
         Page page = new PageImpl(content, pageRequest, paginationResponse.getTotalElements());
         PaginationResponse<ConfirmLogDto> result = new PaginationResponse(page, ConfirmLogDto.class);
         result.setTotalPages(paginationResponse.getTotalPages());

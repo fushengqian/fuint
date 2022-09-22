@@ -13,7 +13,7 @@ import com.fuint.base.shiro.ShiroUser;
 import com.fuint.base.shiro.util.ShiroUserHelper;
 import com.fuint.application.dao.repositories.MtCouponGroupRepository;
 import com.fuint.exception.BusinessCheckException;
-import com.fuint.util.DateUtil;
+import com.fuint.util.StringUtil;
 import com.fuint.application.dao.entities.*;
 import com.fuint.application.dao.repositories.MtSendLogRepository;
 import com.fuint.application.dao.repositories.MtUserCouponRepository;
@@ -22,7 +22,6 @@ import com.fuint.application.service.coupon.CouponService;
 import com.fuint.application.service.coupongroup.CouponGroupService;
 import com.fuint.application.service.store.StoreService;
 import com.fuint.application.service.sendlog.SendLogService;
-import org.apache.commons.lang.StringUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -103,11 +102,6 @@ public class couponController extends BaseController {
     private SettingService settingService;
 
     /**
-     * 上次执行搜索全量索引的时间
-     */
-    private Date lastIndexTime = null;
-
-    /**
      * 卡券列表查询
      *
      * @param request  HttpServletRequest对象
@@ -122,14 +116,9 @@ public class couponController extends BaseController {
 
         model.addAttribute("EQ_groupId", EQ_groupId);
 
-        if (StringUtils.isNotEmpty(EQ_groupId)) {
+        if (StringUtil.isNotEmpty(EQ_groupId)) {
             MtCouponGroup group = couponGroupService.queryCouponGroupById(Integer.parseInt(EQ_groupId));
             model.addAttribute("groupName", group.getName());
-        }
-
-        if (lastIndexTime != null) {
-            long diff = DateUtil.getDiffSeconds(new Date(), lastIndexTime);
-            model.addAttribute("isDisable", diff < 30 ? "disable" : "");
         }
 
         CouponTypeEnum[] typeList = CouponTypeEnum.values();
@@ -184,7 +173,7 @@ public class couponController extends BaseController {
                 // 可用店铺
                 String storeName = "";
                 String storeIds = coupon.getStoreIds();
-                if (StringUtils.isNotEmpty(storeIds)) {
+                if (StringUtil.isNotEmpty(storeIds)) {
                     String[] list = storeIds.split(",");
                     if (list.length > 0) {
                         for (String id : list) {
@@ -212,7 +201,7 @@ public class couponController extends BaseController {
                         storeName = storeName.substring(0, 60) + "...";
                     }
                     h.setValue(storeName);
-                    if (StringUtils.isNotEmpty(h.getKey())) {
+                    if (StringUtil.isNotEmpty(h.getKey())) {
                         storeMap.add(h);
                     }
                 }
@@ -223,7 +212,7 @@ public class couponController extends BaseController {
 
         String groupId = request.getParameter("EQ_groupId");
         Integer groupTotal = 0;
-        if (StringUtils.isNotEmpty(groupId)) {
+        if (StringUtil.isNotEmpty(groupId)) {
             MtCouponGroup groupInfo = couponGroupService.queryCouponGroupById(Integer.parseInt(groupId));
             groupTotal = groupInfo.getTotal();
         }
@@ -242,14 +231,12 @@ public class couponController extends BaseController {
      * 删除卡券
      *
      * @param request
-     * @param response
-     * @param model
      * @return
      */
     @RequiresPermissions("backend/coupon/delete")
     @RequestMapping(value = "/delete/{id}")
     @ResponseBody
-    public ReqResult delete(HttpServletRequest request, HttpServletResponse response, Model model, @PathVariable("id") Long id) throws BusinessCheckException {
+    public ReqResult delete(HttpServletRequest request, @PathVariable("id") Long id) throws BusinessCheckException {
         List<Long> ids = new ArrayList<Long>();
         ids.add(id);
 
@@ -275,7 +262,7 @@ public class couponController extends BaseController {
         String groupId = request.getParameter("groupId");
 
         // 卡券分组
-        if (StringUtils.isNotEmpty(groupId)) {
+        if (StringUtil.isNotEmpty(groupId)) {
             MtCouponGroup mtCouponInfo = couponGroupService.queryCouponGroupById(Integer.parseInt(groupId));
             model.addAttribute("groupInfo", mtCouponInfo);
         }
@@ -340,7 +327,7 @@ public class couponController extends BaseController {
 
         List<MtStore> storeList = new ArrayList<>();
 
-        if (StringUtils.isNotEmpty(mtCouponInfo.getStoreIds())) {
+        if (StringUtil.isNotEmpty(mtCouponInfo.getStoreIds())) {
             String[] ids = mtCouponInfo.getStoreIds().split(",");
             for (String storeId : ids) {
                 MtStore info = storeService.queryStoreById(Integer.parseInt(storeId));
@@ -370,7 +357,7 @@ public class couponController extends BaseController {
 
         // 不可用日期
         List<DateDto> exceptTimeList = new ArrayList<>();
-        if (StringUtils.isNotEmpty(mtCouponInfo.getExceptTime())) {
+        if (StringUtil.isNotEmpty(mtCouponInfo.getExceptTime())) {
             String[] exceptTimeArr = mtCouponInfo.getExceptTime().split(",");
             if (exceptTimeArr.length > 0) {
                 for (int i = 0; i < exceptTimeArr.length; i++) {
@@ -387,11 +374,11 @@ public class couponController extends BaseController {
 
         // 预存卡的预存规则
         List<PreStoreRuleDto> preStoreList = new ArrayList<>();
-        if (StringUtils.isNotEmpty(mtCouponInfo.getInRule()) && mtCouponInfo.getType().equals(CouponTypeEnum.PRESTORE.getKey())) {
+        if (StringUtil.isNotEmpty(mtCouponInfo.getInRule()) && mtCouponInfo.getType().equals(CouponTypeEnum.PRESTORE.getKey())) {
             String[] ruleArr = mtCouponInfo.getInRule().split(",");
             if (ruleArr.length > 0) {
                 for (int i = 0; i < ruleArr.length; i++) {
-                     if (StringUtils.isNotEmpty(ruleArr[i])) {
+                     if (StringUtil.isNotEmpty(ruleArr[i])) {
                          String[] ruleItem = ruleArr[i].split("_");
                          if (ruleItem.length == 2) {
                              PreStoreRuleDto dto = new PreStoreRuleDto();
@@ -409,36 +396,6 @@ public class couponController extends BaseController {
         model.addAttribute("isEdit", true);
 
         return "coupon/form";
-    }
-
-    /**
-     * 查询店铺页面
-     * */
-    @RequiresPermissions("backend/coupon/searchStore")
-    @RequestMapping(value = "/searchStore")
-    public String searchStore(HttpServletRequest request) throws BusinessCheckException {
-        return "components/storeQuickSearch";
-    }
-
-    /**
-     * 快速查询店铺
-     * */
-    @RequiresPermissions("backend/coupon/quickSearchStore")
-    @RequestMapping(value = "/quickSearchStore")
-    public String quickSearchStore(HttpServletRequest request, HttpServletResponse response, Model model) throws BusinessCheckException {
-        PaginationRequest paginationRequest = RequestHandler.buildPaginationRequest(request, model);
-        Map<String, Object> params = paginationRequest.getSearchParams();
-
-        if (null == params) {
-            params = new HashMap<>();
-        }
-
-        params.put("EQ_status", StatusEnum.ENABLED.getKey());
-
-        List<MtStore> storeList = storeService.queryStoresByParams(params);
-        model.addAttribute("storeList", storeList);
-
-        return "components/storeList";
     }
 
     /**
@@ -553,7 +510,7 @@ public class couponController extends BaseController {
         // 导入批次
         String uuid = UUID.randomUUID().toString().replaceAll("-", "");
         try {
-            couponService.sendCoupon(Integer.parseInt(couponId), mobile, Integer.parseInt(num), uuid);
+            couponService.sendCoupon(Integer.parseInt(couponId), mobile, Integer.parseInt(num), uuid, "");
         } catch (BusinessCheckException e) {
             reqResult.setResult(false);
             reqResult.setMsg(e.getMessage());

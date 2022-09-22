@@ -8,7 +8,7 @@ import java.util.List;
  * 分页请求响应结果对象
  *
  * @param <T>
- * @author fsq
+ * @author FSQ
  * @version $Id: PaginationResponse.java
  */
 public class PaginationResponse<T> implements Serializable {

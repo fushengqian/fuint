@@ -8,7 +8,9 @@ package com.fuint.exception;
  *
  * It can also be thrown by service implementation when you think there is a bad request
  *
- * @author Harrison han
+ * Created by FSQ
+ * Contact wx fsq_better
+ * Site https://www.fuint.cn
  */
 public class BadRequestException extends HttpStatusException {
 

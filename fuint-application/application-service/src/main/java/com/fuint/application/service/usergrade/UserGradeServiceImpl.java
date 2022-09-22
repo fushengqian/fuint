@@ -9,8 +9,6 @@ import com.fuint.base.dao.pagination.PaginationRequest;
 import com.fuint.base.dao.pagination.PaginationResponse;
 import com.fuint.exception.BusinessCheckException;
 import com.fuint.application.enums.StatusEnum;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
@@ -30,8 +28,6 @@ import java.util.Map;
 @Service
 public class UserGradeServiceImpl implements UserGradeService {
 
-    private static final Logger log = LoggerFactory.getLogger(UserGradeServiceImpl.class);
-
     @Autowired
     private MtUserGradeRepository userGradeRepository;
 
@@ -42,7 +38,7 @@ public class UserGradeServiceImpl implements UserGradeService {
      * @return
      */
     @Override
-    public PaginationResponse<MtUserGrade> queryUserGradeListByPagination(PaginationRequest paginationRequest) throws BusinessCheckException {
+    public PaginationResponse<MtUserGrade> queryUserGradeListByPagination(PaginationRequest paginationRequest) {
         PaginationResponse<MtUserGrade> paginationResponse = userGradeRepository.findResultsByPagination(paginationRequest);
         return paginationResponse;
     }
@@ -55,7 +51,7 @@ public class UserGradeServiceImpl implements UserGradeService {
      */
     @Override
     @OperationServiceLog(description = "添加会员等级信息")
-    public MtUserGrade addUserGrade(MtUserGrade mtUserGrade) throws BusinessCheckException {
+    public MtUserGrade addUserGrade(MtUserGrade mtUserGrade) {
         return userGradeRepository.save(mtUserGrade);
     }
 
@@ -84,7 +80,7 @@ public class UserGradeServiceImpl implements UserGradeService {
         MtUserGrade userGrade = userGradeRepository.findOne(mtUserGrade.getId());
 
         if (null != userGrade) {
-           userGradeRepository.save(mtUserGrade);
+            userGradeRepository.save(mtUserGrade);
         }
 
         return mtUserGrade;
@@ -99,7 +95,7 @@ public class UserGradeServiceImpl implements UserGradeService {
      */
     @Override
     @OperationServiceLog(description = "删除会员等级")
-    public Integer deleteUserGrade(Integer id, String operator) throws BusinessCheckException {
+    public Integer deleteUserGrade(Integer id, String operator) {
         MtUserGrade mtUserGrade = this.queryUserGradeById(id);
         if (null == mtUserGrade) {
             return 0;
@@ -156,9 +152,9 @@ public class UserGradeServiceImpl implements UserGradeService {
         List<MtUserGrade> dataList = new ArrayList<>();
         if (userGrades.size() > 0 && userInfo != null) {
             for (MtUserGrade grade : userGrades) {
-               if (!userInfo.getGradeId().equals(grade.getId().toString()) && (grade.getGrade() > Integer.parseInt(userInfo.getGradeId()))) {
-                   dataList.add(grade);
-               }
+                if (!userInfo.getGradeId().equals(grade.getId().toString()) && (grade.getGrade() > Integer.parseInt(userInfo.getGradeId()))) {
+                    dataList.add(grade);
+                }
             }
         }
 

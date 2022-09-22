@@ -2,8 +2,10 @@ package com.fuint.enums;
 
 /**
  * 账户信息枚举
- * @author fsq
- * @version $Id: AccountEnum.java
+ *
+ * Created by FSQ
+ * Contact wx fsq_better
+ * Site https://www.fuint.cn
  */
 public interface AccountEnum {
     /**

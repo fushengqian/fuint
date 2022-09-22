@@ -12,11 +12,17 @@
             <div class="form-group">
                 <label class="col-md-3 control-label"><span class="requiredstar">* </span>等级：</label>
                 <div class="col-md-3">
-                    <select class="form-control" disabled id="gradeId" name="gradeId">
+                    <select class="form-control" id="gradeId" name="gradeId">
                         <#list userGradeMap as grade>
                         <option <#if grade.id == member.gradeId>selected</#if> value="${grade.id}">${grade.name}</option>
                         </#list>
                     </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-md-3 control-label"><span class="requiredstar">* </span>名称：</label>
+                <div class="col-md-3">
+                    <input type="text" id="name" class="form-control" name="name" placeholder="名称最长20位" maxlength="20" value="${member.name}" >
                 </div>
             </div>
             <div class="form-group">
@@ -32,27 +38,19 @@
                 </div>
             </div>
             <div class="form-group">
-                <label class="col-md-3 control-label"><span class="requiredstar">* </span>名称：</label>
-                <div class="col-md-3">
-                    <input type="text" id="name" class="form-control" name="name" placeholder="名称最长20位" maxlength="20" value="${member.name}" >
-                </div>
-            </div>
-            <div class="form-group">
-                <label class="col-md-3 control-label">有效期：</label>
-                <div class="col-md-3 info">
-                    <#if member.startTime>
-                    <label class="active-tips">${member.startTime} ~ ${member.endTime}</label>
-                    <#else>
-                    <label class="active-tips">永久</label>
-                    </#if>
+                <label class="col-md-3 control-label">会员有效期：</label>
+                <div class="col-md-4">
+                    <input type="text" class="form-control start-time" id="startTime" name="startTime" placeholder="开始时间" maxlength="100" value="${member.startTime}">
+                    <span class="time-separator">~</span>
+                    <input type="text" class="form-control end-time" id="endTime" name="endTime" placeholder="结束时间" maxlength="100" value="${member.endTime}">
                 </div>
             </div>
             <div class="form-group">
                 <label class="col-md-3 control-label">性别：</label>
-                <div class="col-md-3">
+                <div class="col-md-2">
                     <select class="form-control" name="sex" id="sex">
-                        <option value="0" <#if member.sex == "1" >selected</#if>>男</option>
-                        <option value="1" <#if member.sex == "2" >selected</#if>>女</option>
+                        <option value="1" <#if member.sex == "1" >selected</#if>>男</option>
+                        <option value="2" <#if member.sex == "2" >selected</#if>>女</option>
                     </select>
                 </div>
             </div>
@@ -70,7 +68,7 @@
             </div>
             <div class="form-group">
                 <label class="col-md-3 control-label">通讯地址：</label>
-                <div class="col-md-5">
+                <div class="col-md-3">
                     <input type="text" id="address" class="form-control" name="address" placeholder="通讯地址" maxlength="20" value="${member.address}">
                 </div>
             </div>
@@ -108,7 +106,20 @@
         </form>
     </div>
 </div>
+<script src="<@sp.static/>/assets/plugins/layui/layui.js?v=1.8.6" charset="UTF-8"></script>
+<link rel="stylesheet" type="text/css" href="<@sp.static/>/assets/plugins/layui/css/layui.css?v=1.8.6" charset="UTF-8"/>
 <script type="application/javascript">
+    layui.use('laydate', function(){
+        let laydate = layui.laydate;
+        laydate.render({
+            elem: '#startTime',
+            type: "datetime"
+        });
+        laydate.render({
+            elem: '#endTime',
+            type: "datetime"
+        });
+    });
 
     jQuery.validator.addMethod("isMobile", function(value, element) {
         var length = value.length;

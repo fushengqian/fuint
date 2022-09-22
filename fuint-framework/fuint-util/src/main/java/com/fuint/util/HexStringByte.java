@@ -1,15 +1,11 @@
-/*
- * Copyright (c) 2017. Lorem ipsum dolor sit amet, consectetur adipiscing elit.
- * www.hnapay.com
- */
-
 package com.fuint.util;
 
 /**
  * 十六进制转换
- * HexStringByte.java
- * @author hjy
- * 2012-5-30 下午03:25:32  www.hnapay.com Inc.All rights reserved.
+ *
+ * Created by FSQ
+ * Contact wx fsq_better
+ * Site https://www.fuint.cn
  */
 public class HexStringByte {
 

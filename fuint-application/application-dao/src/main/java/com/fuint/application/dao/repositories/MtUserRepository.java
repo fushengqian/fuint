@@ -28,6 +28,14 @@ public interface MtUserRepository extends BaseRepository<MtUser, Integer> {
    List<MtUser> queryMemberByMobile(@Param("mobile") String mobile);
 
    /**
+    * 根据名称查找会员
+    *
+    * @return
+    */
+   @Query("select t from MtUser t where t.name = :name and t.source = 'register_by_account'")
+   List<MtUser> queryMemberByName(@Param("name") String name);
+
+   /**
     * 根据openId查找会员
     *
     * @return

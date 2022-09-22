@@ -13,9 +13,11 @@ $(function () {
     $('.aw-content-wrap').find('.date-start').val(dateArr[1]);
     $('.aw-content-wrap').find('.date-end').val(dateArr[0]);
 
+    window.fuintBaseUrl = window.fuintBaseUrl ? window.fuintBaseUrl : ''
+
     // 图表数据接入
-    var echart = new Echarts('#main', 'line', '/fuint-application/backend/home/statistic?tag=order,user_active&start_date=' + dateArr[3] + '&end_date=' + dateArr[2]);
-    var echart2 = new Echarts('#main1', 'line', '/fuint-application/backend/home/statistic?tag=payment&start_date=' + dateArr[3] + '&end_date=' + dateArr[2]);
+    var echart = new Echarts('#main', 'line', window.fuintBaseUrl + '/backend/home/statistic?tag=order,user_active&start_date=' + dateArr[3] + '&end_date=' + dateArr[2]);
+    var echart2 = new Echarts('#main1', 'line', window.fuintBaseUrl + '/backend/home/statistic?tag=payment&start_date=' + dateArr[3] + '&end_date=' + dateArr[2]);
 
     // 左侧菜单收缩重新渲染图表
     $('.aw-header .mod-head-btn').click(function ()

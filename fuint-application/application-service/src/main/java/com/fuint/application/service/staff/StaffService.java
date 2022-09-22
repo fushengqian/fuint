@@ -24,12 +24,12 @@ public interface StaffService {
     PaginationResponse<MtStaff> queryStaffListByPagination(PaginationRequest paginationRequest) throws BusinessCheckException;
 
     /**
-     * 添加员工
+     * 保存员工信息
      *
      * @param reqStaff
      * @throws BusinessCheckException
      */
-    MtStaff addStaff(MtStaff reqStaff) throws BusinessCheckException;
+    MtStaff saveStaff(MtStaff reqStaff) throws BusinessCheckException;
 
     /**
      * 根据ID获取店铺信息

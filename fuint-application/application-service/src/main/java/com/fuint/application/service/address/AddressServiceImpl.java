@@ -5,7 +5,7 @@ import com.fuint.application.dao.repositories.MtAddressRepository;
 import com.fuint.base.annoation.OperationServiceLog;
 import com.fuint.exception.BusinessCheckException;
 import com.fuint.application.enums.StatusEnum;
-import org.apache.commons.lang.StringUtils;
+import com.fuint.util.StringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,22 +44,22 @@ public class AddressServiceImpl implements AddressService {
     public MtAddress saveAddress(MtAddress mtAddress) throws BusinessCheckException {
         if (mtAddress.getId() > 0) {
             MtAddress address = addressRepository.findOne(mtAddress.getId());
-            if (StringUtils.isNotEmpty(mtAddress.getName())) {
+            if (StringUtil.isNotEmpty(mtAddress.getName())) {
                 address.setName(mtAddress.getName());
             }
-            if (StringUtils.isNotEmpty(mtAddress.getMobile())) {
+            if (StringUtil.isNotEmpty(mtAddress.getMobile())) {
                 address.setMobile(mtAddress.getMobile());
             }
-            if (StringUtils.isNotEmpty(mtAddress.getDetail())) {
+            if (StringUtil.isNotEmpty(mtAddress.getDetail())) {
                 address.setDetail(mtAddress.getDetail());
             }
-            if (StringUtils.isNotEmpty(mtAddress.getIsDefault())) {
+            if (StringUtil.isNotEmpty(mtAddress.getIsDefault())) {
                 if (mtAddress.getIsDefault().equals("Y")) {
                     addressRepository.setDefault(mtAddress.getUserId(), mtAddress.getId());
                 }
                 address.setIsDefault(mtAddress.getIsDefault());
             }
-            if (StringUtils.isNotEmpty(mtAddress.getStatus())) {
+            if (StringUtil.isNotEmpty(mtAddress.getStatus())) {
                 address.setStatus(mtAddress.getStatus());
             }
             if (mtAddress.getProvinceId() > 0) {
@@ -78,7 +78,9 @@ public class AddressServiceImpl implements AddressService {
             mtAddress.setUpdateTime(new Date());
             mtAddress.setIsDefault("Y");
 
-            return addressRepository.save(mtAddress);
+            MtAddress result = addressRepository.save(mtAddress);
+            addressRepository.setDefault(mtAddress.getUserId(), result.getId());
+            return result;
         }
     }
 

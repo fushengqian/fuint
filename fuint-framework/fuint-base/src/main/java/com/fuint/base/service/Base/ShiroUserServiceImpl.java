@@ -20,8 +20,10 @@ import java.util.*;
 
 /**
  * shiro user 接口
+ *
  * Created by FSQ
  * Contact wx fsq_better
+ * Site https://www.fuint.cn
  */
 @Service
 public class ShiroUserServiceImpl implements ShiroUserService {

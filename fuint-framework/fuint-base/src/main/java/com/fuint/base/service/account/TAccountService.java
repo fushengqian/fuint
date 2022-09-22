@@ -1,6 +1,7 @@
 /**
- * fuint.cn Inc.
- * Copyright (c) 2019-2022 All Rights Reserved.
+ * Created by FSQ
+ * Contact wx fsq_better
+ * Site https://www.fuint.cn
  */
 package com.fuint.base.service.account;
 
@@ -15,7 +16,7 @@ import java.util.List;
 /**
  * 账户接口服务类
  *
- * @author fsq
+ * @author FSQ
  * @version $Id: TAccountService.java
  */
 public interface TAccountService {
@@ -90,6 +91,8 @@ public interface TAccountService {
     void updateAccount(TAccount tAccount);
 
     void entryptPassword(TAccount user);
+
+    String getEntryptPassword(String password, String salt);
 
     void doLogin(ShiroUser username);
 

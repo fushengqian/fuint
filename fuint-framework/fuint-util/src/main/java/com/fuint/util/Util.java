@@ -3,20 +3,21 @@ package com.fuint.util;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-
+/**
+ * 工具类。
+ *
+ *
+ * Created by FSQ
+ * Contact wx fsq_better
+ * Site https://www.fuint.cn
+ */
 public class Util {
-	/**
-	 * 日志常量.
-	 */
-
-
 	/**
 	 * 默认的私有的构造函数，不能生成新的实例.
 	 * **/
 	private Util() {
 
 	}
-
 
 	
 	public static String getURL(String url, String method) {

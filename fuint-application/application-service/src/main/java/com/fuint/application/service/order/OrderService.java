@@ -43,6 +43,13 @@ public interface OrderService {
     UserOrderDto getOrderById(Integer id) throws BusinessCheckException;
 
     /**
+     * 取消订单
+     * @param id 订单ID
+     * @return
+     * */
+    MtOrder cancelOrder(Integer id, String remark) throws BusinessCheckException;
+
+    /**
      * 根据订单ID删除
      *
      * @param id       ID

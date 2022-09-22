@@ -14,6 +14,7 @@ import java.util.List;
  * 缓存配置类
  * Created by FSQ
  * Contact wx fsq_better
+ * Site https://www.fuint.cn
  */
 @Configuration
 public class RedisCacheConfig {

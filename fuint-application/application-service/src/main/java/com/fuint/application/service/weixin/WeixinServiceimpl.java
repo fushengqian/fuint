@@ -1,15 +1,17 @@
 package com.fuint.application.service.weixin;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.fuint.application.BaseService;
 import com.fuint.application.dao.entities.*;
 import com.fuint.application.dto.OrderDto;
-import com.fuint.application.dto.SubMessageDto;
+import com.fuint.application.dto.OrderUserDto;
 import com.fuint.application.dto.UserOrderDto;
-import com.fuint.application.enums.OrderStatusEnum;
-import com.fuint.application.enums.OrderTypeEnum;
-import com.fuint.application.enums.PayStatusEnum;
+import com.fuint.application.enums.*;
 import com.fuint.application.http.HttpRESTDataClient;
+import com.fuint.application.service.balance.BalanceService;
 import com.fuint.application.service.member.MemberService;
+import com.fuint.application.service.message.MessageService;
 import com.fuint.application.service.order.OrderService;
 import com.fuint.application.service.opengift.OpenGiftService;
 import com.fuint.application.service.usercoupon.UserCouponService;
@@ -23,10 +25,8 @@ import com.github.wxpay.sdk.WXPay;
 import com.github.wxpay.sdk.WXPayUtil;
 import com.fuint.application.config.WXPayConfigImpl;
 import com.fuint.application.ResponseObject;
-import org.apache.commons.lang.StringUtils;
-import com.alibaba.fastjson.JSON;
+import com.fuint.util.StringUtil;
 import com.alibaba.fastjson.JSONObject;
-import com.alibaba.fastjson.JSONArray;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -84,7 +84,13 @@ public class WeixinServiceimpl extends BaseService implements WeixinService {
     private UserGradeService userGradeService;
 
     @Autowired
+    private MessageService messageService;
+
+    @Autowired
     private MemberService memberService;
+
+    @Autowired
+    private BalanceService balanceService;
 
     @Autowired
     private RedisTemplate redisTemplate;
@@ -92,8 +98,13 @@ public class WeixinServiceimpl extends BaseService implements WeixinService {
     @Autowired
     private Environment env;
 
+    /**
+     * 获取微信accessToken
+     * @param useCache 是否读取缓存
+     * @return
+     * */
     @Override
-    public String getAccessToken() {
+    public String getAccessToken(boolean useCache) {
         String wxAppId = env.getProperty("weixin.pay.appId");
         String wxAppSecret = env.getProperty("weixin.pay.appSecret");
         String wxTokenUrl = env.getProperty("weixin.token.url");
@@ -101,16 +112,16 @@ public class WeixinServiceimpl extends BaseService implements WeixinService {
         String url = String.format(wxTokenUrl, wxAppId, wxAppSecret);
         String token = "";
 
-        if (redisTemplate.exists("WX_ACCESS_TOKEN")) {
-            token = redisTemplate.get("WX_ACCESS_TOKEN", String.class);
+        if (redisTemplate.exists("FUINT_ACCESS_TOKEN") && useCache) {
+            token = redisTemplate.get("FUINT_ACCESS_TOKEN", String.class);
         }
 
-        if (token == null || StringUtils.isEmpty(token)) {
+        if (token == null || StringUtil.isEmpty(token)) {
             try {
                 String response = HttpRESTDataClient.requestGet(url);
                 JSONObject json = (JSONObject) JSONObject.parse(response);
                 if (!json.containsKey("errcode")) {
-                    redisTemplate.set("WX_ACCESS_TOKEN", json.get("access_token"), 7200);
+                    redisTemplate.set("FUINT_ACCESS_TOKEN", json.get("access_token"), 7200);
                     token = (String) json.get("access_token");
                 } else {
                     logger.error("获取微信accessToken出错：" + json.get("errmsg"));
@@ -123,6 +134,10 @@ public class WeixinServiceimpl extends BaseService implements WeixinService {
         return token;
     }
 
+    /**
+     * 创建支付订单
+     * @return
+     * */
     @Override
     public ResponseObject createPrepayOrder(MtUser userInfo, MtOrder orderInfo, Integer payAmount, String authCode, Integer giveAmount, String ip) throws BusinessCheckException {
         logger.debug("WeixinService createPrepayOrder inParams userInfo={} payAmount={} giveAmount={} goodsInfo={}", userInfo, payAmount, giveAmount, orderInfo);
@@ -150,7 +165,7 @@ public class WeixinServiceimpl extends BaseService implements WeixinService {
             reqData.put("notify_url", wxPayConfigImpl.getCallbackUrl());
             reqData.put("openid", userInfo.getOpenId() == null ? "" : userInfo.getOpenId());
         }
-        if (StringUtils.isNotEmpty(authCode)) {
+        if (StringUtil.isNotEmpty(authCode)) {
             reqData.put("auth_code", authCode);
         }
 
@@ -206,6 +221,10 @@ public class WeixinServiceimpl extends BaseService implements WeixinService {
         return responseObject;
     }
 
+    /**
+     * 支付回调
+     * @return
+     * */
     @Override
     @Transactional
     public boolean paymentCallback(UserOrderDto orderInfo) throws BusinessCheckException {
@@ -227,6 +246,30 @@ public class WeixinServiceimpl extends BaseService implements WeixinService {
             reqDto.setRemark("升级会员等级");
         }
 
+        // 充值订单
+        if (orderInfo.getType().equals(OrderTypeEnum.RECHARGE.getKey())) {
+            // 余额支付
+            MtBalance mtBalance = new MtBalance();
+            OrderUserDto userDto = orderInfo.getUserInfo();
+
+            if (userDto.getMobile() != null && StringUtil.isNotEmpty(userDto.getMobile())) {
+                mtBalance.setMobile(userDto.getMobile());
+            }
+
+            mtBalance.setOrderSn(orderInfo.getOrderSn());
+            mtBalance.setUserId(orderInfo.getUserId());
+
+            String param = orderInfo.getParam();
+            if (StringUtil.isNotEmpty(param)) {
+                String params[] = param.split("_");
+                if (params.length == 2) {
+                    BigDecimal amount = new BigDecimal(params[0]).add(new BigDecimal(params[1]));
+                    mtBalance.setAmount(amount);
+                    balanceService.addBalance(mtBalance);
+                }
+            }
+        }
+
         // 更新订单状态为已支付
         reqDto.setId(orderInfo.getId());
         reqDto.setStatus(OrderStatusEnum.PAID.getKey());
@@ -239,9 +282,11 @@ public class WeixinServiceimpl extends BaseService implements WeixinService {
         MtSetting setting = settingService.querySettingByName("pointNeedConsume");
         if (setting != null) {
             String needPayAmount = setting.getValue();
+            Integer needPayAmountInt = Math.round(Integer.parseInt(needPayAmount));
+
             Double pointNum = 0d;
-            if (orderInfo.getPayAmount().compareTo(new BigDecimal(needPayAmount)) > 0) {
-                BigDecimal point = orderInfo.getPayAmount().divide(new BigDecimal(needPayAmount));
+            if (orderInfo.getPayAmount().compareTo(new BigDecimal(needPayAmountInt)) > 0) {
+                BigDecimal point = orderInfo.getPayAmount().divide(new BigDecimal(needPayAmountInt));
                 pointNum = Math.ceil(point.doubleValue());
             }
 
@@ -287,7 +332,7 @@ public class WeixinServiceimpl extends BaseService implements WeixinService {
 
             Map<String, String> resultMap = WXPayUtil.xmlToMap(result);
             String returnCode = resultMap.get("return_code");
-            if (StringUtils.isNotEmpty(returnCode) && returnCode.equals("SUCCESS")) {
+            if (StringUtil.isNotEmpty(returnCode) && returnCode.equals("SUCCESS")) {
                 boolean flag = WXPayUtil.isSignatureValid(resultMap, wxPayConfigImpl.getKey());
                 if (!flag) {
                     logger.error("微信支付回调接口验签失败");
@@ -339,12 +384,15 @@ public class WeixinServiceimpl extends BaseService implements WeixinService {
                     outputStream.close();
                 } catch (IOException e) {
                     logger.error(e.getMessage(), e);
-                    outputStream = null;
                 }
             }
         }
     }
 
+    /**
+     * 获取微信个人信息
+     * @return
+     * */
     @Override
     public JSONObject getWxProfile(String code) {
         String wxAppId = env.getProperty("weixin.pay.appId");
@@ -367,6 +415,10 @@ public class WeixinServiceimpl extends BaseService implements WeixinService {
         return null;
     }
 
+    /**
+     * 获取微信绑定手机号
+     * @return
+     * */
     @Override
     public String getPhoneNumber(String encryptedData, String sessionKey, String iv) {
         // 被加密的数据
@@ -406,54 +458,101 @@ public class WeixinServiceimpl extends BaseService implements WeixinService {
     }
 
     /**
-     * 获取小程序订阅消息模型列表
+     * 发送订阅消息
+     * @return
      * */
     @Override
-    public List<SubMessageDto> getSubMessageTemplateList() {
-        String url = "https://api.weixin.qq.com/wxaapi/newtmpl/gettemplate?access_token=" + this.getAccessToken();
-
-        List<SubMessageDto> dataList = new ArrayList<>();
-
-        try {
-            String response = HttpRESTDataClient.requestGet(url);
-            JSONObject json = (JSONObject) JSONObject.parse(response);
-            JSONArray jsonArray = json.getJSONArray("data");
-            if (jsonArray.size() > 0) {
-                for (int i = 0; i < jsonArray.size(); i++) {
-                     JSONObject obj = jsonArray.getJSONObject(i);
-                     SubMessageDto item = new SubMessageDto();
-                     item.setTitle(obj.get("title").toString());
-                     item.setContent(obj.get("example").toString());
-                     item.setTemplateId(obj.get("priTmplId").toString());
-                     dataList.add(item);
-                }
-            }
-        } catch (Exception e) {
-            logger.error("获取订阅消息模板出错：" + e.getMessage());
+    public boolean sendSubscribeMessage(Integer userId, String toUserOpenId, String key, String page, Map<String,Object> params, Date sendTime) throws BusinessCheckException {
+        if (StringUtil.isEmpty(toUserOpenId) || StringUtil.isEmpty(key) || userId < 1) {
+            return false;
         }
 
-        return dataList;
-    }
+        MtSetting mtSetting = settingService.querySettingByName(key);
+        if (mtSetting == null) {
+            return false;
+        }
 
-    /**
-     * 创建微信小程序订阅消息模板
-     * */
-    @Override
-    public String addSubMessageTemplate(Map<String, Object> reqData) {
-        String url = "https://api.weixin.qq.com/wxaapi/newtmpl/addtemplate?access_token=" + this.getAccessToken();
+        JSONObject jsonObject = null;
         String templateId = "";
+        JSONArray paramArray = null;
         try {
-            String reqDataJson = JSON.toJSONString(reqData);
-            String response = HttpRESTDataClient.requestPost(url, "application/json; charset=utf-8", reqDataJson);
-            JSONObject json = (JSONObject) JSONObject.parse(response);
-            if (json.get("errmsg").equals("ok")) {
-                templateId = json.get("priTmplId").toString();
+            if (mtSetting != null && mtSetting.getValue().indexOf('}') > 0) {
+                jsonObject = JSONObject.parseObject(mtSetting.getValue());
+            }
+            if (jsonObject != null) {
+                templateId = jsonObject.get("templateId").toString();
+                paramArray = (JSONArray) JSONObject.parse(jsonObject.get("params").toString());
             }
         } catch (Exception e) {
-            logger.error("创建订阅消息模板出错：" + e.getMessage());
+            logger.debug("WeixinService sendSubscribeMessage parse setting error={}", mtSetting);
         }
 
-        return templateId;
+        if (StringUtil.isEmpty(templateId) || paramArray.size() < 1) {
+            logger.debug("WeixinService sendSubscribeMessage setting error={}", mtSetting);
+            return false;
+        }
+
+        JSONObject jsonData = new JSONObject();
+        jsonData.put("touser", toUserOpenId); // 接收者的openid
+        jsonData.put("template_id", templateId);
+
+        if (StringUtil.isEmpty(page)) {
+            page = "pages/index/index";
+        }
+        jsonData.put("page", page);
+
+        // 组装参数
+        JSONObject data = new JSONObject();
+        for (int i = 0; i < paramArray.size(); i++) {
+             JSONObject para = paramArray.getJSONObject(i);
+             String value = para.get("value").toString().replaceAll("\\{", "").replaceAll(".DATA}}", "");
+             String paraKey = para.get("key").toString();
+             String paraValue = params.get(paraKey).toString();
+             JSONObject arg = new JSONObject();
+             arg.put("value", paraValue);
+             data.put(value, arg);
+        }
+        jsonData.put("data", data);
+
+        String reqDataJsonStr = JSON.toJSONString(jsonData);
+
+        // 存储到消息表里，后续通过定时任务发送
+        MtMessage mtMessage = new MtMessage();
+        mtMessage.setUserId(userId);
+        mtMessage.setType(MessageEnum.SUB_MSG.getKey());
+        mtMessage.setTitle(WxMessageEnum.getValue(key));
+        mtMessage.setContent(WxMessageEnum.getValue(key));
+        mtMessage.setIsRead("N");
+        mtMessage.setIsSend("N");
+        mtMessage.setSendTime(sendTime);
+        mtMessage.setStatus(StatusEnum.ENABLED.getKey());
+        mtMessage.setParams(reqDataJsonStr);
+        messageService.addMessage(mtMessage);
+
+        return true;
+    }
+    @Override
+    public boolean doSendSubscribeMessage(String reqDataJsonStr) {
+        try {
+            String url = "https://api.weixin.qq.com/cgi-bin/message/subscribe/send?access_token=" + this.getAccessToken(true);
+            String response = HttpRESTDataClient.requestPost(url, "application/json; charset=utf-8", reqDataJsonStr);
+            logger.debug("WeixinService sendSubscribeMessage response={}", response);
+            JSONObject json = (JSONObject) JSONObject.parse(response);
+            if (json.get("errcode").toString().equals("40001")) {
+                this.getAccessToken(false);
+                logger.error("发送订阅消息出错error1：" + json.get("errcode").toString());
+                return false;
+            } else if (!json.get("errcode").toString().equals("0")) {
+                logger.error("发送订阅消息出错error2：" + json.get("errcode").toString());
+                return false;
+            } else {
+                return true;
+            }
+        } catch (Exception e) {
+            logger.error("发送订阅消息出错：" + e.getMessage());
+        }
+
+        return true;
     }
 
     private Map<String, String> unifiedOrder(Map<String, String> reqData) {
@@ -463,12 +562,12 @@ public class WeixinServiceimpl extends BaseService implements WeixinService {
             WXPay wxPay = new WXPay(wxPayConfigImpl);
             Map<String, String> respMap;
             String authCode = reqData.get("auth_code");
-            if (StringUtils.isNotEmpty(authCode)) {
+            if (StringUtil.isNotEmpty(authCode)) {
                 respMap = wxPay.microPay(reqData);
                 // 支付结果
                 String orderSn = respMap.get("out_trade_no");
                 String resultCode = respMap.get("result_code");
-                if (StringUtils.isNotEmpty(orderSn) && resultCode.equals("SUCCESS")) {
+                if (StringUtil.isNotEmpty(orderSn) && resultCode.equals("SUCCESS")) {
                     UserOrderDto orderInfo = orderService.getOrderByOrderSn(orderSn);
                     if (orderInfo != null) {
                         if (orderInfo.getStatus().equals(OrderStatusEnum.CREATED.getKey())) {

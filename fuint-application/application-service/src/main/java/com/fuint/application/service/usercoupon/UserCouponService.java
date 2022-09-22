@@ -73,4 +73,10 @@ public interface UserCouponService {
      * @param userCouponId
      * */
     MtUserCoupon getUserCouponDetail(Integer userCouponId) throws BusinessCheckException;
+
+    /**
+     * 根据条件查询会员卡券
+     * @param params
+     * */
+    List<MtUserCoupon> getUserCouponListByParams(Map<String, Object> params) throws BusinessCheckException;
 }

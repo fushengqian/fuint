@@ -2,6 +2,7 @@ package com.fuint.application.service.goods;
 
 import com.fuint.application.dao.entities.MtGoodsCate;
 import com.fuint.application.dao.repositories.MtGoodsCateRepository;
+import com.fuint.util.StringUtil;
 import org.springframework.data.jpa.domain.Specification;
 import com.fuint.base.annoation.OperationServiceLog;
 import com.fuint.base.dao.pagination.PaginationRequest;
@@ -116,12 +117,25 @@ public class CateServiceImpl implements CateService {
         }
 
         mtCate.setId(reqDto.getId());
-        mtCate.setLogo(reqDto.getLogo());
-        mtCate.setName(reqDto.getName());
-        mtCate.setDescription(reqDto.getDescription());
+        if (reqDto.getLogo() != null) {
+            mtCate.setLogo(reqDto.getLogo());
+        }
+        if (reqDto.getName() != null) {
+            mtCate.setName(reqDto.getName());
+        }
+        if (reqDto.getDescription() != null) {
+            mtCate.setDescription(reqDto.getDescription());
+        }
         mtCate.setUpdateTime(new Date());
-        mtCate.setOperator(reqDto.getOperator());
-        mtCate.setStatus(reqDto.getStatus());
+        if (StringUtil.isNotEmpty(reqDto.getOperator())) {
+            mtCate.setOperator(reqDto.getOperator());
+        }
+        if (reqDto.getStatus() != null) {
+            mtCate.setStatus(reqDto.getStatus());
+        }
+        if (reqDto.getSort() != null) {
+            mtCate.setSort(reqDto.getSort());
+        }
 
         return cateRepository.save(mtCate);
     }
@@ -134,7 +148,7 @@ public class CateServiceImpl implements CateService {
         param.put("EQ_status", status);
 
         Specification<MtGoodsCate> specification = cateRepository.buildSpecification(param);
-        Sort sort = new Sort(Sort.Direction.DESC, "createTime");
+        Sort sort = new Sort(Sort.Direction.ASC, "sort");
         List<MtGoodsCate> result = cateRepository.findAll(specification, sort);
 
         return result;

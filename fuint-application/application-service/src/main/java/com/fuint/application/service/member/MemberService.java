@@ -66,6 +66,14 @@ public interface MemberService {
     MtUser queryMemberById(Integer id) throws BusinessCheckException;
 
     /**
+     * 根据会员名称获取会员信息
+     *
+     * @param name 会员名称
+     * @throws BusinessCheckException
+     */
+    MtUser queryMemberByName(String name) throws BusinessCheckException;
+
+    /**
      * 根据会员ID获取会员信息
      *
      * @param openId 微信openId

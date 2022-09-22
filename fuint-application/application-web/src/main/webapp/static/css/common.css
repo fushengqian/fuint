@@ -27,6 +27,7 @@ ul,ol{padding:0;list-style:none;}
 .aw-content-wrap .icon.disabled{background-color: #c5c5c5;}
 .aw-content-wrap .data-icon{display:inline-block;width:60px;height:60px;border-radius:5px;background:#ff9d00;color:#fff;text-align:center;line-height:25px;}
 .form-group .tips{font-size:12px;color:#999;padding-left:10px;}
+.form-group .form-tips{font-size:12px;color:#999;padding-left:1px;line-height: 35px;}
 /* 警告提示box */
 .aw-tips-box .modal-dialog, .aw-image-box .modal-dialog, .aw-link-box .modal-dialog, .aw-confirm-box .modal-dialog{width: 370px;}
 .aw-tips-box .modal-body{background: url(../img/warmming.png) no-repeat right 5px;}

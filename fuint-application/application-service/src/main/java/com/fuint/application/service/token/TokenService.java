@@ -1,14 +1,16 @@
 package com.fuint.application.service.token;
 
 import com.fuint.application.dao.repositories.MtUserRepository;
+import com.fuint.application.dto.AccountDto;
 import com.fuint.application.enums.StatusEnum;
 import com.fuint.application.service.member.MemberService;
 import com.fuint.application.util.MD5Util;
 import com.fuint.application.util.TimeUtils;
+import com.fuint.base.annoation.OperationServiceLog;
 import com.fuint.cache.redis.RedisTemplate;
 import com.fuint.exception.BusinessCheckException;
+import com.fuint.util.StringUtil;
 import nl.bitwalker.useragentutils.UserAgent;
-import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.fuint.application.dao.entities.MtUser;
 import org.springframework.stereotype.Service;
@@ -18,6 +20,7 @@ import java.util.Random;
 
 @Service
 public class TokenService {
+
     @Autowired
     private RedisTemplate redisTemplate;
 
@@ -56,6 +59,9 @@ public class TokenService {
      * 保存token
      * */
     public void saveToken(String token, MtUser mtUser) {
+        if (token == null || mtUser == null) {
+            return;
+        }
         // 如果是PC端，那么token保存24个小时
         if (token.startsWith("PC")) {
             redisTemplate.set(token, mtUser, 24 * 3600);
@@ -66,9 +72,27 @@ public class TokenService {
     }
 
     /**
+     * 保存后台登录token
+     * */
+    @OperationServiceLog(description = "登录后台系统")
+    public void saveAccountToken(String token, AccountDto tAccount) {
+        if (token == null || StringUtil.isEmpty(token) || tAccount == null) {
+            return;
+        }
+        redisTemplate.set(token, tAccount, 24 * 3600);
+        return;
+    }
+
+    /**
      * 检查token是否存在 ，及登录状态
+     * @param token
+     * @return
      */
     public Boolean checkTokenLogin(String token) {
+        if (token == null || StringUtil.isEmpty(token)) {
+            return Boolean.FALSE;
+        }
+
         if (this.redisTemplate.exists(token)) {
             return Boolean.TRUE;
         } else {
@@ -78,9 +102,11 @@ public class TokenService {
 
     /**
      * 通过登录token获取用户登录信息
+     * @param token
+     * @return
      * */
     public MtUser getUserInfoByToken(String token) throws BusinessCheckException {
-        if (token == null || StringUtils.isEmpty(token)) {
+        if (token == null || StringUtil.isEmpty(token)) {
             return null;
         }
 
@@ -88,7 +114,7 @@ public class TokenService {
         try {
             if (this.redisTemplate.exists(token)) {
                 mtUser = this.redisTemplate.get(token, MtUser.class);
-                if (mtUser.getId() > 0) {
+                if (mtUser != null) {
                     mtUser = memberService.queryMemberById(mtUser.getId());
                 }
             }
@@ -114,6 +140,28 @@ public class TokenService {
         }
 
         return mtUser;
+    }
+
+    /**
+     * 通过登录token获取后台登录信息
+     * @param token
+     * @return
+     * */
+    public AccountDto getAccountInfoByToken(String token) throws BusinessCheckException {
+        if (token == null || StringUtil.isEmpty(token)) {
+            return null;
+        }
+
+        AccountDto accountDto = null;
+        try {
+            if (this.redisTemplate.exists(token)) {
+                accountDto = this.redisTemplate.get(token, AccountDto.class);
+            }
+        } catch (Exception e) {
+            throw new BusinessCheckException("连接redis出错");
+        }
+
+        return accountDto;
     }
 
     /**

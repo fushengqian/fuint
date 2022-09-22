@@ -21,6 +21,9 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * redis 从库操作服务类
+ * Created by FSQ
+ * Contact wx fsq_better
+ * Site https://www.fuint.cn
  */
 @Component
 public class SlaveRedisTemplate implements CacheTemplate {

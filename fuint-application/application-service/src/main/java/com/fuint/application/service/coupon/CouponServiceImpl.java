@@ -1,22 +1,20 @@
 package com.fuint.application.service.coupon;
 
 import com.fuint.application.dto.CouponDto;
+import com.fuint.application.enums.*;
 import com.fuint.application.service.setting.SettingService;
 import com.fuint.application.service.usercoupon.UserCouponService;
+import com.fuint.application.service.weixin.WeixinService;
 import com.fuint.base.annoation.OperationServiceLog;
 import com.fuint.base.dao.pagination.PaginationRequest;
 import com.fuint.base.dao.pagination.PaginationResponse;
 import com.fuint.base.shiro.ShiroUser;
 import com.fuint.base.shiro.util.ShiroUserHelper;
-import com.fuint.application.enums.CouponTypeEnum;
 import com.fuint.exception.BusinessCheckException;
 import com.fuint.application.dao.entities.*;
 import com.fuint.application.dao.repositories.*;
 import com.fuint.application.dto.ReqCouponDto;
 import com.fuint.application.config.Constants;
-import com.fuint.application.enums.StatusEnum;
-import com.fuint.application.enums.UserCouponStatusEnum;
-import com.fuint.application.enums.SendWayEnum;
 import com.fuint.application.service.member.MemberService;
 import com.fuint.application.service.confirmlog.ConfirmLogService;
 import com.fuint.application.ResponseObject;
@@ -26,7 +24,7 @@ import com.fuint.application.util.DateUtil;
 import com.fuint.application.util.SeqUtil;
 import org.apache.commons.collections.map.HashedMap;
 import com.fuint.application.BaseService;
-import org.apache.commons.lang.StringUtils;
+import com.fuint.util.StringUtil;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -80,6 +78,9 @@ public class CouponServiceImpl extends BaseService implements CouponService {
 
     @Autowired
     private SettingService settingService;
+
+    @Autowired
+    private WeixinService weixinService;
 
     /**
      * 分页查询券列表
@@ -218,7 +219,7 @@ public class CouponServiceImpl extends BaseService implements CouponService {
                }
                // 2.再添加
                for (int n = 0; n < goodsIds.length; n++) {
-                   if (StringUtils.isNotEmpty(goodsIds[n])) {
+                   if (StringUtil.isNotEmpty(goodsIds[n])) {
                        MtCouponGoods mtCouponGoods = new MtCouponGoods();
                        mtCouponGoods.setCouponId(couponInfo.getId());
                        mtCouponGoods.setGoodsId(Integer.parseInt(goodsIds[n]));
@@ -246,6 +247,7 @@ public class CouponServiceImpl extends BaseService implements CouponService {
                     userCoupon.setStatus(UserCouponStatusEnum.UNSEND.getKey());
                     userCoupon.setCreateTime(new Date());
                     userCoupon.setUpdateTime(new Date());
+                    userCoupon.setExpireime(couponInfo.getEndTime());
                     userCoupon.setUuid(uuid);
                     userCoupon.setType(CouponTypeEnum.COUPON.getKey());
                     userCoupon.setAmount(couponInfo.getAmount());
@@ -330,10 +332,10 @@ public class CouponServiceImpl extends BaseService implements CouponService {
         Map<String, Object> searchParams = new HashedMap();
 
         searchParams.put("EQ_status", status);
-        if (StringUtils.isNotEmpty(sendWay)) {
+        if (StringUtil.isNotEmpty(sendWay)) {
             searchParams.put("EQ_sendWay", sendWay);
         }
-        if (StringUtils.isNotEmpty(type)) {
+        if (StringUtil.isNotEmpty(type)) {
             searchParams.put("EQ_type", type);
         }
         if (Integer.parseInt(needPoint) > 0) {
@@ -401,7 +403,7 @@ public class CouponServiceImpl extends BaseService implements CouponService {
 
             // 优惠券卖点
             if (item.getType().equals(CouponTypeEnum.COUPON.getKey())) {
-                if (Integer.parseInt(item.getOutRule()) > 0) {
+                if (StringUtil.isNotEmpty(item.getOutRule()) && Integer.parseInt(item.getOutRule()) > 0) {
                     sellingPoint = "满" + item.getOutRule() + "可用";
                 } else {
                     sellingPoint = "无门槛券";
@@ -410,22 +412,23 @@ public class CouponServiceImpl extends BaseService implements CouponService {
 
             // 预存券卖点
             if (item.getType().equals(CouponTypeEnum.PRESTORE.getKey())) {
-                String inRuleArr[] = item.getInRule().split(",");
-                if (inRuleArr.length > 0) {
-                    for (int n = 0; n < inRuleArr.length; n++) {
-                        String store[] = inRuleArr[n].split("_");
-                        sellingPoint = "预存" + store[0] + "赠" + store[1];
+                if (StringUtil.isNotEmpty(item.getInRule())) {
+                    String inRuleArr[] = item.getInRule().split(",");
+                    if (inRuleArr.length > 0) {
+                        for (int n = 0; n < inRuleArr.length; n++) {
+                            String store[] = inRuleArr[n].split("_");
+                            sellingPoint = "预存" + store[0] + "赠" + store[1];
+                        }
                     }
                 }
             }
 
             // 集次卡卖点
-            if (item.getType().equals(CouponTypeEnum.TIMER.getKey())) {
+            if (item.getType().equals(CouponTypeEnum.TIMER.getKey()) && StringUtil.isNotEmpty(item.getOutRule())) {
                 sellingPoint = "集满" + item.getOutRule() + "次即可";
             }
 
             item.setSellingPoint(sellingPoint);
-
             content.add(item);
         }
 
@@ -439,11 +442,11 @@ public class CouponServiceImpl extends BaseService implements CouponService {
     }
 
     /**
-     * 根据分组获取卡券列表
+     * 根据分组ID获取卡券列表
      * @param groupId 查询参数
      * @throws BusinessCheckException
      * */
-    public List<MtCoupon> queryCouponListByGroupId(Integer groupId) throws BusinessCheckException {
+    public List<MtCoupon> queryCouponListByGroupId(Integer groupId) {
         List<MtCoupon> couponList = couponRepository.queryByGroupId(groupId.intValue());
         return couponList;
     }
@@ -459,28 +462,27 @@ public class CouponServiceImpl extends BaseService implements CouponService {
     @Override
     @Transactional
     @OperationServiceLog(description = "发放卡券")
-    public void sendCoupon(Integer couponId, String mobile, Integer num, String uuid) throws BusinessCheckException {
-        MtUser mtUser = memberService.queryMemberByMobile(mobile);
+    public void sendCoupon(Integer couponId, String mobile, Integer num, String uuid, String operator) throws BusinessCheckException {
+        MtUser userInfo = memberService.queryMemberByMobile(mobile);
 
-        if (null == mtUser || !mtUser.getStatus().equals(StatusEnum.ENABLED.getKey())) {
+        if (null == userInfo || !userInfo.getStatus().equals(StatusEnum.ENABLED.getKey())) {
             throw new BusinessCheckException("该手机号码不存在或已禁用，请先注册会员");
         }
 
-        ShiroUser shiroUser = ShiroUserHelper.getCurrentShiroUser();
         MtCoupon couponInfo = this.queryCouponById(couponId);
 
         // 判断券是否有效
         if (!couponInfo.getStatus().equals(StatusEnum.ENABLED.getKey())) {
-            throw new BusinessCheckException("该卡券已停用，不能发放");
+            throw new BusinessCheckException("卡券“"+couponInfo.getName()+"”已停用,不能发放");
         }
 
         // 发放的是预存卡
         if (couponInfo.getType().equals(CouponTypeEnum.PRESTORE.getKey())) {
-            if (StringUtils.isNotEmpty(couponInfo.getInRule())) {
+            if (StringUtil.isNotEmpty(couponInfo.getInRule())) {
                 String storeParams = "";
                 String[] paramArr = couponInfo.getInRule().split(",");
                 for (int i = 0; i < paramArr.length; i++) {
-                     if (StringUtils.isNotEmpty(storeParams)) {
+                     if (StringUtil.isNotEmpty(storeParams)) {
                          storeParams = storeParams + "," + paramArr[i] + "_" + num;
                      } else {
                          storeParams = paramArr[i] + "_" + num;
@@ -489,7 +491,7 @@ public class CouponServiceImpl extends BaseService implements CouponService {
 
                 Map<String, Object> param = new HashMap<>();
                 param.put("couponId", couponInfo.getId());
-                param.put("userId", mtUser.getId());
+                param.put("userId", userInfo.getId());
                 param.put("param", storeParams);
                 param.put("orderId", 0);
 
@@ -505,18 +507,17 @@ public class CouponServiceImpl extends BaseService implements CouponService {
                 userCoupon.setCouponId(couponInfo.getId());
                 userCoupon.setType(couponInfo.getType());
                 userCoupon.setImage(couponInfo.getImage());
-                userCoupon.setStoreId(mtUser.getStoreId());
+                userCoupon.setStoreId(userInfo.getStoreId());
                 userCoupon.setAmount(couponInfo.getAmount());
                 userCoupon.setBalance(couponInfo.getAmount());
-                if (shiroUser != null) {
-                    userCoupon.setOperator(shiroUser.getAcctName());
-                }
+                userCoupon.setOperator(operator);
                 userCoupon.setGroupId(couponInfo.getGroupId());
                 userCoupon.setMobile(mobile);
-                userCoupon.setUserId(mtUser.getId());
+                userCoupon.setUserId(userInfo.getId());
                 userCoupon.setStatus(UserCouponStatusEnum.UNUSED.getKey());
                 userCoupon.setCreateTime(new Date());
                 userCoupon.setUpdateTime(new Date());
+                userCoupon.setExpireime(couponInfo.getEndTime());
 
                 // 12位随机数
                 StringBuffer code = new StringBuffer();
@@ -528,6 +529,17 @@ public class CouponServiceImpl extends BaseService implements CouponService {
                 userCoupon.setUuid(uuid);
                 userCouponRepository.save(userCoupon);
             }
+        }
+
+        // 发送小程序订阅消息
+        if (userInfo != null && couponInfo != null && couponInfo.getAmount().compareTo(new BigDecimal("0")) > 0) {
+            Date nowTime = new Date();
+            Date sendTime = new Date(nowTime.getTime());
+            Map<String, Object> params = new HashMap<>();
+            params.put("name", couponInfo.getName());
+            params.put("amount", couponInfo.getAmount());
+            params.put("tips", "您的卡券已到账，请查收~");
+            weixinService.sendSubscribeMessage(userInfo.getId(), userInfo.getOpenId(), WxMessageEnum.COUPON_ARRIVAL.getKey(), "pages/user/index", params, sendTime);
         }
     }
 
@@ -550,7 +562,7 @@ public class CouponServiceImpl extends BaseService implements CouponService {
 
         if (userCoupon == null) {
             throw new BusinessCheckException("该卡券不存在！");
-        } else if (!userCoupon.getStatus().equals(UserCouponStatusEnum.UNUSED.getKey()) && !userCoupon.getStatus().equals(UserCouponStatusEnum.UNSEND.getKey())) {
+        } else if (!userCoupon.getStatus().equals(UserCouponStatusEnum.UNUSED.getKey())) {
             throw new BusinessCheckException("该卡券状态有误，可能已使用或已过期！");
         }
 
@@ -656,8 +668,9 @@ public class CouponServiceImpl extends BaseService implements CouponService {
         confirmLog.setUpdateTime(new Date());
         confirmLog.setUserId(userCoupon.getUserId());
         confirmLog.setOperatorUserId(userId);
+        MtUser userInfo = null;
         if (userId > 0) {
-            MtUser userInfo = memberService.queryMemberById(userId);
+            userInfo = memberService.queryMemberById(userId);
             if (userInfo != null) {
                 confirmLog.setOperator(userInfo.getName());
             }
@@ -682,6 +695,7 @@ public class CouponServiceImpl extends BaseService implements CouponService {
         confirmLogRepository.save(confirmLog);
 
         try {
+            // 发送核销短信
             List<String> mobileList = new ArrayList<>();
             mobileList.add(userCoupon.getMobile());
             Map<String, String> params = new HashMap<>();
@@ -691,6 +705,15 @@ public class CouponServiceImpl extends BaseService implements CouponService {
             }
             params.put("sn", code.toString());
             sendSmsService.sendSms("confirm-coupon", mobileList, params);
+
+            // 发送小程序订阅消息
+            Date nowTime = new Date();
+            Date sendTime = new Date(nowTime.getTime());
+            Map<String, Object> param = new HashMap<>();
+            String dateTime = DateUtil.formatDate(Calendar.getInstance().getTime(), "yyyy-MM-dd HH:mm");
+            params.put("name", couponInfo.getName());
+            params.put("time", dateTime);
+            weixinService.sendSubscribeMessage(userInfo.getId(), userInfo.getOpenId(), WxMessageEnum.COUPON_CONFIRM.getKey(), "pages/user/index", param, sendTime);
         } catch (Exception e) {
             //empty
         }
@@ -708,27 +731,27 @@ public class CouponServiceImpl extends BaseService implements CouponService {
     @Override
     @OperationServiceLog(description = "删除卡券")
     public void deleteUserCoupon(Integer id, String operator) throws BusinessCheckException {
-        MtUserCoupon usercoupon = this.userCouponRepository.findOne(id);
-        if (null == usercoupon) {
+        MtUserCoupon userCoupon = this.userCouponRepository.findOne(id);
+        if (null == userCoupon) {
             return;
         }
 
         // 未使用状态才能作废删除
-        if(!usercoupon.getStatus().equals(UserCouponStatusEnum.UNUSED.getKey())) {
+        if(!userCoupon.getStatus().equals(UserCouponStatusEnum.UNUSED.getKey())) {
             throw new BusinessCheckException("不能作废，该劵状态异常");
         }
-        usercoupon.setStatus(UserCouponStatusEnum.DISABLE.getKey());
+        userCoupon.setStatus(UserCouponStatusEnum.DISABLE.getKey());
 
         // 修改时间
-        usercoupon.setUpdateTime(new Date());
+        userCoupon.setUpdateTime(new Date());
 
         // 操作人
-        usercoupon.setOperator(operator);
+        userCoupon.setOperator(operator);
 
         // 更新发券日志为部分作废状态
-        this.sendLogRepository.updateSingleForRemove(usercoupon.getUuid(),UserCouponStatusEnum.USED.getKey());
+        this.sendLogRepository.updateSingleForRemove(userCoupon.getUuid(),UserCouponStatusEnum.USED.getKey());
 
-        userCouponRepository.save(usercoupon);
+        userCouponRepository.save(userCoupon);
     }
 
     /**
@@ -797,8 +820,7 @@ public class CouponServiceImpl extends BaseService implements CouponService {
         userCouponRepository.save(usercoupon);
 
         // 更新流水
-        ShiroUser shiroUser = ShiroUserHelper.getCurrentShiroUser();
-        mtConfirmLog.setOperator(shiroUser.getAcctName());
+        mtConfirmLog.setOperator(operator);
         mtConfirmLog.setStatus(StatusEnum.DISABLE.getKey());
         mtConfirmLog.setUpdateTime(new Date());
         mtConfirmLog.setCancelTime(new Date());
@@ -812,7 +834,7 @@ public class CouponServiceImpl extends BaseService implements CouponService {
      * @throws BusinessCheckException
      * */
     @Override
-    public MtUserCoupon queryUserCouponById(Integer userCouponId) throws BusinessCheckException {
+    public MtUserCoupon queryUserCouponById(Integer userCouponId) {
         MtUserCoupon usercoupon = this.userCouponRepository.findOne(userCouponId);
         return usercoupon;
     }
@@ -869,7 +891,7 @@ public class CouponServiceImpl extends BaseService implements CouponService {
      * */
     @Override
     public boolean codeExpired(String code) {
-        if (StringUtils.isEmpty(code)) {
+        if (StringUtil.isEmpty(code)) {
             return true;
         }
         try {

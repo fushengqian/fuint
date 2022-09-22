@@ -1,12 +1,16 @@
 package com.fuint.exception;
 
+/**
+ * 业务异常
+ *
+ * Created by FSQ
+ * Contact wx fsq_better
+ * Site https://www.fuint.cn
+ */
 public class BusinessCheckException extends Exception {
-    /**
-     *
-     */
     private static final long serialVersionUID = 1L;
 
-    private Throwable         rootCause;
+    private Throwable rootCause;
 
     public BusinessCheckException(String arg0) {
         super(arg0);

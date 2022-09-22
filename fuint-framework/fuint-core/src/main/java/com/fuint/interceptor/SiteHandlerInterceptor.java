@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletResponse;
  *
  * Created by FSQ
  * Contact wx fsq_better
+ * Site https://www.fuint.cn
  */
 public class SiteHandlerInterceptor extends HandlerInterceptorAdapter {
 
@@ -46,14 +47,13 @@ public class SiteHandlerInterceptor extends HandlerInterceptorAdapter {
      * @throws Exception
      */
     @Override
-    public void postHandle(HttpServletRequest request, HttpServletResponse response,
-                           Object handler, ModelAndView modelAndView) throws Exception {
+    public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) {
         if (modelAndView != null) {
             try {
-                String systenName = new String((env.getProperty("system.name")).getBytes("iso-8859-1"), "utf-8");
-                Long randNow=System.currentTimeMillis();
-                modelAndView.addObject("systemName", systenName);//系统名称
-                modelAndView.addObject("randNow", randNow);//当前时间毫秒数的long型数字 20190812 add
+                String systemName = new String((env.getProperty("system.name")).getBytes("iso-8859-1"), "utf-8");
+                Long randNow = System.currentTimeMillis();
+                modelAndView.addObject("systemName", systemName);//系统名称
+                modelAndView.addObject("randNow", randNow);//当前时间毫秒数的long型数字
             } catch (Exception e) {
                 throw new RuntimeException("参数读取错误,{}", e);
             }

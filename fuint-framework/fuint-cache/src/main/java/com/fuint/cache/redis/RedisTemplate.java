@@ -14,23 +14,21 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
-
 import javax.annotation.Resource;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 /**
  * Redis缓存实现
+ *
  * Created by FSQ
  * Contact wx fsq_better
+ * Site https://www.fuint.cn
  */
 @Component
 public class RedisTemplate implements CacheTemplate {
 
     private static final Logger logger = LoggerFactory.getLogger(RedisTemplate.class);
-
-//    @Resource
-//    private JedisCluster jedisCluster;
 
     @Resource
     private JedisPool jedisPool;

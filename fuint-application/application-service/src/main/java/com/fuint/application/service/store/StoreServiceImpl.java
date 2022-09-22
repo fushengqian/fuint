@@ -12,8 +12,7 @@ import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.beanutils.ConvertUtils;
 import org.apache.commons.beanutils.converters.DateConverter;
 import org.apache.commons.collections.MapUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.fuint.util.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
@@ -32,8 +31,6 @@ import java.util.*;
  */
 @Service
 public class StoreServiceImpl implements StoreService {
-
-    private static final Logger log = LoggerFactory.getLogger(StoreServiceImpl.class);
 
     @Autowired
     private MtStoreRepository storeRepository;
@@ -92,6 +89,10 @@ public class StoreServiceImpl implements StoreService {
         mtStore.setHours(storeDto.getHours());
         mtStore.setLatitude(storeDto.getLatitude());
         mtStore.setLongitude(storeDto.getLongitude());
+
+        if (mtStore.getStatus() == null) {
+            mtStore.setStatus(StatusEnum.ENABLED.getKey());
+        }
 
         return storeRepository.save(mtStore);
     }
@@ -201,6 +202,10 @@ public class StoreServiceImpl implements StoreService {
     @Override
     public List<MtStore> queryByDistance(String latitude, String longitude) {
         List<MtStore> dataList = new ArrayList<>();
+
+        if (StringUtil.isEmpty(latitude) || StringUtil.isEmpty(longitude)) {
+            return dataList;
+        }
 
         StringBuffer queryStr = new StringBuffer();
         queryStr.append("SELECT t.id,(6371 * ACOS(COS( RADIANS(" + latitude + "))*COS(RADIANS(t.latitude))*COS(RADIANS(t.longitude ) - RADIANS(" + longitude +")) + SIN(RADIANS(" + latitude + "))*SIN(RADIANS(t.latitude)))) AS distance FROM mt_store t WHERE t.status = 'A' ORDER BY distance LIMIT 0,1000");

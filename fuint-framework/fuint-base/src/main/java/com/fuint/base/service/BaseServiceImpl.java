@@ -1,7 +1,3 @@
-/**
- * fuint.cn Inc.
- * Copyright (c) 2019-2022 All Rights Reserved.
- */
 package com.fuint.base.service;
 
 import java.util.*;
@@ -14,8 +10,9 @@ import org.springframework.stereotype.Service;
 /**
  * 基础接口服务类
  *
- * @author fsq
- * @version $Id: BaseServiceImpl.java
+ * Created by FSQ
+ * Contact wx fsq_better
+ * Site https://www.fuint.cn
  */
 @Service
 public class BaseServiceImpl implements BaseService {

@@ -15,8 +15,9 @@ import java.util.Collection;
 /**
  * 会话管理控制类
  *
- * @author fsq
- * @version $Id: SessionController.java
+ * Created by FSQ
+ * Contact wx fsq_better
+ * Site https://www.fuint.cn
  */
 @Controller
 @RequestMapping("/sessions")

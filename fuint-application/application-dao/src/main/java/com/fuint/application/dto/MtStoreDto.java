@@ -70,7 +70,7 @@ public class MtStoreDto implements Serializable {
     /**
      * 状态，1：正常；2：删除
      */
-    private Byte status;
+    private String status;
 
     /**
      * 最后操作人
@@ -149,10 +149,10 @@ public class MtStoreDto implements Serializable {
     public void setUpdateTime(Date updateTime){
         this.updateTime=updateTime;
     }
-    public Byte getStatus(){
+    public String getStatus(){
         return status;
     }
-    public void setStatus(Byte status){
+    public void setStatus(String status){
         this.status=status;
     }
     public String getOperator(){

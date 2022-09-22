@@ -3,7 +3,9 @@ package com.fuint.exception;
 /**
  * Exception for accessing unauthenticated resources
  *
- * @author Harrison han
+ * Created by FSQ
+ * Contact wx fsq_better
+ * Site https://www.fuint.cn
  */
 public class ForbiddenException extends HttpStatusException {
 

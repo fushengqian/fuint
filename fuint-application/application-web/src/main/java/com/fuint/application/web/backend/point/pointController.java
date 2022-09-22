@@ -17,8 +17,8 @@ import com.fuint.base.shiro.ShiroUser;
 import com.fuint.base.shiro.util.ShiroUserHelper;
 import com.fuint.base.util.RequestHandler;
 import com.fuint.exception.BusinessCheckException;
+import com.fuint.util.StringUtil;
 import org.apache.commons.collections.map.HashedMap;
-import org.apache.commons.lang.StringUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -80,7 +80,7 @@ public class pointController {
         PaginationRequest paginationRequest = RequestHandler.buildPaginationRequest(request, model);
 
         String mobile = request.getParameter("mobile") == null ? "" : request.getParameter("mobile");
-        if (StringUtils.isNotEmpty(mobile)) {
+        if (StringUtil.isNotEmpty(mobile)) {
             MtUser userInfo = memberService.queryMemberByMobile(mobile);
             if (userInfo != null) {
                 Map<String, Object> searchParams = new HashedMap();

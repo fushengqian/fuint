@@ -27,6 +27,7 @@ import java.util.Properties;
  *
  * Created by FSQ
  * Contact wx fsq_better
+ * Site https://www.fuint.cn
  */
 @Configuration
 @EnableWebMvc

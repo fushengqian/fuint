@@ -105,6 +105,12 @@ public class MtUser implements Serializable{
     @Column(name = "CAR_NO", length = 10)
     private String carNo;
 
+    /**
+     * 来源渠道
+     */
+    @Column(name = "SOURCE", length = 30)
+    private String source;
+
    /**
     * 密码 
     */ 
@@ -242,6 +248,12 @@ public class MtUser implements Serializable{
     }
     public void setCarNo(String carNo){
     this.carNo=carNo;
+    }
+    public String getSource(){
+        return source;
+    }
+    public void setSource(String source){
+        this.source=source;
     }
     public String getPassword(){
         return password;

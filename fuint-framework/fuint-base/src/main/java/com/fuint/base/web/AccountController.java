@@ -1,6 +1,3 @@
-/**
- * @author fsq
- */
 package com.fuint.base.web;
 
 import com.fuint.base.dao.entities.TAccount;
@@ -27,6 +24,10 @@ import java.util.List;
 
 /**
  * 管理员管理 - Controller
+ *
+ * Created by FSQ
+ * Contact wx fsq_better
+ * Site https://www.fuint.cn
  */
 @Controller
 @RequestMapping(value = "/user")

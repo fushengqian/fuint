@@ -8,7 +8,7 @@ package com.fuint.application.enums;
  */
 public enum SettingTypeEnum {
     POINT("point", "积分配置"),
-    BALANCE("balance", "积分配置"),
+    BALANCE("balance", "余额配置"),
     USER("user", "会员配置"),
     SUB_MESSAGE("sub_message", "订阅消息");
 

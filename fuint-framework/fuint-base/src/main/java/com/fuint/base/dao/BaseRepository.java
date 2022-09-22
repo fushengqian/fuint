@@ -14,7 +14,7 @@ import java.util.Map;
 /**
  * 全局扩展repository
  *
- * @author fsq
+ * @author FSQ
  * @version $Id: BaseRepository.java
  */
 @NoRepositoryBean

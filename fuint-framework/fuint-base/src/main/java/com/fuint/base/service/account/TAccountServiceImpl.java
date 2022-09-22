@@ -1,11 +1,6 @@
-/**
- * fuint.cn Inc.
- * Copyright (c) 2019-2022 All Rights Reserved.
- */
 package com.fuint.base.service.account;
 
 import java.util.*;
-
 import com.fuint.base.annoation.OperationServiceLog;
 import com.fuint.base.dao.entities.*;
 import com.fuint.base.dao.pagination.PaginationRequest;
@@ -24,8 +19,9 @@ import org.springframework.transaction.annotation.Transactional;
 /**
  * 账户接口服务实现类
  *
- * @author fsq
- * @version $Id: TAccountServiceImpl.java
+ * Created by FSQ
+ * Contact wx fsq_better
+ * Site https://www.fuint.cn
  */
 @Service
 public class TAccountServiceImpl implements TAccountService {
@@ -214,6 +210,9 @@ public class TAccountServiceImpl implements TAccountService {
             }
             oldAccount.setHtAccountDuties(accountDutySet);
         }
+        if (StringUtil.isNotEmpty(tAccount.getAccountName())) {
+            oldAccount.setAccountName(tAccount.getAccountName());
+        }
         oldAccount.setRealName(tAccount.getRealName());
         oldAccount.setStoreId(tAccount.getStoreId());
         oldAccount.setStaffId(tAccount.getStaffId());
@@ -252,6 +251,16 @@ public class TAccountServiceImpl implements TAccountService {
         user.setSalt(Encodes.encodeHex(salt));
         byte[] hashPassword = Digests.sha1(user.getPassword().getBytes(), salt, Constant.SaltConstant.HASH_INTERATIONS);
         user.setPassword(Encodes.encodeHex(hashPassword));
+    }
+
+    /**
+     * 获取加密密码
+     * */
+    @Override
+    public String getEntryptPassword(String password, String salt) {
+        byte[] salt1 = Encodes.decodeHex(salt);
+        byte[] hashPassword = Digests.sha1(password.getBytes(), salt1, Constant.SaltConstant.HASH_INTERATIONS);
+        return Encodes.encodeHex(hashPassword);
     }
 
     /**

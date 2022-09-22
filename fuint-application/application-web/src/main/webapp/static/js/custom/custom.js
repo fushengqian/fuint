@@ -590,6 +590,7 @@ function checkRulePrice() {
     }
     return true;
 }
+
 function checkRuleDefined() {
     var definedKeyInput = $('input[name="definedKey"]');
     var definedValueInput = $('input[name="definedValue"]');
@@ -603,7 +604,6 @@ function checkRuleDefined() {
     }
     return true;
 }
-
 
 function checkOne(itemName) {
     var itemCheckBox = $("[name = '"+itemName+"']:checkbox");

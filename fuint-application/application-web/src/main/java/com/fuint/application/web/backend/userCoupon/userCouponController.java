@@ -20,7 +20,7 @@ import com.fuint.base.util.RequestHandler;
 import com.fuint.exception.BusinessCheckException;
 import com.fuint.base.shiro.util.ShiroUserHelper;
 import com.fuint.application.web.backend.util.ExcelUtil;
-import org.apache.commons.lang.StringUtils;
+import com.fuint.util.StringUtil;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -121,7 +121,7 @@ public class userCouponController {
         String userCouponId = request.getParameter("userCouponId");
         MtUserCoupon mtUserCoupon = couponService.queryUserCouponById(Integer.parseInt(userCouponId));
 
-        if (mtUserCoupon == null || StringUtils.isEmpty(userCouponId)) {
+        if (mtUserCoupon == null || StringUtil.isEmpty(userCouponId)) {
             throw new BusinessCheckException("错误，用户卡券不存在！");
         }
 

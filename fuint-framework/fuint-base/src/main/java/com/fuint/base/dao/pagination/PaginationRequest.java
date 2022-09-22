@@ -6,7 +6,7 @@ import java.util.Map;
 /**
  * 分页实体对象
  *
- * @author fsq
+ * @author FSQ
  * @version $Id: Pagination.java
  */
 public class PaginationRequest implements Serializable {

@@ -19,13 +19,13 @@ import java.util.List;
 public interface MtUserCouponRepository extends BaseRepository<MtUserCoupon, Integer> {
 
       /**
-       * 根据分组ID获取发放套数
+       * 根据卡券ID获取发放套数
        *
-       * @param groupId
+       * @param couponId
        * @return
        */
-      @Query("SELECT t.couponId,count(t.id) as num FROM MtUserCoupon t WHERE t.groupId =:groupId GROUP BY t.couponId")
-      List<Object[]> getSendedNum(@Param("groupId") Integer groupId);
+      @Query("SELECT count(t.id) as num FROM MtUserCoupon t WHERE t.couponId =:couponId")
+      Long getSendNum(@Param("couponId") Integer couponId);
 
        /**
         * 根据卡券ID获取发放套数

@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import com.fuint.application.dao.entities.MtOrderAddress;
+import java.util.List;
 
 /**
  * mt_order_address Repository
@@ -20,6 +21,6 @@ public interface MtOrderAddressRepository extends BaseRepository<MtOrderAddress,
     * @return
     */
    @Query("select t from MtOrderAddress t where t.orderId = :orderId")
-   MtOrderAddress getOrderAddress(@Param("orderId") Integer orderId);
+   List<MtOrderAddress> getOrderAddress(@Param("orderId") Integer orderId);
 }
 

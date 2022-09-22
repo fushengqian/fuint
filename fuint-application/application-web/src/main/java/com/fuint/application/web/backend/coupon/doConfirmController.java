@@ -12,6 +12,7 @@ import com.fuint.application.service.confirmlog.ConfirmLogService;
 import com.fuint.application.service.coupon.CouponService;
 import com.fuint.application.service.member.MemberService;
 import com.fuint.application.util.DateUtil;
+import com.fuint.util.StringUtil;
 import com.fuint.base.service.account.TAccountService;
 import com.fuint.base.shiro.util.ShiroUserHelper;
 import com.fuint.exception.BusinessCheckException;
@@ -25,7 +26,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import com.fuint.application.web.backend.base.BaseController;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.apache.commons.lang.StringUtils;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.math.BigDecimal;
@@ -74,13 +74,13 @@ public class doConfirmController extends BaseController {
     public String index(HttpServletRequest request, HttpServletResponse response, Model model) throws BusinessCheckException {
         Integer userCouponId = request.getParameter("id") == null ? 0 : Integer.parseInt(request.getParameter("id"));
         String userCouponCode = request.getParameter("code") == null ? "" : request.getParameter("code");
-        if (StringUtils.isEmpty(userCouponCode) && userCouponId < 1) {
+        if (StringUtil.isEmpty(userCouponCode) && userCouponId < 1) {
             throw new BusinessRuntimeException("核销券码不能为空");
         }
 
         // 通过券码或ID获取
         MtUserCoupon userCoupon;
-        if (!StringUtils.isEmpty(userCouponCode)) {
+        if (!StringUtil.isEmpty(userCouponCode)) {
             userCoupon = userCouponRepository.findByCode(userCouponCode);
         } else {
             userCoupon = userCouponRepository.findOne(userCouponId);
@@ -133,14 +133,14 @@ public class doConfirmController extends BaseController {
     public ReqResult doConfirm(HttpServletRequest request, HttpServletResponse response, Model model) {
         Integer userCouponId = request.getParameter("userCouponId") == null ? 0 : Integer.parseInt(request.getParameter("userCouponId"));
         String amount = request.getParameter("amount") == null ? "0" : request.getParameter("amount");
-        String remark = StringUtils.isEmpty(request.getParameter("remark")) ? "后台核销" : request.getParameter("remark");
+        String remark = StringUtil.isEmpty(request.getParameter("remark")) ? "后台核销" : request.getParameter("remark");
 
         ShiroUser user = ShiroUserHelper.getCurrentShiroUser();
         TAccount account = accountService.findAccountById(user.getId());
         Integer storeId = account.getStoreId();
 
         MtUserCoupon mtUserCoupon = userCouponRepository.findOne(userCouponId);
-        if (mtUserCoupon.getType().equals(CouponTypeEnum.PRESTORE.getKey()) && StringUtils.isEmpty(amount)) {
+        if (mtUserCoupon.getType().equals(CouponTypeEnum.PRESTORE.getKey()) && StringUtil.isEmpty(amount)) {
             ReqResult reqResult = new ReqResult();
             reqResult.setResult(false);
             reqResult.setMsg("错误，预存卡核销金额不能为空！");

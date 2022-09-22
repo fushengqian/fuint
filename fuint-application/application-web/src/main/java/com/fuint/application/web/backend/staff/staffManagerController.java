@@ -1,5 +1,6 @@
 package com.fuint.application.web.backend.staff;
 
+import com.fuint.application.dto.ReqResult;
 import com.fuint.base.dao.pagination.PaginationRequest;
 import com.fuint.base.dao.pagination.PaginationResponse;
 import com.fuint.base.util.RequestHandler;
@@ -11,14 +12,16 @@ import com.fuint.application.enums.StatusEnum;
 import com.fuint.application.service.store.StoreService;
 import com.fuint.application.service.staff.StaffService;
 import com.fuint.application.util.CommonUtil;
-import org.apache.commons.lang.StringUtils;
+import com.fuint.util.StringUtil;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.*;
 
 /**
@@ -60,19 +63,19 @@ public class staffManagerController {
 
         Map<String, Object> params = paginationRequest.getSearchParams();
         Map<String, Object> paramsStore = new HashMap<>();
-        if (StringUtils.isNotEmpty(mobile)) {
+        if (StringUtil.isNotEmpty(mobile)) {
             paramsStore.put("EQ_mobile", mobile);
         }
-        if (StringUtils.isNotEmpty(auditedStatus)) {
+        if (StringUtil.isNotEmpty(auditedStatus)) {
             params.put("EQ_auditedStatus", auditedStatus);
         }
-        if (StringUtils.isNotEmpty(storeId)) {
+        if (StringUtil.isNotEmpty(storeId)) {
             paramsStore.put("EQ_storeId", storeId);
         }
 
         params.put("NQ_auditedStatus", StatusEnum.DISABLE.getKey());
         paginationRequest.setSearchParams(params);
-        paginationRequest.setSortColumn(new String[]{"auditedStatus asc", "id asc"});
+        paginationRequest.setSortColumn(new String[]{"auditedStatus asc", "id desc"});
         PaginationResponse<MtStaff> paginationResponse = staffService.queryStaffListByPagination(paginationRequest);
         for (MtStaff m : paginationResponse.getContent()) {
             MtStore mtStore = storeService.queryStoreById(m.getStoreId());
@@ -155,13 +158,13 @@ public class staffManagerController {
     public String doEdit(HttpServletRequest request) throws BusinessCheckException {
         String id_str = request.getParameter("id");
         Integer id = 0;
-        if (StringUtils.isNotEmpty(id_str)) {
+        if (StringUtil.isNotEmpty(id_str)) {
             id = Integer.parseInt(id_str);
         }
 
         String storeId_str = request.getParameter("storeId");
         Integer storeId = 0;
-        if (StringUtils.isNotEmpty(storeId_str)) {
+        if (StringUtil.isNotEmpty(storeId_str)) {
             storeId = Integer.parseInt(storeId_str);
         }
 
@@ -185,17 +188,69 @@ public class staffManagerController {
         mtStaff.setAuditedStatus(status);
         mtStaff.setDescription(description);
 
-        if (StringUtils.isEmpty(mtStaff.getMobile())) {
+        if (StringUtil.isEmpty(mtStaff.getMobile())) {
             throw new BusinessRuntimeException("手机号码不能为空");
         } else {
             MtStaff tempUser = staffService.queryStaffByMobile(mtStaff.getMobile());
             if (null != tempUser && tempUser.getId() != mtStaff.getId()) {
-                throw new BusinessCheckException("该会员手机号码已经存在!");
+                throw new BusinessCheckException("该手机号码已经存在");
             }
         }
 
-        staffService.addStaff(mtStaff);
+        staffService.saveStaff(mtStaff);
 
         return "redirect:/backend/staff/queryList";
+    }
+
+    /**
+     * 查询员工信息
+     *
+     * @param request
+     * @return
+     */
+    @RequiresPermissions("backend/staff/getStaffInfo")
+    @RequestMapping(value = "/getStaffInfo")
+    @ResponseBody
+    public ReqResult getStaffInfo(HttpServletRequest request) throws BusinessCheckException {
+        Integer id = request.getParameter("staffId") == null ? 0 : Integer.parseInt(request.getParameter("staffId"));
+
+        ReqResult reqResult = new ReqResult();
+
+        MtStaff mtStaff = staffService.queryStaffById(id);
+
+        Map<String, Object> data = new HashMap();
+        data.put("staffInfo", mtStaff);
+        reqResult.setCode("0");
+        reqResult.setData(data);
+
+        return reqResult;
+    }
+
+    /**
+     * 快速查询页面
+     * */
+    @RequiresPermissions("backend/staff/quickSearch")
+    @RequestMapping(value = "/quickSearch")
+    public String quickSearch(HttpServletRequest request, HttpServletResponse response, Model model) {
+        String name = request.getParameter("name");
+        model.addAttribute("name", name);
+        return "staff/quickSearch";
+    }
+
+    /**
+     * 快速查询列表
+     * */
+    @RequiresPermissions("backend/staff/quickSearchList")
+    @RequestMapping(value = "/quickSearchList")
+    public String quickSearchList(HttpServletRequest request, HttpServletResponse response, Model model) throws BusinessCheckException {
+        PaginationRequest paginationRequest = RequestHandler.buildPaginationRequest(request, model);
+        Map<String, Object> params = paginationRequest.getSearchParams() == null ? new HashMap<>() : paginationRequest.getSearchParams();
+
+        params.put("EQ_status", StatusEnum.ENABLED.getKey());
+
+        List<MtStaff> staffList = staffService.queryStaffByParams(params);
+        model.addAttribute("staffList", staffList);
+
+        return "staff/quickSearchList";
     }
 }

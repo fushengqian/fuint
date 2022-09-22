@@ -1,7 +1,6 @@
 package com.fuint.application.util;
 
-import org.apache.commons.lang.RandomStringUtils;
-import org.apache.commons.lang.StringUtils;
+import com.fuint.util.StringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.text.SimpleDateFormat;
@@ -27,14 +26,14 @@ public class BizCodeGenerator {
      */
     public synchronized static String getPreCodeString(String preString) {
         StringBuffer result = new StringBuffer();
-        if(StringUtils.isNotEmpty(preString)){
+        if(StringUtil.isNotEmpty(preString)){
             result.append(preString);
         }
 
         String dateStr =  new SimpleDateFormat(DATE_FORMAT).format(new Date());
         result.append(dateStr);
 
-        String randomStr = RandomStringUtils.randomNumeric(2);
+        String randomStr = SeqUtil.getRandomNumber(2);
         result.append(randomStr);
         return result.toString();
     }
@@ -46,7 +45,7 @@ public class BizCodeGenerator {
      * @return
      */
     public synchronized static String getVerifyCode() {
-        String verifyCode = getFixLenthString(6);//String.valueOf(new Random().nextInt(899999) + 100000);
+        String verifyCode = getFixLenthString(6);
         return verifyCode;
     }
 

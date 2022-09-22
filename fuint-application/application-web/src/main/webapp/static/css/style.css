@@ -483,6 +483,20 @@ p, h1, h2, h3, h4, input {
     width: 44px;
     height: 44px;
 }
+.start-time {
+    width: 135px;
+    float: left;
+    margin-right: 2px;
+}
+.end-time {
+    width: 135px;
+    float: left;
+    margin-left:2px;
+}
+.time-separator{
+    float: left;
+    line-height: 32px;
+}
 .iframe-base {
     margin: 0px;
     background: red;

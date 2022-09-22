@@ -13,7 +13,9 @@ import java.util.GregorianCalendar;
 /**
  * 有关 <code>Date</code> 处理的工具类
  *
- * @author Harrison han
+ * Created by FSQ
+ * Contact wx fsq_better
+ * Site https://www.fuint.cn
  */
 public class DateUtil {
 

@@ -21,16 +21,18 @@
                 </div>
             </div>
             <div class="form-group">
-                <label class="col-md-3 control-label">员工ID</label>
-                <div class="col-md-3">
-                    <input type="text" class="form-control" id="staffId" name="staffId" placeholder="员工ID" value="${account.staffId}">
-                    <p class="tips">tips：收银、卡券核销等权限需要</p>
+                <label class="col-md-3 control-label">关联店铺员工</label>
+                <div class="col-md-5">
+                    <div class="fl" id="staffNameDiv">
+                        <input type="hidden" id="staffId" name="staffId" placeholder="关联店铺员工" value="${account.staffId}">
+                    </div>
+                    <div class="tips fl" style="padding-top: 3px;"><a onclick="selectStaff();" class="btn btn-success btn-icon btn-circle"><i class="fa fa-user"></i></a>选择店铺员工</div>
                 </div>
             </div>
             <div class="form-group">
-                <label class="col-md-3 control-label">真实姓名</label>
+                <label class="col-md-3 control-label">姓名</label>
                 <div class="col-md-3">
-                    <input type="text" id="realName" class="form-control" name="realName" placeholder="真实姓名 最长20位" maxlength="20" value="${account.realName}">
+                    <input type="text" id="realName" class="form-control" name="realName" placeholder="姓名 最长20位" maxlength="20" value="${account.realName}">
                 </div>
             </div>
             <div class="form-group">
@@ -73,13 +75,13 @@
             </div>
             <div class="form-group">
                 <label class="control-label col-md-3">管辖店铺</label>
-                <div class="col-md-5" id="storeNameDiv">
+                <div class="col-md-2" id="storeNameDiv">
                     <span class="label label-danger f-s-14 m-t-5" style="display: inline-block;"> ${account.storeName}</span>
                     <input type="hidden" name="storeName" value="${account.storeName}"/>
                     <input type="hidden" name="storeId" value="${account.storeId}"/>
                 </div>
                 <div class="col-md-2">
-                    <a id="storeSearch" class="btn btn-success btn-icon btn-circle" onclick="quickSearch('storeName')" title="店铺查询"><i class="fa fa-plus"></i></a>店铺查询
+                    <a id="storeSearch" class="btn btn-success btn-icon btn-circle" onclick="selectStore('storeName')" title="选择店铺"><i class="fa fa-plus"></i></a>选择店铺
                 </div>
             </div>
             <div class="form-group">
@@ -92,9 +94,7 @@
                 <label class="col-md-3 control-label"></label>
                 <div class="col-md-9">
                     <button type="button" id="submitButton" class="btn btn-sm btn-success">提交</button>
-                    <button type="button" class="btn btn-sm btn-danger"
-                            onclick="getData('${rc.contextPath}/user/query','displayArea')">返回
-                    </button>
+                    <button type="button" class="btn btn-sm btn-danger" onclick="getData('${rc.contextPath}/user/query','displayArea')">返回</button>
                 </div>
             </div>
         </form>
@@ -102,6 +102,16 @@
 </div>
 <script type="application/javascript">
     $(function () {
+        $.ajax({
+            type: "GET",
+            url: "${rc.contextPath}/backend/staff/getStaffInfo?staffId=" + $("#staffId").val(),
+            success: function (data) {
+                if (data.data.staffInfo != null) {
+                    let showName = "<span class='label label-info f-s-14 m-t-5' style='display: inline-block;margin-right:5px;padding:5px;'>"+ data.data.staffInfo.realName +"</span>"
+                    $('#staffNameDiv').append(showName);
+                }
+            }
+        })
         $('#submitButton').click(function () {
             $('#accountForm').submit();
         })
@@ -139,10 +149,18 @@
     });
 
     /**
-     * 查询店铺
+     * 选择店铺
      * @param name
      */
-    function quickSearch(name) {
-        alterpage('${rc.contextPath}/backend/store/simple_searchStore/?name='+name, "店铺查询");
+    function selectStore(name) {
+        alterpage('${rc.contextPath}/backend/store/quickSearchInit/?name='+name, "选择店铺");
+    }
+
+    /**
+     * 选择员工
+     * @param name
+     */
+    function selectStaff() {
+        alterpage('${rc.contextPath}/backend/staff/quickSearch/', "选择店铺员工");
     }
 </script>

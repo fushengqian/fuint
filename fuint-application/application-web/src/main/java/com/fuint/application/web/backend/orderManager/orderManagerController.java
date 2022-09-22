@@ -1,6 +1,7 @@
 package com.fuint.application.web.backend.orderManager;
 
 import com.fuint.application.ResponseObject;
+import com.fuint.application.dao.entities.MtUser;
 import com.fuint.application.dto.ExpressDto;
 import com.fuint.application.dto.OrderDto;
 import com.fuint.application.dto.ReqResult;
@@ -8,7 +9,10 @@ import com.fuint.application.dto.UserOrderDto;
 import com.fuint.application.enums.OrderStatusEnum;
 import com.fuint.application.enums.OrderTypeEnum;
 import com.fuint.application.enums.PayStatusEnum;
+import com.fuint.application.enums.WxMessageEnum;
+import com.fuint.application.service.member.MemberService;
 import com.fuint.application.service.order.OrderService;
+import com.fuint.application.service.weixin.WeixinService;
 import com.fuint.application.util.TimeUtils;
 import com.fuint.base.dao.entities.TAccount;
 import com.fuint.base.dao.pagination.PaginationRequest;
@@ -17,7 +21,7 @@ import com.fuint.base.shiro.ShiroUser;
 import com.fuint.base.shiro.util.ShiroUserHelper;
 import com.fuint.base.util.RequestHandler;
 import com.fuint.exception.BusinessCheckException;
-import org.apache.commons.lang.StringUtils;
+import com.fuint.util.StringUtil;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -51,6 +55,18 @@ public class orderManagerController {
      */
     @Autowired
     private TAccountService accountService;
+
+    /**
+     * 会员服务接口
+     * */
+    @Autowired
+    private MemberService memberService;
+
+    /**
+     * 微信服务接口
+     * */
+    @Autowired
+    private WeixinService weixinService;
 
     /**
      * 订单列表查询
@@ -146,11 +162,14 @@ public class orderManagerController {
             return reqResult;
         }
 
+        UserOrderDto orderInfo = orderService.getOrderById(orderId);
+        MtUser userInfo = memberService.queryMemberById(orderInfo.getUserId());
+
         OrderDto dto = new OrderDto();
         dto.setId(orderId);
         dto.setStatus(OrderStatusEnum.DELIVERED.getKey());
 
-        if (StringUtils.isNotEmpty(expressCompany) || StringUtils.isNotEmpty(expressNo)) {
+        if (StringUtil.isNotEmpty(expressCompany) || StringUtil.isNotEmpty(expressNo)) {
             ExpressDto expressInfo = new ExpressDto();
             String time = TimeUtils.formatDate(new Date(), "yyyy-MM-dd HH:mm");
             expressInfo.setExpressTime(time);
@@ -165,6 +184,18 @@ public class orderManagerController {
         reqResult.setCode("1");
         reqResult.setResult(true);
         reqResult.setMsg("执行成功");
+
+        // 发送小程序订阅消息
+        if (orderInfo != null && userInfo != null) {
+            Date nowTime = new Date();
+            Date sendTime = new Date(nowTime.getTime() - 60000);
+            Map<String, Object> params = new HashMap<>();
+            params.put("receiver", orderInfo.getAddress().getName());
+            params.put("orderSn", orderInfo.getOrderSn());
+            params.put("expressCompany", expressCompany);
+            params.put("expressNo", expressNo);
+            weixinService.sendSubscribeMessage(userInfo.getId(), userInfo.getOpenId(), WxMessageEnum.DELIVER_GOODS.getKey(), "pages/order/index", params, sendTime);
+        }
 
         return reqResult;
     }
@@ -204,19 +235,19 @@ public class orderManagerController {
         OrderDto orderDto = new OrderDto();
         orderDto.setId(orderId);
         orderDto.setOperator(shiroUser.getAcctName());
-        if (StringUtils.isNotEmpty(status)) {
+        if (StringUtil.isNotEmpty(status)) {
             orderDto.setStatus(status);
         }
 
-        if (StringUtils.isNotEmpty(amount)) {
+        if (StringUtil.isNotEmpty(amount)) {
             orderDto.setAmount(new BigDecimal(amount));
         }
 
-        if (StringUtils.isNotEmpty(discount)) {
+        if (StringUtil.isNotEmpty(discount)) {
             orderDto.setDiscount(new BigDecimal(discount));
         }
 
-        if (StringUtils.isNotEmpty(remark)) {
+        if (StringUtil.isNotEmpty(remark)) {
             orderDto.setRemark(remark);
         }
 

@@ -1,5 +1,5 @@
 <h1 class="page-header">
-    <small>编辑员工信息</small>
+    <small><#if (staff.id)>编辑<#else>新增</#if>员工信息</small>
 </h1>
 <hr/>
 <div class="panel panel-inverse" data-sortable-id="form-stuff-1">
@@ -45,7 +45,7 @@
                 <div class="col-md-2">
                     <select class="form-control" id="status" name="status">
                         <option value="A" <#if (staff.auditedStatus == 'A')>selected</#if>>启用</option>
-                        <option value="N" <#if (staff.auditedStatus != 'A')>selected</#if>>禁用</option>
+                        <option value="N" <#if (staff.auditedStatus == 'N')>selected</#if>>禁用</option>
                     </select>
                 </div>
             </div>

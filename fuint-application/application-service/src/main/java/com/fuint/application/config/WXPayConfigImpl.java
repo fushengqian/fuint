@@ -11,6 +11,12 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 
+/**
+ * 微信支付配置类
+ * Created by FSQ
+ * Contact wx fsq_better
+ * Site https://www.fuint.cn
+ */
 @Configuration
 public class WXPayConfigImpl implements WXPayConfig {
 

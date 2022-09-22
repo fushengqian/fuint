@@ -2,15 +2,15 @@ package com.fuint.base.util;
 
 import com.fuint.base.service.entities.TreeNode;
 import com.fuint.util.StringUtil;
-
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * 树形展示工具类
- * <p/>
+ *
  * Created by FSQ
  * Contact wx fsq_better
+ * Site https://www.fuint.cn
  */
 public class TreeUtil {
 
@@ -63,6 +63,4 @@ public class TreeUtil {
             }
         }
     }
-
-
 }

@@ -5,6 +5,7 @@ import com.fuint.application.dto.BalanceDto;
 import com.fuint.base.dao.pagination.PaginationRequest;
 import com.fuint.base.dao.pagination.PaginationResponse;
 import com.fuint.exception.BusinessCheckException;
+import java.util.List;
 
 /**
  * 余额业务接口
@@ -29,4 +30,12 @@ public interface BalanceService {
      * @throws BusinessCheckException
      */
     boolean addBalance(MtBalance reqDto) throws BusinessCheckException;
+
+    /**
+     * 获取订单余额记录
+     *
+     * @param orderSn
+     * @return
+     * */
+    List<MtBalance> getBalanceListByOrderSn(String orderSn) throws BusinessCheckException;
 }

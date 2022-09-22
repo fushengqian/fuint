@@ -17,10 +17,7 @@ import com.fuint.application.dto.ReqResult;
 import com.fuint.application.enums.StatusEnum;
 import com.fuint.application.service.store.StoreService;
 import com.fuint.application.util.CommonUtil;
-import org.apache.commons.lang.StringUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -42,8 +39,6 @@ import java.util.*;
 @RequestMapping(value = "/backend/store")
 public class storeController {
 
-    private static final Logger logger = LoggerFactory.getLogger(storeController.class);
-
     /**
      * 店铺服务接口
      */
@@ -51,7 +46,7 @@ public class storeController {
     private StoreService storeService;
 
     /**
-     * 后台员工账户服务接口
+     * 后台账户服务接口
      */
     @Autowired
     private TAccountService tAccountService;
@@ -78,13 +73,13 @@ public class storeController {
 
         if (params == null) {
             params = new HashMap<>();
-            if (StringUtils.isNotEmpty(storeId)) {
+            if (StringUtil.isNotEmpty(storeId)) {
                 params.put("EQ_id", storeId);
             }
-            if (StringUtils.isNotEmpty(store_name)) {
+            if (StringUtil.isNotEmpty(store_name)) {
                 params.put("LIKE_name", store_name);
             }
-            if (StringUtils.isNotEmpty(storeStatus)) {
+            if (StringUtil.isNotEmpty(storeStatus)) {
                 params.put("EQ_status", storeStatus);
             }
         }
@@ -101,21 +96,51 @@ public class storeController {
     }
 
     /**
-     * 查询店铺页面
+     * 查询店铺页面（多选）
      * */
-    @RequiresPermissions("backend/store/simple_searchStore")
-    @RequestMapping(value = "/simple_searchStore")
-    public String quickSearchInit(HttpServletRequest request, HttpServletResponse response, Model model) {
-        String name = request.getParameter("name");
-        model.addAttribute("name", name);
-        return "components/simple_storeQuickSearch";
+    @RequiresPermissions("backend/store/searchStore")
+    @RequestMapping(value = "/searchStore")
+    public String searchStore(HttpServletRequest request) throws BusinessCheckException {
+        return "components/storeQuickSearch";
     }
 
     /**
      * 快速查询店铺
      * */
-    @RequiresPermissions("backend/store/simple-quick-search-store")
-    @RequestMapping(value = "/simple-quick-search-store")
+    @RequiresPermissions("backend/store/quickSearchStore")
+    @RequestMapping(value = "/quickSearchStore")
+    public String quickSearchStore(HttpServletRequest request, HttpServletResponse response, Model model) throws BusinessCheckException {
+        PaginationRequest paginationRequest = RequestHandler.buildPaginationRequest(request, model);
+        Map<String, Object> params = paginationRequest.getSearchParams();
+
+        if (null == params) {
+            params = new HashMap<>();
+        }
+
+        params.put("EQ_status", StatusEnum.ENABLED.getKey());
+
+        List<MtStore> storeList = storeService.queryStoresByParams(params);
+        model.addAttribute("storeList", storeList);
+
+        return "components/storeList";
+    }
+
+    /**
+     * 查询店铺页面（单选）
+     * */
+    @RequiresPermissions("backend/store/quickSearchInit")
+    @RequestMapping(value = "/quickSearchInit")
+    public String quickSearchInit(HttpServletRequest request, HttpServletResponse response, Model model) {
+        String name = request.getParameter("name");
+        model.addAttribute("name", name);
+        return "components/simpleStoreQuickSearch";
+    }
+
+    /**
+     * 快速查询店铺
+     * */
+    @RequiresPermissions("backend/store/quickSearchList")
+    @RequestMapping(value = "/quickSearchList")
     public String quickSearchList(HttpServletRequest request, HttpServletResponse response, Model model) throws BusinessCheckException {
         PaginationRequest paginationRequest = RequestHandler.buildPaginationRequest(request, model);
         Map<String, Object> params = paginationRequest.getSearchParams();
@@ -126,18 +151,14 @@ public class storeController {
 
         Long accId = ShiroUserHelper.getCurrentShiroUser().getId();
         TAccount tAccount = tAccountService.findAccountById(accId);
-        if (tAccount.getStoreId() == null || tAccount.getStoreId().equals(-1)) {
-            if (tAccount.getStoreId() == null){
-                params.put("EQ_id","0");
-            }
-        } else {
-            params.put("EQ_id",tAccount.getStoreId().toString());  //查询消费列表
+        if (tAccount.getStoreId() > 0) {
+            params.put("EQ_id", tAccount.getStoreId().toString());
         }
 
         List<MtStore> storeList = storeService.queryStoresByParams(params);
         model.addAttribute("storeList", storeList);
 
-        return "components/simple_storeList";
+        return "components/simpleStoreList";
     }
 
     /**
@@ -241,6 +262,12 @@ public class storeController {
         String latitude = CommonUtil.replaceXSS(request.getParameter("latitude"));
         String longitude = CommonUtil.replaceXSS(request.getParameter("longitude"));
 
+        if ((StringUtil.isEmpty(latitude) || StringUtil.isEmpty(longitude)) && StringUtil.isNotEmpty(address)) {
+            Map<String, Object> latAndLng = CommonUtil.getLatAndLngByAddress(address);
+            latitude = latAndLng.get("lat").toString();
+            longitude = latAndLng.get("lng").toString();
+        }
+
         storeInfo.setName(storeName);
         storeInfo.setContact(ContactName);
         storeInfo.setPhone(ContactPhone);
@@ -251,7 +278,7 @@ public class storeController {
         storeInfo.setLatitude(latitude);
         storeInfo.setLongitude(longitude);
 
-        if (StringUtils.isEmpty(storeName)) {
+        if (StringUtil.isEmpty(storeName)) {
             throw new BusinessRuntimeException("店铺名称不能为空");
         } else {
             MtStoreDto tempDto = null;
@@ -278,6 +305,7 @@ public class storeController {
         storeInfo.setOperator(operator);
 
         storeService.saveStore(storeInfo);
+
         return "redirect:/backend/store/queryList";
     }
 

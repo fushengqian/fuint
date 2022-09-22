@@ -2,15 +2,20 @@ package com.fuint.cache.redis;
 
 import org.redisson.Redisson;
 import org.redisson.api.RedissonClient;
-import org.redisson.config.ClusterServersConfig;
 import org.redisson.config.Config;
 import org.redisson.config.SingleServerConfig;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.util.CollectionUtils;
-
 import java.util.List;
 
+/**
+ * 缓存配置类
+ *
+ * Created by FSQ
+ * Contact wx fsq_better
+ * Site https://www.fuint.cn
+ */
 public class RedissonFactoryBean implements DisposableBean, FactoryBean<RedissonClient> {
 
     private List<String> nodeAddresses;
@@ -18,9 +23,9 @@ public class RedissonFactoryBean implements DisposableBean, FactoryBean<Redisson
     private RedissonClient redisson;
 
     @Override
-    public RedissonClient getObject() throws Exception {
+    public RedissonClient getObject() {
         Config config = new Config();
-//        ClusterServersConfig clusterServer = config.useClusterServers();
+        // ClusterServersConfig clusterServer = config.useClusterServers();
         SingleServerConfig singleServerConfig = config.useSingleServer();
         if (!CollectionUtils.isEmpty(nodeAddresses)) {
             singleServerConfig.setAddress(nodeAddresses.get(0));

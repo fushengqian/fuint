@@ -17,8 +17,9 @@ import java.util.List;
 /**
  * 动态SQL拼接
  *
- * @author fsq
- * @version $Id: DynamicSpecifications.java
+ * Created by FSQ
+ * Contact wx fsq_better
+ * Site https://www.fuint.cn
  */
 public class DynamicSpecifications {
 

@@ -9,17 +9,17 @@ import com.fuint.application.dto.GoodsDto;
 import com.fuint.application.dto.GoodsSpecValueDto;
 import com.fuint.application.service.setting.SettingService;
 import com.fuint.application.service.store.StoreService;
-import org.apache.commons.beanutils.BeanUtils;
-import org.apache.commons.lang.StringUtils;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.jpa.domain.Specification;
 import com.fuint.base.annoation.OperationServiceLog;
 import com.fuint.base.dao.pagination.PaginationRequest;
 import com.fuint.base.dao.pagination.PaginationResponse;
 import com.fuint.exception.BusinessCheckException;
 import com.fuint.application.enums.StatusEnum;
+import com.fuint.util.StringUtil;
+import org.apache.commons.beanutils.BeanUtils;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -76,7 +76,7 @@ public class GoodsServiceImpl implements GoodsService {
             GoodsDto item = new GoodsDto();
             item.setId(mtGoods.getId());
             item.setInitSale(mtGoods.getInitSale());
-            if (StringUtils.isNotEmpty(mtGoods.getLogo())) {
+            if (StringUtil.isNotEmpty(mtGoods.getLogo())) {
                 item.setLogo(basePath + mtGoods.getLogo());
             }
             item.setStoreId(mtGoods.getStoreId());
@@ -124,34 +124,34 @@ public class GoodsServiceImpl implements GoodsService {
         if (reqDto.getStoreId() != null) {
             mtGoods.setStoreId(reqDto.getStoreId() >= 0 ? reqDto.getStoreId() : 0);
         }
-        if (StringUtils.isNotEmpty(reqDto.getIsSingleSpec())) {
+        if (StringUtil.isNotEmpty(reqDto.getIsSingleSpec())) {
             mtGoods.setIsSingleSpec(reqDto.getIsSingleSpec());
         }
-        if (reqDto.getId() <= 0 && StringUtils.isEmpty(reqDto.getIsSingleSpec())) {
+        if (reqDto.getId() <= 0 && StringUtil.isEmpty(reqDto.getIsSingleSpec())) {
             mtGoods.setIsSingleSpec("Y");
         }
-        if (StringUtils.isNotEmpty(reqDto.getName())) {
+        if (StringUtil.isNotEmpty(reqDto.getName())) {
             mtGoods.setName(reqDto.getName());
         }
-        if (StringUtils.isNotEmpty(reqDto.getStatus())) {
+        if (StringUtil.isNotEmpty(reqDto.getStatus())) {
             mtGoods.setStatus(reqDto.getStatus());
         }
-        if (StringUtils.isNotEmpty(reqDto.getLogo())) {
+        if (StringUtil.isNotEmpty(reqDto.getLogo())) {
             mtGoods.setLogo(reqDto.getLogo());
         }
-        if (StringUtils.isNotEmpty(reqDto.getIsSingleSpec())) {
+        if (StringUtil.isNotEmpty(reqDto.getIsSingleSpec())) {
             mtGoods.setIsSingleSpec(reqDto.getIsSingleSpec());
         }
-        if (StringUtils.isNotEmpty(reqDto.getDescription())) {
+        if (StringUtil.isNotEmpty(reqDto.getDescription())) {
             mtGoods.setDescription(reqDto.getDescription());
         }
-        if (StringUtils.isNotEmpty(reqDto.getOperator())) {
+        if (StringUtil.isNotEmpty(reqDto.getOperator())) {
             mtGoods.setOperator(reqDto.getOperator());
         }
         if (reqDto.getCateId() > 0) {
             mtGoods.setCateId(reqDto.getCateId());
         }
-        if (StringUtils.isNotEmpty(reqDto.getGoodsNo())) {
+        if (StringUtil.isNotEmpty(reqDto.getGoodsNo())) {
             mtGoods.setGoodsNo(reqDto.getGoodsNo());
         }
         if (reqDto.getSort() != null) {
@@ -181,19 +181,19 @@ public class GoodsServiceImpl implements GoodsService {
         if (reqDto.getStock() != null) {
             mtGoods.setStock(reqDto.getStock());
         }
-        if (StringUtils.isNotEmpty(reqDto.getSalePoint())) {
+        if (StringUtil.isNotEmpty(reqDto.getSalePoint())) {
             mtGoods.setSalePoint(reqDto.getSalePoint());
         }
-        if (StringUtils.isEmpty(reqDto.getSalePoint()) && reqDto.getId() <= 0) {
+        if (StringUtil.isEmpty(reqDto.getSalePoint()) && reqDto.getId() <= 0) {
             reqDto.setSalePoint("");
         }
-        if (StringUtils.isNotEmpty(reqDto.getCanUsePoint())) {
+        if (StringUtil.isNotEmpty(reqDto.getCanUsePoint())) {
             mtGoods.setCanUsePoint(reqDto.getCanUsePoint());
         }
-        if (StringUtils.isNotEmpty(reqDto.getIsMemberDiscount())) {
+        if (StringUtil.isNotEmpty(reqDto.getIsMemberDiscount())) {
             mtGoods.setIsMemberDiscount(reqDto.getIsMemberDiscount());
         }
-        if (StringUtils.isNotEmpty(reqDto.getImages())) {
+        if (StringUtil.isNotEmpty(reqDto.getImages())) {
             mtGoods.setImages(reqDto.getImages());
         }
 
@@ -262,8 +262,8 @@ public class GoodsServiceImpl implements GoodsService {
         if (id < 1) {
             return null;
         }
-        MtGoods mtGoods = goodsRepository.findOne(id);
 
+        MtGoods mtGoods = goodsRepository.findOne(id);
         GoodsDto goodsInfo = new GoodsDto();
 
         if (mtGoods != null) {
@@ -284,7 +284,7 @@ public class GoodsServiceImpl implements GoodsService {
         }
 
         String basePath = settingService.getUploadBasePath();
-        if (StringUtils.isNotEmpty(goodsInfo.getLogo())) {
+        if (StringUtil.isNotEmpty(goodsInfo.getLogo())) {
             goodsInfo.setLogo(basePath + goodsInfo.getLogo());
         }
 

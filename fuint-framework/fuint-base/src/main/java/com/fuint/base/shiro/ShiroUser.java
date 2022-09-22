@@ -9,6 +9,7 @@ import java.util.*;
  *
  * Created by FSQ
  * Contact wx fsq_better
+ * Site https://www.fuint.cn
  */
 public class ShiroUser implements Serializable {
 

@@ -1,5 +1,7 @@
 package com.fuint.application.dto;
 
+import java.util.List;
+
 /**
  * 小程序订阅消息dto
  * Created by FSQ
@@ -8,9 +10,11 @@ package com.fuint.application.dto;
 public class SubMessageDto {
     private String key;
     private String templateId;
+    private String tid;
     private String title;
     private String content;
     private String status;
+    private List<ParamDto> params;
 
     public String getKey(){
         return key;
@@ -24,6 +28,13 @@ public class SubMessageDto {
     }
     public void setTemplateId(String templateId){
         this.templateId = templateId;
+    }
+
+    public String getTid(){
+        return tid;
+    }
+    public void setTid(String tid){
+        this.tid = tid;
     }
 
     public String getTitle(){
@@ -45,5 +56,12 @@ public class SubMessageDto {
     }
     public void setStatus(String status){
         this.status = status;
+    }
+
+    public List<ParamDto> getParams(){
+        return params;
+    }
+    public void setParams(List<ParamDto> params){
+        this.params = params;
     }
 }

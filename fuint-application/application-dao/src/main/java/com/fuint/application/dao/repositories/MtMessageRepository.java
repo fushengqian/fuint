@@ -15,12 +15,21 @@ import java.util.List;
  */
 @Repository 
 public interface MtMessageRepository extends BaseRepository<MtMessage, Integer> {
+
    /**
     * 获取最新未读消息
     *
     * @return
     * */
-   @Query(value = "select t from MtMessage t where t.userId=:userId and t.type='pop' and t.isRead = 'N' order by t.id desc")
-   List<MtMessage> findNewMessage(@Param("userId") Integer userId);
+   @Query(value = "select t from MtMessage t where t.userId=:userId and t.type=:type and t.isRead = 'N' order by t.id desc")
+   List<MtMessage> findNewMessage(@Param("userId") Integer userId, @Param("type") String type);
+
+   /**
+    * 获取需要发送的消息
+    *
+    * @return
+    * */
+   @Query(value = "select t from MtMessage t where t.type=:type and t.isSend = 'N' order by t.sendTime asc")
+   List<MtMessage> findNeedSendMessage(@Param("type") String type);
 }
 

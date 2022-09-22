@@ -13,8 +13,9 @@ import java.util.List;
 /**
  * 角色服务接口
  *
- * @author Harrison Han
- * @version $Id: TDutyService.java, v 0.1 2019年11月19日 下午1:15:19 Harrison Han Exp $
+ * Created by FSQ
+ * Contact wx fsq_better
+ * Site https://www.fuint.cn
  */
 public interface TDutyService {
     /**

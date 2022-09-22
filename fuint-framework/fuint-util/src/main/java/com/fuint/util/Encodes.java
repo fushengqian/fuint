@@ -12,9 +12,10 @@ import org.apache.commons.lang3.StringEscapeUtils;
 
 /**
  * 编码转换工具类
- * 
- * @author fsq
- * @version $Id: Encodes.java
+ *
+ * Created by FSQ
+ * Contact wx fsq_better
+ * Site https://www.fuint.cn
  */
 public class Encodes {
 

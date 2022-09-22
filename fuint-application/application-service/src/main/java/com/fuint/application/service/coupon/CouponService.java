@@ -67,7 +67,7 @@ public interface CouponService {
      * @param num     发放套数
      * @throws BusinessCheckException
      */
-    void sendCoupon(Integer couponId, String mobile, Integer num, String uuid) throws BusinessCheckException;
+    void sendCoupon(Integer couponId, String mobile, Integer num, String uuid, String operator) throws BusinessCheckException;
 
     /**
      * 根据分组获取卡券列表

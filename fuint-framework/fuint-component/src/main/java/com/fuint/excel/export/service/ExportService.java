@@ -4,7 +4,10 @@ import com.fuint.excel.export.dto.ExcelExportDto;
 
 /**
  * 导出Excel文件业务接口
- * Created by liuguofang on 2016/11/25.
+ *
+ * Created by FSQ
+ * Contact wx fsq_better
+ * Site https://www.fuint.cn
  */
 public interface ExportService {
 

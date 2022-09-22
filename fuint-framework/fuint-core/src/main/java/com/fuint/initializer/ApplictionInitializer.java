@@ -11,6 +11,7 @@ import javax.servlet.ServletException;
  *
  * Created by FSQ
  * Contact wx fsq_better
+ * Site https://www.fuint.cn
  */
 @Order(1)
 public class ApplictionInitializer implements WebApplicationInitializer {

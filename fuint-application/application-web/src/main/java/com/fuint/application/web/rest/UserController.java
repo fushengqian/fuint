@@ -20,8 +20,8 @@ import com.fuint.base.util.RequestHandler;
 import com.fuint.exception.BusinessCheckException;
 import com.fuint.application.ResponseObject;
 import com.fuint.application.BaseController;
+import com.fuint.util.StringUtil;
 import com.fuint.application.service.token.TokenService;
-import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +29,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import java.io.ByteArrayOutputStream;
-import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -214,7 +213,7 @@ public class UserController extends BaseController {
             return getFailureResult(1001);
         }
 
-        if (StringUtils.isNotEmpty(code)) {
+        if (StringUtil.isNotEmpty(code)) {
             JSONObject loginInfo = weixinService.getWxProfile(code);
             if (loginInfo != null) {
                 mobile = weixinService.getPhoneNumber(param.get("encryptedData").toString(), loginInfo.get("session_key").toString(), param.get("iv").toString());
@@ -222,16 +221,16 @@ public class UserController extends BaseController {
         }
 
         mtUser = memberService.queryMemberById(mtUser.getId());
-        if (StringUtils.isNotEmpty(name)) {
+        if (StringUtil.isNotEmpty(name)) {
             mtUser.setName(name);
         }
         if (sex.equals(1) || sex.equals(0)) {
             mtUser.setSex(sex);
         }
-        if (StringUtils.isNotEmpty(birthday)) {
+        if (StringUtil.isNotEmpty(birthday)) {
             mtUser.setBirthday(birthday);
         }
-        if (StringUtils.isNotEmpty(mobile)) {
+        if (StringUtil.isNotEmpty(mobile)) {
             mtUser.setMobile(mobile);
         }
 
@@ -263,7 +262,7 @@ public class UserController extends BaseController {
      * */
     @RequestMapping(value = "/qrCode", method = RequestMethod.GET)
     @CrossOrigin
-    public ResponseObject qrCode(HttpServletRequest request) throws BusinessCheckException, InvocationTargetException, IllegalAccessException {
+    public ResponseObject qrCode(HttpServletRequest request) throws BusinessCheckException {
         String userToken = request.getHeader("Access-Token");
         MtUser mtUser = tokenService.getUserInfoByToken(userToken);
 

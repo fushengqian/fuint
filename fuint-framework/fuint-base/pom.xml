@@ -8,7 +8,6 @@
         <artifactId>fuint-framework</artifactId>
         <version>1.0.0-RELEASE</version>
     </parent>
-    <groupId>com.fuint</groupId>
     <artifactId>fuint-base</artifactId>
     <version>1.0.0-RELEASE</version>
     <name>fuint-base</name>
@@ -68,8 +67,8 @@
             <artifactId>spring-tx</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.springframework.data</groupId>
-            <artifactId>spring-data-jpa</artifactId>
+            <groupId>com.fuint</groupId>
+            <artifactId>fuint-cache</artifactId>
         </dependency>
         <dependency>
             <groupId>com.fuint</groupId>
@@ -79,10 +78,7 @@
             <groupId>org.springframework.data</groupId>
             <artifactId>spring-data-jpa</artifactId>
         </dependency>
-        <dependency>
-            <groupId>org.hibernate</groupId>
-            <artifactId>hibernate-entitymanager</artifactId>
-        </dependency>
+
         <dependency>
             <groupId>com.github.axet</groupId>
             <artifactId>kaptcha</artifactId>
@@ -102,4 +98,16 @@
             <classifier>jdk15</classifier>
         </dependency>
     </dependencies>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 </project>

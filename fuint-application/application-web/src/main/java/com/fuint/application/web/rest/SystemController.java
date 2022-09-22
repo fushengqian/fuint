@@ -5,7 +5,7 @@ import com.fuint.application.enums.StatusEnum;
 import com.fuint.application.service.store.StoreService;
 import com.fuint.exception.BusinessCheckException;
 import com.fuint.application.service.token.TokenService;
-import org.apache.commons.lang.StringUtils;
+import com.fuint.util.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import com.fuint.application.BaseController;
@@ -56,7 +56,7 @@ public class SystemController extends BaseController {
         }
 
         // 未登录先切换的店铺
-        if (userInfo == null && StringUtils.isNotEmpty(storeId)) {
+        if (userInfo == null && StringUtil.isNotEmpty(storeId)) {
             storeInfo = storeService.queryStoreById(Integer.parseInt(storeId));
         }
 
@@ -68,7 +68,7 @@ public class SystemController extends BaseController {
         }
 
         // 取距离最近的
-        if (storeInfo == null && StringUtils.isNotEmpty(latitude) && StringUtils.isNotEmpty(longitude)) {
+        if (storeInfo == null && StringUtil.isNotEmpty(latitude) && StringUtil.isNotEmpty(longitude)) {
             List<MtStore> storeList = storeService.queryByDistance(latitude, longitude);
             if (storeList.size() > 0) {
                 storeInfo = storeList.get(0);

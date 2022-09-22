@@ -4,12 +4,14 @@ import com.fuint.base.dao.entities.TSource;
 import com.fuint.base.service.entities.TreeNode;
 import com.fuint.base.shiro.util.ShiroUserHelper;
 import com.fuint.util.StringUtil;
-
 import java.util.*;
 
 /**
  * 用户菜单工具类
- * <p/>
+ *
+ * Created by FSQ
+ * Contact wx fsq_better
+ * Site https://www.fuint.cn
  */
 public class MenuUtil {
 
@@ -18,7 +20,7 @@ public class MenuUtil {
         StringBuffer menustr = new StringBuffer();
         if (sources != null && sources.size() > 0) {
             List<TreeNode> trees = new ArrayList<TreeNode>();
-            TreeNode treeNode = null;
+            TreeNode treeNode;
             for (TSource tSource : sources) {
                 if (tSource.getIsMenu() == 1) {
                     treeNode = new TreeNode();

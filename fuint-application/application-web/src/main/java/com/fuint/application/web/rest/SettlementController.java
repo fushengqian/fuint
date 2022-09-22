@@ -15,19 +15,18 @@ import com.fuint.application.service.usercoupon.UserCouponService;
 import com.fuint.application.service.weixin.WeixinService;
 import com.fuint.application.service.usergrade.UserGradeService;
 import com.fuint.application.util.CommonUtil;
+import com.fuint.application.util.DateUtil;
+import com.fuint.util.StringUtil;
 import com.fuint.base.shiro.util.ShiroUserHelper;
 import com.fuint.exception.BusinessCheckException;
 import com.fuint.application.ResponseObject;
 import com.fuint.application.BaseController;
 import com.fuint.base.shiro.ShiroUser;
-import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * 结算中心接口
@@ -114,9 +113,9 @@ public class SettlementController extends BaseController {
         }
 
         // 后台操作自动注册会员信息
-        if ((userInfo == null || StringUtils.isEmpty(token))) {
+        if ((userInfo == null || StringUtil.isEmpty(token))) {
             String mobile = param.get("mobile") == null ? "" : param.get("mobile").toString();
-            if (StringUtils.isNotEmpty(operator) && StringUtils.isNotEmpty(mobile)) {
+            if (StringUtil.isNotEmpty(operator) && StringUtil.isNotEmpty(mobile)) {
                 userInfo = memberService.queryMemberByMobile(mobile);
                 // 自动注册会员
                 if (userInfo == null) {
@@ -134,13 +133,13 @@ public class SettlementController extends BaseController {
         String selectNum = param.get("selectNum") == null ? "" : param.get("selectNum").toString(); // 预存卡必填
         String remark = param.get("remark") == null ? "" : param.get("remark").toString();
         String type = param.get("type") == null ? "" : param.get("type").toString(); // 订单类型
-        String payAmount = param.get("payAmount") == null ? "0" : StringUtils.isEmpty(param.get("payAmount").toString()) ? "0" : param.get("payAmount").toString(); // 支付金额
-        Integer usePoint = param.get("usePoint") == null ? 0 : Integer.parseInt(param.get("usePoint").toString());
+        String payAmount = param.get("payAmount") == null ? "0" : StringUtil.isEmpty(param.get("payAmount").toString()) ? "0" : param.get("payAmount").toString(); // 支付金额
+        Integer usePoint = param.get("usePoint") == null ? 0 : Integer.parseInt(param.get("usePoint").toString()); // 使用积分数量
         Integer couponId = param.get("couponId") == null ? 0 : Integer.parseInt(param.get("couponId").toString());
         String payType = param.get("payType") == null ? PayTypeEnum.JSAPI.getKey() : param.get("payType").toString();
         String authCode = param.get("authCode") == null ? "" : param.get("authCode").toString();
         Integer storeId = request.getHeader("storeId") == null ? 0 : Integer.parseInt(request.getHeader("storeId"));
-        Integer userId = param.get("userId") == null ? 0 : (StringUtils.isNotEmpty(param.get("userId").toString()) ? Integer.parseInt(param.get("userId").toString()) : 0); // 指定下单会员 eg:收银功能
+        Integer userId = param.get("userId") == null ? 0 : (StringUtil.isNotEmpty(param.get("userId").toString()) ? Integer.parseInt(param.get("userId").toString()) : 0); // 指定下单会员 eg:收银功能
         String cashierPayAmount = param.get("cashierPayAmount") == null ? "" : param.get("cashierPayAmount").toString(); // 收银台实付金额
         String cashierDiscountAmount = param.get("cashierDiscountAmount") == null ? "" : param.get("cashierDiscountAmount").toString(); // 收银台优惠金额
         Integer goodsId = param.get("goodsId") == null ? 0 : Integer.parseInt(param.get("goodsId").toString()); // 立即购买商品ID
@@ -151,6 +150,10 @@ public class SettlementController extends BaseController {
 
         if (userId <= 0) {
             userId = userInfo.getId();
+        } else {
+            if (StringUtil.isNotEmpty(operator)) {
+                userInfo = memberService.queryMemberById(userId);
+            }
         }
         param.put("userId", userId);
 
@@ -177,10 +180,12 @@ public class SettlementController extends BaseController {
         orderDto.setCouponId(0);
 
         MtSetting pointSetting = settingService.querySettingByName(PointSettingEnum.CAN_USE_AS_MONEY.getKey());
+        // 使用积分数量
         if (pointSetting != null && pointSetting.getValue().equals("true")) {
             orderDto.setUsePoint(usePoint);
         } else {
             orderDto.setUsePoint(0);
+            usePoint = 0;
         }
 
         orderDto.setPointAmount(new BigDecimal("0"));
@@ -200,7 +205,7 @@ public class SettlementController extends BaseController {
             String[] selectNumArr = selectNum.split(",");
             String[] ruleArr = inRule.split(",");
             for (int i = 0; i < ruleArr.length; i++) {
-                String item = ruleArr[i] + "_" + (StringUtils.isNotEmpty(selectNumArr[i]) ? selectNumArr[i] : 0);
+                String item = ruleArr[i] + "_" + (StringUtil.isNotEmpty(selectNumArr[i]) ? selectNumArr[i] : 0);
                 String[] itemArr = item.split("_");
                 // 预存金额
                 BigDecimal price = new BigDecimal(itemArr[0]);
@@ -208,7 +213,7 @@ public class SettlementController extends BaseController {
                 BigDecimal num = new BigDecimal(selectNumArr[i]);
                 BigDecimal amount = price.multiply(num);
                 totalAmount = totalAmount.add(amount);
-                orderParam = StringUtils.isEmpty(orderParam) ?  item : orderParam + ","+item;
+                orderParam = StringUtil.isEmpty(orderParam) ?  item : orderParam + ","+item;
             }
 
             orderDto.setParam(orderParam);
@@ -227,8 +232,10 @@ public class SettlementController extends BaseController {
         if (orderDto.getType().equals(OrderTypeEnum.MEMBER.getKey())) {
             orderDto.setParam(targetId+"");
             MtUserGrade userGrade = userGradeService.queryUserGradeById(targetId);
-            orderDto.setRemark("付费升级" + userGrade.getName());
-            orderDto.setAmount(new BigDecimal(userGrade.getCatchValue().toString()));
+            if (userGrade != null) {
+                orderDto.setRemark("付费升级" + userGrade.getName());
+                orderDto.setAmount(new BigDecimal(userGrade.getCatchValue().toString()));
+            }
         }
 
         // 商品订单
@@ -275,11 +282,18 @@ public class SettlementController extends BaseController {
         }
 
         // 生成订单
-        MtOrder orderInfo = orderService.saveOrder(orderDto);
+        MtOrder orderInfo;
+        try {
+            orderInfo = orderService.saveOrder(orderDto);
+        } catch (BusinessCheckException e) {
+            return getFailureResult(201, e.getMessage());
+        }
+
+        orderDto.setId(orderInfo.getId());
         param.put("orderId", orderInfo.getId());
 
         // 收银台实付金额、优惠金额
-        if ((StringUtils.isNotEmpty(cashierPayAmount) || StringUtils.isNotEmpty(cashierDiscountAmount)) && StringUtils.isNotEmpty(operator)) {
+        if ((StringUtil.isNotEmpty(cashierPayAmount) || StringUtil.isNotEmpty(cashierDiscountAmount)) && StringUtil.isNotEmpty(operator)) {
             OrderDto reqOrder = new OrderDto();
             reqOrder.setId(orderInfo.getId());
             reqOrder.setAmount(new BigDecimal(cashierPayAmount).add(new BigDecimal(cashierDiscountAmount)));
@@ -300,10 +314,10 @@ public class SettlementController extends BaseController {
                             // 优惠券，直接减去优惠券金额
                             if (couponInfo.getType().equals(CouponTypeEnum.COUPON.getKey())) {
                                 String useCode = couponService.useCoupon(couponId, orderDto.getUserId(), orderDto.getStoreId(), orderInfo.getId(), userCouponInfo.getAmount(), "核销");
-                                if (StringUtils.isNotEmpty(useCode)) {
+                                if (StringUtil.isNotEmpty(useCode)) {
                                     orderDto.setCouponId(couponId);
                                     orderDto.setDiscount(orderDto.getDiscount().add(userCouponInfo.getAmount()));
-                                    orderDto.setAmount(orderDto.getAmount().subtract(userCouponInfo.getAmount()));
+                                    orderService.updateOrder(orderDto);
                                 }
                             } else if(couponInfo.getType().equals(CouponTypeEnum.PRESTORE.getKey())) {
                                 // 预存卡，减去余额
@@ -311,11 +325,16 @@ public class SettlementController extends BaseController {
                                 if (orderDto.getPayAmount().compareTo(userCouponInfo.getBalance()) <= 0) {
                                     useCouponAmount = orderDto.getPayAmount();
                                 }
-                                String useCode = couponService.useCoupon(couponId, orderDto.getUserId(), orderDto.getStoreId(), orderInfo.getId(), useCouponAmount, "核销");
-                                if (StringUtils.isNotEmpty(useCode)) {
-                                    orderDto.setCouponId(couponId);
-                                    orderDto.setDiscount(orderDto.getDiscount().add(useCouponAmount));
-                                    orderDto.setPayAmount(orderDto.getPayAmount().subtract(useCouponAmount));
+                                try {
+                                    String useCode = couponService.useCoupon(couponId, orderDto.getUserId(), orderDto.getStoreId(), orderInfo.getId(), useCouponAmount, "核销");
+                                    if (StringUtil.isNotEmpty(useCode)) {
+                                        orderDto.setCouponId(couponId);
+                                        orderDto.setDiscount(orderDto.getDiscount().add(useCouponAmount));
+                                        orderDto.setPayAmount(orderDto.getPayAmount().subtract(useCouponAmount));
+                                        orderService.updateOrder(orderDto);
+                                    }
+                                } catch (BusinessCheckException e) {
+                                    return getFailureResult(201, e.getMessage());
                                 }
                             }
                         }
@@ -325,6 +344,7 @@ public class SettlementController extends BaseController {
         }
 
         // 生成支付订单
+        orderInfo = orderRepository.findOne(orderInfo.getId());
         String ip = CommonUtil.getIPFromHttpRequest(request);
         BigDecimal realPayAmount = orderInfo.getAmount().subtract(new BigDecimal(orderInfo.getDiscount().toString())).subtract(new BigDecimal(orderInfo.getPointAmount().toString()));
 
@@ -333,7 +353,7 @@ public class SettlementController extends BaseController {
 
         // 应付金额大于0才提交微信支付
         if (realPayAmount.compareTo(new BigDecimal("0")) > 0) {
-            if (payType.equals(PayTypeEnum.CASH.getKey()) && StringUtils.isNotEmpty(operator)) {
+            if (payType.equals(PayTypeEnum.CASH.getKey()) && StringUtil.isNotEmpty(operator)) {
                 // 收银台现金支付，更新为已支付
                 orderService.setOrderPayed(orderInfo.getId());
             } else if(payType.equals(PayTypeEnum.BALANCE.getKey())) {
@@ -347,12 +367,14 @@ public class SettlementController extends BaseController {
                 if (isPay) {
                     orderService.setOrderPayed(orderInfo.getId());
                 } else {
+                    // 取消订单
+                    orderService.cancelOrder(orderInfo.getId(), "");
                     errorMessage = PropertiesUtil.getResponseErrorMessageByCode(5001);
                 }
             } else {
                 BigDecimal wxPayAmount = realPayAmount.multiply(new BigDecimal("100"));
                 // 微信扫码支付，先返回不处理，后面拿到支付二维码再处理
-                if (payType.equals(PayTypeEnum.MICROPAY.getKey()) && StringUtils.isEmpty(authCode)) {
+                if (payType.equals(PayTypeEnum.MICROPAY.getKey()) && StringUtil.isEmpty(authCode)) {
                     Map<String, String> data = new HashMap<>();
                     paymentInfo = getSuccessResult(data);
                 } else {
@@ -381,8 +403,18 @@ public class SettlementController extends BaseController {
 
         ResponseObject responseObject = getSuccessResult(outParams);
 
-        if (StringUtils.isNotEmpty(errorMessage)) {
-            return getSuccessResult(errorMessage, responseObject.getData());
+        // 1分钟后发送小程序订阅消息
+        Date nowTime = new Date();
+        Date sendTime = new Date(nowTime.getTime() + 60000);
+        Map<String, Object> params = new HashMap<>();
+        String dateTime = DateUtil.formatDate(Calendar.getInstance().getTime(), "yyyy-MM-dd HH:mm");
+        params.put("time", dateTime);
+        params.put("orderSn", orderInfo.getOrderSn());
+        params.put("remark", "您的订单已生成，请留意~");
+        weixinService.sendSubscribeMessage(userInfo.getId(), userInfo.getOpenId(), WxMessageEnum.ORDER_CREATED.getKey(), "pages/order/index", params, sendTime);
+
+        if (StringUtil.isNotEmpty(errorMessage)) {
+            return getFailureResult(201, errorMessage);
         } else {
             return getSuccessResult(responseObject.getData());
         }

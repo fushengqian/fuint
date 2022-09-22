@@ -15,7 +15,7 @@ import com.fuint.base.shiro.util.ShiroUserHelper;
 import com.fuint.exception.BusinessCheckException;
 import com.fuint.application.ResponseObject;
 import com.fuint.application.BaseController;
-import org.apache.commons.lang.StringUtils;
+import com.fuint.util.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
@@ -100,7 +100,7 @@ public class CartController extends BaseController {
         }
 
         // 通过商品条码操作
-        if (StringUtils.isNotEmpty(skuNo)) {
+        if (StringUtil.isNotEmpty(skuNo)) {
             MtGoodsSku mtGoodsSku = goodsService.getSkuInfoBySkuNo(skuNo);
             if (mtGoodsSku != null) {
                 goodsId = mtGoodsSku.getGoodsId();
@@ -141,7 +141,7 @@ public class CartController extends BaseController {
         if (null == mtUser) {
             return getFailureResult(1001);
         }
-        if (StringUtils.isEmpty(cartIds)) {
+        if (StringUtil.isEmpty(cartIds)) {
             cartService.clearCart(mtUser.getId());
         } else {
             cartService.removeCart(cartIds);
@@ -190,7 +190,7 @@ public class CartController extends BaseController {
             param.put("EQ_userId", mtUser.getId().toString());
         }
 
-        if (StringUtils.isNotEmpty(cartIds)) {
+        if (StringUtil.isNotEmpty(cartIds)) {
             param.put("IN_id", cartIds);
         }
 

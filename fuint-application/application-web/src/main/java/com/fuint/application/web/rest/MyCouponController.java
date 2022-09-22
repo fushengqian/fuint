@@ -5,9 +5,7 @@ import com.fuint.application.dao.entities.MtUserCoupon;
 import com.fuint.application.service.coupon.CouponService;
 import com.fuint.application.service.usercoupon.UserCouponService;
 import com.fuint.application.service.token.TokenService;
-import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.fuint.util.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import com.fuint.application.BaseController;
@@ -28,8 +26,6 @@ import java.util.Map;
 @RestController
 @RequestMapping(value = "/rest/myCoupon")
 public class MyCouponController extends BaseController {
-
-    private static final Logger logger = LoggerFactory.getLogger(MyCouponController.class);
 
     /**
      * 卡券服务接口
@@ -61,7 +57,7 @@ public class MyCouponController extends BaseController {
         String status = request.getParameter("status") == null ? "" : request.getParameter("status");
         String type = request.getParameter("type") == null ? "" : request.getParameter("type");
 
-        if (StringUtils.isEmpty(token)) {
+        if (StringUtil.isEmpty(token)) {
             return getFailureResult(1001);
         }
 
@@ -91,7 +87,7 @@ public class MyCouponController extends BaseController {
         String token = request.getHeader("Access-Token");
         Integer userCouponId = param.get("id") == null ? 0 : Integer.parseInt(param.get("id").toString());
 
-        if (StringUtils.isEmpty(token)) {
+        if (StringUtil.isEmpty(token)) {
             return getFailureResult(1001);
         }
 

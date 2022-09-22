@@ -1,5 +1,6 @@
 package com.fuint.base.service.entities;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -7,6 +8,7 @@ import java.util.List;
  *
  * Created by FSQ
  * Contact wx fsq_better
+ * Site https://www.fuint.cn
  */
 public class TreeNode {
 
@@ -21,9 +23,19 @@ public class TreeNode {
     private String name;
 
     /**
+     * 菜单名称(字母)
+     */
+    private String ename;
+
+    /**
      * tree 节点是否打开
      */
     private boolean open;
+
+    /**
+     * 是否菜单
+     * */
+    private int isMenu;
 
     /**
      * tree 节点是否选中
@@ -36,9 +48,19 @@ public class TreeNode {
     private String url;
 
     /**
+     * path
+     */
+    private String path;
+
+    /**
+     * 权限标识
+     */
+    private String perms;
+
+    /**
      * 子菜单
      */
-    private List<TreeNode> childrens;
+    private List<TreeNode> childrens = new ArrayList<TreeNode>();
 
     /**
      * 菜单级别
@@ -54,6 +76,21 @@ public class TreeNode {
      * 图标
      */
     private String icon;
+
+    /**
+     * 新图标
+     */
+    private String newIcon;
+
+    /**
+     * 排序
+     * */
+    private String sort;
+
+    /**
+     * 状态
+     * */
+    private String status;
 
     public long getId() {
         return id;
@@ -71,9 +108,24 @@ public class TreeNode {
         this.name = name;
     }
 
+    public String getEname() {
+        return ename;
+    }
+
+    public void setEname(String ename) {
+        this.ename = ename;
+    }
 
     public boolean isOpen() {
         return open;
+    }
+
+    public int getIsMenu() {
+        return isMenu;
+    }
+
+    public void setIsMenu(int isMenu) {
+        this.isMenu = isMenu;
     }
 
     public void setOpen(boolean open) {
@@ -120,11 +172,51 @@ public class TreeNode {
         this.url = url;
     }
 
+    public String getPath() {
+        return path;
+    }
+
+    public void setPath(String path) {
+        this.path = path;
+    }
+
+    public String getPerms() {
+        return perms;
+    }
+
+    public void setPerms(String perms) {
+        this.perms = perms;
+    }
+
     public String getIcon() {
         return icon;
     }
 
     public void setIcon(String icon) {
         this.icon = icon;
+    }
+
+    public String getNewIcon() {
+        return newIcon;
+    }
+
+    public void setNewIcon(String newIcon) {
+        this.newIcon = newIcon;
+    }
+
+    public String getSort() {
+        return sort;
+    }
+
+    public void setSort(String sort) {
+        this.sort = sort;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 }

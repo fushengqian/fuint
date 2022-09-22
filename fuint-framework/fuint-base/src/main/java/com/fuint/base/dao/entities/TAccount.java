@@ -12,7 +12,7 @@ import javax.persistence.*;
 /**
  * 账户信息实体类
  *
- * @author fsq
+ * @author FSQ
  * @version $Id: TAccount.java
  */
 @Entity

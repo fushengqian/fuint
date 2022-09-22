@@ -6,7 +6,10 @@ import com.fuint.application.dao.repositories.MtUserRepository;
 import com.fuint.application.dto.ConfirmLogDto;
 import com.fuint.application.dto.PointDto;
 import com.fuint.application.enums.StatusEnum;
+import com.fuint.application.enums.WxMessageEnum;
 import com.fuint.application.service.member.MemberService;
+import com.fuint.application.service.weixin.WeixinService;
+import com.fuint.application.util.DateUtil;
 import com.fuint.base.dao.pagination.PaginationRequest;
 import com.fuint.base.dao.pagination.PaginationResponse;
 import com.fuint.exception.BusinessCheckException;
@@ -19,9 +22,8 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+
+import java.util.*;
 
 /**
  * 积分管理业务实现类
@@ -42,6 +44,9 @@ public class PointServiceImpl implements PointService {
 
     @Autowired
     private MemberService memberService;
+
+    @Autowired
+    private WeixinService weixinService;
 
     /**
      * 分页查询积分列表
@@ -88,7 +93,7 @@ public class PointServiceImpl implements PointService {
      */
     @Override
     @Transactional
-    public void addPoint(MtPoint mtPoint) {
+    public void addPoint(MtPoint mtPoint) throws BusinessCheckException {
         if (mtPoint.getUserId() < 0) {
            return;
         }
@@ -113,6 +118,18 @@ public class PointServiceImpl implements PointService {
 
         userRepository.save(user);
         pointRepository.save(mtPoint);
+
+        // 发送小程序订阅消息
+        Date nowTime = new Date();
+        Date sendTime = new Date(nowTime.getTime() + 60000);
+        Map<String, Object> params = new HashMap<>();
+        String dateTime = DateUtil.formatDate(Calendar.getInstance().getTime(), "yyyy-MM-dd HH:mm");
+        params.put("amount", mtPoint.getAmount());
+        params.put("time", dateTime);
+        params.put("remark", "您的积分发生了变动，请留意~");
+        weixinService.sendSubscribeMessage(mtPoint.getUserId(), user.getOpenId(), WxMessageEnum.POINT_CHANGE.getKey(), "pages/user/index", params, sendTime);
+
+        return;
     }
 
     /**

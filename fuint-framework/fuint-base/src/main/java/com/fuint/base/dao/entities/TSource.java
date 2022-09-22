@@ -6,7 +6,7 @@ import javax.persistence.*;
 /**
  * 菜单实体类
  *
- * @author Harrison Han
+ * @author FSQ
  * @version $Id: TSource.java
  */
 @Entity
@@ -18,6 +18,7 @@ public class TSource implements java.io.Serializable {
      * UUID
      */
     private static final long serialVersionUID = -5175246456181078279L;
+
     /**
      * ID
      */
@@ -31,11 +32,25 @@ public class TSource implements java.io.Serializable {
      */
     @Column(name = "source_name")
     private String name;
+
+    /**
+     * 菜单名称(字母)
+     */
+    @Column(name = "ename")
+    private String ename;
+
     /**
      * 菜单地址
      */
     @Column(name = "source_code")
     private String sourceCode;
+
+    /**
+     * 菜单路径
+     */
+    @Column(name = "path")
+    private String path;
+
     /**
      * 菜单级别
      */
@@ -87,6 +102,12 @@ public class TSource implements java.io.Serializable {
     @Column
     private String icon;
 
+    /**
+     * 新图标
+     */
+    @Column(name = "new_icon")
+    private String newIcon;
+
     public String getStatus() {
         return status;
     }
@@ -117,7 +138,6 @@ public class TSource implements java.io.Serializable {
         this.sourceCode = sourceCode;
     }
 
-
     public String getDescription() {
         return description;
     }
@@ -140,6 +160,22 @@ public class TSource implements java.io.Serializable {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getEname() {
+        return ename;
+    }
+
+    public void setEname(String ename) {
+        this.ename = ename;
+    }
+
+    public String getPath() {
+        return this.path;
+    }
+
+    public void setPath(String path) {
+        this.path = path;
     }
 
     public Integer getLevel() {
@@ -166,7 +202,6 @@ public class TSource implements java.io.Serializable {
         this.parent = parent;
     }
 
-
     public Set<TDutySource> gettDutySources() {
         return tDutySources;
     }
@@ -189,5 +224,13 @@ public class TSource implements java.io.Serializable {
 
     public void setIcon(String icon) {
         this.icon = icon;
+    }
+
+    public String getNewIcon() {
+        return newIcon;
+    }
+
+    public void setNewIcon(String newIcon) {
+        this.newIcon = newIcon;
     }
 }

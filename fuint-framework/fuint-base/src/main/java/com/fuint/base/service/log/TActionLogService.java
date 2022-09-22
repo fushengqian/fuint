@@ -7,8 +7,9 @@ import com.fuint.base.dao.pagination.PaginationResponse;
 /**
  * 日志服务接口
  *
- * @author fsq
- * @version $Id: TActionLogService.java
+ * Created by FSQ
+ * Contact wx fsq_better
+ * Site https://www.fuint.cn
  */
 public interface TActionLogService {
 

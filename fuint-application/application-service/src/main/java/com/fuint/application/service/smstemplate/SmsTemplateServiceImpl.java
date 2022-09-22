@@ -1,24 +1,18 @@
 package com.fuint.application.service.smstemplate;
 
+import com.fuint.application.enums.StatusEnum;
 import com.fuint.base.annoation.OperationServiceLog;
 import com.fuint.base.dao.pagination.PaginationRequest;
 import com.fuint.base.dao.pagination.PaginationResponse;
-import com.fuint.base.shiro.util.ShiroUserHelper;
 import com.fuint.application.dao.entities.MtSmsTemplate;
 import com.fuint.application.dao.repositories.MtSmsTemplateRepository;
 import com.fuint.application.dto.MtSmsTemplateDto;
 import com.fuint.exception.BusinessCheckException;
-import com.fuint.exception.BusinessRuntimeException;
-import com.fuint.application.enums.StatusEnum;
 import org.apache.commons.collections.MapUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -30,8 +24,6 @@ import java.util.*;
 @Service
 public class SmsTemplateServiceImpl implements SmsTemplateService {
 
-    private static final Logger log = LoggerFactory.getLogger(SmsTemplateServiceImpl.class);
-
     @Autowired
     private MtSmsTemplateRepository smsTemplateRepository;
 
@@ -42,44 +34,37 @@ public class SmsTemplateServiceImpl implements SmsTemplateService {
      * @return
      */
     @Override
-    public PaginationResponse<MtSmsTemplate> querySmsTemplateListByPagination(PaginationRequest paginationRequest) throws BusinessCheckException {
+    public PaginationResponse<MtSmsTemplate> querySmsTemplateListByPagination(PaginationRequest paginationRequest) {
         paginationRequest.setSortColumn(new String[]{"id asc", "status asc"});
         PaginationResponse<MtSmsTemplate> paginationResponse = smsTemplateRepository.findResultsByPagination(paginationRequest);
         return paginationResponse;
     }
 
     /**
-     * 添加模板信息
+     * 保存模板信息
      *
      * @param mtSmsTemplateDto
      * @throws BusinessCheckException
      */
     @Override
-    @OperationServiceLog(description = "编辑短信模板")
-    public MtSmsTemplate saveSmsTemplate(MtSmsTemplateDto mtSmsTemplateDto) throws BusinessCheckException {
+    @OperationServiceLog(description = "保存短信模板")
+    public MtSmsTemplate saveSmsTemplate(MtSmsTemplateDto mtSmsTemplateDto) {
         MtSmsTemplate mtSmsTemplate = new MtSmsTemplate();
 
-        if (null != mtSmsTemplateDto.getId()) {
+        if (mtSmsTemplateDto.getId() == null) {
+            mtSmsTemplate.setCreateTime(new Date());
+            mtSmsTemplate.setUpdateTime(new Date());
+        } else {
             mtSmsTemplate.setId(mtSmsTemplateDto.getId());
+            mtSmsTemplate.setUpdateTime(new Date());
         }
 
         mtSmsTemplate.setCode(mtSmsTemplateDto.getCode());
         mtSmsTemplate.setName(mtSmsTemplateDto.getName());
         mtSmsTemplate.setUname(mtSmsTemplateDto.getUname());
         mtSmsTemplate.setContent(mtSmsTemplateDto.getContent());
-        mtSmsTemplate.setStatus(StatusEnum.ENABLED.getKey());
-        String operator = ShiroUserHelper.getCurrentShiroUser().getAcctName();
-        mtSmsTemplate.setOperator(operator);
-
-        try {
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            String dt = sdf.format(new Date());
-            Date addtime = sdf.parse(dt);
-            mtSmsTemplate.setUpdateTime(addtime);
-            mtSmsTemplate.setCreateTime(addtime);
-        } catch (ParseException e) {
-            throw new BusinessRuntimeException("日期转换异常" + e.getMessage());
-        }
+        mtSmsTemplate.setStatus(mtSmsTemplateDto.getStatus());
+        mtSmsTemplate.setOperator(mtSmsTemplate.getOperator());
 
         mtSmsTemplate = smsTemplateRepository.save(mtSmsTemplate);
 
@@ -87,18 +72,39 @@ public class SmsTemplateServiceImpl implements SmsTemplateService {
     }
 
     /**
-     * 根据D获取信息
+     * 根据ID删除数据
      *
-     * @param id 模板ID
+     * @param id       模板ID
+     * @param operator 操作人
      * @throws BusinessCheckException
      */
     @Override
-    public MtSmsTemplate querySmsTemplateById(Integer id) throws BusinessCheckException {
+    @OperationServiceLog(description = "删除短信模板")
+    public void deleteTemplate(Integer id, String operator) {
+        MtSmsTemplate MtTemplate = smsTemplateRepository.findOne(id);
+        if (null == MtTemplate) {
+            return;
+        }
+
+        MtTemplate.setStatus(StatusEnum.DISABLE.getKey());
+        MtTemplate.setUpdateTime(new Date());
+
+        smsTemplateRepository.save(MtTemplate);
+    }
+
+    /**
+     * 根据D获取信息
+     *
+     * @param  id 模板ID
+     * @throws BusinessCheckException
+     */
+    @Override
+    public MtSmsTemplate querySmsTemplateById(Integer id) {
         return smsTemplateRepository.findOne(id);
     }
 
     @Override
-    public List<MtSmsTemplate> querySmsTemplateByParams(Map<String, Object> params) throws BusinessCheckException {
+    public List<MtSmsTemplate> querySmsTemplateByParams(Map<String, Object> params) {
         if (MapUtils.isEmpty(params)) {
             params = new HashMap<>();
         }

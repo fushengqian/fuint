@@ -3,7 +3,9 @@ package com.fuint.exception;
 /**
  * Exception for modifying resource on an unexpected status
  *
- * @author Harrison han
+ * Created by FSQ
+ * Contact wx fsq_better
+ * Site https://www.fuint.cn
  */
 public class ConflictException extends HttpStatusException {
 

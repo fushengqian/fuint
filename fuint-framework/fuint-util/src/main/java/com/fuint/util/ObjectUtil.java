@@ -1,6 +1,5 @@
 package com.fuint.util;
 
-
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -12,8 +11,9 @@ import java.lang.reflect.Method;
  * 这个类中的每个方法都可以“安全”地处理<code>null</code>，而不会抛出<code>NullPointerException</code>。
  * </p>
  *
- * @author Harrison han
- * @version 1.0
+ * Created by FSQ
+ * Contact wx fsq_better
+ * Site https://www.fuint.cn
  */
 public class ObjectUtil {
     /* ============================================================================ */

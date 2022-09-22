@@ -3,10 +3,12 @@ package com.fuint.application.service.member;
 import com.fuint.application.dao.entities.MtStaff;
 import com.fuint.application.dao.entities.MtUserGrade;
 import com.fuint.application.dao.repositories.MtUserGradeRepository;
+import com.fuint.application.enums.MemberSourceEnum;
 import com.fuint.application.service.opengift.OpenGiftService;
 import com.fuint.application.service.staff.StaffService;
 import com.fuint.application.service.usergrade.UserGradeService;
 import com.fuint.application.util.CommonUtil;
+import com.fuint.application.util.SeqUtil;
 import com.fuint.base.annoation.OperationServiceLog;
 import com.fuint.base.dao.entities.TAccount;
 import com.fuint.base.dao.pagination.PaginationRequest;
@@ -20,7 +22,7 @@ import com.fuint.application.dao.repositories.MtUserRepository;
 import com.fuint.application.enums.StatusEnum;
 import com.fuint.application.service.sms.SendSmsInterface;
 import org.apache.commons.collections.MapUtils;
-import org.apache.commons.lang.StringUtils;
+import com.fuint.util.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
@@ -97,7 +99,7 @@ public class MemberServiceImpl implements MemberService {
                         MtStaff staff = staffService.queryStaffById(account.getStaffId());
                         if (staff != null) {
                             mtUser = this.queryMemberById(staff.getUserId());
-                            if (mtUser.getStoreId() == null || mtUser.getStoreId() <= 0) {
+                            if (mtUser != null && (mtUser.getStoreId() == null || mtUser.getStoreId() <= 0)) {
                                 mtUser.setStoreId(staff.getStoreId());
                                 userRepository.save(mtUser);
                             }
@@ -118,7 +120,9 @@ public class MemberServiceImpl implements MemberService {
      */
     @Override
     public PaginationResponse<MtUser> queryMemberListByPagination(PaginationRequest paginationRequest) {
-        paginationRequest.setSortColumn(new String[]{"updateTime desc", "createTime desc"});
+        if (paginationRequest.getSortColumn() == null) {
+            paginationRequest.setSortColumn(new String[]{"updateTime desc", "createTime desc"});
+        }
         PaginationResponse<MtUser> paginationResponse = userRepository.findResultsByPagination(paginationRequest);
         return paginationResponse;
     }
@@ -132,12 +136,21 @@ public class MemberServiceImpl implements MemberService {
     @Override
     @OperationServiceLog(description = "添加会员")
     public MtUser addMember(MtUser mtUser) throws BusinessCheckException {
-        MtUser userInfo = this.queryMemberByMobile(mtUser.getMobile());
-        if (userInfo != null) {
-            return userInfo;
+        // 手机号已存在
+        if (StringUtil.isNotEmpty(mtUser.getMobile())) {
+            MtUser userInfo = this.queryMemberByMobile(mtUser.getMobile());
+            if (userInfo != null) {
+                return userInfo;
+            }
         }
 
-        if (StringUtils.isEmpty(mtUser.getGradeId())) {
+        // 会员名称已存在
+        List<MtUser> userList = userRepository.queryMemberByName(mtUser.getName());
+        if (userList.size() > 0) {
+            return null;
+        }
+
+        if (StringUtil.isEmpty(mtUser.getGradeId())) {
             MtUserGrade grade = userGradeService.getInitUserGrade();
             mtUser.setGradeId(grade.getId()+"");
         }
@@ -147,7 +160,7 @@ public class MemberServiceImpl implements MemberService {
         if (mtUser.getPoint() == null || mtUser.getPoint() < 1) {
             mtUser.setPoint(0);
         }
-        if (StringUtils.isEmpty(mtUser.getIdcard())) {
+        if (StringUtil.isEmpty(mtUser.getIdcard())) {
             mtUser.setIdcard("");
         }
         mtUser.setSex(mtUser.getSex());
@@ -160,9 +173,25 @@ public class MemberServiceImpl implements MemberService {
             mtUser.setStoreId(0);
         }
 
-        userRepository.save(mtUser);
+        // 密码加密
+        if (mtUser.getPassword() != null && StringUtil.isNotEmpty(mtUser.getPassword())) {
+            String salt = SeqUtil.getRandomLetter(4);
+            String password = CommonUtil.createPassword(mtUser.getPassword(), salt);
+            mtUser.setPassword(password);
+            mtUser.setSalt(salt);
+            mtUser.setSource(MemberSourceEnum.REGISTER_BY_ACCOUNT.getKey());
+        }
 
-        mtUser = this.queryMemberByMobile(mtUser.getMobile());
+        if (mtUser.getSource() == null || StringUtil.isEmpty(mtUser.getSource())) {
+            mtUser.setSource(MemberSourceEnum.BACKEND_ADD.getKey());
+        }
+
+        mtUser = userRepository.save(mtUser);
+        if (mtUser == null) {
+           return null;
+        }
+
+        mtUser = this.queryMemberById(mtUser.getId());
 
         // 开卡赠礼
         openGiftService.openGift(mtUser.getId(), Integer.parseInt(mtUser.getGradeId()));
@@ -197,7 +226,7 @@ public class MemberServiceImpl implements MemberService {
         mtUser.setUpdateTime(new Date());
 
         // 检查会员号是否重复
-        if (StringUtils.isNotEmpty(mtUser.getUserNo())) {
+        if (StringUtil.isNotEmpty(mtUser.getUserNo())) {
             List<MtUser> userList = userRepository.findMembersByUserNo(mtUser.getUserNo());
             if (userList.size() > 0) {
                 for(MtUser user: userList) {
@@ -237,6 +266,7 @@ public class MemberServiceImpl implements MemberService {
         mtUser.setIdcard("");
         mtUser.setStatus(StatusEnum.ENABLED.getKey());
         mtUser.setStoreId(0);
+        mtUser.setSource(MemberSourceEnum.MOBILE_LOGIN.getKey());
 
         userRepository.save(mtUser);
 
@@ -256,6 +286,9 @@ public class MemberServiceImpl implements MemberService {
      */
     @Override
     public MtUser queryMemberByMobile(String mobile) {
+        if (mobile == null || StringUtil.isEmpty(mobile)) {
+            return null;
+        }
         List<MtUser> mtUser = userRepository.queryMemberByMobile(mobile);
         if (mtUser.size() > 0) {
             return mtUser.get(0);
@@ -294,6 +327,23 @@ public class MemberServiceImpl implements MemberService {
     }
 
     /**
+     * 根据会员名称获取会员信息
+     *
+     * @param name 会员名称
+     * @throws BusinessCheckException
+     */
+    @Override
+    public MtUser queryMemberByName(String name) {
+        if (StringUtil.isNotEmpty(name)) {
+            List<MtUser> userList = userRepository.queryMemberByName(name);
+            if (userList.size() == 1) {
+                return userList.get(0);
+            }
+        }
+        return null;
+    }
+
+    /**
      * 根据openId获取会员信息(为空就注册)
      *
      * @param openId
@@ -303,18 +353,18 @@ public class MemberServiceImpl implements MemberService {
     public MtUser queryMemberByOpenId(String openId, JSONObject userInfo) throws BusinessCheckException {
         MtUser user = userRepository.queryMemberByOpenId(openId);
 
-        String avatar = StringUtils.isNotEmpty(userInfo.getString("avatarUrl")) ? userInfo.getString("avatarUrl") : "";
-        String gender = StringUtils.isNotEmpty(userInfo.getString("gender")) ? userInfo.getString("gender") : "1";
-        String country = StringUtils.isNotEmpty(userInfo.getString("country")) ? userInfo.getString("country") : "";
-        String province = StringUtils.isNotEmpty(userInfo.getString("province")) ? userInfo.getString("province") : "";
-        String city = StringUtils.isNotEmpty(userInfo.getString("city")) ? userInfo.getString("city") : "";
+        String avatar = StringUtil.isNotEmpty(userInfo.getString("avatarUrl")) ? userInfo.getString("avatarUrl") : "";
+        String gender = StringUtil.isNotEmpty(userInfo.getString("gender")) ? userInfo.getString("gender") : "1";
+        String country = StringUtil.isNotEmpty(userInfo.getString("country")) ? userInfo.getString("country") : "";
+        String province = StringUtil.isNotEmpty(userInfo.getString("province")) ? userInfo.getString("province") : "";
+        String city = StringUtil.isNotEmpty(userInfo.getString("city")) ? userInfo.getString("city") : "";
 
         if (user == null) {
             String nickName = userInfo.getString("nickName");
-            String mobile = StringUtils.isNotEmpty(userInfo.getString("phone")) ? userInfo.getString("phone") : "";
+            String mobile = StringUtil.isNotEmpty(userInfo.getString("phone")) ? userInfo.getString("phone") : "";
 
             MtUser mtUser = new MtUser();
-            if (StringUtils.isNotEmpty(mobile)) {
+            if (StringUtil.isNotEmpty(mobile)) {
                 MtUser mtUserMobile = this.queryMemberByMobile(mobile);
                 if (mtUserMobile != null) {
                     mtUser = mtUserMobile;
@@ -322,7 +372,7 @@ public class MemberServiceImpl implements MemberService {
             }
 
             // 昵称为空，用手机号
-            if (StringUtils.isEmpty(nickName) && StringUtils.isNotEmpty(mobile)) {
+            if (StringUtil.isEmpty(nickName) && StringUtil.isNotEmpty(mobile)) {
                 nickName = mobile.replaceAll("(\\d{3})\\d{4}(\\d{4})","$1****$2");
             }
 
@@ -346,6 +396,7 @@ public class MemberServiceImpl implements MemberService {
             mtUser.setAddress(country + province + city);
             mtUser.setSex(Integer.parseInt(gender));
             mtUser.setStoreId(0);
+            mtUser.setSource(MemberSourceEnum.WECHAT_LOGIN.getKey());
             userRepository.save(mtUser);
             user = userRepository.queryMemberByOpenId(openId);
 
@@ -358,29 +409,29 @@ public class MemberServiceImpl implements MemberService {
             }
 
             // 更新昵称和手机号码
-            String nickName = StringUtils.isNotEmpty(userInfo.getString("nickName")) ? CommonUtil.replaceXSS(userInfo.getString("nickName")) : "";
+            String nickName = StringUtil.isNotEmpty(userInfo.getString("nickName")) ? CommonUtil.replaceXSS(userInfo.getString("nickName")) : "";
             String name = user.getName();
-            String mobile = StringUtils.isNotEmpty(userInfo.getString("phone")) ? CommonUtil.replaceXSS(userInfo.getString("phone")) : "";
-            if (StringUtils.isEmpty(name)) {
+            String mobile = StringUtil.isNotEmpty(userInfo.getString("phone")) ? CommonUtil.replaceXSS(userInfo.getString("phone")) : "";
+            if (StringUtil.isEmpty(name)) {
                 nickName = CommonUtil.replaceXSS(userInfo.getString("nickName"));
-                if (StringUtils.isEmpty(nickName) && StringUtils.isNotEmpty(mobile)) {
+                if (StringUtil.isEmpty(nickName) && StringUtil.isNotEmpty(mobile)) {
                     nickName = mobile.replaceAll("(\\d{3})\\d{4}(\\d{4})","$1****$2");
                 }
             }
 
-            if (StringUtils.isEmpty(user.getUserNo())) {
+            if (StringUtil.isEmpty(user.getUserNo())) {
                 user.setUserNo(CommonUtil.createUserNo());
             }
-            if (StringUtils.isNotEmpty(nickName)) {
+            if (StringUtil.isNotEmpty(nickName)) {
                 user.setName(nickName);
             }
-            if (StringUtils.isNotEmpty(mobile)) {
+            if (StringUtil.isNotEmpty(mobile)) {
                 user.setMobile(mobile);
             }
-            if (StringUtils.isNotEmpty(avatar)) {
+            if (StringUtil.isNotEmpty(avatar)) {
                 user.setAvatar(avatar);
             }
-            if (StringUtils.isEmpty(user.getAddress())) {
+            if (StringUtil.isEmpty(user.getAddress())) {
                 user.setAddress(country + province + city);
             }
             user.setSex(Integer.parseInt(gender));

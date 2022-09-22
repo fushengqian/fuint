@@ -24,11 +24,13 @@ import com.fuint.application.dao.entities.*;
 import com.fuint.application.dao.repositories.MtUserCouponRepository;
 import com.fuint.application.BaseService;
 import org.apache.commons.collections.map.HashedMap;
-import org.apache.commons.lang.StringUtils;
+import com.fuint.util.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
@@ -102,12 +104,6 @@ public class UserCouponServiceImpl extends BaseService implements UserCouponServ
             throw new BusinessCheckException(Message.COUPON_TYPE_ERROR);
         }
 
-        // 判断卡券是否有效
-        boolean isCouponEffective = couponService.isCouponEffective(couponInfo);
-        if (!isCouponEffective) {
-            throw new BusinessCheckException(Message.COUPON_IS_EXPIRE);
-        }
-
         MtCouponGroup groupInfo = couponGroupService.queryCouponGroupById(couponInfo.getGroupId());
         MtUser userInfo = memberService.queryMemberById(userId);
         if (null == userInfo) {
@@ -147,6 +143,7 @@ public class UserCouponServiceImpl extends BaseService implements UserCouponServ
             userCoupon.setStatus(UserCouponStatusEnum.UNUSED.getKey());
             userCoupon.setCreateTime(new Date());
             userCoupon.setUpdateTime(new Date());
+            userCoupon.setExpireime(couponInfo.getEndTime());
 
             // 12位随机数
             StringBuffer code = new StringBuffer();
@@ -184,7 +181,7 @@ public class UserCouponServiceImpl extends BaseService implements UserCouponServ
         String param = paramMap.get("param") == null ? "" : paramMap.get("param").toString();
         Integer orderId = paramMap.get("orderId") == null ? 0 : Integer.parseInt(paramMap.get("orderId").toString());
 
-        if (StringUtils.isEmpty(param) || couponId <= 0 || userId <= 0) {
+        if (StringUtil.isEmpty(param) || couponId <= 0 || userId <= 0) {
             throw new BusinessCheckException(Message.PARAM_ERROR);
         }
 
@@ -202,13 +199,13 @@ public class UserCouponServiceImpl extends BaseService implements UserCouponServ
 
         for (int i = 0; i < paramArr.length; i++) {
             String item = paramArr[i];
-            if (StringUtils.isNotEmpty(item)) {
+            if (StringUtil.isNotEmpty(item)) {
                 String buyItem = paramArr[i]; // 100_200_1
                 String[] buyItemArr = buyItem.split("_");
-                if (StringUtils.isNotEmpty(buyItemArr[2])) {
+                if (StringUtil.isNotEmpty(buyItemArr[2])) {
                     Integer numInt = Integer.parseInt(buyItemArr[2]);
                     for (int j = 1; j <= numInt; j++) {
-                        if (StringUtils.isNotEmpty(buyItemArr[1])) {
+                        if (StringUtil.isNotEmpty(buyItemArr[1])) {
                             this.preStoreItem(couponInfo, userInfo, orderId, new BigDecimal(buyItemArr[1]));
                         }
                     }
@@ -249,14 +246,14 @@ public class UserCouponServiceImpl extends BaseService implements UserCouponServ
         String code = paramMap.get("code") == null ? "" : paramMap.get("code").toString();
 
         // 处理已失效
-        if (pageNumber <= 1 && StringUtils.isNotEmpty(userId)) {
+        if (pageNumber <= 1 && StringUtil.isNotEmpty(userId)) {
             List<String> statusList = Arrays.asList(UserCouponStatusEnum.UNUSED.getKey());
             List<MtUserCoupon> data = userCouponRepository.getUserCouponList(Integer.parseInt(userId), statusList);
             for (MtUserCoupon uc : data) {
                 MtCoupon coupon = couponService.queryCouponById(uc.getCouponId());
                 // 已过期
                 if (coupon.getEndTime().before(new Date())) {
-                    uc.setStatus(StatusEnum.EXPIRED.getKey());
+                    uc.setStatus(UserCouponStatusEnum.EXPIRE.getKey());
                     uc.setUpdateTime(new Date());
                     userCouponRepository.save(uc);
                 }
@@ -274,25 +271,25 @@ public class UserCouponServiceImpl extends BaseService implements UserCouponServ
         paginationRequest.setPageSize(pageSize);
 
         Map<String, Object> searchParams = new HashedMap();
-        if (StringUtils.isNotEmpty(status)) {
+        if (StringUtil.isNotEmpty(status)) {
             searchParams.put("EQ_status", status);
         }
-        if (StringUtils.isNotEmpty(userId)) {
+        if (StringUtil.isNotEmpty(userId)) {
             searchParams.put("EQ_userId", userId);
         }
-        if (StringUtils.isNotEmpty(mobile)) {
+        if (StringUtil.isNotEmpty(mobile)) {
             searchParams.put("EQ_mobile", mobile);
         }
-        if (StringUtils.isNotEmpty(type)) {
+        if (StringUtil.isNotEmpty(type)) {
             searchParams.put("EQ_type", type);
         }
-        if (StringUtils.isNotEmpty(storeId)) {
+        if (StringUtil.isNotEmpty(storeId)) {
             searchParams.put("EQ_storeId", storeId);
         }
-        if (StringUtils.isNotEmpty(couponId)) {
+        if (StringUtil.isNotEmpty(couponId)) {
             searchParams.put("EQ_couponId", couponId);
         }
-        if (StringUtils.isNotEmpty(code)) {
+        if (StringUtil.isNotEmpty(code)) {
             searchParams.put("EQ_code", code);
         }
 
@@ -340,7 +337,7 @@ public class UserCouponServiceImpl extends BaseService implements UserCouponServ
 
                 // 优惠券tips
                 if (couponInfo.getType().equals(CouponTypeEnum.COUPON.getKey())) {
-                    if (StringUtils.isNotEmpty(couponInfo.getOutRule()) && Integer.parseInt(couponInfo.getOutRule()) > 0) {
+                    if (StringUtil.isNotEmpty(couponInfo.getOutRule()) && Integer.parseInt(couponInfo.getOutRule()) > 0) {
                         tips = "满" + couponInfo.getOutRule() + "可用";
                     } else {
                         tips = "无门槛券";
@@ -404,7 +401,7 @@ public class UserCouponServiceImpl extends BaseService implements UserCouponServ
                      }
                  } else if(isEffective && couponInfo.getType().equals(CouponTypeEnum.COUPON.getKey())) {
                      // 2.无门槛的优惠券可用
-                     if (StringUtils.isEmpty(couponInfo.getOutRule())) {
+                     if (StringUtil.isEmpty(couponInfo.getOutRule())) {
                          couponDto.setType(CouponTypeEnum.COUPON.getValue());
                          dataList.add(couponDto);
                      }
@@ -437,6 +434,18 @@ public class UserCouponServiceImpl extends BaseService implements UserCouponServ
     }
 
     /**
+     * 根据条件查询会员卡券
+     * */
+    @Override
+    public List<MtUserCoupon> getUserCouponListByParams(Map<String, Object> params) {
+        Specification<MtUserCoupon> specification = userCouponRepository.buildSpecification(params);
+        Sort sort = new Sort(Sort.Direction.ASC, "createTime");
+        List<MtUserCoupon> result = userCouponRepository.findAll(specification, sort);
+
+        return result;
+    }
+
+    /**
      * 预存单张
      * @param couponInfo
      * @param userInfo
@@ -452,6 +461,7 @@ public class UserCouponServiceImpl extends BaseService implements UserCouponServ
         userCoupon.setStatus(UserCouponStatusEnum.UNUSED.getKey());
         userCoupon.setCreateTime(new Date());
         userCoupon.setUpdateTime(new Date());
+        userCoupon.setExpireime(couponInfo.getEndTime());
 
         userCoupon.setOrderId(orderId);
         userCoupon.setAmount(amount);

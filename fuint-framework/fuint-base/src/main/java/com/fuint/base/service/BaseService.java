@@ -1,16 +1,13 @@
-/**
- * fuint.cn Inc.
- * Copyright (c) 2019-2022 All Rights Reserved.
- */
 package com.fuint.base.service;
 
 import java.util.Set;
 
 /**
  * 基础接口服务类
- * 
- * @author fsq
- * @version $Id: BaseService.java
+ *
+ * Created by FSQ
+ * Contact wx fsq_better
+ * Site https://www.fuint.cn
  */
 public interface BaseService {
 
@@ -21,5 +18,4 @@ public interface BaseService {
      * @return
      */
     Set<String> findRoles(Long accountId);
-
 }

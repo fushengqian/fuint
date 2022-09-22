@@ -11,8 +11,9 @@ import org.springframework.transaction.annotation.Transactional;
 /**
  * 日志服务实现类
  *
- * @author fsq
- * @version $Id: TActionLogServiceImpl.java
+ * Created by FSQ
+ * Contact wx fsq_better
+ * Site https://www.fuint.cn
  */
 @Service("sActionLogService")
 public class TActionLogServiceImpl implements TActionLogService {

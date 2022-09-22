@@ -154,11 +154,17 @@
                         <div class="col-md-3">
                             <input type="text" id="price" class="form-control" name="price" value="${goods.price}" placeholder="商品价格" rangelength="1,100">
                         </div>
+                        <div class="col-md-2">
+                            <span class="form-tips">单位：元</span>
+                        </div>
                     </div>
                     <div class="form-group">
                         <label class="col-md-3 control-label"><span class="requiredstar">*</span>划线价格：</label>
                         <div class="col-md-3">
                             <input type="text" id="linePrice" class="form-control" name="linePrice" value="${goods.linePrice}" placeholder="划线价格，长度1-100" rangelength="1, 100">
+                        </div>
+                        <div class="col-md-2">
+                            <span class="form-tips">单位：元</span>
                         </div>
                     </div>
                     <!--单规格 start-->
@@ -233,12 +239,12 @@
         </div>
     </div>
 </div>
-<script src="<@sp.static/>/assets/plugins/ueditor/ueditor.config.js?v=1.8.1" type="text/javascript" charset="UTF-8"></script>
-<script src="<@sp.static/>/assets/plugins/ueditor/ueditor.all.js?v=1.8.1" type="text/javascript" charset="UTF-8"></script>
-<script src="<@sp.static/>/assets/plugins/ueditor/lang/zh-cn/zh-cn.js?v=1.8.1" type="text/javascript" charset="UTF-8"></script>
-<script src="<@sp.static/>/assets/plugins/skuTable/layui/layui.js?v=1.8.1" charset="UTF-8"></script>
-<script src="<@sp.static/>/assets/plugins/skuTable/skuTable.js?v=1.8.1" charset="UTF-8"></script>
-<link rel="stylesheet" type="text/css" href="<@sp.static/>/assets/plugins/skuTable/layui/css/layui.css?v=1.8.1" charset="UTF-8"/>
+<script src="<@sp.static/>/assets/plugins/ueditor/ueditor.config.js?v=1.8.6" type="text/javascript" charset="UTF-8"></script>
+<script src="<@sp.static/>/assets/plugins/ueditor/ueditor.all.js?v=1.8.6" type="text/javascript" charset="UTF-8"></script>
+<script src="<@sp.static/>/assets/plugins/ueditor/lang/zh-cn/zh-cn.js?v=1.8.6" type="text/javascript" charset="UTF-8"></script>
+<script src="<@sp.static/>/assets/plugins/layui/layui.js?v=1.8.6" charset="UTF-8"></script>
+<script src="<@sp.static/>/assets/plugins/skuTable/skuTable.js?v=1.8.6" charset="UTF-8"></script>
+<link rel="stylesheet" type="text/css" href="<@sp.static/>/assets/plugins/layui/css/layui.css?v=1.8.6" charset="UTF-8"/>
 <script>
     layui.config({
         base: './'
@@ -304,7 +310,7 @@
                     'forecolor', 'backcolor','insertorderedlist', 'insertunorderedlist',
                     'selectall', 'cleardoc', 'link', 'unlink','emotion','simpleupload','insertvideo', 'help']
             ],
-            iframeCssUrl: "<@sp.static/>/assets/plugins/ueditor/themes/iframe.css?v=1.8.1",
+            iframeCssUrl: "<@sp.static/>/assets/plugins/ueditor/themes/iframe.css?v=1.8.6",
             autoHeightEnabled: true,
             autoFloatEnabled: true,
             initialFrameWidth: 380,

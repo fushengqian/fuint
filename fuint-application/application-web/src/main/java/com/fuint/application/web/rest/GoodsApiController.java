@@ -16,9 +16,8 @@ import com.fuint.base.dao.pagination.PaginationResponse;
 import com.fuint.exception.BusinessCheckException;
 import com.fuint.application.ResponseObject;
 import com.fuint.application.BaseController;
-import jodd.util.StringUtil;
+import com.fuint.util.StringUtil;
 import org.apache.commons.collections.map.HashedMap;
-import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
@@ -126,7 +125,7 @@ public class GoodsApiController extends BaseController {
         if (cateId > 0) {
             searchParams.put("EQ_cateId", cateId);
         }
-        if (StringUtils.isNotEmpty(name)) {
+        if (StringUtil.isNotEmpty(name)) {
             searchParams.put("LIKE_name", name);
         }
 
@@ -253,7 +252,7 @@ public class GoodsApiController extends BaseController {
     @CrossOrigin
     public ResponseObject getGoodsInfoBySkuNo(HttpServletRequest request) throws BusinessCheckException, InvocationTargetException, IllegalAccessException {
         String skuNo = request.getParameter("skuNo") == null ? "" : request.getParameter("skuNo");
-        if (StringUtils.isEmpty(skuNo)) {
+        if (StringUtil.isEmpty(skuNo)) {
             return getFailureResult(201, "商品编码不能为空");
         }
 

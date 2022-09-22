@@ -17,6 +17,7 @@ import javax.servlet.http.HttpServletResponse;
  *
  * Created by FSQ
  * Contact wx fsq_better
+ * Site https://www.fuint.cn
  */
 @Controller
 @RequestMapping(value = "/log")

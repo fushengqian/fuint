@@ -7,7 +7,7 @@ import org.springframework.stereotype.Repository;
 /**
  * 日志服务Repository
  * 
- * @author fsq
+ * @author FSQ
  * @version $Id: TActionLogRepository.java
  */
 @Repository("tActionLogRepository")

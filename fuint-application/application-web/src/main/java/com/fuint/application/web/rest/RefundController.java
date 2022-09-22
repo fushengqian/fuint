@@ -10,7 +10,7 @@ import com.fuint.application.ResponseObject;
 import com.fuint.application.BaseController;
 import com.fuint.application.dao.entities.MtUser;
 import com.fuint.application.service.token.TokenService;
-import jodd.util.StringUtil;
+import com.fuint.util.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;

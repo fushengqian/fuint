@@ -10,11 +10,11 @@ import javax.imageio.ImageIO;
 import java.io.ByteArrayOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 /**
  * 图形验证码控制类
@@ -31,11 +31,12 @@ public class CaptchaApiController extends BaseController {
 
     @RequestMapping("/getCode")
     @CrossOrigin
-    public ResponseObject getCode(HttpServletRequest request, HttpServletResponse response) {
+    public ResponseObject getCode(HttpServletResponse response) {
         String captcha = "";
+        String uuid = UUID.randomUUID().toString().replaceAll("-", "");
+
         try {
-            HttpSession session = request.getSession();
-            BufferedImage image = captchaService.getCode(session);
+            BufferedImage image = captchaService.getCodeByUuid(uuid);
             // 输出流
             ByteArrayOutputStream stream = new ByteArrayOutputStream();
             ImageIO.write(image, "png", stream);
@@ -50,7 +51,8 @@ public class CaptchaApiController extends BaseController {
         response.addHeader("Cache-Control", "no-cache");
 
         Map<String, Object> outParams = new HashMap<String, Object>();
-        outParams.put("captcha", "data:image/jpg;base64,"+captcha);
+        outParams.put("captcha", "data:image/jpg;base64," + captcha);
+        outParams.put("uuid", uuid);
 
         return getSuccessResult(outParams);
     }
@@ -58,8 +60,9 @@ public class CaptchaApiController extends BaseController {
     @RequestMapping("/checkCode")
     @CrossOrigin
     public ResponseObject checkCode(@RequestParam String code, HttpServletRequest request) {
-        HttpSession session = request.getSession();
-        Boolean result = captchaService.checkCode(code, session);
+        String uuid = request.getParameter("uuid") == null ? "" : request.getParameter("uuid");
+
+        Boolean result = captchaService.checkCodeByUuid(code, uuid);
         Map<String, Object> outParams = new HashMap<String, Object>();
         outParams.put("result", result);
 

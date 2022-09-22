@@ -15,8 +15,9 @@ import javax.servlet.http.HttpServletResponse;
 /**
  * 日志管理控制器
  *
- * @author fsq
- * @version $Id: HtActionLogController.java
+ * Created by FSQ
+ * Contact wx fsq_better
+ * Site https://www.fuint.cn
  */
 @Controller
 @RequestMapping("/actlog")

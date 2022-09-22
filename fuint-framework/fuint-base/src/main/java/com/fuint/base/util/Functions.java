@@ -9,8 +9,9 @@ import org.apache.shiro.subject.support.DefaultSubjectContext;
 /**
  * 页面数据处理
  *
- * @author Harrison Han
- * @version $Id: Functions.java, v 0.1 2019年11月18日 下午3:54:22 Harrison Han Exp $
+ * Created by FSQ
+ * Contact wx fsq_better
+ * Site https://www.fuint.cn
  */
 public class Functions {
 

@@ -3,15 +3,13 @@ package com.fuint.util;
 /**
  * 系统常量定义接口
  *
- * @author Harrison Han
- * @version $Id: Constant.java, v 0.1 2019年11月12日 下午1:13:42 Harrison Han Exp $
+ * Created by FSQ
+ * Contact wx fsq_better
+ * Site https://www.fuint.cn
  */
 public interface Constant {
     /**
      * 密码加密过程系统常量
-     *
-     * @author Harrison Han
-     * @version $Id: Constant.java, v 0.1 2019年11月12日 下午1:18:13 Harrison Han Exp $
      */
     public interface SaltConstant {
         /**

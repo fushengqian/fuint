@@ -1,7 +1,7 @@
 package com.fuint.application.enums;
 
 /**
- * 支付类型
+ * 支付类型枚举
  * Created by FSQ
  * Contact wx fsq_better
  * Site https://www.fuint.cn

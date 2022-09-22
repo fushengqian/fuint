@@ -1,9 +1,11 @@
 package com.fuint.base.config;
 
+import com.fuint.base.annoation.AccountVo;
 import com.fuint.base.annoation.OperationServiceLog;
 import com.fuint.base.dao.entities.TActionLog;
 import com.fuint.base.service.log.TActionLogService;
 import com.fuint.base.shiro.ShiroUser;
+import com.fuint.cache.redis.RedisTemplate;
 import org.apache.commons.lang.StringUtils;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.session.Session;
@@ -15,15 +17,17 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
+import javax.servlet.http.HttpServletRequest;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 import java.util.Date;
 
 /**
  * 操作日志AOP实现
- * s
  *
  * @author FSQ
  * Contact wx fsq_better
- * @version $Id: LogAspect.java
+ * Site https://www.fuint.cn
  */
 @Component
 @Aspect
@@ -34,6 +38,9 @@ public class LogAspect {
     @Lazy
     @Autowired
     private TActionLogService tActionLogService;
+
+    @Autowired
+    private RedisTemplate redisTemplate;
 
     private String userName = ""; // 用户名
     private Long startTimeMillis = 0l; // 开始时间
@@ -71,27 +78,35 @@ public class LogAspect {
             endTimeMillis = System.currentTimeMillis(); // 记录方法执行完成的时间
             Subject sub = SecurityUtils.getSubject();
             ShiroUser user = (ShiroUser) sub.getPrincipal();
+
             Session session = sub.getSession(true);
             clientIp = session.getHost();
+            module = operationServiceLog.description();
+            if (module.length() > 255) {
+                module = module.substring(0, 255);
+            }
 
             if (user != null) {
                 userName = user.getAcctName();
-
                 userAgent = user.getUserAgent();
                 if (userAgent.length() > 255) {
                     userAgent = userAgent.substring(0, 255);
                 }
-
                 clientPort = user.getClientPort();
-
-                module = operationServiceLog.description();
-                if (module.length() > 255) {
-                    module = module.substring(0, 255);
-                }
-
                 url = user.getRequestURL();
                 if (url.length() > 255) {
                     url = url.substring(0, 255);
+                }
+            } else {
+                HttpServletRequest request = getRequest();
+                String token = request.getHeader("Access-Token");
+                if (StringUtils.isNotEmpty(token)) {
+                    AccountVo accountVo = redisTemplate.get(token, AccountVo.class);
+                    if (accountVo != null) {
+                        userName = accountVo.getAccountName();
+                        url = request.getRequestURI();
+                        userAgent = request.getHeader("user-agent");
+                    }
                 }
             }
 
@@ -117,5 +132,9 @@ public class LogAspect {
         if (StringUtils.isNotEmpty(module)) {
             this.tActionLogService.saveActionLog(hal);
         }
+    }
+
+    protected HttpServletRequest getRequest(){
+        return ((ServletRequestAttributes) (RequestContextHolder.currentRequestAttributes())).getRequest();
     }
 }

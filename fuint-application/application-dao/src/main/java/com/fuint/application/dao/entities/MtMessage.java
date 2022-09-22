@@ -68,6 +68,24 @@ public class MtMessage implements Serializable{
     @Column(name = "UPDATE_TIME")
     private Date updateTime;
 
+    /**
+     * 是否已发送
+     */
+    @Column(name = "IS_SEND", length = 1)
+    private String isSend;
+
+    /**
+     * 消息参数
+     */
+    @Column(name = "PARAMS", length = 1000)
+    private String params;
+
+    /**
+     * 发送时间
+     */
+    @Column(name = "SEND_TIME")
+    private Date sendTime;
+
    /**
     * 状态 
     */ 
@@ -92,14 +110,14 @@ public class MtMessage implements Serializable{
     public void setType(String type){
     this.type=type;
     }
-    public String getContent(){
-        return content;
-    }
     public void setTitle(String title){
         this.title=title;
     }
     public String getTitle(){
         return title;
+    }
+    public String getContent(){
+        return content;
     }
     public void setContent(String content){
     this.content=content;
@@ -121,6 +139,24 @@ public class MtMessage implements Serializable{
     }
     public void setUpdateTime(Date updateTime){
     this.updateTime=updateTime;
+    }
+    public String getIsSend(){
+        return isSend;
+    }
+    public void setIsSend(String isSend){
+        this.isSend=isSend;
+    }
+    public String getParams(){
+        return params;
+    }
+    public void setParams(String params){
+        this.params=params;
+    }
+    public Date getSendTime(){
+        return sendTime;
+    }
+    public void setSendTime(Date sendTime){
+        this.sendTime=sendTime;
     }
     public String getStatus(){
         return status;

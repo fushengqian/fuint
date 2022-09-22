@@ -19,8 +19,10 @@ import java.io.IOException;
 
 /**
  * 图形验证码插件控制类
+ *
  * Created by FSQ
  * Contact wx fsq_better
+ * Site https://www.fuint.cn
  */
 @Controller
 @RequestMapping("/captcha")

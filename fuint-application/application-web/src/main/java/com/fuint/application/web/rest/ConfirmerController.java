@@ -10,7 +10,7 @@ import com.fuint.application.service.store.StoreService;
 import com.fuint.application.service.staff.StaffService;
 import com.fuint.application.util.CommonUtil;
 import com.fuint.application.util.PhoneFormatCheckUtils;
-import org.apache.commons.lang.StringUtils;
+import com.fuint.util.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -65,7 +65,7 @@ public class ConfirmerController extends BaseController{
 
         realName = CommonUtil.replaceXSS(realName);
 
-        if (StringUtils.isEmpty(mobile)) {
+        if (StringUtil.isEmpty(mobile)) {
             return getFailureResult(1002,"手机号码不能为空");
         } else if(!PhoneFormatCheckUtils.isChinaPhoneLegal(mobile)) {
             return getFailureResult(1002, "手机号码格式不正确");
@@ -93,10 +93,10 @@ public class ConfirmerController extends BaseController{
                 mtStaff2.setUserId(null);
                 mtStaff2.setStoreId(Integer.parseInt(storeID));
                 mtStaff2.setRealName(realName);
-                mtStaff = staffService.addStaff(mtStaff2);
+                mtStaff = staffService.saveStaff(mtStaff2);
             }
         } else {
-            mtStaff = staffService.addStaff(mtStaff);
+            mtStaff = staffService.saveStaff(mtStaff);
         }
 
         return getSuccessResult(mtStaff);

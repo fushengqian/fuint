@@ -12,6 +12,9 @@ import org.springframework.stereotype.Component;
 
 /**
  * 缓存刷新AOP实现
+ * Created by FSQ
+ * Contact wx fsq_better
+ * Site https://www.fuint.cn
  */
 @Component
 @Aspect
@@ -19,7 +22,7 @@ public class CacheAspect {
 
     private Logger LOGGER = LoggerFactory.getLogger(CacheAspect.class);
 
-    //Service层切点
+    // Service层切点
     @Pointcut("@annotation(com.fuint.application.annoation.RefreshCache)")
     public void serviceAspect() {
     }

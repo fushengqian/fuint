@@ -18,7 +18,7 @@ import com.fuint.application.dao.entities.*;
 import com.fuint.application.dto.*;
 import com.fuint.application.dto.GoodsSpecItemDto;
 import com.fuint.application.service.goods.GoodsService;
-import org.apache.commons.lang.StringUtils;
+import com.fuint.util.StringUtil;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
@@ -255,7 +255,7 @@ public class goodsController {
         }
 
         String goodsId = request.getParameter("goodsId") == null ? "0" : request.getParameter("goodsId");
-        if (StringUtils.isEmpty(goodsId)) {
+        if (StringUtil.isEmpty(goodsId)) {
             goodsId = "0";
         }
 
@@ -281,7 +281,7 @@ public class goodsController {
         if (images.length > 0) {
             List<String> tempArr = new ArrayList<>();
             for (String img : images) {
-                 if (StringUtils.isNotEmpty(img)) {
+                 if (StringUtil.isNotEmpty(img)) {
                      tempArr.add(img);
                  }
             }
@@ -391,10 +391,10 @@ public class goodsController {
         info.setName(name);
         info.setGoodsNo(goodsNo);
         info.setIsSingleSpec(isSingleSpec);
-        if (StringUtils.isNotEmpty(stock)) {
+        if (StringUtil.isNotEmpty(stock)) {
             info.setStock(Integer.parseInt(stock));
         }
-        if (StringUtils.isNotEmpty(description)) {
+        if (StringUtil.isNotEmpty(description)) {
             info.setDescription(description);
         }
         if (storeId != null) {
@@ -403,37 +403,37 @@ public class goodsController {
         if (images.length > 0) {
             info.setLogo(images[0]);
         }
-        if (StringUtils.isNotEmpty(sort)) {
+        if (StringUtil.isNotEmpty(sort)) {
             info.setSort(Integer.parseInt(sort));
         }
-        if (StringUtils.isNotEmpty(status)) {
+        if (StringUtil.isNotEmpty(status)) {
             info.setStatus(status);
         }
-        if (StringUtils.isNotEmpty(price)) {
+        if (StringUtil.isNotEmpty(price)) {
             info.setPrice(new BigDecimal(price));
         }
         if(minPrice.compareTo(new BigDecimal("0")) > 0) {
             info.setPrice(minPrice);
         }
-        if (StringUtils.isNotEmpty(linePrice)) {
+        if (StringUtil.isNotEmpty(linePrice)) {
             info.setLinePrice(new BigDecimal(linePrice));
         }
         if(minLinePrice.compareTo(new BigDecimal("0")) > 0) {
             info.setLinePrice(minLinePrice);
         }
-        if (StringUtils.isNotEmpty(weight)) {
+        if (StringUtil.isNotEmpty(weight)) {
             info.setWeight(new BigDecimal(weight));
         }
         if (initSale > 0) {
             info.setInitSale(initSale);
         }
-        if (StringUtils.isNotEmpty(salePoint)) {
+        if (StringUtil.isNotEmpty(salePoint)) {
             info.setSalePoint(salePoint);
         }
-        if (StringUtils.isNotEmpty(canUsePoint)) {
+        if (StringUtil.isNotEmpty(canUsePoint)) {
             info.setCanUsePoint(canUsePoint);
         }
-        if (StringUtils.isNotEmpty(isMemberDiscount)) {
+        if (StringUtil.isNotEmpty(isMemberDiscount)) {
             info.setIsMemberDiscount(isMemberDiscount);
         }
         if (images.length > 0) {
@@ -471,7 +471,7 @@ public class goodsController {
         String goodsId = request.getParameter("goodsId") == null ? "0" : request.getParameter("goodsId");
         String name = request.getParameter("name") == null ? "" : request.getParameter("name");
 
-        if (StringUtils.isEmpty(goodsId)) {
+        if (StringUtil.isEmpty(goodsId)) {
             return null;
         }
 
@@ -523,7 +523,7 @@ public class goodsController {
         String goodsId = request.getParameter("goodsId") == null ? "" : request.getParameter("goodsId");
         String value = request.getParameter("value") == null ? "" : request.getParameter("value");
 
-        if (StringUtils.isEmpty(specName) || StringUtils.isEmpty(goodsId) || StringUtils.isEmpty(value)) {
+        if (StringUtil.isEmpty(specName) || StringUtil.isEmpty(goodsId) || StringUtil.isEmpty(value)) {
             ReqResult reqResult = new ReqResult();
             reqResult.setCode("201");
             reqResult.setResult(false);
@@ -543,7 +543,7 @@ public class goodsController {
         Integer id = 0;
         if (dataList.size() > 0) {
             for (MtGoodsSpec mtGoodsSpec : dataList) {
-                if (StringUtils.isEmpty(mtGoodsSpec.getValue())) {
+                if (StringUtil.isEmpty(mtGoodsSpec.getValue())) {
                     mtGoodsSpec.setValue(value);
                     id = mtGoodsSpec.getId();
                     specRepository.save(mtGoodsSpec);
@@ -591,7 +591,7 @@ public class goodsController {
         String goodsId = request.getParameter("goodsId") == null ? "0" : request.getParameter("goodsId");
 
         ReqResult reqResult = new ReqResult();
-        if (StringUtils.isEmpty(specName) || StringUtils.isEmpty(goodsId)) {
+        if (StringUtil.isEmpty(specName) || StringUtil.isEmpty(goodsId)) {
             reqResult.setCode("201");
             reqResult.setResult(false);
             reqResult.setMsg("请求参数错误");

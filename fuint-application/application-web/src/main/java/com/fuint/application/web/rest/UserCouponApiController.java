@@ -20,9 +20,9 @@ import com.fuint.application.dao.entities.MtUser;
 import com.fuint.application.util.QRCodeUtil;
 import com.fuint.application.util.Base64Util;
 import com.fuint.application.util.SeqUtil;
+import com.fuint.util.StringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
@@ -79,11 +79,11 @@ public class UserCouponApiController extends BaseController {
         int height = param.get("height") == null ? 800 : Integer.parseInt(param.get("height").toString());
 
         // 参数有误
-        if (userCouponId <= 0 && StringUtils.isEmpty(userCouponCode)) {
+        if (userCouponId <= 0 && StringUtil.isEmpty(userCouponCode)) {
             return getFailureResult(1004);
         }
 
-        if (StringUtils.isEmpty(token)) {
+        if (StringUtil.isEmpty(token)) {
             return getFailureResult(1001);
         }
 

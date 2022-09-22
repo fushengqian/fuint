@@ -9,9 +9,10 @@ import java.util.Set;
 
 /**
  * freeMarker  访问静态类静态方法
- * <p/>
+ *
  * Created by FSQ
  * Contact wx fsq_better
+ * Site https://www.fuint.cn
  */
 public class FreemarkerStaticModels extends HashMap<String, Object> {
 

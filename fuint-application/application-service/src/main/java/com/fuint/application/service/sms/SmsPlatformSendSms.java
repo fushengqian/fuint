@@ -41,13 +41,13 @@ public class SmsPlatformSendSms implements SendSmsInterface {
         logger.info("使用短信平台发送短信.....");
         Integer mode = Integer.parseInt(env.getProperty("ALIYUN.SMS.mode"));
         if (templateUname != null && !CollectionUtils.isEmpty(phones)) {
-            Map<Boolean,List<String>> result = new HashMap<>();
+            Map<Boolean, List<String>> result = new HashMap<>();
             try{
                 if (mode != null && mode.intValue() == 1) {
                     // 手机号以","分隔拼接
                     String mobilePhones = phones.stream().collect(Collectors.joining(","));
                     MessageResInfo res = smsPlatformService.sendMessage(mobilePhones, templateUname, contentParams);
-                    result.put(res.getResult(),phones);
+                    result.put(res.getResult(), phones);
                 } else {
                     result.put(Boolean.TRUE,phones);
                     logger.info("模拟短信平台发送短信.....");
@@ -70,7 +70,7 @@ public class SmsPlatformSendSms implements SendSmsInterface {
      * @return
      */
     @Override
-    public PaginationResponse<MtSmsSendedLog> querySmsListByPagination(PaginationRequest paginationRequest) throws BusinessCheckException {
+    public PaginationResponse<MtSmsSendedLog> querySmsListByPagination(PaginationRequest paginationRequest) {
         paginationRequest.setSortColumn(new String[]{"logId desc", "createTime desc"});
         PaginationResponse<MtSmsSendedLog> paginationResponse = smsSendedLogRepository.findResultsByPagination(paginationRequest);
         return paginationResponse;

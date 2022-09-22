@@ -35,7 +35,6 @@ import org.springframework.web.context.ContextLoader;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.multipart.MultipartFile;
 import com.fuint.application.util.XlsUtil;
-import org.apache.commons.lang.StringUtils;
 import com.fuint.util.StringUtil;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
@@ -54,6 +53,7 @@ import java.util.regex.Pattern;
  */
 @Service
 public class CouponGroupServiceImpl implements CouponGroupService {
+
     private static final Logger log = LoggerFactory.getLogger(CouponGroupServiceImpl.class);
 
     @Autowired
@@ -104,7 +104,7 @@ public class CouponGroupServiceImpl implements CouponGroupService {
      */
     @Override
     @OperationServiceLog(description = "添加卡券分组")
-    public MtCouponGroup addCouponGroup(ReqCouponGroupDto reqCouponGroupDto) throws BusinessCheckException {
+    public MtCouponGroup addCouponGroup(ReqCouponGroupDto reqCouponGroupDto) {
         MtCouponGroup couponGroup = new MtCouponGroup();
 
         couponGroup.setName(CommonUtil.replaceXSS(reqCouponGroupDto.getName()));
@@ -136,7 +136,7 @@ public class CouponGroupServiceImpl implements CouponGroupService {
      * @throws BusinessCheckException
      */
     @Override
-    public MtCouponGroup queryCouponGroupById(Integer id) throws BusinessCheckException {
+    public MtCouponGroup queryCouponGroupById(Integer id) {
         return couponGroupRepository.findOne(id.intValue());
     }
 
@@ -149,7 +149,7 @@ public class CouponGroupServiceImpl implements CouponGroupService {
      */
     @Override
     @OperationServiceLog(description = "删除卡券分组")
-    public void deleteCouponGroup(Integer id, String operator) throws BusinessCheckException {
+    public void deleteCouponGroup(Integer id, String operator) {
         MtCouponGroup couponGroup = this.queryCouponGroupById(id);
         if (null == couponGroup) {
             return;
@@ -182,18 +182,20 @@ public class CouponGroupServiceImpl implements CouponGroupService {
             log.error("该分组不存在或已被删除");
             throw new BusinessCheckException("该分组不存在或已被删除");
         }
+        if (reqcouponGroupDto.getName() != null) {
+            couponGroup.setName(CommonUtil.replaceXSS(reqcouponGroupDto.getName()));
+        }
+        if (reqcouponGroupDto.getDescription() != null) {
+            couponGroup.setDescription(CommonUtil.replaceXSS(reqcouponGroupDto.getDescription()));
+        }
+        if (couponGroup.getTotal() == null) {
+            couponGroup.setTotal(0);
+        }
+        if (reqcouponGroupDto.getStatus() != null) {
+            couponGroup.setStatus(reqcouponGroupDto.getStatus());
+        }
 
-        couponGroup.setId(reqcouponGroupDto.getId().intValue());
-        couponGroup.setName(CommonUtil.replaceXSS(reqcouponGroupDto.getName()));
-
-        couponGroup.setDescription(CommonUtil.replaceXSS(reqcouponGroupDto.getDescription()));
-
-        couponGroup.setTotal(0);
-
-        // 修改时间
         couponGroup.setUpdateTime(new Date());
-
-        // 操作人
         couponGroup.setOperator(reqcouponGroupDto.getOperator());
 
         couponGroupRepository.save(couponGroup);
@@ -209,7 +211,7 @@ public class CouponGroupServiceImpl implements CouponGroupService {
      */
     @Override
     @Transactional
-    public Integer getCouponNum(Integer id) throws BusinessCheckException {
+    public Integer getCouponNum(Integer id) {
         Long num = couponRepository.queryNumByGroupId(id);
         return num.intValue();
     }
@@ -222,7 +224,7 @@ public class CouponGroupServiceImpl implements CouponGroupService {
      */
     @Override
     @Transactional
-    public BigDecimal getCouponMoney(Integer groupId) throws BusinessCheckException {
+    public BigDecimal getCouponMoney(Integer groupId) {
         List<MtCoupon> couponList = couponRepository.queryByGroupId(groupId.intValue());
         MtCouponGroup groupInfo = this.queryCouponGroupById(groupId);
         BigDecimal money = BigDecimal.valueOf(0);
@@ -239,24 +241,13 @@ public class CouponGroupServiceImpl implements CouponGroupService {
     /**
      * 获取已发放套数
      *
-     * @param  groupId  分组ID
+     * @param  couponId  卡券ID
      * @throws BusinessCheckException
      * */
     @Override
-    public Integer getSendedNum(Integer groupId) {
-        List<Object[]> list = userCouponRepository.getSendedNum(groupId);
-        if (null == list || list.size() < 1) {
-            return 0;
-        }
-
-        Object[] obj =  list.get(0);
-        Integer couponId = (Integer)obj[0];
-        Long num = (Long)obj[1];
-
-        MtCoupon couponInfo = couponRepository.findOne(couponId);
-        Integer totalNum = num.intValue() / couponInfo.getSendNum();
-
-        return totalNum > 0 ? totalNum : 0;
+    public Integer getSendNum(Integer couponId) {
+        Long num = userCouponRepository.getSendNum(couponId);
+        return num.intValue();
     }
 
     /**
@@ -277,7 +268,7 @@ public class CouponGroupServiceImpl implements CouponGroupService {
             throw new BusinessCheckException("文件类型不正确");
         }
 
-        List<List<String>> content = null;
+        List<List<String>> content;
         try {
             content = XlsUtil.readExcelContent(file.getInputStream(), isExcel2003, 1, null, null, null);
         } catch (IOException e) {
@@ -297,9 +288,9 @@ public class CouponGroupServiceImpl implements CouponGroupService {
             List<Integer> numArr = new ArrayList<>();
 
             List<String> rowContent = content.get(i);
-            String mobile = rowContent.get(0).toString();
+            String mobile = rowContent.get(0);
 
-            if (StringUtils.isBlank(mobile) || mobile.length() < 11 || mobile.length() > 11) {
+            if (StringUtil.isBlank(mobile) || mobile.length() < 11 || mobile.length() > 11) {
                 errorMsg.append("第" + i + "行错误,手机号有误:"+mobile);
                 continue;
             }
@@ -314,12 +305,12 @@ public class CouponGroupServiceImpl implements CouponGroupService {
                 if (j%2 != 0) {
                     Pattern pattern = Pattern.compile("^[1-9]\\d*$");
                     if (item == null || (!pattern.matcher(cellContent).matches())) {
-                        throw new BusinessCheckException("第" + (i+1) + "行第"+ j +"列错误, 分组ID异常");
+                        throw new BusinessCheckException("第" + (i+1) + "行第"+ j +"列错误, 卡券ID异常");
                     }
 
                     item = Integer.parseInt(cellContent);
                     if (item < 0) {
-                        errorMsg.append("第" + (i+1) + "行第"+ j +"列错误, 分组ID异常");
+                        errorMsg.append("第" + (i+1) + "行第"+ j +"列错误, 卡券ID异常");
                         continue;
                     }
                     groupIdArr.add(item);
@@ -359,12 +350,16 @@ public class CouponGroupServiceImpl implements CouponGroupService {
         }
 
         // 获取每个分组的总数
-        Map<String, Integer> groupIdMap = new HashMap<>();
+        Map<String, Integer> couponIdMap = new HashMap<>();
         for (CouponCellDto dto : rows) {
             MtUser userInfo = memberService.queryMemberByMobile(dto.getMobile());
-            if (null == userInfo || !userInfo.getStatus().equals("A")) {
+            if (userInfo == null) {
+                userInfo = memberService.addMemberByMobile(dto.getMobile());
+            }
+
+            if (null == userInfo || !userInfo.getStatus().equals(StatusEnum.ENABLED.getKey())) {
                 if (StringUtil.isNotBlank(errorMsgNoGroup.toString())) {
-                    errorMsgNoGroup.append("," + dto.getMobile());
+                    errorMsgNoGroup.append("，" + dto.getMobile());
                 } else {
                     errorMsgNoGroup.append("手机号没有注册或已禁用："+dto.getMobile());
                 }
@@ -372,8 +367,8 @@ public class CouponGroupServiceImpl implements CouponGroupService {
 
             for (int k = 0; k < dto.getGroupId().size(); k++) {
                 Integer num = dto.getNum().get(k);
-                Integer total = groupIdMap.get(dto.getGroupId().get(k).toString()) == null ? 0 : groupIdMap.get(dto.getGroupId().get(k).toString());
-                groupIdMap.put(dto.getGroupId().get(k).toString(), (total+num));
+                Integer total = couponIdMap.get(dto.getGroupId().get(k).toString()) == null ? 0 : couponIdMap.get(dto.getGroupId().get(k).toString());
+                couponIdMap.put(dto.getGroupId().get(k).toString(), (total+num));
             }
         }
 
@@ -381,36 +376,30 @@ public class CouponGroupServiceImpl implements CouponGroupService {
             throw new BusinessCheckException(errorMsgNoRegister.toString());
         }
 
-        for (String key : groupIdMap.keySet()) {
-             MtCouponGroup groupInfo = this.queryCouponGroupById(Integer.parseInt(key));
-
-             if (null == groupInfo) {
+        for (String couponId : couponIdMap.keySet()) {
+             MtCoupon couponInfo = couponService.queryCouponById(Integer.parseInt(couponId));
+             if (null == couponInfo) {
                  if (StringUtil.isNotBlank(errorMsgNoGroup.toString())) {
-                     errorMsgNoGroup.append("," + key);
+                     errorMsgNoGroup.append("," + couponId);
                  } else {
-                     errorMsgNoGroup.append("分组ID不存在："+key);
+                     errorMsgNoGroup.append("卡券ID不存在："+couponId);
                  }
                  continue;
              }
 
-             if (!groupInfo.getStatus().equals("A")) {
-                 throw new BusinessCheckException("分组ID"+key+"可能已删除或禁用");
+             if (!couponInfo.getStatus().equals(StatusEnum.ENABLED.getKey())) {
+                 throw new BusinessCheckException("卡券ID"+couponId+"可能已删除或禁用");
              }
 
-             List<MtCoupon> couponList = couponService.queryCouponListByGroupId(Integer.parseInt(key));
-             if (couponList.size() < 1) {
-                 throw new BusinessCheckException("分组ID"+key+"种类为空，请增加卡券");
-             }
-
-             Integer totalNum = groupInfo.getTotal() == null ? 0 : groupInfo.getTotal();
-             Integer sendNum = groupIdMap.get(key);
-             Integer sendedNum = this.getSendedNum(Integer.parseInt(key));
-             if ((totalNum - sendedNum) < sendNum) {
-                 Integer needNum = sendNum - (totalNum - sendedNum);
+             Integer totalNum = couponInfo.getTotal() == null ? 0 : couponInfo.getTotal();
+             Integer sendNum = couponIdMap.get(couponId);
+             Integer hasSendNum = this.getSendNum(Integer.parseInt(couponId));
+             if (totalNum > 0 && ((totalNum - hasSendNum) < sendNum)) {
+                 Integer needNum = sendNum - (totalNum - hasSendNum);
                  if (StringUtil.isNotBlank(errorMsgNoNum.toString())) {
-                     errorMsgNoNum.append(";分组ID:"+key+"存量不足,至少再添加"+needNum+"套");
+                     errorMsgNoNum.append(";卡券ID:" + couponId + "存量不足,至少再添加" + needNum + "套");
                  } else {
-                     errorMsgNoNum.append("分组ID:" + key + "存量不足,至少再添加" + needNum + "套");
+                     errorMsgNoNum.append("卡券ID:" + couponId + "存量不足,至少再添加" + needNum + "套");
                  }
              }
         }
@@ -435,11 +424,12 @@ public class CouponGroupServiceImpl implements CouponGroupService {
             for (CouponCellDto cellDto : rows) {
                 // 发送张数
                 Integer totalNum = 0;
+
                 // 发送总价值
                 BigDecimal totalMoney = new BigDecimal("0.0");
 
                 for (int gid = 0; gid < cellDto.getGroupId().size(); gid++) {
-                    couponService.sendCoupon(cellDto.getGroupId().get(gid).intValue(), cellDto.getMobile(), cellDto.getNum().get(gid), uuid);
+                    couponService.sendCoupon(cellDto.getGroupId().get(gid).intValue(), cellDto.getMobile(), cellDto.getNum().get(gid), uuid, operator);
                     List<MtCoupon> couponList = couponService.queryCouponListByGroupId(cellDto.getGroupId().get(gid).intValue());
                     // 累加总张数、总价值
                     for (MtCoupon coupon : couponList) {
@@ -469,7 +459,6 @@ public class CouponGroupServiceImpl implements CouponGroupService {
                 try {
                     List<String> mobileList = new ArrayList<>();
                     mobileList.add(cellDto.getMobile());
-
                     Map<String, String> params = new HashMap<>();
                     params.put("totalNum", totalNum+"");
                     params.put("totalMoney", totalMoney+"");
@@ -490,7 +479,7 @@ public class CouponGroupServiceImpl implements CouponGroupService {
      * @param file excel文件
      * @param request
      * */
-    public String saveExcelFile(MultipartFile file, HttpServletRequest request) throws Exception {
+    public String saveExcelFile(MultipartFile file, HttpServletRequest request) {
         String fileName = file.getOriginalFilename();
 
         String imageName = fileName.substring(fileName.lastIndexOf("."));
@@ -528,7 +517,7 @@ public class CouponGroupServiceImpl implements CouponGroupService {
         MtCouponGroup groupInfo = this.queryCouponGroupById(groupId);
 
         // 已发放套数
-        Integer sendNum = this.getSendedNum(groupId);
+        Integer sendNum = 0;
 
         // 未发放套数
         Integer unSendNum = groupInfo.getTotal() - sendNum;
