@@ -1,0 +1,69 @@
+<h1 class="page-header">
+    <small>编辑订阅消息</small>
+</h1>
+<hr/>
+<div class="panel panel-inverse" data-sortable-id="form-stuff-1">
+    <div class="panel-heading">
+        <h4 class="panel-title">订阅消息</h4>
+    </div>
+    <div class="panel-body">
+        <form class="form-horizontal" id="form" name="form" action="" method="post">
+            <input type="hidden" id="key" name="key" class="form-control" value="${key}">
+            <div class="form-group">
+                <label class="col-md-3 control-label">消息名称：</label>
+                <div class="col-md-4">
+                    <input type="text" id="name" name="name" disabled class="form-control" placeholder="消息名称" value="${name}">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-md-3 control-label">模板ID：</label>
+                <div class="col-md-4">
+                    <input type="text"  id="templateId" name="templateId" class="form-control" placeholder="消息模板" value="${templateId}">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-md-3 control-label">模板编号：</label>
+                <div class="col-md-4">
+                    <input type="text" id="tid" name="tid" class="form-control" placeholder="模板编号" value="${tid}">
+                </div>
+            </div>
+            <#if params>
+            <#list params as para>
+            <div class="form-group">
+                <label class="col-md-3 control-label">${para.name}参数：</label>
+                <div class="col-md-4">
+                    <input type="text" class="form-control" name="${para.key}" placeholder="格式如：{{thing1.DATA}}，详见小程序模板消息详情" value="${para.value}" maxlength="100">
+                </div>
+            </div>
+            </#list>
+            </#if>
+            <div class="form-group">
+                <label class="col-md-3 control-label"></label>
+                <div class="col-md-9">
+                    <button type="button" id="submitButton" class="btn btn-sm btn-success">提交</button>
+                    <button type="button" class="btn btn-sm btn-danger"
+                            onclick="getData('${rc.contextPath}/backend/subMessage/index','displayArea')">返回
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<script type="application/javascript">
+    $(function () {
+        $('#submitButton').click(function () {
+            $('#form').submit();
+        })
+        $('#form').validate({
+            rules: {},
+            messages: {},
+            errorPlacement: function (error, element) {
+                error.appendTo(element.parent());
+            },
+            submitHandler: function () {
+                postDataByForm('${rc.contextPath}/backend/subMessage/save', 'displayArea', 'form');
+                $.close();
+            }
+        })
+    })
+</script>

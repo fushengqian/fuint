@@ -1,0 +1,78 @@
+<link href="<@sp.static/>/assets/plugins/bootstrap/css/bootstrap.min.css" rel="stylesheet"/>
+<link href="<@sp.static/>/assets/css/style.min.css" rel="stylesheet"/>
+<link href="<@sp.static/>/assets/plugins/datatables/css/data-table.css" rel="stylesheet"/>
+<div style="overflow: auto; height: 450px; position: relative; margin: 8px;">
+    <div class="panel panel-inverse" data-sortable-id="form-stuff-5">
+        <div class="panel-body">
+            <form id="storeForm" name="storeForm" method="post" class="form-inline">
+                <div class="col-md-6">
+                    <label>店铺名称：</label>
+                    <input type="text" class="form-control" placeholder="请输入店铺名称" name="LIKE_name">
+                    <button type="button" class="btn btn-sm btn-success m-r-5" style="width: 80px;margin-left: 10px" onclick="query()">查询</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div id="storeList"></div>
+</div>
+<div class="pop-footer">
+    <button type="button" id="selectedButton" class="btn btn-sm btn-success m-5">确定选择</button>
+</div>
+
+<!-- jquery -->
+<script src="<@sp.static/>/js/jquery/jquery-3.0.0.min.js" type="text/javascript" charset="UTF-8"></script>
+<!-- jquery validate -->
+<script src="<@sp.static/>/js/jquery/validation/jquery.validate.min.js" type="text/javascript" charset="UTF-8"></script>
+<script src="<@sp.static/>/assets/plugins/jquery-ui/ui/minified/jquery-ui.min.js"></script>
+<script src="<@sp.static/>/assets/plugins/bootstrap/js/bootstrap.min.js"></script>
+<script src="<@sp.static/>/js/layer/layer.js?v=1.8.6" type="text/javascript" charset="UTF-8"></script>
+<script src="<@sp.static/>/js/custom/util.js?v=1.8.6" type="text/javascript" charset="UTF-8"></script>
+<script src="<@sp.static/>/js/custom/message.js?v=1.8.6" type="text/javascript" charset="UTF-8"></script>
+<script src="<@sp.static/>/js/custom/send.js?v=1.8.6" type="text/javascript" charset="UTF-8"></script>
+<script language="JavaScript">
+    $(function () {
+        init();
+        query();
+    });
+
+    function init() {
+        $('#selectedButton').click(function () {
+            parent.$('#storeNameDiv').empty();
+            var stores = '';
+            var storeNames = '';
+            $("input:radio[name='id']:checked").each(function (index, elem) {
+                //如果父页面已存在，则跳出执行下一条
+                let storeName = $(elem).parent().parent().find("input[name='storeNameTD']").val();
+                let storeId = $(elem).parent().parent().find("input[name='storeIdTD']").val();
+                let showName = "<span class='label label-info f-s-14 m-t-5' style='display: inline-block;margin-right:5px;'>"+storeName+"</span>"
+                parent.$('#storeNameDiv').append(showName);
+                if (stores.length > 0) {
+                    stores = stores + ',' + storeId;
+                    storeNames=storeNames + ',' +storeName;
+                } else {
+                    stores = storeId;
+                    storeNames=storeName;
+                }
+            });
+
+            let store = '<input name="storeId" type="hidden" value="'+stores+'">';
+            store=store+'<input name="storeName" type="hidden" value="'+storeNames+'">';
+            parent.$('#storeNameDiv').append(store);
+
+            parent.layer.closeAll();
+        })
+    }
+
+    function query() {
+        postDataByForm('${rc.contextPath}/backend/store/quickSearchList', 'storeList', 'storeForm');
+    }
+
+    function checkOne() {
+        let itemCheckBox = $("[name = 'id']:checkbox");
+        $("#checkAll").prop("checked", itemCheckBox.length == itemCheckBox.filter(":checked").length);
+    }
+
+    function checkAll() {
+        $("[name='id']").prop("checked",$("#checkAll").prop("checked"));
+    }
+</script>

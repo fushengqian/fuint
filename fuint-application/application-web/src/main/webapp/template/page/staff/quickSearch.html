@@ -1,0 +1,77 @@
+<link href="<@sp.static/>/assets/plugins/bootstrap/css/bootstrap.min.css" rel="stylesheet"/>
+<link href="<@sp.static/>/assets/css/style.min.css" rel="stylesheet"/>
+<link href="<@sp.static/>/assets/plugins/datatables/css/data-table.css" rel="stylesheet"/>
+<div style="overflow: auto; height: 450px; position: relative; margin: 8px;">
+    <div class="panel panel-inverse" data-sortable-id="form-stuff-5">
+        <div class="panel-body">
+            <form id="staffForm" name="staffForm" method="post" class="form-inline">
+                <div class="col-md-6">
+                    <input type="text" class="form-control" placeholder="请输入员工姓名" name="LIKE_realName"/>
+                    <input type="text" class="form-control" placeholder="请输入手机号" name="EQ_mobile"/>
+                    <button type="button" class="btn btn-sm btn-success m-r-5" style="width:80px;" onclick="query()">查询</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div id="staffList"></div>
+</div>
+<div class="pop-footer">
+    <button type="button" id="selectedButton" class="btn btn-sm btn-success m-5">确定选择</button>
+</div>
+
+<!-- jquery -->
+<script src="<@sp.static/>/js/jquery/jquery-3.0.0.min.js" type="text/javascript" charset="UTF-8"></script>
+<!-- jquery validate -->
+<script src="<@sp.static/>/js/jquery/validation/jquery.validate.min.js" type="text/javascript" charset="UTF-8"></script>
+<script src="<@sp.static/>/assets/plugins/jquery-ui/ui/minified/jquery-ui.min.js"></script>
+<script src="<@sp.static/>/assets/plugins/bootstrap/js/bootstrap.min.js"></script>
+<script src="<@sp.static/>/js/layer/layer.js?v=1.8.6" type="text/javascript" charset="UTF-8"></script>
+<script src="<@sp.static/>/js/custom/util.js?v=1.8.6" type="text/javascript" charset="UTF-8"></script>
+<script src="<@sp.static/>/js/custom/message.js?v=1.8.6" type="text/javascript" charset="UTF-8"></script>
+<script src="<@sp.static/>/js/custom/send.js?v=1.8.6" type="text/javascript" charset="UTF-8"></script>
+<script language="JavaScript">
+    $(function () {
+        init();
+        query();
+    });
+
+    function init() {
+        $('#selectedButton').click(function () {
+            parent.$('#staffNameDiv').empty();
+            var staffs = '';
+            var staffNames = '';
+            $("input:radio[name='id']:checked").each(function (index, elem) {
+                //如果父页面已存在，则跳出执行下一条
+                let staffName = $(elem).parent().parent().find("input[name='staffNameTD']").val();
+                let staffId = $(elem).parent().parent().find("input[name='staffIdTD']").val();
+                let showName = "<span class='label label-info f-s-14 m-t-5' style='display: inline-block;margin-right:5px;padding:5px;'>"+staffName+"</span>"
+                parent.$('#staffNameDiv').append(showName);
+                if (staffs.length > 0) {
+                    staffs = staffs + ',' + staffId;
+                    staffNames = staffNames + ',' + staffName;
+                } else {
+                    staffs = staffId;
+                    staffNames = staffName;
+                }
+            });
+
+            let staff = '<input id="staffId" name="staffId" type="hidden" value="'+staffs+'">';
+            parent.$('#staffNameDiv').append(staff);
+
+            parent.layer.closeAll();
+        })
+    }
+
+    function query() {
+        postDataByForm('${rc.contextPath}/backend/staff/quickSearchList', 'staffList', 'staffForm');
+    }
+
+    function checkOne() {
+        var itemCheckBox = $("[name = 'id']:checkbox");
+        $("#checkAll").prop("checked", itemCheckBox.length == itemCheckBox.filter(":checked").length);
+    }
+
+    function checkAll() {
+        $("[name='id']").prop("checked",$("#checkAll").prop("checked"));
+    }
+</script>
