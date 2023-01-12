@@ -659,7 +659,7 @@ CREATE TABLE `t_platform` (
   `name` varchar(20) NOT NULL COMMENT '平台名称',
   `status` int NOT NULL COMMENT '状态 0 无效 1 有效',
   `description` varchar(255) DEFAULT NULL COMMENT '描述',
-  `platform_type` int NOT NULL COMMENT '平台类型 1：免税易购 2：其他体验店',
+  `platform_type` int NOT NULL COMMENT '平台类型',
   PRIMARY KEY (`owner_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
 

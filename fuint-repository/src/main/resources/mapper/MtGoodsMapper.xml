@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fuint.repository.mapper.MtGoodsMapper">
+    <select id="getStoreGoodsList" resultType="com.fuint.repository.model.MtGoods">
+        select * from mt_goods t where (t.STORE_ID = #{storeId} or t.STORE_ID = 0) and t.STATUS = 'A' order by t.sort asc
+    </select>
+
+    <select id="searchStoreGoodsList" resultType="com.fuint.repository.model.MtGoods">
+        select * from mt_goods o where o.STORE_ID = #{storeId} and o.STATUS = 'A' and o.name like concat('%',#{keyword},'%')
+    </select>
+
+    <select id="getByGoodsNo" resultType="com.fuint.repository.model.MtGoods">
+        select * from mt_goods o where o.GOODS_NO = #{goodsNo} and o.STATUS = 'A'
+    </select>
+</mapper>

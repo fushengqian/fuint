@@ -9,22 +9,9 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>fuint-framework</artifactId>
+    <artifactId>fuint-repository</artifactId>
     <version>1.0.0</version>
     <packaging>jar</packaging>
-
-    <dependencies>
-        <dependency>
-            <groupId>com.fuint</groupId>
-            <artifactId>fuint-utils</artifactId>
-            <version>1.0.0</version>
-        </dependency>
-        <dependency>
-            <groupId>com.fuint</groupId>
-            <artifactId>fuint-repository</artifactId>
-            <version>1.0.0</version>
-        </dependency>
-    </dependencies>
 
     <build>
         <plugins>
@@ -39,4 +26,5 @@
             </plugin>
         </plugins>
     </build>
+
 </project>

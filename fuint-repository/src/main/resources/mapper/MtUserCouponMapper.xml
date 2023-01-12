@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fuint.repository.mapper.MtUserCouponMapper">
+    <select id="getSendNum" resultType="java.lang.Long">
+        select count(*) from mt_user_coupon t where t.GROUP_ID = #{couponId}
+    </select>
+
+    <select id="getPeopleNumByCouponId" resultType="com.fuint.repository.bean.CouponNumBean">
+        SELECT t.COUPON_ID,count(t.ID) as num FROM mt_user_coupon t WHERE t.COUPON_ID = #{couponId} GROUP BY t.COUPON_ID
+    </select>
+
+    <select id="getUserCouponList" resultType="com.fuint.repository.model.MtUserCoupon">
+        SELECT * FROM mt_user_coupon t WHERE t.USER_ID = #{userId} AND t.STATUS in
+        <foreach collection="statusList" item="status" separator="," open="(" close=")">
+            #{status}
+        </foreach>
+        ORDER BY t.ID DESC
+    </select>
+
+    <select id="getUserCouponListByCouponId" resultType="com.fuint.repository.model.MtUserCoupon">
+        SELECT * FROM mt_user_coupon t WHERE t.USER_ID = #{userId} AND t.COUPON_ID = #{couponId} AND t.STATUS in
+        <foreach collection="statusList" item="status" separator="," open="(" close=")">
+            #{status}
+        </foreach>
+        ORDER BY t.ID DESC
+    </select>
+
+    <select id="findByCode" resultType="com.fuint.repository.model.MtUserCoupon">
+        SELECT * FROM mt_user_coupon t WHERE t.CODE = #{code}
+        ORDER BY t.ID DESC
+    </select>
+
+    <update id="removeUserCoupon">
+        update mt_user_coupon p set p.STATUS ='D',p.OPERATOR = #{operator} where p.UUID = #{uuid} and p.COUPON_ID in
+        <foreach collection="couponIds" item="couponId" separator="," open="(" close=")">
+            #{couponId}
+        </foreach>
+        and p.status='A'
+    </update>
+
+    <select id="queryExpireNumByGroupId" resultType="com.fuint.repository.model.MtUserCoupon">
+        SELECT * FROM mt_user_coupon t WHERE t.GROUP_ID = #{groupId} AND (t.STATUS = 'A' OR t.STATUS = 'C')
+        ORDER BY t.ID DESC
+    </select>
+
+    <select id="getCouponIdsByUuid" resultType="java.lang.Integer">
+        SELECT t.COUPON_ID FROM mt_user_coupon t WHERE t.UUID = #{uuid} GROUP BY t.COUPON_ID
+    </select>
+
+    <select id="findUserCouponDetail" resultType="com.fuint.repository.model.MtUserCoupon">
+        SELECT * FROM mt_user_coupon t WHERE t.COUPON_ID = #{couponId} AND t.USER_ID = #{userId} ORDER BY t.ID DESC
+    </select>
+
+    <select id="getUserCouponListByExpireTime" resultType="com.fuint.repository.model.MtUserCoupon">
+        SELECT * FROM mt_user_coupon t WHERE t.STATUS = #{status}
+        <if test="userId != null and userId > 0">
+            and USER_ID = #{userId}
+        </if>
+        AND t.EXPIRE_TIME &lt; #{endTime} AND t.EXPIRE_TIME &gt; #{startTime}
+        ORDER BY t.ID ASC
+    </select>
+</mapper>

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fuint.repository.mapper.MtGoodsSkuMapper">
+    <select id="getBySkuNo" resultType="com.fuint.repository.model.MtGoodsSku">
+        select * from mt_goods_sku o where o.SKU_NO = #{skuNo} and o.STATUS = 'A'
+    </select>
+</mapper>

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fuint.repository.mapper.MtStoreMapper">
+    <select id="queryStoreByName" resultType="com.fuint.repository.model.MtStore">
+        select * from mt_store t where t.NAME = #{name}
+    </select>
+
+    <update id="resetDefaultStore">
+        update mt_store p set p.IS_DEFAULT = 'N'
+    </update>
+
+    <select id="findStoresByIds" resultType="com.fuint.repository.model.MtStore">
+        select * from mt_store where ID in
+        <foreach collection="ids" item="id" separator="," open="(" close=")">
+            #{id}
+        </foreach>
+    </select>
+
+    <select id="queryByDistance" resultType="com.fuint.repository.bean.StoreDistanceBean">
+        SELECT t.id,(6371 * ACOS(COS( RADIANS(#{latitude}))*COS(RADIANS(t.latitude))*COS(RADIANS(t.longitude ) - RADIANS(#{longitude})) + SIN(RADIANS(#{latitude}))*SIN(RADIANS(t.latitude)))) AS distance
+        FROM mt_store t WHERE t.status = 'A'
+        <if test="keyword != null and keyword != ''">
+            AND t.name LIKE concat('%',#{keyword},'%')
+        </if>
+        ORDER BY distance LIMIT 0,1000
+    </select>
+</mapper>

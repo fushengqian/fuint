@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fuint.repository.mapper.TDutyMapper">
+
+    <select id="findByStatus" resultType="com.fuint.repository.model.TDuty">
+        select * from t_duty u
+        where u.status = 'A'
+    </select>
+
+    <select id="findByName" resultType="com.fuint.repository.model.TDuty">
+        select * from t_duty u
+        where u.DUTY_NAME = #{name}
+    </select>
+
+    <select id="findByIdIn" resultType="com.fuint.repository.model.TDuty">
+        select * from t_duty where duty_id in
+        <foreach collection="ids" item="id" separator="," open="(" close=")">
+            #{id}
+        </foreach>
+    </select>
+
+    <select id="getRoleIdsByAccountId" resultType="java.lang.Long">
+        select d.DUTY_ID from t_duty d left join t_account_duty ad on d.DUTY_ID = ad.DUTY_ID
+        where ad.ACCT_ID = #{accountId}
+    </select>
+
+</mapper>
