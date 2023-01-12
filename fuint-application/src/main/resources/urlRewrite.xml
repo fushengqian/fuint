@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE urlrewrite PUBLIC "-//tuckey.org//DTD UrlRewrite 4.0//EN"
+        "http://www.tuckey.org/res/dtds/urlrewrite4.0.dtd">
+<urlrewrite use-query-string="true">
+    <rule>
+        <name>h5</name>
+        <from>^/h5.*$</from>
+        <to type="forward" last="true">/index.html</to>
+    </rule>
+    <rule>
+        <name>web</name>
+        <from>^/web.*$</from>
+        <to type="forward" last="true">/admin.html</to>
+    </rule>
+</urlrewrite>

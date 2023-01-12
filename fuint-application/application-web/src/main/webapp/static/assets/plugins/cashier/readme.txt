@@ -1,1 +1,0 @@
-https://seantheme.com/color-admin/admin/assets/webfonts/fa-solid-900.ttf
