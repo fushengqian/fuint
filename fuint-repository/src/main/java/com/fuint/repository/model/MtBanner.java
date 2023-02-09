@@ -31,6 +31,9 @@ public class MtBanner implements Serializable {
     @ApiModelProperty("标题")
     private String title;
 
+    @ApiModelProperty("所属商户")
+    private Integer merchantId;
+
     @ApiModelProperty("所属店铺ID")
     private Integer storeId;
 

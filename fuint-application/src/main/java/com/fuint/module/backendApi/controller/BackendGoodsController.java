@@ -86,22 +86,30 @@ public class BackendGoodsController extends BaseController {
         String name = request.getParameter("name");
         String goodsNo = request.getParameter("goodsNo");
         String status = request.getParameter("status");
+        String merchantId = request.getParameter("merchantId") == null ? "" : request.getParameter("merchantId");
+        String storeId = request.getParameter("storeId") == null ? "" : request.getParameter("storeId");
 
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
         if (accountInfo == null) {
             return getFailureResult(1001, "请先登录");
         }
 
-        TAccount account = accountService.getAccountInfoById(accountInfo.getId());
-        Integer storeId = account.getStoreId();
-
         PaginationRequest paginationRequest = new PaginationRequest();
         paginationRequest.setCurrentPage(page);
         paginationRequest.setPageSize(pageSize);
 
         Map<String, Object> params = new HashMap<>();
-        if (storeId > 0) {
+        if (StringUtil.isNotEmpty(merchantId)) {
+            params.put("merchantId", merchantId);
+        }
+        if (StringUtil.isNotEmpty(storeId)) {
             params.put("storeId", storeId);
+        }
+        if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
+            params.put("merchantId", accountInfo.getMerchantId());
+        }
+        if (accountInfo.getStoreId() != null && accountInfo.getStoreId() > 0) {
+            params.put("storeId", accountInfo.getStoreId());
         }
         if (StringUtil.isNotEmpty(name)) {
             params.put("name", name);
@@ -111,6 +119,9 @@ public class BackendGoodsController extends BaseController {
         }
         if (StringUtil.isNotEmpty(status)) {
             params.put("status", status);
+        }
+        if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
+            params.put("merchantId", accountInfo.getMerchantId());
         }
         paginationRequest.setSearchParams(params);
         paginationRequest.setSortColumn(new String[]{"status asc", "sort asc", "updateTime desc"});
@@ -427,6 +438,9 @@ public class BackendGoodsController extends BaseController {
         }
         if (StringUtil.isNotEmpty(description)) {
             info.setDescription(description);
+        }
+        if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
+            info.setMerchantId(accountInfo.getMerchantId());
         }
         if (storeId != null) {
             info.setStoreId(storeId);

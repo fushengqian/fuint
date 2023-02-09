@@ -87,7 +87,11 @@ public class GoodsServiceImpl extends ServiceImpl<MtGoodsMapper, MtGoods> implem
         }
         String storeId = paginationRequest.getSearchParams().get("storeId") == null ? "" : paginationRequest.getSearchParams().get("storeId").toString();
         if (StringUtils.isNotBlank(storeId)) {
-            lambdaQueryWrapper.eq(MtGoods::getStoreId, storeId);
+            lambdaQueryWrapper.and(wq -> wq.eq(MtGoods::getStoreId, 0).or().eq(MtGoods::getStoreId, storeId));
+        }
+        String merchantId = paginationRequest.getSearchParams().get("merchantId") == null ? "" : paginationRequest.getSearchParams().get("merchantId").toString();
+        if (StringUtils.isNotBlank(merchantId)) {
+            lambdaQueryWrapper.eq(MtGoods::getMerchantId, merchantId);
         }
 
         lambdaQueryWrapper.orderByDesc(MtGoods::getId);

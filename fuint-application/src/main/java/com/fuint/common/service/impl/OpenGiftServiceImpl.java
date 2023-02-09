@@ -61,6 +61,12 @@ public class OpenGiftServiceImpl extends ServiceImpl<MtOpenGiftMapper, MtOpenGif
     private MessageService messageService;
 
     /**
+     * 商户服务接口
+     */
+    @Autowired
+    private MerchantService merchantService;
+
+    /**
      * 获取开卡赠礼列表
      * @param paramMap
      * @throws BusinessCheckException
@@ -82,6 +88,10 @@ public class OpenGiftServiceImpl extends ServiceImpl<MtOpenGiftMapper, MtOpenGif
         String gradeId = paramMap.get("gradeId") == null ? "" : paramMap.get("gradeId").toString();
         if (StringUtils.isNotBlank(gradeId)) {
             lambdaQueryWrapper.eq(MtOpenGift::getGradeId, Integer.parseInt(gradeId));
+        }
+        String merchantId = paramMap.get("merchantId") == null ? "" : paramMap.get("merchantId").toString();
+        if (StringUtils.isNotBlank(merchantId)) {
+            lambdaQueryWrapper.eq(MtOpenGift::getMerchantId, merchantId);
         }
 
         lambdaQueryWrapper.orderByDesc(MtOpenGift::getId);
@@ -168,7 +178,9 @@ public class OpenGiftServiceImpl extends ServiceImpl<MtOpenGiftMapper, MtOpenGif
 
         MtOpenGift.setId(reqDto.getId());
         MtOpenGift.setUpdateTime(new Date());
-
+        if (null != reqDto.getMerchantId()) {
+            MtOpenGift.setMerchantId(reqDto.getMerchantId());
+        }
         if (null != reqDto.getOperator()) {
             MtOpenGift.setOperator(reqDto.getOperator());
         }
@@ -232,7 +244,7 @@ public class OpenGiftServiceImpl extends ServiceImpl<MtOpenGiftMapper, MtOpenGif
             user.setUpdateTime(new Date());
             mtUserMapper.updateById(user);
         }
-
+        params.put("merchant_id", user.getMerchantId());
         List<MtOpenGift> openGiftList = mtOpenGiftMapper.selectByMap(params);
 
         if (openGiftList.size() > 0) {
@@ -303,7 +315,13 @@ public class OpenGiftServiceImpl extends ServiceImpl<MtOpenGiftMapper, MtOpenGif
         dto.setCouponNum(openGiftInfo.getCouponNum());
         dto.setPoint(openGiftInfo.getPoint());
         dto.setOperator(openGiftInfo.getOperator());
-
+        dto.setMerchantId(openGiftInfo.getMerchantId());
+        if (openGiftInfo.getMerchantId() != null && openGiftInfo.getMerchantId() > 0) {
+            MtMerchant mtMerchant = merchantService.queryMerchantById(openGiftInfo.getMerchantId());
+            if (mtMerchant != null) {
+                dto.setMerchantName(mtMerchant.getName());
+            }
+        }
         MtCoupon couponInfo = couponService.queryCouponById(openGiftInfo.getCouponId());
         dto.setCouponInfo(couponInfo);
 

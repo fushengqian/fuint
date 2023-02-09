@@ -3,21 +3,26 @@ package com.fuint.common.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.fuint.common.dto.GoodsCateDto;
 import com.fuint.common.enums.StatusEnum;
 import com.fuint.common.service.CateService;
+import com.fuint.common.service.MerchantService;
+import com.fuint.common.service.StoreService;
 import com.fuint.framework.annoation.OperationServiceLog;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.pagination.PaginationRequest;
 import com.fuint.framework.pagination.PaginationResponse;
 import com.fuint.repository.mapper.MtGoodsCateMapper;
-import com.fuint.repository.model.MtBanner;
-import com.fuint.repository.model.MtGoodsCate;
+import com.fuint.repository.mapper.MtStoreMapper;
+import com.fuint.repository.model.*;
 import com.fuint.utils.StringUtil;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -38,7 +43,22 @@ public class CateServiceImpl extends ServiceImpl<MtGoodsCateMapper, MtGoodsCate>
     private static final Logger log = LoggerFactory.getLogger(CateServiceImpl.class);
 
     @Resource
-    private MtGoodsCateMapper cateRepository;
+    private MtGoodsCateMapper mtGoodsCateMapper;
+
+    @Resource
+    private MtStoreMapper mtStoreMapper;
+
+    /**
+     * 商户服务接口
+     */
+    @Autowired
+    private MerchantService merchantService;
+
+    /**
+     * 店铺接口
+     */
+    @Autowired
+    private StoreService storeService;
 
     /**
      * 分页查询分类列表
@@ -47,7 +67,7 @@ public class CateServiceImpl extends ServiceImpl<MtGoodsCateMapper, MtGoodsCate>
      * @return
      */
     @Override
-    public PaginationResponse<MtGoodsCate> queryCateListByPagination(PaginationRequest paginationRequest) {
+    public PaginationResponse<GoodsCateDto> queryCateListByPagination(PaginationRequest paginationRequest) throws BusinessCheckException {
         Page<MtBanner> pageHelper = PageHelper.startPage(paginationRequest.getCurrentPage(), paginationRequest.getPageSize());
         LambdaQueryWrapper<MtGoodsCate> lambdaQueryWrapper = Wrappers.lambdaQuery();
         lambdaQueryWrapper.ne(MtGoodsCate::getStatus, StatusEnum.DISABLE.getKey());
@@ -60,13 +80,39 @@ public class CateServiceImpl extends ServiceImpl<MtGoodsCateMapper, MtGoodsCate>
         if (StringUtils.isNotBlank(status)) {
             lambdaQueryWrapper.eq(MtGoodsCate::getStatus, status);
         }
+        String merchantId = paginationRequest.getSearchParams().get("merchantId") == null ? "" : paginationRequest.getSearchParams().get("merchantId").toString();
+        if (StringUtils.isNotBlank(merchantId)) {
+            lambdaQueryWrapper.eq(MtGoodsCate::getMerchantId, merchantId);
+        }
+        String storeId = paginationRequest.getSearchParams().get("storeId") == null ? "" : paginationRequest.getSearchParams().get("storeId").toString();
+        if (StringUtils.isNotBlank(storeId)) {
+            lambdaQueryWrapper.and(wq -> wq.eq(MtGoodsCate::getStoreId, 0).or().eq(MtGoodsCate::getStoreId, storeId));
+        }
 
         lambdaQueryWrapper.orderByDesc(MtGoodsCate::getId);
-        List<MtGoodsCate> dataList = cateRepository.selectList(lambdaQueryWrapper);
+        List<MtGoodsCate> cateList = mtGoodsCateMapper.selectList(lambdaQueryWrapper);
+        List<GoodsCateDto> dataList = new ArrayList<>();
+        for (MtGoodsCate mtGoodsCate : cateList) {
+             GoodsCateDto goodsCateDto = new GoodsCateDto();
+             BeanUtils.copyProperties(mtGoodsCate, goodsCateDto);
+             if (goodsCateDto.getMerchantId() != null && goodsCateDto.getMerchantId() > 0) {
+                 MtMerchant mtMerchant = merchantService.queryMerchantById(goodsCateDto.getMerchantId());
+                 if (mtMerchant != null) {
+                     goodsCateDto.setMerchantName(mtMerchant.getName());
+                 }
+             }
+             if (goodsCateDto.getStoreId() != null && goodsCateDto.getStoreId() > 0) {
+                 MtStore mtStore = storeService.queryStoreById(goodsCateDto.getStoreId());
+                 if (mtStore != null) {
+                     goodsCateDto.setStoreName(mtStore.getName());
+                 }
+             }
+             dataList.add(goodsCateDto);
+        }
 
         PageRequest pageRequest = PageRequest.of(paginationRequest.getCurrentPage(), paginationRequest.getPageSize());
         PageImpl pageImpl = new PageImpl(dataList, pageRequest, pageHelper.getTotal());
-        PaginationResponse<MtGoodsCate> paginationResponse = new PaginationResponse(pageImpl, MtGoodsCate.class);
+        PaginationResponse<GoodsCateDto> paginationResponse = new PaginationResponse(pageImpl, GoodsCateDto.class);
         paginationResponse.setTotalPages(pageHelper.getPages());
         paginationResponse.setTotalElements(pageHelper.getTotal());
         paginationResponse.setContent(dataList);
@@ -87,6 +133,8 @@ public class CateServiceImpl extends ServiceImpl<MtGoodsCateMapper, MtGoodsCate>
         if (null != reqDto.getId()) {
             mtCate.setId(reqDto.getId());
         }
+        mtCate.setMerchantId(reqDto.getMerchantId());
+        mtCate.setStoreId(reqDto.getStoreId());
         mtCate.setName(reqDto.getName());
         mtCate.setStatus(StatusEnum.ENABLED.getKey());
         mtCate.setLogo(reqDto.getLogo());
@@ -109,7 +157,7 @@ public class CateServiceImpl extends ServiceImpl<MtGoodsCateMapper, MtGoodsCate>
      */
     @Override
     public MtGoodsCate queryCateById(Integer id) {
-        return cateRepository.selectById(id);
+        return mtGoodsCateMapper.selectById(id);
     }
 
     /**
@@ -150,6 +198,12 @@ public class CateServiceImpl extends ServiceImpl<MtGoodsCateMapper, MtGoodsCate>
         }
 
         mtCate.setId(reqDto.getId());
+        if (reqDto.getMerchantId() != null) {
+            mtCate.setMerchantId(reqDto.getMerchantId());
+        }
+        if (reqDto.getStoreId() != null) {
+            mtCate.setStoreId(reqDto.getStoreId());
+        }
         if (reqDto.getLogo() != null) {
             mtCate.setLogo(reqDto.getLogo());
         }
@@ -175,14 +229,33 @@ public class CateServiceImpl extends ServiceImpl<MtGoodsCateMapper, MtGoodsCate>
     }
 
     @Override
+    public List<MtGoodsCate> getStoreCateList(Integer storeId) {
+        Integer merchantId = 0;
+        MtStore mtStore = mtStoreMapper.selectById(storeId);
+        if (mtStore != null) {
+            merchantId = mtStore.getMerchantId();
+        }
+        List<MtGoodsCate> dataList = mtGoodsCateMapper.getStoreGoodsCateList(merchantId);
+        return dataList;
+    }
+
+    @Override
     public List<MtGoodsCate> queryCateListByParams(Map<String, Object> params) {
         Map<String, Object> param = new HashMap<>();
 
         String status =  params.get("status") == null ? StatusEnum.ENABLED.getKey(): params.get("status").toString();
         param.put("status", status);
 
-        List<MtGoodsCate> result = cateRepository.selectByMap(param);
+        String merchantId = params.get("merchantId") == null ? "" : params.get("merchantId").toString();
+        if (StringUtil.isNotEmpty(merchantId)) {
+            param.put("merchant_id", merchantId);
+        }
+        String storeId = params.get("storeId") == null ? "" : params.get("storeId").toString();
+        if (StringUtil.isNotEmpty(storeId)) {
+            param.put("store_id", storeId);
+        }
 
+        List<MtGoodsCate> result = mtGoodsCateMapper.selectByMap(param);
         return result;
     }
 }

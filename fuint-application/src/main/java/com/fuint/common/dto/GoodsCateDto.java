@@ -1,11 +1,7 @@
-package com.fuint.repository.model;
+package com.fuint.common.dto;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
 import java.io.Serializable;
 import java.util.Date;
-import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
@@ -17,21 +13,24 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-@TableName("mt_goods_cate")
-@ApiModel(value = "MtGoodsCate对象", description = "")
-public class MtGoodsCate implements Serializable {
+public class GoodsCateDto implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     @ApiModelProperty("自增ID")
-    @TableId(value = "ID", type = IdType.AUTO)
     private Integer id;
 
-    @ApiModelProperty("所属商户")
+    @ApiModelProperty("所属商户ID")
     private Integer merchantId;
 
-    @ApiModelProperty("所属店铺")
+    @ApiModelProperty("所属商户名称")
+    private String merchantName;
+
+    @ApiModelProperty("所属店铺ID")
     private Integer storeId;
+
+    @ApiModelProperty("所属店铺名称")
+    private String storeName;
 
     @ApiModelProperty("分类名称")
     private String name;
@@ -56,6 +55,4 @@ public class MtGoodsCate implements Serializable {
 
     @ApiModelProperty("A：正常；D：删除")
     private String status;
-
-
 }

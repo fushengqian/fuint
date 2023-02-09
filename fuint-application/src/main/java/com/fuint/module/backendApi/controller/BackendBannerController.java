@@ -92,8 +92,11 @@ public class BackendBannerController extends BaseController {
         if (storeId != null && storeId > 0) {
             params.put("storeId", storeId);
         }
+        if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
+            params.put("merchantId", accountInfo.getMerchantId());
+        }
         paginationRequest.setSearchParams(params);
-        PaginationResponse<MtBanner> paginationResponse = bannerService.queryBannerListByPagination(paginationRequest);
+        PaginationResponse<BannerDto> paginationResponse = bannerService.queryBannerListByPagination(paginationRequest);
 
         String imagePath = settingService.getUploadBasePath();
         Map<String, Object> paramsStore = new HashMap<>();
@@ -159,10 +162,14 @@ public class BackendBannerController extends BaseController {
         String status = params.get("status") == null ? "" : params.get("status").toString();
         String storeId = params.get("storeId") == null ? "0" : params.get("storeId").toString();
         String sort = params.get("sort") == null ? "0" : params.get("sort").toString();
+        String merchantId = params.get("merchantId") == null ? "" : params.get("merchantId").toString();
 
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
         if (accountInfo == null) {
             return getFailureResult(1001, "请先登录");
+        }
+        if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
+            merchantId = accountInfo.getMerchantId().toString();
         }
 
         BannerDto info = new BannerDto();
@@ -174,6 +181,9 @@ public class BackendBannerController extends BaseController {
         info.setStatus(status);
         info.setStoreId(Integer.parseInt(storeId));
         info.setSort(Integer.parseInt(sort));
+        if (StringUtil.isNotEmpty(merchantId)) {
+            info.setMerchantId(Integer.parseInt(merchantId));
+        }
 
         if (StringUtil.isNotEmpty(id)) {
             info.setId(Integer.parseInt(id));

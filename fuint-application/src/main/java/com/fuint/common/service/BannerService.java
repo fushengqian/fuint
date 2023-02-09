@@ -23,7 +23,7 @@ public interface BannerService extends IService<MtBanner> {
      * @param paginationRequest
      * @return
      */
-    PaginationResponse<MtBanner> queryBannerListByPagination(PaginationRequest paginationRequest) throws BusinessCheckException;
+    PaginationResponse<BannerDto> queryBannerListByPagination(PaginationRequest paginationRequest) throws BusinessCheckException;
 
     /**
      * 添加Banner
