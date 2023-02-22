@@ -140,7 +140,7 @@ public class PointServiceImpl extends ServiceImpl<MtPointMapper, MtPoint> implem
         user.setPoint(newAmount);
 
         mtUserMapper.updateById(user);
-        this.save(mtPoint);
+        mtPointMapper.insert(mtPoint);
 
         // 发送小程序订阅消息
         Date nowTime = new Date();
@@ -178,15 +178,23 @@ public class PointServiceImpl extends ServiceImpl<MtPointMapper, MtPoint> implem
             fUserInfo = memberService.addMemberByMobile(mobile);
         }
 
+        if (fUserInfo == null) {
+            throw new BusinessCheckException("转赠的好友信息不存在");
+        }
+
+        if (fUserInfo.getId().equals(userInfo.getId())) {
+            throw new BusinessCheckException("积分不能转赠给自己");
+        }
+
         Integer newAmount = fUserInfo.getPoint() + amount;
         if (newAmount < 0) {
-            return false;
+            throw new BusinessCheckException("积分赠送失败");
         }
         fUserInfo.setPoint(newAmount);
 
         Integer myNewAmount = userInfo.getPoint() - amount;
         if (myNewAmount < 0) {
-            return false;
+            throw new BusinessCheckException("您的积分不足");
         }
         userInfo.setPoint(myNewAmount);
 

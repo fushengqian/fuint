@@ -71,8 +71,8 @@ public interface GoodsService {
     /**
      * 根据ID删除
      *
-     * @param id       ID
-     * @param operator 操作人
+     * @param  id       ID
+     * @param  operator 操作人
      * @throws BusinessCheckException
      */
     void deleteGoods(Integer id, String operator) throws BusinessCheckException;
@@ -94,4 +94,9 @@ public interface GoodsService {
      * 获取规格详情
      * */
     MtGoodsSpec getSpecDetail(Integer specId);
+
+    /**
+     * 更新已售数量
+     * */
+    Boolean updateInitSale(Integer goodsId);
 }

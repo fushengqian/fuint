@@ -20,4 +20,6 @@ public interface MtGoodsMapper extends BaseMapper<MtGoods> {
 
     MtGoods getByGoodsNo(@Param("goodsNo") String goodsNo);
 
+    Boolean updateInitSale(@Param("goodsId") Integer goodsId);
+
 }

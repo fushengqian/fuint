@@ -98,8 +98,8 @@ public class ClientSettlementController extends BaseController {
     public ResponseObject submit(HttpServletRequest request, @RequestBody Map<String, Object> param) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
         String cartIds = param.get("cartIds") == null ? "" : param.get("cartIds").toString();
-        Integer targetId = param.get("targetId") == null ? 0 : Integer.parseInt(param.get("targetId").toString()); // 预存卡、升级等级必填
-        String selectNum = param.get("selectNum") == null ? "" : param.get("selectNum").toString(); // 预存卡必填
+        Integer targetId = param.get("targetId") == null ? 0 : Integer.parseInt(param.get("targetId").toString()); // 储值卡、升级等级必填
+        String selectNum = param.get("selectNum") == null ? "" : param.get("selectNum").toString(); // 储值卡必填
         String remark = param.get("remark") == null ? "" : param.get("remark").toString();
         String type = param.get("type") == null ? "" : param.get("type").toString(); // 订单类型
         String payAmount = param.get("payAmount") == null ? "0" : StringUtil.isEmpty(param.get("payAmount").toString()) ? "0" : param.get("payAmount").toString(); // 支付金额
@@ -143,7 +143,9 @@ public class ClientSettlementController extends BaseController {
 
         if (userInfo == null) {
             MtUser user = memberService.getCurrentUserInfo(request, userId, token);
-            userInfo = memberService.queryMemberById(user.getId());
+            if (user != null) {
+                userInfo = memberService.queryMemberById(user.getId());
+            }
         } else {
             MtStaff mtStaff = staffService.queryStaffByUserId(userInfo.getId());
             if (mtStaff != null) {
@@ -151,7 +153,7 @@ public class ClientSettlementController extends BaseController {
             }
         }
 
-        // 后台操作自动注册会员信息
+        // 收银台通过手机号自动注册会员信息
         if ((userInfo == null || StringUtil.isEmpty(token))) {
             String mobile = param.get("mobile") == null ? "" : param.get("mobile").toString();
             if (StringUtil.isNotEmpty(operator) && StringUtil.isNotEmpty(mobile)) {
@@ -229,7 +231,7 @@ public class ClientSettlementController extends BaseController {
         orderDto.setAmount(new BigDecimal("0"));
         orderDto.setCartIds(cartIds);
 
-        // 预存卡的订单
+        // 储值卡的订单
         if (orderDto.getType().equals(OrderTypeEnum.PRESTORE.getKey())) {
             orderDto.setCouponId(targetId);
             String orderParam = "";
@@ -294,7 +296,7 @@ public class ClientSettlementController extends BaseController {
             // 是否可以使用积分，并且积分数量足够
             if (canUsedAsMoney.equals("true") && Float.parseFloat(exchangeNeedPoint) > 0 && (userInfo.getPoint() >= usePoint)) {
                 orderDto.setUsePoint(usePoint);
-                orderDto.setPointAmount(new BigDecimal(usePoint).divide(new BigDecimal(exchangeNeedPoint)));
+                orderDto.setPointAmount(new BigDecimal(usePoint).divide(new BigDecimal(exchangeNeedPoint), BigDecimal.ROUND_CEILING));
                 if (orderDto.getPayAmount().compareTo(orderDto.getPointAmount()) > 0) {
                     orderDto.setPayAmount(orderDto.getPayAmount().subtract(orderDto.getPointAmount()));
                 } else {
@@ -309,7 +311,7 @@ public class ClientSettlementController extends BaseController {
             if (userGrade != null) {
                 // 是否有会员折扣
                 if (userGrade.getDiscount() > 0) {
-                    BigDecimal percent = new BigDecimal(userGrade.getDiscount()).divide(new BigDecimal("10"));
+                    BigDecimal percent = new BigDecimal(userGrade.getDiscount()).divide(new BigDecimal("10"), BigDecimal.ROUND_CEILING);
                     BigDecimal payAmountDiscount = orderDto.getPayAmount().multiply(percent);
                     orderDto.setDiscount(orderDto.getDiscount().add(orderDto.getPayAmount().subtract(payAmountDiscount)));
                     orderDto.setPayAmount(payAmountDiscount);
@@ -368,7 +370,7 @@ public class ClientSettlementController extends BaseController {
                                     }
                                 }
                             } else if(couponInfo.getType().equals(CouponTypeEnum.PRESTORE.getKey())) {
-                                // 预存卡，减去余额
+                                // 储值卡，减去余额
                                 BigDecimal useCouponAmount = userCouponInfo.getBalance();
                                 if (orderDto.getPayAmount().compareTo(userCouponInfo.getBalance()) <= 0) {
                                     useCouponAmount = orderDto.getPayAmount();

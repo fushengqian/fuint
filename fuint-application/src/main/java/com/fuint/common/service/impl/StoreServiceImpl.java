@@ -60,9 +60,9 @@ public class StoreServiceImpl extends ServiceImpl<MtStoreMapper, MtStore> implem
         if (StringUtils.isNotBlank(status)) {
             lambdaQueryWrapper.eq(MtStore::getStatus, status);
         }
-        String id = paginationRequest.getSearchParams().get("id") == null ? "" : paginationRequest.getSearchParams().get("id").toString();
-        if (StringUtils.isNotBlank(id)) {
-            lambdaQueryWrapper.eq(MtStore::getId, id);
+        String storeId = paginationRequest.getSearchParams().get("storeId") == null ? "" : paginationRequest.getSearchParams().get("storeId").toString();
+        if (StringUtils.isNotBlank(storeId)) {
+            lambdaQueryWrapper.eq(MtStore::getId, storeId);
         }
 
         lambdaQueryWrapper.orderByAsc(MtStore::getStatus).orderByDesc(MtStore::getIsDefault);
@@ -98,6 +98,10 @@ public class StoreServiceImpl extends ServiceImpl<MtStoreMapper, MtStore> implem
         mtStore.setName(storeDto.getName());
         mtStore.setContact(storeDto.getContact());
         mtStore.setOperator(storeDto.getOperator());
+        mtStore.setWxMchId(storeDto.getWxMchId());
+        if (storeDto.getWxApiV2() != null && !storeDto.getWxApiV2().equals(mtStore.getId()+"")) {
+            mtStore.setWxApiV2(storeDto.getWxApiV2());
+        }
 
         mtStore.setUpdateTime(new Date());
         if (storeDto.getId() == null) {
@@ -122,8 +126,11 @@ public class StoreServiceImpl extends ServiceImpl<MtStoreMapper, MtStore> implem
         if (mtStore.getStatus() == null) {
             mtStore.setStatus(StatusEnum.ENABLED.getKey());
         }
-
-        this.save(mtStore);
+        if (mtStore.getId() == null || mtStore.getId() < 1) {
+            this.save(mtStore);
+        } else {
+            mtStoreMapper.updateById(mtStore);
+        }
         return mtStore;
     }
 
@@ -244,6 +251,11 @@ public class StoreServiceImpl extends ServiceImpl<MtStoreMapper, MtStore> implem
     public List<MtStore> queryStoresByParams(Map<String, Object> params) {
         LambdaQueryWrapper<MtStore> lambdaQueryWrapper = Wrappers.lambdaQuery();
         lambdaQueryWrapper.ne(MtStore::getStatus, StatusEnum.DISABLE.getKey());
+
+        String storeId = params.get("storeId") == null ? "" : params.get("storeId").toString();
+        if (StringUtils.isNotBlank(storeId)) {
+            lambdaQueryWrapper.eq(MtStore::getId, storeId);
+        }
 
         String name = params.get("name") == null ? "" : params.get("name").toString();
         if (StringUtils.isNotBlank(name)) {

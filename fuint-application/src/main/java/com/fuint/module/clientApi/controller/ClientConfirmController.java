@@ -82,11 +82,11 @@ public class ClientConfirmController extends BaseController {
         // 员工是否已经被审核
         HashMap params = new HashMap<>();
         params.put("user_id", mtUser.getId());
-        params.put("status", StatusEnum.ENABLED.getKey());
-        List<MtStaff> confirmerList = staffService.queryStaffByParams(params);
+        params.put("AUDITED_STATUS", StatusEnum.ENABLED.getKey());
+        List<MtStaff> staffList = staffService.queryStaffByParams(params);
         Integer storeId = 0;
-        if (confirmerList.size() > 0) {
-            for (MtStaff staff : confirmerList) {
+        if (staffList.size() > 0) {
+            for (MtStaff staff : staffList) {
                 if (!staff.getAuditedStatus().equals(StatusEnum.ENABLED.getKey())) {
                     return getFailureResult(1003, "员工状态异常！");
                 }

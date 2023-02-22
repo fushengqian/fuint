@@ -27,7 +27,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.core.env.Environment;
 import weixin.popular.util.JsonUtil;
-import javax.annotation.Resource;
+
 import javax.crypto.Cipher;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
@@ -56,9 +56,6 @@ public class WeixinServiceImpl implements WeixinService {
 
     private static final Logger logger = LoggerFactory.getLogger(WeixinServiceImpl.class);
 
-    @Resource
-    private WXPayConfigImpl wxPayConfigImpl;
-
     @Autowired
     private UserCouponService userCouponService;
 
@@ -72,9 +69,6 @@ public class WeixinServiceImpl implements WeixinService {
     private PointService pointService;
 
     @Autowired
-    private OpenGiftService openGiftService;
-
-    @Autowired
     private UserGradeService userGradeService;
 
     @Autowired
@@ -85,6 +79,9 @@ public class WeixinServiceImpl implements WeixinService {
 
     @Autowired
     private BalanceService balanceService;
+
+    @Autowired
+    private StoreService storeService;
 
     @Autowired
     private Environment env;
@@ -151,9 +148,11 @@ public class WeixinServiceImpl implements WeixinService {
         }
         reqData.put("spbill_create_ip", ip);
 
+        WXPayConfigImpl wxPayConfig = WXPayConfigImpl.getInstance(env, orderInfo.getStoreId(), storeService);
+
         if (orderInfo.getPayType().equals("JSAPI")) {
             reqData.put("trade_type", orderInfo.getPayType() == null ? "JSAPI" : orderInfo.getPayType());
-            reqData.put("notify_url", wxPayConfigImpl.getCallbackUrl());
+            reqData.put("notify_url", wxPayConfig.getCallbackUrl());
             reqData.put("openid", userInfo.getOpenId() == null ? "" : userInfo.getOpenId());
         }
         if (StringUtil.isNotEmpty(authCode)) {
@@ -161,14 +160,14 @@ public class WeixinServiceImpl implements WeixinService {
         }
 
         // 更新支付金额
-        BigDecimal payAmount1 = new BigDecimal(payAmount).divide(new BigDecimal("100"));
+        BigDecimal payAmount1 = new BigDecimal(payAmount).divide(new BigDecimal("100"), BigDecimal.ROUND_CEILING);
         OrderDto reqDto = new OrderDto();
         reqDto.setId(orderInfo.getId());
         reqDto.setPayAmount(payAmount1);
         reqDto.setPayType(orderInfo.getPayType());
         orderService.updateOrder(reqDto);
 
-        Map<String, String> respData = this.unifiedOrder(reqData);
+        Map<String, String> respData = this.unifiedOrder(orderInfo.getStoreId(), reqData);
         if (respData == null) {
             logger.error("微信支付接口调用异常......");
             return new ResponseObject(3000, "微信支付接口调用异常", null);
@@ -194,7 +193,7 @@ public class WeixinServiceImpl implements WeixinService {
             outParmas.put("package", "prepay_id=" + prepayId);
             outParmas.put("signType", "MD5");
             try {
-                String sign = WXPayUtil.generateSignature(outParmas, wxPayConfigImpl.getKey());
+                String sign = WXPayUtil.generateSignature(outParmas, wxPayConfig.getKey());
                 outParmas.put("paySign", sign);
             } catch (Exception e) {
                 // 签名失败
@@ -219,9 +218,13 @@ public class WeixinServiceImpl implements WeixinService {
     @Override
     @Transactional
     public boolean paymentCallback(UserOrderDto orderInfo) throws BusinessCheckException {
-        OrderDto reqDto = new OrderDto();
+        // 更新订单状态为已支付
+        boolean isPay = orderService.setOrderPayed(orderInfo.getId());
+        if (!isPay) {
+            return false;
+        }
 
-        // 预存卡订单
+        // 储值卡订单
         if (orderInfo.getType().equals(OrderTypeEnum.PRESTORE.getKey())) {
             Map<String, Object> param = new HashMap<>();
             param.put("couponId", orderInfo.getCouponId());
@@ -229,12 +232,6 @@ public class WeixinServiceImpl implements WeixinService {
             param.put("param", orderInfo.getParam());
             param.put("orderId", orderInfo.getId());
             userCouponService.preStore(param);
-        }
-
-        // 会员升级订单
-        if (orderInfo.getType().equals(OrderTypeEnum.MEMBER.getKey())) {
-            openGiftService.openGift(orderInfo.getUserId(), Integer.parseInt(orderInfo.getParam()));
-            reqDto.setRemark("升级会员等级");
         }
 
         // 充值订单
@@ -261,14 +258,6 @@ public class WeixinServiceImpl implements WeixinService {
             }
         }
 
-        // 更新订单状态为已支付
-        reqDto.setId(orderInfo.getId());
-        reqDto.setStatus(OrderStatusEnum.PAID.getKey());
-        reqDto.setPayStatus(PayStatusEnum.SUCCESS.getKey());
-        reqDto.setPayTime(new Date());
-        reqDto.setUpdateTime(new Date());
-        orderService.updateOrder(reqDto);
-
         // 处理消费返积分，查询返1积分所需消费金额
         MtSetting setting = settingService.querySettingByName("pointNeedConsume");
         if (setting != null) {
@@ -277,7 +266,7 @@ public class WeixinServiceImpl implements WeixinService {
 
             Double pointNum = 0d;
             if (orderInfo.getPayAmount().compareTo(new BigDecimal(needPayAmountInt)) > 0) {
-                BigDecimal point = orderInfo.getPayAmount().divide(new BigDecimal(needPayAmountInt));
+                BigDecimal point = orderInfo.getPayAmount().divide(new BigDecimal(needPayAmountInt), BigDecimal.ROUND_CEILING);
                 pointNum = Math.ceil(point.doubleValue());
             }
 
@@ -313,7 +302,7 @@ public class WeixinServiceImpl implements WeixinService {
         try {
             inStream = request.getInputStream();
             byte[] buffer = new byte[4096];
-            int len = 0;
+            int len;
             while ((len = inStream.read(buffer)) != -1) {
                 outSteam.write(buffer, 0, len);
             }
@@ -324,11 +313,6 @@ public class WeixinServiceImpl implements WeixinService {
             Map<String, String> resultMap = WXPayUtil.xmlToMap(result);
             String returnCode = resultMap.get("return_code");
             if (StringUtil.isNotEmpty(returnCode) && returnCode.equals("SUCCESS")) {
-                boolean flag = WXPayUtil.isSignatureValid(resultMap, wxPayConfigImpl.getKey());
-                if (!flag) {
-                    logger.error("微信支付回调接口验签失败");
-                    return null;
-                }
                 return resultMap;
             }
         } catch (Exception e) {
@@ -546,11 +530,11 @@ public class WeixinServiceImpl implements WeixinService {
         return true;
     }
 
-    private Map<String, String> unifiedOrder(Map<String, String> reqData) {
+    private Map<String, String> unifiedOrder(Integer storeId, Map<String, String> reqData) {
         try {
             logger.info("调用微信支付下单接口入参{}", JsonUtil.toJSONString(reqData));
-
-            WXPay wxPay = new WXPay(wxPayConfigImpl);
+            WXPayConfigImpl wxPayConfig = WXPayConfigImpl.getInstance(env, storeId, storeService);
+            WXPay wxPay = new WXPay(wxPayConfig);
             Map<String, String> respMap;
             String authCode = reqData.get("auth_code");
             if (StringUtil.isNotEmpty(authCode)) {

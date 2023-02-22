@@ -78,12 +78,6 @@ public interface UserCouponService extends IService<MtUserCoupon> {
     MtUserCoupon getUserCouponDetail(Integer userCouponId) throws BusinessCheckException;
 
     /**
-     * 根据条件查询会员卡券
-     * @param params
-     * */
-    List<MtUserCoupon> getUserCouponListByParams(Map<String, Object> params) throws BusinessCheckException;
-
-    /**
      * 根据过期时间查询会员卡券
      * @param userId
      * @param status
@@ -92,4 +86,13 @@ public interface UserCouponService extends IService<MtUserCoupon> {
      * @return
      * */
     List<MtUserCoupon> getUserCouponListByExpireTime(Integer userId, String status, String startTime, String endTime) throws BusinessCheckException;
+
+    /**
+     * 给会员发送卡券（会员购买）
+     * @param orderId
+     * @param couponId
+     * @param userId
+     * @param mobile
+     * */
+    boolean buyCouponItem(Integer orderId, Integer couponId, Integer userId, String mobile) throws BusinessCheckException;
 }

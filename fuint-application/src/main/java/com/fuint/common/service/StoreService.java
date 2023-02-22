@@ -7,7 +7,6 @@ import com.fuint.framework.pagination.PaginationRequest;
 import com.fuint.framework.pagination.PaginationResponse;
 import com.fuint.repository.model.MtStore;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.Map;
 
@@ -64,7 +63,7 @@ public interface StoreService extends IService<MtStore> {
      * @param storeName 店铺名称
      * @throws BusinessCheckException
      */
-    StoreDto queryStoreByName(String storeName) throws BusinessCheckException, InvocationTargetException, IllegalAccessException;
+    StoreDto queryStoreByName(String storeName) throws BusinessCheckException;
 
     /**
      * 根据店铺ID查询店铺信息
@@ -73,7 +72,7 @@ public interface StoreService extends IService<MtStore> {
      * @return
      * @throws BusinessCheckException
      */
-    StoreDto queryStoreDtoById(Integer id) throws BusinessCheckException, InvocationTargetException, IllegalAccessException;
+    StoreDto queryStoreDtoById(Integer id) throws BusinessCheckException;
 
     /**
      * 更新店铺状态

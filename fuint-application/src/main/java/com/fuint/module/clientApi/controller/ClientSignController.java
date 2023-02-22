@@ -1,7 +1,6 @@
 package com.fuint.module.clientApi.controller;
 
 import com.alibaba.fastjson.JSONObject;
-import com.fuint.common.Constants;
 import com.fuint.common.dto.TokenDto;
 import com.fuint.common.dto.UserInfo;
 import com.fuint.common.enums.GenderEnum;
@@ -215,7 +214,7 @@ public class ClientSignController extends BaseController {
                 TokenUtil.saveToken(loginInfo);
 
                 dto.setIsLogin("true");
-                dto.setToken(token);
+                dto.setToken(userToken);
                 dto.setTokenCreatedTime(System.currentTimeMillis());
             } else {
                 dto.setIsLogin("false");
@@ -239,7 +238,7 @@ public class ClientSignController extends BaseController {
                     loginInfo.setToken(TokenUtil.generateToken(userAgent, userInfo.getId()));
                     loginInfo.setId(userInfo.getId());
                     TokenUtil.saveToken(loginInfo);
-                    dto.setToken(token);
+                    dto.setToken(loginInfo.getToken());
                     mtUser = userInfo;
                 } else {
                     return getFailureResult(201, "账号或密码有误");

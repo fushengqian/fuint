@@ -1,21 +1,24 @@
 package com.fuint.common.enums;
 
 /**
- * 卡券适用商品
+ * 员工类别枚举
  *
  * Created by FSQ
  * CopyRight https://www.fuint.cn
  */
-public enum ApplyGoodsEnum {
-    ALL_GOODS("allGoods", "全场通用"),
-    PARK_GOODS("parkGoods", "指定商品");
+public enum StaffCategoryEnum {
+    MANAGER("1", "店长","admin"),
+    CASHIER("2", "收银人员","cashier"),
+    SALE("3", "销售人员","sale"),
+    SERVICE("4", "服务人员","service");
 
     private String key;
-
+    private String name;
     private String value;
 
-    ApplyGoodsEnum(String key, String value) {
+    StaffCategoryEnum(String key, String name, String value) {
         this.key = key;
+        this.name = name;
         this.value = value;
     }
 
@@ -25,6 +28,14 @@ public enum ApplyGoodsEnum {
 
     public void setKey(String key) {
         this.key = key;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getValue() {
@@ -37,7 +48,7 @@ public enum ApplyGoodsEnum {
 
     // 普通方法，通过key获取value
     public static String getValue(String k) {
-        for (ApplyGoodsEnum c : ApplyGoodsEnum.values()) {
+        for (StaffCategoryEnum c : StaffCategoryEnum.values()) {
             if (c.getKey().equals(k)) {
                 return c.getValue();
             }
@@ -45,9 +56,19 @@ public enum ApplyGoodsEnum {
         return null;
     }
 
+    // 普通方法，通过key获取name
+    public static String getName(String k) {
+        for (StaffCategoryEnum c : StaffCategoryEnum.values()) {
+            if (c.getKey().equals(k)) {
+                return c.getName();
+            }
+        }
+        return null;
+    }
+
     // 普通方法，通过Value获取key
     public static String getKey(String v) {
-        for (ApplyGoodsEnum c : ApplyGoodsEnum.values()) {
+        for (StaffCategoryEnum c : StaffCategoryEnum.values()) {
             if (c.getValue() == v) {
                 return c.getKey();
             }

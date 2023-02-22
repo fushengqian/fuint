@@ -70,6 +70,7 @@ public class ClientCartController extends BaseController {
     @CrossOrigin
     public ResponseObject save(HttpServletRequest request, @RequestBody Map<String, Object> param) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
+        Integer storeId = request.getHeader("storeId") == null ? 0 : Integer.parseInt(request.getHeader("storeId"));
         Integer cartId = param.get("cartId") == null ? 0 : Integer.parseInt(param.get("cartId").toString());
         Integer goodsId = param.get("goodsId") == null ? 0 : Integer.parseInt(param.get("goodsId").toString());
         Integer skuId = param.get("skuId") == null ? 0 : Integer.parseInt(param.get("skuId").toString());
@@ -102,6 +103,7 @@ public class ClientCartController extends BaseController {
         MtCart mtCart = new MtCart();
         mtCart.setGoodsId(goodsId);
         mtCart.setUserId(mtUser.getId());
+        mtCart.setStoreId(storeId);
         mtCart.setNum(buyNum);
         mtCart.setSkuId(skuId);
         mtCart.setId(cartId);
@@ -159,6 +161,7 @@ public class ClientCartController extends BaseController {
     @CrossOrigin
     public ResponseObject list(HttpServletRequest request, @RequestBody Map<String, Object> params) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
+        Integer storeId = request.getHeader("storeId") == null ? 0 : Integer.parseInt(request.getHeader("storeId"));
         Integer goodsId = params.get("goodsId") == null ? 0 : Integer.parseInt(params.get("goodsId").toString());
         Integer skuId = params.get("skuId") == null ? 0 : Integer.parseInt(params.get("skuId").toString());
         Integer buyNum = params.get("buyNum") == null ? 1 : Integer.parseInt(params.get("buyNum").toString());
@@ -205,6 +208,9 @@ public class ClientCartController extends BaseController {
             param.put("hangNo", hangNo);
         } else {
             param.put("hangNo", "");
+        }
+        if (storeId > 0) {
+            param.put("storeId", storeId);
         }
         List<MtCart> cartList = new ArrayList<>();
 

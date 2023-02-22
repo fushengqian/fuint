@@ -87,11 +87,11 @@ public class GoodsServiceImpl extends ServiceImpl<MtGoodsMapper, MtGoods> implem
         }
         String storeId = paginationRequest.getSearchParams().get("storeId") == null ? "" : paginationRequest.getSearchParams().get("storeId").toString();
         if (StringUtils.isNotBlank(storeId)) {
-            lambdaQueryWrapper.and(wq -> wq.eq(MtGoods::getStoreId, 0).or().eq(MtGoods::getStoreId, storeId));
+            lambdaQueryWrapper.eq(MtGoods::getStoreId, storeId);
         }
-        String merchantId = paginationRequest.getSearchParams().get("merchantId") == null ? "" : paginationRequest.getSearchParams().get("merchantId").toString();
-        if (StringUtils.isNotBlank(merchantId)) {
-            lambdaQueryWrapper.eq(MtGoods::getMerchantId, merchantId);
+        String type = paginationRequest.getSearchParams().get("type") == null ? "" : paginationRequest.getSearchParams().get("type").toString();
+        if (StringUtils.isNotBlank(type)) {
+            lambdaQueryWrapper.eq(MtGoods::getType, type);
         }
 
         lambdaQueryWrapper.orderByDesc(MtGoods::getId);
@@ -180,8 +180,14 @@ public class GoodsServiceImpl extends ServiceImpl<MtGoodsMapper, MtGoods> implem
         if (StringUtil.isNotEmpty(reqDto.getOperator())) {
             mtGoods.setOperator(reqDto.getOperator());
         }
+        if (StringUtil.isNotEmpty(reqDto.getType())) {
+            mtGoods.setType(reqDto.getType());
+        }
         if (reqDto.getCateId() != null && reqDto.getCateId() > 0) {
             mtGoods.setCateId(reqDto.getCateId());
+        }
+        if (reqDto.getServiceTime() != null && reqDto.getServiceTime() > 0) {
+            mtGoods.setServiceTime(reqDto.getServiceTime());
         }
         if (StringUtil.isNotEmpty(reqDto.getGoodsNo())) {
             mtGoods.setGoodsNo(reqDto.getGoodsNo());
@@ -203,6 +209,9 @@ public class GoodsServiceImpl extends ServiceImpl<MtGoodsMapper, MtGoods> implem
         }
         if (reqDto.getLinePrice() == null && reqDto.getId() <= 0) {
             mtGoods.setLinePrice(new BigDecimal("0.00"));
+        }
+        if (StringUtil.isNotEmpty(reqDto.getCouponIds())) {
+            mtGoods.setCouponIds(reqDto.getCouponIds());
         }
         if (reqDto.getWeight() != null) {
             mtGoods.setWeight(reqDto.getWeight());
@@ -252,9 +261,7 @@ public class GoodsServiceImpl extends ServiceImpl<MtGoodsMapper, MtGoods> implem
        if (mtGoods == null) {
            return null;
        }
-       MtGoods goodsInfo = new MtGoods();
-       BeanUtils.copyProperties(mtGoods, goodsInfo);
-       return goodsInfo;
+       return mtGoods;
     }
 
     /**
@@ -289,12 +296,12 @@ public class GoodsServiceImpl extends ServiceImpl<MtGoodsMapper, MtGoods> implem
     /**
      * 根据ID获取商品详情
      *
-     * @param id 商品ID
+     * @param  id 商品ID
      * @throws BusinessCheckException
      */
     @Override
     public GoodsDto getGoodsDetail(Integer id, boolean getDeleteSpec) {
-        if (id < 1) {
+        if (id == null || id < 1) {
             return null;
         }
 
@@ -306,6 +313,7 @@ public class GoodsServiceImpl extends ServiceImpl<MtGoodsMapper, MtGoods> implem
                 BeanUtils.copyProperties(mtGoods, goodsInfo);
             } catch (Exception e) {
                 goodsInfo.setId(mtGoods.getId());
+                goodsInfo.setType(mtGoods.getType());
                 goodsInfo.setStoreId(mtGoods.getStoreId());
                 goodsInfo.setName(mtGoods.getName());
                 goodsInfo.setCateId(mtGoods.getCateId());
@@ -317,6 +325,8 @@ public class GoodsServiceImpl extends ServiceImpl<MtGoodsMapper, MtGoods> implem
                 goodsInfo.setSort(mtGoods.getSort());
                 goodsInfo.setPrice(mtGoods.getPrice());
                 goodsInfo.setLinePrice(mtGoods.getLinePrice());
+                goodsInfo.setServiceTime(mtGoods.getServiceTime());
+                goodsInfo.setCouponIds(mtGoods.getCouponIds());
             }
         }
 
@@ -450,5 +460,13 @@ public class GoodsServiceImpl extends ServiceImpl<MtGoodsMapper, MtGoods> implem
     public MtGoodsSpec getSpecDetail(Integer specId) {
         MtGoodsSpec mtGoodsSpec = mtGoodsSpecMapper.selectById(specId);
         return mtGoodsSpec;
+    }
+
+    /**
+     * 更新已售数量
+     * */
+    @Override
+    public Boolean updateInitSale(Integer goodsId) {
+        return mtGoodsMapper.updateInitSale(goodsId);
     }
 }

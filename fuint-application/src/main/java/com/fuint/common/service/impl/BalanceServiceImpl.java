@@ -41,7 +41,7 @@ import java.util.*;
 public class BalanceServiceImpl extends ServiceImpl<MtBalanceMapper, MtBalance> implements BalanceService {
 
     @Resource
-    private MtBalanceMapper balanceRepository;
+    private MtBalanceMapper mtBalanceMapper;
 
     @Resource
     private MtUserMapper mtUserMapper;
@@ -86,7 +86,7 @@ public class BalanceServiceImpl extends ServiceImpl<MtBalanceMapper, MtBalance> 
         }
 
         lambdaQueryWrapper.orderByDesc(MtBalance::getId);
-        List<MtBalance> balanceList = balanceRepository.selectList(lambdaQueryWrapper);
+        List<MtBalance> balanceList = mtBalanceMapper.selectList(lambdaQueryWrapper);
 
         List<BalanceDto> dataList = new ArrayList<>();
         for (MtBalance mtBalance : balanceList) {
@@ -142,7 +142,7 @@ public class BalanceServiceImpl extends ServiceImpl<MtBalanceMapper, MtBalance> 
         mtUserMapper.updateById(mtUser);
 
         mtBalance.setMobile(mtUser.getMobile());
-        balanceRepository.updateById(mtBalance);
+        mtBalanceMapper.insert(mtBalance);
 
         // 发送小程序订阅消息
         Date nowTime = new Date();
@@ -165,6 +165,6 @@ public class BalanceServiceImpl extends ServiceImpl<MtBalanceMapper, MtBalance> 
      * */
     @Override
     public List<MtBalance> getBalanceListByOrderSn(String orderSn) {
-        return balanceRepository.getBalanceListByOrderSn(orderSn);
+        return mtBalanceMapper.getBalanceListByOrderSn(orderSn);
     }
 }

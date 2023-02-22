@@ -38,6 +38,12 @@ public class MtStore implements Serializable {
     @ApiModelProperty("联系人姓名")
     private String contact;
 
+    @ApiModelProperty("微信支付商户号")
+    private String wxMchId;
+
+    @ApiModelProperty("微信支付APIv2密钥")
+    private String wxApiV2;
+
     @ApiModelProperty("联系电话")
     private String phone;
 

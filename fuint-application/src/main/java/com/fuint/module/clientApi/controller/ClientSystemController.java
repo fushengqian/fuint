@@ -56,8 +56,14 @@ public class ClientSystemController extends BaseController {
         MtStore storeInfo = null;
         if (loginInfo != null) {
             MtUser mtUser = memberService.queryMemberById(loginInfo.getId());
-            if (mtUser != null && mtUser.getStoreId() != null) {
-                storeInfo = storeService.queryStoreById(mtUser.getStoreId());
+            if (mtUser != null) {
+                // 会员已禁用
+                if (!mtUser.getStatus().equals(StatusEnum.ENABLED.getKey())) {
+                    return getFailureResult(1001);
+                }
+                if (mtUser.getStoreId() != null) {
+                    storeInfo = storeService.queryStoreById(mtUser.getStoreId());
+                }
             }
         }
 

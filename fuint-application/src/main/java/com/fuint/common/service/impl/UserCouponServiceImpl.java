@@ -242,7 +242,7 @@ public class UserCouponServiceImpl extends ServiceImpl<MtUserCouponMapper, MtUse
     }
 
     /**
-     * 预存卡券
+     * 储值卡券
      * @param paramMap
      * @return
      * */
@@ -457,7 +457,7 @@ public class UserCouponServiceImpl extends ServiceImpl<MtUserCouponMapper, MtUse
                      continue;
                  }
                  // 不取专用卡券
-                 if (StringUtil.isEmpty(useFor) && (couponInfo.getUseFor() != null || StringUtil.isNotEmpty(couponInfo.getUseFor()))) {
+                 if (StringUtil.isEmpty(useFor) && couponInfo.getUseFor() != null && StringUtil.isNotEmpty(couponInfo.getUseFor())) {
                      continue;
                  }
                  CouponDto couponDto = new CouponDto();
@@ -467,7 +467,7 @@ public class UserCouponServiceImpl extends ServiceImpl<MtUserCouponMapper, MtUse
                  couponDto.setAmount(userCoupon.getAmount());
                  couponDto.setStatus(UserCouponStatusEnum.UNUSED.getKey());
                  boolean isEffective = couponService.isCouponEffective(couponInfo);
-                 // 1.预存卡可用
+                 // 1.储值卡可用
                  if (isEffective && couponInfo.getType().equals(CouponTypeEnum.PRESTORE.getKey())) {
                      if (userCoupon.getBalance().compareTo(new BigDecimal("0")) > 0) {
                          couponDto.setType(CouponTypeEnum.PRESTORE.getValue());
@@ -509,15 +509,6 @@ public class UserCouponServiceImpl extends ServiceImpl<MtUserCouponMapper, MtUse
     }
 
     /**
-     * 根据条件查询会员卡券
-     * */
-    @Override
-    public List<MtUserCoupon> getUserCouponListByParams(Map<String, Object> params) {
-        List<MtUserCoupon> result = mtUserCouponMapper.selectByMap(params);
-        return result;
-    }
-
-    /**
      * 根据过期时间查询会员卡券
      * @param userId
      * @param status
@@ -529,6 +520,45 @@ public class UserCouponServiceImpl extends ServiceImpl<MtUserCouponMapper, MtUse
     public List<MtUserCoupon> getUserCouponListByExpireTime(Integer userId, String status, String startTime, String endTime) {
         List<MtUserCoupon> result = mtUserCouponMapper.getUserCouponListByExpireTime(userId, status, startTime, endTime);
         return result;
+    }
+
+    /**
+     * 会员发送卡券
+     * @param orderId
+     * @param couponId
+     * @param userId
+     * @param mobile
+     * @return
+     * */
+    public boolean buyCouponItem(Integer orderId, Integer couponId, Integer userId, String mobile) throws BusinessCheckException {
+        MtCoupon couponInfo = couponService.queryCouponById(couponId);
+
+        MtUserCoupon userCoupon = new MtUserCoupon();
+        userCoupon.setCouponId(couponId);
+        userCoupon.setType(couponInfo.getType());
+        userCoupon.setGroupId(couponInfo.getGroupId());
+        userCoupon.setMobile(mobile);
+        userCoupon.setUserId(userId);
+        userCoupon.setStatus(UserCouponStatusEnum.UNUSED.getKey());
+        userCoupon.setCreateTime(new Date());
+        userCoupon.setUpdateTime(new Date());
+        userCoupon.setExpireTime(couponInfo.getEndTime());
+
+        userCoupon.setOrderId(orderId);
+        userCoupon.setAmount(couponInfo.getAmount());
+        userCoupon.setBalance(couponInfo.getAmount());
+
+        // 12位随机数
+        StringBuffer code = new StringBuffer();
+        code.append(SeqUtil.getRandomNumber(4));
+        code.append(SeqUtil.getRandomNumber(4));
+        code.append(SeqUtil.getRandomNumber(4));
+        code.append(SeqUtil.getRandomNumber(4));
+        userCoupon.setCode(code.toString());
+        userCoupon.setUuid(code.toString());
+
+        mtUserCouponMapper.insert(userCoupon);
+        return true;
     }
 
     /**

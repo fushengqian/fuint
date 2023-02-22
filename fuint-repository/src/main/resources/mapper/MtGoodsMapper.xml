@@ -6,10 +6,19 @@
     </select>
 
     <select id="searchStoreGoodsList" resultType="com.fuint.repository.model.MtGoods">
-        select * from mt_goods o where o.STORE_ID = #{storeId} and o.STATUS = 'A' and o.name like concat('%',#{keyword},'%')
+        select * from mt_goods t where t.STATUS = 'A'
+        <if test="storeId != null and storeId > 0">
+            and t.STORE_ID = #{storeId}
+        </if>
+        and (t.name like concat('%',#{keyword},'%') or t.goods_no = #{keyword} or t.ID = #{keyword} or t.description like concat('%',#{keyword},'%'))
+        order by t.sort asc
     </select>
 
     <select id="getByGoodsNo" resultType="com.fuint.repository.model.MtGoods">
-        select * from mt_goods o where o.GOODS_NO = #{goodsNo} and o.STATUS = 'A'
+        select * from mt_goods t where t.GOODS_NO = #{goodsNo} and t.STATUS = 'A'
     </select>
+
+    <update id="updateInitSale">
+        update mt_goods t set t.INIT_SALE = t.INIT_SALE + 1 where t.ID = #{goodsId}
+    </update>
 </mapper>

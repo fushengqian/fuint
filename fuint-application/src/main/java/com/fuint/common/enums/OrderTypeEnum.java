@@ -10,7 +10,7 @@ public enum OrderTypeEnum {
     PAYMENT("payment", "付款订单"),
     GOOGS("goods", "商品订单"),
     RECHARGE("recharge", "充值订单"),
-    PRESTORE("prestore", "预存卡订单"),
+    PRESTORE("prestore", "储值卡订单"),
     MEMBER("member", "会员升级订单");
 
     private String key;

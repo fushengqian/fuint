@@ -5,13 +5,11 @@ import com.fuint.common.dto.AccountInfo;
 import com.fuint.common.dto.OpenGiftDto;
 import com.fuint.common.enums.StatusEnum;
 import com.fuint.common.service.MemberService;
-import com.fuint.common.service.MerchantService;
 import com.fuint.common.service.OpenGiftService;
 import com.fuint.common.util.TokenUtil;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.web.BaseController;
 import com.fuint.framework.web.ResponseObject;
-import com.fuint.repository.model.MtMerchant;
 import com.fuint.repository.model.MtOpenGift;
 import com.fuint.repository.model.MtUserGrade;
 import com.fuint.utils.StringUtil;
@@ -46,12 +44,6 @@ public class BackendOpenGiftController extends BaseController {
     private OpenGiftService openGiftService;
 
     /**
-     * 商户接口
-     */
-    @Autowired
-    private MerchantService merchantService;
-
-    /**
      * 开卡礼列表查询
      *
      * @param request  HttpServletRequest对象
@@ -60,16 +52,11 @@ public class BackendOpenGiftController extends BaseController {
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject list(HttpServletRequest request) throws BusinessCheckException {
-        String token = request.getHeader("Access-Token");
         Integer page = request.getParameter("page") == null ? Constants.PAGE_NUMBER : Integer.parseInt(request.getParameter("page"));
         Integer pageSize = request.getParameter("pageSize") == null ? Constants.PAGE_SIZE : Integer.parseInt(request.getParameter("pageSize"));
         String couponId = request.getParameter("couponId");
         String gradeId = request.getParameter("gradeId");
-
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
-        if (accountInfo == null) {
-            return getFailureResult(1001, "请先登录");
-        }
+        String status = request.getParameter("status");
 
         Map<String, Object> param = new HashMap<>();
         if (StringUtil.isNotEmpty(couponId)) {
@@ -78,8 +65,8 @@ public class BackendOpenGiftController extends BaseController {
         if (StringUtil.isNotEmpty(gradeId)) {
             param.put("gradeId", gradeId);
         }
-        if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
-            param.put("merchantId", accountInfo.getMerchantId());
+        if (StringUtil.isNotEmpty(status)) {
+            param.put("status", status);
         }
         param.put("pageNumber", page);
         param.put("pageSize", pageSize);
@@ -87,17 +74,11 @@ public class BackendOpenGiftController extends BaseController {
         ResponseObject response = openGiftService.getOpenGiftList(param);
 
         Map<String, Object> params = new HashMap<>();
-        params.put("status", StatusEnum.ENABLED.getKey());
-        if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
-            params.put("merchantId", accountInfo.getMerchantId());
-        }
         List<MtUserGrade> userGradeList = memberService.queryMemberGradeByParams(params);
-        List<MtMerchant> merchants = merchantService.queryMerchantByParams(params);
 
         Map<String, Object> result = new HashMap<>();
         result.put("paginationResponse", response.getData());
         result.put("userGradeList", userGradeList);
-        result.put("merchants", merchants);
 
         return getSuccessResult(result);
     }
@@ -149,14 +130,6 @@ public class BackendOpenGiftController extends BaseController {
         String couponNum = param.get("couponNum").toString();
         String point = param.get("point").toString();
         String status = param.get("status") == null ? StatusEnum.ENABLED.getKey() : param.get("status").toString();
-        String merchant = param.get("merchantId") == null ? "0" : param.get("merchantId").toString();
-        Integer merchantId = 0;
-        if (StringUtil.isNotEmpty(merchant)) {
-            merchantId = Integer.parseInt(merchant);
-        }
-        if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
-            merchantId = accountInfo.getMerchantId();
-        }
 
         if (StringUtil.isEmpty(couponId) && StringUtil.isEmpty(couponNum) && StringUtil.isEmpty(point)) {
             return getFailureResult(201, "积分和卡券必须填写一项");
@@ -187,7 +160,6 @@ public class BackendOpenGiftController extends BaseController {
         } else {
             reqDto.setPoint(0);
         }
-        reqDto.setMerchantId(merchantId);
         reqDto.setStoreId(0);
         reqDto.setStatus(status);
         String operator = accountInfo.getAccountName();

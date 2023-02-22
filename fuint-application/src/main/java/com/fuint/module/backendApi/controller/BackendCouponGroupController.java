@@ -180,7 +180,7 @@ public class BackendCouponGroupController extends BaseController {
 
         // 该分组已有数据，不允许删除
         Map<String, Object> searchParams = new HashMap<>();
-        searchParams.put("groupId", id.toString());
+        searchParams.put("GROUP_ID", id.toString());
         List<MtUserCoupon> dataList = mtUserCouponMapper.selectByMap(searchParams);
         if (dataList.size() > 0) {
             return getFailureResult(201, "已发放卡券，不允许删除");

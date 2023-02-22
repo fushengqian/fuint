@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.fuint.common.Constants;
 import com.fuint.common.dto.*;
+import com.fuint.common.enums.GoodsTypeEnum;
 import com.fuint.common.enums.StatusEnum;
 import com.fuint.common.service.*;
 import com.fuint.common.util.CommonUtil;
@@ -85,34 +86,30 @@ public class BackendGoodsController extends BaseController {
         Integer pageSize = request.getParameter("pageSize") == null ? Constants.PAGE_SIZE : Integer.parseInt(request.getParameter("pageSize"));
         String name = request.getParameter("name");
         String goodsNo = request.getParameter("goodsNo");
+        String type = request.getParameter("type");
         String status = request.getParameter("status");
-        String merchantId = request.getParameter("merchantId") == null ? "" : request.getParameter("merchantId");
-        String storeId = request.getParameter("storeId") == null ? "" : request.getParameter("storeId");
 
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
         if (accountInfo == null) {
             return getFailureResult(1001, "请先登录");
         }
 
+        TAccount account = accountService.getAccountInfoById(accountInfo.getId());
+        Integer storeId = account.getStoreId();
+
         PaginationRequest paginationRequest = new PaginationRequest();
         paginationRequest.setCurrentPage(page);
         paginationRequest.setPageSize(pageSize);
 
         Map<String, Object> params = new HashMap<>();
-        if (StringUtil.isNotEmpty(merchantId)) {
-            params.put("merchantId", merchantId);
-        }
-        if (StringUtil.isNotEmpty(storeId)) {
+        if (storeId > 0) {
             params.put("storeId", storeId);
-        }
-        if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
-            params.put("merchantId", accountInfo.getMerchantId());
-        }
-        if (accountInfo.getStoreId() != null && accountInfo.getStoreId() > 0) {
-            params.put("storeId", accountInfo.getStoreId());
         }
         if (StringUtil.isNotEmpty(name)) {
             params.put("name", name);
+        }
+        if (StringUtil.isNotEmpty(type)) {
+            params.put("type", type);
         }
         if (StringUtil.isNotEmpty(goodsNo)) {
             params.put("goodsNo", goodsNo);
@@ -120,15 +117,24 @@ public class BackendGoodsController extends BaseController {
         if (StringUtil.isNotEmpty(status)) {
             params.put("status", status);
         }
-        if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
-            params.put("merchantId", accountInfo.getMerchantId());
-        }
         paginationRequest.setSearchParams(params);
         paginationRequest.setSortColumn(new String[]{"status asc", "sort asc", "updateTime desc"});
         PaginationResponse<GoodsDto> paginationResponse = goodsService.queryGoodsListByPagination(paginationRequest);
 
+        // 商品类型列表
+        GoodsTypeEnum[] typeListEnum = GoodsTypeEnum.values();
+        List<ParamDto> typeList = new ArrayList<>();
+        for (GoodsTypeEnum enumItem : typeListEnum) {
+            ParamDto paramDto = new ParamDto();
+            paramDto.setKey(enumItem.getKey());
+            paramDto.setName(enumItem.getValue());
+            paramDto.setValue(enumItem.getKey());
+            typeList.add(paramDto);
+        }
+
         Map<String, Object> result = new HashMap<>();
         result.put("paginationResponse", paginationResponse);
+        result.put("typeList", typeList);
 
         return getSuccessResult(result);
     }
@@ -204,8 +210,7 @@ public class BackendGoodsController extends BaseController {
         if (accountInfo == null) {
             return getFailureResult(1001, "请先登录");
         }
-
-        TAccount account = accountService.getAccountInfoById(accountInfo.getId());
+        Integer storeId = accountInfo.getStoreId();
         GoodsDto goods = goodsService.getGoodsDetail(goodsId, false);
 
         Map<String, Object> result = new HashMap<>();
@@ -283,10 +288,23 @@ public class BackendGoodsController extends BaseController {
 
         Map<String, Object> paramsStore = new HashMap<>();
         paramsStore.put("status", StatusEnum.ENABLED.getKey());
+        if (storeId != null && storeId > 0) {
+            paramsStore.put("storeId", storeId.toString());
+        }
         List<MtStore> storeList = storeService.queryStoresByParams(paramsStore);
         result.put("storeList", storeList);
 
-        Integer storeId = account.getStoreId();
+        // 商品类型列表
+        GoodsTypeEnum[] typeListEnum = GoodsTypeEnum.values();
+        List<ParamDto> typeList = new ArrayList<>();
+        for (GoodsTypeEnum enumItem : typeListEnum) {
+             ParamDto paramDto = new ParamDto();
+             paramDto.setKey(enumItem.getKey());
+             paramDto.setName(enumItem.getValue());
+             paramDto.setValue(enumItem.getKey());
+             typeList.add(paramDto);
+        }
+        result.put("typeList", typeList);
         result.put("storeId", storeId);
 
         return getSuccessResult(result);
@@ -329,6 +347,9 @@ public class BackendGoodsController extends BaseController {
         String isSingleSpec = param.get("isSingleSpec") == null ? "" : param.get("isSingleSpec").toString();
         Integer cateId = param.get("cateId") == null ? 0 : Integer.parseInt(param.get("cateId").toString());
         Integer storeId = param.get("storeId") == null ? 0 : Integer.parseInt(param.get("storeId").toString());
+        String type = param.get("type") == null ? "" : param.get("type").toString();
+        String couponIds = param.get("couponIds") == null ? "" : param.get("couponIds").toString();
+        String serviceTime = param.get("serviceTime") == null ? "0" : param.get("serviceTime").toString();
         List<LinkedHashMap> skuList = param.get("skuData") == null ? new ArrayList<>() : (List) param.get("skuData");
         List<LinkedHashMap> specList = param.get("specData") == null ? new ArrayList<>() : (List) param.get("specData");
 
@@ -421,26 +442,31 @@ public class BackendGoodsController extends BaseController {
             }
         }
 
-        TAccount account = accountService.getAccountInfoById(accountInfo.getId());
-        Integer myStoreId = account.getStoreId();
+        Integer myStoreId = accountInfo.getStoreId();
         if (myStoreId > 0) {
             storeId = myStoreId;
         }
 
         MtGoods info = new MtGoods();
         info.setId(Integer.parseInt(goodsId));
+        if (StringUtil.isNotEmpty(type)) {
+            info.setType(type);
+        }
         info.setCateId(cateId);
         info.setName(name);
         info.setGoodsNo(goodsNo);
+        if (StringUtil.isNotEmpty(serviceTime)) {
+            info.setServiceTime(Integer.parseInt(serviceTime));
+        }
+        if (StringUtil.isNotEmpty(couponIds)) {
+            info.setCouponIds(couponIds);
+        }
         info.setIsSingleSpec(isSingleSpec);
         if (StringUtil.isNotEmpty(stock)) {
             info.setStock(Integer.parseInt(stock));
         }
         if (StringUtil.isNotEmpty(description)) {
             info.setDescription(description);
-        }
-        if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
-            info.setMerchantId(accountInfo.getMerchantId());
         }
         if (storeId != null) {
             info.setStoreId(storeId);

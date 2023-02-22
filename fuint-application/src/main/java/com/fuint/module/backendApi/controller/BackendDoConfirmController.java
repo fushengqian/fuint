@@ -166,7 +166,7 @@ public class BackendDoConfirmController extends BaseController {
 
         MtUserCoupon mtUserCoupon = mtUserCouponMapper.selectById(Integer.parseInt(userCouponId));
         if (mtUserCoupon.getType().equals(CouponTypeEnum.PRESTORE.getKey()) && StringUtil.isEmpty(amount)) {
-            return getFailureResult(201, "预存卡核销金额不能为空");
+            return getFailureResult(201, "储值卡核销金额不能为空");
         }
 
         try {

@@ -11,6 +11,7 @@ import java.util.Date;
 import java.util.List;
 
 public class GoodsDto implements Serializable {
+
     /**
      * 自增ID
      */
@@ -30,6 +31,11 @@ public class GoodsDto implements Serializable {
      * 商品名称
      */
     private String name;
+
+    /**
+     * 商品类型
+     */
+    private String type;
 
     /**
      * 分类ID
@@ -75,6 +81,16 @@ public class GoodsDto implements Serializable {
      * 库存
      */
     private Integer stock;
+
+    /**
+     * 服务时长
+     */
+    private Integer serviceTime;
+
+    /**
+     * 服务时长
+     */
+    private String couponIds;
 
     /**
      * 重量
@@ -165,6 +181,12 @@ public class GoodsDto implements Serializable {
     public void setName(String name){
         this.name=name;
     }
+    public String getType(){
+        return type;
+    }
+    public void setType(String type){
+        this.type=type;
+    }
     public Integer getCateId(){
         return cateId;
     }
@@ -212,6 +234,18 @@ public class GoodsDto implements Serializable {
     }
     public void setLinePrice(BigDecimal linePrice){
         this.linePrice=linePrice;
+    }
+    public Integer getServiceTime(){
+        return serviceTime;
+    }
+    public void setServiceTime(Integer serviceTime){
+        this.serviceTime=serviceTime;
+    }
+    public String getCouponIds(){
+        return couponIds;
+    }
+    public void setCouponIds(String couponIds){
+        this.couponIds=couponIds;
     }
     public Integer getStock(){
         return stock;

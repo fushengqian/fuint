@@ -1,20 +1,21 @@
 package com.fuint.common.enums;
 
 /**
- * 卡券适用商品
+ * 商品类型
  *
  * Created by FSQ
  * CopyRight https://www.fuint.cn
  */
-public enum ApplyGoodsEnum {
-    ALL_GOODS("allGoods", "全场通用"),
-    PARK_GOODS("parkGoods", "指定商品");
+public enum GoodsTypeEnum {
+    PRODUCT("product", "实物商品"),
+    SERVICE("service", "服务项目"),
+    COUPON("coupon", "虚拟卡券");
 
     private String key;
 
     private String value;
 
-    ApplyGoodsEnum(String key, String value) {
+    GoodsTypeEnum(String key, String value) {
         this.key = key;
         this.value = value;
     }
@@ -37,7 +38,7 @@ public enum ApplyGoodsEnum {
 
     // 普通方法，通过key获取value
     public static String getValue(String k) {
-        for (ApplyGoodsEnum c : ApplyGoodsEnum.values()) {
+        for (GoodsTypeEnum c : GoodsTypeEnum.values()) {
             if (c.getKey().equals(k)) {
                 return c.getValue();
             }
@@ -47,7 +48,7 @@ public enum ApplyGoodsEnum {
 
     // 普通方法，通过Value获取key
     public static String getKey(String v) {
-        for (ApplyGoodsEnum c : ApplyGoodsEnum.values()) {
+        for (GoodsTypeEnum c : GoodsTypeEnum.values()) {
             if (c.getValue() == v) {
                 return c.getKey();
             }

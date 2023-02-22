@@ -1,10 +1,7 @@
 package com.fuint.module.clientApi.controller;
 
 import com.fuint.common.Constants;
-import com.fuint.common.dto.BalanceDto;
-import com.fuint.common.dto.OrderDto;
-import com.fuint.common.dto.RechargeRuleDto;
-import com.fuint.common.dto.UserInfo;
+import com.fuint.common.dto.*;
 import com.fuint.common.enums.*;
 import com.fuint.common.service.*;
 import com.fuint.common.util.CommonUtil;
@@ -75,6 +72,12 @@ public class ClientBalanceController extends BaseController {
     @RequestMapping(value = "/setting", method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject setting(HttpServletRequest request) throws BusinessCheckException {
+        String token = request.getHeader("Access-Token");
+        UserInfo userInfo = TokenUtil.getUserInfoByToken(token);
+        if (userInfo == null) {
+            return getFailureResult(1001, "请先登录");
+        }
+
         Map<String, Object> outParams = new HashMap<>();
 
         List<MtSetting> settingList = settingService.getSettingList(SettingTypeEnum.BALANCE.getKey());

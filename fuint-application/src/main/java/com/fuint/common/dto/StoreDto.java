@@ -58,6 +58,16 @@ public class StoreDto implements Serializable {
     private String description;
 
     /**
+     * 微信商户号
+     */
+    private String wxMchId;
+
+    /**
+     * 微信支付秘钥
+     */
+    private String wxApiV2;
+
+    /**
      * 创建时间
      */
     private Date createTime;
@@ -136,6 +146,18 @@ public class StoreDto implements Serializable {
     }
     public void setDescription(String description){
         this.description=description;
+    }
+    public String getWxMchId(){
+        return wxMchId;
+    }
+    public void setWxMchId(String wxMchId){
+        this.wxMchId=wxMchId;
+    }
+    public String getWxApiV2(){
+        return wxApiV2;
+    }
+    public void setWxApiV2(String wxApiV2){
+        this.wxApiV2=wxApiV2;
     }
     public Date getCreateTime(){
         return createTime;

@@ -1,5 +1,6 @@
 package com.fuint.module.clientApi.controller;
 
+import com.fuint.common.config.WXPayConfigImpl;
 import com.fuint.common.dto.*;
 import com.fuint.common.enums.OrderStatusEnum;
 import com.fuint.common.enums.PayStatusEnum;
@@ -14,7 +15,9 @@ import com.fuint.framework.web.ResponseObject;
 import com.fuint.repository.mapper.MtOrderMapper;
 import com.fuint.repository.model.*;
 import com.fuint.utils.StringUtil;
+import com.github.wxpay.sdk.WXPayUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 
@@ -40,6 +43,9 @@ import java.util.Map;
 public class ClientPayController extends BaseController {
 
     private static final Logger logger = LoggerFactory.getLogger(ClientPayController.class);
+
+    @Autowired
+    private Environment env;
 
     @Resource
     private MtOrderMapper mtOrderMapper;
@@ -73,6 +79,9 @@ public class ClientPayController extends BaseController {
 
     @Autowired
     private BalanceService balanceService;
+
+    @Autowired
+    private StoreService storeService;
 
     /**
      * 支付前查询
@@ -115,7 +124,7 @@ public class ClientPayController extends BaseController {
             MtUserGrade userGrade = userGradeService.queryUserGradeById(Integer.parseInt(mtUser.getGradeId()));
             if (userGrade != null) {
                 if (userGrade.getDiscount() > 0) {
-                    payDiscount = new BigDecimal(userGrade.getDiscount()).divide(new BigDecimal("10"));
+                    payDiscount = new BigDecimal(userGrade.getDiscount()).divide(new BigDecimal("10"), BigDecimal.ROUND_CEILING);
                 }
             }
         }
@@ -174,6 +183,13 @@ public class ClientPayController extends BaseController {
 
         if (accountInfo != null && StringUtil.isNotEmpty(cashierPayAmount) && StringUtil.isNotEmpty(cashierDiscountAmount)) {
             orderInfo.setDiscount(new BigDecimal(cashierDiscountAmount));
+            if (userInfo == null) {
+                MtUser user = memberService.queryMemberById(orderInfo.getUserId());
+                if (user != null) {
+                    userInfo = new UserInfo();
+                    userInfo.setId(user.getId());
+                }
+            }
         }
 
         // 实付金额 = 总金额 - 优惠金额 - 积分金额
@@ -188,14 +204,12 @@ public class ClientPayController extends BaseController {
             balance.setAmount(realPayAmount.subtract(realPayAmount).subtract(realPayAmount));
             boolean isPay = balanceService.addBalance(balance);
             if (isPay) {
+                orderService.setOrderPayed(orderInfo.getId());
                 OrderDto reqOrder = new OrderDto();
                 reqOrder.setId(orderInfo.getId());
                 reqOrder.setPayAmount(realPayAmount);
                 reqOrder.setDiscount(orderInfo.getDiscount());
-                reqOrder.setStatus(OrderStatusEnum.PAID.getKey());
-                reqOrder.setPayTime(new Date());
                 reqOrder.setPayType(PayTypeEnum.BALANCE.getKey());
-                reqOrder.setPayStatus(PayStatusEnum.SUCCESS.getKey());
                 if (accountInfo != null) {
                     reqOrder.setOperator(accountInfo.getAccountName());
                 }
@@ -211,13 +225,12 @@ public class ClientPayController extends BaseController {
             reqOrder.setAmount(new BigDecimal(cashierPayAmount).add(new BigDecimal(cashierDiscountAmount)));
             reqOrder.setDiscount(new BigDecimal(cashierDiscountAmount));
             reqOrder.setPayAmount(new BigDecimal(cashierPayAmount));
-            reqOrder.setStatus(OrderStatusEnum.PAID.getKey());
             reqOrder.setPayTime(new Date());
             reqOrder.setPayType(PayTypeEnum.CASH.getKey());
             reqOrder.setOperator(accountInfo.getAccountName());
-            reqOrder.setPayStatus(PayStatusEnum.SUCCESS.getKey());
             orderService.updateOrder(reqOrder);
             orderInfo = orderService.getOrderInfo(orderInfo.getId());
+            orderService.setOrderPayed(orderInfo.getId());
         } else {
             String ip = CommonUtil.getIPFromHttpRequest(request);
             BigDecimal pay = realPayAmount.multiply(new BigDecimal("100"));
@@ -243,7 +256,7 @@ public class ClientPayController extends BaseController {
      */
     @RequestMapping(value = "/weixinCallback", method = RequestMethod.POST)
     @CrossOrigin
-    public void weixinCallback(HttpServletRequest request, HttpServletResponse response) throws BusinessCheckException{
+    public void weixinCallback(HttpServletRequest request, HttpServletResponse response) throws Exception {
         logger.info("微信支付结果回调....");
 
         Map<String, String> inParams = weixinService.processResXml(request);
@@ -252,12 +265,18 @@ public class ClientPayController extends BaseController {
             String orderSn = inParams.get("out_trade_no");//商户订单号
             String orderId = inParams.get("transaction_id");//微信订单号
             String tranAmt = inParams.get("total_fee");//交易金额
-            BigDecimal tranAmount = new BigDecimal(tranAmt).divide(new BigDecimal("100"));
-
+            BigDecimal tranAmount = new BigDecimal(tranAmt).divide(new BigDecimal("100"), BigDecimal.ROUND_CEILING);
             // 参数校验
             if (StringUtil.isNotEmpty(orderSn) && StringUtil.isNotEmpty(tranAmt) && StringUtil.isNotEmpty(orderId)) {
                 UserOrderDto orderInfo = orderService.getOrderByOrderSn(orderSn);
                 if (orderInfo != null) {
+                    MtStore storeInfo = orderInfo.getStoreInfo();
+                    WXPayConfigImpl wxPayConfig = WXPayConfigImpl.getInstance(env, storeInfo == null ? 0 : storeInfo.getId(), storeService);
+                    boolean valid = WXPayUtil.isSignatureValid(inParams, wxPayConfig.getKey());
+                    if (!valid) {
+                        logger.error("微信支付回调接口验签失败");
+                        return;
+                    }
                     // 订单金额
                     BigDecimal payAmount = orderInfo.getPayAmount();
                     int compareFlag = tranAmount.compareTo(payAmount);

@@ -19,24 +19,9 @@ public class BannerDto implements Serializable {
     private String title;
 
     /**
-     * 所属商户ID
-     * */
-    private Integer merchantId;
-
-    /**
-     * 所属商户名称
-     * */
-    private String merchantName;
-
-    /**
-     * 所属店铺ID
+     * 所属店铺
      * */
     private Integer storeId;
-
-    /**
-     * 所属店铺名称
-     * */
-    private String storeName;
 
     /**
      * 链接地址
@@ -89,18 +74,6 @@ public class BannerDto implements Serializable {
     }
     public void setTitle(String title){
     this.title=title;
-    }
-    public Integer getMerchantId(){
-        return merchantId;
-    }
-    public void setMerchantId(Integer merchantId){
-        this.merchantId=merchantId;
-    }
-    public String getMerchantName(){
-        return merchantName;
-    }
-    public void setMerchantName(String merchantName){
-        this.merchantName=merchantName;
     }
     public Integer getStoreId(){
         return storeId;

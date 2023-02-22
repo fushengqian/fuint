@@ -329,7 +329,7 @@ public class RefundServiceImpl extends ServiceImpl<MtRefundMapper, MtRefund> imp
                         mtUserCouponMapper.updateById(userCouponInfo);
                     }
 
-                    // 预存卡把余额加回去
+                    // 储值卡把余额加回去
                     if (couponInfo.getType().equals(CouponTypeEnum.PRESTORE.getKey())) {
                         BigDecimal balance = userCouponInfo.getBalance();
                         BigDecimal newBalance = balance.add(log.getAmount());

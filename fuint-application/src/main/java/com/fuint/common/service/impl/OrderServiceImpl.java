@@ -21,6 +21,8 @@ import com.fuint.utils.StringUtil;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageImpl;
@@ -40,6 +42,8 @@ import java.util.*;
  */
 @Service
 public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implements OrderService {
+
+    private static final Logger logger = LoggerFactory.getLogger(OrderServiceImpl.class);
 
     @Resource
     private MtOrderMapper mtOrderMapper;
@@ -120,7 +124,7 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
         String staffId = paramMap.get("staffId") == null ? "" : paramMap.get("staffId").toString();
         String couponId = paramMap.get("couponId") == null ? "" : paramMap.get("couponId").toString();
 
-        if (dataType.equals("pay")) {
+        if (dataType.equals("toPay")) {
             status = OrderStatusEnum.CREATED.getKey(); // 待支付
         } else if(dataType.equals("paid")) {
             status = OrderStatusEnum.PAID.getKey();    // 已支付
@@ -500,7 +504,7 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
                             mtUserCouponMapper.updateById(userCouponInfo);
                         }
 
-                        // 预存卡把余额加回去
+                        // 储值卡把余额加回去
                         if (couponInfo.getType().equals(CouponTypeEnum.PRESTORE.getKey())) {
                             BigDecimal balance = userCouponInfo.getBalance();
                             BigDecimal newBalance = balance.add(log.getAmount());
@@ -584,11 +588,6 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
 
         if (null != orderDto.getStatus()) {
             mtOrder.setStatus(orderDto.getStatus());
-            // 订单状态为已支付，修改支付状态
-            if (orderDto.getStatus().equals(OrderStatusEnum.PAID.getKey())) {
-                orderDto.setPayStatus(PayStatusEnum.SUCCESS.getKey());
-                orderDto.setPayTime(new Date());
-            }
             if (orderDto.getStatus().equals(OrderStatusEnum.CANCEL.getKey()) || orderDto.getStatus().equals(OrderStatusEnum.CREATED.getKey())) {
                 orderDto.setPayStatus(PayStatusEnum.WAIT.getKey());
             }
@@ -656,6 +655,16 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
     public boolean setOrderPayed(Integer orderId) throws BusinessCheckException {
         MtOrder mtOrder = mtOrderMapper.selectById(orderId);
 
+        if (mtOrder == null) {
+            return false;
+        }
+
+        if (mtOrder.getPayStatus().equals(PayStatusEnum.SUCCESS.getKey())) {
+            return true;
+        }
+
+        UserOrderDto orderInfo = this.getOrderDetail(mtOrder, false);
+
         OrderDto reqDto = new OrderDto();
         reqDto.setId(orderId);
         reqDto.setStatus(OrderStatusEnum.PAID.getKey());
@@ -668,6 +677,33 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
         if (mtOrder.getType().equals(OrderTypeEnum.MEMBER.getKey())) {
             openGiftService.openGift(mtOrder.getUserId(), Integer.parseInt(mtOrder.getParam()));
             reqDto.setRemark("升级会员等级");
+        }
+
+        // 处理购物订单
+        if (orderInfo.getType().equals(OrderTypeEnum.GOOGS.getKey())) {
+            try {
+                List<OrderGoodsDto> goodsList = orderInfo.getGoods();
+                if (goodsList != null && goodsList.size() > 0) {
+                    for (OrderGoodsDto goodsDto : goodsList) {
+                         MtGoods mtGoods = goodsService.queryGoodsById(goodsDto.getGoodsId());
+                         if (mtGoods != null) {
+                            // 卡券购买
+                            if (mtGoods.getCouponIds() != null && StringUtil.isNotEmpty(mtGoods.getCouponIds())) {
+                                String couponIds[] = mtGoods.getCouponIds().split(",");
+                                if (couponIds.length > 0) {
+                                    for (int i = 0; i < couponIds.length; i++) {
+                                        userCouponService.buyCouponItem(orderInfo.getId(), Integer.parseInt(couponIds[i]), orderInfo.getUserId(), orderInfo.getUserInfo().getMobile());
+                                    }
+                                }
+                            }
+                            // 将已销售数量+1
+                            goodsService.updateInitSale(mtGoods.getId());
+                         }
+                    }
+                }
+            } catch (BusinessCheckException e) {
+                logger.error("会员购买的卡券发送给会员失败......" + e.getMessage());
+            }
         }
 
         return true;
@@ -788,7 +824,7 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
 
         String baseImage = settingService.getUploadBasePath();
 
-        // 预存卡的订单
+        // 储值卡的订单
         if (orderInfo.getType().equals(OrderTypeEnum.PRESTORE.getKey())) {
             MtCoupon coupon = couponService.queryCouponById(orderInfo.getCouponId());
             String[] paramArr = orderInfo.getParam().split(",");
@@ -831,7 +867,6 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
                     orderGoodsDto.setPrice(orderGoods.getPrice().toString());
                     orderGoodsDto.setDiscount(orderGoods.getDiscount().toString());
                     orderGoodsDto.setGoodsId(orderGoods.getGoodsId());
-
                     if (orderGoods.getSkuId() > 0) {
                         List<GoodsSpecValueDto> specList = goodsService.getSpecListBySkuId(orderGoods.getSkuId());
                         orderGoodsDto.setSpecList(specList);
@@ -1055,7 +1090,7 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
                     couponDto.setAmount(userCoupon.getAmount());
                     couponDto.setStatus(UserCouponStatusEnum.DISABLE.getKey());
                     // 购物不能用专用的卡券
-                    if (couponInfo.getUseFor() != null || StringUtil.isNotEmpty(couponInfo.getUseFor())) {
+                    if (couponInfo.getUseFor() != null && StringUtil.isNotEmpty(couponInfo.getUseFor())) {
                         continue;
                     }
                     boolean isEffective = couponService.isCouponEffective(couponInfo);
@@ -1075,7 +1110,7 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
                             }
                         }
                     } else if (couponInfo.getType().equals(CouponTypeEnum.PRESTORE.getKey())) {
-                        // 预存卡
+                        // 储值卡
                         couponDto.setType(CouponTypeEnum.PRESTORE.getValue());
                         couponDto.setDescription("无使用门槛");
                         couponDto.setAmount(userCoupon.getAmount());
@@ -1084,7 +1119,7 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
                             couponDto.setStatus(UserCouponStatusEnum.UNUSED.getKey());
                         }
                     }
-                    couponDto.setEffectiveDate(couponInfo.getBeginTime() + "~" + couponInfo.getEndTime());
+                    couponDto.setEffectiveDate(DateUtil.formatDate(couponInfo.getBeginTime(), "yyyy.MM.dd HH:mm") + "~" + DateUtil.formatDate(couponInfo.getEndTime(), "yyyy.MM.dd HH:mm"));
                     couponList.add(couponDto);
                 }
             }
@@ -1126,7 +1161,7 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
         if (myPoint > 0 && setting != null && isUsePoint) {
             if (StringUtil.isNotEmpty(setting.getValue())) {
                 BigDecimal usePoints = new BigDecimal(myPoint);
-                usePointAmount = usePoints.divide(new BigDecimal(setting.getValue()));
+                usePointAmount = usePoints.divide(new BigDecimal(setting.getValue()), BigDecimal.ROUND_CEILING);
                 usePoint = myPoint;
                 if (usePointAmount.compareTo(totalCanUsePointAmount) >= 0) {
                     usePointAmount = totalCanUsePointAmount;

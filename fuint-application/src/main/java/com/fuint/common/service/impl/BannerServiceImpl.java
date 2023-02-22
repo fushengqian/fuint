@@ -4,7 +4,6 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 
-import com.fuint.common.service.MerchantService;
 import com.fuint.framework.annoation.OperationServiceLog;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.pagination.PaginationRequest;
@@ -16,14 +15,11 @@ import com.fuint.common.service.SettingService;
 import com.fuint.common.enums.StatusEnum;
 import com.fuint.repository.mapper.MtBannerMapper;
 
-import com.fuint.repository.model.MtMerchant;
 import com.github.pagehelper.PageHelper;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.github.pagehelper.Page;
-import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -49,19 +45,13 @@ public class BannerServiceImpl extends ServiceImpl<MtBannerMapper, MtBanner> imp
     private SettingService settingService;
 
     /**
-     * 商户服务接口
-     */
-    @Autowired
-    private MerchantService merchantService;
-
-    /**
      * 分页查询Banner列表
      *
      * @param paginationRequest
      * @return
      */
     @Override
-    public PaginationResponse<BannerDto> queryBannerListByPagination(PaginationRequest paginationRequest) throws BusinessCheckException {
+    public PaginationResponse<MtBanner> queryBannerListByPagination(PaginationRequest paginationRequest) {
         Page<MtBanner> pageHelper = PageHelper.startPage(paginationRequest.getCurrentPage(), paginationRequest.getPageSize());
         LambdaQueryWrapper<MtBanner> lambdaQueryWrapper = Wrappers.lambdaQuery();
         lambdaQueryWrapper.ne(MtBanner::getStatus, StatusEnum.DISABLE.getKey());
@@ -78,29 +68,13 @@ public class BannerServiceImpl extends ServiceImpl<MtBannerMapper, MtBanner> imp
         if (StringUtils.isNotBlank(storeId)) {
             lambdaQueryWrapper.eq(MtBanner::getStoreId, storeId);
         }
-        String merchantId = paginationRequest.getSearchParams().get("merchantId") == null ? "" : paginationRequest.getSearchParams().get("merchantId").toString();
-        if (StringUtils.isNotBlank(merchantId)) {
-            lambdaQueryWrapper.eq(MtBanner::getMerchantId, merchantId);
-        }
 
         lambdaQueryWrapper.orderByAsc(MtBanner::getSort);
-        List<MtBanner> bannerList = mtBannerMapper.selectList(lambdaQueryWrapper);
-        List<BannerDto> dataList = new ArrayList<>();
-        for (MtBanner mtBanner : bannerList) {
-             BannerDto bannerDto = new BannerDto();
-             BeanUtils.copyProperties(mtBanner, bannerDto);
-             if (bannerDto.getMerchantId() != null && bannerDto.getMerchantId() > 0) {
-                 MtMerchant mtMerchant = merchantService.queryMerchantById(bannerDto.getMerchantId());
-                 if (mtMerchant != null) {
-                     bannerDto.setMerchantName(mtMerchant.getName());
-                 }
-             }
-             dataList.add(bannerDto);
-        }
+        List<MtBanner> dataList = mtBannerMapper.selectList(lambdaQueryWrapper);
 
         PageRequest pageRequest = PageRequest.of(paginationRequest.getCurrentPage(), paginationRequest.getPageSize());
         PageImpl pageImpl = new PageImpl(dataList, pageRequest, pageHelper.getTotal());
-        PaginationResponse<BannerDto> paginationResponse = new PaginationResponse(pageImpl, BannerDto.class);
+        PaginationResponse<MtBanner> paginationResponse = new PaginationResponse(pageImpl, MtBanner.class);
         paginationResponse.setTotalPages(pageHelper.getPages());
         paginationResponse.setTotalElements(pageHelper.getTotal());
         paginationResponse.setContent(dataList);
@@ -127,7 +101,6 @@ public class BannerServiceImpl extends ServiceImpl<MtBannerMapper, MtBanner> imp
         mtBanner.setUpdateTime(new Date());
         mtBanner.setCreateTime(new Date());
         mtBanner.setSort(bannerDto.getSort());
-        mtBanner.setMerchantId(bannerDto.getMerchantId());
 
         Integer id = mtBannerMapper.insert(mtBanner);
         if (id > 0) {
@@ -186,9 +159,6 @@ public class BannerServiceImpl extends ServiceImpl<MtBannerMapper, MtBanner> imp
         if (bannerDto.getImage() != null) {
             MtBanner.setImage(bannerDto.getImage());
         }
-        if (bannerDto.getMerchantId() != null) {
-            MtBanner.setMerchantId(bannerDto.getMerchantId());
-        }
         if (bannerDto.getTitle() != null) {
             MtBanner.setTitle(bannerDto.getTitle());
         }
@@ -220,7 +190,6 @@ public class BannerServiceImpl extends ServiceImpl<MtBannerMapper, MtBanner> imp
     @Override
     public List<MtBanner> queryBannerListByParams(Map<String, Object> params) {
         String status =  params.get("status") == null ? StatusEnum.ENABLED.getKey(): params.get("status").toString();
-        String merchantId =  params.get("merchantId") == null ? "" : params.get("merchantId").toString();
         String storeId =  params.get("storeId") == null ? "" : params.get("storeId").toString();
         String title = params.get("title") == null ? "" : params.get("title").toString();
 
@@ -231,11 +200,11 @@ public class BannerServiceImpl extends ServiceImpl<MtBannerMapper, MtBanner> imp
         if (StringUtils.isNotBlank(status)) {
             lambdaQueryWrapper.eq(MtBanner::getStatus, status);
         }
-        if (StringUtils.isNotBlank(merchantId)) {
-            lambdaQueryWrapper.eq(MtBanner::getMerchantId, merchantId);
-        }
         if (StringUtils.isNotBlank(storeId)) {
-            lambdaQueryWrapper.and(wq -> wq.eq(MtBanner::getStoreId, 0).or().eq(MtBanner::getStoreId, storeId));
+            lambdaQueryWrapper.and(wq -> wq
+                              .eq(MtBanner::getStoreId, 0)
+                              .or()
+                              .eq(MtBanner::getStoreId, storeId));
         }
 
         lambdaQueryWrapper.orderByAsc(MtBanner::getSort);

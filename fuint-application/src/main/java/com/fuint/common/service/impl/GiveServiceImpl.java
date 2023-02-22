@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fuint.common.dto.GiveDto;
 import com.fuint.common.enums.StatusEnum;
 import com.fuint.common.service.*;
+import com.fuint.common.util.DateUtil;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.pagination.PaginationRequest;
 import com.fuint.framework.pagination.PaginationResponse;
@@ -109,6 +110,8 @@ public class GiveServiceImpl extends ServiceImpl<MtGiveMapper, MtGive> implement
         for (MtGive mtGive : giveList) {
              GiveDto giveDto = new GiveDto();
              BeanUtils.copyProperties(mtGive, giveDto);
+             giveDto.setCreateTime(DateUtil.formatDate(mtGive.getCreateTime(), "yyyy-MM-dd HH:mm:ss"));
+             giveDto.setUpdateTime(DateUtil.formatDate(mtGive.getUpdateTime(), "yyyy-MM-dd HH:mm:ss"));
              dataList.add(giveDto);
         }
 

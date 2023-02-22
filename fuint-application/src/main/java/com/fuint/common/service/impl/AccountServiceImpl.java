@@ -177,12 +177,14 @@ public class AccountServiceImpl extends ServiceImpl<TAccountMapper, TAccount> im
         }
         tAccount.setModifyDate(new Date());
         if (duties != null && duties.size() > 0) {
-            tAccountDutyMapper.deleteDutiesByAccountId(tAccount.getAcctId());
-            for (TDuty tDuty : duties) {
-                 TAccountDuty tAccountDuty = new TAccountDuty();
-                 tAccountDuty.setDutyId(tDuty.getDutyId());
-                 tAccountDuty.setAcctId(tAccount.getAcctId());
-                 tAccountDutyMapper.insert(tAccountDuty);
+            if (tAccount.getAcctId() != null && tAccount.getAcctId() > 0) {
+                tAccountDutyMapper.deleteDutiesByAccountId(tAccount.getAcctId());
+                for (TDuty tDuty : duties) {
+                     TAccountDuty tAccountDuty = new TAccountDuty();
+                     tAccountDuty.setDutyId(tDuty.getDutyId());
+                     tAccountDuty.setAcctId(tAccount.getAcctId());
+                     tAccountDutyMapper.insert(tAccountDuty);
+                }
             }
         }
         tAccountMapper.updateById(tAccount);

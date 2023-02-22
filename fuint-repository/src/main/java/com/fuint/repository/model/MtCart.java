@@ -31,6 +31,9 @@ public class MtCart implements Serializable {
     @ApiModelProperty("会员ID")
     private Integer userId;
 
+    @ApiModelProperty("店铺ID")
+    private Integer storeId;
+
     @ApiModelProperty("是否游客")
     private String isVisitor;
 

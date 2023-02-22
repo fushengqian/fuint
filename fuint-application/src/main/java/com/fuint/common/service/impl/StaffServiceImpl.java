@@ -86,6 +86,10 @@ public class StaffServiceImpl extends ServiceImpl<MtStaffMapper, MtStaff> implem
         if (StringUtils.isNotBlank(storeId)) {
             lambdaQueryWrapper.eq(MtStaff::getStoreId, storeId);
         }
+        String category = paginationRequest.getSearchParams().get("category") == null ? "" : paginationRequest.getSearchParams().get("category").toString();
+        if (StringUtils.isNotBlank(category)) {
+            lambdaQueryWrapper.eq(MtStaff::getCategory, category);
+        }
 
         lambdaQueryWrapper.orderByDesc(MtStaff::getId);
         List<MtStaff> dataList = mtStaffMapper.selectList(lambdaQueryWrapper);
@@ -108,7 +112,7 @@ public class StaffServiceImpl extends ServiceImpl<MtStaffMapper, MtStaff> implem
      */
     @Override
     @Transactional
-    @OperationServiceLog(description = "保存后店铺员工")
+    @OperationServiceLog(description = "保存店铺员工")
     public MtStaff saveStaff(MtStaff mtStaff) throws BusinessCheckException {
         mtStaff.setUpdateTime(new Date());
         if (mtStaff.getId() == null || mtStaff.getId() <= 0) {

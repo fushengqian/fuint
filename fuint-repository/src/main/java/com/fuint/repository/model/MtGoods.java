@@ -12,7 +12,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * 商品表对象
+ * 商品表
  *
  * Created by FSQ
  * CopyRight https://www.fuint.cn
@@ -20,7 +20,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @TableName("mt_goods")
-@ApiModel(value = "MtGoods对象", description = "")
+@ApiModel(value = "MtGoods对象", description = "MtGoods对象")
 public class MtGoods implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -34,6 +34,9 @@ public class MtGoods implements Serializable {
 
     @ApiModelProperty("商品名称")
     private String name;
+
+    @ApiModelProperty("商品类型")
+    private String type;
 
     @ApiModelProperty("分类ID")
     private Integer cateId;
@@ -58,6 +61,12 @@ public class MtGoods implements Serializable {
 
     @ApiModelProperty("库存")
     private Integer stock;
+
+    @ApiModelProperty("关联卡券")
+    private String couponIds;
+
+    @ApiModelProperty("服务时长")
+    private Integer serviceTime;
 
     @ApiModelProperty("重量")
     private BigDecimal weight;

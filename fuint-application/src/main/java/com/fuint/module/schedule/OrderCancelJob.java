@@ -75,6 +75,7 @@ public class OrderCancelJob {
                              reqDto.setId(mtOrder.getId());
                              reqDto.setStatus(OrderStatusEnum.PAID.getKey());
                              orderService.updateOrder(reqDto);
+                             orderService.setOrderPayed(mtOrder.getId());
                          }
                      }
                 }

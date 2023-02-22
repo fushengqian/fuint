@@ -7,6 +7,6 @@
     </select>
 
     <delete id="deleteSourcesByDutyId">
-        delete from t_duty_source t where t.duty_id = #{dutyId}
+        delete from t_duty_source where duty_id = #{dutyId}
     </delete>
 </mapper>

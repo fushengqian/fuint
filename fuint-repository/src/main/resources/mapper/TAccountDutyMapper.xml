@@ -6,6 +6,6 @@
     </select>
 
     <delete id="deleteDutiesByAccountId">
-        delete from t_account_duty t where t.acct_id = #{accountId}
+        delete from t_account_duty where acct_id = #{accountId}
     </delete>
 </mapper>

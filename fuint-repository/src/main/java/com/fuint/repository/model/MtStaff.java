@@ -28,6 +28,9 @@ public class MtStaff implements Serializable {
     @TableId(value = "ID", type = IdType.AUTO)
     private Integer id;
 
+    @ApiModelProperty("员工类别")
+    private Integer category;
+
     @ApiModelProperty("用户ID")
     private Integer userId;
 

@@ -1,5 +1,7 @@
 package com.fuint.common.dto;
 
+import com.sun.org.apache.xpath.internal.operations.Bool;
+
 import java.io.Serializable;
 import java.math.BigDecimal;
 
@@ -60,6 +62,11 @@ public class UserCouponDto implements Serializable {
      * 面额
      * */
     private BigDecimal amount;
+
+    /**
+     * 是否允许转赠
+     * */
+    private boolean isGive;
 
     /**
      * 余额
@@ -161,6 +168,13 @@ public class UserCouponDto implements Serializable {
     }
     public void setAmount(BigDecimal amount) {
         this.amount = amount;
+    }
+
+    public Boolean getIsGive() {
+        return isGive;
+    }
+    public void setIsGive(Boolean isGive) {
+        this.isGive = isGive;
     }
 
     public BigDecimal getBalance() {

@@ -156,7 +156,7 @@ public class CouponServiceImpl extends ServiceImpl<MtCouponMapper, MtCoupon> imp
             mtCoupon.setName(CommonUtil.replaceXSS(reqCouponDto.getName()));
         }
         if (reqCouponDto.getIsGive() != null) {
-            mtCoupon.setIsGive(reqCouponDto.getIsGive().equals("1") ? true : false);
+            mtCoupon.setIsGive(reqCouponDto.getIsGive().equals(1) ? true : false);
         }
         if (reqCouponDto.getPoint() != null) {
             mtCoupon.setPoint(reqCouponDto.getPoint());
@@ -510,7 +510,7 @@ public class CouponServiceImpl extends ServiceImpl<MtCouponMapper, MtCoupon> imp
             throw new BusinessCheckException("卡券“"+couponInfo.getName()+"”已停用,不能发放");
         }
 
-        // 发放的是预存卡
+        // 发放的是储值卡
         if (couponInfo.getType().equals(CouponTypeEnum.PRESTORE.getKey())) {
             if (StringUtil.isNotEmpty(couponInfo.getInRule())) {
                 String storeParams = "";
@@ -660,7 +660,7 @@ public class CouponServiceImpl extends ServiceImpl<MtCouponMapper, MtCoupon> imp
             // 优惠券核销直接修改状态
             userCoupon.setStatus(UserCouponStatusEnum.USED.getKey());
         } else if (couponInfo.getType().equals(CouponTypeEnum.PRESTORE.getKey())) {
-            // 预存卡核销，修改余额
+            // 储值卡核销，修改余额
             BigDecimal balance = userCoupon.getBalance();
             BigDecimal newBalance = balance.subtract(amount);
 
@@ -777,7 +777,7 @@ public class CouponServiceImpl extends ServiceImpl<MtCouponMapper, MtCoupon> imp
         // 更新发券日志为部分作废状态
         this.mtSendLogMapper.updateSingleForRemove(userCoupon.getUuid(),UserCouponStatusEnum.USED.getKey());
 
-        mtUserCouponMapper.insert(userCoupon);
+        mtUserCouponMapper.updateById(userCoupon);
     }
 
     /**
@@ -832,7 +832,7 @@ public class CouponServiceImpl extends ServiceImpl<MtCouponMapper, MtCoupon> imp
         userCoupon.setUsedTime(null);
         userCoupon.setUpdateTime(new Date());
 
-        // 如果是预存卡则返回余额
+        // 如果是储值卡则返回余额
         if (userCoupon.getType().equals(CouponTypeEnum.PRESTORE.getKey())) {
             BigDecimal balance = userCoupon.getBalance();
             BigDecimal amount = mtConfirmLog.getAmount();

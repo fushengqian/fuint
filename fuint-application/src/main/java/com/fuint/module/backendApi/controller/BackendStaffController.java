@@ -2,6 +2,8 @@ package com.fuint.module.backendApi.controller;
 
 import com.fuint.common.Constants;
 import com.fuint.common.dto.AccountInfo;
+import com.fuint.common.dto.ParamDto;
+import com.fuint.common.enums.StaffCategoryEnum;
 import com.fuint.common.enums.StatusEnum;
 import com.fuint.common.service.StaffService;
 import com.fuint.common.util.CommonUtil;
@@ -17,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -53,6 +56,7 @@ public class BackendStaffController extends BaseController {
         String realName = request.getParameter("realName");
         String auditedStatus = request.getParameter("status");
         String storeId = request.getParameter("storeId");
+        String category = request.getParameter("category");
 
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
         if (accountInfo == null) {
@@ -60,7 +64,7 @@ public class BackendStaffController extends BaseController {
         }
 
         if (accountInfo.getStoreId() > 0) {
-            storeId = accountInfo.getStoreId()+"";
+            storeId = accountInfo.getStoreId().toString();
         }
 
         PaginationRequest paginationRequest = new PaginationRequest();
@@ -80,10 +84,29 @@ public class BackendStaffController extends BaseController {
         if (StringUtil.isNotEmpty(storeId)) {
             params.put("storeId", storeId);
         }
+        if (StringUtil.isNotEmpty(category)) {
+            params.put("category", category);
+        }
         paginationRequest.setSearchParams(params);
         paginationRequest.setSortColumn(new String[]{"auditedStatus asc", "id desc"});
         PaginationResponse<MtStaff> paginationResponse = staffService.queryStaffListByPagination(paginationRequest);
-        return getSuccessResult(paginationResponse);
+
+        // 员工类别列表
+        StaffCategoryEnum[] categoryListEnum = StaffCategoryEnum.values();
+        List<ParamDto> categoryList = new ArrayList<>();
+        for (StaffCategoryEnum enumItem : categoryListEnum) {
+            ParamDto paramDto = new ParamDto();
+            paramDto.setKey(enumItem.getKey());
+            paramDto.setName(enumItem.getName());
+            paramDto.setValue(enumItem.getKey());
+            categoryList.add(paramDto);
+        }
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("paginationResponse", paginationResponse);
+        result.put("categoryList", categoryList);
+
+        return getSuccessResult(result);
     }
 
     /**
@@ -118,6 +141,7 @@ public class BackendStaffController extends BaseController {
         String token = request.getHeader("Access-Token");
         String id = params.get("id") == null ? "0" : params.get("id").toString();
         String storeId = params.get("storeId") == null ? "0" : params.get("storeId").toString();
+        String category = params.get("category") == null ? "0" : params.get("category").toString();
         String mobile = params.get("mobile") == null ? "" : CommonUtil.replaceXSS(params.get("mobile").toString());
         String realName = params.get("realName") == null ? "" : CommonUtil.replaceXSS(params.get("realName").toString());
         String description = params.get("description") == null ? "" : CommonUtil.replaceXSS(params.get("description").toString());
@@ -142,6 +166,7 @@ public class BackendStaffController extends BaseController {
         mtStaff.setMobile(mobile);
         mtStaff.setAuditedStatus(status);
         mtStaff.setDescription(description);
+        mtStaff.setCategory(Integer.parseInt(category));
 
         if (StringUtil.isEmpty(mtStaff.getMobile())) {
             return getFailureResult(201, "手机号码不能为空");

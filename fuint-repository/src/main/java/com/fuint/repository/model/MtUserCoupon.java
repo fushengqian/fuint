@@ -32,7 +32,7 @@ public class MtUserCoupon implements Serializable {
     @ApiModelProperty("编码")
     private String code;
 
-    @ApiModelProperty("券类型，C优惠券；P预存卡；T集次卡")
+    @ApiModelProperty("券类型，C优惠券；P储值卡；T集次卡")
     private String type;
 
     @ApiModelProperty("效果图")

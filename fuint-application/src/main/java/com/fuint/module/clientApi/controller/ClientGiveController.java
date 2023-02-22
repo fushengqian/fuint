@@ -55,11 +55,10 @@ public class ClientGiveController extends BaseController {
         }
 
         UserInfo userInfo = TokenUtil.getUserInfoByToken(token);
-        MtUser mtUser = null;
         if (userInfo == null) {
             return getFailureResult(1001);
         }
-        mtUser = memberService.queryMemberById(userInfo.getId());
+        MtUser mtUser = memberService.queryMemberById(userInfo.getId());
 
         param.put("userId", mtUser.getId());
         param.put("storeId", mtUser.getStoreId());
@@ -104,27 +103,28 @@ public class ClientGiveController extends BaseController {
             return getFailureResult(1001);
         }
 
-        PaginationRequest paginationRequest = new PaginationRequest();
-
         String mobile = request.getParameter("mobile") == null ? "" : request.getParameter("mobile");
         String type = request.getParameter("type") == null ? "give" : request.getParameter("type");
         String pageNumber = request.getParameter("pageNumber") == null ? "1" : request.getParameter("pageNumber");
         String pageSize = request.getParameter("pageSize") == null ? "20" : request.getParameter("pageSize");
+
+        PaginationRequest paginationRequest = new PaginationRequest();
+        Map<String, Object> searchParams = new HashMap<>();
         paginationRequest.setCurrentPage(Integer.parseInt(pageNumber));
         paginationRequest.setPageSize(Integer.parseInt(pageSize));
 
         if (type.equals("gived")) {
-            paginationRequest.getSearchParams().put("userId", mtUser.getId());
+            searchParams.put("userId", mtUser.getId());
         } else {
-            paginationRequest.getSearchParams().put("giveUserId", mtUser.getId());
+            searchParams.put("giveUserId", mtUser.getId());
         }
 
         if (StringUtil.isNotEmpty(mobile) && type.equals("give")) {
-            paginationRequest.getSearchParams().put("mobile", mobile);
+            searchParams.put("mobile", mobile);
         } else if(StringUtil.isNotEmpty(mobile) && type.equals("gived")) {
-            paginationRequest.getSearchParams().put("userMobile", mobile);
+            searchParams.put("userMobile", mobile);
         }
-
+        paginationRequest.setSearchParams(searchParams);
         PaginationResponse<GiveDto> paginationResponse = giveService.queryGiveListByPagination(paginationRequest);
 
         ResponseObject responseObject;

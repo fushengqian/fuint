@@ -135,6 +135,9 @@ public class BackendCouponController extends BaseController {
 
         Map<String, Object> paramsStore = new HashMap<>();
         paramsStore.put("status", StatusEnum.ENABLED.getKey());
+        if (accountInfo.getStoreId() != null && accountInfo.getStoreId() > 0) {
+            paramsStore.put("storeId", accountInfo.getStoreId().toString());
+        }
         List<MtStore> storeList = storeService.queryStoresByParams(paramsStore);
 
         if (dataList.size() > 0) {
@@ -159,9 +162,6 @@ public class BackendCouponController extends BaseController {
                 }
             }
         }
-
-        Map<String, Object> result = new HashMap<>();
-        result.put("paginationResponse", paginationResponse);
 
         Integer groupTotal = 0;
         if (groupId > 0) {
@@ -209,6 +209,7 @@ public class BackendCouponController extends BaseController {
 
         String imagePath = settingService.getUploadBasePath();
 
+        Map<String, Object> result = new HashMap<>();
         result.put("imagePath", imagePath);
         result.put("groupTotal", groupTotal);
         result.put("storeList", storeList);
@@ -269,7 +270,7 @@ public class BackendCouponController extends BaseController {
         requestSearch.setPageSize(Constants.PAGE_SIZE);
         Map<String, Object> requestParams = new HashMap<>();
         requestParams.put("name", reqCouponDto.getName());
-        requestParams.put("group_id", reqCouponDto.getGroupId().toString());
+        requestParams.put("groupId", reqCouponDto.getGroupId().toString());
         requestSearch.setSearchParams(requestParams);
         PaginationResponse<MtCoupon> dataName = couponService.queryCouponListByPagination(requestSearch);
 
@@ -365,7 +366,7 @@ public class BackendCouponController extends BaseController {
             }
         }
 
-        // 预存卡的预存规则
+        // 储值卡的预存规则
         List<PreStoreRuleDto> preStoreList = new ArrayList<>();
         if (StringUtil.isNotEmpty(mtCouponInfo.getInRule()) && mtCouponInfo.getType().equals(CouponTypeEnum.PRESTORE.getKey())) {
             String[] ruleArr = mtCouponInfo.getInRule().split(",");

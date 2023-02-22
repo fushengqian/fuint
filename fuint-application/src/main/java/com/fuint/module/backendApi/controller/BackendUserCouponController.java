@@ -107,6 +107,9 @@ public class BackendUserCouponController extends BaseController {
 
         Map<String, Object> storeParams = new HashMap<>();
         storeParams.put("status", StatusEnum.ENABLED.getKey());
+        if (accountInfo.getStoreId() != null && accountInfo.getStoreId() > 0) {
+            storeParams.put("storeId", accountInfo.getStoreId().toString());
+        }
         List<MtStore> storeList = storeService.queryStoresByParams(storeParams);
 
         // 卡券类型列表

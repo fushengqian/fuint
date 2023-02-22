@@ -12,6 +12,7 @@ import lombok.Setter;
 
 /**
  * 商品分类
+ *
  * Created by FSQ
  * CopyRight https://www.fuint.cn
  */
@@ -26,12 +27,6 @@ public class MtGoodsCate implements Serializable {
     @ApiModelProperty("自增ID")
     @TableId(value = "ID", type = IdType.AUTO)
     private Integer id;
-
-    @ApiModelProperty("所属商户")
-    private Integer merchantId;
-
-    @ApiModelProperty("所属店铺")
-    private Integer storeId;
 
     @ApiModelProperty("分类名称")
     private String name;

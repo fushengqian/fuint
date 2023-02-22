@@ -95,6 +95,7 @@ public class CartServiceImpl extends ServiceImpl<MtCartMapper, MtCart> implement
             }
         }
 
+        mtCart.setStoreId(reqDto.getStoreId() == null ? 0 : reqDto.getStoreId());
         mtCart.setStatus(StatusEnum.ENABLED.getKey());
         mtCart.setUpdateTime(new Date());
         mtCart.setSkuId(reqDto.getSkuId());
@@ -104,9 +105,10 @@ public class CartServiceImpl extends ServiceImpl<MtCartMapper, MtCart> implement
 
         Map<String, Object> params = new HashMap<>();
         params.put("userId", mtCart.getUserId());
+        params.put("storeId", mtCart.getStoreId());
         params.put("goodsId", mtCart.getGoodsId());
         params.put("skuId", mtCart.getSkuId());
-        params.put("hangNo", "");
+        params.put("hangNo", reqDto.getHangNo() == null ? "" : reqDto.getHangNo());
 
         List<MtCart> cartList = this.queryCartListByParams(params);
         if (action.equals("-") && cartList.size() == 0) {
@@ -190,6 +192,7 @@ public class CartServiceImpl extends ServiceImpl<MtCartMapper, MtCart> implement
         String hangNo =  params.get("hangNo") == null ? "" : params.get("hangNo").toString();
         String goodsId =  params.get("goodsId") == null ? "" : params.get("goodsId").toString();
         String skuId =  params.get("skuId") == null ? "" : params.get("skuId").toString();
+        String storeId =  params.get("storeId") == null ? "" : params.get("storeId").toString();
 
         LambdaQueryWrapper<MtCart> lambdaQueryWrapper = new LambdaQueryWrapper<>();
         lambdaQueryWrapper.eq(MtCart::getStatus, status);
@@ -208,6 +211,9 @@ public class CartServiceImpl extends ServiceImpl<MtCartMapper, MtCart> implement
         }
         if (StringUtil.isNotEmpty(goodsId)) {
             lambdaQueryWrapper.eq(MtCart::getGoodsId, goodsId);
+        }
+        if (StringUtil.isNotEmpty(storeId)) {
+            lambdaQueryWrapper.eq(MtCart::getStoreId, storeId);
         }
         if (StringUtil.isNotEmpty(skuId)) {
             lambdaQueryWrapper.eq(MtCart::getSkuId, skuId);

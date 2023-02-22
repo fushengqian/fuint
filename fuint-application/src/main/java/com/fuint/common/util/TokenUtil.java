@@ -19,7 +19,7 @@ import java.util.Random;
 @Component
 public class TokenUtil {
 
-    public static int TOKEN_OVER_TIME = 86400;
+    public static int TOKEN_OVER_TIME = 604800;
 
     /**
      * 生成token
