@@ -3,7 +3,7 @@ package com.fuint.common.service.impl;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.JSONArray;
-import com.fuint.common.config.WXPayConfigImpl;
+import com.fuint.common.bean.WxPayBean;
 import com.fuint.common.dto.OrderDto;
 import com.fuint.common.dto.OrderUserDto;
 import com.fuint.common.dto.UserOrderDto;
@@ -11,13 +11,17 @@ import com.fuint.common.enums.*;
 import com.fuint.common.http.HttpRESTDataClient;
 import com.fuint.common.service.*;
 import com.fuint.common.util.RedisUtil;
-import com.fuint.common.util.TimeUtils;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.web.ResponseObject;
 import com.fuint.repository.model.*;
 import com.fuint.utils.StringUtil;
-import com.github.wxpay.sdk.WXPay;
-import com.github.wxpay.sdk.WXPayUtil;
+import com.ijpay.core.enums.SignType;
+import com.ijpay.core.kit.HttpKit;
+import com.ijpay.core.kit.WxPayKit;
+import com.ijpay.wxpay.WxPayApi;
+import com.ijpay.wxpay.WxPayApiConfig;
+import com.ijpay.wxpay.WxPayApiConfigKit;
+import com.ijpay.wxpay.model.UnifiedOrderModel;
 import com.sun.org.apache.xerces.internal.impl.dv.util.Base64;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.slf4j.Logger;
@@ -33,9 +37,7 @@ import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.math.BigDecimal;
 import java.security.AlgorithmParameters;
@@ -81,10 +83,10 @@ public class WeixinServiceImpl implements WeixinService {
     private BalanceService balanceService;
 
     @Autowired
-    private StoreService storeService;
+    private Environment env;
 
     @Autowired
-    private Environment env;
+    WxPayBean wxPayBean;
 
     /**
      * 获取微信accessToken
@@ -93,9 +95,9 @@ public class WeixinServiceImpl implements WeixinService {
      * */
     @Override
     public String getAccessToken(boolean useCache) {
-        String wxAppId = env.getProperty("weixin.pay.appId");
-        String wxAppSecret = env.getProperty("weixin.pay.appSecret");
-        String wxTokenUrl = env.getProperty("weixin.token.url");
+        String wxAppId = env.getProperty("weixin.miniProgram.appId");
+        String wxAppSecret = env.getProperty("weixin.miniProgram.appSecret");
+        String wxTokenUrl = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=%s&secret=%s";
 
         String url = String.format(wxTokenUrl, wxAppId, wxAppSecret);
         String token = "";
@@ -148,13 +150,12 @@ public class WeixinServiceImpl implements WeixinService {
         }
         reqData.put("spbill_create_ip", ip);
 
-        WXPayConfigImpl wxPayConfig = WXPayConfigImpl.getInstance(env, orderInfo.getStoreId(), storeService);
-
-        if (orderInfo.getPayType().equals("JSAPI")) {
-            reqData.put("trade_type", orderInfo.getPayType() == null ? "JSAPI" : orderInfo.getPayType());
-            reqData.put("notify_url", wxPayConfig.getCallbackUrl());
+        // JSAPI支付
+        if (orderInfo.getPayType().equals(PayTypeEnum.JSAPI.getKey())) {
+            reqData.put("trade_type", PayTypeEnum.JSAPI.getKey());
             reqData.put("openid", userInfo.getOpenId() == null ? "" : userInfo.getOpenId());
         }
+
         if (StringUtil.isNotEmpty(authCode)) {
             reqData.put("auth_code", authCode);
         }
@@ -167,39 +168,26 @@ public class WeixinServiceImpl implements WeixinService {
         reqDto.setPayType(orderInfo.getPayType());
         orderService.updateOrder(reqDto);
 
-        Map<String, String> respData = this.unifiedOrder(orderInfo.getStoreId(), reqData);
+        Map<String, String> respData = unifiedOrder(orderInfo.getStoreId(), reqData, ip);
         if (respData == null) {
             logger.error("微信支付接口调用异常......");
             return new ResponseObject(3000, "微信支付接口调用异常", null);
         }
 
         // 2.记录支付接口请求/响应参数
-        Map<String, String> outParmas = new HashMap<>();
+        Map<String, String> outParmas;
 
-        //3.更新预支付订单号
+        // 3.更新预支付订单号
         if (respData.get("return_code").equals("SUCCESS")) {
             if (respData.get("result_code").equals("FAIL")) {
                 return new ResponseObject(3000, respData.get("err_code_des"), null);
             }
             String prepayId = respData.get("prepay_id");
-
-            //组织返回参数
-            String appId = respData.get("appid");
-            String nonceStr = respData.get("nonce_str");
-
-            outParmas.put("appId", appId);
-            outParmas.put("timeStamp", String.valueOf(TimeUtils.timeStamp()));
-            outParmas.put("nonceStr", nonceStr);
-            outParmas.put("package", "prepay_id=" + prepayId);
-            outParmas.put("signType", "MD5");
-            try {
-                String sign = WXPayUtil.generateSignature(outParmas, wxPayConfig.getKey());
-                outParmas.put("paySign", sign);
-            } catch (Exception e) {
-                // 签名失败
-                logger.error(e.getMessage(), e);
-                return new ResponseObject(3000, "微信支付签名失败", null);
-            }
+            getApiConfig(orderInfo.getStoreId());
+            WxPayApiConfig wxPayApiConfig = WxPayApiConfigKit.getWxPayApiConfig();
+            outParmas = WxPayKit.miniAppPrepayIdCreateSign(wxPayApiConfig.getAppId(), prepayId, wxPayApiConfig.getPartnerKey(), SignType.HMACSHA256);
+            String jsonStr = JSON.toJSONString(outParmas);
+            logger.info("小程序支付的参数:" + jsonStr);
         } else {
             logger.error("微信支付接口返回状态失败......" + respData.toString() + "...reason");
             return new ResponseObject(3000, "微信支付接口返回状态失败", null);
@@ -292,52 +280,29 @@ public class WeixinServiceImpl implements WeixinService {
         }
 
         logger.info("WXService paymentCallback Success orderSn {}", orderInfo.getOrderSn());
-
         return true;
     }
 
     public Map<String, String> processResXml(HttpServletRequest request) {
-        InputStream inStream = null;
-        ByteArrayOutputStream outSteam = new ByteArrayOutputStream();
         try {
-            inStream = request.getInputStream();
-            byte[] buffer = new byte[4096];
-            int len;
-            while ((len = inStream.read(buffer)) != -1) {
-                outSteam.write(buffer, 0, len);
-            }
-
-            String result = new String(outSteam.toByteArray(), "utf-8");
-            logger.info("微信支付回调入参报文{}", result);
-
-            Map<String, String> resultMap = WXPayUtil.xmlToMap(result);
-            String returnCode = resultMap.get("return_code");
-            if (StringUtil.isNotEmpty(returnCode) && returnCode.equals("SUCCESS")) {
-                return resultMap;
+            String xmlMsg = HttpKit.readData(request);
+            logger.info("支付通知=" + xmlMsg);
+            Map<String, String> result = WxPayKit.xmlToMap(xmlMsg);
+            String returnCode = result.get("return_code");
+            getApiConfig(0);
+            if (WxPayKit.verifyNotify(result, WxPayApiConfigKit.getWxPayApiConfig().getPartnerKey(), SignType.HMACSHA256)) {
+                if (WxPayKit.codeIsOk(returnCode)) {
+                    return result;
+                }
             }
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
-        } finally {
-            if (inStream != null) {
-                try {
-                    inStream.close();
-                } catch (IOException e) {
-                    logger.error(e.getMessage(), e);
-                }
-            }
-            if (outSteam != null) {
-                try {
-                    outSteam.close();
-                } catch (IOException e) {
-                    logger.error(e.getMessage(), e);
-                }
-            }
         }
         return null;
     }
 
     public void processRespXml(HttpServletResponse response, boolean flag){
-        Map<String,String> respData = new HashMap<String,String>();
+        Map<String,String> respData = new HashMap<>();
         if (flag) {
             respData.put("return_code", "SUCCESS");
             respData.put("return_msg", "OK");
@@ -347,7 +312,7 @@ public class WeixinServiceImpl implements WeixinService {
         }
         OutputStream outputStream = null;
         try {
-            String respXml = WXPayUtil.mapToXml(respData);
+            String respXml = WxPayKit.toXml(respData);
             outputStream = response.getOutputStream();
             outputStream.write(respXml.getBytes("UTF-8"));
             outputStream.flush();
@@ -370,10 +335,9 @@ public class WeixinServiceImpl implements WeixinService {
      * */
     @Override
     public JSONObject getWxProfile(String code) {
-        String wxAppId = env.getProperty("weixin.pay.appId");
-        String wxAppSecret = env.getProperty("weixin.pay.appSecret");
-        String wxAccessUrl = env.getProperty("weixin.access.url");
-
+        String wxAppId = env.getProperty("weixin.miniProgram.appId");
+        String wxAppSecret = env.getProperty("weixin.miniProgram.appSecret");
+        String wxAccessUrl = "https://api.weixin.qq.com/sns/jscode2session?appid=%s&secret=%s&js_code=%s&grant_type=authorization_code";
         String url = String.format(wxAccessUrl, wxAppId, wxAppSecret, code);
         try {
             String response = HttpRESTDataClient.requestGet(url);
@@ -381,10 +345,35 @@ public class WeixinServiceImpl implements WeixinService {
             if (!json.containsKey("errcode")) {
                 return json;
             } else {
-                logger.error("获取union id 出错：" + json.get("errmsg"));
+                logger.error("获取微信getWxProfile出错：code = " + json.containsKey("errcode") + ",msg="+ json.get("errmsg"));
             }
         } catch (Exception e) {
-            logger.error("获取微信union id 异常：" + e.getMessage());
+            logger.error("获取微信getWxProfile异常：" + e.getMessage());
+        }
+
+        return null;
+    }
+
+    /**
+     * 获取公众号openId
+     * @return
+     * */
+    @Override
+    public JSONObject getWxOpenId(String code) {
+        String wxAppId = env.getProperty("weixin.official.appId");
+        String wxAppSecret = env.getProperty("weixin.official.appSecret");
+        String wxAccessUrl = "https://api.weixin.qq.com/sns/oauth2/access_token?appid=%s&secret=%s&code=%s&grant_type=authorization_code";
+        String url = String.format(wxAccessUrl, wxAppId, wxAppSecret, code);
+        try {
+            String response = HttpRESTDataClient.requestGet(url);
+            JSONObject json = (JSONObject) JSONObject.parse(response);
+            if (!json.containsKey("errcode")) {
+                return json;
+            } else {
+                logger.error("获取openId出错：code = " + json.containsKey("errcode") + ",msg="+ json.get("errmsg"));
+            }
+        } catch (Exception e) {
+            logger.error("获取微信openId异常：" + e.getMessage());
         }
 
         return null;
@@ -530,35 +519,66 @@ public class WeixinServiceImpl implements WeixinService {
         return true;
     }
 
-    private Map<String, String> unifiedOrder(Integer storeId, Map<String, String> reqData) {
+    private Map<String, String> unifiedOrder(Integer storeId, Map<String, String> reqData, String ip) {
         try {
             logger.info("调用微信支付下单接口入参{}", JsonUtil.toJSONString(reqData));
-            WXPayConfigImpl wxPayConfig = WXPayConfigImpl.getInstance(env, storeId, storeService);
-            WXPay wxPay = new WXPay(wxPayConfig);
-            Map<String, String> respMap;
-            String authCode = reqData.get("auth_code");
-            if (StringUtil.isNotEmpty(authCode)) {
-                respMap = wxPay.microPay(reqData);
-                // 支付结果
-                String orderSn = respMap.get("out_trade_no");
-                String resultCode = respMap.get("result_code");
-                if (StringUtil.isNotEmpty(orderSn) && resultCode.equals("SUCCESS")) {
-                    UserOrderDto orderInfo = orderService.getOrderByOrderSn(orderSn);
-                    if (orderInfo != null) {
-                        if (orderInfo.getStatus().equals(OrderStatusEnum.CREATED.getKey())) {
-                            this.paymentCallback(orderInfo);
-                        }
-                    }
-                }
-            } else {
-                respMap = wxPay.unifiedOrder(reqData);
+            // 小程序支付
+            getApiConfig(storeId);
+            WxPayApiConfig wxPayApiConfig = WxPayApiConfigKit.getWxPayApiConfig();
+
+            Map<String, String> params = UnifiedOrderModel
+                    .builder()
+                    .appid(wxPayApiConfig.getAppId())
+                    .mch_id(wxPayApiConfig.getMchId())
+                    .nonce_str(WxPayKit.generateStr())
+                    .body(reqData.get("body"))
+                    .attach(reqData.get("body"))
+                    .out_trade_no(WxPayKit.generateStr())
+                    .total_fee(reqData.get("total_fee"))
+                    .spbill_create_ip(ip)
+                    .notify_url(wxPayBean.getDomain(null))
+                    .trade_type(reqData.get("trade_type"))
+                    .openid(reqData.get("openid"))
+                    .build()
+                    .createSign(wxPayApiConfig.getPartnerKey(), SignType.HMACSHA256);
+            String xmlResult = WxPayApi.pushOrder(false, params);
+
+            logger.info(xmlResult);
+            Map<String, String> result = WxPayKit.xmlToMap(xmlResult);
+
+            String returnCode = result.get("return_code");
+            String returnMsg = result.get("return_msg");
+            if (!WxPayKit.codeIsOk(returnCode)) {
+                logger.error(returnMsg);
+            }
+            String resultCode = result.get("result_code");
+            if (!WxPayKit.codeIsOk(resultCode)) {
+                logger.error(returnMsg);
             }
 
-            logger.info("调用微信支付下单接口返回{}", JsonUtil.toJSONString(respMap));
-            return respMap;
+            logger.info("调用微信支付下单接口返回{}", JsonUtil.toJSONString(result));
+            return result;
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
         }
         return null;
+    }
+
+    private WxPayApiConfig getApiConfig(Integer storeId) {
+        WxPayApiConfig apiConfig;
+        MtStore mtStore = new MtStore();
+        try {
+            apiConfig = WxPayApiConfigKit.getApiConfig(wxPayBean.getAppId(mtStore));
+        } catch (Exception e) {
+            apiConfig = WxPayApiConfig.builder()
+                    .appId(wxPayBean.getAppId(mtStore))
+                    .mchId(wxPayBean.getMchId(mtStore))
+                    .partnerKey(wxPayBean.getPartnerKey(mtStore))
+                    .certPath(wxPayBean.getCertPath(mtStore))
+                    .domain(wxPayBean.getDomain(mtStore))
+                    .build();
+        }
+        WxPayApiConfigKit.setThreadLocalWxPayApiConfig(apiConfig);
+        return apiConfig;
     }
 }

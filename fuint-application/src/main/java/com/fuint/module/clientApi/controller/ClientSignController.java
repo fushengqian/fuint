@@ -98,6 +98,7 @@ public class ClientSignController extends BaseController {
         result.put("token", token);
         result.put("userId", mtUser.getId());
         result.put("userName", mtUser.getName());
+        result.put("openId", mtUser.getOpenId());
 
         return getSuccessResult("登录成功", result);
     }
@@ -153,6 +154,7 @@ public class ClientSignController extends BaseController {
             outParams.put("userId", userInfo.getId());
             outParams.put("userName", userInfo.getName());
             outParams.put("token", token);
+            outParams.put("openId", "");
             return getSuccessResult("注册成功", outParams);
         } else {
             return getFailureResult(201,"注册失败");

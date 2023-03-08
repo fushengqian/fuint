@@ -1,9 +1,8 @@
 package com.fuint.module.clientApi.controller;
 
-import com.fuint.common.config.WXPayConfigImpl;
+import com.fuint.common.bean.WxPayBean;
 import com.fuint.common.dto.*;
 import com.fuint.common.enums.OrderStatusEnum;
-import com.fuint.common.enums.PayStatusEnum;
 import com.fuint.common.enums.PayTypeEnum;
 import com.fuint.common.enums.SettingTypeEnum;
 import com.fuint.common.service.*;
@@ -15,9 +14,7 @@ import com.fuint.framework.web.ResponseObject;
 import com.fuint.repository.mapper.MtOrderMapper;
 import com.fuint.repository.model.*;
 import com.fuint.utils.StringUtil;
-import com.github.wxpay.sdk.WXPayUtil;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 
@@ -45,7 +42,7 @@ public class ClientPayController extends BaseController {
     private static final Logger logger = LoggerFactory.getLogger(ClientPayController.class);
 
     @Autowired
-    private Environment env;
+    WxPayBean wxPayBean;
 
     @Resource
     private MtOrderMapper mtOrderMapper;
@@ -55,6 +52,12 @@ public class ClientPayController extends BaseController {
      * */
     @Autowired
     private WeixinService weixinService;
+
+    /**
+     * 支付服务接口
+     * */
+    @Autowired
+    private PaymentService paymentService;
 
     /**
      * 订单服务接口
@@ -79,9 +82,6 @@ public class ClientPayController extends BaseController {
 
     @Autowired
     private BalanceService balanceService;
-
-    @Autowired
-    private StoreService storeService;
 
     /**
      * 支付前查询
@@ -229,13 +229,13 @@ public class ClientPayController extends BaseController {
             reqOrder.setPayType(PayTypeEnum.CASH.getKey());
             reqOrder.setOperator(accountInfo.getAccountName());
             orderService.updateOrder(reqOrder);
-            orderInfo = orderService.getOrderInfo(orderInfo.getId());
             orderService.setOrderPayed(orderInfo.getId());
+            orderInfo = orderService.getOrderInfo(orderInfo.getId());
         } else {
             String ip = CommonUtil.getIPFromHttpRequest(request);
             BigDecimal pay = realPayAmount.multiply(new BigDecimal("100"));
             orderInfo.setPayType(payType);
-            ResponseObject paymentInfo = weixinService.createPrepayOrder(mtUser, orderInfo, (pay.intValue()), authCode, 0, ip);
+            ResponseObject paymentInfo = paymentService.createPrepayOrder(mtUser, orderInfo, (pay.intValue()), authCode, 0, ip);
             if (paymentInfo.getData() == null) {
                 return getFailureResult(201, "抱歉，微信支付失败");
             }
@@ -259,21 +259,19 @@ public class ClientPayController extends BaseController {
     public void weixinCallback(HttpServletRequest request, HttpServletResponse response) throws Exception {
         logger.info("微信支付结果回调....");
 
-        Map<String, String> inParams = weixinService.processResXml(request);
-        logger.info("微信返回Map:" + inParams);
-        if (!CollectionUtils.isEmpty(inParams)) {
-            String orderSn = inParams.get("out_trade_no");//商户订单号
-            String orderId = inParams.get("transaction_id");//微信订单号
-            String tranAmt = inParams.get("total_fee");//交易金额
+        Map<String, String> resData = weixinService.processResXml(request);
+        logger.info("微信返回Map:" + resData);
+        if (!CollectionUtils.isEmpty(resData)) {
+            String orderSn = resData.get("out_trade_no"); // 商户订单号
+            String orderId = resData.get("transaction_id"); // 微信订单号
+            String tranAmt = resData.get("total_fee"); // 交易金额
             BigDecimal tranAmount = new BigDecimal(tranAmt).divide(new BigDecimal("100"), BigDecimal.ROUND_CEILING);
             // 参数校验
             if (StringUtil.isNotEmpty(orderSn) && StringUtil.isNotEmpty(tranAmt) && StringUtil.isNotEmpty(orderId)) {
                 UserOrderDto orderInfo = orderService.getOrderByOrderSn(orderSn);
                 if (orderInfo != null) {
-                    MtStore storeInfo = orderInfo.getStoreInfo();
-                    WXPayConfigImpl wxPayConfig = WXPayConfigImpl.getInstance(env, storeInfo == null ? 0 : storeInfo.getId(), storeService);
-                    boolean valid = WXPayUtil.isSignatureValid(inParams, wxPayConfig.getKey());
-                    if (!valid) {
+                    String result = resData.get("return_code");
+                    if (!result.equals("SUCCESS")) {
                         logger.error("微信支付回调接口验签失败");
                         return;
                     }
@@ -282,7 +280,7 @@ public class ClientPayController extends BaseController {
                     int compareFlag = tranAmount.compareTo(payAmount);
                     if (true) { // compareFlag == 0，测试暂时去掉
                         if (orderInfo.getStatus().equals(OrderStatusEnum.CREATED.getKey())) {
-                            boolean flag = weixinService.paymentCallback(orderInfo);
+                            boolean flag = paymentService.paymentCallback(orderInfo);
                             logger.info("回调结果：" + flag);
                             if (flag) {
                                 weixinService.processRespXml(response, true);

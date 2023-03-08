@@ -4,6 +4,7 @@ import com.fuint.common.dto.AccountInfo;
 import com.fuint.common.service.ActionLogService;
 import com.fuint.common.util.CommonUtil;
 import com.fuint.common.util.TokenUtil;
+import com.fuint.framework.annoation.OperationServiceLog;
 import com.fuint.repository.model.TActionLog;
 import org.apache.commons.lang.StringUtils;
 import org.aspectj.lang.JoinPoint;
@@ -64,10 +65,10 @@ public class TActionLogAop {
     /**
      * 方法后调用
      *
-     * @param joinPoint
+     * @param operationServiceLog
      */
     @After("serviceAspect() && @annotation(operationServiceLog)")
-    public void doAfterInService(JoinPoint joinPoint, com.fuint.framework.annoation.OperationServiceLog operationServiceLog) {
+    public void doAfterInService(OperationServiceLog operationServiceLog) {
         try {
             endTimeMillis = System.currentTimeMillis(); // 记录方法执行完成的时间
             clientIp = CommonUtil.getIPFromHttpRequest(getRequest());
@@ -86,7 +87,7 @@ public class TActionLogAop {
             }
             this.printOptLog();
         } catch (Exception e) {
-            LOGGER.error("操作日志记录失败啦：" + e.getMessage());
+            // empty
         }
     }
 

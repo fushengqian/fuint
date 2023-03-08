@@ -1,6 +1,9 @@
 package com.fuint.common.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.fuint.common.dto.ParamDto;
+import com.fuint.common.enums.PayTypeEnum;
+import com.fuint.common.enums.PlatformTypeEnum;
 import com.fuint.framework.annoation.OperationServiceLog;
 import com.fuint.repository.mapper.MtSettingMapper;
 import com.fuint.repository.model.MtSetting;
@@ -14,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -133,5 +137,48 @@ public class SettingServiceImpl extends ServiceImpl<MtSettingMapper, MtSetting> 
         }
 
         return basePath;
+    }
+
+    /**
+     * 获取支付方式列表
+     * @param platform
+     * @return
+     * */
+    @Override
+    public List<ParamDto> getPayTypeList(String platform) {
+        List<ParamDto> payTypeList = new ArrayList<>();
+
+        // 微信jsapi
+        ParamDto jsApi = new ParamDto();
+        jsApi.setKey(PayTypeEnum.JSAPI.getKey());
+        jsApi.setValue(PayTypeEnum.JSAPI.getKey());
+        jsApi.setName(PayTypeEnum.JSAPI.getValue());
+
+        // 余额支付
+        ParamDto balance = new ParamDto();
+        balance.setKey(PayTypeEnum.BALANCE.getKey());
+        balance.setValue(PayTypeEnum.BALANCE.getKey());
+        balance.setName(PayTypeEnum.BALANCE.getValue());
+        payTypeList.add(balance);
+
+        // 扫码支付
+        ParamDto micro = new ParamDto();
+        micro.setKey(PayTypeEnum.MICROPAY.getKey());
+        micro.setValue(PayTypeEnum.MICROPAY.getKey());
+        micro.setValue(PayTypeEnum.MICROPAY.getValue());
+
+        // 微信公众号号
+        if (platform.equals(PlatformTypeEnum.MP_WEIXIN.getCode())) {
+            payTypeList.add(jsApi);
+        }
+
+        // H5
+        if(platform.equals(PlatformTypeEnum.H5.getCode())) {
+
+        }
+
+        // PC端
+
+        return payTypeList;
     }
 }

@@ -11,12 +11,22 @@ public enum PlatformTypeEnum {
     /**
      * PC
      */
-    PC("P", "并且"),
+    PC("PC", "PC端"),
 
     /**
-     * 移动端
+     * H5
      */
-    MOBILE("M", "或");
+    H5("H5", "H5端"),
+
+    /**
+     * 微信小程序
+     */
+    MP_WEIXIN("MP_WEIXIN", "微信小程序"),
+
+    /**
+     * App客户端
+     */
+    APP("APP", "App客户端");
 
     private String code;
 

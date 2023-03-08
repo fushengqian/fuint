@@ -47,10 +47,10 @@ public class ClientBalanceController extends BaseController {
     private BalanceService balanceService;
 
     /**
-     * 微信服务接口
+     * 支付服务接口
      * */
     @Autowired
-    private WeixinService weixinService;
+    private PaymentService paymentService;
 
     /**
      * 订单服务接口
@@ -193,7 +193,7 @@ public class ClientBalanceController extends BaseController {
         String ip = CommonUtil.getIPFromHttpRequest(request);
         BigDecimal pay = amount.multiply(new BigDecimal("100"));
         orderInfo.setPayType(PayTypeEnum.JSAPI.getKey());
-        ResponseObject paymentInfo = weixinService.createPrepayOrder(mtUser, orderInfo, (pay.intValue()), "", 0, ip);
+        ResponseObject paymentInfo = paymentService.createPrepayOrder(mtUser, orderInfo, (pay.intValue()), "", 0, ip);
         if (paymentInfo.getData() == null) {
             return getFailureResult(201, "抱歉，发起支付失败");
         }

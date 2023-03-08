@@ -60,7 +60,7 @@ public class SendSmsServiceImpl implements SendSmsService {
     @Override
     public Map<Boolean,List<String>> sendSms(String templateUname, List<String> phones, Map<String, String> contentParams) throws Exception {
         logger.info("使用短信平台发送短信.....");
-        Integer mode = Integer.parseInt(env.getProperty("ALIYUN.SMS.mode"));
+        Integer mode = Integer.parseInt(env.getProperty("aliyun.sms.mode"));
         if (mode != 1) {
             throw new BusinessCheckException("未开启短信发送开关，请联系管理员！");
         }
@@ -104,9 +104,9 @@ public class SendSmsServiceImpl implements SendSmsService {
             return resInfo;
         }
 
-        String accessKeyId = env.getProperty("ALIYUN.SMS.ACCESSKRYID");
-        String secret = env.getProperty("ALIYUN.SMS.SECRET");
-        String signName = env.getProperty("ALIYUN.SMS.SIGNNAME");
+        String accessKeyId = env.getProperty("aliyun.sms.accessKeyId");
+        String secret = env.getProperty("aliyun.sms.accessKeySecret");
+        String signName = env.getProperty("aliyun.sms.signName");
 
         MtSmsTemplate templateInfo = new MtSmsTemplate();
         try {

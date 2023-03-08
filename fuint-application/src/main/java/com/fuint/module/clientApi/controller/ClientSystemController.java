@@ -1,8 +1,12 @@
 package com.fuint.module.clientApi.controller;
 
+import com.fuint.common.dto.ParamDto;
 import com.fuint.common.dto.UserInfo;
+import com.fuint.common.enums.PayTypeEnum;
+import com.fuint.common.enums.PlatformTypeEnum;
 import com.fuint.common.enums.StatusEnum;
 import com.fuint.common.service.MemberService;
+import com.fuint.common.service.SettingService;
 import com.fuint.common.service.StoreService;
 import com.fuint.common.util.TokenUtil;
 import com.fuint.framework.exception.BusinessCheckException;
@@ -14,6 +18,7 @@ import com.fuint.utils.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -38,6 +43,12 @@ public class ClientSystemController extends BaseController {
     private MemberService memberService;
 
     /**
+     * 配置服务接口
+     * */
+    @Autowired
+    private SettingService settingService;
+
+    /**
      * 系统配置
      *
      * @param request Request对象
@@ -46,6 +57,7 @@ public class ClientSystemController extends BaseController {
     @CrossOrigin
     public ResponseObject config(HttpServletRequest request) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
+        String platform = request.getHeader("platform");
         String storeId = request.getHeader("storeId") == null ? "" : request.getHeader("storeId");
         String latitude = request.getHeader("latitude") == null ? "" : request.getHeader("latitude");
         String longitude = request.getHeader("longitude") == null ? "" : request.getHeader("longitude");
@@ -87,14 +99,18 @@ public class ClientSystemController extends BaseController {
             }
         }
 
-        // 最后取系统默认的
+        // 最后取系统默认的店铺
         if (storeInfo == null) {
             storeInfo = storeService.getDefaultStore();
         }
 
-        Map<String, Object> outParams = new HashMap<>();
-        outParams.put("storeInfo", storeInfo);
+        // 支付方式列表
+        List<ParamDto> payTypeList = settingService.getPayTypeList(platform);
 
-        return getSuccessResult(outParams);
+        Map<String, Object> result = new HashMap<>();
+        result.put("storeInfo", storeInfo);
+        result.put("payTypeList", payTypeList);
+
+        return getSuccessResult(result);
     }
 }

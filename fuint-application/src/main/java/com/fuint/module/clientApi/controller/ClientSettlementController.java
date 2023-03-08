@@ -55,6 +55,12 @@ public class ClientSettlementController extends BaseController {
     private WeixinService weixinService;
 
     /**
+     * 支付服务接口
+     * */
+    @Autowired
+    private PaymentService paymentService;
+
+    /**
      * 会员等级接口
      * */
     @Autowired
@@ -426,7 +432,7 @@ public class ClientSettlementController extends BaseController {
                     Map<String, String> data = new HashMap<>();
                     paymentInfo = getSuccessResult(data);
                 } else {
-                    paymentInfo = weixinService.createPrepayOrder(userInfo, orderInfo, (wxPayAmount.intValue()), authCode, 0, ip);
+                    paymentInfo = paymentService.createPrepayOrder(userInfo, orderInfo, (wxPayAmount.intValue()), authCode, 0, ip);
                 }
                 if (paymentInfo.getData() == null) {
                     errorMessage = PropertiesUtil.getResponseErrorMessageByCode(3000);

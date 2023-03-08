@@ -93,8 +93,8 @@ public class BackendFileController extends BaseController {
 
         String maxSizeStr = env.getProperty("images.upload.maxSize");
 
-        // 默认限制5M
-        float maxSize = 5;
+        // 默认限制2M
+        float maxSize = 2;
         try {
             maxSize = Float.parseFloat(maxSizeStr);
         } catch (NumberFormatException e) {

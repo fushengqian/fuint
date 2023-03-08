@@ -24,13 +24,15 @@ public interface WeixinService {
 
     ResponseObject createPrepayOrder(MtUser userInfo, MtOrder orderInfo, Integer payAmount, String authCode, Integer giveAmount, String ip) throws BusinessCheckException;
 
-    boolean paymentCallback(UserOrderDto orderInfo) throws BusinessCheckException;;
+    boolean paymentCallback(UserOrderDto orderInfo) throws BusinessCheckException;
 
     Map<String,String> processResXml(HttpServletRequest request);
 
     void processRespXml(HttpServletResponse response, boolean flag);
 
     JSONObject getWxProfile(String code);
+
+    JSONObject getWxOpenId(String code);
 
     String getPhoneNumber(String encryptedData, String session_key, String iv);
 

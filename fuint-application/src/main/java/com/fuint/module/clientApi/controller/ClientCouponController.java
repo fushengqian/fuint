@@ -54,7 +54,7 @@ public class ClientCouponController extends BaseController {
     private SettingService settingService;
 
     /**
-     * 获取列表数据
+     * 获取卡券列表数据
      */
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     @CrossOrigin

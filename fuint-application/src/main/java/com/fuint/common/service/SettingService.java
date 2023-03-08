@@ -1,6 +1,7 @@
 package com.fuint.common.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.fuint.common.dto.ParamDto;
 import com.fuint.repository.model.MtSetting;
 import com.fuint.framework.exception.BusinessCheckException;
 import java.util.List;
@@ -50,4 +51,11 @@ public interface SettingService extends IService<MtSetting> {
      * @return 本地配置或阿里云的oss域名
      * */
     String getUploadBasePath();
+
+    /**
+     * 获取支付方式列表
+     * @param platform 平台
+     * @return
+     * */
+    List<ParamDto> getPayTypeList(String platform);
 }
