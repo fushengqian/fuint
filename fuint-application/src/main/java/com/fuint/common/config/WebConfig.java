@@ -58,11 +58,11 @@ public class WebConfig extends WebMvcConfigurationSupport {
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        // Command命令请求拦截器
+        // Command
         registry.addInterceptor(commandInterceptor())
                 .addPathPatterns("/cmd/**");
 
-        // 后台管理拦截器
+        // 后台拦截
         registry.addInterceptor(adminUserInterceptor())
                 .addPathPatterns("/backendApi/**")
                 .excludePathPatterns("/clientApi/captcha/**")
@@ -70,7 +70,7 @@ public class WebConfig extends WebMvcConfigurationSupport {
                 .excludePathPatterns("/backendApi/userCoupon/exportList")
                 .excludePathPatterns("/backendApi/login/**");
 
-        // 前端接口系统拦截器
+        // 客户端拦截
         registry.addInterceptor(portalUserInterceptor())
                 .addPathPatterns("/clientApi/**")
                 .excludePathPatterns("/clientApi/sign/**")
@@ -80,7 +80,6 @@ public class WebConfig extends WebMvcConfigurationSupport {
                 .excludePathPatterns("/clientApi/cart/**")
                 .excludePathPatterns("/clientApi/user/**")
                 .excludePathPatterns("/clientApi/settlement/submit")
-                .excludePathPatterns("/clientApi/system/config")
                 .excludePathPatterns("/clientApi/pay/**")
                 .excludePathPatterns("/clientApi/order/todoCounts")
                 .excludePathPatterns("/clientApi/store/**")

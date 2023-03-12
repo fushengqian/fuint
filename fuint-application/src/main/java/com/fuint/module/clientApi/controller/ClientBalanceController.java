@@ -126,6 +126,8 @@ public class ClientBalanceController extends BaseController {
     @CrossOrigin
     public ResponseObject doRecharge(HttpServletRequest request, @RequestBody Map<String, Object> param) throws BusinessCheckException {
         Integer storeId = request.getHeader("storeId") == null ? 0 : Integer.parseInt(request.getHeader("storeId"));
+        String platform = request.getHeader("platform") == null ? "" : request.getHeader("platform");
+
         String token = request.getHeader("Access-Token");
         if (StringUtil.isEmpty(token)) {
             return getFailureResult(1001);
@@ -193,7 +195,7 @@ public class ClientBalanceController extends BaseController {
         String ip = CommonUtil.getIPFromHttpRequest(request);
         BigDecimal pay = amount.multiply(new BigDecimal("100"));
         orderInfo.setPayType(PayTypeEnum.JSAPI.getKey());
-        ResponseObject paymentInfo = paymentService.createPrepayOrder(mtUser, orderInfo, (pay.intValue()), "", 0, ip);
+        ResponseObject paymentInfo = paymentService.createPrepayOrder(mtUser, orderInfo, (pay.intValue()), "", 0, ip, platform);
         if (paymentInfo.getData() == null) {
             return getFailureResult(201, "抱歉，发起支付失败");
         }

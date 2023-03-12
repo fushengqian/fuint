@@ -2,6 +2,7 @@ package com.fuint.common.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.alibaba.fastjson.JSONObject;
+import com.fuint.common.dto.UserDto;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.pagination.PaginationRequest;
 import com.fuint.framework.pagination.PaginationResponse;
@@ -25,7 +26,7 @@ public interface MemberService extends IService<MtUser> {
      * @param userId 会员ID
      * @return
      * */
-    boolean updateActiveTime(Integer userId) throws BusinessCheckException;
+    Boolean updateActiveTime(Integer userId) throws BusinessCheckException;
 
     /**
      * 获取当前操作会员信息
@@ -41,7 +42,7 @@ public interface MemberService extends IService<MtUser> {
      * @param paginationRequest
      * @return
      */
-    PaginationResponse<MtUser> queryMemberListByPagination(PaginationRequest paginationRequest) throws BusinessCheckException;
+    PaginationResponse<UserDto> queryMemberListByPagination(PaginationRequest paginationRequest) throws BusinessCheckException;
 
     /**
      * 添加会员

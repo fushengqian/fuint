@@ -5,15 +5,13 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fuint.common.dto.AccountInfo;
+import com.fuint.common.dto.UserDto;
 import com.fuint.common.enums.GenderEnum;
 import com.fuint.common.enums.MemberSourceEnum;
 import com.fuint.common.enums.StatusEnum;
 import com.fuint.common.enums.UserActionEnum;
 import com.fuint.common.service.*;
-import com.fuint.common.util.CommonUtil;
-import com.fuint.common.util.SeqUtil;
-import com.fuint.common.util.TimeUtils;
-import com.fuint.common.util.TokenUtil;
+import com.fuint.common.util.*;
 import com.fuint.framework.annoation.OperationServiceLog;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.pagination.PaginationRequest;
@@ -26,6 +24,8 @@ import com.fuint.utils.StringUtil;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -85,6 +85,12 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
     private StaffService staffService;
 
     /**
+     * 店铺接口
+     */
+    @Resource
+    private StoreService storeService;
+
+    /**
      * 会员行为接口
      */
     @Resource
@@ -97,8 +103,8 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
      * */
     @Override
     @Transactional
-    public boolean updateActiveTime(Integer userId) throws BusinessCheckException {
-        MtUser mtUser = this.queryMemberById(userId);
+    public Boolean updateActiveTime(Integer userId) throws BusinessCheckException {
+        MtUser mtUser = queryMemberById(userId);
         if (mtUser != null) {
             if (!mtUser.getStatus().equals(StatusEnum.ENABLED.getKey())) {
                 return false;
@@ -176,7 +182,7 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
      * @return
      */
     @Override
-    public PaginationResponse<MtUser> queryMemberListByPagination(PaginationRequest paginationRequest) {
+    public PaginationResponse<UserDto> queryMemberListByPagination(PaginationRequest paginationRequest) throws BusinessCheckException {
         Page<MtUser> pageHelper = PageHelper.startPage(paginationRequest.getCurrentPage(), paginationRequest.getPageSize());
         LambdaQueryWrapper<MtUser> lambdaQueryWrapper = Wrappers.lambdaQuery();
         lambdaQueryWrapper.ne(MtUser::getStatus, StatusEnum.DISABLE.getKey());
@@ -213,22 +219,55 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
         if (StringUtils.isNotBlank(status)) {
             lambdaQueryWrapper.eq(MtUser::getStatus, status);
         }
+        // 今日注册
+        String createTime = paginationRequest.getSearchParams().get("createTime") == null ? "" : paginationRequest.getSearchParams().get("createTime").toString();
+        if (StringUtils.isNotBlank(createTime)) {
+            String time[] = createTime.split("~");
+            if (time.length == 2) {
+                lambdaQueryWrapper.gt(MtUser::getCreateTime, time[0] + " 00:00:00");
+                lambdaQueryWrapper.lt(MtUser::getCreateTime, time[0] + " 23:59:59");
+            }
+        }
+        // 今日活跃
+        String updateTime = paginationRequest.getSearchParams().get("updateTime") == null ? "" : paginationRequest.getSearchParams().get("updateTime").toString();
+        if (StringUtils.isNotBlank(updateTime)) {
+            String time[] = updateTime.split("~");
+            if (time.length == 2) {
+                lambdaQueryWrapper.gt(MtUser::getUpdateTime, time[0] + " 00:00:00");
+                lambdaQueryWrapper.lt(MtUser::getUpdateTime, time[0] + " 23:59:59");
+            }
+        }
 
         lambdaQueryWrapper.orderByDesc(MtUser::getUpdateTime);
         List<MtUser> userList = mtUserMapper.selectList(lambdaQueryWrapper);
-        List<MtUser> dataList = new ArrayList<>();
+        List<UserDto> dataList = new ArrayList<>();
         for (MtUser user : userList) {
             String phone = user.getMobile();
+            UserDto userDto = new UserDto();
+            BeanUtils.copyProperties(user, userDto);
             // 隐藏手机号中间四位
             if (phone != null && StringUtil.isNotEmpty(phone) && phone.length() == 11) {
-                user.setMobile(phone.substring(0, 3) + "****" + phone.substring(7));
+                userDto.setMobile(phone.substring(0, 3) + "****" + phone.substring(7));
             }
-            dataList.add(user);
+            if (userDto.getStoreId() != null && userDto.getStoreId() > 0) {
+                MtStore mtStore = storeService.queryStoreById(userDto.getStoreId());
+                if (mtStore != null) {
+                    userDto.setStoreName(mtStore.getName());
+                }
+            }
+            if (userDto.getGradeId() != null) {
+                MtUserGrade mtGrade = userGradeService.queryUserGradeById(Integer.parseInt(userDto.getGradeId()));
+                if (mtGrade != null) {
+                    userDto.setGradeName(mtGrade.getName());
+                }
+            }
+            userDto.setLastLoginTime(TimeUtil.showTime(new Date(), user.getUpdateTime()));
+            dataList.add(userDto);
         }
 
         PageRequest pageRequest = PageRequest.of(paginationRequest.getCurrentPage(), paginationRequest.getPageSize());
         PageImpl pageImpl = new PageImpl(dataList, pageRequest, pageHelper.getTotal());
-        PaginationResponse<MtUser> paginationResponse = new PaginationResponse(pageImpl, MtUser.class);
+        PaginationResponse<UserDto> paginationResponse = new PaginationResponse(pageImpl, UserDto.class);
         paginationResponse.setTotalPages(pageHelper.getPages());
         paginationResponse.setTotalElements(pageHelper.getTotal());
         paginationResponse.setContent(dataList);
@@ -442,13 +481,28 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
 
         if (mtUser != null) {
             // 检查会员是否过期，过期就把会员等级置为初始等级
-            Date endTime = mtUser.getEndTime();
-            if (endTime != null) {
-                Date now = new Date();
-                if (endTime.before(now)) {
-                    MtUserGrade grade = userGradeService.getInitUserGrade();
-                    if (!mtUser.getGradeId().equals(grade.getId())) {
-                        mtUser.setGradeId(grade.getId().toString());
+            MtUserGrade initGrade = userGradeService.getInitUserGrade();
+            if (initGrade != null) {
+                Date endTime = mtUser.getEndTime();
+                if (endTime != null) {
+                    Date now = new Date();
+                    if (endTime.before(now)) {
+                        if (!mtUser.getGradeId().equals(initGrade.getId())) {
+                            mtUser.setGradeId(initGrade.getId().toString());
+                            this.updateById(mtUser);
+                        }
+                    }
+                }
+                // 会员等级为空，就把会员等级置为初始等级
+                String userGradeId = mtUser.getGradeId();
+                if (userGradeId == null && initGrade != null) {
+                    mtUser.setGradeId(initGrade.getId().toString());
+                    this.updateById(mtUser);
+                } else {
+                    // 会员等级不存在或已禁用、删除，就把会员等级置为初始等级
+                    MtUserGrade myGrade = userGradeService.queryUserGradeById(Integer.parseInt(userGradeId));
+                    if (myGrade == null || !myGrade.getStatus().equals(StatusEnum.ENABLED.getKey())) {
+                        mtUser.setGradeId(initGrade.getId().toString());
                         this.updateById(mtUser);
                     }
                 }
@@ -491,11 +545,11 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
         String province = StringUtil.isNotEmpty(userInfo.getString("province")) ? userInfo.getString("province") : "";
         String city = StringUtil.isNotEmpty(userInfo.getString("city")) ? userInfo.getString("city") : "";
         String storeId = StringUtil.isNotEmpty(userInfo.getString("storeId")) ? userInfo.getString("storeId") : "0";
+        String nickName = StringUtil.isNotEmpty(userInfo.getString("nickName")) ? userInfo.getString("nickName") : "";
+        String mobile = StringUtil.isNotEmpty(userInfo.getString("phone")) ? userInfo.getString("phone") : "";
+        String source = StringUtil.isNotEmpty(userInfo.getString("source")) ? userInfo.getString("source") : MemberSourceEnum.WECHAT_LOGIN.getKey();
 
         if (user == null) {
-            String nickName = userInfo.getString("nickName");
-            String mobile = StringUtil.isNotEmpty(userInfo.getString("phone")) ? userInfo.getString("phone") : "";
-
             MtUser mtUser = new MtUser();
             if (StringUtil.isNotEmpty(mobile)) {
                 MtUser mtUserMobile = this.queryMemberByMobile(mobile);
@@ -534,7 +588,7 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
             } else {
                 mtUser.setStoreId(0);
             }
-            mtUser.setSource(MemberSourceEnum.WECHAT_LOGIN.getKey());
+            mtUser.setSource(source);
             if (mtUser.getId() == null || mtUser.getId() <= 0) {
                 this.save(mtUser);
             } else {
@@ -548,6 +602,11 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
             // 已被禁用
             if (user.getStatus().equals(StatusEnum.DISABLE.getKey())) {
                return null;
+            }
+            // 补充手机号
+            if (StringUtil.isNotEmpty(mobile)) {
+                user.setMobile(mobile);
+                this.updateById(user);
             }
             // 补充会员号
             if (StringUtil.isEmpty(user.getUserNo())) {

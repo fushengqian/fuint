@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
  * CopyRight https://www.fuint.cn
  */
 @Component
-@PropertySource("file:${env.properties.path}/${env.profile}/payment.properties")
+@PropertySource("file:${env.properties.path}/${env.profile}/application.properties")
 @ConfigurationProperties(prefix = "v3")
 public class WxPayV3Bean {
 

@@ -152,6 +152,7 @@ public class ClientPayController extends BaseController {
     @CrossOrigin
     public ResponseObject doPay(HttpServletRequest request) throws BusinessCheckException{
         String token = request.getHeader("Access-Token");
+        String platform = request.getHeader("platform") == null ? "" : request.getHeader("platform");
         String payType = request.getParameter("payType") == null ? PayTypeEnum.JSAPI.getKey() : request.getParameter("payType");
         String cashierPayAmount = request.getParameter("cashierPayAmount") == null ? "" : request.getParameter("cashierPayAmount"); // 收银台实付金额
         String cashierDiscountAmount = request.getParameter("cashierDiscountAmount") == null ? "" : request.getParameter("cashierDiscountAmount"); // 收银台优惠金额
@@ -235,7 +236,7 @@ public class ClientPayController extends BaseController {
             String ip = CommonUtil.getIPFromHttpRequest(request);
             BigDecimal pay = realPayAmount.multiply(new BigDecimal("100"));
             orderInfo.setPayType(payType);
-            ResponseObject paymentInfo = paymentService.createPrepayOrder(mtUser, orderInfo, (pay.intValue()), authCode, 0, ip);
+            ResponseObject paymentInfo = paymentService.createPrepayOrder(mtUser, orderInfo, (pay.intValue()), authCode, 0, ip, platform);
             if (paymentInfo.getData() == null) {
                 return getFailureResult(201, "抱歉，微信支付失败");
             }

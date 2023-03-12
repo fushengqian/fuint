@@ -172,13 +172,6 @@ public class SettingServiceImpl extends ServiceImpl<MtSettingMapper, MtSetting> 
             payTypeList.add(jsApi);
         }
 
-        // H5
-        if(platform.equals(PlatformTypeEnum.H5.getCode())) {
-
-        }
-
-        // PC端
-
         return payTypeList;
     }
 }

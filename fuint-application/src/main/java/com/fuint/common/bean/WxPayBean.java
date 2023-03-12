@@ -1,6 +1,5 @@
 package com.fuint.common.bean;
 
-import com.fuint.repository.model.MtStore;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Component;
@@ -12,18 +11,18 @@ import org.springframework.stereotype.Component;
  * CopyRight https://www.fuint.cn
  */
 @Component
-@PropertySource("file:${env.properties.path}/${env.profile}/payment.properties")
+@PropertySource("file:${env.properties.path}/${env.profile}/application.properties")
 @ConfigurationProperties(prefix = "wxpay")
 public class WxPayBean {
 
     private String appId;
     private String appSecret;
     private String mchId;
-    private String partnerKey;
+    private String apiV2;
     private String certPath;
     private String domain; // 填写完整的回调地址
 
-    public String getAppId(MtStore storeInfo) {
+    public String getAppId() {
         return appId;
     }
 
@@ -31,7 +30,7 @@ public class WxPayBean {
         this.appId = appId;
     }
 
-    public String getAppSecret(MtStore storeInfo) {
+    public String getAppSecret() {
         return appSecret;
     }
 
@@ -39,7 +38,7 @@ public class WxPayBean {
         this.appSecret = appSecret;
     }
 
-    public String getMchId(MtStore storeInfo) {
+    public String getMchId() {
         return mchId;
     }
 
@@ -47,15 +46,15 @@ public class WxPayBean {
         this.mchId = mchId;
     }
 
-    public String getPartnerKey(MtStore storeInfo) {
-        return partnerKey;
+    public String getApiV2() {
+        return apiV2;
     }
 
-    public void setPartnerKey(String partnerKey) {
-        this.partnerKey = partnerKey;
+    public void setApiV2(String apiV2) {
+        this.apiV2 = apiV2;
     }
 
-    public String getCertPath(MtStore storeInfo) {
+    public String getCertPath() {
         return certPath;
     }
 
@@ -63,7 +62,7 @@ public class WxPayBean {
         this.certPath = certPath;
     }
 
-    public String getDomain(MtStore storeInfo) {
+    public String getDomain() {
         return domain;
     }
 
@@ -73,7 +72,7 @@ public class WxPayBean {
 
     @Override
     public String toString() {
-        return "WxPayBean [appId=" + appId + ", appSecret=" + appSecret + ", mchId=" + mchId + ", partnerKey="
-            + partnerKey + ", certPath=" + certPath + ", domain=" + domain + "]";
+        return "WxPayBean [appId=" + appId + ", appSecret=" + appSecret + ", mchId=" + mchId + ", apiV2="
+            + apiV2 + ", certPath=" + certPath + ", domain=" + domain + "]";
     }
 }

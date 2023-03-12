@@ -10,5 +10,5 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  * CopyRight https://www.fuint.cn
  */
 public interface MtUserGradeMapper extends BaseMapper<MtUserGrade> {
-
+   // empty
 }

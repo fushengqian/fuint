@@ -103,6 +103,7 @@ public class ClientSettlementController extends BaseController {
     @CrossOrigin
     public ResponseObject submit(HttpServletRequest request, @RequestBody Map<String, Object> param) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
+        String platform = request.getHeader("platform") == null ? "" : request.getHeader("platform");
         String cartIds = param.get("cartIds") == null ? "" : param.get("cartIds").toString();
         Integer targetId = param.get("targetId") == null ? 0 : Integer.parseInt(param.get("targetId").toString()); // 储值卡、升级等级必填
         String selectNum = param.get("selectNum") == null ? "" : param.get("selectNum").toString(); // 储值卡必填
@@ -432,7 +433,7 @@ public class ClientSettlementController extends BaseController {
                     Map<String, String> data = new HashMap<>();
                     paymentInfo = getSuccessResult(data);
                 } else {
-                    paymentInfo = paymentService.createPrepayOrder(userInfo, orderInfo, (wxPayAmount.intValue()), authCode, 0, ip);
+                    paymentInfo = paymentService.createPrepayOrder(userInfo, orderInfo, (wxPayAmount.intValue()), authCode, 0, ip, platform);
                 }
                 if (paymentInfo.getData() == null) {
                     errorMessage = PropertiesUtil.getResponseErrorMessageByCode(3000);

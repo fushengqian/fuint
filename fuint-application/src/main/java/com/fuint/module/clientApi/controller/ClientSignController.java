@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.fuint.common.dto.TokenDto;
 import com.fuint.common.dto.UserInfo;
 import com.fuint.common.enums.GenderEnum;
+import com.fuint.common.enums.MemberSourceEnum;
 import com.fuint.common.enums.StatusEnum;
 import com.fuint.common.service.CaptchaService;
 import com.fuint.common.service.MemberService;
@@ -18,6 +19,7 @@ import com.fuint.repository.model.MtUser;
 import com.fuint.repository.model.MtVerifyCode;
 import com.fuint.utils.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
@@ -57,8 +59,11 @@ public class ClientSignController extends BaseController {
     @Autowired
     private CaptchaService captchaService;
 
+    @Autowired
+    private Environment env;
+
     /**
-     * 微信授权登录
+     * 微信授权登录（小程序）
      * */
     @RequestMapping(value = "/mpWxLogin", method = RequestMethod.POST)
     @ResponseBody
@@ -76,6 +81,7 @@ public class ClientSignController extends BaseController {
         String type = userInfo.getString("type");
         String encryptedData = userInfo.getString("encryptedData");
         userInfo.put("phone", "");
+        userInfo.put("source", MemberSourceEnum.WECHAT_LOGIN.getKey());
         if (type.equals("phone") && StringUtil.isNotEmpty(encryptedData)) {
             String phone = weixinService.getPhoneNumber(userInfo.get("encryptedData").toString(), loginInfo.get("session_key").toString(), userInfo.get("iv").toString());
             userInfo.put("phone", phone);
@@ -96,6 +102,46 @@ public class ClientSignController extends BaseController {
 
         Map<String, Object> result = new HashMap<>();
         result.put("token", token);
+        result.put("userId", mtUser.getId());
+        result.put("userName", mtUser.getName());
+        result.put("openId", mtUser.getOpenId());
+
+        return getSuccessResult("登录成功", result);
+    }
+
+    /**
+     * 微信授权登录（公众号）
+     * */
+    @RequestMapping(value = "/mpWxAuth", method = RequestMethod.POST)
+    @ResponseBody
+    @CrossOrigin
+    public ResponseObject mpWxAuth(HttpServletRequest request, @RequestBody Map<String, Object> param) throws BusinessCheckException {
+        String token = request.getHeader("Access-Token");
+        String storeId = request.getHeader("storeId") == null ? "0" : request.getHeader("storeId");
+        JSONObject mpUserInfo = weixinService.getWxOpenId(param.get("code").toString());
+        if (mpUserInfo == null) {
+            return getFailureResult(201, "微信公众号授权失败");
+        }
+
+        if (StringUtil.isEmpty(token)) {
+            return getFailureResult(1001);
+        }
+
+        UserInfo loginInfo = TokenUtil.getUserInfoByToken(token);
+        if (loginInfo == null) {
+            return getFailureResult(1001);
+        }
+
+        MtUser userInfo = memberService.queryMemberById(loginInfo.getId());
+        userInfo.setOpenId(mpUserInfo.get("openid").toString());
+        userInfo.setStoreId(Integer.parseInt(storeId));
+        MtUser mtUser = memberService.updateMember(userInfo);
+
+        if (mtUser == null) {
+            return getFailureResult(0, "用户状态异常");
+        }
+
+        Map<String, Object> result = new HashMap<>();
         result.put("userId", mtUser.getId());
         result.put("userName", mtUser.getName());
         result.put("openId", mtUser.getOpenId());
@@ -155,6 +201,10 @@ public class ClientSignController extends BaseController {
             outParams.put("userName", userInfo.getName());
             outParams.put("token", token);
             outParams.put("openId", "");
+            String domain = env.getProperty("website.url");
+            String appId = env.getProperty("weixin.official.appId");
+            outParams.put("domain", domain);
+            outParams.put("appId", appId);
             return getSuccessResult("注册成功", outParams);
         } else {
             return getFailureResult(201,"注册失败");
@@ -255,6 +305,11 @@ public class ClientSignController extends BaseController {
             outParams.put("token", dto.getToken());
             outParams.put("userId", mtUser.getId());
             outParams.put("userName", mtUser.getName());
+            outParams.put("openId", mtUser.getOpenId());
+            String domain = env.getProperty("website.url");
+            String appId = env.getProperty("weixin.official.appId");
+            outParams.put("domain", domain);
+            outParams.put("appId", appId);
             return getSuccessResult("登录成功", outParams);
         } else {
             return getFailureResult(201, "登录失败");

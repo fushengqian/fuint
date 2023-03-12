@@ -22,9 +22,9 @@ public interface WeixinService {
 
     String getAccessToken(boolean useCache);
 
-    ResponseObject createPrepayOrder(MtUser userInfo, MtOrder orderInfo, Integer payAmount, String authCode, Integer giveAmount, String ip) throws BusinessCheckException;
+    ResponseObject createPrepayOrder(MtUser userInfo, MtOrder orderInfo, Integer payAmount, String authCode, Integer giveAmount, String ip, String platform) throws BusinessCheckException;
 
-    boolean paymentCallback(UserOrderDto orderInfo) throws BusinessCheckException;
+    Boolean paymentCallback(UserOrderDto orderInfo) throws BusinessCheckException;
 
     Map<String,String> processResXml(HttpServletRequest request);
 
@@ -36,7 +36,10 @@ public interface WeixinService {
 
     String getPhoneNumber(String encryptedData, String session_key, String iv);
 
-    boolean sendSubscribeMessage(Integer userId, String toUserOpenId, String key, String page, Map<String,Object> params, Date sendTime) throws BusinessCheckException;
+    Boolean sendSubscribeMessage(Integer userId, String toUserOpenId, String key, String page, Map<String,Object> params, Date sendTime) throws BusinessCheckException;
 
-    boolean doSendSubscribeMessage(String reqDataJsonStr);
+    Boolean doSendSubscribeMessage(String reqDataJsonStr);
+
+    String queryPaidOrder(Integer storeId, String transactionId, String orderSn);
+
 }

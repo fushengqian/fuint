@@ -143,18 +143,14 @@ public class UserGradeServiceImpl extends ServiceImpl<MtUserGradeMapper, MtUserG
     public MtUserGrade getInitUserGrade() {
         Map<String, Object> param = new HashMap<>();
         param.put("status", StatusEnum.ENABLED.getKey());
-
+        param.put("CATCH_TYPE", UserGradeCatchTypeEnum.INIT.getKey());
         List<MtUserGrade> dataList = mtUserGradeMapper.selectByMap(param);
-
-        MtUserGrade result = new MtUserGrade();
-        result.setId(0);
-        for (MtUserGrade grade : dataList) {
-            if (grade.getCatchType().equals(UserGradeCatchTypeEnum.INIT.getKey())) {
-                return grade;
-            }
+        MtUserGrade initGrade = new MtUserGrade();
+        initGrade.setId(0);
+        if (dataList != null && dataList.size() > 0) {
+            initGrade = dataList.get(0);
         }
-
-         return result;
+        return initGrade;
     }
 
     /**
