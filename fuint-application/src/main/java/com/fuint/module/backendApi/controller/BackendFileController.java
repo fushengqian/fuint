@@ -130,10 +130,11 @@ public class BackendFileController extends BaseController {
                 String bucketName = env.getProperty("aliyun.oss.bucketName");
                 String folder = env.getProperty("aliyun.oss.folder");
                 String domain = env.getProperty("aliyun.oss.domain");
-
                 OSS ossClient = AliyunOssUtil.getOSSClient(accessKeyId, accessKeySecret, endpoint);
-                String pathRoot = ResourceUtils.getURL("classpath:").getPath();
-
+                String pathRoot = env.getProperty("images.root");
+                if (pathRoot == null || StringUtil.isEmpty(pathRoot)) {
+                    pathRoot = ResourceUtils.getURL("classpath:").getPath();
+                }
                 File ossFile = new File(pathRoot + fileName);
                 fileName = AliyunOssUtil.upload(ossClient, ossFile, bucketName, folder);
                 filePath = domain + fileName;
@@ -161,8 +162,11 @@ public class BackendFileController extends BaseController {
         String fileName = file.getOriginalFilename();
 
         String imageName = fileName.substring(fileName.lastIndexOf("."));
-        String pathRoot = ResourceUtils.getURL("classpath:").getPath();
 
+        String pathRoot = env.getProperty("images.root");
+        if (pathRoot == null || StringUtil.isEmpty(pathRoot)) {
+            pathRoot = ResourceUtils.getURL("classpath:").getPath();
+        }
         String uuid = UUID.randomUUID().toString().replaceAll("-", "");
 
         String baseImage = env.getProperty("images.path");

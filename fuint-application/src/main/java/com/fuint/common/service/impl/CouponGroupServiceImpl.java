@@ -27,6 +27,8 @@ import com.github.pagehelper.PageHelper;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -78,6 +80,9 @@ public class CouponGroupServiceImpl extends ServiceImpl<MtCouponGroupMapper, MtC
 
     @Resource
     private SendSmsService sendSmsService;
+
+    @Autowired
+    private Environment env;
 
     /**
      * 分页查询卡券分组列表
@@ -492,7 +497,10 @@ public class CouponGroupServiceImpl extends ServiceImpl<MtCouponGroupMapper, MtC
         String fileName = file.getOriginalFilename();
 
         String imageName = fileName.substring(fileName.lastIndexOf("."));
-        String pathRoot = ResourceUtils.getURL("classpath:").getPath();
+        String pathRoot = env.getProperty("images.root");
+        if (pathRoot == null || StringUtil.isEmpty(pathRoot)) {
+            pathRoot = ResourceUtils.getURL("classpath:").getPath();
+        }
         String uuid = UUID.randomUUID().toString().replaceAll("-", "");
 
         String filePath = "/static/uploadFiles/"+ DateUtil.formatDate(new Date(), "yyyyMMdd")+"/";

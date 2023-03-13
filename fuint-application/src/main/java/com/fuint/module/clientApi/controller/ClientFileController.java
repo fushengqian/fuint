@@ -112,7 +112,11 @@ public class ClientFileController extends BaseController {
                 String domain = env.getProperty("aliyun.oss.domain");
 
                 OSS ossClient = AliyunOssUtil.getOSSClient(accessKeyId, accessKeySecret, endpoint);
-                String pathRoot = ResourceUtils.getURL("classpath:").getPath();
+
+                String pathRoot = env.getProperty("images.root");
+                if (pathRoot == null || StringUtil.isEmpty(pathRoot)) {
+                    pathRoot = ResourceUtils.getURL("classpath:").getPath();
+                }
 
                 File ossFile = new File(pathRoot + fileName);
                 fileName = AliyunOssUtil.upload(ossClient, ossFile, bucketName, folder);
@@ -139,17 +143,15 @@ public class ClientFileController extends BaseController {
 
     public String saveFile(MultipartFile file) throws Exception {
         String fileName = file.getOriginalFilename();
-
         String imageName = fileName.substring(fileName.lastIndexOf("."));
-        String pathRoot = ResourceUtils.getURL("classpath:").getPath();
-
+        String pathRoot = env.getProperty("images.root");
+        if (pathRoot == null || StringUtil.isEmpty(pathRoot)) {
+            pathRoot = ResourceUtils.getURL("classpath:").getPath();
+        }
         String uuid = UUID.randomUUID().toString().replaceAll("-", "");
-
         String baseImage = env.getProperty("images.path");
         String filePath = baseImage + DateUtil.formatDate(new Date(), "yyyyMMdd") + "/";
-
         String path = filePath + uuid + imageName;
-
         try {
             File tempFile = new File(pathRoot + path);
             if (!tempFile.getParentFile().exists()) {
@@ -159,7 +161,6 @@ public class ClientFileController extends BaseController {
         } catch (Exception e) {
             throw new Exception("上传失败，请检查目录是否可写");
         }
-
         return path;
     }
 }
