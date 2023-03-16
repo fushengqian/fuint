@@ -264,7 +264,7 @@ public class ClientPayController extends BaseController {
         logger.info("微信返回Map:" + resData);
         if (!CollectionUtils.isEmpty(resData)) {
             String orderSn = resData.get("out_trade_no"); // 商户订单号
-            String orderId = resData.get("transaction_id"); // 微信订单号
+            String orderId = resData.get("transaction_id"); // 微信交易单号
             String tranAmt = resData.get("total_fee"); // 交易金额
             BigDecimal tranAmount = new BigDecimal(tranAmt).divide(new BigDecimal("100"), BigDecimal.ROUND_CEILING);
             // 参数校验

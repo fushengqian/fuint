@@ -30,7 +30,7 @@ public interface BalanceService extends IService<MtBalance> {
      * @param reqDto
      * @throws BusinessCheckException
      */
-    boolean addBalance(MtBalance reqDto) throws BusinessCheckException;
+    Boolean addBalance(MtBalance reqDto) throws BusinessCheckException;
 
     /**
      * 获取订单余额记录

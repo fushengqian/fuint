@@ -24,7 +24,6 @@ import com.ijpay.wxpay.WxPayApiConfigKit;
 import com.ijpay.wxpay.model.MicroPayModel;
 import com.ijpay.wxpay.model.OrderQueryModel;
 import com.ijpay.wxpay.model.UnifiedOrderModel;
-import com.sun.org.apache.xerces.internal.impl.dv.util.Base64;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,10 +43,7 @@ import java.io.OutputStream;
 import java.math.BigDecimal;
 import java.security.AlgorithmParameters;
 import java.security.Security;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Arrays;
+import java.util.*;
 
 /**
  * 微信相关接口
@@ -396,11 +392,11 @@ public class WeixinServiceImpl implements WeixinService {
     @Override
     public String getPhoneNumber(String encryptedData, String sessionKey, String iv) {
         // 被加密的数据
-        byte[] dataByte = Base64.decode(encryptedData);
+        byte[] dataByte = Base64.getDecoder().decode(encryptedData);
         // 加密秘钥
-        byte[] keyByte = Base64.decode(sessionKey);
+        byte[] keyByte = Base64.getDecoder().decode(sessionKey);
         // 偏移量
-        byte[] ivByte = Base64.decode(iv);
+        byte[] ivByte = Base64.getDecoder().decode(iv);
         try {
             // 如果密钥不足16位，那么就补足.  这个if 中的内容很重要
             int base = 16;
@@ -552,7 +548,7 @@ public class WeixinServiceImpl implements WeixinService {
             return query;
         } catch (Exception e) {
             e.printStackTrace();
-            return "系统错误";
+            return "FAIL";
         }
     }
 
@@ -561,8 +557,11 @@ public class WeixinServiceImpl implements WeixinService {
      * */
     private Map<String, String> microPay(Integer storeId, Map<String, String> reqData, String ip, String platform) {
         try {
+            String orderSn = reqData.get("out_trade_no");
+
             logger.info("调用微信刷卡支付下单接口入参{}", JsonUtil.toJSONString(reqData));
-            logger.info("请求平台：{}", platform);
+            logger.info("请求平台：{}, 订单号：{}", platform, orderSn);
+
             // 支付配置
             getApiConfig(storeId, platform);
             WxPayApiConfig wxPayApiConfig = WxPayApiConfigKit.getWxPayApiConfig();
@@ -572,7 +571,7 @@ public class WeixinServiceImpl implements WeixinService {
                     .nonce_str(WxPayKit.generateStr())
                     .body(reqData.get("body"))
                     .attach(reqData.get("body"))
-                    .out_trade_no(reqData.get("out_trade_no"))
+                    .out_trade_no(orderSn)
                     .total_fee(reqData.get("total_fee"))
                     .spbill_create_ip(ip)
                     .auth_code(reqData.get("auth_code"))
@@ -587,15 +586,24 @@ public class WeixinServiceImpl implements WeixinService {
             String returnMsg = respMap.get("return_msg");
             if (!WxPayKit.codeIsOk(returnCode)) {
                 // 通讯失败
+                String payResult = "";
                 String errCode = respMap.get("err_code");
                 if (StringUtil.isNotEmpty(errCode)) {
                     // 用户支付中，需要输入密码
                     if (errCode.equals("USERPAYING")) {
-                        // 等待5秒后调用【查询订单API】
+                        // 等待5秒后调用
+                        try {
+                            Thread.sleep(5000);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                        payResult = queryPaidOrder(storeId, respMap.get("transaction_id"), orderSn);
                     }
                 }
-                logger.info("提交刷卡支付失败>>" + xmlResult);
-                return respMap;
+                if (StringUtil.isEmpty(payResult) || payResult.equals("FAIL")) {
+                    logger.info("提交刷卡支付失败>>" + xmlResult);
+                    return respMap;
+                }
             }
 
             String resultCode = respMap.get("result_code");
@@ -606,7 +614,6 @@ public class WeixinServiceImpl implements WeixinService {
             }
 
             // 支付成功
-            String orderSn = respMap.get("out_trade_no");
             logger.info("刷卡支付返回>>" + respMap.toString());
 
             if (StringUtil.isNotEmpty(orderSn)) {

@@ -148,7 +148,6 @@ public class CouponServiceImpl extends ServiceImpl<MtCouponMapper, MtCoupon> imp
         }
 
         mtCoupon.setGroupId(reqCouponDto.getGroupId());
-
         if (reqCouponDto.getType() != null) {
             mtCoupon.setType(reqCouponDto.getType());
         }
@@ -252,6 +251,11 @@ public class CouponServiceImpl extends ServiceImpl<MtCouponMapper, MtCoupon> imp
         }
 
         MtCoupon couponInfo = mtCouponMapper.selectById(mtCoupon.getId());
+
+        // 更新已下发的会员卡券有效期
+        if (couponInfo.getId() != null && reqCouponDto.getEndTime() != null && StringUtil.isNotEmpty(reqCouponDto.getEndTime())) {
+            mtUserCouponMapper.updateExpireTime(couponInfo.getId(), reqCouponDto.getEndTime());
+        }
 
         // 适用商品
         if (reqCouponDto.getGoodsIds() != null) {
@@ -500,7 +504,7 @@ public class CouponServiceImpl extends ServiceImpl<MtCouponMapper, MtCoupon> imp
         MtUser userInfo = memberService.queryMemberByMobile(mobile);
 
         if (null == userInfo || !userInfo.getStatus().equals(StatusEnum.ENABLED.getKey())) {
-            throw new BusinessCheckException("该手机号码不存在或已禁用，请先注册会员");
+            throw new BusinessCheckException("该会员不存在或已禁用，请先注册会员");
         }
 
         MtCoupon couponInfo = this.queryCouponById(couponId);
@@ -596,7 +600,7 @@ public class CouponServiceImpl extends ServiceImpl<MtCouponMapper, MtCoupon> imp
 
         if (userCoupon == null) {
             throw new BusinessCheckException("该卡券不存在！");
-        } else if (!userCoupon.getStatus().equals(UserCouponStatusEnum.UNUSED.getKey())) {
+        } else if (!userCoupon.getStatus().equals(UserCouponStatusEnum.UNUSED.getKey()) && !userCoupon.getStatus().equals(UserCouponStatusEnum.UNSEND.getKey())) {
             throw new BusinessCheckException("该卡券状态有误，可能已使用或已过期！");
         }
 

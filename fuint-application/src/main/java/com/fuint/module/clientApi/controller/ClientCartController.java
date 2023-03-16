@@ -139,14 +139,16 @@ public class ClientCartController extends BaseController {
             mtUser = memberService.queryMemberById(userInfo.getId());
         }
 
-        if (null == mtUser) {
+        if (mtUser == null) {
             return getFailureResult(1001);
         }
 
         if (StringUtil.isEmpty(cartIds)) {
-            cartService.clearCart(mtUser.getId());
-        } else if (StringUtil.isNotEmpty(hangNo)) {
-            cartService.removeCartByHangNo(hangNo);
+            if (StringUtil.isNotEmpty(hangNo)) {
+                cartService.removeCartByHangNo(hangNo);
+            } else {
+                cartService.clearCart(mtUser.getId());
+            }
         } else {
             cartService.removeCart(cartIds);
         }

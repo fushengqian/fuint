@@ -15,6 +15,8 @@ import java.util.List;
  */
 public interface MtUserCouponMapper extends BaseMapper<MtUserCoupon> {
 
+    Boolean updateExpireTime(@Param("couponId") Integer couponId, @Param("expireTime") String expireTime);
+
     Long getSendNum(@Param("couponId") Integer couponId);
 
     CouponNumBean getPeopleNumByCouponId(@Param("couponId") Integer couponId);
