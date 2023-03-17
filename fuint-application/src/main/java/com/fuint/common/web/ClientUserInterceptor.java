@@ -37,12 +37,16 @@ public class ClientUserInterceptor implements AsyncHandlerInterceptor {
         }
 
         String accessToken = request.getHeader("Access-Token");
+        String requestURI = request.getRequestURI();
         if (StringUtils.isEmpty(accessToken)) {
-            logger.info("header部分token为空,uri={}", request.getRequestURI());
-            response.setHeader("Content-Type", "application/json;charset=UTF-8");
-            response.getOutputStream().print("{\"code\":1001,\"message\":\"" + PropertiesUtil
-                    .getResponseErrorMessageByCode(Constants.HTTP_RESPONSE_CODE_NOLOGIN) + "\",\"data\":null}");
-            return false;
+            if (!requestURI.equals("/clientApi/system/config")) {
+                response.setHeader("Content-Type", "application/json;charset=UTF-8");
+                response.getOutputStream().print("{\"code\":1001,\"message\":\"" + PropertiesUtil
+                        .getResponseErrorMessageByCode(Constants.HTTP_RESPONSE_CODE_NOLOGIN) + "\",\"data\":null}");
+                return false;
+            } else {
+                return true;
+            }
         }
 
         // 验证session中的Token
@@ -54,6 +58,10 @@ public class ClientUserInterceptor implements AsyncHandlerInterceptor {
                 if (!isActive) {
                     return false;
                 }
+                return true;
+            }
+        } else {
+            if (requestURI.equals("/clientApi/system/config")) {
                 return true;
             }
         }

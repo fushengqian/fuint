@@ -332,28 +332,39 @@ public class BackendAccountController extends BaseController {
      * 删除账户信息
      *
      * @param request HttpServletRequest对象
-     * @param userId  账户ID
+     * @param userIds  账户ID（逗号隔开）
      * @return
      * @throws BusinessCheckException
      */
-    @RequestMapping(value = "/delete/{userId}", method = RequestMethod.GET)
+    @RequestMapping(value = "/delete/{userIds}", method = RequestMethod.GET)
     @CrossOrigin
-    public ResponseObject deleteAccount(HttpServletRequest request, @PathVariable("userId") Long userId) {
+    public ResponseObject deleteAccount(HttpServletRequest request, @PathVariable("userIds") String userIds) {
         String token = request.getHeader("Access-Token");
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
         if (accountInfo == null) {
             return getFailureResult(1001, "请先登录");
         }
-
-        TAccount tAccount = tAccountService.getAccountInfoById(userId.intValue());
-        if (tAccount == null) {
-            return getFailureResult(201, "账户不存在");
+        String ids[] = userIds.split(",");
+        if (ids.length > 0) {
+            for (int i = 0; i < ids.length; i++) {
+                 if (StringUtil.isNotEmpty(ids[i])) {
+                     Integer userId = Integer.parseInt(ids[i]);
+                     TAccount tAccount = tAccountService.getAccountInfoById(userId.intValue());
+                     if (tAccount == null) {
+                         return getFailureResult(201, "账户不存在");
+                     }
+                     if (StringUtil.equals(accountInfo.getAccountName(), tAccount.getAccountName())) {
+                         return getFailureResult(201, "您不能删除自己");
+                     }
+                 }
+            }
+            for (int i = 0; i < ids.length; i++) {
+                 if (StringUtil.isNotEmpty(ids[i])) {
+                     Long userId = Long.parseLong(ids[i]);
+                     tAccountService.deleteAccount(userId);
+                 }
+            }
         }
-        if (StringUtil.equals(accountInfo.getAccountName(), tAccount.getAccountName())) {
-            return getFailureResult(201, "您不能删除自己");
-        }
-        tAccountService.deleteAccount(userId);
-
         return getSuccessResult(true);
     }
 
