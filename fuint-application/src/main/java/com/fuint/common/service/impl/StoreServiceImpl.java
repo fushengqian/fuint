@@ -122,6 +122,7 @@ public class StoreServiceImpl extends ServiceImpl<MtStoreMapper, MtStore> implem
         mtStore.setHours(storeDto.getHours());
         mtStore.setLatitude(storeDto.getLatitude());
         mtStore.setLongitude(storeDto.getLongitude());
+        mtStore.setStatus(storeDto.getStatus());
 
         if (mtStore.getStatus() == null) {
             mtStore.setStatus(StatusEnum.ENABLED.getKey());

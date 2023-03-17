@@ -169,9 +169,9 @@ public class BackendStoreController extends BaseController {
         String hours = params.get("hours") == null ? "" : CommonUtil.replaceXSS(params.get("hours").toString());
         String latitude = params.get("latitude") == null ? "" : CommonUtil.replaceXSS(params.get("latitude").toString());
         String longitude = params.get("longitude") == null ? "" : CommonUtil.replaceXSS(params.get("longitude").toString());
-        String status = params.get("status") == null ? "" : CommonUtil.replaceXSS(params.get("status").toString());
         String wxMchId = params.get("wxMchId") == null ? "" : CommonUtil.replaceXSS(params.get("wxMchId").toString());
         String wxApiV2 = params.get("wxApiV2") == null ? "" : CommonUtil.replaceXSS(params.get("wxApiV2").toString());
+        String status = params.get("status") != null ? params.get("status").toString() : StatusEnum.ENABLED.getKey();
 
         if ((StringUtil.isEmpty(latitude) || StringUtil.isEmpty(longitude)) && StringUtil.isNotEmpty(address)) {
             Map<String, Object> latAndLng = CommonUtil.getLatAndLngByAddress(address);

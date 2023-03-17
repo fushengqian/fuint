@@ -5,6 +5,7 @@ import com.fuint.common.dto.*;
 import com.fuint.common.enums.OrderStatusEnum;
 import com.fuint.common.enums.PayTypeEnum;
 import com.fuint.common.enums.SettingTypeEnum;
+import com.fuint.common.enums.YesOrNoEnum;
 import com.fuint.common.service.*;
 import com.fuint.common.util.CommonUtil;
 import com.fuint.common.util.TokenUtil;
@@ -156,8 +157,9 @@ public class ClientPayController extends BaseController {
         String payType = request.getParameter("payType") == null ? PayTypeEnum.JSAPI.getKey() : request.getParameter("payType");
         String cashierPayAmount = request.getParameter("cashierPayAmount") == null ? "" : request.getParameter("cashierPayAmount"); // 收银台实付金额
         String cashierDiscountAmount = request.getParameter("cashierDiscountAmount") == null ? "" : request.getParameter("cashierDiscountAmount"); // 收银台优惠金额
-        UserInfo userInfo = TokenUtil.getUserInfoByToken(token);
+        UserInfo loginInfo = TokenUtil.getUserInfoByToken(token);
         String orderId = request.getParameter("orderId");
+        String userId = request.getParameter("userId");
         String authCode = request.getParameter("authCode");
         if (StringUtil.isEmpty(orderId)) {
             return getFailureResult(201, "订单不能为空");
@@ -168,14 +170,22 @@ public class ClientPayController extends BaseController {
             return getFailureResult(201, "该订单不存在");
         }
         MtUser mtUser = null;
-        if (userInfo != null) {
-            mtUser = memberService.queryMemberById(userInfo.getId());
+        if (loginInfo != null) {
+            mtUser = memberService.queryMemberById(loginInfo.getId());
         }
 
         // 收银员操作
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
-        if (userInfo == null && accountInfo != null) {
-            mtUser = memberService.queryMemberById(orderInfo.getUserId());
+        if (loginInfo == null && accountInfo != null) {
+            // 游客订单绑定到会员
+            if (orderInfo.getIsVisitor().equals(YesOrNoEnum.YES.getKey()) && StringUtil.isNotEmpty(userId)) {
+                mtUser = memberService.queryMemberById(Integer.parseInt(userId));
+                orderInfo.setUserId(Integer.parseInt(userId));
+                orderInfo.setIsVisitor(YesOrNoEnum.NO.getKey());
+                orderService.updateOrder(orderInfo);
+            } else {
+                mtUser = memberService.queryMemberById(orderInfo.getUserId());
+            }
         }
 
         if (mtUser == null) {
@@ -184,11 +194,11 @@ public class ClientPayController extends BaseController {
 
         if (accountInfo != null && StringUtil.isNotEmpty(cashierPayAmount) && StringUtil.isNotEmpty(cashierDiscountAmount)) {
             orderInfo.setDiscount(new BigDecimal(cashierDiscountAmount));
-            if (userInfo == null) {
+            if (loginInfo == null) {
                 MtUser user = memberService.queryMemberById(orderInfo.getUserId());
                 if (user != null) {
-                    userInfo = new UserInfo();
-                    userInfo.setId(user.getId());
+                    loginInfo = new UserInfo();
+                    loginInfo.setId(user.getId());
                 }
             }
         }
@@ -201,7 +211,7 @@ public class ClientPayController extends BaseController {
             MtBalance balance = new MtBalance();
             balance.setMobile(mtUser.getMobile());
             balance.setOrderSn(orderInfo.getOrderSn());
-            balance.setUserId(userInfo.getId());
+            balance.setUserId(mtUser.getId());
             balance.setAmount(realPayAmount.subtract(realPayAmount).subtract(realPayAmount));
             boolean isPay = balanceService.addBalance(balance);
             if (isPay) {
