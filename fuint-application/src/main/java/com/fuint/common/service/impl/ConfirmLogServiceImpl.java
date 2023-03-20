@@ -110,7 +110,7 @@ public class ConfirmLogServiceImpl extends ServiceImpl<MtConfirmLogMapper, MtCon
     }
 
     /**
-     * 获取卡券（集次卡）核销次数
+     * 获取卡券（计次卡）核销次数
      * @param userCouponId 会员卡券ID
      * @return
      * */

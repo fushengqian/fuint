@@ -154,7 +154,7 @@ public class ClientUserCouponController extends BaseController {
             result.setStatus(userCoupon.getStatus());
             result.setIsGive(couponInfo.getIsGive());
 
-            // 如果是集次卡，获取核销次数
+            // 如果是计次卡，获取核销次数
             if (couponInfo.getType().equals(CouponTypeEnum.TIMER.getKey())) {
                 if (userCouponId <= 0 && StringUtil.isNotEmpty(userCouponCode)) {
                     userCouponId = userCoupon.getId();

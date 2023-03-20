@@ -144,11 +144,7 @@ public class WeixinServiceImpl implements WeixinService {
         reqData.put("out_trade_no", orderInfo.getOrderSn());
         reqData.put("device_info", "");
         reqData.put("fee_type", "CNY");
-        if (userInfo.getId() == 163) {
-            reqData.put("total_fee", "1");// 1分钱
-        } else {
-            reqData.put("total_fee", payAmount.toString());
-        }
+        reqData.put("total_fee", payAmount.toString());
         reqData.put("spbill_create_ip", ip);
 
         // JSAPI支付
@@ -163,7 +159,7 @@ public class WeixinServiceImpl implements WeixinService {
         }
 
         // 更新支付金额
-        BigDecimal payAmount1 = new BigDecimal(payAmount).divide(new BigDecimal("100"), BigDecimal.ROUND_CEILING);
+        BigDecimal payAmount1 = new BigDecimal(payAmount).divide(new BigDecimal("100"));
         OrderDto reqDto = new OrderDto();
         reqDto.setId(orderInfo.getId());
         reqDto.setPayAmount(payAmount1);

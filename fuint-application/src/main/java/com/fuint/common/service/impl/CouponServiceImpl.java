@@ -460,7 +460,7 @@ public class CouponServiceImpl extends ServiceImpl<MtCouponMapper, MtCoupon> imp
                 }
             }
 
-            // 集次卡卖点
+            // 计次卡卖点
             if (item.getType().equals(CouponTypeEnum.TIMER.getKey()) && StringUtil.isNotEmpty(item.getOutRule())) {
                 sellingPoint = "集满" + item.getOutRule() + "次即可";
             }
@@ -538,7 +538,7 @@ public class CouponServiceImpl extends ServiceImpl<MtCouponMapper, MtCoupon> imp
             return;
         }
 
-        // 优惠券或集次卡，发放num套
+        // 优惠券或计次卡，发放num套
         for (int k = 1; k <= num; k++) {
             for (int j = 1; j <= couponInfo.getSendNum(); j++) {
                 MtUserCoupon userCoupon = new MtUserCoupon();
@@ -678,7 +678,7 @@ public class CouponServiceImpl extends ServiceImpl<MtCouponMapper, MtCoupon> imp
 
             userCoupon.setBalance(newBalance);
         } else if (couponInfo.getType().equals(CouponTypeEnum.TIMER.getKey())) {
-            // 集次卡核销，增加核销次数至满
+            // 计次卡核销，增加核销次数至满
             Long confirmCount = confirmLogService.getConfirmNum(userCouponId);
             if ((confirmCount.intValue() + 1) >= Integer.parseInt(couponInfo.getOutRule())) {
                 userCoupon.setStatus(UserCouponStatusEnum.USED.getKey());

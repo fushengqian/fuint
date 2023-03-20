@@ -9,7 +9,7 @@ package com.fuint.common.enums;
 public enum CouponTypeEnum {
     COUPON("C", "优惠券"),
     PRESTORE("P", "储值卡"),
-    TIMER("T", "集次卡");
+    TIMER("T", "计次卡");
 
     private String key;
 

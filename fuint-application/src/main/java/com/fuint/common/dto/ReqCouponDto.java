@@ -42,7 +42,7 @@ public class ReqCouponDto implements Serializable {
     private Integer point;
 
     /**
-     * 获得集次卡卡所消耗积分
+     * 获得计次卡卡所消耗积分
      */
     private Integer timerPoint;
 
@@ -57,7 +57,7 @@ public class ReqCouponDto implements Serializable {
     private String useFor;
 
     /**
-     * 集次卡领取码
+     * 计次卡领取码
      */
     private String timerReceiveCode;
 

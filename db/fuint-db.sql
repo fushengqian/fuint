@@ -102,7 +102,7 @@ DROP TABLE IF EXISTS `mt_coupon`;
 CREATE TABLE `mt_coupon` (
   `ID` int NOT NULL AUTO_INCREMENT COMMENT '自增ID',
   `GROUP_ID` int NOT NULL DEFAULT '0' COMMENT '券组ID',
-  `TYPE` char(1) DEFAULT 'C' COMMENT '券类型，C优惠券；P储值卡；T集次卡',
+  `TYPE` char(1) DEFAULT 'C' COMMENT '券类型，C优惠券；P储值卡；T计次卡',
   `NAME` varchar(100) NOT NULL DEFAULT '' COMMENT '券名称',
   `IS_GIVE` tinyint(1) DEFAULT '0' COMMENT '是否允许转赠',
   `POINT` int DEFAULT '0' COMMENT '获得卡券所消耗积分',
@@ -502,7 +502,7 @@ DROP TABLE IF EXISTS `mt_user_coupon`;
 CREATE TABLE `mt_user_coupon` (
   `ID` int NOT NULL AUTO_INCREMENT COMMENT '自增ID',
   `CODE` varchar(32) NOT NULL DEFAULT '' COMMENT '编码',
-  `TYPE` char(1) NOT NULL DEFAULT 'C' COMMENT '券类型，C优惠券；P储值卡；T集次卡',
+  `TYPE` char(1) NOT NULL DEFAULT 'C' COMMENT '券类型，C优惠券；P储值卡；T计次卡',
   `IMAGE` varchar(100) DEFAULT '' COMMENT '效果图',
   `GROUP_ID` int NOT NULL DEFAULT '0' COMMENT '券组ID',
   `COUPON_ID` int NOT NULL DEFAULT '0' COMMENT '券ID',

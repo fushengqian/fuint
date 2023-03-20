@@ -114,7 +114,7 @@ public class UserCouponServiceImpl extends ServiceImpl<MtUserCouponMapper, MtUse
     }
 
     /**
-     * 领取卡券(优惠券、集次卡)
+     * 领取卡券(优惠券、计次卡)
      * @param paramMap
      * @return
      * */
@@ -417,7 +417,7 @@ public class UserCouponServiceImpl extends ServiceImpl<MtUserCouponMapper, MtUse
                     tips = "￥" + userCouponDto .getAmount() + "，余额￥" + userCouponDto.getBalance();
                 }
 
-                // 集次卡tips
+                // 计次卡tips
                 if (couponInfo.getType().equals(CouponTypeEnum.TIMER.getKey())) {
                     Long confirmNum = confirmLogService.getConfirmNum(userCouponDto.getId());
                     tips = "已集"+ confirmNum +"次，需集满" + couponInfo.getOutRule() + "次";
