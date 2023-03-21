@@ -3,6 +3,7 @@ package com.fuint.module.clientApi.controller;
 import com.fuint.common.dto.UserInfo;
 import com.fuint.common.enums.StatusEnum;
 import com.fuint.common.service.CouponService;
+import com.fuint.common.service.MemberService;
 import com.fuint.common.service.StaffService;
 import com.fuint.common.util.TokenUtil;
 import com.fuint.framework.exception.BusinessCheckException;
@@ -11,6 +12,7 @@ import com.fuint.framework.web.ResponseObject;
 import com.fuint.repository.mapper.MtUserCouponMapper;
 import com.fuint.repository.model.MtCoupon;
 import com.fuint.repository.model.MtStaff;
+import com.fuint.repository.model.MtUser;
 import com.fuint.repository.model.MtUserCoupon;
 import com.fuint.utils.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,8 +44,17 @@ public class ClientConfirmController extends BaseController {
     @Autowired
     private CouponService couponService;
 
+    /**
+     * 员工服务接口
+     * */
     @Autowired
     private StaffService staffService;
+
+    /**
+     * 会员服务接口
+     */
+    @Autowired
+    private MemberService memberService;
 
     /**
      * 核销卡券
@@ -62,8 +73,8 @@ public class ClientConfirmController extends BaseController {
             return getFailureResult(1001);
         }
 
-        UserInfo mtUser = TokenUtil.getUserInfoByToken(token);
-        if (null == mtUser) {
+        UserInfo loginInfo = TokenUtil.getUserInfoByToken(token);
+        if (loginInfo == null) {
             return getFailureResult(1001);
         }
 
@@ -76,25 +87,20 @@ public class ClientConfirmController extends BaseController {
         if (couponService.codeExpired(code)) {
             return getFailureResult(1003, "二维码已过期，请重新获取！");
         }
-
+        MtUser mtUser = memberService.queryMemberById(loginInfo.getId());
         MtCoupon couponInfo = couponService.queryCouponById(userCoupon.getCouponId());
 
         // 员工是否已经被审核
         HashMap params = new HashMap<>();
-        params.put("user_id", mtUser.getId());
+        params.put("MOBILE", mtUser.getMobile());
         params.put("AUDITED_STATUS", StatusEnum.ENABLED.getKey());
         List<MtStaff> staffList = staffService.queryStaffByParams(params);
         Integer storeId = 0;
         if (staffList.size() > 0) {
             for (MtStaff staff : staffList) {
-                if (!staff.getAuditedStatus().equals(StatusEnum.ENABLED.getKey())) {
-                    return getFailureResult(1003, "员工状态异常！");
-                }
-
                 if (staff.getStoreId() > 0) {
                     storeId = staff.getStoreId();
                 }
-
                 String storeIdsStr = couponInfo.getStoreIds();
                 if (StringUtil.isNotEmpty(storeIdsStr)) {
                     String[] storeIds = couponInfo.getStoreIds().split(",");
@@ -127,12 +133,11 @@ public class ClientConfirmController extends BaseController {
         MtUserCoupon userCouponNew = mtUserCouponMapper.selectById(userCoupon.getId());
 
         // 组织返回参数
-        Map<String, Object> result = new HashMap<String, Object>();
+        Map<String, Object> result = new HashMap<>();
         result.put("result", true);
         result.put("money", couponInfo.getAmount());
         result.put("balance", userCouponNew.getBalance());
-        String tips = "";
-        result.put("tips", tips);
+        result.put("tips", "");
         result.put("name", couponInfo.getName());
         result.put("code", confirmCode);
         result.put("status", userCouponNew.getStatus());

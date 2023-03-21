@@ -6,6 +6,9 @@ import com.fuint.framework.web.ResponseObject;
 import com.fuint.repository.model.MtOrder;
 import com.fuint.repository.model.MtUser;
 
+import javax.servlet.http.HttpServletRequest;
+import java.util.Map;
+
 /**
  * 支付相关业务接口
  *
@@ -22,6 +25,11 @@ public interface PaymentService {
     /**
      * 支付回调
      * */
-    boolean paymentCallback(UserOrderDto orderInfo) throws BusinessCheckException;
+    Boolean paymentCallback(UserOrderDto orderInfo) throws BusinessCheckException;
+
+    /**
+     * 订单支付
+     * */
+    Map<String, Object> doPay(HttpServletRequest request) throws BusinessCheckException;
 
 }

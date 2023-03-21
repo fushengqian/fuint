@@ -91,7 +91,7 @@ public class ClientMyCouponController extends BaseController {
         }
 
         MtUserCoupon userCoupon = couponService.queryUserCouponById(userCouponId);
-        if (userCoupon.getStatus().equals(UserCouponStatusEnum.USED.getKey()) && mtUser.getId() == userCoupon.getUserId()) {
+        if (userCoupon.getStatus().equals(UserCouponStatusEnum.USED.getKey()) && mtUser.getId().equals(userCoupon.getUserId())) {
             return getSuccessResult(true);
         } else {
             return getSuccessResult(false);
