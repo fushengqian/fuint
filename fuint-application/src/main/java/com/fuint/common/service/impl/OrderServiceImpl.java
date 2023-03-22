@@ -1159,7 +1159,7 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
         BigDecimal usePointAmount = new BigDecimal("0");
         MtSetting setting = settingService.querySettingByName(PointSettingEnum.EXCHANGE_NEED_POINT.getKey());
         if (myPoint > 0 && setting != null && isUsePoint) {
-            if (StringUtil.isNotEmpty(setting.getValue())) {
+            if (StringUtil.isNotEmpty(setting.getValue()) && !setting.getValue().equals("0")) {
                 BigDecimal usePoints = new BigDecimal(myPoint);
                 usePointAmount = usePoints.divide(new BigDecimal(setting.getValue()), BigDecimal.ROUND_CEILING);
                 usePoint = myPoint;

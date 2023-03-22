@@ -176,8 +176,8 @@ public class RefundServiceImpl extends ServiceImpl<MtRefundMapper, MtRefund> imp
 
         // 检查是否已存在
         Map<String, Object> params = new HashMap<>();
-        params.put("userId", refundDto.getUserId().toString());
-        params.put("orderId", refundDto.getOrderId().toString());
+        params.put("USER_ID", refundDto.getUserId().toString());
+        params.put("ORDER_ID", refundDto.getOrderId().toString());
         List<MtRefund> result = mtRefundMapper.selectByMap(params);
 
         if (result.size() > 0) {

@@ -2,6 +2,9 @@ package com.fuint.common.util;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -13,6 +16,53 @@ import java.util.Calendar;
  * CopyRight https://www.fuint.cn
  */
 public class TimeUtil {
+
+    /**
+     * 一天、一分钟、一小时对应的秒数
+     */
+    private static final Long ONE_MINUTE_TO_SECOND = 60L;
+    private static final Long ONE_HOUR_TO_SECOND = ONE_MINUTE_TO_SECOND * 60;
+
+    /**
+     * 使用LocalDateTime进行格式化 保证多线程安全
+     */
+    private static final DateTimeFormatter DATE_TIME_FORMATTER1 = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+    private static final DateTimeFormatter DATE_TIME_FORMATTER2 = DateTimeFormatter.ofPattern("MM-dd");
+
+    public static String showTime(Date now, Date targetDate) {
+        String showTime = "";
+        if (targetDate != null) {
+            // 5. 年内判断
+            if (targetDate.getYear() == now.getYear()) {
+                // 获取秒数差
+                long betweenSeconds = (now.getTime() - targetDate.getTime()) / 1000;
+                if (betweenSeconds < ONE_MINUTE_TO_SECOND) {
+                    // 1. 1分钟内：刚刚
+                    showTime = "刚刚";
+                } else if (betweenSeconds < ONE_HOUR_TO_SECOND) {
+                    // 2. 60分钟内
+                    showTime = betweenSeconds / ONE_MINUTE_TO_SECOND + "分钟前";
+                } else if (betweenSeconds < ONE_HOUR_TO_SECOND * 24) {
+                    // 3. 24小时内：x小时前
+                    showTime = betweenSeconds / ONE_HOUR_TO_SECOND + "小时前";
+                } else {
+                    // 4. >24小时：x月x日  08-1
+                    showTime = dateToLocalDateTime(targetDate).format(DATE_TIME_FORMATTER2);
+                }
+            } else {
+                showTime = dateToLocalDateTime(targetDate).format(DATE_TIME_FORMATTER1);
+            }
+        }
+        return showTime;
+    }
+
+    /**
+     * date转localDateTime
+     */
+    public static LocalDateTime dateToLocalDateTime(Date date) {
+        return date.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+    }
+
     /**
      * 日期转换为时间戳，时间戳为秒
      *
