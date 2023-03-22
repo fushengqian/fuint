@@ -19,16 +19,6 @@ public class OpenGiftDto implements Serializable {
     private Integer id;
 
     /**
-     * 所属商户ID
-     */
-    private Integer merchantId;
-
-    /**
-     * 所属商户名称
-     */
-    private String merchantName;
-
-    /**
      * 门店信息
      */
     private MtStore storeInfo;
@@ -79,22 +69,6 @@ public class OpenGiftDto implements Serializable {
 
     public void setId(Integer id) {
         this.id = id;
-    }
-
-    public Integer getMerchantId() {
-        return merchantId;
-    }
-
-    public void setMerchantId(Integer merchantId) {
-        this.merchantId = merchantId;
-    }
-
-    public String getMerchantName() {
-        return merchantName;
-    }
-
-    public void setMerchantName(String merchantName) {
-        this.merchantName = merchantName;
     }
 
     public MtStore getStoreInfo() {
