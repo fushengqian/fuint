@@ -36,7 +36,7 @@ import java.util.*;
 @Service
 public class BannerServiceImpl extends ServiceImpl<MtBannerMapper, MtBanner> implements BannerService {
 
-    private static final Logger log = LoggerFactory.getLogger(BannerServiceImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(BannerServiceImpl.class);
 
     @Resource
     private MtBannerMapper mtBannerMapper;
@@ -121,12 +121,13 @@ public class BannerServiceImpl extends ServiceImpl<MtBannerMapper, MtBanner> imp
     }
 
     /**
-     * 根据ID删除Banner信息
+     * 根据ID删除Banner图
      *
      * @param id BannerID
      * @param operator 操作人
      */
     @Override
+    @Transactional
     @OperationServiceLog(description = "删除Banner图")
     public void deleteBanner(Integer id, String operator) {
         MtBanner mtBanner = this.queryBannerById(id);
@@ -136,12 +137,11 @@ public class BannerServiceImpl extends ServiceImpl<MtBannerMapper, MtBanner> imp
 
         mtBanner.setStatus(StatusEnum.DISABLE.getKey());
         mtBanner.setUpdateTime(new Date());
-
         mtBannerMapper.updateById(mtBanner);
     }
 
     /**
-     * 修改Banner
+     * 修改Banner图
      *
      * @param bannerDto
      * @throws BusinessCheckException
@@ -150,41 +150,39 @@ public class BannerServiceImpl extends ServiceImpl<MtBannerMapper, MtBanner> imp
     @Transactional
     @OperationServiceLog(description = "更新Banner图")
     public MtBanner updateBanner(BannerDto bannerDto) throws BusinessCheckException {
-        MtBanner MtBanner = this.queryBannerById(bannerDto.getId());
-        if (MtBanner == null) {
+        MtBanner mtBanner = this.queryBannerById(bannerDto.getId());
+        if (mtBanner == null) {
             throw new BusinessCheckException("该Banner状态异常");
         }
 
-        MtBanner.setId(bannerDto.getId());
+        mtBanner.setId(bannerDto.getId());
         if (bannerDto.getImage() != null) {
-            MtBanner.setImage(bannerDto.getImage());
+            mtBanner.setImage(bannerDto.getImage());
         }
         if (bannerDto.getTitle() != null) {
-            MtBanner.setTitle(bannerDto.getTitle());
+            mtBanner.setTitle(bannerDto.getTitle());
         }
         if (bannerDto.getStoreId() != null) {
-            MtBanner.setStoreId(bannerDto.getStoreId());
+            mtBanner.setStoreId(bannerDto.getStoreId());
         }
         if (bannerDto.getDescription() != null) {
-            MtBanner.setDescription(bannerDto.getDescription());
+            mtBanner.setDescription(bannerDto.getDescription());
         }
         if (bannerDto.getOperator() != null) {
-            MtBanner.setOperator(bannerDto.getOperator());
+            mtBanner.setOperator(bannerDto.getOperator());
         }
         if (bannerDto.getStatus() != null) {
-            MtBanner.setStatus(bannerDto.getStatus());
+            mtBanner.setStatus(bannerDto.getStatus());
         }
         if (bannerDto.getUrl() != null) {
-            MtBanner.setUrl(bannerDto.getUrl());
+            mtBanner.setUrl(bannerDto.getUrl());
         }
         if (bannerDto.getSort() != null) {
-            MtBanner.setSort(bannerDto.getSort());
+            mtBanner.setSort(bannerDto.getSort());
         }
-        MtBanner.setUpdateTime(new Date());
-
-        mtBannerMapper.updateById(MtBanner);
-
-        return MtBanner;
+        mtBanner.setUpdateTime(new Date());
+        mtBannerMapper.updateById(mtBanner);
+        return mtBanner;
     }
 
     @Override

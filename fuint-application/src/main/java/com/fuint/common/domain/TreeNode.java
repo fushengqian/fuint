@@ -84,7 +84,7 @@ public class TreeNode {
     /**
      * 排序
      * */
-    private String sort;
+    private Integer sort;
 
     /**
      * 状态
@@ -203,11 +203,11 @@ public class TreeNode {
         this.newIcon = newIcon;
     }
 
-    public String getSort() {
+    public Integer getSort() {
         return sort;
     }
 
-    public void setSort(String sort) {
+    public void setSort(Integer sort) {
         this.sort = sort;
     }
 

@@ -11,6 +11,7 @@ import com.fuint.repository.model.TSource;
 import com.fuint.common.domain.TreeNode;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.utils.ArrayUtil;
+import com.fuint.utils.StringUtil;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -56,7 +57,7 @@ public class SourceServiceImpl extends ServiceImpl<TSourceMapper, TSource> imple
                 sourceTreeNode.setName(tSource.getSourceName());
                 sourceTreeNode.setId(tSource.getSourceId());
                 sourceTreeNode.setLevel(tSource.getSourceLevel());
-                sourceTreeNode.setSort(tSource.getSourceStyle());
+                sourceTreeNode.setSort((tSource.getSourceStyle() == null || StringUtil.isEmpty(tSource.getSourceStyle())) ? 0 : Integer.parseInt(tSource.getSourceStyle()));
                 sourceTreeNode.setPath(tSource.getPath());
                 sourceTreeNode.setIcon(tSource.getNewIcon());
                 sourceTreeNode.setIsMenu(tSource.getIsMenu());

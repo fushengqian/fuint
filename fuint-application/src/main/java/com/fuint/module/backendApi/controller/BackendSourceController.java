@@ -3,6 +3,7 @@ package com.fuint.module.backendApi.controller;
 import com.fuint.common.domain.TreeNode;
 import com.fuint.common.domain.TreeSelect;
 import com.fuint.common.dto.SourceDto;
+import com.fuint.common.enums.StatusEnum;
 import com.fuint.common.service.SourceService;
 import com.fuint.common.util.CommonUtil;
 import com.fuint.framework.exception.BusinessCheckException;
@@ -133,7 +134,7 @@ public class BackendSourceController extends BaseController {
      * @return
      */
     @RequestMapping(value = "/update", method = RequestMethod.POST)
-    public ResponseObject update(@RequestBody Map<String, Object> param) throws BusinessCheckException {
+    public ResponseObject update(@RequestBody Map<String, Object> param) {
         String name = param.get("name").toString();
         String status = param.get("status").toString();
         String parentId = param.get("parentId").toString();
@@ -175,9 +176,7 @@ public class BackendSourceController extends BaseController {
         } else {
             editSource.setSourceLevel(1);
         }
-
         sSourceService.editSource(editSource);
-
         return getSuccessResult(true);
     }
 
@@ -188,11 +187,18 @@ public class BackendSourceController extends BaseController {
      * @throws BusinessCheckException
      */
     @RequestMapping(value = "/delete/{sourceId}", method = RequestMethod.GET)
-    public ResponseObject delete(@PathVariable("sourceId") Long sourceId) throws BusinessCheckException {
+    public ResponseObject delete(HttpServletRequest request, @PathVariable("sourceId") Long sourceId) throws BusinessCheckException {
+        String token = request.getHeader("Access-Token");
+        if (StringUtil.isEmpty(token)) {
+            return getFailureResult(201,"请求参数有误");
+        }
+
         try {
-            sSourceService.removeById(sourceId);
+            TSource tSource = sSourceService.getById(sourceId);
+            tSource.setStatus(StatusEnum.DISABLE.getKey());
+            sSourceService.editSource(tSource);
         } catch(Exception e) {
-            return getFailureResult(201,"存在子菜单,不能删除.");
+            return getFailureResult(201,"存在子菜单或已关联角色,不能删除.");
         }
 
         return getSuccessResult(true);

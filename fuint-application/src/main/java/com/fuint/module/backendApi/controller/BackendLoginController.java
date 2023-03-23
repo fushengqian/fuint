@@ -176,6 +176,7 @@ public class BackendLoginController extends BaseController {
             treeNode.setId(tSource.getSourceId());
             treeNode.setLevel(tSource.getSourceLevel());
             treeNode.setIsMenu(tSource.getIsMenu());
+            treeNode.setSort((tSource.getSourceStyle() == null || StringUtil.isEmpty(tSource.getSourceStyle())) ? 0 : Integer.parseInt(tSource.getSourceStyle()));
             if (tSource.getParentId() != null) {
                 treeNode.setpId(tSource.getParentId());
             }

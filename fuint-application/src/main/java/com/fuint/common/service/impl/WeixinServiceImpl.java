@@ -130,6 +130,7 @@ public class WeixinServiceImpl implements WeixinService {
      * @return
      * */
     @Override
+    @Transactional
     public ResponseObject createPrepayOrder(MtUser userInfo, MtOrder orderInfo, Integer payAmount, String authCode, Integer giveAmount, String ip, String platform) throws BusinessCheckException {
         logger.info("WeixinService createPrepayOrder inParams userInfo={} payAmount={} giveAmount={} goodsInfo={}", userInfo, payAmount, giveAmount, orderInfo);
 
