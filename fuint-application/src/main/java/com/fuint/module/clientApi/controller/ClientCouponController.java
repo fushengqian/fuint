@@ -80,7 +80,7 @@ public class ClientCouponController extends BaseController {
      * */
     @RequestMapping(value = "/receive", method = RequestMethod.POST)
     @CrossOrigin
-    public ResponseObject receive(HttpServletRequest request, @RequestBody Map<String, Object> param) throws BusinessCheckException {
+    public ResponseObject receive(HttpServletRequest request, @RequestBody Map<String, Object> param) {
         String token = request.getHeader("Access-Token");
         UserInfo mtUser = TokenUtil.getUserInfoByToken(token);
 

@@ -306,7 +306,7 @@ public class SettlementServiceImpl implements SettlementService {
             // 是否可以使用积分，并且积分数量足够
             if (canUsedAsMoney.equals("true") && Float.parseFloat(exchangeNeedPoint) > 0 && (userInfo.getPoint() >= usePoint)) {
                 orderDto.setUsePoint(usePoint);
-                orderDto.setPointAmount(new BigDecimal(usePoint).divide(new BigDecimal(exchangeNeedPoint), BigDecimal.ROUND_CEILING));
+                orderDto.setPointAmount(new BigDecimal(usePoint).divide(new BigDecimal(exchangeNeedPoint), BigDecimal.ROUND_CEILING, 2));
                 if (orderDto.getPayAmount().compareTo(orderDto.getPointAmount()) > 0) {
                     orderDto.setPayAmount(orderDto.getPayAmount().subtract(orderDto.getPointAmount()));
                 } else {
@@ -321,7 +321,7 @@ public class SettlementServiceImpl implements SettlementService {
             if (userGrade != null) {
                 // 是否有会员折扣
                 if (userGrade.getDiscount() > 0) {
-                    BigDecimal percent = new BigDecimal(userGrade.getDiscount()).divide(new BigDecimal("10"), BigDecimal.ROUND_CEILING);
+                    BigDecimal percent = new BigDecimal(userGrade.getDiscount()).divide(new BigDecimal("10"), BigDecimal.ROUND_CEILING, 2);
                     BigDecimal payAmountDiscount = orderDto.getPayAmount().multiply(percent);
                     orderDto.setDiscount(orderDto.getDiscount().add(orderDto.getPayAmount().subtract(payAmountDiscount)));
                     orderDto.setPayAmount(payAmountDiscount);

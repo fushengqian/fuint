@@ -108,7 +108,7 @@ public class ClientGoodsController extends BaseController {
      * */
     @RequestMapping(value = "/search", method = RequestMethod.POST)
     @CrossOrigin
-    public ResponseObject search(HttpServletRequest request, @RequestBody Map<String, Object> params) throws BusinessCheckException {
+    public ResponseObject search(@RequestBody Map<String, Object> params) throws BusinessCheckException {
         Integer page = params.get("page") == null ? 1 : Integer.parseInt(params.get("page").toString());
         Integer pageSize = params.get("pageSize") == null ? Constants.PAGE_SIZE : Integer.parseInt(params.get("pageSize").toString());
         String name = params.get("name") == null ? "" : params.get("name").toString();

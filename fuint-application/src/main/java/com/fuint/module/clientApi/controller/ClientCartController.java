@@ -77,6 +77,7 @@ public class ClientCartController extends BaseController {
         String skuNo = param.get("skuNo") == null ? "" : param.get("skuNo").toString();
         Integer buyNum = param.get("buyNum") == null ? 1 : Integer.parseInt(param.get("buyNum").toString());
         String action = param.get("action") == null ? "+" : param.get("action").toString();
+        String hangNo = param.get("hangNo") == null ? "" : param.get("hangNo").toString();
         Integer userId = param.get("userId") == null ? 0 : Integer.parseInt(param.get("userId").toString()); // 指定会员ID
 
         UserInfo userInfo = TokenUtil.getUserInfoByToken(token);
@@ -107,7 +108,7 @@ public class ClientCartController extends BaseController {
         mtCart.setNum(buyNum);
         mtCart.setSkuId(skuId);
         mtCart.setId(cartId);
-        mtCart.setHangNo("");
+        mtCart.setHangNo(hangNo);
         mtCart.setIsVisitor(YesOrNoEnum.NO.getKey());
 
         try {

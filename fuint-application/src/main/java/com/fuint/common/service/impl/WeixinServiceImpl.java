@@ -257,7 +257,7 @@ public class WeixinServiceImpl implements WeixinService {
 
             Double pointNum = 0d;
             if (orderInfo.getPayAmount().compareTo(new BigDecimal(needPayAmountInt)) > 0) {
-                BigDecimal point = orderInfo.getPayAmount().divide(new BigDecimal(needPayAmountInt), BigDecimal.ROUND_CEILING);
+                BigDecimal point = orderInfo.getPayAmount().divide(new BigDecimal(needPayAmountInt), BigDecimal.ROUND_CEILING, 2);
                 pointNum = Math.ceil(point.doubleValue());
             }
 

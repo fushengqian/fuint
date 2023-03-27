@@ -59,7 +59,7 @@ public class ClientConfirmController extends BaseController {
     /**
      * 核销卡券
      *
-     * @param param  Request对象
+     * @param param Request对象
      */
     @RequestMapping(value = "/doConfirm", method = RequestMethod.POST)
     @CrossOrigin

@@ -1161,7 +1161,7 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
         if (myPoint > 0 && setting != null && isUsePoint) {
             if (StringUtil.isNotEmpty(setting.getValue()) && !setting.getValue().equals("0")) {
                 BigDecimal usePoints = new BigDecimal(myPoint);
-                usePointAmount = usePoints.divide(new BigDecimal(setting.getValue()), BigDecimal.ROUND_CEILING);
+                usePointAmount = usePoints.divide(new BigDecimal(setting.getValue()), BigDecimal.ROUND_CEILING, 2);
                 usePoint = myPoint;
                 if (usePointAmount.compareTo(totalCanUsePointAmount) >= 0) {
                     usePointAmount = totalCanUsePointAmount;

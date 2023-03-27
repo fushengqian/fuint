@@ -94,7 +94,7 @@ public class GoodsServiceImpl extends ServiceImpl<MtGoodsMapper, MtGoods> implem
             lambdaQueryWrapper.eq(MtGoods::getType, type);
         }
 
-        lambdaQueryWrapper.orderByDesc(MtGoods::getId);
+        lambdaQueryWrapper.orderByAsc(MtGoods::getSort);
         List<MtGoods> goodsList = mtGoodsMapper.selectList(lambdaQueryWrapper);
         List<GoodsDto> dataList = new ArrayList<>();
         String basePath = settingService.getUploadBasePath();
@@ -396,13 +396,21 @@ public class GoodsServiceImpl extends ServiceImpl<MtGoodsMapper, MtGoods> implem
      * */
     @Override
     public List<MtGoods> getStoreGoodsList(Integer storeId, String keyword) {
-        List<MtGoods> goodsList;
-        if (keyword != null && StringUtil.isNotEmpty(keyword)) {
-            goodsList = mtGoodsMapper.searchStoreGoodsList(storeId, keyword);
-        } else {
-            goodsList = mtGoodsMapper.getStoreGoodsList(storeId);
+        List<MtGoods> goodsList = new ArrayList<>();
+        List<MtGoodsSku> skuList = new ArrayList<>();
+        if (StringUtil.isNotEmpty(keyword)) {
+            skuList = mtGoodsSkuMapper.getBySkuNo(keyword);
         }
-
+        if (skuList != null && skuList.size() > 0) {
+            MtGoods goods = mtGoodsMapper.selectById(skuList.get(0).getGoodsId());
+            goodsList.add(goods);
+        } else {
+            if (keyword != null && StringUtil.isNotEmpty(keyword)) {
+                goodsList = mtGoodsMapper.searchStoreGoodsList(storeId, keyword);
+            } else {
+                goodsList = mtGoodsMapper.getStoreGoodsList(storeId);
+            }
+        }
         List<MtGoods> dataList = new ArrayList<>();
         if (goodsList.size() > 0) {
             for (MtGoods mtGoods : goodsList) {

@@ -60,7 +60,7 @@ public class CateServiceImpl extends ServiceImpl<MtGoodsCateMapper, MtGoodsCate>
             lambdaQueryWrapper.eq(MtGoodsCate::getStatus, status);
         }
 
-        lambdaQueryWrapper.orderByDesc(MtGoodsCate::getId);
+        lambdaQueryWrapper.orderByAsc(MtGoodsCate::getSort);
         List<MtGoodsCate> dataList = cateRepository.selectList(lambdaQueryWrapper);
 
         PageRequest pageRequest = PageRequest.of(paginationRequest.getCurrentPage(), paginationRequest.getPageSize());
@@ -175,13 +175,20 @@ public class CateServiceImpl extends ServiceImpl<MtGoodsCateMapper, MtGoodsCate>
 
     @Override
     public List<MtGoodsCate> queryCateListByParams(Map<String, Object> params) {
-        Map<String, Object> param = new HashMap<>();
+        LambdaQueryWrapper<MtGoodsCate> lambdaQueryWrapper = Wrappers.lambdaQuery();
+        lambdaQueryWrapper.ne(MtGoodsCate::getStatus, StatusEnum.DISABLE.getKey());
 
+        String name =  params.get("name") == null ? "" : params.get("name").toString();
+        if (StringUtils.isNotBlank(name)) {
+            lambdaQueryWrapper.like(MtGoodsCate::getName, name);
+        }
         String status =  params.get("status") == null ? StatusEnum.ENABLED.getKey(): params.get("status").toString();
-        param.put("status", status);
+        if (StringUtils.isNotBlank(status)) {
+            lambdaQueryWrapper.eq(MtGoodsCate::getStatus, status);
+        }
 
-        List<MtGoodsCate> result = cateRepository.selectByMap(param);
-
-        return result;
+        lambdaQueryWrapper.orderByAsc(MtGoodsCate::getSort);
+        List<MtGoodsCate> dataList = cateRepository.selectList(lambdaQueryWrapper);
+        return dataList;
     }
 }

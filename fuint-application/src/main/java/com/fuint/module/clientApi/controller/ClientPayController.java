@@ -112,7 +112,7 @@ public class ClientPayController extends BaseController {
             MtUserGrade userGrade = userGradeService.queryUserGradeById(Integer.parseInt(mtUser.getGradeId()));
             if (userGrade != null) {
                 if (userGrade.getDiscount() > 0) {
-                    payDiscount = new BigDecimal(userGrade.getDiscount()).divide(new BigDecimal("10"), BigDecimal.ROUND_CEILING);
+                    payDiscount = new BigDecimal(userGrade.getDiscount()).divide(new BigDecimal("10"), BigDecimal.ROUND_CEILING, 2);
                 }
             }
         }
@@ -161,7 +161,7 @@ public class ClientPayController extends BaseController {
             String orderSn = resData.get("out_trade_no"); // 商户订单号
             String orderId = resData.get("transaction_id"); // 微信交易单号
             String tranAmt = resData.get("total_fee"); // 交易金额
-            BigDecimal tranAmount = new BigDecimal(tranAmt).divide(new BigDecimal("100"), BigDecimal.ROUND_CEILING);
+            BigDecimal tranAmount = new BigDecimal(tranAmt).divide(new BigDecimal("100"), BigDecimal.ROUND_CEILING, 2);
             // 参数校验
             if (StringUtil.isNotEmpty(orderSn) && StringUtil.isNotEmpty(tranAmt) && StringUtil.isNotEmpty(orderId)) {
                 UserOrderDto orderInfo = orderService.getOrderByOrderSn(orderSn);
