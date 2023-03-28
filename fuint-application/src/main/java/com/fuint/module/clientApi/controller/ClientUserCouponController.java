@@ -17,6 +17,7 @@ import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.web.BaseController;
 import com.fuint.framework.web.ResponseObject;
 import com.fuint.repository.mapper.MtUserCouponMapper;
+import com.fuint.repository.model.MtConfirmLog;
 import com.fuint.repository.model.MtCoupon;
 import com.fuint.repository.model.MtStaff;
 import com.fuint.repository.model.MtUserCoupon;
@@ -33,6 +34,7 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -154,13 +156,13 @@ public class ClientUserCouponController extends BaseController {
             result.setStatus(userCoupon.getStatus());
             result.setIsGive(couponInfo.getIsGive());
 
-            // 如果是计次卡，获取核销次数
+            // 如果是计次卡，获取核销列表
             if (couponInfo.getType().equals(CouponTypeEnum.TIMER.getKey())) {
                 if (userCouponId <= 0 && StringUtil.isNotEmpty(userCouponCode)) {
                     userCouponId = userCoupon.getId();
                 }
-                Long confirmCount = confirmLogService.getConfirmNum(userCouponId);
-                result.setConfirmCount(confirmCount.intValue());
+                List<MtConfirmLog> confirmLogs = confirmLogService.getConfirmList(userCouponId);
+                result.setConfirmLogs(confirmLogs);
             }
 
             responseObject = getSuccessResult(result);

@@ -124,6 +124,22 @@ public class ConfirmLogServiceImpl extends ServiceImpl<MtConfirmLogMapper, MtCon
     }
 
     /**
+     * 获取卡券核销列表
+     * @param userCouponId
+     * @return
+     * */
+    @Override
+    public List<MtConfirmLog> getConfirmList(Integer userCouponId) {
+        if (userCouponId == null || userCouponId <= 0) {
+            return new ArrayList<>();
+        }
+        Map<String, Object> params = new HashMap<>();
+        params.put("status", StatusEnum.ENABLED.getKey());
+        params.put("USER_COUPON_ID", userCouponId.toString());
+        return mtConfirmLogMapper.selectByMap(params);
+    }
+
+    /**
      * 获取卡券核销数量
      * @param storeId   店铺ID
      * @param beginTime 开始时间

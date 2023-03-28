@@ -210,10 +210,15 @@ public class ClientGoodsController extends BaseController {
         // sku列表
         List<MtGoodsSku> goodsSkuList = goodsDto.getSkuList();
         List<GoodsSkuDto> skuDtoList = new ArrayList<>();
+        String basePath = settingService.getUploadBasePath();
         for (MtGoodsSku sku : goodsSkuList) {
              GoodsSkuDto dto = new GoodsSkuDto();
              dto.setId(sku.getId());
-             dto.setLogo(sku.getLogo());
+             if (sku.getLogo() != null && StringUtil.isNotEmpty(sku.getLogo())) {
+                 dto.setLogo(basePath + sku.getLogo());
+             } else {
+                 dto.setLogo(goodsDetailDto.getLogo());
+             }
              dto.setGoodsId(sku.getGoodsId());
              dto.setSkuNo(sku.getSkuNo());
              dto.setPrice(sku.getPrice());

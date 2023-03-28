@@ -1,9 +1,11 @@
 package com.fuint.common.dto;
 
+import com.fuint.repository.model.MtConfirmLog;
 import com.sun.org.apache.xpath.internal.operations.Bool;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.List;
 
 /**
  * 我的卡券实体类
@@ -77,6 +79,11 @@ public class UserCouponDto implements Serializable {
      * 核销次数
      * */
     private Integer confirmCount;
+
+    /**
+     * 核销记录
+     * */
+    private List<MtConfirmLog> confirmLogs;
 
     /**
      * 是否可以使用(过期、状态等)
@@ -189,6 +196,13 @@ public class UserCouponDto implements Serializable {
     }
     public void setConfirmCount(Integer confirmCount) {
         this.confirmCount = confirmCount;
+    }
+
+    public List<MtConfirmLog> getConfirmLogs() {
+        return confirmLogs;
+    }
+    public void setConfirmLogs(List<MtConfirmLog> confirmLogs) {
+        this.confirmLogs = confirmLogs;
     }
 
     public boolean getCanUse() {

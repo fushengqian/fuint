@@ -102,6 +102,9 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
     @Autowired
     private OpenGiftService openGiftService;
 
+    @Autowired
+    UserGradeService userGradeService;
+
     /**
      * 获取用户订单列表
      * @param  paramMap
@@ -344,11 +347,27 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
             }
         }
 
+        // 会员付款类订单、商品类订单的会员折扣
+        if (orderDto.getType().equals(OrderTypeEnum.PAYMENT.getKey()) || orderDto.getType().equals(OrderTypeEnum.GOOGS.getKey())) {
+            MtUser userInfo = memberService.queryMemberById(orderDto.getUserId());
+            if (userInfo != null && userInfo.getGradeId() != null && orderDto.getIsVisitor().equals(YesOrNoEnum.NO.getKey())) {
+                MtUserGrade userGrade = userGradeService.queryUserGradeById(Integer.parseInt(userInfo.getGradeId()));
+                if (userGrade != null && userGrade.getDiscount() != null && userGrade.getDiscount() > 0) {
+                    // 是否有会员折扣
+                    BigDecimal percent = new BigDecimal(userGrade.getDiscount()).divide(new BigDecimal("10"), BigDecimal.ROUND_CEILING, 2);
+                    BigDecimal payAmountDiscount = mtOrder.getPayAmount().multiply(percent);
+                    mtOrder.setDiscount(orderDto.getDiscount().add(mtOrder.getPayAmount().subtract(payAmountDiscount)));
+                    mtOrder.setPayAmount(payAmountDiscount);
+                }
+            }
+        }
+
         // 再次更新订单
         try {
-            orderInfo = this.updateOrder(mtOrder);
+             orderInfo = this.updateOrder(mtOrder);
         } catch (Exception e) {
-            throw new BusinessCheckException("生成订单失败，请稍后重试");
+             logger.error("OrderService 生成订单失败...");
+             throw new BusinessCheckException("生成订单失败，请稍后重试");
         }
 
         // 如果是商品订单，生成订单商品

@@ -8,6 +8,7 @@ import com.fuint.framework.pagination.PaginationResponse;
 import com.fuint.repository.model.MtConfirmLog;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * 核销记录业务接口
@@ -31,6 +32,13 @@ public interface ConfirmLogService extends IService<MtConfirmLog> {
      * @return
      * */
     Long getConfirmNum(Integer userCouponId) throws BusinessCheckException;
+
+    /**
+     * 获取卡券核销列表
+     * @param userCouponId
+     * @return
+     * */
+    List<MtConfirmLog> getConfirmList(Integer userCouponId) throws BusinessCheckException;
 
     /**
      * 获取核销总数

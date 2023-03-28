@@ -315,21 +315,7 @@ public class SettlementServiceImpl implements SettlementService {
             }
         }
 
-        // 会员付款折扣
-        if (orderDto.getType().equals(OrderTypeEnum.PAYMENT.getKey())) {
-            MtUserGrade userGrade = userGradeService.queryUserGradeById(Integer.parseInt(userInfo.getGradeId()));
-            if (userGrade != null) {
-                // 是否有会员折扣
-                if (userGrade.getDiscount() > 0) {
-                    BigDecimal percent = new BigDecimal(userGrade.getDiscount()).divide(new BigDecimal("10"), BigDecimal.ROUND_CEILING, 2);
-                    BigDecimal payAmountDiscount = orderDto.getPayAmount().multiply(percent);
-                    orderDto.setDiscount(orderDto.getDiscount().add(orderDto.getPayAmount().subtract(payAmountDiscount)));
-                    orderDto.setPayAmount(payAmountDiscount);
-                }
-            }
-        }
-
-        // 生成订单
+        // 首先生成订单，拿到订单ID
         MtOrder orderInfo;
         try {
             orderInfo = orderService.saveOrder(orderDto);
