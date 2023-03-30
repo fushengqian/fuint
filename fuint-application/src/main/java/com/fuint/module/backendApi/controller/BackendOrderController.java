@@ -20,7 +20,11 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Date;
 
 /**
  * 订单管理controller
@@ -223,13 +227,13 @@ public class BackendOrderController extends BaseController {
      * @param request  HttpServletRequest对象
      * @return
      * */
-    @RequestMapping(value = "/delivered", method = RequestMethod.GET)
+    @RequestMapping(value = "/delivered", method = RequestMethod.POST)
     @CrossOrigin
-    public ResponseObject delivered(HttpServletRequest request) throws BusinessCheckException {
+    public ResponseObject delivered(HttpServletRequest request, @RequestBody Map<String, Object> param) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
-        Integer orderId = request.getParameter("orderId") == null ? 0 : Integer.parseInt(request.getParameter("orderId"));
-        String expressCompany = request.getParameter("expressCompany") == null ? "" : request.getParameter("expressCompany");
-        String expressNo = request.getParameter("expressNo") == null ? "" : request.getParameter("expressNo");
+        Integer orderId = param.get("orderId") == null ? 0 : Integer.parseInt(param.get("orderId").toString());
+        String expressCompany = param.get("expressCompany") == null ? "" : param.get("expressCompany").toString();
+        String expressNo = param.get("expressNo") == null ? "" : param.get("expressNo").toString();
 
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
         if (accountInfo == null) {
@@ -259,7 +263,7 @@ public class BackendOrderController extends BaseController {
         orderService.updateOrder(dto);
 
         // 发送小程序订阅消息
-        if (orderInfo != null && userInfo != null) {
+        if (orderInfo != null && userInfo != null && orderInfo.getAddress() != null) {
             Date nowTime = new Date();
             Date sendTime = new Date(nowTime.getTime() - 60000);
             Map<String, Object> params = new HashMap<>();
@@ -333,7 +337,7 @@ public class BackendOrderController extends BaseController {
      * */
     @RequestMapping(value = "/verify", method = RequestMethod.POST)
     @CrossOrigin
-    public ResponseObject verify(HttpServletRequest request, @RequestBody Map<String, Object> param) throws BusinessCheckException {
+    public ResponseObject verify(HttpServletRequest request, @RequestBody Map<String, Object> param) {
         String token = request.getHeader("Access-Token");
         Integer orderId = param.get("orderId") == null ? 0 : Integer.parseInt(param.get("orderId").toString());
         String remark = param.get("remark") == null ? "" : param.get("remark").toString();

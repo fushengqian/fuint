@@ -10,6 +10,7 @@ import com.fuint.common.service.BalanceService;
 import com.fuint.common.service.MemberService;
 import com.fuint.common.service.WeixinService;
 import com.fuint.common.util.DateUtil;
+import com.fuint.common.util.PhoneFormatCheckUtils;
 import com.fuint.framework.annoation.OperationServiceLog;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.pagination.PaginationRequest;
@@ -141,7 +142,9 @@ public class BalanceServiceImpl extends ServiceImpl<MtBalanceMapper, MtBalance> 
         mtUser.setBalance(newAmount);
         mtUserMapper.updateById(mtUser);
 
-        mtBalance.setMobile(mtUser.getMobile());
+        if (PhoneFormatCheckUtils.isChinaPhoneLegal(mtUser.getMobile())) {
+            mtBalance.setMobile(mtUser.getMobile());
+        }
         mtBalanceMapper.insert(mtBalance);
 
         // 发送小程序订阅消息

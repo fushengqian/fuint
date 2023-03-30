@@ -7,6 +7,7 @@ import com.fuint.common.enums.StaffCategoryEnum;
 import com.fuint.common.enums.StatusEnum;
 import com.fuint.common.service.StaffService;
 import com.fuint.common.util.CommonUtil;
+import com.fuint.common.util.PhoneFormatCheckUtils;
 import com.fuint.common.util.TokenUtil;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.pagination.PaginationRequest;
@@ -152,6 +153,10 @@ public class BackendStaffController extends BaseController {
             return getFailureResult(1001, "请先登录");
         }
 
+        if (!PhoneFormatCheckUtils.isChinaPhoneLegal(mobile)) {
+            return getFailureResult(201, "手机号格式有误！");
+        }
+
         MtStaff mtStaff = new MtStaff();
         if (StringUtil.isNotEmpty(id)) {
             mtStaff = staffService.queryStaffById(Integer.parseInt(id));
@@ -172,7 +177,7 @@ public class BackendStaffController extends BaseController {
             return getFailureResult(201, "手机号码不能为空");
         } else {
             MtStaff tempUser = staffService.queryStaffByMobile(mtStaff.getMobile());
-            if (tempUser  != null && tempUser.getId() != mtStaff.getId()) {
+            if (tempUser  != null && !tempUser.getId().equals(mtStaff.getId())) {
                 return getFailureResult(201, "该手机号码已经存在");
             }
         }

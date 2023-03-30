@@ -71,7 +71,6 @@ public class ClientAddressController extends BaseController {
         }
 
         MtAddress mtAddress = new MtAddress();
-
         mtAddress.setId(addressId);
         mtAddress.setName(name);
         mtAddress.setMobile(mobile);

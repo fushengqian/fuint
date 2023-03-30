@@ -2,10 +2,12 @@ package com.fuint.module.backendApi.controller;
 
 import com.fuint.common.Constants;
 import com.fuint.common.dto.AccountInfo;
+import com.fuint.common.dto.UserDto;
 import com.fuint.common.enums.SettingTypeEnum;
 import com.fuint.common.enums.StatusEnum;
 import com.fuint.common.enums.UserSettingEnum;
 import com.fuint.common.service.*;
+import com.fuint.common.util.PhoneFormatCheckUtils;
 import com.fuint.common.util.TokenUtil;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.pagination.PaginationRequest;
@@ -171,7 +173,7 @@ public class BackendMemberController extends BaseController {
             }
         }
         paginationRequest.setSearchParams(params);
-        PaginationResponse<MtUser> paginationResponse = memberService.queryMemberListByPagination(paginationRequest);
+        PaginationResponse<UserDto> paginationResponse = memberService.queryMemberListByPagination(paginationRequest);
 
         // 会员等级列表
         Map<String, Object> param = new HashMap<>();
@@ -260,6 +262,10 @@ public class BackendMemberController extends BaseController {
         String address = param.get("address") == null ? "" : param.get("address").toString();
         String description = param.get("description") == null ? "" : param.get("description").toString();
         String status = param.get("status") == null ? StatusEnum.ENABLED.getKey() : param.get("status").toString();
+
+        if (!PhoneFormatCheckUtils.isChinaPhoneLegal(mobile)) {
+            return getFailureResult(201, "手机号格式有误！");
+        }
 
         if (StringUtil.isNotEmpty(mobile)) {
             // 重置该手机号

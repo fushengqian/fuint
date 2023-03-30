@@ -1,7 +1,7 @@
 # fuint会员营销系统介绍
 
 #### 介绍
-fuint会员营销系统是一套开源的实体店铺会员管理和营销系统。系统基于前后端分离的架构，后端采用<b>Java SpringBoot</b> + <b>Mysql</b>，前端基于当前流行的<b>Uniapp</b>，<b>Element UI</b>，支持小程序、h5。主要功能包含电子优惠券、储值卡、计次卡（计次卡）、短信发送、储值卡、会员积分、会员等级权益体系，支付收款等会员日常营销工具。本系统适用于各类实体店铺，如酒吧、酒店、汽车4S店、鲜花店、甜品店、餐饮店等，是实体店铺会员营销必备的一款利器。
+fuint会员营销系统是一套开源的实体店铺会员管理和营销系统。系统基于前后端分离的架构，后端采用<b>Java SpringBoot</b> + <b>Mysql</b>，前端基于当前流行的<b>Uniapp</b>，<b>Element UI</b>，支持小程序、h5。主要功能包含电子优惠券、储值卡、集次卡（计次卡）、短信发送、储值卡、会员积分、会员等级权益体系，支付收款等会员日常营销工具。本系统适用于各类实体店铺，如酒吧、酒店、汽车4S店、鲜花店、甜品店、餐饮店等，是实体店铺会员营销必备的一款利器。
 以下是前台的页面展示：
 <p><img src="https://fuint-cn.oss-cn-shenzhen.aliyuncs.com/screenshots/g1.png?v=1" alt="前台页面1"></p>
 <p><img src="https://fuint-cn.oss-cn-shenzhen.aliyuncs.com/screenshots/g2.png?v=1" alt="前台页面2"></p>
@@ -13,7 +13,7 @@ fuint侧重于线下实体店的私域流量的运营，帮助商户降低获客
 <p>1、会员运营自动化：商家通过日常活动设置，如开卡礼设置，沉睡唤醒等，成为会员后自动给顾客送优惠券，让顾客更有黏性，提升会员运营效率。</p>
 <p>2、打通收银系统和会员营销的壁垒，代客下单收银，支付即成为会员。</p>
 <p>3、会员体系完整化：积分兑换、积分转赠、会员等级权益、积分加速、买单折扣。</p>
-<p>4、会员卡券齐全：储值卡、电子券、优惠券、计次卡、计次卡、会员余额支付。</p>
+<p>4、会员卡券齐全：储值卡、电子券、优惠券、集次卡、计次卡、会员余额支付。</p>
 <p>5、线上代客下单收银系统，后台管理员可帮助临柜的会员下单、扫码支付。</p>
 <p>6、支持手机短信、站内弹框消息、微信订阅消息：支持包括发货消息、卡券到期提醒、活动提醒、会员到期提醒、积分余额变动提醒等消息。</p>
 <p>小程序前端仓库：https://gitee.com/fuint/fuint-uniapp</p>
@@ -88,9 +88,9 @@ fuint侧重于线下实体店的私域流量的运营，帮助商户降低获客
 <p><img src="https://fuint-cn.oss-cn-shenzhen.aliyuncs.com/screenshots/coupon-list.png?v=fuint" alt="卡券列表"></p>
 
 <p>收银代客下单功能：店员角色登录后台，从首页的“下单首页”菜单可进入代客收银下单界面，完成代客下单收银的流程。</p>
-<p><img src="https://fuint-cn.oss-cn-shenzhen.aliyuncs.com/screenshots/cashier.png?v=fuint" alt="收银界面"></p>
+<p><img src="https://fuint-cn.oss-cn-shenzhen.aliyuncs.com/screenshots/cashier.png?v=fuint3.0.2" alt="收银界面"></p>
 <p>发起结算：</p>
-<p><img src="https://fuint-cn.oss-cn-shenzhen.aliyuncs.com/screenshots/cashier-1.png?v=fuint" alt="收银结算"></p>
+<p><img src="https://fuint-cn.oss-cn-shenzhen.aliyuncs.com/screenshots/cashier-1.png?v=fuint3.0.2" alt="收银结算"></p>
 
 #### 开发计划
 1.  完善的报表统计

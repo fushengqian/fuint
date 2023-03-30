@@ -4,10 +4,7 @@ import com.fuint.common.dto.UserCouponDto;
 import com.fuint.common.dto.UserInfo;
 import com.fuint.common.enums.CouponTypeEnum;
 import com.fuint.common.enums.UserCouponStatusEnum;
-import com.fuint.common.service.ConfirmLogService;
-import com.fuint.common.service.CouponService;
-import com.fuint.common.service.SettingService;
-import com.fuint.common.service.StaffService;
+import com.fuint.common.service.*;
 import com.fuint.common.util.DateUtil;
 import com.fuint.common.util.QRCodeUtil;
 import com.fuint.common.util.SeqUtil;
@@ -17,10 +14,7 @@ import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.web.BaseController;
 import com.fuint.framework.web.ResponseObject;
 import com.fuint.repository.mapper.MtUserCouponMapper;
-import com.fuint.repository.model.MtConfirmLog;
-import com.fuint.repository.model.MtCoupon;
-import com.fuint.repository.model.MtStaff;
-import com.fuint.repository.model.MtUserCoupon;
+import com.fuint.repository.model.*;
 import com.fuint.utils.StringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -65,6 +59,12 @@ public class ClientUserCouponController extends BaseController {
     private SettingService settingService;
 
     /**
+     * 会员服务接口
+     */
+    @Autowired
+    private MemberService memberService;
+
+    /**
      * 查询会员卡券详情
      *
      * @param param  Request对象
@@ -93,6 +93,7 @@ public class ClientUserCouponController extends BaseController {
             return getFailureResult(1001);
         }
 
+        MtUser loginInfo = memberService.queryMemberById(mtUser.getId());
         MtUserCoupon userCoupon;
         if (userCouponId > 0) {
             userCoupon = mtUserCouponMapper.selectById(userCouponId);
@@ -101,7 +102,7 @@ public class ClientUserCouponController extends BaseController {
         }
 
         if (!mtUser.getId().equals(userCoupon.getUserId())) {
-            MtStaff confirmInfo = staffService.queryStaffByUserId(mtUser.getId());
+            MtStaff confirmInfo = staffService.queryStaffByMobile(loginInfo.getMobile());
             if (null == confirmInfo) {
                 return getFailureResult(1004);
             }

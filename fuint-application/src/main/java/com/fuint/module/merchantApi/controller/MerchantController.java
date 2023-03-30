@@ -45,14 +45,13 @@ public class MerchantController extends BaseController {
     /**
      * 查询商户信息
      *
-     * @param request  Request对象
+     * @param request Request对象
      */
     @RequestMapping(value = "/info", method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject info(HttpServletRequest request) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
         UserInfo userInfo = TokenUtil.getUserInfoByToken(token);
-
         if (null == userInfo) {
             return getFailureResult(1001, "用户未登录");
         }
@@ -61,7 +60,7 @@ public class MerchantController extends BaseController {
         Map<String, Object> outParams = new HashMap<>();
         outParams.put("userInfo", mtUser);
 
-        MtStaff confirmInfo = staffService.queryStaffByUserId(userInfo.getId());
+        MtStaff confirmInfo = staffService.queryStaffByMobile(mtUser.getMobile());
         if (null == confirmInfo) {
             return getFailureResult(1002, "该账号不是商户");
         }
