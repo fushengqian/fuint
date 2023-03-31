@@ -163,6 +163,8 @@ public class ClientUserCouponController extends BaseController {
                     userCouponId = userCoupon.getId();
                 }
                 List<MtConfirmLog> confirmLogs = confirmLogService.getConfirmList(userCouponId);
+                Long confirmCount = confirmLogService.getConfirmNum(userCouponId);
+                result.setConfirmCount(confirmCount.intValue());
                 result.setConfirmLogs(confirmLogs);
             }
 

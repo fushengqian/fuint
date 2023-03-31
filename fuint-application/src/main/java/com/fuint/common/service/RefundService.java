@@ -45,10 +45,18 @@ public interface RefundService extends IService<MtRefund> {
     /**
      * 根据ID获取售后订单信息
      *
-     * @param id Banner ID
+     * @param id ID
      * @throws BusinessCheckException
      */
-    MtRefund getRefundById(Integer id) throws BusinessCheckException;
+    RefundDto getRefundById(Integer id) throws BusinessCheckException;
+
+    /**
+     * 根据订单ID获取售后订单信息
+     *
+     * @param  orderId
+     * @throws BusinessCheckException
+     */
+    MtRefund getRefundByOrderId(Integer orderId) throws BusinessCheckException;
 
     /**
      * 更新售后订单

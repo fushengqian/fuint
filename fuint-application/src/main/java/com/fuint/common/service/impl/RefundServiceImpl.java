@@ -22,6 +22,7 @@ import com.fuint.utils.StringUtil;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -29,10 +30,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import javax.annotation.Resource;
 import java.math.BigDecimal;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * 售后接口实现类
@@ -183,6 +181,9 @@ public class RefundServiceImpl extends ServiceImpl<MtRefundMapper, MtRefund> imp
         if (result.size() > 0) {
             refund = result.get(0);
             refund.setUpdateTime(new Date());
+            if (refundDto.getRemark() != null && StringUtil.isNotEmpty(refundDto.getRemark())) {
+                refund.setRemark(refund.getRemark() + "|" + refundDto.getRemark());
+            }
             mtRefundMapper.updateById(refund);
             return refund;
         }
@@ -193,7 +194,9 @@ public class RefundServiceImpl extends ServiceImpl<MtRefundMapper, MtRefund> imp
         refund.setType(refundDto.getType());
         refund.setStoreId(refundDto.getStoreId());
         refund.setAmount(refundDto.getAmount());
-        refund.setImages(refundDto.getImages());
+        if (refundDto.getImages() != null && StringUtil.isNotEmpty(refundDto.getImages()) && refundDto.getImages().length() > 5) {
+            refund.setImages(String.join(",", refundDto.getImages()));
+        }
         refund.setStatus(RefundStatusEnum.CREATED.getKey());
         refund.setUpdateTime(new Date());
         refund.setCreateTime(new Date());
@@ -205,18 +208,47 @@ public class RefundServiceImpl extends ServiceImpl<MtRefundMapper, MtRefund> imp
     /**
      * 根据ID获取订单详情
      *
-     * @param id 订单ID
+     * @param  id 售后订单ID
      * @throws BusinessCheckException
      */
     @Override
-    public MtRefund getRefundById(Integer id) {
-        return mtRefundMapper.selectById(id);
+    public RefundDto getRefundById(Integer id) throws BusinessCheckException {
+        MtRefund mtRefund = mtRefundMapper.selectById(id);
+        if (mtRefund != null) {
+            RefundDto refundDto = new RefundDto();
+            BeanUtils.copyProperties(mtRefund, refundDto);
+            UserOrderDto orderDto = orderService.getOrderById(mtRefund.getOrderId());
+            if (mtRefund.getImages() != null && StringUtil.isNotEmpty(mtRefund.getImages())) {
+                List<String> images = Arrays.asList(mtRefund.getImages().split(",").clone());
+                refundDto.setImageList(images);
+            }
+            refundDto.setOrderInfo(orderDto);
+            return refundDto;
+        }
+        return null;
+    }
+
+    /**
+     * 根据订单ID获取售后订单信息
+     *
+     * @param  orderId
+     * @throws BusinessCheckException
+     */
+    @Override
+    public MtRefund getRefundByOrderId(Integer orderId) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("ORDER_ID", orderId.toString());
+        List<MtRefund> refunds = mtRefundMapper.selectByMap(params);
+        if (refunds != null && refunds.size() > 0) {
+            return refunds.get(0);
+        }
+        return null;
     }
 
     /**
      * 修改订单
      *
-     * @param refundDto
+     * @param  refundDto
      * @throws BusinessCheckException
      */
     @Override

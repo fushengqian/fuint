@@ -164,7 +164,7 @@ public class BackendRefundController extends BaseController {
             return getFailureResult(1001, "请先登录");
         }
 
-        MtRefund refundInfo = refundService.getRefundById(refundId);
+        RefundDto refundInfo = refundService.getRefundById(refundId);
         UserOrderDto orderInfo = null;
         if (refundInfo != null) {
             orderInfo = orderService.getOrderById(refundInfo.getOrderId());

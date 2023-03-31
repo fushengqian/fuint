@@ -454,7 +454,7 @@ public class CouponServiceImpl extends ServiceImpl<MtCouponMapper, MtCoupon> imp
                     if (inRuleArr.length > 0) {
                         for (int n = 0; n < inRuleArr.length; n++) {
                             String store[] = inRuleArr[n].split("_");
-                            sellingPoint = "预存" + store[0] + "赠" + store[1];
+                            sellingPoint = "预存" + store[0] + "到账" + store[1];
                         }
                     }
                 }

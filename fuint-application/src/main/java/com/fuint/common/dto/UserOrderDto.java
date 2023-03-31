@@ -1,5 +1,6 @@
 package com.fuint.common.dto;
 
+import com.fuint.repository.model.MtRefund;
 import com.fuint.repository.model.MtStore;
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -167,6 +168,11 @@ public class UserOrderDto implements Serializable {
      * 所属店铺
      */
     private MtStore storeInfo;
+
+    /**
+     * 售后订单
+     * */
+    private MtRefund refundInfo;
 
     public Integer getId() {
         return id;
@@ -414,6 +420,14 @@ public class UserOrderDto implements Serializable {
 
     public void setStoreInfo(MtStore storeInfo) {
         this.storeInfo = storeInfo;
+    }
+
+    public MtRefund getRefundInfo() {
+        return refundInfo;
+    }
+
+    public void setRefundInfo(MtRefund refundInfo) {
+        this.refundInfo = refundInfo;
     }
 }
 

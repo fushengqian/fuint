@@ -118,7 +118,7 @@ public class ClientRefundController extends BaseController {
             return getFailureResult(2000, "售后订单ID不能为空");
         }
 
-        MtRefund refundInfo = refundService.getRefundById(Integer.parseInt(refundId));
+        RefundDto refundInfo = refundService.getRefundById(Integer.parseInt(refundId));
 
         return getSuccessResult(refundInfo);
     }

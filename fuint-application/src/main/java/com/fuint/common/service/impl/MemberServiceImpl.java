@@ -300,7 +300,9 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
 
         if (StringUtil.isEmpty(mtUser.getGradeId())) {
             MtUserGrade grade = userGradeService.getInitUserGrade();
-            mtUser.setGradeId(grade.getId()+"");
+            if (grade != null) {
+                mtUser.setGradeId(grade.getId() + "");
+            }
         }
 
         mtUser.setUserNo(userNo);
@@ -374,6 +376,12 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
     public MtUser updateMember(MtUser mtUser) throws BusinessCheckException {
         mtUser.setUpdateTime(new Date());
 
+        if (mtUser.getGradeId() != null && StringUtil.isNotEmpty(mtUser.getGradeId())) {
+            if (!CommonUtil.isNumeric(mtUser.getGradeId())) {
+                throw new BusinessCheckException("该会员等级有误");
+            }
+        }
+
         // 检查会员号是否重复
         if (StringUtil.isNotEmpty(mtUser.getUserNo())) {
             List<MtUser> userList = mtUserMapper.findMembersByUserNo(mtUser.getUserNo());
@@ -407,7 +415,9 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
         mtUser.setName(nickName);
         mtUser.setMobile(mobile);
         MtUserGrade grade = userGradeService.getInitUserGrade();
-        mtUser.setGradeId(grade.getId()+"");
+        if (grade != null) {
+            mtUser.setGradeId(grade.getId() + "");
+        }
         Date time = new Date();
         mtUser.setCreateTime(time);
         mtUser.setUpdateTime(time);
@@ -571,7 +581,9 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
             mtUser.setName(nickName);
             mtUser.setOpenId(openId);
             MtUserGrade grade = userGradeService.getInitUserGrade();
-            mtUser.setGradeId(grade.getId()+"");
+            if (grade != null) {
+                mtUser.setGradeId(grade.getId() + "");
+            }
             Date time = new Date();
             mtUser.setCreateTime(time);
             mtUser.setUpdateTime(time);

@@ -2,6 +2,7 @@ package com.fuint.common.dto;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.List;
 
 /**
  * 售后实体类
@@ -66,7 +67,12 @@ public class RefundDto implements Serializable {
     private String statusText;
 
     /**
-     * 图片
+     * 申请凭证图片
+     */
+    private List<String> imageList;
+
+    /**
+     * 申请凭证图片
      */
     private String images;
 
@@ -74,6 +80,11 @@ public class RefundDto implements Serializable {
      * 最后操作人
      */
     private String operator;
+
+    /**
+     * 订单详情
+     * */
+    private UserOrderDto orderInfo;
 
     public Integer getId() {
         return id;
@@ -163,12 +174,20 @@ public class RefundDto implements Serializable {
         this.statusText = statusText;
     }
 
-    public String getImages(){
+    public List<String> getImageList(){
+        return imageList;
+    }
+
+    public void setImageList(List<String> imageList){
+        this.imageList=imageList;
+    }
+
+    public String getImages() {
         return images;
     }
 
-    public void setImages(String images){
-        this.images=images;
+    public void setImages(String images) {
+        this.images = images;
     }
 
     public String getOperator() {
@@ -177,6 +196,14 @@ public class RefundDto implements Serializable {
 
     public void setOperator(String operator) {
         this.operator = operator;
+    }
+
+    public UserOrderDto getOrderInfo() {
+        return orderInfo;
+    }
+
+    public void setOrderInfo(UserOrderDto orderInfo) {
+        this.orderInfo = orderInfo;
     }
 }
 

@@ -105,6 +105,9 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
     @Autowired
     UserGradeService userGradeService;
 
+    @Autowired
+    private RefundService refundService;
+
     /**
      * 获取用户订单列表
      * @param  paramMap
@@ -180,7 +183,7 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
         List<UserOrderDto> dataList = new ArrayList<>();
         if (orderList.size() > 0) {
             for (MtOrder order : orderList) {
-                 UserOrderDto dto = this.getOrderDetail(order,false);
+                 UserOrderDto dto = getOrderDetail(order,false);
                  dataList.add(dto);
             }
         }
@@ -322,7 +325,7 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
             }
 
             boolean isUsePoint = orderDto.getUsePoint() > 0 ? true : false;
-            cartData = this.calculateCartGoods(orderDto.getUserId(), cartList, orderDto.getCouponId(), isUsePoint);
+            cartData = calculateCartGoods(orderDto.getUserId(), cartList, orderDto.getCouponId(), isUsePoint);
 
             mtOrder.setAmount(new BigDecimal(cartData.get("totalPrice").toString()));
             mtOrder.setUsePoint(Integer.parseInt(cartData.get("usePoint").toString()));
@@ -364,7 +367,7 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
 
         // 再次更新订单
         try {
-             orderInfo = this.updateOrder(mtOrder);
+             orderInfo = updateOrder(mtOrder);
         } catch (Exception e) {
              logger.error("OrderService 生成订单失败...");
              throw new BusinessCheckException("生成订单失败，请稍后重试");
@@ -462,7 +465,7 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
     @Override
     public UserOrderDto getOrderById(Integer id) throws BusinessCheckException {
         MtOrder mtOrder = mtOrderMapper.selectById(id);
-        return this.getOrderDetail(mtOrder, true);
+        return getOrderDetail(mtOrder, true);
     }
 
     /**
@@ -474,7 +477,12 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
     @Override
     public UserOrderDto getMyOrderById(Integer id) throws BusinessCheckException {
         MtOrder mtOrder = mtOrderMapper.selectById(id);
-        UserOrderDto orderInfo = this.getOrderDetail(mtOrder, true);
+        UserOrderDto orderInfo = getOrderDetail(mtOrder, true);
+
+        // 售后订单
+        MtRefund refund = refundService.getRefundByOrderId(id);
+        orderInfo.setRefundInfo(refund);
+
         orderInfo.setVerifyCode(mtOrder.getVerifyCode());
         return orderInfo;
     }
@@ -580,7 +588,7 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
             return null;
         }
 
-        return this.getOrderDetail(orderInfo, true);
+        return getOrderDetail(orderInfo, true);
     }
 
     /**
@@ -682,7 +690,7 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
             return true;
         }
 
-        UserOrderDto orderInfo = this.getOrderDetail(mtOrder, false);
+        UserOrderDto orderInfo = getOrderDetail(mtOrder, false);
 
         OrderDto reqDto = new OrderDto();
         reqDto.setId(orderId);
@@ -690,7 +698,7 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
         reqDto.setPayStatus(PayStatusEnum.SUCCESS.getKey());
         reqDto.setPayTime(new Date());
         reqDto.setUpdateTime(new Date());
-        this.updateOrder(reqDto);
+        updateOrder(reqDto);
 
         // 会员升级订单
         if (mtOrder.getType().equals(OrderTypeEnum.MEMBER.getKey())) {
@@ -853,7 +861,7 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
                     OrderGoodsDto goodsDto = new OrderGoodsDto();
                     goodsDto.setId(coupon.getId());
                     goodsDto.setType(OrderTypeEnum.PRESTORE.getKey());
-                    goodsDto.setName("预存￥" + item[0] + "升至￥" + item[1]);
+                    goodsDto.setName("预存￥" + item[0] + "到账￥" + item[1]);
                     goodsDto.setNum(Integer.parseInt(item[2]));
                     goodsDto.setPrice(item[0]);
                     goodsDto.setDiscount("0");
