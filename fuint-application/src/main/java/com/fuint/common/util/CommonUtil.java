@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.JSONArray;
 import com.fuint.utils.IpUtil;
 import com.fuint.utils.StringUtil;
+import jdk.nashorn.internal.runtime.regexp.joni.Regex;
 import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletRequest;
 import java.io.*;
@@ -127,7 +128,12 @@ public class CommonUtil {
         if (remoteIp == null) {
             remoteIp = request.getRemoteAddr();
         }
-        if (remoteIp.equals("[0:0:0:0:0:0:0:1]") || remoteIp.equals("0:0:0:0:0:0:0:1")) {
+
+        // 校验IP格式
+        String regex = "\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}";
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(remoteIp);
+        if (!matcher.matches()) {
             remoteIp = "127.0.0.1";
         }
 

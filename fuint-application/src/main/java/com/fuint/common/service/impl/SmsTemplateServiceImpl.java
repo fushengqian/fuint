@@ -90,14 +90,6 @@ public class SmsTemplateServiceImpl extends ServiceImpl<MtSmsTemplateMapper, MtS
     public MtSmsTemplate saveSmsTemplate(SmsTemplateDto mtSmsTemplateDto) {
         MtSmsTemplate mtSmsTemplate = new MtSmsTemplate();
 
-        if (mtSmsTemplateDto.getId() == null) {
-            mtSmsTemplate.setCreateTime(new Date());
-            mtSmsTemplate.setUpdateTime(new Date());
-        } else {
-            mtSmsTemplate.setId(mtSmsTemplateDto.getId());
-            mtSmsTemplate.setUpdateTime(new Date());
-        }
-
         mtSmsTemplate.setCode(mtSmsTemplateDto.getCode());
         mtSmsTemplate.setName(mtSmsTemplateDto.getName());
         mtSmsTemplate.setUname(mtSmsTemplateDto.getUname());
@@ -105,7 +97,15 @@ public class SmsTemplateServiceImpl extends ServiceImpl<MtSmsTemplateMapper, MtS
         mtSmsTemplate.setStatus(mtSmsTemplateDto.getStatus());
         mtSmsTemplate.setOperator(mtSmsTemplate.getOperator());
 
-        mtSmsTemplateMapper.insert(mtSmsTemplate);
+        if (mtSmsTemplateDto.getId() == null) {
+            mtSmsTemplate.setCreateTime(new Date());
+            mtSmsTemplate.setUpdateTime(new Date());
+            mtSmsTemplateMapper.insert(mtSmsTemplate);
+        } else {
+            mtSmsTemplate.setId(mtSmsTemplateDto.getId());
+            mtSmsTemplate.setUpdateTime(new Date());
+            this.updateById(mtSmsTemplate);
+        }
 
         return mtSmsTemplate;
     }

@@ -330,9 +330,17 @@ public class SettlementServiceImpl implements SettlementService {
         if ((StringUtil.isNotEmpty(cashierPayAmount) || StringUtil.isNotEmpty(cashierDiscountAmount)) && StringUtil.isNotEmpty(operator)) {
             OrderDto reqOrder = new OrderDto();
             reqOrder.setId(orderInfo.getId());
-            reqOrder.setAmount(new BigDecimal(cashierPayAmount).add(new BigDecimal(cashierDiscountAmount)));
-            reqOrder.setDiscount(new BigDecimal(cashierDiscountAmount));
-            reqOrder.setPayAmount(new BigDecimal(cashierPayAmount));
+            if (orderInfo.getAmount().compareTo(new BigDecimal("0")) <= 0) {
+                reqOrder.setAmount(new BigDecimal(cashierPayAmount).add(new BigDecimal(cashierDiscountAmount)));
+            } else {
+                reqOrder.setAmount(orderInfo.getAmount());
+            }
+            if (new BigDecimal(cashierDiscountAmount).compareTo(new BigDecimal("0")) > 0) {
+                reqOrder.setDiscount(new BigDecimal(cashierDiscountAmount).add(orderInfo.getDiscount()));
+            } else {
+                reqOrder.setDiscount(orderInfo.getDiscount());
+            }
+            reqOrder.setPayAmount(reqOrder.getAmount().subtract(reqOrder.getDiscount()));
             orderService.updateOrder(reqOrder);
             orderInfo = orderService.getOrderInfo(orderInfo.getId());
         }

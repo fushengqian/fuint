@@ -263,7 +263,7 @@ public class BackendMemberController extends BaseController {
         String description = param.get("description") == null ? "" : param.get("description").toString();
         String status = param.get("status") == null ? StatusEnum.ENABLED.getKey() : param.get("status").toString();
 
-        if (!PhoneFormatCheckUtils.isChinaPhoneLegal(mobile)) {
+        if (!PhoneFormatCheckUtils.isChinaPhoneLegal(mobile) && StringUtil.isNotEmpty(mobile)) {
             return getFailureResult(201, "手机号格式有误！");
         }
 

@@ -415,7 +415,7 @@ public class BackendCouponController extends BaseController {
             return getFailureResult(201, "系统参数有误");
         }
 
-        if (!PhoneFormatCheckUtils.isChinaPhoneLegal(mobile)) {
+        if (!PhoneFormatCheckUtils.isChinaPhoneLegal(mobile) && StringUtil.isNotEmpty(mobile)) {
             return getFailureResult(201, "手机号格式有误");
         }
 
