@@ -69,7 +69,14 @@ public class PaymentServiceImpl implements PaymentService {
     @Override
     public ResponseObject createPrepayOrder(MtUser userInfo, MtOrder orderInfo, Integer payAmount, String authCode, Integer giveAmount, String ip, String platform) throws BusinessCheckException {
         logger.info("PaymentService createPrepayOrder inParams userInfo={} payAmount={} giveAmount={} goodsInfo={}", userInfo, payAmount, giveAmount, orderInfo);
-        ResponseObject responseObject = weixinService.createPrepayOrder(userInfo, orderInfo, payAmount, authCode, giveAmount, ip, platform);
+
+        ResponseObject responseObject = null;
+        if (orderInfo.getPayType().equals(PayTypeEnum.ALISCAN.getKey())) {
+            // 支付宝扫码支付
+        } else {
+            responseObject = weixinService.createPrepayOrder(userInfo, orderInfo, payAmount, authCode, giveAmount, ip, platform);
+        }
+
         logger.info("PaymentService createPrepayOrder outParams {}", responseObject.toString());
         return responseObject;
     }

@@ -33,7 +33,7 @@ import java.util.*;
 @Service
 public class SettlementServiceImpl implements SettlementService {
 
-    private static final Logger logger = LoggerFactory.getLogger(PaymentServiceImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(SettlementServiceImpl.class);
 
     @Autowired
     private WeixinService weixinService;

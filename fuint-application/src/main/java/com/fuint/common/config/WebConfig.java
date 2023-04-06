@@ -10,6 +10,7 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.http.CacheControl;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.web.filter.CharacterEncodingFilter;
 import org.springframework.web.servlet.config.annotation.*;
 import org.springframework.web.servlet.resource.CssLinkResourceTransformer;
 import org.springframework.web.servlet.resource.VersionResourceResolver;
@@ -86,4 +87,33 @@ public class WebConfig extends WebMvcConfigurationSupport {
                 .excludePathPatterns("/clientApi/message/getOne")
                 .excludePathPatterns("/clientApi/sms/sendVerifyCode");
     }
+
+    @Bean
+    public CharacterEncodingFilter characterEncodingFilter() {
+        CharacterEncodingFilter filter = new CharacterEncodingFilter();
+        filter.setEncoding("UTF-8");
+        filter.setForceEncoding(true);
+        return filter;
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }
