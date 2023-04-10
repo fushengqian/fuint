@@ -2,8 +2,11 @@ package com.fuint.module.merchantApi.controller;
 
 import com.fuint.common.Constants;
 import com.fuint.common.dto.AccountInfo;
+import com.fuint.common.dto.UserDto;
+import com.fuint.common.dto.UserInfo;
 import com.fuint.common.enums.StatusEnum;
 import com.fuint.common.service.*;
+import com.fuint.common.util.DateUtil;
 import com.fuint.common.util.TokenUtil;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.pagination.PaginationRequest;
@@ -16,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,12 +39,6 @@ public class MerchantMemberController extends BaseController {
      */
     @Autowired
     private MemberService memberService;
-
-    /**
-     * 后台账户服务接口
-     */
-    @Autowired
-    private AccountService accountService;
 
     /**
      * 会员等级服务接口
@@ -69,8 +67,16 @@ public class MerchantMemberController extends BaseController {
         String activeTime = request.getParameter("activeTime") == null ? "" : request.getParameter("activeTime");
         String memberTime = request.getParameter("memberTime") == null ? "" : request.getParameter("memberTime");
         String status = request.getParameter("status");
+        String dataType = request.getParameter("dataType");
         Integer page = request.getParameter("page") == null ? Constants.PAGE_NUMBER : Integer.parseInt(request.getParameter("page"));
         Integer pageSize = request.getParameter("pageSize") == null ? Constants.PAGE_SIZE : Integer.parseInt(request.getParameter("pageSize"));
+
+        // 今日注册、今日活跃
+        if (dataType.equals("todayRegister")) {
+            regTime = DateUtil.formatDate(new Date(), "yyyy-MM-dd") + "~" + DateUtil.formatDate(new Date(), "yyyy-MM-dd");
+        } else if (dataType.equals("todayActive")) {
+            activeTime = DateUtil.formatDate(new Date(), "yyyy-MM-dd") + "~" + DateUtil.formatDate(new Date(), "yyyy-MM-dd");
+        }
 
         PaginationRequest paginationRequest = new PaginationRequest();
         paginationRequest.setCurrentPage(page);
@@ -99,41 +105,27 @@ public class MerchantMemberController extends BaseController {
             params.put("status", status);
         }
 
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
-        if (accountInfo == null) {
+        UserInfo userInfo = TokenUtil.getUserInfoByToken(token);
+        if (userInfo == null) {
             return getFailureResult(1001, "请先登录");
-        }
-
-        TAccount account = accountService.getAccountInfoById(accountInfo.getId());
-        Integer storeId = account.getStoreId();
-        if (storeId != null && storeId > 0) {
-            params.put("storeId", storeId.toString());
         }
 
         // 注册时间比对
         if (StringUtil.isNotEmpty(regTime)) {
-            String[] dateTime = regTime.split("~");
-            if (dateTime.length == 2) {
-                params.put("createTime", dateTime[0].trim() + ":00");
-                params.put("createTime", dateTime[1].trim() + ":00");
-            }
+            params.put("createTime", regTime);
         }
 
         // 活跃时间比对
         if (StringUtil.isNotEmpty(activeTime)) {
-            String[] dateTime = activeTime.split("~");
-            if (dateTime.length == 2) {
-                params.put("updateTime", dateTime[0].trim() + ":00");
-                params.put("updateTime", dateTime[1].trim() + ":00");
-            }
+            params.put("updateTime", activeTime);
         }
 
         // 会员有效期比对
         if (StringUtil.isNotEmpty(memberTime)) {
             String[] dateTime = memberTime.split("~");
             if (dateTime.length == 2) {
-                params.put("startTime", dateTime[0].trim() + ":00");
-                params.put("endTime", dateTime[1].trim() + ":00");
+                params.put("startTime", dateTime[0].trim());
+                params.put("endTime", dateTime[1].trim());
             }
         }
 
@@ -156,7 +148,7 @@ public class MerchantMemberController extends BaseController {
             }
         }
         paginationRequest.setSearchParams(params);
-        PaginationResponse<MtUser> paginationResponse = memberService.queryMemberListByPagination(paginationRequest);
+        PaginationResponse<UserDto> paginationResponse = memberService.queryMemberListByPagination(paginationRequest);
 
         // 会员等级列表
         Map<String, Object> param = new HashMap<>();

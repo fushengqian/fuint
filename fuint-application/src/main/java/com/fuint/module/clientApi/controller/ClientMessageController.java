@@ -13,10 +13,8 @@ import com.fuint.repository.model.MtMessage;
 import com.fuint.repository.model.MtSetting;
 import com.fuint.utils.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.util.*;
 
 /**
@@ -48,7 +46,7 @@ public class ClientMessageController extends BaseController {
      */
     @RequestMapping(value = "/getOne", method = RequestMethod.GET)
     @CrossOrigin
-    public ResponseObject getOne(HttpServletRequest request, HttpServletResponse response, Model model) throws BusinessCheckException {
+    public ResponseObject getOne(HttpServletRequest request) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
 
         if (StringUtil.isEmpty(token)) {
