@@ -146,7 +146,7 @@ public class BackendStoreController extends BaseController {
     /**
      * 保存店铺
      *
-     * @param request  HttpServletRequest对象
+     * @param request HttpServletRequest对象
      * @return
      */
     @RequestMapping(value = "/save", method = RequestMethod.POST)

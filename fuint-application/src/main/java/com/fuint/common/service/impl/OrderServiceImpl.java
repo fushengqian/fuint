@@ -679,7 +679,7 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
     @Override
     @Transactional
     @OperationServiceLog(description = "修改订单为已支付")
-    public boolean setOrderPayed(Integer orderId) throws BusinessCheckException {
+    public Boolean setOrderPayed(Integer orderId) throws BusinessCheckException {
         MtOrder mtOrder = mtOrderMapper.selectById(orderId);
 
         if (mtOrder == null) {

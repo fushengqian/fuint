@@ -44,6 +44,9 @@ public class PaymentServiceImpl implements PaymentService {
     @Autowired
     private WeixinService weixinService;
 
+    @Autowired
+    private AlipayService alipayService;
+
     /**
      * 会员服务接口
      * */
@@ -70,10 +73,12 @@ public class PaymentServiceImpl implements PaymentService {
     public ResponseObject createPrepayOrder(MtUser userInfo, MtOrder orderInfo, Integer payAmount, String authCode, Integer giveAmount, String ip, String platform) throws BusinessCheckException {
         logger.info("PaymentService createPrepayOrder inParams userInfo={} payAmount={} giveAmount={} goodsInfo={}", userInfo, payAmount, giveAmount, orderInfo);
 
-        ResponseObject responseObject = null;
+        ResponseObject responseObject;
         if (orderInfo.getPayType().equals(PayTypeEnum.ALISCAN.getKey())) {
-            // 支付宝扫码支付
+            // 支付宝支付
+            responseObject = alipayService.createPrepayOrder(userInfo, orderInfo, payAmount, authCode, giveAmount, ip, platform);
         } else {
+            // 微信支付
             responseObject = weixinService.createPrepayOrder(userInfo, orderInfo, payAmount, authCode, giveAmount, ip, platform);
         }
 

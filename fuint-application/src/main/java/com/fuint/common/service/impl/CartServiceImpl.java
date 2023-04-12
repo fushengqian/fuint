@@ -53,7 +53,9 @@ public class CartServiceImpl extends ServiceImpl<MtCartMapper, MtCart> implement
             MtGoods mtGoods = mtGoodsMapper.selectById(reqDto.getGoodsId());
             if (reqDto.getId() != null && reqDto.getId() > 0) {
                 MtCart cartInfo = mtCartMapper.selectById(reqDto.getId());
-                cartNum = cartInfo.getNum();
+                if (cartInfo != null) {
+                    cartNum = cartInfo.getNum();
+                }
             }
             if (reqDto.getSkuId() != null && reqDto.getSkuId() > 0) {
                 MtGoodsSku mtGoodsSku = mtGoodsSkuMapper.selectById(reqDto.getSkuId());
