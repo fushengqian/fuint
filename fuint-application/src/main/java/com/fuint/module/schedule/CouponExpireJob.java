@@ -71,7 +71,7 @@ public class CouponExpireJob {
     private int MAX_SEND_NUM = 50;
 
     @Scheduled(cron = "${couponExpire.job.time}")
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void dealCoupon() throws BusinessCheckException {
         String theSwitch = environment.getProperty("couponExpire.job.switch");
         if (theSwitch.equals("1")) {

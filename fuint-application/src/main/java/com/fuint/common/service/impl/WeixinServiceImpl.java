@@ -5,7 +5,6 @@ import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.JSONArray;
 import com.fuint.common.bean.WxPayBean;
 import com.fuint.common.dto.OrderDto;
-import com.fuint.common.dto.OrderUserDto;
 import com.fuint.common.dto.UserOrderDto;
 import com.fuint.common.enums.*;
 import com.fuint.common.http.HttpRESTDataClient;
@@ -57,31 +56,19 @@ public class WeixinServiceImpl implements WeixinService {
     private static final Logger logger = LoggerFactory.getLogger(WeixinServiceImpl.class);
 
     @Autowired
-    private UserCouponService userCouponService;
-
-    @Autowired
     private OrderService orderService;
 
     @Autowired
     private SettingService settingService;
 
     @Autowired
-    private PointService pointService;
-
-    @Autowired
-    private UserGradeService userGradeService;
-
-    @Autowired
     private MessageService messageService;
 
     @Autowired
-    private MemberService memberService;
-
-    @Autowired
-    private BalanceService balanceService;
-
-    @Autowired
     private StoreService storeService;
+
+    @Autowired
+    private PaymentService paymentService;
 
     @Autowired
     private Environment env;
@@ -130,7 +117,7 @@ public class WeixinServiceImpl implements WeixinService {
      * @return
      * */
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public ResponseObject createPrepayOrder(MtUser userInfo, MtOrder orderInfo, Integer payAmount, String authCode, Integer giveAmount, String ip, String platform) throws BusinessCheckException {
         logger.info("WeixinService createPrepayOrder inParams userInfo={} payAmount={} giveAmount={} goodsInfo={}", userInfo, payAmount, giveAmount, orderInfo);
 
@@ -198,92 +185,6 @@ public class WeixinServiceImpl implements WeixinService {
         logger.info("WXService createPrepayOrder outParams {}", responseObject.toString());
 
         return responseObject;
-    }
-
-    /**
-     * 支付回调
-     * @return
-     * */
-    @Override
-    @Transactional
-    public Boolean paymentCallback(UserOrderDto orderInfo) throws BusinessCheckException {
-        logger.info("WXService paymentCallback outParams {}", orderInfo.toString());
-
-        // 更新订单状态为已支付
-        boolean isPay = orderService.setOrderPayed(orderInfo.getId());
-        if (!isPay) {
-            return false;
-        }
-
-        // 储值卡订单
-        if (orderInfo.getType().equals(OrderTypeEnum.PRESTORE.getKey())) {
-            Map<String, Object> param = new HashMap<>();
-            param.put("couponId", orderInfo.getCouponId());
-            param.put("userId", orderInfo.getUserId());
-            param.put("param", orderInfo.getParam());
-            param.put("orderId", orderInfo.getId());
-            userCouponService.preStore(param);
-        }
-
-        // 充值订单
-        if (orderInfo.getType().equals(OrderTypeEnum.RECHARGE.getKey())) {
-            // 余额支付
-            MtBalance mtBalance = new MtBalance();
-            OrderUserDto userDto = orderInfo.getUserInfo();
-
-            if (userDto.getMobile() != null && StringUtil.isNotEmpty(userDto.getMobile())) {
-                mtBalance.setMobile(userDto.getMobile());
-            }
-
-            mtBalance.setOrderSn(orderInfo.getOrderSn());
-            mtBalance.setUserId(orderInfo.getUserId());
-
-            String param = orderInfo.getParam();
-            if (StringUtil.isNotEmpty(param)) {
-                String params[] = param.split("_");
-                if (params.length == 2) {
-                    BigDecimal amount = new BigDecimal(params[0]).add(new BigDecimal(params[1]));
-                    mtBalance.setAmount(amount);
-                    balanceService.addBalance(mtBalance);
-                }
-            }
-        }
-
-        // 处理消费返积分，查询返1积分所需消费金额
-        MtSetting setting = settingService.querySettingByName("pointNeedConsume");
-        if (setting != null) {
-            String needPayAmount = setting.getValue();
-            Integer needPayAmountInt = Math.round(Integer.parseInt(needPayAmount));
-
-            Double pointNum = 0d;
-            if (orderInfo.getPayAmount().compareTo(new BigDecimal(needPayAmountInt)) > 0) {
-                BigDecimal point = orderInfo.getPayAmount().divide(new BigDecimal(needPayAmountInt), BigDecimal.ROUND_CEILING, 2);
-                pointNum = Math.ceil(point.doubleValue());
-            }
-
-            logger.info("WXService paymentCallback Point orderSn = {} , pointNum ={}", orderInfo.getOrderSn(), pointNum);
-
-            if (pointNum > 0) {
-                MtUser userInfo = memberService.queryMemberById(orderInfo.getUserId());
-                MtUserGrade userGrade = userGradeService.queryUserGradeById(Integer.parseInt(userInfo.getGradeId()));
-
-                // 是否会员积分加倍
-                if (userGrade.getSpeedPoint() > 1) {
-                    pointNum = pointNum * userGrade.getSpeedPoint();
-                }
-
-                MtPoint reqPointDto = new MtPoint();
-                reqPointDto.setAmount(pointNum.intValue());
-                reqPointDto.setUserId(orderInfo.getUserId());
-                reqPointDto.setOrderSn(orderInfo.getOrderSn());
-                reqPointDto.setDescription("支付￥"+orderInfo.getPayAmount()+"返"+pointNum+"积分");
-                reqPointDto.setOperator("系统");
-                pointService.addPoint(reqPointDto);
-            }
-        }
-
-        logger.info("WXService paymentCallback Success orderSn {}", orderInfo.getOrderSn());
-        return true;
     }
 
     public Map<String, String> processResXml(HttpServletRequest request) {
@@ -617,7 +518,7 @@ public class WeixinServiceImpl implements WeixinService {
                 UserOrderDto orderInfo = orderService.getOrderByOrderSn(orderSn);
                 if (orderInfo != null) {
                     if (!orderInfo.getStatus().equals(OrderStatusEnum.DELETED.getKey())) {
-                        paymentCallback(orderInfo);
+                        paymentService.paymentCallback(orderInfo);
                     }
                 }
             }

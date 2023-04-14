@@ -4,11 +4,13 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fuint.common.Constants;
+import com.fuint.common.dto.AddressDto;
 import com.fuint.common.dto.OrderDto;
 import com.fuint.common.dto.RefundDto;
 import com.fuint.common.dto.UserOrderDto;
 import com.fuint.common.enums.*;
 import com.fuint.common.service.*;
+import com.fuint.common.util.DateUtil;
 import com.fuint.framework.annoation.OperationServiceLog;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.pagination.PaginationRequest;
@@ -127,8 +129,8 @@ public class RefundServiceImpl extends ServiceImpl<MtRefundMapper, MtRefund> imp
      * @throws BusinessCheckException
      * */
     @Override
-    @Transactional
-    public ResponseObject getUserRefundList(Map<String, Object> paramMap) {
+    @Transactional(rollbackFor = Exception.class)
+    public ResponseObject getUserRefundList(Map<String, Object> paramMap) throws BusinessCheckException {
         Integer pageNumber = paramMap.get("pageNumber") == null ? Constants.PAGE_NUMBER : Integer.parseInt(paramMap.get("pageNumber").toString());
         Integer pageSize = paramMap.get("pageSize") == null ? Constants.PAGE_SIZE : Integer.parseInt(paramMap.get("pageSize").toString());
         String userId = paramMap.get("userId") == null ? "0" : paramMap.get("userId").toString();
@@ -145,11 +147,42 @@ public class RefundServiceImpl extends ServiceImpl<MtRefundMapper, MtRefund> imp
         }
 
         lambdaQueryWrapper.orderByDesc(MtRefund::getId);
-        List<MtRefund> dataList = mtRefundMapper.selectList(lambdaQueryWrapper);
+        List<MtRefund> refundList = mtRefundMapper.selectList(lambdaQueryWrapper);
+
+        List<RefundDto> dataList = new ArrayList<>();
+        if (refundList != null && refundList.size() > 0) {
+            for (MtRefund mtRefund : refundList) {
+                 RefundDto refundDto = new RefundDto();
+                 BeanUtils.copyProperties(mtRefund, refundDto);
+                 UserOrderDto orderDto = orderService.getOrderById(mtRefund.getOrderId());
+                 if (mtRefund.getImages() != null && StringUtil.isNotEmpty(mtRefund.getImages())) {
+                     List<String> images = Arrays.asList(mtRefund.getImages().split(",").clone());
+                     refundDto.setImageList(images);
+                 }
+                 refundDto.setOrderInfo(orderDto);
+                 refundDto.setCreateTime(DateUtil.formatDate(mtRefund.getCreateTime(), "yyyy.MM.dd HH:mm"));
+                 refundDto.setUpdateTime(DateUtil.formatDate(mtRefund.getUpdateTime(), "yyyy.MM.dd HH:mm"));
+
+                 if (mtRefund.getStatus().equals(RefundStatusEnum.CREATED.getKey())) {
+                     refundDto.setStatusText(RefundStatusEnum.CREATED.getValue());
+                 }
+                 if (mtRefund.getStatus().equals(RefundStatusEnum.APPROVED.getKey())) {
+                     refundDto.setStatusText(RefundStatusEnum.APPROVED.getValue());
+                 }
+                 if (mtRefund.getStatus().equals(RefundStatusEnum.REJECT.getKey())) {
+                     refundDto.setStatusText(RefundStatusEnum.REJECT.getValue());
+                 }
+                 if (mtRefund.getStatus().equals(RefundStatusEnum.CANCEL.getKey())) {
+                     refundDto.setStatusText(RefundStatusEnum.CANCEL.getValue());
+                 }
+
+                 dataList.add(refundDto);
+            }
+        }
 
         PageRequest pageRequest = PageRequest.of(pageNumber, pageSize);
         PageImpl pageImpl = new PageImpl(dataList, pageRequest, pageHelper.getTotal());
-        PaginationResponse<MtRefund> paginationResponse = new PaginationResponse(pageImpl, MtRefund.class);
+        PaginationResponse<RefundDto> paginationResponse = new PaginationResponse(pageImpl, RefundDto.class);
         paginationResponse.setTotalPages(pageHelper.getPages());
         paginationResponse.setTotalElements(pageHelper.getTotal());
         paginationResponse.setContent(dataList);
@@ -164,7 +197,7 @@ public class RefundServiceImpl extends ServiceImpl<MtRefundMapper, MtRefund> imp
      * @throws BusinessCheckException
      */
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     @OperationServiceLog(description = "提交售后订单")
     public MtRefund createRefund(RefundDto refundDto) {
         MtRefund refund = new MtRefund();
@@ -223,6 +256,8 @@ public class RefundServiceImpl extends ServiceImpl<MtRefundMapper, MtRefund> imp
                 refundDto.setImageList(images);
             }
             refundDto.setOrderInfo(orderDto);
+            AddressDto address = new AddressDto();
+            refundDto.setAddress(address);
             return refundDto;
         }
         return null;
@@ -252,7 +287,7 @@ public class RefundServiceImpl extends ServiceImpl<MtRefundMapper, MtRefund> imp
      * @throws BusinessCheckException
      */
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     @OperationServiceLog(description = "更新售后订单")
     public MtRefund updateRefund(RefundDto refundDto) throws BusinessCheckException {
         MtRefund refund = mtRefundMapper.selectById(refundDto.getId());
@@ -280,7 +315,7 @@ public class RefundServiceImpl extends ServiceImpl<MtRefundMapper, MtRefund> imp
      * @throws BusinessCheckException
      * */
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public MtRefund agreeRefund(RefundDto refundDto) throws BusinessCheckException {
         MtRefund refund = mtRefundMapper.selectById(refundDto.getId());
         if (null == refund) {

@@ -85,7 +85,7 @@ public class StoreServiceImpl extends ServiceImpl<MtStoreMapper, MtStore> implem
      * @throws BusinessCheckException
      */
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     @OperationServiceLog(description = "保存店铺信息")
     public MtStore saveStore(StoreDto storeDto) {
         MtStore mtStore = new MtStore();
@@ -233,7 +233,7 @@ public class StoreServiceImpl extends ServiceImpl<MtStoreMapper, MtStore> implem
      * @throws BusinessCheckException
      */
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     @OperationServiceLog(description = "修改店铺状态")
     public void updateStatus(Integer id, String operator, String status) throws BusinessCheckException {
         MtStore mtStore = this.queryStoreById(id);

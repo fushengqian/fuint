@@ -184,7 +184,7 @@ public class SourceServiceImpl extends ServiceImpl<TSourceMapper, TSource> imple
      * @param tSource
      */
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     @OperationServiceLog(description = "新增后台菜单")
     public void addSource(TSource tSource) {
         this.save(tSource);
@@ -196,7 +196,7 @@ public class SourceServiceImpl extends ServiceImpl<TSourceMapper, TSource> imple
      * @param source
      */
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     @OperationServiceLog(description = "修改后台菜单")
     public void editSource(TSource source) {
         tSourceMapper.updateById(source);

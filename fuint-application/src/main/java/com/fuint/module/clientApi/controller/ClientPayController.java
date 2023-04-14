@@ -1,5 +1,6 @@
 package com.fuint.module.clientApi.controller;
 
+import com.alipay.api.AlipayApiException;
 import com.fuint.common.bean.WxPayBean;
 import com.fuint.common.dto.*;
 import com.fuint.common.enums.OrderStatusEnum;
@@ -11,6 +12,7 @@ import com.fuint.framework.web.BaseController;
 import com.fuint.framework.web.ResponseObject;
 import com.fuint.repository.model.*;
 import com.fuint.utils.StringUtil;
+import com.ijpay.alipay.AliPayApi;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
@@ -43,6 +45,12 @@ public class ClientPayController extends BaseController {
      * */
     @Autowired
     private WeixinService weixinService;
+
+    /**
+     * 支付宝服务接口
+     * */
+    @Autowired
+    private AlipayService alipayService;
 
     /**
      * 支付服务接口
@@ -148,7 +156,7 @@ public class ClientPayController extends BaseController {
     }
 
     /**
-     * 支付回调
+     * 微信支付回调
      */
     @RequestMapping(value = "/weixinCallback", method = RequestMethod.POST)
     @CrossOrigin
@@ -174,7 +182,7 @@ public class ClientPayController extends BaseController {
                     // 订单金额
                     BigDecimal payAmount = orderInfo.getPayAmount();
                     int compareFlag = tranAmount.compareTo(payAmount);
-                    if (true) { // compareFlag == 0，测试暂时去掉
+                    if (compareFlag == 0) { // 支付金额正确
                         if (orderInfo.getStatus().equals(OrderStatusEnum.CREATED.getKey())) {
                             boolean flag = paymentService.paymentCallback(orderInfo);
                             logger.info("回调结果：" + flag);
@@ -193,6 +201,43 @@ public class ClientPayController extends BaseController {
                     logger.error("支付订单{}对应的信息不存在", orderSn);
                 }
             }
+        }
+    }
+
+    /**
+     * 支付宝支付回调
+     */
+    @RequestMapping(value = "/aliPayCallback", method = RequestMethod.POST)
+    @CrossOrigin
+    public String aliPayCallback(HttpServletRequest request) throws Exception {
+        try {
+            // 获取支付宝POST过来反馈信息
+            Map<String, String> params = AliPayApi.toMap(request);
+            for (Map.Entry<String, String> entry : params.entrySet()) {
+                logger.info("{} = {}", entry.getKey(), entry.getValue());
+            }
+            String orderSn = params.get("out_trade_no") != null ? params.get("out_trade_no") : "";
+            if (StringUtil.isEmpty(orderSn)) {
+                logger.error("支付宝验证失败 订单号为空");
+            }
+            Boolean verifyResult = alipayService.checkCallBack(params);
+            if (verifyResult) {
+                logger.info("支付宝验证成功 succcess");
+                UserOrderDto orderInfo = orderService.getOrderByOrderSn(orderSn);
+                boolean flag = paymentService.paymentCallback(orderInfo);
+                if (flag) {
+                    return "success";
+                } else {
+                    return "failure";
+                }
+            } else {
+                logger.error("支付宝验证失败 orderSn={}", orderSn);
+                return "failure";
+            }
+        } catch (AlipayApiException e) {
+            e.printStackTrace();
+            logger.error("支付宝回调出错啦...");
+            return "failure";
         }
     }
 }

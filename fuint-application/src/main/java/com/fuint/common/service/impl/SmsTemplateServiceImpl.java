@@ -85,7 +85,7 @@ public class SmsTemplateServiceImpl extends ServiceImpl<MtSmsTemplateMapper, MtS
      * @param mtSmsTemplateDto
      */
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     @OperationServiceLog(description = "保存短信模板")
     public MtSmsTemplate saveSmsTemplate(SmsTemplateDto mtSmsTemplateDto) {
         MtSmsTemplate mtSmsTemplate = new MtSmsTemplate();
@@ -117,7 +117,7 @@ public class SmsTemplateServiceImpl extends ServiceImpl<MtSmsTemplateMapper, MtS
      * @param operator 操作人
      */
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     @OperationServiceLog(description = "删除短信模板")
     public void deleteTemplate(Integer id, String operator) {
         MtSmsTemplate mtTemplate = mtSmsTemplateMapper.selectById(id);

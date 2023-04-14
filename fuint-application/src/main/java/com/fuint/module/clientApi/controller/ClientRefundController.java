@@ -3,6 +3,7 @@ package com.fuint.module.clientApi.controller;
 import com.fuint.common.dto.RefundDto;
 import com.fuint.common.dto.UserInfo;
 import com.fuint.common.dto.UserOrderDto;
+import com.fuint.common.enums.RefundStatusEnum;
 import com.fuint.common.service.OrderService;
 import com.fuint.common.service.RefundService;
 import com.fuint.common.util.TokenUtil;
@@ -40,7 +41,7 @@ public class ClientRefundController extends BaseController {
     private OrderService orderService;
 
     /**
-     * 获取订单列表
+     * 获取售后订单列表
      */
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     @CrossOrigin
@@ -53,7 +54,21 @@ public class ClientRefundController extends BaseController {
         }
 
         param.put("userId", userInfo.getId());
-        ResponseObject orderData = refundService.getUserRefundList(param);
+
+        String status = param.get("status") != null ? param.get("status").toString() : "";
+        if (status.equals("1")) {
+            status = RefundStatusEnum.CREATED.getKey();
+        } else {
+            status = "";
+        }
+        Map<String, Object> params = new HashMap();
+        params.put("userId", userInfo.getId());
+        if (StringUtil.isNotEmpty(status)) {
+            params.put("status", status);
+        }
+        params.put("pageNumber", param.get("page").toString());
+
+        ResponseObject orderData = refundService.getUserRefundList(params);
         return getSuccessResult(orderData.getData());
     }
 

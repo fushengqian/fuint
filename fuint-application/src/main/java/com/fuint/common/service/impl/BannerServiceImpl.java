@@ -127,7 +127,7 @@ public class BannerServiceImpl extends ServiceImpl<MtBannerMapper, MtBanner> imp
      * @param operator 操作人
      */
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     @OperationServiceLog(description = "删除Banner图")
     public void deleteBanner(Integer id, String operator) {
         MtBanner mtBanner = this.queryBannerById(id);
@@ -147,7 +147,7 @@ public class BannerServiceImpl extends ServiceImpl<MtBannerMapper, MtBanner> imp
      * @throws BusinessCheckException
      */
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     @OperationServiceLog(description = "更新Banner图")
     public MtBanner updateBanner(BannerDto bannerDto) throws BusinessCheckException {
         MtBanner mtBanner = this.queryBannerById(bannerDto.getId());

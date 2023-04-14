@@ -146,7 +146,7 @@ public class GoodsServiceImpl extends ServiceImpl<MtGoodsMapper, MtGoods> implem
      * @throws BusinessCheckException
      */
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     @OperationServiceLog(description = "保存商品信息")
     public MtGoods saveGoods(MtGoods reqDto) {
         MtGoods mtGoods = new MtGoods();

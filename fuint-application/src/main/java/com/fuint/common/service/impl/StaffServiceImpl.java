@@ -111,7 +111,7 @@ public class StaffServiceImpl extends ServiceImpl<MtStaffMapper, MtStaff> implem
      * @throws BusinessCheckException
      */
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     @OperationServiceLog(description = "保存店铺员工")
     public MtStaff saveStaff(MtStaff mtStaff) throws BusinessCheckException {
         mtStaff.setUpdateTime(new Date());

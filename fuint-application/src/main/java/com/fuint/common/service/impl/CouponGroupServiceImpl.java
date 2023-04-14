@@ -187,7 +187,7 @@ public class CouponGroupServiceImpl extends ServiceImpl<MtCouponGroupMapper, MtC
      * @throws BusinessCheckException
      */
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     @OperationServiceLog(description = "更新卡券分组")
     public MtCouponGroup updateCouponGroup(ReqCouponGroupDto reqcouponGroupDto) throws BusinessCheckException {
         MtCouponGroup couponGroup = this.queryCouponGroupById(reqcouponGroupDto.getId());
@@ -223,7 +223,7 @@ public class CouponGroupServiceImpl extends ServiceImpl<MtCouponGroupMapper, MtC
      * @throws BusinessCheckException
      */
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public Integer getCouponNum(Integer id) {
         Long num = mtCouponMapper.queryNumByGroupId(id);
         return num.intValue();
@@ -236,7 +236,7 @@ public class CouponGroupServiceImpl extends ServiceImpl<MtCouponGroupMapper, MtC
      * @throws BusinessCheckException
      */
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public BigDecimal getCouponMoney(Integer groupId) {
         List<MtCoupon> couponList = mtCouponMapper.queryByGroupId(groupId.intValue());
         MtCouponGroup groupInfo = this.queryCouponGroupById(groupId);
@@ -270,7 +270,7 @@ public class CouponGroupServiceImpl extends ServiceImpl<MtCouponGroupMapper, MtC
      * @param operator 操作者
      * */
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     @OperationServiceLog(description = "导入发券列表")
     public String importSendCoupon(MultipartFile file, String operator, String filePath) throws BusinessCheckException {
         String originalFileName = file.getOriginalFilename();

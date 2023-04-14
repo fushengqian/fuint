@@ -35,7 +35,7 @@ public class AddressServiceImpl extends ServiceImpl<MtAddressMapper, MtAddress> 
      * @throws BusinessCheckException
      */
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public MtAddress saveAddress(MtAddress mtAddress) {
         if (mtAddress.getId() > 0) {
             MtAddress address = mtAddressMapper.selectById(mtAddress.getId());

@@ -33,7 +33,7 @@ public class MessageServiceImpl extends ServiceImpl<MtMessageMapper, MtMessage> 
      * @param  mtMsg
      */
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void addMessage(MtMessage mtMsg) {
         if (mtMsg.getUserId() < 0 || StringUtil.isEmpty(mtMsg.getContent())) {
             return;
@@ -53,7 +53,7 @@ public class MessageServiceImpl extends ServiceImpl<MtMessageMapper, MtMessage> 
      * @param  msgId
      */
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void readMessage(Integer msgId) {
         if (msgId < 0) {
             return;
@@ -77,7 +77,7 @@ public class MessageServiceImpl extends ServiceImpl<MtMessageMapper, MtMessage> 
      * @return
      */
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void sendMessage(Integer msgId, boolean isRead) {
         if (msgId < 0 ) {
             return;

@@ -66,7 +66,7 @@ public class OpenGiftServiceImpl extends ServiceImpl<MtOpenGiftMapper, MtOpenGif
      * @throws BusinessCheckException
      * */
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public ResponseObject getOpenGiftList(Map<String, Object> paramMap) throws BusinessCheckException {
         Integer pageNumber = paramMap.get("pageNumber") == null ? Constants.PAGE_NUMBER : Integer.parseInt(paramMap.get("pageNumber").toString());
         Integer pageSize = paramMap.get("pageSize") == null ? Constants.PAGE_SIZE : Integer.parseInt(paramMap.get("pageSize").toString());
@@ -113,7 +113,7 @@ public class OpenGiftServiceImpl extends ServiceImpl<MtOpenGiftMapper, MtOpenGif
      * @throws BusinessCheckException
      */
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     @OperationServiceLog(description = "新增开卡赠礼")
     public MtOpenGift addOpenGift(MtOpenGift mtOpenGift) {
         mtOpenGift.setUpdateTime(new Date());
@@ -162,7 +162,7 @@ public class OpenGiftServiceImpl extends ServiceImpl<MtOpenGiftMapper, MtOpenGif
      * @throws BusinessCheckException
      */
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     @OperationServiceLog(description = "更新开卡赠礼")
     public MtOpenGift updateOpenGift(MtOpenGift reqDto) throws BusinessCheckException {
         MtOpenGift MtOpenGift = mtOpenGiftMapper.selectById(reqDto.getId());
@@ -208,7 +208,7 @@ public class OpenGiftServiceImpl extends ServiceImpl<MtOpenGiftMapper, MtOpenGif
      * @return
      * */
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void openGift(Integer userId, Integer gradeId) throws BusinessCheckException {
         Map<String, Object> params = new HashMap<>();
         params.put("grade_id", gradeId.toString());

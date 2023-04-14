@@ -127,7 +127,7 @@ public class CommissionLogServiceImpl extends ServiceImpl<MtCommissionLogMapper,
      * @throws BusinessCheckException
      */
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     @OperationServiceLog(description = "更新分销提成记录")
     public MtCommissionLog updateCommissionLog(MtCommissionLog commissionLog) throws BusinessCheckException {
         MtCommissionLog mtCommissionLog = queryCommissionLogById(commissionLog.getId());

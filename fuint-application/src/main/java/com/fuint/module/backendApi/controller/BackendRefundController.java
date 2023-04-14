@@ -124,22 +124,22 @@ public class BackendRefundController extends BaseController {
         RefundStatusEnum[] statusListEnum = RefundStatusEnum.values();
         List<ParamDto> statusList = new ArrayList<>();
         for (RefundStatusEnum enumItem : statusListEnum) {
-            ParamDto paramDto = new ParamDto();
-            paramDto.setKey(enumItem.getKey());
-            paramDto.setName(enumItem.getValue());
-            paramDto.setValue(enumItem.getKey());
-            statusList.add(paramDto);
+             ParamDto paramDto = new ParamDto();
+             paramDto.setKey(enumItem.getKey());
+             paramDto.setName(enumItem.getValue());
+             paramDto.setValue(enumItem.getKey());
+             statusList.add(paramDto);
         }
 
         // 售后类型列表
         RefundTypeEnum[] refundTypeEnums = RefundTypeEnum.values();
         List<ParamDto> refundTypeList = new ArrayList<>();
         for (RefundTypeEnum enumItem : refundTypeEnums) {
-            ParamDto paramDto = new ParamDto();
-            paramDto.setKey(enumItem.getKey());
-            paramDto.setName(enumItem.getValue());
-            paramDto.setValue(enumItem.getKey());
-            refundTypeList.add(paramDto);
+             ParamDto paramDto = new ParamDto();
+             paramDto.setKey(enumItem.getKey());
+             paramDto.setName(enumItem.getValue());
+             paramDto.setValue(enumItem.getKey());
+             refundTypeList.add(paramDto);
         }
 
         Map<String, Object> result = new HashMap<>();

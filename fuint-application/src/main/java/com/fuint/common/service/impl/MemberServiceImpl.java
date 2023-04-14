@@ -101,7 +101,7 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
      * @return
      * */
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public Boolean updateActiveTime(Integer userId) throws BusinessCheckException {
         MtUser mtUser = queryMemberById(userId);
         if (mtUser != null) {
@@ -371,7 +371,7 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
      * @throws BusinessCheckException
      */
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     @OperationServiceLog(description = "修改会员信息")
     public MtUser updateMember(MtUser mtUser) throws BusinessCheckException {
         mtUser.setUpdateTime(new Date());
@@ -406,7 +406,7 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
      * @throws BusinessCheckException
      */
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     @OperationServiceLog(description = "通过手机号新增会员")
     public MtUser addMemberByMobile(String mobile) throws BusinessCheckException {
         MtUser mtUser = new MtUser();

@@ -83,7 +83,7 @@ public class UserGradeServiceImpl extends ServiceImpl<MtUserGradeMapper, MtUserG
      * @param mtUserGrade
      */
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     @OperationServiceLog(description = "新增会员等级")
     public MtUserGrade addUserGrade(MtUserGrade mtUserGrade) {
         mtUserGradeMapper.insert(mtUserGrade);
@@ -107,7 +107,7 @@ public class UserGradeServiceImpl extends ServiceImpl<MtUserGradeMapper, MtUserG
      * @param mtUserGrade
      */
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     @OperationServiceLog(description = "修改会员等级")
     public MtUserGrade updateUserGrade(MtUserGrade mtUserGrade) {
         MtUserGrade userGrade = mtUserGradeMapper.selectById(mtUserGrade.getId());
@@ -124,7 +124,7 @@ public class UserGradeServiceImpl extends ServiceImpl<MtUserGradeMapper, MtUserG
      * @param operator 操作人
      */
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     @OperationServiceLog(description = "删除会员等级")
     public Integer deleteUserGrade(Integer id, String operator) {
         MtUserGrade mtUserGrade = this.queryUserGradeById(id);

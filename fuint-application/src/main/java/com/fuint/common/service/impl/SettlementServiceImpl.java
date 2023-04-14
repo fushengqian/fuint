@@ -103,7 +103,7 @@ public class SettlementServiceImpl implements SettlementService {
      * @return
      * */
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public Map<String, Object> doSubmit(HttpServletRequest request, @RequestBody Map<String, Object> param) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
         String platform = request.getHeader("platform") == null ? "" : request.getHeader("platform");

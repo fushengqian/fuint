@@ -139,7 +139,7 @@ public class CateServiceImpl extends ServiceImpl<MtGoodsCateMapper, MtGoodsCate>
      * @throws BusinessCheckException
      */
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     @OperationServiceLog(description = "更新商品分类")
     public MtGoodsCate updateCate(MtGoodsCate reqDto) throws BusinessCheckException {
         MtGoodsCate mtCate = this.queryCateById(reqDto.getId());

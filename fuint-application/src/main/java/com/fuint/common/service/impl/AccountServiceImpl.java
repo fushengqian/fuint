@@ -168,7 +168,7 @@ public class AccountServiceImpl extends ServiceImpl<TAccountMapper, TAccount> im
      * @throws BusinessCheckException
      */
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     @OperationServiceLog(description = "修改后台账户")
     public void editAccount(TAccount tAccount, List<TDuty> duties) throws BusinessCheckException {
         TAccount oldAccount = tAccountMapper.selectById(tAccount.getAcctId());
@@ -207,7 +207,7 @@ public class AccountServiceImpl extends ServiceImpl<TAccountMapper, TAccount> im
      * @param tAccount
      */
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     @OperationServiceLog(description = "修改后台账户")
     public void updateAccount(TAccount tAccount) {
         tAccountMapper.updateById(tAccount);
@@ -219,7 +219,7 @@ public class AccountServiceImpl extends ServiceImpl<TAccountMapper, TAccount> im
      * @param
      * */
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     @OperationServiceLog(description = "删除后台账户")
     public void deleteAccount(Long userId) {
         TAccount tAccount = tAccountMapper.selectById(userId);

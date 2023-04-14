@@ -1,7 +1,6 @@
 package com.fuint.common.service;
 
 import com.alibaba.fastjson.JSONObject;
-import com.fuint.common.dto.UserOrderDto;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.web.ResponseObject;
 import com.fuint.repository.model.MtOrder;
@@ -23,8 +22,6 @@ public interface WeixinService {
     String getAccessToken(boolean useCache);
 
     ResponseObject createPrepayOrder(MtUser userInfo, MtOrder orderInfo, Integer payAmount, String authCode, Integer giveAmount, String ip, String platform) throws BusinessCheckException;
-
-    Boolean paymentCallback(UserOrderDto orderInfo) throws BusinessCheckException;
 
     Map<String,String> processResXml(HttpServletRequest request);
 

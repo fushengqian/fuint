@@ -119,7 +119,7 @@ public class UserCouponServiceImpl extends ServiceImpl<MtUserCouponMapper, MtUse
      * @return
      * */
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public boolean receiveCoupon(Map<String, Object> paramMap) throws BusinessCheckException {
         Integer couponId = paramMap.get("couponId") == null ? 0 : Integer.parseInt(paramMap.get("couponId").toString());
         Integer userId = paramMap.get("userId") == null ? 0 : Integer.parseInt(paramMap.get("userId").toString());
@@ -304,7 +304,7 @@ public class UserCouponServiceImpl extends ServiceImpl<MtUserCouponMapper, MtUse
      * @throws BusinessCheckException
      * */
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public ResponseObject getUserCouponList(Map<String, Object> paramMap) throws BusinessCheckException {
         Integer pageNumber = paramMap.get("pageNumber") == null ? Constants.PAGE_NUMBER : Integer.parseInt(paramMap.get("pageNumber").toString());
         Integer pageSize = paramMap.get("pageSize") == null ? Constants.PAGE_SIZE : Integer.parseInt(paramMap.get("pageSize").toString());

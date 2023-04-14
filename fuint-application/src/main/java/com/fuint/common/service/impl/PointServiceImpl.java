@@ -114,7 +114,7 @@ public class PointServiceImpl extends ServiceImpl<MtPointMapper, MtPoint> implem
      * @throws BusinessCheckException
      */
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     @OperationServiceLog(description = "修改会员积分")
     public void addPoint(MtPoint mtPoint) throws BusinessCheckException {
         if (mtPoint.getUserId() < 0) {
@@ -165,7 +165,7 @@ public class PointServiceImpl extends ServiceImpl<MtPointMapper, MtPoint> implem
      * @return boolean
      */
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public boolean doGift(Integer userId, String mobile, Integer amount, String remark) throws BusinessCheckException {
         if (userId < 0 || StringUtil.isEmpty(mobile) || amount <= 0) {
             return false;

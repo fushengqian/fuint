@@ -11,6 +11,7 @@ import java.util.List;
  * CopyRight https://www.fuint.cn
  */
 public class RefundDto implements Serializable {
+
     /**
      * 自增ID
      */
@@ -85,6 +86,11 @@ public class RefundDto implements Serializable {
      * 订单详情
      * */
     private UserOrderDto orderInfo;
+
+    /**
+     * 退货地址
+     */
+    private AddressDto address;
 
     public Integer getId() {
         return id;
@@ -204,6 +210,14 @@ public class RefundDto implements Serializable {
 
     public void setOrderInfo(UserOrderDto orderInfo) {
         this.orderInfo = orderInfo;
+    }
+
+    public AddressDto getAddress() {
+        return address;
+    }
+
+    public void setAddress(AddressDto address) {
+        this.address = address;
     }
 }
 

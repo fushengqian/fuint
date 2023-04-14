@@ -123,7 +123,7 @@ public class BalanceServiceImpl extends ServiceImpl<MtBalanceMapper, MtBalance> 
      * @throws BusinessCheckException
      */
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     @OperationServiceLog(description = "会员余额变动")
     public Boolean addBalance(MtBalance mtBalance) throws BusinessCheckException {
         if (mtBalance.getUserId() < 0) {

@@ -76,7 +76,7 @@ public class DutyServiceImpl extends ServiceImpl<TDutyMapper, TDuty> implements 
      * @param dutyId
      */
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     @OperationServiceLog(description = "删除后台角色")
     public void deleteDuty(long dutyId) {
         tDutySourceMapper.deleteSourcesByDutyId((int)dutyId);
@@ -89,7 +89,7 @@ public class DutyServiceImpl extends ServiceImpl<TDutyMapper, TDuty> implements 
      * @param tduty
      */
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     @OperationServiceLog(description = "更新后台角色")
     public void updateDuty(TDuty tduty, List<TSource> sources) throws BusinessCheckException {
         TDuty existsDuty = this.tDutyMapper.selectById(tduty.getDutyId());
@@ -149,7 +149,7 @@ public class DutyServiceImpl extends ServiceImpl<TDutyMapper, TDuty> implements 
      * @param duty
      */
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     @OperationServiceLog(description = "新增后台角色")
     public void saveDuty(TDuty duty, List<TSource> sources) throws BusinessCheckException {
         TDuty existsDuty = tDutyMapper.findByName(duty.getDutyName());

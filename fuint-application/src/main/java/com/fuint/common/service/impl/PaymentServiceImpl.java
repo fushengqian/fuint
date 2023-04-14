@@ -1,9 +1,7 @@
 package com.fuint.common.service.impl;
 
-import com.fuint.common.dto.AccountInfo;
-import com.fuint.common.dto.OrderDto;
-import com.fuint.common.dto.UserInfo;
-import com.fuint.common.dto.UserOrderDto;
+import com.fuint.common.dto.*;
+import com.fuint.common.enums.OrderTypeEnum;
 import com.fuint.common.enums.PayTypeEnum;
 import com.fuint.common.enums.YesOrNoEnum;
 import com.fuint.common.service.*;
@@ -65,6 +63,18 @@ public class PaymentServiceImpl implements PaymentService {
     @Autowired
     private BalanceService balanceService;
 
+    @Autowired
+    private PointService pointService;
+
+    @Autowired
+    private UserCouponService userCouponService;
+
+    @Autowired
+    private SettingService settingService;
+
+    @Autowired
+    private UserGradeService userGradeService;
+
     /**
      * 创建支付订单
      * @return
@@ -87,17 +97,88 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     /**
-     * 支付回调
+     * 支付成功回调
      * @return
      * */
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public Boolean paymentCallback(UserOrderDto orderInfo) throws BusinessCheckException {
-        Boolean result = weixinService.paymentCallback(orderInfo);
-        if (!result) {
-            logger.error("PaymentService paymentCallback error orderSn {}", orderInfo.getOrderSn());
+        logger.info("paymentCallback outParams {}", orderInfo.toString());
+
+        // 更新订单状态为已支付
+        boolean isPay = orderService.setOrderPayed(orderInfo.getId());
+        if (!isPay) {
+            return false;
         }
-        logger.info("PaymentService paymentCallback Success orderSn {}", orderInfo.getOrderSn());
+
+        // 储值卡订单
+        if (orderInfo.getType().equals(OrderTypeEnum.PRESTORE.getKey())) {
+            Map<String, Object> param = new HashMap<>();
+            param.put("couponId", orderInfo.getCouponId());
+            param.put("userId", orderInfo.getUserId());
+            param.put("param", orderInfo.getParam());
+            param.put("orderId", orderInfo.getId());
+            userCouponService.preStore(param);
+        }
+
+        // 充值订单
+        if (orderInfo.getType().equals(OrderTypeEnum.RECHARGE.getKey())) {
+            // 余额支付
+            MtBalance mtBalance = new MtBalance();
+            OrderUserDto userDto = orderInfo.getUserInfo();
+
+            if (userDto.getMobile() != null && StringUtil.isNotEmpty(userDto.getMobile())) {
+                mtBalance.setMobile(userDto.getMobile());
+            }
+
+            mtBalance.setOrderSn(orderInfo.getOrderSn());
+            mtBalance.setUserId(orderInfo.getUserId());
+
+            String param = orderInfo.getParam();
+            if (StringUtil.isNotEmpty(param)) {
+                String params[] = param.split("_");
+                if (params.length == 2) {
+                    BigDecimal amount = new BigDecimal(params[0]).add(new BigDecimal(params[1]));
+                    mtBalance.setAmount(amount);
+                    balanceService.addBalance(mtBalance);
+                }
+            }
+        }
+
+        // 处理消费返积分，查询返1积分所需消费金额
+        MtSetting setting = settingService.querySettingByName("pointNeedConsume");
+        if (setting != null) {
+            String needPayAmount = setting.getValue();
+            Integer needPayAmountInt = Math.round(Integer.parseInt(needPayAmount));
+
+            Double pointNum = 0d;
+            if (orderInfo.getPayAmount().compareTo(new BigDecimal(needPayAmountInt)) > 0) {
+                BigDecimal point = orderInfo.getPayAmount().divide(new BigDecimal(needPayAmountInt), BigDecimal.ROUND_CEILING, 2);
+                pointNum = Math.ceil(point.doubleValue());
+            }
+
+            logger.info("WXService paymentCallback Point orderSn = {} , pointNum ={}", orderInfo.getOrderSn(), pointNum);
+
+            if (pointNum > 0) {
+                MtUser userInfo = memberService.queryMemberById(orderInfo.getUserId());
+                MtUserGrade userGrade = userGradeService.queryUserGradeById(Integer.parseInt(userInfo.getGradeId()));
+
+                // 是否会员积分加倍
+                if (userGrade.getSpeedPoint() > 1) {
+                    pointNum = pointNum * userGrade.getSpeedPoint();
+                }
+
+                MtPoint reqPointDto = new MtPoint();
+                reqPointDto.setAmount(pointNum.intValue());
+                reqPointDto.setUserId(orderInfo.getUserId());
+                reqPointDto.setOrderSn(orderInfo.getOrderSn());
+                reqPointDto.setDescription("支付￥"+orderInfo.getPayAmount()+"返"+pointNum+"积分");
+                reqPointDto.setOperator("系统");
+                pointService.addPoint(reqPointDto);
+            }
+        }
+
+        logger.info("WXService paymentCallback Success orderSn {}", orderInfo.getOrderSn());
         return true;
     }
 
@@ -105,7 +186,7 @@ public class PaymentServiceImpl implements PaymentService {
      * 订单支付
      * */
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public Map<String, Object> doPay(HttpServletRequest request) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
         String platform = request.getHeader("platform") == null ? "" : request.getHeader("platform");
@@ -203,7 +284,7 @@ public class PaymentServiceImpl implements PaymentService {
             orderInfo.setPayType(payType);
             ResponseObject paymentInfo = createPrepayOrder(mtUser, orderInfo, (pay.intValue()), authCode, 0, ip, platform);
             if (paymentInfo.getData() == null) {
-                throw new BusinessCheckException("抱歉，微信支付失败");
+                throw new BusinessCheckException("抱歉，支付失败");
             }
             payment = paymentInfo.getData();
         }

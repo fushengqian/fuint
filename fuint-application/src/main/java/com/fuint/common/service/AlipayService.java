@@ -1,10 +1,10 @@
 package com.fuint.common.service;
 
-import com.fuint.common.dto.UserOrderDto;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.web.ResponseObject;
 import com.fuint.repository.model.MtOrder;
 import com.fuint.repository.model.MtUser;
+import java.util.Map;
 
 /**
  * 支付宝相关业务接口
@@ -16,8 +16,6 @@ public interface AlipayService {
 
     ResponseObject createPrepayOrder(MtUser userInfo, MtOrder orderInfo, Integer payAmount, String authCode, Integer giveAmount, String ip, String platform) throws BusinessCheckException;
 
-    Boolean paymentCallback(UserOrderDto orderInfo) throws BusinessCheckException;
-
-    String queryPaidOrder(Integer storeId, String transactionId, String orderSn);
+    Boolean checkCallBack( Map<String, String> params) throws Exception;
 
 }

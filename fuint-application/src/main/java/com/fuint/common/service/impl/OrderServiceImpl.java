@@ -114,7 +114,7 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
      * @throws BusinessCheckException
      * */
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public ResponseObject getUserOrderList(Map<String, Object> paramMap) throws BusinessCheckException {
         Integer pageNumber = paramMap.get("pageNumber") == null ? Constants.PAGE_NUMBER : Integer.parseInt(paramMap.get("pageNumber").toString());
         Integer pageSize = paramMap.get("pageSize") == null ? Constants.PAGE_SIZE : Integer.parseInt(paramMap.get("pageSize").toString());
@@ -205,7 +205,7 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
      * @throws BusinessCheckException
      */
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     @OperationServiceLog(description = "提交订单信息")
     public MtOrder saveOrder(OrderDto orderDto) throws BusinessCheckException {
         MtOrder mtOrder;
@@ -493,7 +493,7 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
      * @return
      * */
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     @OperationServiceLog(description = "取消订单")
     public MtOrder cancelOrder(Integer id, String remark) throws BusinessCheckException {
         MtOrder mtOrder = mtOrderMapper.selectById(id);
@@ -587,7 +587,6 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
         if (orderInfo == null) {
             return null;
         }
-
         return getOrderDetail(orderInfo, true);
     }
 
@@ -598,7 +597,7 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
      * @throws BusinessCheckException
      */
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     @OperationServiceLog(description = "更新订单信息")
     public MtOrder updateOrder(OrderDto orderDto) throws BusinessCheckException {
         MtOrder mtOrder = mtOrderMapper.selectById(orderDto.getId());
@@ -671,13 +670,14 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
      * @return
      * */
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public MtOrder updateOrder(MtOrder mtOrder) {
         mtOrderMapper.updateById(mtOrder);
         return mtOrder;
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     @OperationServiceLog(description = "修改订单为已支付")
     public Boolean setOrderPayed(Integer orderId) throws BusinessCheckException {
         MtOrder mtOrder = mtOrderMapper.selectById(orderId);

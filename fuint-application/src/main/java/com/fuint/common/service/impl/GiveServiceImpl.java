@@ -132,7 +132,7 @@ public class GiveServiceImpl extends ServiceImpl<MtGiveMapper, MtGive> implement
      * @throws BusinessCheckException
      */
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public ResponseObject addGive(Map<String, Object> paramMap) throws BusinessCheckException {
         MtGive give = new MtGive();
 

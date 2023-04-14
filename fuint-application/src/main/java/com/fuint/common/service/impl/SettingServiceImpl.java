@@ -59,7 +59,7 @@ public class SettingServiceImpl extends ServiceImpl<MtSettingMapper, MtSetting> 
      * @throws BusinessCheckException
      */
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     @OperationServiceLog(description = "保存配置信息")
     public MtSetting saveSetting(MtSetting mtSetting) {
         MtSetting info = this.querySettingByName(mtSetting.getName());

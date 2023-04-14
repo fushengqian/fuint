@@ -131,7 +131,7 @@ public class CommissionRuleServiceImpl extends ServiceImpl<MtCommissionRuleMappe
      * @throws BusinessCheckException
      */
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     @OperationServiceLog(description = "更新分销提成规则")
     public MtCommissionRule updateCommissionRule(MtCommissionRule commissionRule) throws BusinessCheckException {
         MtCommissionRule mtCommissionRule = queryCommissionRuleById(commissionRule.getId());
