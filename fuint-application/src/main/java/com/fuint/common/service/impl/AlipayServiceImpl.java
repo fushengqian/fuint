@@ -2,6 +2,7 @@ package com.fuint.common.service.impl;
 
 import com.alipay.api.domain.AlipayTradePayModel;
 import com.alipay.api.internal.util.AlipaySignature;
+import com.alipay.api.response.AlipayTradePayResponse;
 import com.fuint.common.bean.AliPayBean;
 import com.fuint.common.dto.OrderDto;
 import com.fuint.common.enums.*;
@@ -69,15 +70,20 @@ public class AlipayServiceImpl implements AlipayService {
         model.setStoreId(orderInfo.getStoreId().toString());
         model.setScene("bar_code");
 
-        String result = "";
+        String code = "";
         try {
-            result = AliPayApi.tradePayToResponse(model, notifyUrl).getBody();
+            AlipayTradePayResponse response = AliPayApi.tradePayToResponse(model, notifyUrl);
+            code = response.getCode();
+            String msg = response.getMsg();
+            if (!msg.equals("SUCCESS")) {
+                throw new BusinessCheckException("支付宝支付出错，请检查配置项.");
+            }
         } catch (Exception e) {
-            throw new BusinessCheckException("支付宝支付出错，请检查配置项！");
+            throw new BusinessCheckException("支付宝支付出错，请检查配置项.");
         }
 
         Map<String, String> respData = new HashMap<>();
-        respData.put("result", result);
+        respData.put("result", code);
 
         ResponseObject responseObject = new ResponseObject(200, "支付宝支付接口返回成功", respData);
         logger.info("AlipayService createPrepayOrder outParams {}", responseObject.toString());
@@ -94,8 +100,9 @@ public class AlipayServiceImpl implements AlipayService {
     /**
      * 获取支付配置
      * */
-    private AliPayApiConfig getApiConfig() {
+    public AliPayApiConfig getApiConfig() {
         AliPayApiConfig aliPayApiConfig;
+
         try {
             aliPayApiConfig = AliPayApiConfigKit.getApiConfig(aliPayBean.getAppId());
         } catch (Exception e) {
@@ -108,6 +115,10 @@ public class AlipayServiceImpl implements AlipayService {
                     .setSignType("RSA2")
                     .build();
         }
+
+        AliPayApiConfigKit.setThreadLocalAppId(aliPayBean.getAppId());
+        AliPayApiConfigKit.setThreadLocalAliPayApiConfig(aliPayApiConfig);
+
         return aliPayApiConfig;
     }
 }

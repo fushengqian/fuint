@@ -142,7 +142,7 @@ public class ClientPayController extends BaseController {
     }
 
     /**
-     * 去支付
+     * 请求支付
      * */
     @RequestMapping(value = "/doPay", method = RequestMethod.GET)
     @CrossOrigin
@@ -151,7 +151,7 @@ public class ClientPayController extends BaseController {
             Map<String, Object> result = paymentService.doPay(request);
             return getSuccessResult(result);
         } catch (BusinessCheckException e) {
-            return getFailureResult(201, "该订单不存在");
+            return getFailureResult(201, e.getMessage() == null ? "订单支付出错" : e.getMessage());
         }
     }
 
@@ -224,7 +224,7 @@ public class ClientPayController extends BaseController {
             if (verifyResult) {
                 logger.info("支付宝验证成功 succcess");
                 UserOrderDto orderInfo = orderService.getOrderByOrderSn(orderSn);
-                boolean flag = paymentService.paymentCallback(orderInfo);
+                Boolean flag = paymentService.paymentCallback(orderInfo);
                 if (flag) {
                     return "success";
                 } else {

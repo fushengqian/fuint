@@ -106,7 +106,7 @@ public class PaymentServiceImpl implements PaymentService {
         logger.info("paymentCallback outParams {}", orderInfo.toString());
 
         // 更新订单状态为已支付
-        boolean isPay = orderService.setOrderPayed(orderInfo.getId());
+        Boolean isPay = orderService.setOrderPayed(orderInfo.getId());
         if (!isPay) {
             return false;
         }

@@ -425,8 +425,8 @@ public class SettlementServiceImpl implements SettlementService {
                 }
             } else {
                 BigDecimal wxPayAmount = realPayAmount.multiply(new BigDecimal("100"));
-                // 微信扫码支付，先返回不处理，后面拿到支付二维码再处理
-                if (payType.equals(PayTypeEnum.MICROPAY.getKey()) && StringUtil.isEmpty(authCode)) {
+                // 扫码支付，先返回不处理，后面拿到支付二维码再处理
+                if ((payType.equals(PayTypeEnum.MICROPAY.getKey()) || payType.equals(PayTypeEnum.ALISCAN.getKey())) && StringUtil.isEmpty(authCode)) {
                     paymentInfo = new ResponseObject(200, "请求成功", new HashMap<>());
                 } else {
                     paymentInfo = paymentService.createPrepayOrder(userInfo, orderInfo, (wxPayAmount.intValue()), authCode, 0, ip, platform);
@@ -447,7 +447,7 @@ public class SettlementServiceImpl implements SettlementService {
 
         if (paymentInfo != null) {
             outParams.put("payment", paymentInfo.getData());
-            outParams.put("payType", PayTypeEnum.JSAPI.getKey());
+            outParams.put("payType", payType);
         } else {
             outParams.put("payment", null);
             outParams.put("payType", "BALANCE");
