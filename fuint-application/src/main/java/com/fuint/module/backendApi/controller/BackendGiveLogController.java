@@ -138,7 +138,7 @@ public class BackendGiveLogController extends BaseController {
 
         Map<String, Object> params = new HashMap<>();
         params.put("status", StatusEnum.ENABLED.getKey());
-        params.put("giveId", giveId);
+        params.put("GIVE_ID", giveId);
 
         List<MtGiveItem> itemList = giveService.queryItemByParams(params);
 
