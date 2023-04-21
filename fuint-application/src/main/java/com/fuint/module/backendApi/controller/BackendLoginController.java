@@ -17,6 +17,7 @@ import com.fuint.repository.model.TAccount;
 import com.fuint.repository.model.TDuty;
 import com.fuint.repository.model.TSource;
 import com.fuint.utils.StringUtil;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.*;
 import com.fuint.common.domain.TreeNode;
@@ -30,6 +31,7 @@ import java.util.*;
  * Created by FSQ
  * CopyRight https://www.fuint.cn
  */
+@Api(tags="管理端-后台登录相关接口")
 @RestController
 @RequestMapping("/backendApi/login")
 public class BackendLoginController extends BaseController {

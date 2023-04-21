@@ -9,10 +9,13 @@ import com.fuint.common.util.TokenUtil;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.web.BaseController;
 import com.fuint.framework.web.ResponseObject;
+import com.fuint.module.clientApi.request.AddressRequest;
 import com.fuint.repository.mapper.MtRegionMapper;
 import com.fuint.repository.model.MtAddress;
 import com.fuint.repository.model.MtRegion;
 import com.fuint.utils.StringUtil;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import java.lang.reflect.InvocationTargetException;
@@ -31,6 +34,7 @@ import java.util.Map;
  * Created by FSQ
  * CopyRight https://www.fuint.cn
  */
+@Api(tags="会员端-收货地址相关接口")
 @RestController
 @RequestMapping(value = "/clientApi/address")
 public class ClientAddressController extends BaseController {
@@ -47,19 +51,21 @@ public class ClientAddressController extends BaseController {
     /**
      * 保存收货地址
      */
+    @ApiOperation(value="保存收货地址", notes="保存会员的收货地址")
     @RequestMapping(value = "/save", method = RequestMethod.POST)
     @CrossOrigin
-    public ResponseObject save(HttpServletRequest request, @RequestBody Map<String, Object> param) throws BusinessCheckException {
+    public ResponseObject save(HttpServletRequest request, @RequestBody AddressRequest address) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
-        String name = param.get("name") == null ? "" : param.get("name").toString();
-        String mobile = param.get("mobile") == null ? "" : param.get("mobile").toString();
-        Integer provinceId = param.get("provinceId") == null ? 0 : Integer.parseInt(param.get("provinceId").toString());
-        Integer cityId = param.get("cityId") == null ? 0 : Integer.parseInt(param.get("cityId").toString());
-        Integer regionId = param.get("regionId") == null ? 0 : Integer.parseInt(param.get("regionId").toString());
-        String detail = param.get("detail") == null ? "" : param.get("detail").toString();
-        String status = param.get("status") == null ? "" : param.get("status").toString();
-        String isDefault = param.get("isDefault") == null ? "" : param.get("isDefault").toString();
-        Integer addressId = param.get("addressId") == null ? 0 : Integer.parseInt(param.get("addressId").toString());
+
+        String name = address.getName() == null ? "" : address.getName();
+        String mobile = address.getMobile() == null ? "" : address.getMobile();
+        Integer provinceId = address.getProvinceId() == null ? 0 : address.getProvinceId();
+        Integer cityId = address.getCityId() == null ? 0 : address.getCityId();
+        Integer regionId = address.getRegionId() == null ? 0 : address.getRegionId();
+        String detail = address.getDetail() == null ? "" : address.getDetail();
+        String status = address.getStatus() == null ? StatusEnum.ENABLED.getKey() : address.getStatus();
+        String isDefault = address.getIsDefault() == null ? "" : address.getIsDefault();
+        Integer addressId = address.getAddressId() == null ? 0 : address.getAddressId();
 
         if (StringUtil.isEmpty(token)) {
             return getFailureResult(1001);
@@ -88,8 +94,9 @@ public class ClientAddressController extends BaseController {
     }
 
     /**
-     * 获取收货地址列表
+     * 获取个人收货地址列表
      */
+    @ApiOperation(value="获取个人收货地址列表", notes="获取个人收货地址列表")
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject list(HttpServletRequest request) throws BusinessCheckException, InvocationTargetException, IllegalAccessException {
@@ -104,9 +111,7 @@ public class ClientAddressController extends BaseController {
         } else {
             param.put("userId", mtUser.getId());
         }
-
         param.put("status", StatusEnum.ENABLED.getKey());
-
         List<MtAddress> addressList = addressService.queryListByParams(param);
 
         List<AddressDto> dataList = new ArrayList<>();
@@ -152,6 +157,7 @@ public class ClientAddressController extends BaseController {
     /**
      * 获取收货地址详情
      */
+    @ApiOperation(value="获取收货地址详情", notes="根据ID获取会员收货地址详情")
     @RequestMapping(value = "/detail", method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject detail(HttpServletRequest request) throws BusinessCheckException, InvocationTargetException, IllegalAccessException {

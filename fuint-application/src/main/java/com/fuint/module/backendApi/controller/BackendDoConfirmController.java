@@ -19,6 +19,7 @@ import com.fuint.repository.model.MtUser;
 import com.fuint.repository.model.MtUserCoupon;
 import com.fuint.repository.model.TAccount;
 import com.fuint.utils.StringUtil;
+import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -36,6 +37,7 @@ import java.util.Map;
  * Created by FSQ
  * CopyRight https://www.fuint.cn
  */
+@Api(tags="管理端-卡券核销相关接口")
 @RestController
 @RequestMapping(value = "/backendApi/doConfirm")
 public class BackendDoConfirmController extends BaseController {

@@ -12,6 +12,7 @@ import com.fuint.framework.web.BaseController;
 import com.fuint.framework.web.ResponseObject;
 import com.fuint.repository.model.MtStaff;
 import com.fuint.repository.model.MtUser;
+import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
@@ -21,11 +22,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * 商家相关controller
+ * 商户相关controller
  *
  * Created by FSQ
  * CopyRight https://www.fuint.cn
  */
+@Api(tags="商户端-商户信息相关接口")
 @RestController
 @RequestMapping(value = "/merchantApi/merchant")
 public class MerchantController extends BaseController {

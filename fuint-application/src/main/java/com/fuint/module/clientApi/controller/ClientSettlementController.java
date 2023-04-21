@@ -4,6 +4,7 @@ import com.fuint.common.service.SettlementService;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.web.BaseController;
 import com.fuint.framework.web.ResponseObject;
+import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
@@ -15,6 +16,7 @@ import java.util.*;
  * Created by FSQ
  * CopyRight https://www.fuint.cn
  */
+@Api(tags="会员端-订单结算相关接口")
 @RestController
 @RequestMapping(value = "/clientApi/settlement")
 public class ClientSettlementController extends BaseController {

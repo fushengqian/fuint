@@ -12,6 +12,7 @@ import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.web.BaseController;
 import com.fuint.framework.web.ResponseObject;
 import com.fuint.repository.model.TAccount;
+import io.swagger.annotations.Api;
 import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.annotation.Resource;
@@ -27,6 +28,7 @@ import java.util.Map;
  * Created by FSQ
  * CopyRight https://www.fuint.cn
  */
+@Api(tags="管理端-首页相关接口")
 @RestController
 @RequestMapping(value = "/backendApi/home")
 public class BackendHomeController extends BaseController {

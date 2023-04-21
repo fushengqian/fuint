@@ -20,6 +20,7 @@ import com.fuint.repository.mapper.MtSendLogMapper;
 import com.fuint.repository.mapper.MtUserCouponMapper;
 import com.fuint.repository.model.*;
 import com.fuint.utils.StringUtil;
+import io.swagger.annotations.Api;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -31,11 +32,12 @@ import java.math.BigDecimal;
 import java.util.*;
 
 /**
- * 卡券统计管理类controller
+ * 会员卡券统计管理类controller
  *
  * Created by FSQ
  * CopyRight https://www.fuint.cn
  */
+@Api(tags="管理端-会员卡券统计相关接口")
 @RestController
 @RequestMapping(value = "/backendApi/userCoupon")
 public class BackendUserCouponController extends BaseController {

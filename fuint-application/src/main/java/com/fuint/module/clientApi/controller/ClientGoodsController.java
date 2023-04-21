@@ -18,6 +18,7 @@ import com.fuint.repository.model.MtGoodsCate;
 import com.fuint.repository.model.MtGoodsSku;
 import com.fuint.repository.model.MtGoodsSpec;
 import com.fuint.utils.StringUtil;
+import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
@@ -33,6 +34,7 @@ import java.util.Map;
  * Created by FSQ
  * CopyRight https://www.fuint.cn
  */
+@Api(tags="会员端-商品相关接口")
 @RestController
 @RequestMapping(value = "/clientApi/goodsApi")
 public class ClientGoodsController extends BaseController {

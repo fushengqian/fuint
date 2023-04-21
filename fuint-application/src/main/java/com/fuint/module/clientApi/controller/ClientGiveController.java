@@ -12,6 +12,7 @@ import com.fuint.framework.web.BaseController;
 import com.fuint.framework.web.ResponseObject;
 import com.fuint.repository.model.MtUser;
 import com.fuint.utils.StringUtil;
+import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
@@ -19,11 +20,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * 转赠功能controller
+ * 卡券转赠controller
  *
  * Created by FSQ
  * CopyRight https://www.fuint.cn
  */
+@Api(tags="会员端-卡券转赠相关接口")
 @RestController
 @RequestMapping(value = "/clientApi/give")
 public class ClientGiveController extends BaseController {

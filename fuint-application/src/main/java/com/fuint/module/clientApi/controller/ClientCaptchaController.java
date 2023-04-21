@@ -4,6 +4,7 @@ import com.fuint.common.service.CaptchaService;
 import com.fuint.framework.web.BaseController;
 import com.fuint.framework.web.ResponseObject;
 import com.fuint.common.util.Base64Util;
+import io.swagger.annotations.Api;
 import org.springframework.web.bind.annotation.*;
 import javax.annotation.Resource;
 import javax.imageio.ImageIO;
@@ -22,6 +23,7 @@ import java.util.UUID;
  * Created by FSQ
  * CopyRight https://www.fuint.cn
  */
+@Api(tags="会员端-图形验证码相关接口")
 @RestController
 @RequestMapping("/clientApi/captcha")
 public class ClientCaptchaController extends BaseController {

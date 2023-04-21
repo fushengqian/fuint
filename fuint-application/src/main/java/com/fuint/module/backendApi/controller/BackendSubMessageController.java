@@ -15,6 +15,7 @@ import com.fuint.framework.web.BaseController;
 import com.fuint.framework.web.ResponseObject;
 import com.fuint.repository.model.MtSetting;
 import com.fuint.utils.StringUtil;
+import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.core.env.Environment;
@@ -22,11 +23,12 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.*;
 
 /**
- * 订阅消息管理类controller
+ * 小程序订阅消息管理类controller
  *
  * Created by FSQ
  * CopyRight https://www.fuint.cn
  */
+@Api(tags="管理端-小程序订阅消息相关接口")
 @RestController
 @RequestMapping(value = "/backendApi/subMessage")
 public class BackendSubMessageController extends BaseController {

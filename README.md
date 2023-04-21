@@ -22,8 +22,8 @@ fuint侧重于线下实体店的私域流量的运营，帮助商户降低获客
 <br>
 <b>官网演示地址：</b><br>
 <p>
-   <a target="_blank" href="https://www.fuint.cn">https://www.fuint.cn</a>
-   账号:fuint / 123456
+   1、官网：<a target="_blank" href="https://www.fuint.cn">https://www.fuint.cn</a> 点击 -> 系统演示，演示账号：fuint / 123456<br>
+   2、swagger接口文档：<a target="_blank" href="https://www.fuint.cn/fuint-application/swagger-ui.html">https://www.fuint.cn/fuint-application/swagger-ui.html</a>
 </p>
 
 #### 软件架构
@@ -50,6 +50,7 @@ fuint侧重于线下实体店的私域流量的运营，帮助商户降低获客
 1.9 Redis<br>
 1.10 Quartz<br>
 1.11 Mysql 5.8<br>
+1.12 Swagger UI<br>
 
 
 #### 安装步骤

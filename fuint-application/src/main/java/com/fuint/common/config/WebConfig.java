@@ -3,18 +3,14 @@ package com.fuint.common.config;
 import com.fuint.common.web.AdminUserInterceptor;
 import com.fuint.common.web.CommandInterceptor;
 import com.fuint.common.web.ClientUserInterceptor;
-import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.http.CacheControl;
-import org.springframework.scheduling.annotation.EnableAsync;
-import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.web.filter.CharacterEncodingFilter;
 import org.springframework.web.servlet.config.annotation.*;
 import org.springframework.web.servlet.resource.CssLinkResourceTransformer;
 import org.springframework.web.servlet.resource.VersionResourceResolver;
-import javax.servlet.annotation.MultipartConfig;
+
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -24,11 +20,6 @@ import java.util.concurrent.TimeUnit;
  * CopyRight https://www.fuint.cn
  */
 @Configuration
-@EnableCaching
-@EnableAspectJAutoProxy
-@EnableAsync
-@EnableScheduling
-@MultipartConfig(location = "org.springframework.web.multipart.commons.CommonsMultipartResolver", maxFileSize = 10240)
 public class WebConfig extends WebMvcConfigurationSupport {
 
     @Override
@@ -40,6 +31,14 @@ public class WebConfig extends WebMvcConfigurationSupport {
                 .addResolver(new VersionResourceResolver().addContentVersionStrategy("/**"))
                 .addTransformer(new CssLinkResourceTransformer());
         registry.addResourceHandler("/static/**").addResourceLocations("classpath:/static/");
+
+        registry.addResourceHandler("/**").addResourceLocations(
+                "classpath:/static/");
+        registry.addResourceHandler("swagger-ui.html").addResourceLocations(
+                "classpath:/META-INF/resources/");
+        registry.addResourceHandler("/webjars/**").addResourceLocations(
+                "classpath:/META-INF/resources/webjars/");
+        super.addResourceHandlers(registry);
     }
 
     @Bean
@@ -69,11 +68,17 @@ public class WebConfig extends WebMvcConfigurationSupport {
                 .excludePathPatterns("/clientApi/captcha/**")
                 .excludePathPatterns("/backendApi/captcha/**")
                 .excludePathPatterns("/backendApi/userCoupon/exportList")
+                .excludePathPatterns("/webjars/**")
+                .excludePathPatterns("/swagger/**")
+                .excludePathPatterns("/swagger-ui.html/**")
                 .excludePathPatterns("/backendApi/login/**");
 
         // 客户端拦截
         registry.addInterceptor(portalUserInterceptor())
                 .addPathPatterns("/clientApi/**")
+                .excludePathPatterns("/webjars/**")
+                .excludePathPatterns("/swagger/**")
+                .excludePathPatterns("/swagger-ui.html/**")
                 .excludePathPatterns("/clientApi/sign/**")
                 .excludePathPatterns("/clientApi/page/home")
                 .excludePathPatterns("/clientApi/captcha/**")
@@ -95,25 +100,4 @@ public class WebConfig extends WebMvcConfigurationSupport {
         filter.setForceEncoding(true);
         return filter;
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 }

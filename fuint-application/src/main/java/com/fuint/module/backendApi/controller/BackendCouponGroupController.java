@@ -18,6 +18,7 @@ import com.fuint.repository.mapper.MtUserCouponMapper;
 import com.fuint.repository.model.MtCouponGroup;
 import com.fuint.repository.model.MtUserCoupon;
 import com.fuint.utils.StringUtil;
+import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -41,6 +42,7 @@ import java.util.Map;
  * Created by FSQ
  * CopyRight https://www.fuint.cn
  */
+@Api(tags="管理端-卡券分组相关接口")
 @RestController
 @RequestMapping(value = "/backendApi/couponGroup")
 public class BackendCouponGroupController extends BaseController {

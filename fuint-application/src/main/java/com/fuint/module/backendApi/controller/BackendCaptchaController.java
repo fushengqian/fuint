@@ -1,5 +1,6 @@
 package com.fuint.module.backendApi.controller;
 
+import io.swagger.annotations.Api;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -23,6 +24,7 @@ import com.fuint.common.service.CaptchaService;
  * Created by FSQ
  * CopyRight https://www.fuint.cn
  */
+@Api(tags="管理端-图形验证码相关接口")
 @Controller
 @RequestMapping("/backendApi/captcha")
 public class BackendCaptchaController {

@@ -21,6 +21,7 @@ import com.fuint.repository.model.MtBalance;
 import com.fuint.repository.model.MtSetting;
 import com.fuint.repository.model.MtUser;
 import com.fuint.utils.StringUtil;
+import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -34,6 +35,7 @@ import java.util.*;
  * Created by FSQ
  * CopyRight https://www.fuint.cn
  */
+@Api(tags="管理端-余额相关接口")
 @RestController
 @RequestMapping(value = "/backendApi/balance")
 public class BackendBalanceController extends BaseController {

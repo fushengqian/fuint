@@ -9,6 +9,7 @@ import com.fuint.framework.web.BaseController;
 import com.fuint.framework.web.ResponseObject;
 import com.fuint.repository.model.MtVerifyCode;
 import com.fuint.utils.StringUtil;
+import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.web.bind.annotation.*;
@@ -17,11 +18,12 @@ import javax.servlet.http.HttpSession;
 import java.util.*;
 
 /**
- * 短信类controller
+ * 手机短信controller
  *
  * Created by FSQ
  * CopyRight https://www.fuint.cn
  */
+@Api(tags="会员端-手机短信相关接口")
 @RestController
 @RequestMapping(value = "/clientApi/sms")
 public class ClientSmsController extends BaseController {

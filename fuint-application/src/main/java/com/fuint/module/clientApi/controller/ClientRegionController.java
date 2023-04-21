@@ -7,6 +7,7 @@ import com.fuint.framework.web.BaseController;
 import com.fuint.framework.web.ResponseObject;
 import com.fuint.repository.mapper.MtRegionMapper;
 import com.fuint.repository.model.MtRegion;
+import io.swagger.annotations.Api;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -22,6 +23,7 @@ import java.util.Map;
  * Created by FSQ
  * CopyRight https://www.fuint.cn
  */
+@Api(tags="会员端-省/市/区相关接口")
 @RestController
 @RequestMapping(value = "/clientApi/region")
 public class ClientRegionController extends BaseController {

@@ -21,6 +21,8 @@ import com.fuint.repository.mapper.MtUserCouponMapper;
 import com.fuint.repository.model.*;
 import com.fuint.utils.StringUtil;
 import static com.fuint.common.util.XlsUtil.objectConvertToString;
+
+import io.swagger.annotations.Api;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -39,6 +41,7 @@ import java.util.Map;
  * Created by FSQ
  * CopyRight https://www.fuint.cn
  */
+@Api(tags="管理端-转赠相关接口")
 @RestController
 @RequestMapping(value = "/backendApi/give")
 public class BackendGiveLogController extends BaseController {
@@ -197,13 +200,13 @@ public class BackendGiveLogController extends BaseController {
         }
 
         for (int i = 0; i < list.size(); i++) {
-            GiveDto obj = list.get(i);
-            content[i][0] = objectConvertToString(obj.getId());
-            content[i][1] = objectConvertToString(obj.getUserMobile());
-            content[i][2] = objectConvertToString(obj.getNum());
-            content[i][3] = objectConvertToString(obj.getMoney());
-            content[i][4] = objectConvertToString(obj.getMobile());
-            content[i][5] = objectConvertToString(obj.getCreateTime());
+             GiveDto obj = list.get(i);
+             content[i][0] = objectConvertToString(obj.getId());
+             content[i][1] = objectConvertToString(obj.getUserMobile());
+             content[i][2] = objectConvertToString(obj.getNum());
+             content[i][3] = objectConvertToString(obj.getMoney());
+             content[i][4] = objectConvertToString(obj.getMobile());
+             content[i][5] = objectConvertToString(obj.getCreateTime());
         }
 
         // 创建HSSFWorkbook

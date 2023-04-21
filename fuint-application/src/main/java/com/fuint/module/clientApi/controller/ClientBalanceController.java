@@ -15,6 +15,7 @@ import com.fuint.repository.model.MtOrder;
 import com.fuint.repository.model.MtSetting;
 import com.fuint.repository.model.MtUser;
 import com.fuint.utils.StringUtil;
+import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
@@ -25,11 +26,12 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * 余额接口相关controller
+ * 余额接口controller
  *
  * Created by FSQ
  * CopyRight https://www.fuint.cn
  */
+@Api(tags="会员端-余额相关接口")
 @RestController
 @RequestMapping(value = "/clientApi/balance")
 public class ClientBalanceController extends BaseController {

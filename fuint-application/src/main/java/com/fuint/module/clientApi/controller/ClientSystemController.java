@@ -2,8 +2,6 @@ package com.fuint.module.clientApi.controller;
 
 import com.fuint.common.dto.ParamDto;
 import com.fuint.common.dto.UserInfo;
-import com.fuint.common.enums.PayTypeEnum;
-import com.fuint.common.enums.PlatformTypeEnum;
 import com.fuint.common.enums.StatusEnum;
 import com.fuint.common.service.MemberService;
 import com.fuint.common.service.SettingService;
@@ -15,10 +13,10 @@ import com.fuint.framework.web.ResponseObject;
 import com.fuint.repository.model.MtStore;
 import com.fuint.repository.model.MtUser;
 import com.fuint.utils.StringUtil;
+import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -29,6 +27,7 @@ import java.util.Map;
  * Created by FSQ
  * CopyRight https://www.fuint.cn
  */
+@Api(tags="会员端-系统配置相关接口")
 @RestController
 @RequestMapping(value = "/clientApi/system")
 public class ClientSystemController extends BaseController {

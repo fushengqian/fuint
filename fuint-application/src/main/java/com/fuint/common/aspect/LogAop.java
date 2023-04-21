@@ -78,21 +78,24 @@ public class LogAop {
         ClassPool pool = ClassPool.getDefault();
         ClassClassPath classPath = new ClassClassPath(clazz);
         pool.insertClassPath(classPath);
-
-        CtClass ctClass = pool.get(clazz_name);
-        CtMethod ctMethod = ctClass.getDeclaredMethod(method_name);
-        MethodInfo methodInfo = ctMethod.getMethodInfo();
-        CodeAttribute codeAttribute = methodInfo.getCodeAttribute();
-        LocalVariableAttribute attr = (LocalVariableAttribute) codeAttribute.getAttribute(LocalVariableAttribute.tag);
-        if (attr == null) {
+        try {
+            CtClass ctClass = pool.get(clazz_name);
+            CtMethod ctMethod = ctClass.getDeclaredMethod(method_name);
+            MethodInfo methodInfo = ctMethod.getMethodInfo();
+            CodeAttribute codeAttribute = methodInfo.getCodeAttribute();
+            LocalVariableAttribute attr = (LocalVariableAttribute) codeAttribute.getAttribute(LocalVariableAttribute.tag);
+            if (attr == null) {
+                return null;
+            }
+            String[] paramsArgsName = new String[ctMethod.getParameterTypes().length];
+            int pos = Modifier.isStatic(ctMethod.getModifiers()) ? 0 : 1;
+            for (int i = 0; i < paramsArgsName.length; i++) {
+                paramsArgsName[i] = attr.variableName(i + pos);
+            }
+            return paramsArgsName;
+        } catch (Exception ex) {
             return null;
         }
-        String[] paramsArgsName = new String[ctMethod.getParameterTypes().length];
-        int pos = Modifier.isStatic(ctMethod.getModifiers()) ? 0 : 1;
-        for (int i=0;i<paramsArgsName.length;i++) {
-            paramsArgsName[i] = attr.variableName(i + pos);
-        }
-        return paramsArgsName;
     }
 
     /**

@@ -6,6 +6,7 @@ import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.web.BaseController;
 import com.fuint.framework.web.ResponseObject;
 import com.fuint.utils.StringUtil;
+import io.swagger.annotations.Api;
 import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
@@ -16,6 +17,7 @@ import java.util.ArrayList;
  * Created by FSQ
  * CopyRight https://www.fuint.cn
  */
+@Api(tags="会员端-帮助相关接口")
 @RestController
 @RequestMapping(value = "/clientApi/help")
 public class ClientHelpController extends BaseController {

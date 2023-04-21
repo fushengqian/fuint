@@ -16,6 +16,7 @@ import com.fuint.framework.web.BaseController;
 import com.fuint.framework.web.ResponseObject;
 import com.fuint.repository.model.MtStaff;
 import com.fuint.utils.StringUtil;
+import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,11 +27,12 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * 员工管理
+ * 店铺员工管理
  *
  * Created by FSQ
  * CopyRight https://www.fuint.cn
  */
+@Api(tags="管理端-店铺员工相关接口")
 @RestController
 @RequestMapping(value = "/backendApi/staff")
 public class BackendStaffController extends BaseController {

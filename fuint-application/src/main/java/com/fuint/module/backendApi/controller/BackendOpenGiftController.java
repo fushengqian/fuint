@@ -13,6 +13,7 @@ import com.fuint.framework.web.ResponseObject;
 import com.fuint.repository.model.MtOpenGift;
 import com.fuint.repository.model.MtUserGrade;
 import com.fuint.utils.StringUtil;
+import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,11 +23,12 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * 开卡礼管理controller
+ * 开卡赠礼管理controller
  *
  * Created by FSQ
  * CopyRight https://www.fuint.cn
  */
+@Api(tags="管理端-开卡赠礼相关接口")
 @RestController
 @RequestMapping(value = "/backendApi/openGift")
 public class BackendOpenGiftController extends BaseController {
