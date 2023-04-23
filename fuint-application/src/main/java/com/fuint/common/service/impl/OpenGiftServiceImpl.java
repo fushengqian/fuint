@@ -109,7 +109,7 @@ public class OpenGiftServiceImpl extends ServiceImpl<MtOpenGiftMapper, MtOpenGif
     /**
      * 新增开卡赠礼
      *
-     * @param mtOpenGift
+     * @param  mtOpenGift
      * @throws BusinessCheckException
      */
     @Override
@@ -125,7 +125,7 @@ public class OpenGiftServiceImpl extends ServiceImpl<MtOpenGiftMapper, MtOpenGif
     /**
      * 根据ID获取开卡赠礼详情
      *
-     * @param id 开卡赠礼ID
+     * @param  id 开卡赠礼ID
      * @throws BusinessCheckException
      */
     @Override
@@ -137,8 +137,8 @@ public class OpenGiftServiceImpl extends ServiceImpl<MtOpenGiftMapper, MtOpenGif
     /**
      * 根据ID删除数据
      *
-     * @param id       开卡赠礼ID
-     * @param operator 操作人
+     * @param  id       开卡赠礼ID
+     * @param  operator 操作人
      * @throws BusinessCheckException
      */
     @Override
@@ -158,7 +158,7 @@ public class OpenGiftServiceImpl extends ServiceImpl<MtOpenGiftMapper, MtOpenGif
     /**
      * 更新开卡赠礼
      *
-     * @param reqDto
+     * @param  reqDto
      * @throws BusinessCheckException
      */
     @Override
@@ -296,7 +296,7 @@ public class OpenGiftServiceImpl extends ServiceImpl<MtOpenGiftMapper, MtOpenGif
 
     /**
      * 处理详情
-     * @param openGiftInfo
+     * @param  openGiftInfo
      * @return OpenGiftDto
      * */
     private OpenGiftDto _dealDetail(MtOpenGift openGiftInfo) throws BusinessCheckException {

@@ -100,9 +100,6 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
     private StoreService storeService;
 
     @Autowired
-    private OpenGiftService openGiftService;
-
-    @Autowired
     UserGradeService userGradeService;
 
     @Autowired
@@ -471,7 +468,7 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
     /**
      * 根据ID获取我的订单详情
      *
-     * @param id 订单ID
+     * @param  id 订单ID
      * @throws BusinessCheckException
      */
     @Override
@@ -489,7 +486,7 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
 
     /**
      * 取消订单
-     * @param id 订单ID
+     * @param  id 订单ID
      * @return
      * */
     @Override
@@ -556,8 +553,8 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
     /**
      * 根据订单ID删除
      *
-     * @param id       ID
-     * @param operator 操作人
+     * @param  id       ID
+     * @param  operator 操作人
      * @throws BusinessCheckException
      */
     @Override
@@ -681,17 +678,12 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
     @OperationServiceLog(description = "修改订单为已支付")
     public Boolean setOrderPayed(Integer orderId) throws BusinessCheckException {
         MtOrder mtOrder = mtOrderMapper.selectById(orderId);
-
         if (mtOrder == null) {
             return false;
         }
-
         if (mtOrder.getPayStatus().equals(PayStatusEnum.SUCCESS.getKey())) {
             return true;
         }
-
-        UserOrderDto orderInfo = getOrderDetail(mtOrder, false);
-
         OrderDto reqDto = new OrderDto();
         reqDto.setId(orderId);
         reqDto.setStatus(OrderStatusEnum.PAID.getKey());
@@ -699,40 +691,6 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
         reqDto.setPayTime(new Date());
         reqDto.setUpdateTime(new Date());
         updateOrder(reqDto);
-
-        // 会员升级订单
-        if (mtOrder.getType().equals(OrderTypeEnum.MEMBER.getKey())) {
-            openGiftService.openGift(mtOrder.getUserId(), Integer.parseInt(mtOrder.getParam()));
-            reqDto.setRemark("升级会员等级");
-        }
-
-        // 处理购物订单
-        if (orderInfo.getType().equals(OrderTypeEnum.GOOGS.getKey())) {
-            try {
-                List<OrderGoodsDto> goodsList = orderInfo.getGoods();
-                if (goodsList != null && goodsList.size() > 0) {
-                    for (OrderGoodsDto goodsDto : goodsList) {
-                         MtGoods mtGoods = goodsService.queryGoodsById(goodsDto.getGoodsId());
-                         if (mtGoods != null) {
-                            // 卡券购买
-                            if (mtGoods.getCouponIds() != null && StringUtil.isNotEmpty(mtGoods.getCouponIds())) {
-                                String couponIds[] = mtGoods.getCouponIds().split(",");
-                                if (couponIds.length > 0) {
-                                    for (int i = 0; i < couponIds.length; i++) {
-                                        userCouponService.buyCouponItem(orderInfo.getId(), Integer.parseInt(couponIds[i]), orderInfo.getUserId(), orderInfo.getUserInfo().getMobile());
-                                    }
-                                }
-                            }
-                            // 将已销售数量+1
-                            goodsService.updateInitSale(mtGoods.getId());
-                         }
-                    }
-                }
-            } catch (BusinessCheckException e) {
-                logger.error("会员购买的卡券发送给会员失败......" + e.getMessage());
-            }
-        }
-
         return true;
     }
 
@@ -744,7 +702,7 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
 
     /**
      * 处理订单详情
-     * @param orderInfo
+     * @param  orderInfo
      * @return UserOrderDto
      * */
     private UserOrderDto getOrderDetail(MtOrder orderInfo, boolean needAddress) throws BusinessCheckException {

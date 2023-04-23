@@ -25,6 +25,7 @@ public class SwaggerConfig implements WebMvcConfigurer {
      public Docket createRestApi() {
          return new Docket(DocumentationType.SWAGGER_2)
          .apiInfo(apiInfo())
+         .enable(true)
          .select()
          .apis(RequestHandlerSelectors.basePackage("com.fuint.module"))
          .build();

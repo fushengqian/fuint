@@ -275,9 +275,9 @@ public class SettlementServiceImpl implements SettlementService {
             orderDto.setDiscount(new BigDecimal("0"));
         }
 
-        // 升级订单
+        // 会员升级订单
         if (orderDto.getType().equals(OrderTypeEnum.MEMBER.getKey())) {
-            orderDto.setParam(targetId+"");
+            orderDto.setParam(targetId.toString());
             orderDto.setCouponId(couponId);
             MtUserGrade userGrade = userGradeService.queryUserGradeById(targetId);
             if (userGrade != null) {

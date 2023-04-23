@@ -68,17 +68,11 @@ public class WebConfig extends WebMvcConfigurationSupport {
                 .excludePathPatterns("/clientApi/captcha/**")
                 .excludePathPatterns("/backendApi/captcha/**")
                 .excludePathPatterns("/backendApi/userCoupon/exportList")
-                .excludePathPatterns("/webjars/**")
-                .excludePathPatterns("/swagger/**")
-                .excludePathPatterns("/swagger-ui.html/**")
                 .excludePathPatterns("/backendApi/login/**");
 
         // 客户端拦截
         registry.addInterceptor(portalUserInterceptor())
                 .addPathPatterns("/clientApi/**")
-                .excludePathPatterns("/webjars/**")
-                .excludePathPatterns("/swagger/**")
-                .excludePathPatterns("/swagger-ui.html/**")
                 .excludePathPatterns("/clientApi/sign/**")
                 .excludePathPatterns("/clientApi/page/home")
                 .excludePathPatterns("/clientApi/captcha/**")
@@ -90,6 +84,7 @@ public class WebConfig extends WebMvcConfigurationSupport {
                 .excludePathPatterns("/clientApi/order/todoCounts")
                 .excludePathPatterns("/clientApi/store/**")
                 .excludePathPatterns("/clientApi/message/getOne")
+                .excludePathPatterns("/clientApi/message/wxPush")
                 .excludePathPatterns("/clientApi/sms/sendVerifyCode");
     }
 
