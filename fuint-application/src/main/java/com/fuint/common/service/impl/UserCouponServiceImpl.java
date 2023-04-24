@@ -504,8 +504,9 @@ public class UserCouponServiceImpl extends ServiceImpl<MtUserCouponMapper, MtUse
      * @return
      * */
     @Override
-    public  MtUserCoupon getUserCouponDetail(Integer userCouponId) {
-        return mtUserCouponMapper.selectById(userCouponId);
+    public MtUserCoupon getUserCouponDetail(Integer userCouponId) {
+        MtUserCoupon userCoupon = mtUserCouponMapper.selectById(userCouponId);
+        return userCoupon;
     }
 
     /**

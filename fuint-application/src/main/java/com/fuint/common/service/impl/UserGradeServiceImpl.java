@@ -162,9 +162,7 @@ public class UserGradeServiceImpl extends ServiceImpl<MtUserGradeMapper, MtUserG
         Map<String, Object> param = new HashMap<>();
         param.put("status", StatusEnum.ENABLED.getKey());
         param.put("catch_type", UserGradeCatchTypeEnum.PAY.getKey());
-
         List<MtUserGrade> userGrades = mtUserGradeMapper.selectByMap(param);
-
         List<MtUserGrade> dataList = new ArrayList<>();
         if (userGrades.size() > 0 && userInfo != null) {
             for (MtUserGrade grade : userGrades) {

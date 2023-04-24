@@ -92,7 +92,7 @@ public class OpenGiftServiceImpl extends ServiceImpl<MtOpenGiftMapper, MtOpenGif
         List<MtOpenGift> openGiftList = mtOpenGiftMapper.selectList(lambdaQueryWrapper);
         List<OpenGiftDto> dataList = new ArrayList<>();
         for (MtOpenGift item : openGiftList) {
-            OpenGiftDto dto = this._dealDetail(item);
+            OpenGiftDto dto = dealDetail(item);
             dataList.add(dto);
         }
 
@@ -131,7 +131,7 @@ public class OpenGiftServiceImpl extends ServiceImpl<MtOpenGiftMapper, MtOpenGif
     @Override
     public OpenGiftDto getOpenGiftDetail(Integer id) throws BusinessCheckException {
         MtOpenGift openGift = mtOpenGiftMapper.selectById(id);
-        return this._dealDetail(openGift);
+        return dealDetail(openGift);
     }
 
     /**
@@ -299,7 +299,7 @@ public class OpenGiftServiceImpl extends ServiceImpl<MtOpenGiftMapper, MtOpenGif
      * @param  openGiftInfo
      * @return OpenGiftDto
      * */
-    private OpenGiftDto _dealDetail(MtOpenGift openGiftInfo) throws BusinessCheckException {
+    private OpenGiftDto dealDetail(MtOpenGift openGiftInfo) throws BusinessCheckException {
         OpenGiftDto dto = new OpenGiftDto();
 
         dto.setId(openGiftInfo.getId());

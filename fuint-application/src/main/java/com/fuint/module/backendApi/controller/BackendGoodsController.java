@@ -65,10 +65,10 @@ public class BackendGoodsController extends BaseController {
     private AccountService accountService;
 
     @Resource
-    private MtGoodsSpecMapper specRepository;
+    private MtGoodsSpecMapper mtGoodsSpecMapper;
 
     @Resource
-    private MtGoodsSkuMapper goodSkuRepository;
+    private MtGoodsSkuMapper mtGoodsSkuMapper;
 
     @Autowired
     private SettingService settingService;
@@ -156,9 +156,12 @@ public class BackendGoodsController extends BaseController {
         if (accountInfo == null) {
             return getFailureResult(1001, "请先登录");
         }
-
-        String operator = accountInfo.getAccountName();
-        goodsService.deleteGoods(id, operator);
+        try {
+            String operator = accountInfo.getAccountName();
+            goodsService.deleteGoods(id, operator);
+        } catch (BusinessCheckException e) {
+            return getFailureResult(201, e.getMessage() == null ? "删除失败" : e.getMessage());
+        }
 
         return getSuccessResult(true);
     }
@@ -361,16 +364,16 @@ public class BackendGoodsController extends BaseController {
                  String specId = specDto.get("id") == null ? "" : specDto.get("id").toString();
                  String specName = specDto.get("name") == null ? "" : specDto.get("name").toString();
                  if (StringUtil.isNotEmpty(specId) && StringUtil.isNotEmpty(specName)) {
-                     MtGoodsSpec mtGoodsSpec = specRepository.selectById(Integer.parseInt(specId));
+                     MtGoodsSpec mtGoodsSpec = mtGoodsSpecMapper.selectById(Integer.parseInt(specId));
                      String oldName = mtGoodsSpec.getName();
                      Map<String, Object> paramSearch = new HashMap<>();
                      paramSearch.put("goods_id", goodsId);
                      paramSearch.put("name", oldName);
-                     List<MtGoodsSpec> dataList = specRepository.selectByMap(paramSearch);
+                     List<MtGoodsSpec> dataList = mtGoodsSpecMapper.selectByMap(paramSearch);
                      if (dataList.size() > 0 && !specName.equals(oldName)) {
                          for (MtGoodsSpec mtSpec : dataList) {
                               mtSpec.setName(specName);
-                              specRepository.updateById(mtSpec);
+                              mtGoodsSpecMapper.updateById(mtSpec);
                          }
                      }
                  }
@@ -389,11 +392,11 @@ public class BackendGoodsController extends BaseController {
         if (skuList.size() > 0) {
             Map<String, Object> param0 = new HashMap<>();
             param0.put("goods_id", goodsId);
-            List<MtGoodsSku> goodsSkuList = goodSkuRepository.selectByMap(param0);
+            List<MtGoodsSku> goodsSkuList = mtGoodsSkuMapper.selectByMap(param0);
             if (goodsSkuList.size() > 0) {
                 for (MtGoodsSku mtGoodsSku : goodsSkuList) {
                      if (!specIdList.contains(mtGoodsSku.getSpecIds())) {
-                         goodSkuRepository.deleteById(mtGoodsSku.getId());
+                         mtGoodsSkuMapper.deleteById(mtGoodsSku.getId());
                      }
                 }
             }
@@ -404,7 +407,7 @@ public class BackendGoodsController extends BaseController {
             params.put("goods_id", goodsId);
             params.put("spec_ids", skuDto.get("specIds"));
             // 是否已存在
-            List<MtGoodsSku> goodsSkuList = goodSkuRepository.selectByMap(params);
+            List<MtGoodsSku> goodsSkuList = mtGoodsSkuMapper.selectByMap(params);
             MtGoodsSku sku = new MtGoodsSku();
             if (goodsSkuList.size() > 0) {
                 sku = goodsSkuList.get(0);
@@ -438,9 +441,9 @@ public class BackendGoodsController extends BaseController {
             sku.setWeight(skuWeight);
             sku.setStatus(StatusEnum.ENABLED.getKey());
             if (sku.getId() != null && sku.getId() > 0) {
-                goodSkuRepository.updateById(sku);
+                mtGoodsSkuMapper.updateById(sku);
             } else {
-                goodSkuRepository.insert(sku);
+                mtGoodsSkuMapper.insert(sku);
             }
         }
 
@@ -542,7 +545,7 @@ public class BackendGoodsController extends BaseController {
         Map<String, Object> paramSearch = new HashMap<>();
         paramSearch.put("goods_id", goodsId);
         paramSearch.put("name", name);
-        List<MtGoodsSpec> dataList = specRepository.selectByMap(paramSearch);
+        List<MtGoodsSpec> dataList = mtGoodsSpecMapper.selectByMap(paramSearch);
 
         Integer targetId;
         if (dataList.size() < 1) {
@@ -551,14 +554,14 @@ public class BackendGoodsController extends BaseController {
             mtGoodsSpec.setName(name);
             mtGoodsSpec.setValue("");
             mtGoodsSpec.setStatus(StatusEnum.ENABLED.getKey());
-            specRepository.insert(mtGoodsSpec);
+            mtGoodsSpecMapper.insert(mtGoodsSpec);
             targetId = mtGoodsSpec.getId();
         } else {
             MtGoodsSpec mtGoodsSpec = dataList.get(0);
             if (!mtGoodsSpec.getStatus().equals(StatusEnum.ENABLED.getKey())) {
                 mtGoodsSpec.setStatus(StatusEnum.ENABLED.getKey());
                 mtGoodsSpec.setValue("");
-                specRepository.updateById(mtGoodsSpec);
+                mtGoodsSpecMapper.updateById(mtGoodsSpec);
             }
             targetId = mtGoodsSpec.getId();
         }
@@ -604,7 +607,7 @@ public class BackendGoodsController extends BaseController {
         paramSearch.put("goods_id", goodsId);
         paramSearch.put("name", specName);
         paramSearch.put("status", StatusEnum.ENABLED.getKey());
-        List<MtGoodsSpec> dataList = specRepository.selectByMap(paramSearch);
+        List<MtGoodsSpec> dataList = mtGoodsSpecMapper.selectByMap(paramSearch);
 
         // 1.先修改空值
         Integer id = 0;
@@ -613,7 +616,7 @@ public class BackendGoodsController extends BaseController {
                 if (StringUtil.isEmpty(mtGoodsSpec.getValue())) {
                     mtGoodsSpec.setValue(value);
                     id = mtGoodsSpec.getId();
-                    specRepository.updateById(mtGoodsSpec);
+                    mtGoodsSpecMapper.updateById(mtGoodsSpec);
                     break;
                 }
             }
@@ -626,7 +629,7 @@ public class BackendGoodsController extends BaseController {
             mtGoodsSpec.setName(specName);
             mtGoodsSpec.setValue(value);
             mtGoodsSpec.setStatus(StatusEnum.ENABLED.getKey());
-            specRepository.insert(mtGoodsSpec);
+            mtGoodsSpecMapper.insert(mtGoodsSpec);
             id = mtGoodsSpec.getId();
         }
 
@@ -634,8 +637,8 @@ public class BackendGoodsController extends BaseController {
         Map<String, Object> skuParams = new HashMap<>();
         skuParams.put("goods_id", goodsId);
         skuParams.put("status", StatusEnum.ENABLED.getKey());
-        List<MtGoodsSku> goodsSkuList = goodSkuRepository.selectByMap(skuParams);
-        List<MtGoodsSpec> dataCountList = specRepository.getGoodsSpecCountList(Integer.parseInt(goodsId));
+        List<MtGoodsSku> goodsSkuList = mtGoodsSkuMapper.selectByMap(skuParams);
+        List<MtGoodsSpec> dataCountList = mtGoodsSpecMapper.getGoodsSpecCountList(Integer.parseInt(goodsId));
         if (goodsSkuList.size() > 0) {
             for (MtGoodsSku mtGoodsSku : goodsSkuList) {
                  String specIds = mtGoodsSku.getSpecIds();
@@ -643,7 +646,7 @@ public class BackendGoodsController extends BaseController {
                  if (specIdArr.length < dataCountList.size()) {
                      specIds = specIds + "-" + id;
                      mtGoodsSku.setSpecIds(specIds);
-                     goodSkuRepository.updateById(mtGoodsSku);
+                     mtGoodsSkuMapper.updateById(mtGoodsSku);
                  }
             }
         }
@@ -658,7 +661,7 @@ public class BackendGoodsController extends BaseController {
     /**
      * 删除商品规格
      *
-     * @param request  HttpServletRequest对象
+     * @param request HttpServletRequest对象
      * @return
      */
     @RequestMapping(value = "/deleteSpec", method = RequestMethod.GET)
@@ -674,12 +677,11 @@ public class BackendGoodsController extends BaseController {
         Map<String, Object> param = new HashMap<>();
         param.put("goods_id", goodsId);
         param.put("name", specName);
-        List<MtGoodsSpec> dataList = specRepository.selectByMap(param);
+        List<MtGoodsSpec> dataList = mtGoodsSpecMapper.selectByMap(param);
         if (dataList.size() > 0) {
             for (MtGoodsSpec mtGoodsSpec : dataList) {
-                MtGoodsSpec info = specRepository.selectById(mtGoodsSpec.getId());
-                info.setStatus(StatusEnum.DISABLE.getKey());
-                specRepository.updateById(mtGoodsSpec);
+                 mtGoodsSpec.setStatus(StatusEnum.DISABLE.getKey());
+                 mtGoodsSpecMapper.updateById(mtGoodsSpec);
             }
         }
 
@@ -700,24 +702,24 @@ public class BackendGoodsController extends BaseController {
             return getFailureResult(201, "请求参数错误");
         }
 
-        MtGoodsSpec mtGoodsSpec = specRepository.selectById(specId);
+        MtGoodsSpec mtGoodsSpec = mtGoodsSpecMapper.selectById(specId);
         if (mtGoodsSpec == null) {
             return getFailureResult(201, "该规格值不存在");
         }
 
         mtGoodsSpec.setStatus(StatusEnum.DISABLE.getKey());
-        specRepository.updateById(mtGoodsSpec);
+        mtGoodsSpecMapper.updateById(mtGoodsSpec);
 
         // 把对应的sku删掉
         Map<String, Object> param = new HashMap<>();
         param.put("goods_id", mtGoodsSpec.getGoodsId().toString());
-        List<MtGoodsSku> goodsSkuList = goodSkuRepository.selectByMap(param);
+        List<MtGoodsSku> goodsSkuList = mtGoodsSkuMapper.selectByMap(param);
         for(MtGoodsSku mtGoodsSku : goodsSkuList) {
             String[] ss = mtGoodsSku.getSpecIds().split("-");
             for (int i = 0; i < ss.length; i++) {
                  if (ss[i].equals(specId+"")) {
                      mtGoodsSku.setStatus(StatusEnum.DISABLE.getKey());
-                     goodSkuRepository.updateById(mtGoodsSku);
+                     mtGoodsSkuMapper.updateById(mtGoodsSku);
                  }
             }
         }

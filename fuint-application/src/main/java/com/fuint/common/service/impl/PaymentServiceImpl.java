@@ -1,15 +1,14 @@
 package com.fuint.common.service.impl;
 
 import com.fuint.common.dto.*;
-import com.fuint.common.enums.OrderTypeEnum;
-import com.fuint.common.enums.PayTypeEnum;
-import com.fuint.common.enums.YesOrNoEnum;
+import com.fuint.common.enums.*;
 import com.fuint.common.service.*;
 import com.fuint.common.util.CommonUtil;
 import com.fuint.common.util.TokenUtil;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.web.ResponseObject;
 import com.fuint.repository.mapper.MtOrderMapper;
+import com.fuint.repository.mapper.MtUserGradeMapper;
 import com.fuint.repository.model.*;
 import com.fuint.utils.StringUtil;
 import org.slf4j.Logger;
@@ -39,6 +38,9 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Resource
     private MtOrderMapper mtOrderMapper;
+
+    @Resource
+    private MtUserGradeMapper mtUserGradeMapper;
 
     @Autowired
     private WeixinService weixinService;
@@ -111,7 +113,6 @@ public class PaymentServiceImpl implements PaymentService {
     @Transactional(rollbackFor = Exception.class)
     public Boolean paymentCallback(UserOrderDto orderInfo) throws BusinessCheckException {
         logger.info("paymentCallback outParams {}", orderInfo.toString());
-
         MtOrder mtOrder = mtOrderMapper.selectById(orderInfo.getId());
 
         // 更新订单状态为已支付
@@ -138,7 +139,7 @@ public class PaymentServiceImpl implements PaymentService {
                                 String couponIds[] = mtGoods.getCouponIds().split(",");
                                 if (couponIds.length > 0) {
                                     for (int i = 0; i < couponIds.length; i++) {
-                                        userCouponService.buyCouponItem(orderInfo.getId(), Integer.parseInt(couponIds[i]), orderInfo.getUserId(), orderInfo.getUserInfo().getMobile());
+                                         userCouponService.buyCouponItem(orderInfo.getId(), Integer.parseInt(couponIds[i]), orderInfo.getUserId(), orderInfo.getUserInfo().getMobile());
                                     }
                                 }
                             }
@@ -167,14 +168,11 @@ public class PaymentServiceImpl implements PaymentService {
             // 余额支付
             MtBalance mtBalance = new MtBalance();
             OrderUserDto userDto = orderInfo.getUserInfo();
-
             if (userDto.getMobile() != null && StringUtil.isNotEmpty(userDto.getMobile())) {
                 mtBalance.setMobile(userDto.getMobile());
             }
-
             mtBalance.setOrderSn(orderInfo.getOrderSn());
             mtBalance.setUserId(orderInfo.getUserId());
-
             String param = orderInfo.getParam();
             if (StringUtil.isNotEmpty(param)) {
                 String params[] = param.split("_");
@@ -191,24 +189,19 @@ public class PaymentServiceImpl implements PaymentService {
         if (setting != null) {
             String needPayAmount = setting.getValue();
             Integer needPayAmountInt = Math.round(Integer.parseInt(needPayAmount));
-
             Double pointNum = 0d;
             if (orderInfo.getPayAmount().compareTo(new BigDecimal(needPayAmountInt)) > 0) {
                 BigDecimal point = orderInfo.getPayAmount().divide(new BigDecimal(needPayAmountInt), BigDecimal.ROUND_CEILING, 2);
                 pointNum = Math.ceil(point.doubleValue());
             }
-
-            logger.info("WXService paymentCallback Point orderSn = {} , pointNum ={}", orderInfo.getOrderSn(), pointNum);
-
+            logger.info("PaymentService paymentCallback Point orderSn = {} , pointNum ={}", orderInfo.getOrderSn(), pointNum);
             if (pointNum > 0) {
                 MtUser userInfo = memberService.queryMemberById(orderInfo.getUserId());
                 MtUserGrade userGrade = userGradeService.queryUserGradeById(Integer.parseInt(userInfo.getGradeId()));
-
                 // 是否会员积分加倍
                 if (userGrade.getSpeedPoint() > 1) {
                     pointNum = pointNum * userGrade.getSpeedPoint();
                 }
-
                 MtPoint reqPointDto = new MtPoint();
                 reqPointDto.setAmount(pointNum.intValue());
                 reqPointDto.setUserId(orderInfo.getUserId());
@@ -219,7 +212,46 @@ public class PaymentServiceImpl implements PaymentService {
             }
         }
 
-        logger.info("WXService paymentCallback Success orderSn {}", orderInfo.getOrderSn());
+        // 计算是否要升级（购物订单、付款订单、充值订单）
+        if (orderInfo.getType().equals(OrderTypeEnum.GOOGS.getKey()) || orderInfo.getType().equals(OrderTypeEnum.PAYMENT.getKey()) || orderInfo.getType().equals(OrderTypeEnum.RECHARGE.getKey())) {
+            try {
+                if (orderInfo.getIsVisitor().equals(YesOrNoEnum.NO.getKey())) {
+                    Map<String, Object> param = new HashMap<>();
+                    param.put("status", StatusEnum.ENABLED.getKey());
+                    MtUser mtUser = memberService.queryMemberById(orderInfo.getUserId());
+                    MtUserGrade mtUserGrade = mtUserGradeMapper.selectById(mtUser.getGradeId());
+                    if (mtUserGrade == null) {
+                        mtUserGrade = userGradeService.getInitUserGrade();
+                    }
+                    List<MtUserGrade> userGradeList = mtUserGradeMapper.selectByMap(param);
+                    if (mtUserGrade != null && userGradeList != null && userGradeList.size() > 0) {
+                        // 会员已支付金额
+                        BigDecimal payMoney = orderService.getUserPayMoney(orderInfo.getUserId());
+                        // 会员支付订单笔数
+                        Integer payOrderCount = orderService.getUserPayOrderCount(orderInfo.getUserId());
+                        for (MtUserGrade grade : userGradeList) {
+                            if (grade.getCatchValue() != null && grade.getCatchType() != null) {
+                                // 累计消费金额已达到
+                                if (grade.getCatchType().equals(UserGradeCatchTypeEnum.AMOUNT.getKey())) {
+                                    if (grade.getGrade().compareTo(mtUserGrade.getGrade()) > 0 && payMoney.compareTo(new BigDecimal(grade.getCatchValue())) >= 0) {
+                                        openGiftService.openGift(mtOrder.getUserId(), grade.getId());
+                                    }
+                                }
+                                // 累计消费次数已达到
+                                if (grade.getCatchType().equals(UserGradeCatchTypeEnum.FREQUENCY.getKey()) && payOrderCount.compareTo(grade.getCatchValue()) >= 0) {
+                                    if (grade.getGrade().compareTo(mtUserGrade.getGrade()) > 0) {
+                                        openGiftService.openGift(mtOrder.getUserId(), grade.getId());
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            } catch (Exception ex) {
+                logger.error("会员升级出错啦，userId = {}，message = {}", orderInfo.getUserId(), ex.getMessage());
+            }
+        }
+        logger.info("PaymentService paymentCallback Success orderSn {}", orderInfo.getOrderSn());
         return true;
     }
 

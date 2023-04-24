@@ -14,7 +14,7 @@
         <foreach collection="statusList" item="status" separator="," open="(" close=")">
             #{status}
         </foreach>
-        ORDER BY t.ID DESC
+        ORDER BY t.BALANCE DESC
     </select>
 
     <select id="getUserCouponListByCouponId" resultType="com.fuint.repository.model.MtUserCoupon">

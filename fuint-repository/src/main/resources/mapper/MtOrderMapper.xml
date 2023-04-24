@@ -44,4 +44,12 @@
     <select id="getStorePayUserCount" resultType="java.lang.Integer">
         SELECT COUNT(DISTINCT t.USER_ID) as num FROM mt_order t where t.STORE_ID = #{storeId} and t.PAY_STATUS='B' and t.STATUS != 'G'
     </select>
+
+    <select id="getUserPayMoney" resultType="java.math.BigDecimal">
+        SELECT sum(t.PAY_AMOUNT) as num FROM mt_order t where t.USER_ID = #{userId} and t.PAY_STATUS='B' and t.STATUS != 'G'
+    </select>
+
+    <select id="getUserPayOrderCount" resultType="java.lang.Integer">
+        SELECT COUNT(DISTINCT t.ID) as num FROM mt_order t where t.USER_ID = #{userId} and t.PAY_STATUS='B' and t.STATUS != 'G'
+    </select>
 </mapper>

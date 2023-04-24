@@ -356,7 +356,7 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
                     // 是否有会员折扣
                     BigDecimal percent = new BigDecimal(userGrade.getDiscount()).divide(new BigDecimal("10"), BigDecimal.ROUND_CEILING, 2);
                     BigDecimal payAmountDiscount = mtOrder.getPayAmount().multiply(percent);
-                    mtOrder.setDiscount(orderDto.getDiscount().add(mtOrder.getPayAmount().subtract(payAmountDiscount)));
+                    mtOrder.setDiscount(mtOrder.getDiscount().add(mtOrder.getPayAmount().subtract(payAmountDiscount)));
                     mtOrder.setPayAmount(payAmountDiscount);
                 }
             }
@@ -1098,7 +1098,7 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
                         // 储值卡
                         couponDto.setType(CouponTypeEnum.PRESTORE.getValue());
                         couponDto.setDescription("无使用门槛");
-                        couponDto.setAmount(userCoupon.getAmount());
+                        couponDto.setAmount(userCoupon.getBalance());
                         // 余额须大于0
                         if (isEffective && (userCoupon.getBalance().compareTo(new BigDecimal("0")) > 0)) {
                             couponDto.setStatus(UserCouponStatusEnum.UNUSED.getKey());
@@ -1122,7 +1122,7 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
                    if (useCouponInfo.getType().equals(CouponTypeEnum.COUPON.getKey())) {
                        couponAmount = useCouponInfo.getAmount();
                    } else if(useCouponInfo.getType().equals(CouponTypeEnum.PRESTORE.getKey())) {
-                       BigDecimal couponTotalAmount = userCouponInfo.getAmount();
+                       BigDecimal couponTotalAmount = userCouponInfo.getBalance();
                        if (couponTotalAmount.compareTo(totalPrice) > 0) {
                            couponAmount = totalPrice;
                            useCouponInfo.setAmount(totalPrice);
@@ -1180,5 +1180,27 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
         result.put("usePointAmount", usePointAmount);
 
         return result;
+    }
+
+    /**
+     * 获取会员支付金额
+     *
+     * @param  userId
+     * @return
+     * */
+    @Override
+    public BigDecimal getUserPayMoney(Integer userId) {
+        return mtOrderMapper.getUserPayMoney(userId);
+    }
+
+    /**
+     * 获取会员订单数
+     *
+     * @param  userId
+     * @return
+     * */
+    @Override
+    public Integer getUserPayOrderCount(Integer userId) {
+        return mtOrderMapper.getUserPayOrderCount(userId);
     }
 }

@@ -140,4 +140,14 @@ public interface OrderService extends IService<MtOrder> {
      * 获取支付金额
      * */
     BigDecimal getPayMoney(Integer storeId) throws BusinessCheckException;
+
+    /**
+     * 获取会员支付金额
+     * */
+    BigDecimal getUserPayMoney(Integer userId) throws BusinessCheckException;
+
+    /**
+     * 获取会员订单数
+     * */
+    Integer getUserPayOrderCount(Integer userId) throws BusinessCheckException;
 }

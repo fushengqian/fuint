@@ -4,7 +4,6 @@ import com.fuint.common.dto.OpenGiftDto;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.web.ResponseObject;
 import com.fuint.repository.model.MtOpenGift;
-
 import java.util.Map;
 
 /**

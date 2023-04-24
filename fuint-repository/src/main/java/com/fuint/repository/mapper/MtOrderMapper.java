@@ -36,4 +36,9 @@ public interface MtOrderMapper extends BaseMapper<MtOrder> {
     Integer getPayUserCount();
 
     Integer getStorePayUserCount(@Param("storeId") Integer storeId);
+
+    BigDecimal getUserPayMoney(@Param("userId") Integer userId);
+
+    Integer getUserPayOrderCount(@Param("userId") Integer userId);
+
 }
