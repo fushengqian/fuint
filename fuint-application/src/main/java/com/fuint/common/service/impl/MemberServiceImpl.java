@@ -152,7 +152,7 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
         if (accountInfo != null) {
             // 输入了会员ID就用会员的账号下单，否则用员工账号下单
             if (userId > 0) {
-                mtUser = this.queryMemberById(userId);
+                mtUser = queryMemberById(userId);
             } else {
                 Integer accountId = accountInfo.getId();
                 TAccount account = accountService.getAccountInfoById(accountId);
@@ -160,7 +160,7 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
                     if (account.getStaffId() > 0) {
                         MtStaff staff = staffService.queryStaffById(account.getStaffId());
                         if (staff != null) {
-                            mtUser = this.queryMemberById(staff.getUserId());
+                            mtUser = queryMemberById(staff.getUserId());
                             if (mtUser != null && (mtUser.getStoreId() == null || mtUser.getStoreId() <= 0)) {
                                 mtUser.setStoreId(staff.getStoreId());
                                 this.updateById(mtUser);
@@ -342,7 +342,7 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
            return null;
         }
 
-        mtUser = this.queryMemberById(mtUser.getId());
+        mtUser = queryMemberById(mtUser.getId());
 
         // 开卡赠礼
         openGiftService.openGift(mtUser.getId(), Integer.parseInt(mtUser.getGradeId()));
@@ -376,6 +376,7 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
     public MtUser updateMember(MtUser mtUser) throws BusinessCheckException {
         mtUser.setUpdateTime(new Date());
 
+        MtUser oldUserInfo = mtUserMapper.selectById(mtUser.getId());
         if (mtUser.getGradeId() != null && StringUtil.isNotEmpty(mtUser.getGradeId())) {
             if (!CommonUtil.isNumeric(mtUser.getGradeId())) {
                 throw new BusinessCheckException("该会员等级有误");
@@ -395,7 +396,13 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
             }
         }
 
-        this.updateById(mtUser);
+        Boolean result = this.updateById(mtUser);
+        if (result && mtUser.getGradeId() != null) {
+            // 修改了会员等级，开卡赠礼
+            if (!mtUser.getGradeId().equals(oldUserInfo.getGradeId())) {
+                openGiftService.openGift(mtUser.getId(), Integer.parseInt(mtUser.getGradeId()));
+            }
+        }
         return mtUser;
     }
 

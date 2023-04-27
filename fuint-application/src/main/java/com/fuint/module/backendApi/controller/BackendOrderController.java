@@ -3,14 +3,12 @@ package com.fuint.module.backendApi.controller;
 import com.fuint.common.Constants;
 import com.fuint.common.dto.*;
 import com.fuint.common.enums.*;
-import com.fuint.common.service.AccountService;
-import com.fuint.common.service.MemberService;
-import com.fuint.common.service.OrderService;
-import com.fuint.common.service.WeixinService;
+import com.fuint.common.service.*;
 import com.fuint.common.util.TokenUtil;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.web.BaseController;
 import com.fuint.framework.web.ResponseObject;
+import com.fuint.repository.model.MtStore;
 import com.fuint.repository.model.MtUser;
 import com.fuint.repository.model.TAccount;
 import com.fuint.utils.StringUtil;
@@ -63,6 +61,12 @@ public class BackendOrderController extends BaseController {
     private WeixinService weixinService;
 
     /**
+     * 店铺服务接口
+     */
+    @Autowired
+    private StoreService storeService;
+
+    /**
      * 订单列表查询
      *
      * @param request  HttpServletRequest对象
@@ -80,8 +84,8 @@ public class BackendOrderController extends BaseController {
         String payStatus = request.getParameter("payStatus");
         String userId = request.getParameter("userId");
         String mobile = request.getParameter("mobile");
-        String storeIdStr = request.getParameter("storeId");
         String orderMode = request.getParameter("orderMode");
+        String storeIds = request.getParameter("storeIds");
 
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
         if (accountInfo == null) {
@@ -109,21 +113,18 @@ public class BackendOrderController extends BaseController {
         if (StringUtil.isNotEmpty(mobile)) {
             param.put("mobile", mobile);
         }
-        if (StringUtil.isNotEmpty(storeIdStr)) {
-            param.put("storeId", storeIdStr);
-        }
         if (StringUtil.isNotEmpty(orderMode)) {
             param.put("orderMode", orderMode);
         }
-
+        if (StringUtil.isNotEmpty(storeIds)) {
+            param.put("storeIds", storeIds);
+        }
         TAccount account = accountService.getAccountInfoById(accountInfo.getId());
         Integer storeId = account.getStoreId();
         if (storeId > 0) {
             param.put("storeId", storeId);
         }
-
         ResponseObject response = orderService.getUserOrderList(param);
-
         // 订单类型列表
         OrderTypeEnum[] typeListEnum = OrderTypeEnum.values();
         List<ParamDto> typeList = new ArrayList<>();
@@ -168,11 +169,32 @@ public class BackendOrderController extends BaseController {
             orderModeList.add(paramDto);
         }
 
+        // 店铺列表
+        Map<String, Object> paramsStore = new HashMap<>();
+        paramsStore.put("status", StatusEnum.ENABLED.getKey());
+        if (storeId != null && storeId > 0) {
+            paramsStore.put("storeId", storeId.toString());
+        }
+        List<MtStore> storeList = storeService.queryStoresByParams(paramsStore);
+
+        // 支付方式列表
+        PayTypeEnum[] payTypes = PayTypeEnum.values();
+        List<ParamDto> payTypeList = new ArrayList<>();
+        for (PayTypeEnum catchTypeEnum : payTypes) {
+            ParamDto catchType = new ParamDto();
+            catchType.setKey(catchTypeEnum.getKey());
+            catchType.setName(catchTypeEnum.getValue());
+            catchType.setValue(catchTypeEnum.getKey());
+            payTypeList.add(catchType);
+        }
+
         Map<String, Object> result = new HashMap<>();
         result.put("typeList", typeList);
         result.put("statusList", statusList);
         result.put("payStatusList", payStatusList);
         result.put("orderModeList", orderModeList);
+        result.put("storeList", storeList);
+        result.put("payTypeList", payTypeList);
         result.put("paginationResponse", response.getData());
 
         return getSuccessResult(result);
@@ -411,7 +433,6 @@ public class BackendOrderController extends BaseController {
         }
 
         ResponseObject response = orderService.getUserOrderList(param);
-
         return getSuccessResult(response.getData());
     }
 

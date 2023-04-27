@@ -154,7 +154,7 @@ public class BackendRefundController extends BaseController {
 
     /**
      * 退款详情
-     * @param request  HttpServletRequest对象
+     * @param request HttpServletRequest对象
      * @return
      * */
     @RequestMapping(value = "/info/{refundId}", method = RequestMethod.GET)
@@ -180,7 +180,7 @@ public class BackendRefundController extends BaseController {
     }
 
     /**
-     * 保存处理售后订单
+     * 保存售后订单
      * @return
      */
     @RequestMapping(value = "save", method = RequestMethod.POST)
@@ -190,14 +190,11 @@ public class BackendRefundController extends BaseController {
         Integer refundId = param.get("refundId") == null ? 0 : Integer.parseInt(param.get("refundId").toString());
         String status = param.get("status") == null ? "" : param.get("status").toString();
         String remark = param.get("remark") == null ? "" : param.get("remark").toString();
-
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
         if (accountInfo == null) {
             return getFailureResult(1001, "请先登录");
         }
-
         String operator = accountInfo.getAccountName();
-
         if (status.equals(RefundStatusEnum.REJECT.getKey())) {
             RefundDto dto = new RefundDto();
             dto.setId(refundId);
@@ -213,7 +210,32 @@ public class BackendRefundController extends BaseController {
             dto.setRemark(remark);
             refundService.agreeRefund(dto);
         }
-
         return getSuccessResult(true);
+    }
+
+    /**
+     * 发起退款
+     * @return
+     */
+    @RequestMapping(value = "doRefund", method = RequestMethod.POST)
+    @CrossOrigin
+    public ResponseObject doRefund(HttpServletRequest request, @RequestBody Map<String, Object> param) throws BusinessCheckException {
+        String token = request.getHeader("Access-Token");
+        Integer orderId = param.get("orderId") == null ? 0 : Integer.parseInt(param.get("orderId").toString());
+        String remark = param.get("remark") == null ? "" : param.get("remark").toString();
+        String refundAmount = param.get("refundAmount") == null ? "" : param.get("refundAmount").toString();
+        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
+        if (accountInfo == null) {
+            return getFailureResult(1001, "请先登录");
+        }
+        if (orderId <= 0 || StringUtil.isEmpty(refundAmount)) {
+            return getFailureResult(201, "参数有误，发起退款失败");
+        }
+        Boolean result = refundService.doRefund(orderId, refundAmount, remark, accountInfo);
+        if (result) {
+            return getSuccessResult(true);
+        } else {
+            return getFailureResult(201, "退款失败");
+        }
     }
 }

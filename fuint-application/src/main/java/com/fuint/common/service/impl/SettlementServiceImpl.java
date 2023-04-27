@@ -176,7 +176,11 @@ public class SettlementServiceImpl implements SettlementService {
         }
 
         if (userInfo == null) {
-            throw new BusinessCheckException("请先登录");
+            if (StringUtil.isNotEmpty(operator)) {
+                throw new BusinessCheckException("该管理员还未关联店铺员工");
+            } else {
+                throw new BusinessCheckException("请先登录");
+            }
         }
 
         if (userId <= 0) {
@@ -409,17 +413,18 @@ public class SettlementServiceImpl implements SettlementService {
         if (realPayAmount.compareTo(new BigDecimal("0")) > 0) {
             if (payType.equals(PayTypeEnum.CASH.getKey()) && StringUtil.isNotEmpty(operator)) {
                 // 收银台现金支付，更新为已支付
-                orderService.setOrderPayed(orderInfo.getId());
+                orderService.setOrderPayed(orderInfo.getId(), null);
             } else if(payType.equals(PayTypeEnum.BALANCE.getKey())) {
                 // 余额支付
                 MtBalance balance = new MtBalance();
                 balance.setMobile(userInfo.getMobile());
                 balance.setOrderSn(orderInfo.getOrderSn());
                 balance.setUserId(userInfo.getId());
-                balance.setAmount(realPayAmount.subtract(realPayAmount).subtract(realPayAmount));
+                BigDecimal balanceAmount = realPayAmount.subtract(realPayAmount).subtract(realPayAmount);
+                balance.setAmount(balanceAmount);
                 boolean isPay = balanceService.addBalance(balance);
                 if (isPay) {
-                    orderService.setOrderPayed(orderInfo.getId());
+                    orderService.setOrderPayed(orderInfo.getId(), realPayAmount);
                 } else {
                     errorMessage = PropertiesUtil.getResponseErrorMessageByCode(5001);
                 }
@@ -437,7 +442,7 @@ public class SettlementServiceImpl implements SettlementService {
             }
         } else {
             // 应付金额是0，直接更新为已支付
-            orderService.setOrderPayed(orderInfo.getId());
+            orderService.setOrderPayed(orderInfo.getId(), null);
         }
 
         orderInfo = orderService.getOrderInfo(orderInfo.getId());

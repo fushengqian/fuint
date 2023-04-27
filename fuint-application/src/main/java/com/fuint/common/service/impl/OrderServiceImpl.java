@@ -126,6 +126,7 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
         String orderMode =  paramMap.get("orderMode") == null ? "": paramMap.get("orderMode").toString();
         String staffId = paramMap.get("staffId") == null ? "" : paramMap.get("staffId").toString();
         String couponId = paramMap.get("couponId") == null ? "" : paramMap.get("couponId").toString();
+        String storeIds = paramMap.get("storeIds") == null ? "" : paramMap.get("storeIds").toString();
 
         if (dataType.equals("toPay")) {
             status = OrderStatusEnum.CREATED.getKey(); // 待支付
@@ -172,6 +173,12 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
         }
         if (StringUtils.isNotBlank(couponId)) {
             lambdaQueryWrapper.eq(MtOrder::getCouponId, couponId);
+        }
+        if (StringUtils.isNotBlank(storeIds)) {
+            List<String> idList = Arrays.asList(storeIds.split(","));
+            if (idList.size() > 0) {
+                lambdaQueryWrapper.in(MtOrder::getStoreId, idList);
+            }
         }
 
         lambdaQueryWrapper.orderByDesc(MtOrder::getId);
@@ -409,7 +416,7 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
                      }
                  }
                  if (cart.getId() > 0) {
-                    mtCartMapper.deleteById(cart.getId());
+                     mtCartMapper.deleteById(cart.getId());
                  }
             }
 
@@ -676,7 +683,7 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
     @Override
     @Transactional(rollbackFor = Exception.class)
     @OperationServiceLog(description = "修改订单为已支付")
-    public Boolean setOrderPayed(Integer orderId) throws BusinessCheckException {
+    public Boolean setOrderPayed(Integer orderId, BigDecimal payAmount) throws BusinessCheckException {
         MtOrder mtOrder = mtOrderMapper.selectById(orderId);
         if (mtOrder == null) {
             return false;
@@ -688,6 +695,9 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
         reqDto.setId(orderId);
         reqDto.setStatus(OrderStatusEnum.PAID.getKey());
         reqDto.setPayStatus(PayStatusEnum.SUCCESS.getKey());
+        if (payAmount != null) {
+            reqDto.setPayAmount(payAmount);
+        }
         reqDto.setPayTime(new Date());
         reqDto.setUpdateTime(new Date());
         updateOrder(reqDto);

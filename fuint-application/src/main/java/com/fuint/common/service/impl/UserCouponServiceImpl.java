@@ -315,6 +315,7 @@ public class UserCouponServiceImpl extends ServiceImpl<MtUserCouponMapper, MtUse
         String storeId = paramMap.get("storeId") == null ? "" : paramMap.get("storeId").toString();
         String couponId = paramMap.get("couponId") == null ? "" : paramMap.get("couponId").toString();
         String code = paramMap.get("code") == null ? "" : paramMap.get("code").toString();
+        String id = paramMap.get("id") == null ? "" : paramMap.get("id").toString();
 
         Page<MtUserCoupon> pageHelper = PageHelper.startPage(pageNumber, pageSize);
         LambdaQueryWrapper<MtUserCoupon> lambdaQueryWrapper = Wrappers.lambdaQuery();
@@ -361,6 +362,9 @@ public class UserCouponServiceImpl extends ServiceImpl<MtUserCouponMapper, MtUse
         }
         if (StringUtil.isNotEmpty(code)) {
             lambdaQueryWrapper.eq(MtUserCoupon::getCode, code);
+        }
+        if (StringUtil.isNotEmpty(id)) {
+            lambdaQueryWrapper.eq(MtUserCoupon::getId, id);
         }
 
         lambdaQueryWrapper.orderByDesc(MtUserCoupon::getId);

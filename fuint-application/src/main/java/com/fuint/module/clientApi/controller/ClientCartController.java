@@ -1,5 +1,6 @@
 package com.fuint.module.clientApi.controller;
 
+import com.fuint.common.dto.AccountInfo;
 import com.fuint.common.dto.UserInfo;
 import com.fuint.common.enums.StatusEnum;
 import com.fuint.common.enums.YesOrNoEnum;
@@ -91,6 +92,10 @@ public class ClientCartController extends BaseController {
         }
 
         if (mtUser == null) {
+            AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
+            if (accountInfo != null) {
+                return getFailureResult(201, "请先将该账号关联店铺员工");
+            }
             return getFailureResult(1001);
         }
 

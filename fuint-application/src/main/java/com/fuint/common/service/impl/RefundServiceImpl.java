@@ -4,10 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fuint.common.Constants;
-import com.fuint.common.dto.AddressDto;
-import com.fuint.common.dto.OrderDto;
-import com.fuint.common.dto.RefundDto;
-import com.fuint.common.dto.UserOrderDto;
+import com.fuint.common.dto.*;
 import com.fuint.common.enums.*;
 import com.fuint.common.service.*;
 import com.fuint.common.util.DateUtil;
@@ -24,6 +21,8 @@ import com.fuint.utils.StringUtil;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageImpl;
@@ -42,6 +41,8 @@ import java.util.*;
  */
 @Service
 public class RefundServiceImpl extends ServiceImpl<MtRefundMapper, MtRefund> implements RefundService {
+
+    private static final Logger logger = LoggerFactory.getLogger(RefundServiceImpl.class);
 
     @Resource
     private MtRefundMapper mtRefundMapper;
@@ -415,6 +416,56 @@ public class RefundServiceImpl extends ServiceImpl<MtRefundMapper, MtRefund> imp
         }
 
         return mtRefund;
+    }
+
+    /**
+     * 发起退款
+     * @param orderId
+     * @param refundAmount
+     * @param remark
+     * @param accountInfo
+     * throws BusinessCheckException;
+     * */
+    @Override
+    public Boolean doRefund(Integer orderId, String refundAmount, String remark, AccountInfo accountInfo) {
+        try {
+            UserOrderDto orderInfo = orderService.getOrderById(orderId);
+            if (orderInfo == null) {
+                return false;
+            }
+            // 创建售后订单
+            RefundDto refundDto = new RefundDto();
+            refundDto.setUserId(orderInfo.getUserId());
+            refundDto.setOrderId(orderInfo.getId());
+            refundDto.setRemark(remark);
+            refundDto.setType(RefundTypeEnum.RETURN.getKey());
+            if (orderInfo.getStoreInfo() != null) {
+                refundDto.setStoreId(orderInfo.getStoreInfo().getId());
+            }
+            refundDto.setAmount(new BigDecimal(refundAmount));
+            refundDto.setOperator(accountInfo.getAccountName());
+            refundDto.setImages(null);
+            MtRefund mtRefund = createRefund(refundDto);
+            if (mtRefund != null) {
+                // 审核同意
+                RefundDto agreeDto = new RefundDto();
+                agreeDto.setId(mtRefund.getId());
+                agreeDto.setOperator(accountInfo.getAccountName());
+                agreeDto.setStatus(RefundStatusEnum.APPROVED.getKey());
+                MtRefund refundInfo = agreeRefund(agreeDto);
+                if (refundInfo != null) {
+                    logger.error("退款审核失败，orderId = " + orderId + ", refundId = " + mtRefund.getId());
+                    return true;
+                }
+            } else {
+                logger.error("退款生成售后订单失败，orderId = " + orderId);
+                return false;
+            }
+        } catch (BusinessCheckException e) {
+            logger.error("退款生成售后订单失败，message = " + e.getMessage());
+            return false;
+        }
+        return false;
     }
 
     /**

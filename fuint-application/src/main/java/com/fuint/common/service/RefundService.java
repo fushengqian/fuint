@@ -1,6 +1,7 @@
 package com.fuint.common.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.fuint.common.dto.AccountInfo;
 import com.fuint.common.dto.RefundDto;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.pagination.PaginationRequest;
@@ -71,6 +72,16 @@ public interface RefundService extends IService<MtRefund> {
      * @throws BusinessCheckException
      * */
     MtRefund agreeRefund(RefundDto reqDto) throws BusinessCheckException;
+
+    /**
+     * 发起退款
+     * @param orderId
+     * @param refundAmount
+     * @param remark
+     * @param accountInfo
+     * throws BusinessCheckException;
+     * */
+    Boolean doRefund(Integer orderId, String refundAmount, String remark, AccountInfo accountInfo) throws BusinessCheckException;
 
     /**
      * 获取售后订单总数

@@ -102,6 +102,7 @@ public class BackendUserCouponController extends BaseController {
         param.put("mobile", request.getParameter("mobile"));
         param.put("storeId", request.getParameter("storeId"));
         param.put("couponId", request.getParameter("couponId"));
+        param.put("id", request.getParameter("id"));
         param.put("type", request.getParameter("type"));
         param.put("code", request.getParameter("code"));
 

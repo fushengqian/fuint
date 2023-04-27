@@ -116,7 +116,7 @@ public class PaymentServiceImpl implements PaymentService {
         MtOrder mtOrder = mtOrderMapper.selectById(orderInfo.getId());
 
         // 更新订单状态为已支付
-        Boolean isPay = orderService.setOrderPayed(orderInfo.getId());
+        Boolean isPay = orderService.setOrderPayed(orderInfo.getId(), null);
         if (mtOrder == null || !isPay) {
             return false;
         }
@@ -321,10 +321,11 @@ public class PaymentServiceImpl implements PaymentService {
             balance.setMobile(mtUser.getMobile());
             balance.setOrderSn(orderInfo.getOrderSn());
             balance.setUserId(mtUser.getId());
-            balance.setAmount(realPayAmount.subtract(realPayAmount).subtract(realPayAmount));
+            BigDecimal balanceAmount = realPayAmount.subtract(realPayAmount).subtract(realPayAmount);
+            balance.setAmount(balanceAmount);
             boolean isPay = balanceService.addBalance(balance);
             if (isPay) {
-                orderService.setOrderPayed(orderInfo.getId());
+                orderService.setOrderPayed(orderInfo.getId(), balanceAmount);
                 OrderDto reqOrder = new OrderDto();
                 reqOrder.setId(orderInfo.getId());
                 reqOrder.setPayAmount(realPayAmount);
@@ -349,7 +350,7 @@ public class PaymentServiceImpl implements PaymentService {
             reqOrder.setPayType(PayTypeEnum.CASH.getKey());
             reqOrder.setOperator(accountInfo.getAccountName());
             orderService.updateOrder(reqOrder);
-            orderService.setOrderPayed(orderInfo.getId());
+            orderService.setOrderPayed(orderInfo.getId(), null);
             orderInfo = orderService.getOrderInfo(orderInfo.getId());
         } else {
             String ip = CommonUtil.getIPFromHttpRequest(request);

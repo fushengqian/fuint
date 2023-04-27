@@ -102,9 +102,10 @@ public interface OrderService extends IService<MtOrder> {
     /**
      * 把订单置为已支付
      * @param orderId
+     * @param payAmount
      * @return
      * */
-    Boolean setOrderPayed(Integer orderId) throws BusinessCheckException;
+    Boolean setOrderPayed(Integer orderId, BigDecimal payAmount) throws BusinessCheckException;
 
     /**
      * 根据条件搜索订单
