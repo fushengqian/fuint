@@ -111,7 +111,7 @@ public class ClientOrderController extends BaseController {
      */
     @RequestMapping(value = "/receipt", method = RequestMethod.GET)
     @CrossOrigin
-    public ResponseObject receipt(HttpServletRequest request) throws BusinessCheckException{
+    public ResponseObject receipt(HttpServletRequest request) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
         UserInfo mtUser = TokenUtil.getUserInfoByToken(token);
 
@@ -142,7 +142,7 @@ public class ClientOrderController extends BaseController {
      */
     @RequestMapping(value = "/todoCounts", method = RequestMethod.GET)
     @CrossOrigin
-    public ResponseObject todoCounts(HttpServletRequest request) throws BusinessCheckException{
+    public ResponseObject todoCounts(HttpServletRequest request) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
         UserInfo userInfo = TokenUtil.getUserInfoByToken(token);
 

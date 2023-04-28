@@ -341,8 +341,9 @@ public class CouponServiceImpl extends ServiceImpl<MtCouponMapper, MtCoupon> imp
      */
     @Override
     @OperationServiceLog(description = "删除卡券")
+    @Transactional(rollbackFor = Exception.class)
     public void deleteCoupon(Long id, String operator) {
-        MtCoupon couponInfo = this.queryCouponById(id.intValue());
+        MtCoupon couponInfo = queryCouponById(id.intValue());
         if (null == couponInfo) {
             return;
         }

@@ -282,21 +282,6 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
             }
         }
 
-        // 扣减积分
-        if (orderDto.getUsePoint() > 0) {
-            try {
-                MtPoint reqPointDto = new MtPoint();
-                reqPointDto.setUserId(orderDto.getUserId());
-                reqPointDto.setAmount(-orderDto.getUsePoint());
-                reqPointDto.setOrderSn(orderSn);
-                reqPointDto.setDescription("支付扣除" + orderDto.getUsePoint() + "积分");
-                reqPointDto.setOperator("");
-                pointService.addPoint(reqPointDto);
-            } catch (BusinessCheckException e) {
-                // empty
-            }
-        }
-
         mtOrder.setUpdateTime(new Date());
         if (mtOrder.getCreateTime() == null) {
             mtOrder.setCreateTime(new Date());
@@ -375,6 +360,22 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
         } catch (Exception e) {
              logger.error("OrderService 生成订单失败...");
              throw new BusinessCheckException("生成订单失败，请稍后重试");
+        }
+
+        // 扣减积分
+        if (orderDto.getUsePoint() > 0) {
+            try {
+                MtPoint reqPointDto = new MtPoint();
+                reqPointDto.setUserId(orderDto.getUserId());
+                reqPointDto.setAmount(-orderDto.getUsePoint());
+                reqPointDto.setOrderSn(orderSn);
+                reqPointDto.setDescription("支付扣除" + orderDto.getUsePoint() + "积分");
+                reqPointDto.setOperator("");
+                pointService.addPoint(reqPointDto);
+            } catch (BusinessCheckException e) {
+                logger.error("OrderService 扣减积分失败...{}", e.getMessage());
+                throw new BusinessCheckException("扣减积分失败，请稍后重试");
+            }
         }
 
         // 如果是商品订单，生成订单商品

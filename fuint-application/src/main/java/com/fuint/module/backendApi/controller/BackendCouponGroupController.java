@@ -14,9 +14,9 @@ import com.fuint.framework.pagination.PaginationResponse;
 import com.fuint.framework.service.ExportService;
 import com.fuint.framework.web.BaseController;
 import com.fuint.framework.web.ResponseObject;
-import com.fuint.repository.mapper.MtUserCouponMapper;
+import com.fuint.repository.mapper.MtCouponMapper;
+import com.fuint.repository.model.MtCoupon;
 import com.fuint.repository.model.MtCouponGroup;
-import com.fuint.repository.model.MtUserCoupon;
 import com.fuint.utils.StringUtil;
 import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,7 +50,7 @@ public class BackendCouponGroupController extends BaseController {
     private static final Logger logger = LoggerFactory.getLogger(BackendCouponGroupController.class);
 
     @Resource
-    private MtUserCouponMapper mtUserCouponMapper;
+    private MtCouponMapper mtCouponMapper;
 
     /**
      * 卡券分组服务接口
@@ -183,9 +183,10 @@ public class BackendCouponGroupController extends BaseController {
         // 该分组已有数据，不允许删除
         Map<String, Object> searchParams = new HashMap<>();
         searchParams.put("GROUP_ID", id.toString());
-        List<MtUserCoupon> dataList = mtUserCouponMapper.selectByMap(searchParams);
+        searchParams.put("status", StatusEnum.ENABLED.getKey());
+        List<MtCoupon> dataList = mtCouponMapper.selectByMap(searchParams);
         if (dataList.size() > 0) {
-            return getFailureResult(201, "已发放卡券，不允许删除");
+            return getFailureResult(201, "该分组下有卡券，不能删除");
         }
 
         couponGroupService.deleteCouponGroup(id, accountInfo.getAccountName());
