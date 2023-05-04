@@ -4,4 +4,7 @@
     <select id="getRefundCount" resultType="java.math.BigDecimal">
         SELECT count(0) as num FROM mt_refund t where t.CREATE_TIME &lt; #{endTime} and t.CREATE_TIME &gt;= #{beginTime}
     </select>
+    <select id="findByOrderId" resultType="com.fuint.repository.model.MtRefund">
+        select * from mt_refund t where t.ORDER_ID = #{orderId} and t.STATUS != 'D'
+    </select>
 </mapper>

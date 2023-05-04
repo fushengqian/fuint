@@ -16,4 +16,6 @@ public interface MtRefundMapper extends BaseMapper<MtRefund> {
 
     Long getRefundCount(@Param("beginTime") Date beginTime, @Param("endTime") Date endTime);
 
+    MtRefund findByOrderId(@Param("orderId") Integer orderId);
+
 }

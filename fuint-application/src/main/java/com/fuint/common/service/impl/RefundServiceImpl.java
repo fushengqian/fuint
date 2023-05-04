@@ -78,6 +78,12 @@ public class RefundServiceImpl extends ServiceImpl<MtRefundMapper, MtRefund> imp
     private BalanceService balanceService;
 
     /**
+     * 微信服务接口
+     * */
+    @Autowired
+    private WeixinService weixinService;
+
+    /**
      * 分页查询售后订单列表
      *
      * @param  paginationRequest
@@ -349,7 +355,7 @@ public class RefundServiceImpl extends ServiceImpl<MtRefundMapper, MtRefund> imp
 
         OrderDto reqDto = new OrderDto();
         reqDto.setId(orderInfo.getId());
-        reqDto.setStatus(OrderStatusEnum.CANCEL.getKey());
+        reqDto.setStatus(OrderStatusEnum.REFUND.getKey());
         orderService.updateOrder(reqDto);
 
         // 如果是余额支付，返还余额
@@ -389,14 +395,12 @@ public class RefundServiceImpl extends ServiceImpl<MtRefundMapper, MtRefund> imp
             for (MtConfirmLog log : confirmLogList) {
                 MtCoupon couponInfo = couponService.queryCouponById(log.getCouponId());
                 MtUserCoupon userCouponInfo = mtUserCouponMapper.selectById(log.getUserCouponId());
-
                 if (userCouponInfo != null) {
                     // 优惠券直接置为未使用
                     if (couponInfo.getType().equals(CouponTypeEnum.COUPON.getKey())) {
                         userCouponInfo.setStatus(UserCouponStatusEnum.UNUSED.getKey());
                         mtUserCouponMapper.updateById(userCouponInfo);
                     }
-
                     // 储值卡把余额加回去
                     if (couponInfo.getType().equals(CouponTypeEnum.PRESTORE.getKey())) {
                         BigDecimal balance = userCouponInfo.getBalance();
@@ -407,12 +411,16 @@ public class RefundServiceImpl extends ServiceImpl<MtRefundMapper, MtRefund> imp
                         }
                         mtUserCouponMapper.updateById(userCouponInfo);
                     }
-
                     // 撤销核销记录
                     log.setStatus(StatusEnum.DISABLE.getKey());
                     mtConfirmLogMapper.updateById(log);
                 }
             }
+        }
+
+        // 微信支付发起退款
+        if (orderInfo.getPayType().equals(PayTypeEnum.JSAPI.getKey()) || orderInfo.getPayType().equals(PayTypeEnum.MICROPAY.getKey())) {
+            weixinService.doRefund(orderInfo.getStoreInfo().getId(), orderInfo.getOrderSn(), orderInfo.getPayAmount(), mtRefund.getAmount(), PlatformTypeEnum.MP_WEIXIN.getCode());
         }
 
         return mtRefund;
@@ -427,45 +435,53 @@ public class RefundServiceImpl extends ServiceImpl<MtRefundMapper, MtRefund> imp
      * throws BusinessCheckException;
      * */
     @Override
-    public Boolean doRefund(Integer orderId, String refundAmount, String remark, AccountInfo accountInfo) {
-        try {
-            UserOrderDto orderInfo = orderService.getOrderById(orderId);
-            if (orderInfo == null) {
-                return false;
-            }
-            // 创建售后订单
-            RefundDto refundDto = new RefundDto();
-            refundDto.setUserId(orderInfo.getUserId());
-            refundDto.setOrderId(orderInfo.getId());
-            refundDto.setRemark(remark);
-            refundDto.setType(RefundTypeEnum.RETURN.getKey());
-            if (orderInfo.getStoreInfo() != null) {
-                refundDto.setStoreId(orderInfo.getStoreInfo().getId());
-            }
-            refundDto.setAmount(new BigDecimal(refundAmount));
-            refundDto.setOperator(accountInfo.getAccountName());
-            refundDto.setImages(null);
-            MtRefund mtRefund = createRefund(refundDto);
-            if (mtRefund != null) {
-                // 审核同意
-                RefundDto agreeDto = new RefundDto();
-                agreeDto.setId(mtRefund.getId());
-                agreeDto.setOperator(accountInfo.getAccountName());
-                agreeDto.setStatus(RefundStatusEnum.APPROVED.getKey());
-                MtRefund refundInfo = agreeRefund(agreeDto);
-                if (refundInfo != null) {
-                    logger.error("退款审核失败，orderId = " + orderId + ", refundId = " + mtRefund.getId());
-                    return true;
-                }
-            } else {
-                logger.error("退款生成售后订单失败，orderId = " + orderId);
-                return false;
-            }
-        } catch (BusinessCheckException e) {
-            logger.error("退款生成售后订单失败，message = " + e.getMessage());
-            return false;
+    @Transactional(rollbackFor = Exception.class)
+    public Boolean doRefund(Integer orderId, String refundAmount, String remark, AccountInfo accountInfo) throws BusinessCheckException {
+        UserOrderDto orderInfo = orderService.getOrderById(orderId);
+        if (orderInfo == null) {
+            logger.error("退款订单为空，orderId = " + orderId + orderInfo.getId());
+            throw new BusinessCheckException("该订单状态异常！");
         }
-        return false;
+
+        MtRefund refund = mtRefundMapper.findByOrderId(orderId);
+        if (refund != null) {
+            logger.error("售后订单已存在，orderId = " + orderId);
+            throw new BusinessCheckException("该售后订单已存在，请查询售后订单列表！");
+        }
+
+        if (new BigDecimal(refundAmount).compareTo(orderInfo.getPayAmount()) > 0) {
+            throw new BusinessCheckException("退款金额不能大于实际支付金额！");
+        }
+
+        // 创建售后订单
+        RefundDto refundDto = new RefundDto();
+        refundDto.setUserId(orderInfo.getUserId());
+        refundDto.setOrderId(orderInfo.getId());
+        refundDto.setRemark(remark);
+        refundDto.setType(RefundTypeEnum.RETURN.getKey());
+        if (orderInfo.getStoreInfo() != null) {
+            refundDto.setStoreId(orderInfo.getStoreInfo().getId());
+        }
+        refundDto.setAmount(new BigDecimal(refundAmount));
+        refundDto.setOperator(accountInfo.getAccountName());
+        refundDto.setImages(null);
+        MtRefund mtRefund = createRefund(refundDto);
+        if (mtRefund != null) {
+            // 审核同意
+            RefundDto agreeDto = new RefundDto();
+            agreeDto.setId(mtRefund.getId());
+            agreeDto.setOperator(accountInfo.getAccountName());
+            agreeDto.setStatus(RefundStatusEnum.APPROVED.getKey());
+            MtRefund refundInfo = agreeRefund(agreeDto);
+            if (refundInfo == null) {
+                logger.error("退款审核失败，orderId = " + orderId + ", refundId = " + mtRefund.getId());
+                throw new BusinessCheckException("退款审核失败！");
+            }
+        } else {
+            logger.error("退款生成售后订单失败，orderId = " + orderId);
+            throw new BusinessCheckException("生成售后订单失败！");
+        }
+        return true;
     }
 
     /**

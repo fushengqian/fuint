@@ -350,8 +350,8 @@ public class BackendGoodsController extends BaseController {
         String canUsePoint = param.get("canUsePoint") == null ? "" : param.get("canUsePoint").toString();
         String isMemberDiscount = param.get("isMemberDiscount") == null ? "" : param.get("isMemberDiscount").toString();
         String isSingleSpec = param.get("isSingleSpec") == null ? "" : param.get("isSingleSpec").toString();
-        Integer cateId = param.get("cateId") == null ? 0 : Integer.parseInt(param.get("cateId").toString());
-        Integer storeId = param.get("storeId") == null ? null : Integer.parseInt(param.get("storeId").toString());
+        Integer cateId = (param.get("cateId") == null || StringUtil.isEmpty(param.get("cateId").toString())) ? 0 : Integer.parseInt(param.get("cateId").toString());
+        Integer storeId = (param.get("storeId") == null || StringUtil.isEmpty(param.get("storeId").toString())) ? null : Integer.parseInt(param.get("storeId").toString());
         String type = param.get("type") == null ? "" : param.get("type").toString();
         String couponIds = param.get("couponIds") == null ? "" : param.get("couponIds").toString();
         String serviceTime = param.get("serviceTime") == null ? "0" : param.get("serviceTime").toString();

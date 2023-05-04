@@ -22,6 +22,7 @@ import com.ijpay.wxpay.WxPayApiConfig;
 import com.ijpay.wxpay.WxPayApiConfigKit;
 import com.ijpay.wxpay.model.MicroPayModel;
 import com.ijpay.wxpay.model.OrderQueryModel;
+import com.ijpay.wxpay.model.RefundModel;
 import com.ijpay.wxpay.model.UnifiedOrderModel;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.slf4j.Logger;
@@ -75,6 +76,10 @@ public class WeixinServiceImpl implements WeixinService {
 
     @Autowired
     WxPayBean wxPayBean;
+
+    private static final String CALL_BACK_URL = "/clientApi/pay/weixinCallback";
+
+    private static final String REFUND_NOTIFY_URL = "/clientApi/pay/weixinRefundNotify";
 
     /**
      * 获取微信accessToken
@@ -540,7 +545,6 @@ public class WeixinServiceImpl implements WeixinService {
             // 支付配置
             getApiConfig(storeId, platform);
             WxPayApiConfig wxPayApiConfig = WxPayApiConfigKit.getWxPayApiConfig();
-
             Map<String, String> params = UnifiedOrderModel
                     .builder()
                     .appid(wxPayApiConfig.getAppId())
@@ -551,7 +555,7 @@ public class WeixinServiceImpl implements WeixinService {
                     .out_trade_no(reqData.get("out_trade_no"))
                     .total_fee(reqData.get("total_fee"))
                     .spbill_create_ip(ip)
-                    .notify_url(wxPayApiConfig.getDomain())
+                    .notify_url(wxPayApiConfig.getDomain() + CALL_BACK_URL)
                     .trade_type(reqData.get("trade_type"))
                     .openid(reqData.get("openid"))
                     .build()
@@ -580,6 +584,58 @@ public class WeixinServiceImpl implements WeixinService {
     }
 
     /**
+     * 发起退款
+     * @param storeId
+     * @param orderSn
+     * @param totalAmount
+     * @param refundAmount
+     * @param platform
+     * @return
+     * */
+    public Boolean doRefund(Integer storeId, String orderSn, BigDecimal totalAmount, BigDecimal refundAmount, String platform) throws BusinessCheckException {
+        try {
+            logger.info("WeixinService.doRefund orderSn = {}, totalFee = {}, refundFee = {}", orderSn, totalAmount, refundAmount);
+            if (StringUtil.isEmpty(orderSn)) {
+                throw new BusinessCheckException("退款订单号不能为空...");
+            }
+
+            BigDecimal totalFee = totalAmount.multiply(new BigDecimal("100"));
+            BigDecimal refundFee = refundAmount.multiply(new BigDecimal("100"));
+            Integer totalFeeInt = totalFee.intValue();
+            Integer refundFeeInt = refundFee.intValue();
+
+            // 支付配置
+            getApiConfig(storeId, platform);
+            WxPayApiConfig wxPayApiConfig = WxPayApiConfigKit.getWxPayApiConfig();
+            Map<String, String> params = RefundModel.builder()
+                    .appid(wxPayApiConfig.getAppId())
+                    .mch_id(wxPayApiConfig.getMchId())
+                    .nonce_str(WxPayKit.generateStr())
+                    .transaction_id("")
+                    .out_trade_no(orderSn)
+                    .out_refund_no(orderSn)
+                    .total_fee(totalFeeInt.toString())
+                    .refund_fee(refundFeeInt.toString())
+                    .notify_url(wxPayApiConfig.getDomain() + REFUND_NOTIFY_URL)
+                    .build()
+                    .createSign(wxPayApiConfig.getPartnerKey(), SignType.MD5);
+            String refundStr = WxPayApi.orderRefund(false, params, wxPayApiConfig.getCertPath(), wxPayApiConfig.getMchId());
+            logger.info("WeixinService doRefund params: {}", params);
+            logger.info("WeixinService doRefund return: {}", refundStr);
+            Map<String, String> result = WxPayKit.xmlToMap(refundStr);
+            String returnCode = result.get("return_code");
+            String returnMsg = result.get("return_msg");
+            if (!WxPayKit.codeIsOk(returnCode)) {
+                logger.error(returnMsg);
+                return false;
+            }
+            return true;
+        } catch (Exception e) {
+            throw new BusinessCheckException("WeixinService.doRefund 微信退款失败：" + e.getMessage());
+        }
+    }
+
+    /**
      * 获取支付配置
      * @param storeId
      * @param platform
@@ -593,7 +649,6 @@ public class WeixinServiceImpl implements WeixinService {
             mchId = mtStore.getWxMchId();
             apiV2 = mtStore.getWxApiV2();
         }
-
         apiConfig = WxPayApiConfig.builder()
                    .appId(wxPayBean.getAppId())
                    .mchId(mchId)
@@ -601,7 +656,6 @@ public class WeixinServiceImpl implements WeixinService {
                    .certPath(wxPayBean.getCertPath())
                    .domain(wxPayBean.getDomain())
                    .build();
-
         // 微信内h5公众号支付
         if (platform.equals(PlatformTypeEnum.H5.getCode())) {
             String wxAppId = env.getProperty("weixin.official.appId");
@@ -611,7 +665,6 @@ public class WeixinServiceImpl implements WeixinService {
                 apiConfig.setApiKey(wxAppSecret);
             }
         }
-
         WxPayApiConfigKit.setThreadLocalWxPayApiConfig(apiConfig);
         return apiConfig;
     }

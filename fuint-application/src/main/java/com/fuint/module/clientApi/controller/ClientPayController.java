@@ -13,6 +13,9 @@ import com.fuint.framework.web.ResponseObject;
 import com.fuint.repository.model.*;
 import com.fuint.utils.StringUtil;
 import com.ijpay.alipay.AliPayApi;
+import com.ijpay.core.kit.HttpKit;
+import com.ijpay.core.kit.WxPayKit;
+import com.ijpay.wxpay.WxPayApiConfigKit;
 import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
@@ -204,6 +207,30 @@ public class ClientPayController extends BaseController {
                 }
             }
         }
+    }
+
+    /**
+     * 微信退款通知
+     */
+    @RequestMapping(value = "/weixinRefundNotify", method = {RequestMethod.POST, RequestMethod.GET})
+    @ResponseBody
+    public String weixinRefundNotify(HttpServletRequest request) {
+        String xmlMsg = HttpKit.readData(request);
+        logger.info("退款通知 = " + xmlMsg);
+        Map<String, String> params = WxPayKit.xmlToMap(xmlMsg);
+        String returnCode = params.get("return_code");
+        // 注意重复通知的情况，同一订单号可能收到多次通知，请注意一定先判断订单状态
+        if (WxPayKit.codeIsOk(returnCode)) {
+            String reqInfo = params.get("req_info");
+            String decryptData = WxPayKit.decryptData(reqInfo, WxPayApiConfigKit.getWxPayApiConfig().getPartnerKey());
+            logger.info("退款通知解密后的数据 = " + decryptData);
+            // 发送通知等
+            Map<String, String> xml = new HashMap<>(2);
+            xml.put("return_code", "SUCCESS");
+            xml.put("return_msg", "OK");
+            return WxPayKit.toXml(xml);
+        }
+        return null;
     }
 
     /**

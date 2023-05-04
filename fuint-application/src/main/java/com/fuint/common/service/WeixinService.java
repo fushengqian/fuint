@@ -8,6 +8,7 @@ import com.fuint.repository.model.MtUser;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.math.BigDecimal;
 import java.util.Map;
 import java.util.Date;
 
@@ -38,5 +39,7 @@ public interface WeixinService {
     Boolean doSendSubscribeMessage(String reqDataJsonStr);
 
     String queryPaidOrder(Integer storeId, String transactionId, String orderSn);
+
+    Boolean doRefund(Integer storeId, String orderSn, BigDecimal totalAmount, BigDecimal refundAmount, String platform) throws BusinessCheckException;
 
 }

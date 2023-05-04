@@ -13,7 +13,8 @@ public enum OrderStatusEnum {
     DELIVERY("D", "待发货"),
     DELIVERED("E", "已发货"),
     RECEIVED("F", "已收货"),
-    DELETED("G", "已删除");
+    DELETED("G", "已删除"),
+    REFUND("H", "已退款");
 
     private String key;
 

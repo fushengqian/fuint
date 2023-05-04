@@ -798,7 +798,10 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
             dto.setStatusText(OrderStatusEnum.RECEIVED.getValue());
         } else if(dto.getStatus().equals(OrderStatusEnum.DELETED.getKey())) {
             dto.setStatusText(OrderStatusEnum.DELETED.getValue());
+        } else if(dto.getStatus().equals(OrderStatusEnum.REFUND.getKey())) {
+            dto.setStatusText(OrderStatusEnum.REFUND.getValue());
         }
+
 
         // 订单所属店铺
         MtStore storeInfo = storeService.queryStoreById(orderInfo.getStoreId());
