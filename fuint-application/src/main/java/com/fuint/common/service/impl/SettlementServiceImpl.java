@@ -199,20 +199,6 @@ public class SettlementServiceImpl implements SettlementService {
             }
         }
 
-        // 支付类的订单 检查余额
-        if (type.equals(OrderTypeEnum.PAYMENT.getKey()) && payType.equals(PayTypeEnum.BALANCE.getKey())) {
-            BigDecimal paymentAmount = new BigDecimal(payAmount);
-            if (userInfo.getBalance() == null || paymentAmount.compareTo(userInfo.getBalance()) > 0) {
-                throw new BusinessCheckException("您的余额不足");
-            }
-            if (StringUtil.isNotEmpty(cashierPayAmount)) {
-                paymentAmount = new BigDecimal(cashierPayAmount);
-                if (userInfo.getBalance() == null || paymentAmount.compareTo(userInfo.getBalance()) > 0) {
-                    throw new BusinessCheckException("您的余额不足");
-                }
-            }
-        }
-
         // 生成订单数据
         OrderDto orderDto = new OrderDto();
         orderDto.setId(orderId);
@@ -373,22 +359,22 @@ public class SettlementServiceImpl implements SettlementService {
                                     String useCode = couponService.useCoupon(couponId, orderDto.getUserId(), orderDto.getStoreId(), orderInfo.getId(), userCouponInfo.getAmount(), "核销");
                                     if (StringUtil.isNotEmpty(useCode)) {
                                         orderDto.setCouponId(couponId);
-                                        orderDto.setDiscount(orderDto.getDiscount().add(userCouponInfo.getAmount()));
+                                        orderDto.setDiscount(orderInfo.getDiscount().add(userCouponInfo.getAmount()));
                                         orderService.updateOrder(orderDto);
                                     }
                                 }
                             } else if(couponInfo.getType().equals(CouponTypeEnum.PRESTORE.getKey())) {
                                 // 储值卡，减去余额
                                 BigDecimal useCouponAmount = userCouponInfo.getBalance();
-                                if (orderDto.getPayAmount().compareTo(userCouponInfo.getBalance()) <= 0) {
-                                    useCouponAmount = orderDto.getPayAmount();
+                                if (orderInfo.getPayAmount().compareTo(userCouponInfo.getBalance()) <= 0) {
+                                    useCouponAmount = orderInfo.getPayAmount();
                                 }
                                 try {
                                     String useCode = couponService.useCoupon(couponId, orderDto.getUserId(), orderDto.getStoreId(), orderInfo.getId(), useCouponAmount, "核销");
                                     if (StringUtil.isNotEmpty(useCode)) {
                                         orderDto.setCouponId(couponId);
-                                        orderDto.setDiscount(orderDto.getDiscount().add(useCouponAmount));
-                                        orderDto.setPayAmount(orderDto.getPayAmount().subtract(useCouponAmount));
+                                        orderDto.setDiscount(orderInfo.getDiscount().add(useCouponAmount));
+                                        orderDto.setPayAmount(orderInfo.getPayAmount().subtract(useCouponAmount));
                                         orderService.updateOrder(orderDto);
                                     }
                                 } catch (BusinessCheckException e) {
@@ -405,6 +391,18 @@ public class SettlementServiceImpl implements SettlementService {
         orderInfo = orderService.getOrderInfo(orderInfo.getId());
         String ip = CommonUtil.getIPFromHttpRequest(request);
         BigDecimal realPayAmount = orderInfo.getAmount().subtract(new BigDecimal(orderInfo.getDiscount().toString())).subtract(new BigDecimal(orderInfo.getPointAmount().toString()));
+
+        // 支付类的订单，检查余额是否充足
+        if (type.equals(OrderTypeEnum.PAYMENT.getKey()) && payType.equals(PayTypeEnum.BALANCE.getKey())) {
+            if (userInfo.getBalance() == null || realPayAmount.compareTo(userInfo.getBalance()) > 0) {
+                throw new BusinessCheckException("会员余额不足");
+            }
+            if (StringUtil.isNotEmpty(cashierPayAmount)) {
+                if (userInfo.getBalance() == null || new BigDecimal(cashierPayAmount).compareTo(userInfo.getBalance()) > 0) {
+                    throw new BusinessCheckException("会员余额不足");
+                }
+            }
+        }
 
         ResponseObject paymentInfo = null;
         String errorMessage = "";

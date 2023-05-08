@@ -420,7 +420,7 @@ public class RefundServiceImpl extends ServiceImpl<MtRefundMapper, MtRefund> imp
 
         // 微信支付发起退款
         if (orderInfo.getPayType().equals(PayTypeEnum.JSAPI.getKey()) || orderInfo.getPayType().equals(PayTypeEnum.MICROPAY.getKey())) {
-            weixinService.doRefund(orderInfo.getStoreInfo().getId(), orderInfo.getOrderSn(), orderInfo.getPayAmount(), mtRefund.getAmount(), PlatformTypeEnum.MP_WEIXIN.getCode());
+            weixinService.doRefund(orderInfo.getStoreInfo() != null ? orderInfo.getStoreInfo().getId() : 0, orderInfo.getOrderSn(), orderInfo.getPayAmount(), mtRefund.getAmount(), PlatformTypeEnum.MP_WEIXIN.getCode());
         }
 
         return mtRefund;

@@ -1,11 +1,12 @@
 package com.fuint.repository.model;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.annotation.*;
+
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
@@ -51,9 +52,13 @@ public class MtUser implements Serializable {
     private String gradeId;
 
     @ApiModelProperty("会员开始时间")
+    @TableField(strategy = FieldStrategy.IGNORED)
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date startTime;
 
     @ApiModelProperty("会员结束时间")
+    @TableField(strategy=FieldStrategy.IGNORED)
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date endTime;
 
     @ApiModelProperty("余额")

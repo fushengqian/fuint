@@ -426,6 +426,10 @@ public class BackendCouponController extends BaseController {
             return getFailureResult(201, "发放数量必须为正整数");
         }
 
+        if (Integer.parseInt(num) > 100) {
+            return getFailureResult(201, "发放数量最多为100");
+        }
+
         // 导入批次
         String uuid = UUID.randomUUID().toString().replaceAll("-", "");
         try {

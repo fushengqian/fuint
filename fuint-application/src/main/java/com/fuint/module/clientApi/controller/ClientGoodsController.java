@@ -80,7 +80,7 @@ public class ClientGoodsController extends BaseController {
             ResCateDto dto = new ResCateDto();
             dto.setCateId(cate.getId());
             dto.setName(cate.getName());
-            dto.setLogo(cate.getLogo());
+            dto.setLogo(baseImage + cate.getLogo());
             List<MtGoods> goodsArr = new ArrayList<>();
             for (MtGoods goods : goodsList) {
                 if (goods.getCateId() == cate.getId()) {

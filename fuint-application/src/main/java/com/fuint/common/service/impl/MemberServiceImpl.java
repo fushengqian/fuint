@@ -163,7 +163,7 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
                             mtUser = queryMemberById(staff.getUserId());
                             if (mtUser != null && (mtUser.getStoreId() == null || mtUser.getStoreId() <= 0)) {
                                 mtUser.setStoreId(staff.getStoreId());
-                                this.updateById(mtUser);
+                                updateById(mtUser);
                             }
                         }
                     }
@@ -297,14 +297,13 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
         if (userList.size() > 0) {
             mtUser.setName(userNo);
         }
-
+        // 默认会员等级
         if (StringUtil.isEmpty(mtUser.getGradeId())) {
             MtUserGrade grade = userGradeService.getInitUserGrade();
             if (grade != null) {
-                mtUser.setGradeId(grade.getId() + "");
+                mtUser.setGradeId(grade.getId().toString());
             }
         }
-
         mtUser.setUserNo(userNo);
         mtUser.setBalance(new BigDecimal(0));
         if (mtUser.getPoint() == null || mtUser.getPoint() < 1) {
@@ -318,12 +317,13 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
         Date time = new Date();
         mtUser.setCreateTime(time);
         mtUser.setUpdateTime(time);
+        mtUser.setStartTime(mtUser.getStartTime());
+        mtUser.setEndTime(mtUser.getEndTime());
         if (mtUser.getStoreId() != null) {
             mtUser.setStoreId(mtUser.getStoreId());
         } else {
             mtUser.setStoreId(0);
         }
-
         // 密码加密
         if (mtUser.getPassword() != null && StringUtil.isNotEmpty(mtUser.getPassword())) {
             String salt = SeqUtil.getRandomLetter(4);
@@ -332,12 +332,11 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
             mtUser.setSalt(salt);
             mtUser.setSource(MemberSourceEnum.REGISTER_BY_ACCOUNT.getKey());
         }
-
         if (mtUser.getSource() == null || StringUtil.isEmpty(mtUser.getSource())) {
             mtUser.setSource(MemberSourceEnum.BACKEND_ADD.getKey());
         }
 
-        boolean result = this.save(mtUser);
+        boolean result = save(mtUser);
         if (!result) {
            return null;
         }
@@ -345,7 +344,7 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
         mtUser = queryMemberById(mtUser.getId());
 
         // 开卡赠礼
-        openGiftService.openGift(mtUser.getId(), Integer.parseInt(mtUser.getGradeId()));
+        openGiftService.openGift(mtUser.getId(), Integer.parseInt(mtUser.getGradeId()), true);
 
         // 新增用户发短信通知
         if (mtUser.getId() > 0 && mtUser.getStatus().equals(StatusEnum.ENABLED.getKey())) {
@@ -395,12 +394,13 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
                 }
             }
         }
-
-        Boolean result = this.updateById(mtUser);
+        String gradeId = mtUser.getGradeId();
+        mtUser.setGradeId(oldUserInfo.getGradeId());
+        Boolean result = updateById(mtUser);
         if (result && mtUser.getGradeId() != null) {
             // 修改了会员等级，开卡赠礼
-            if (!mtUser.getGradeId().equals(oldUserInfo.getGradeId())) {
-                openGiftService.openGift(mtUser.getId(), Integer.parseInt(mtUser.getGradeId()));
+            if (!gradeId.equals(oldUserInfo.getGradeId())) {
+                openGiftService.openGift(mtUser.getId(), Integer.parseInt(gradeId), false);
             }
         }
         return mtUser;
@@ -435,14 +435,11 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
         mtUser.setStatus(StatusEnum.ENABLED.getKey());
         mtUser.setStoreId(0);
         mtUser.setSource(MemberSourceEnum.MOBILE_LOGIN.getKey());
-
         mtUserMapper.insert(mtUser);
-
-        mtUser = this.queryMemberByMobile(mobile);
+        mtUser = queryMemberByMobile(mobile);
 
         // 开卡赠礼
-        openGiftService.openGift(mtUser.getId(), Integer.parseInt(mtUser.getGradeId()));
-
+        openGiftService.openGift(mtUser.getId(), Integer.parseInt(mtUser.getGradeId()), true);
         return mtUser;
     }
 
@@ -505,7 +502,7 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
                     if (endTime.before(now)) {
                         if (!mtUser.getGradeId().equals(initGrade.getId())) {
                             mtUser.setGradeId(initGrade.getId().toString());
-                            this.updateById(mtUser);
+                            updateById(mtUser);
                         }
                     }
                 }
@@ -513,13 +510,14 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
                 String userGradeId = mtUser.getGradeId();
                 if (userGradeId == null && initGrade != null) {
                     mtUser.setGradeId(initGrade.getId().toString());
-                    this.updateById(mtUser);
+                    updateById(mtUser);
+                    openGiftService.openGift(mtUser.getId(), initGrade.getId(), false);
                 } else {
                     // 会员等级不存在或已禁用、删除，就把会员等级置为初始等级
                     MtUserGrade myGrade = userGradeService.queryUserGradeById(Integer.parseInt(userGradeId));
                     if (myGrade == null || !myGrade.getStatus().equals(StatusEnum.ENABLED.getKey())) {
                         mtUser.setGradeId(initGrade.getId().toString());
-                        this.updateById(mtUser);
+                        updateById(mtUser);
                     }
                 }
             }
@@ -608,14 +606,14 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
             }
             mtUser.setSource(source);
             if (mtUser.getId() == null || mtUser.getId() <= 0) {
-                this.save(mtUser);
+                save(mtUser);
             } else {
-                this.updateById(mtUser);
+                updateById(mtUser);
             }
             user = mtUserMapper.queryMemberByOpenId(openId);
 
             // 开卡赠礼
-            openGiftService.openGift(user.getId(), Integer.parseInt(user.getGradeId()));
+            openGiftService.openGift(user.getId(), Integer.parseInt(user.getGradeId()), true);
         } else {
             // 已被禁用
             if (user.getStatus().equals(StatusEnum.DISABLE.getKey())) {
@@ -624,12 +622,12 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
             // 补充手机号
             if (StringUtil.isNotEmpty(mobile)) {
                 user.setMobile(mobile);
-                this.updateById(user);
+                updateById(user);
             }
             // 补充会员号
             if (StringUtil.isEmpty(user.getUserNo())) {
                 user.setUserNo(CommonUtil.createUserNo());
-                this.updateById(user);
+                updateById(user);
             }
         }
 
@@ -662,13 +660,10 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
         if (null == mtUser) {
             return 0;
         }
-
         mtUser.setStatus(StatusEnum.DISABLE.getKey());
         mtUser.setUpdateTime(new Date());
         mtUser.setOperator(operator);
-
-        this.updateById(mtUser);
-
+        updateById(mtUser);
         return mtUser.getId();
     }
 

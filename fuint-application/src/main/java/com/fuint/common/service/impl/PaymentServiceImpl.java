@@ -123,7 +123,7 @@ public class PaymentServiceImpl implements PaymentService {
 
         // 会员升级订单
         if (mtOrder.getType().equals(OrderTypeEnum.MEMBER.getKey())) {
-            openGiftService.openGift(mtOrder.getUserId(), Integer.parseInt(mtOrder.getParam()));
+            openGiftService.openGift(mtOrder.getUserId(), Integer.parseInt(mtOrder.getParam()), false);
         }
 
         // 处理购物订单
@@ -234,13 +234,13 @@ public class PaymentServiceImpl implements PaymentService {
                                 // 累计消费金额已达到
                                 if (grade.getCatchType().equals(UserGradeCatchTypeEnum.AMOUNT.getKey())) {
                                     if (grade.getGrade().compareTo(mtUserGrade.getGrade()) > 0 && payMoney.compareTo(new BigDecimal(grade.getCatchValue())) >= 0) {
-                                        openGiftService.openGift(mtOrder.getUserId(), grade.getId());
+                                        openGiftService.openGift(mtOrder.getUserId(), grade.getId(), false);
                                     }
                                 }
                                 // 累计消费次数已达到
                                 if (grade.getCatchType().equals(UserGradeCatchTypeEnum.FREQUENCY.getKey()) && payOrderCount.compareTo(grade.getCatchValue()) >= 0) {
                                     if (grade.getGrade().compareTo(mtUserGrade.getGrade()) > 0) {
-                                        openGiftService.openGift(mtOrder.getUserId(), grade.getId());
+                                        openGiftService.openGift(mtOrder.getUserId(), grade.getId(), false);
                                     }
                                 }
                             }

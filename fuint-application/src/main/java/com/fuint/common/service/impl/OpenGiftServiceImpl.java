@@ -17,6 +17,7 @@ import com.fuint.framework.web.ResponseObject;
 import com.fuint.repository.mapper.MtOpenGiftMapper;
 import com.fuint.repository.mapper.MtUserMapper;
 import com.fuint.repository.model.*;
+import com.fuint.utils.StringUtil;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import org.apache.commons.lang.StringUtils;
@@ -209,7 +210,7 @@ public class OpenGiftServiceImpl extends ServiceImpl<MtOpenGiftMapper, MtOpenGif
      * */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void openGift(Integer userId, Integer gradeId) throws BusinessCheckException {
+    public void openGift(Integer userId, Integer gradeId, boolean isNewMember) throws BusinessCheckException {
         Map<String, Object> params = new HashMap<>();
         params.put("grade_id", gradeId.toString());
         params.put("status", StatusEnum.ENABLED.getKey());
@@ -218,31 +219,33 @@ public class OpenGiftServiceImpl extends ServiceImpl<MtOpenGiftMapper, MtOpenGif
         if (user == null) {
             throw new BusinessCheckException("会员状态异常");
         }
-
-        // 保存会员等级
-        if (Integer.parseInt(user.getGradeId()) != gradeId) {
-            user.setGradeId(gradeId.toString());
-            // 设置有效期
-            MtUserGrade gradeInfo = userGradeService.queryUserGradeById(gradeId);
-            if (gradeInfo.getValidDay() > 0) {
-                user.setStartTime(new Date());
-                Date endDate = new Date();
-                Calendar calendar = new GregorianCalendar();
-                calendar.setTime(endDate);
-                calendar.add(calendar.DATE, gradeInfo.getValidDay());
-                endDate = calendar.getTime();
-                user.setEndTime(endDate);
-            }
-            user.setUpdateTime(new Date());
-            mtUserMapper.updateById(user);
+        if (user.getGradeId() == null && StringUtil.isEmpty(user.getGradeId())) {
+            user.setGradeId("0");
         }
-
+        MtUserGrade oldGrade = userGradeService.queryUserGradeById(Integer.parseInt(user.getGradeId()));
+        MtUserGrade gradeInfo = userGradeService.queryUserGradeById(gradeId);
+        // 设置有效期
+        if (gradeInfo.getValidDay() > 0) {
+            user.setStartTime(new Date());
+            Date endDate = new Date();
+            Calendar calendar = new GregorianCalendar();
+            calendar.setTime(endDate);
+            calendar.add(calendar.DATE, gradeInfo.getValidDay());
+            endDate = calendar.getTime();
+            user.setEndTime(endDate);
+        }
+        user.setGradeId(gradeId.toString());
+        user.setUpdateTime(new Date());
+        mtUserMapper.updateById(user);
+        // 会员往低了改变，没有开卡赠礼
+        if (!isNewMember && oldGrade != null && oldGrade.getGrade() >= gradeInfo.getGrade()) {
+            return;
+        }
         List<MtOpenGift> openGiftList = mtOpenGiftMapper.selectByMap(params);
-
         if (openGiftList.size() > 0) {
             Integer totalPoint = 0;
             BigDecimal totalAmount = new BigDecimal("0");
-           for(MtOpenGift item : openGiftList) {
+            for(MtOpenGift item : openGiftList) {
                // 加积分
                if (item.getPoint() > 0) {
                    MtPoint reqPointDto = new MtPoint();
@@ -269,29 +272,26 @@ public class OpenGiftServiceImpl extends ServiceImpl<MtOpenGiftMapper, MtOpenGif
                        // empty
                    }
                }
-           }
-
-           // 弹框消息
-           MtMessage msg = new MtMessage();
-           msg.setType(MessageEnum.POP_MSG.getKey());
-           msg.setUserId(userId);
-           msg.setTitle("温馨提示");
-           msg.setSendTime(new Date());
-           msg.setIsSend(YesOrNoEnum.YES.getKey());
-           msg.setParams("");
-           if (totalAmount.compareTo(new BigDecimal("0")) > 0 && totalPoint > 0) {
-               msg.setContent("系统赠送您价值￥" + totalAmount + "卡券和" + totalPoint + "积分，请注意查收！");
-               messageService.addMessage(msg);
-           } else if(totalAmount.compareTo(new BigDecimal("0")) > 0) {
-               msg.setContent("系统赠送您价值" + totalAmount + "卡券，请注意查收！");
-               messageService.addMessage(msg);
-           } else if(totalPoint > 0) {
-               msg.setContent("系统赠送您" + totalPoint + "积分，请注意查收！");
-               messageService.addMessage(msg);
-           }
+            }
+            // 弹框消息
+            MtMessage msg = new MtMessage();
+            msg.setType(MessageEnum.POP_MSG.getKey());
+            msg.setUserId(userId);
+            msg.setTitle("温馨提示");
+            msg.setSendTime(new Date());
+            msg.setIsSend(YesOrNoEnum.YES.getKey());
+            msg.setParams("");
+            if (totalAmount.compareTo(new BigDecimal("0")) > 0 && totalPoint > 0) {
+                msg.setContent("系统赠送您价值￥" + totalAmount + "卡券和" + totalPoint + "积分，请注意查收！");
+                messageService.addMessage(msg);
+            } else if(totalAmount.compareTo(new BigDecimal("0")) > 0) {
+                msg.setContent("系统赠送您价值" + totalAmount + "卡券，请注意查收！");
+                messageService.addMessage(msg);
+            } else if(totalPoint > 0) {
+                msg.setContent("系统赠送您" + totalPoint + "积分，请注意查收！");
+                messageService.addMessage(msg);
+            }
         }
-
-        return;
     }
 
     /**

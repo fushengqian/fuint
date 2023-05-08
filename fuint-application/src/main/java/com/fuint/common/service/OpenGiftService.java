@@ -57,7 +57,8 @@ public interface OpenGiftService {
      * 开卡赠礼
      * @param userId
      * @param gradeId
+     * @param isNewMember
      * @throws BusinessCheckException
      * */
-    void openGift(Integer userId, Integer gradeId) throws BusinessCheckException;
+    void openGift(Integer userId, Integer gradeId, boolean isNewMember) throws BusinessCheckException;
 }

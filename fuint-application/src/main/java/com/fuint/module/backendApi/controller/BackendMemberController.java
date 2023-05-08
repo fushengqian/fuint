@@ -7,6 +7,7 @@ import com.fuint.common.enums.SettingTypeEnum;
 import com.fuint.common.enums.StatusEnum;
 import com.fuint.common.enums.UserSettingEnum;
 import com.fuint.common.service.*;
+import com.fuint.common.util.DateUtil;
 import com.fuint.common.util.PhoneFormatCheckUtils;
 import com.fuint.common.util.TokenUtil;
 import com.fuint.framework.exception.BusinessCheckException;
@@ -21,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.text.ParseException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -48,12 +50,6 @@ public class BackendMemberController extends BaseController {
      * */
     @Autowired
     private SettingService settingService;
-
-    /**
-     * 员工接口
-     */
-    @Autowired
-    private StaffService staffService;
 
     /**
      * 后台账户服务接口
@@ -246,7 +242,7 @@ public class BackendMemberController extends BaseController {
      */
     @RequestMapping(value = "/save", method = RequestMethod.POST)
     @CrossOrigin
-    public ResponseObject save(HttpServletRequest request, @RequestBody Map<String, Object> param) throws BusinessCheckException {
+    public ResponseObject save(HttpServletRequest request, @RequestBody Map<String, Object> param) throws BusinessCheckException, ParseException {
         String token = request.getHeader("Access-Token");
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
         if (accountInfo == null) {
@@ -264,6 +260,8 @@ public class BackendMemberController extends BaseController {
         String address = param.get("address") == null ? "" : param.get("address").toString();
         String description = param.get("description") == null ? "" : param.get("description").toString();
         String status = param.get("status") == null ? StatusEnum.ENABLED.getKey() : param.get("status").toString();
+        String startTime = param.get("startTime") == null ? "" : param.get("startTime").toString();
+        String endTime = param.get("endTime") == null ? "" : param.get("endTime").toString();
 
         if (!PhoneFormatCheckUtils.isChinaPhoneLegal(mobile) && StringUtil.isNotEmpty(mobile)) {
             return getFailureResult(201, "手机号格式有误！");
@@ -291,11 +289,11 @@ public class BackendMemberController extends BaseController {
         memberInfo.setBirthday(birthday);
         memberInfo.setAddress(address);
         memberInfo.setDescription(description);
-
+        memberInfo.setStartTime(DateUtil.parseDate(startTime));
+        memberInfo.setEndTime(DateUtil.parseDate(endTime));
         TAccount account = accountService.getAccountInfoById(accountInfo.getId());
         Integer storeId = account.getStoreId();
         memberInfo.setStoreId(storeId);
-
         try {
             if (StringUtil.isEmpty(id)) {
                 memberService.addMember(memberInfo);
