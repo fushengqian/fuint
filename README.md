@@ -89,9 +89,9 @@ fuint侧重于线下实体店的私域流量的运营，帮助商户降低获客
 <p><img src="https://fuint-cn.oss-cn-shenzhen.aliyuncs.com/screenshots/coupon-list.png?v=fuint" alt="卡券列表"></p>
 
 <p>收银代客下单功能：店员角色登录后台，从首页的“下单首页”菜单可进入代客收银下单界面，完成代客下单收银的流程。</p>
-<p><img src="https://fuint-cn.oss-cn-shenzhen.aliyuncs.com/screenshots/cashier.png?v=fuint3.0.2" alt="收银界面"></p>
+<p><img src="https://fuint-cn.oss-cn-shenzhen.aliyuncs.com/screenshots/cashier.png?v=fuint3.0.3" alt="收银界面"></p>
 <p>发起结算：</p>
-<p><img src="https://fuint-cn.oss-cn-shenzhen.aliyuncs.com/screenshots/cashier-1.png?v=fuint3.0.2" alt="收银结算"></p>
+<p><img src="https://fuint-cn.oss-cn-shenzhen.aliyuncs.com/screenshots/cashier-1.png?v=fuint3.0.3" alt="收银结算"></p>
 
 #### 开发计划
 1.  完善的报表统计
