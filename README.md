@@ -4,8 +4,8 @@
 fuint会员营销系统是一套开源的实体店铺会员管理和营销系统。系统基于前后端分离的架构，后端采用<b>Java SpringBoot</b> + <b>Mysql</b>，前端基于当前流行的<b>Uniapp</b>，<b>Element UI</b>，支持小程序、h5。主要功能包含电子优惠券、储值卡、集次卡（计次卡）、短信发送、储值卡、会员积分、会员等级权益体系，支付收款等会员日常营销工具。本系统适用于各类实体店铺，如酒吧、酒店、汽车4S店、鲜花店、甜品店、餐饮店等，是实体店铺会员营销必备的一款利器。
 以下是前台的页面展示：
 <p><img src="https://fuint-cn.oss-cn-shenzhen.aliyuncs.com/screenshots/g1.png?v=1" alt="前台页面1"></p>
-<p><img src="https://fuint-cn.oss-cn-shenzhen.aliyuncs.com/screenshots/g2.png?v=1" alt="前台页面2"></p>
-<p><img src="https://fuint-cn.oss-cn-shenzhen.aliyuncs.com/screenshots/g3.png?v=1" alt="前台页面3"></p>
+<p><img src="https://fuint-cn.oss-cn-shenzhen.aliyuncs.com/screenshots/g2.png?v=2" alt="前台页面2"></p>
+<p><img src="https://fuint-cn.oss-cn-shenzhen.aliyuncs.com/screenshots/g3.png?v=2" alt="前台页面3"></p>
 <p><img src="https://fuint-cn.oss-cn-shenzhen.aliyuncs.com/screenshots/g4.png?v=1" alt="前台页面4"></p>
 <p><img src="https://fuint-cn.oss-cn-shenzhen.aliyuncs.com/screenshots/g5.png?v=1" alt="前台页面4"></p>
 

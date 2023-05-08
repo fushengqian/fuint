@@ -416,7 +416,7 @@ public class UserCouponServiceImpl extends ServiceImpl<MtUserCouponMapper, MtUse
                     }
                 }
 
-                // 预存券tips
+                // 储值卡tips
                 if (couponInfo.getType().equals(CouponTypeEnum.PRESTORE.getKey())) {
                     tips = "￥" + userCouponDto .getAmount() + "，余额￥" + userCouponDto.getBalance();
                 }

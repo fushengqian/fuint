@@ -448,7 +448,7 @@ public class CouponServiceImpl extends ServiceImpl<MtCouponMapper, MtCoupon> imp
                 }
             }
 
-            // 预存券卖点
+            // 储值卡卖点
             if (item.getType().equals(CouponTypeEnum.PRESTORE.getKey())) {
                 if (StringUtil.isNotEmpty(item.getInRule())) {
                     String inRuleArr[] = item.getInRule().split(",");

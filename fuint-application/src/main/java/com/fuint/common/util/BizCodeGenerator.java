@@ -15,10 +15,10 @@ import java.util.Random;
  */
 public class BizCodeGenerator {
 
-    private static final Logger log = LoggerFactory.getLogger(BizCodeGenerator.class);
-
+    private static final Logger logger = LoggerFactory.getLogger(BizCodeGenerator.class);
 
     private static String DATE_FORMAT="yyyyMMddHHmmssSSS";
+
     /**
      * 获取指定前缀的Code字符串
      * @param preString 前缀字符串
@@ -45,20 +45,21 @@ public class BizCodeGenerator {
      * @return
      */
     public synchronized static String getVerifyCode() {
-        String verifyCode = getFixLenthString(6);
+        String verifyCode = getFixLengthString(6);
         return verifyCode;
     }
 
-    /*
+    /**
      * 返回长度为【strLength】的随机数，在前面补0
+     * @return
      */
-    private static String getFixLenthString(int strLength) {
+    private static String getFixLengthString(int strLength) {
         Random rm = new Random();
         // 获得随机数
-        double pross = (1 + rm.nextDouble()) * Math.pow(10, strLength);
+        double process = (1 + rm.nextDouble()) * Math.pow(10, strLength);
         // 将获得的获得随机数转化为字符串
-        String fixLenthString = String.valueOf(pross);
+        String codeStr = String.valueOf(process);
         // 返回固定的长度的随机数
-        return fixLenthString.substring(1, strLength + 1);
+        return codeStr.substring(1, strLength + 1);
     }
 }

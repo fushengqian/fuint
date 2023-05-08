@@ -9,6 +9,7 @@ import com.fuint.common.service.DutyService;
 import com.fuint.common.service.SourceService;
 import com.fuint.common.util.TokenUtil;
 import com.fuint.framework.exception.BusinessCheckException;
+import com.fuint.framework.exception.BusinessRuntimeException;
 import com.fuint.framework.pagination.PaginationRequest;
 import com.fuint.framework.pagination.PaginationResponse;
 import com.fuint.framework.web.BaseController;
@@ -232,7 +233,11 @@ public class BackendDutyController extends BaseController {
     @RequestMapping(value = "/delete/{roleId}", method = RequestMethod.POST)
     @CrossOrigin
     public ResponseObject deleteAccount(@PathVariable("roleId") Long roleId) {
-        tDutyService.deleteDuty(roleId);
+        try {
+            tDutyService.deleteDuty(roleId);
+        } catch (BusinessRuntimeException e) {
+            return getFailureResult(201, e.getMessage() == null ? "角色删除失败" : e.getMessage());
+        }
         return getSuccessResult(true);
     }
 }

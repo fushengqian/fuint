@@ -8,6 +8,7 @@ import com.fuint.common.service.DutyService;
 import com.fuint.framework.annoation.OperationServiceLog;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.common.domain.TreeNode;
+import com.fuint.framework.exception.BusinessRuntimeException;
 import com.fuint.framework.pagination.PaginationRequest;
 import com.fuint.framework.pagination.PaginationResponse;
 import com.fuint.repository.mapper.TDutyMapper;
@@ -79,8 +80,12 @@ public class DutyServiceImpl extends ServiceImpl<TDutyMapper, TDuty> implements 
     @Transactional(rollbackFor = Exception.class)
     @OperationServiceLog(description = "删除后台角色")
     public void deleteDuty(long dutyId) {
-        tDutySourceMapper.deleteSourcesByDutyId((int)dutyId);
-        tDutyMapper.deleteById(dutyId);
+        try {
+            tDutySourceMapper.deleteSourcesByDutyId((int) dutyId);
+            tDutyMapper.deleteById(dutyId);
+        } catch (Exception e) {
+            throw new BusinessRuntimeException("该角色已存在关联用户，无法删除");
+        }
     }
 
     /**

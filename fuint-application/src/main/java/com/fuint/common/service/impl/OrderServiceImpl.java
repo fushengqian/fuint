@@ -1080,7 +1080,7 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
         if (userCouponList.size() > 0) {
             for (MtUserCoupon userCoupon : userCouponList) {
                 MtCoupon couponInfo = couponService.queryCouponById(userCoupon.getCouponId());
-                // 优惠券和预存券才能使用
+                // 优惠券和储值卡才能使用
                 if (couponInfo.getType().equals(CouponTypeEnum.COUPON.getKey()) || couponInfo.getType().equals(CouponTypeEnum.PRESTORE.getKey())) {
                     CouponDto couponDto = new CouponDto();
                     couponDto.setId(couponInfo.getId());

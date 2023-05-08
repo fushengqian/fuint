@@ -14,7 +14,7 @@
         <foreach collection="statusList" item="status" separator="," open="(" close=")">
             #{status}
         </foreach>
-        ORDER BY t.BALANCE DESC LIMIT 1000
+        ORDER BY t.BALANCE DESC
     </select>
 
     <select id="getUserCouponListByCouponId" resultType="com.fuint.repository.model.MtUserCoupon">
@@ -22,12 +22,12 @@
         <foreach collection="statusList" item="status" separator="," open="(" close=")">
             #{status}
         </foreach>
-        ORDER BY t.ID DESC LIMIT 1000
+        ORDER BY t.ID DESC
     </select>
 
     <select id="findByCode" resultType="com.fuint.repository.model.MtUserCoupon">
         SELECT * FROM mt_user_coupon t WHERE t.CODE = #{code}
-        ORDER BY t.ID DESC LIMIT 1000
+        ORDER BY t.ID DESC
     </select>
 
     <update id="removeUserCoupon">
@@ -40,7 +40,7 @@
 
     <select id="queryExpireNumByGroupId" resultType="com.fuint.repository.model.MtUserCoupon">
         SELECT * FROM mt_user_coupon t WHERE t.GROUP_ID = #{groupId} AND (t.STATUS = 'A' OR t.STATUS = 'C')
-        ORDER BY t.ID DESC LIMIT 1000
+        ORDER BY t.ID DESC
     </select>
 
     <select id="getCouponIdsByUuid" resultType="java.lang.Integer">
