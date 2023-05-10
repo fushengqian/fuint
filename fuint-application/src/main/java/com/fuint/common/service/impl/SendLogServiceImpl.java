@@ -10,7 +10,6 @@ import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.pagination.PaginationRequest;
 import com.fuint.framework.pagination.PaginationResponse;
 import com.fuint.repository.mapper.MtSendLogMapper;
-import com.fuint.repository.model.MtConfirmLog;
 import com.fuint.repository.model.MtSendLog;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;

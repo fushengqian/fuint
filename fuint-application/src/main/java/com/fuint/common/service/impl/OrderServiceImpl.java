@@ -397,10 +397,10 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
                  // 扣减库存
                  MtGoods goodsInfo = mtGoodsMapper.selectById(cart.getGoodsId());
                  if (goodsInfo.getIsSingleSpec().equals(YesOrNoEnum.YES.getKey())) {
-                     // 单规格
+                     // 单规格减去库存
                      Integer stock = goodsInfo.getStock() - cart.getNum();
                      if (stock < 0) {
-                         throw new BusinessCheckException("商品库存不足，订单提交失败");
+                         throw new BusinessCheckException("商品“" + goodsInfo.getName() + "”库存不足，订单提交失败");
                      }
                      goodsInfo.setStock(stock);
                      mtGoodsMapper.updateById(goodsInfo);
@@ -410,7 +410,7 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
                      if (mtGoodsSku != null) {
                          Integer stock = mtGoodsSku.getStock() - cart.getNum();
                          if (stock < 0) {
-                             throw new BusinessCheckException("商品库存不足，订单提交失败");
+                             throw new BusinessCheckException("商品sku编码“" + mtGoodsSku.getSkuNo() +"”库存不足，订单提交失败");
                          }
                          mtGoodsSku.setStock(stock);
                          mtGoodsSkuMapper.updateById(mtGoodsSku);

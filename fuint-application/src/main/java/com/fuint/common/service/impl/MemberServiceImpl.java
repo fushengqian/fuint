@@ -566,7 +566,7 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
         if (user == null) {
             MtUser mtUser = new MtUser();
             if (StringUtil.isNotEmpty(mobile)) {
-                MtUser mtUserMobile = this.queryMemberByMobile(mobile);
+                MtUser mtUserMobile = queryMemberByMobile(mobile);
                 if (mtUserMobile != null) {
                     mtUser = mtUserMobile;
                 }

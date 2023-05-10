@@ -317,31 +317,29 @@ public class UserCouponServiceImpl extends ServiceImpl<MtUserCouponMapper, MtUse
         String code = paramMap.get("code") == null ? "" : paramMap.get("code").toString();
         String id = paramMap.get("id") == null ? "" : paramMap.get("id").toString();
 
-        Page<MtUserCoupon> pageHelper = PageHelper.startPage(pageNumber, pageSize);
-        LambdaQueryWrapper<MtUserCoupon> lambdaQueryWrapper = Wrappers.lambdaQuery();
-        lambdaQueryWrapper.ne(MtUserCoupon::getStatus, StatusEnum.DISABLE.getKey());
-
         // 处理已失效
         if (pageNumber <= 1 && StringUtil.isNotEmpty(userId)) {
             List<String> statusList = Arrays.asList(UserCouponStatusEnum.UNUSED.getKey());
             List<MtUserCoupon> data = mtUserCouponMapper.getUserCouponList(Integer.parseInt(userId), statusList);
             for (MtUserCoupon uc : data) {
-                MtCoupon coupon = couponService.queryCouponById(uc.getCouponId());
-                // 已过期
-                if (coupon.getEndTime().before(new Date())) {
-                    uc.setStatus(UserCouponStatusEnum.EXPIRE.getKey());
-                    uc.setUpdateTime(new Date());
-                    mtUserCouponMapper.updateById(uc);
-                }
-                // 已删除
-                if (coupon.getStatus().equals(StatusEnum.DISABLE.getKey())) {
-                    uc.setStatus(UserCouponStatusEnum.DISABLE.getKey());
-                    uc.setUpdateTime(new Date());
-                    mtUserCouponMapper.updateById(uc);
-                }
+                 MtCoupon coupon = couponService.queryCouponById(uc.getCouponId());
+                 // 已过期
+                 if (coupon.getEndTime().before(new Date())) {
+                     uc.setStatus(UserCouponStatusEnum.EXPIRE.getKey());
+                     uc.setUpdateTime(new Date());
+                     mtUserCouponMapper.updateById(uc);
+                 }
+                 // 已删除
+                 if (coupon.getStatus().equals(StatusEnum.DISABLE.getKey())) {
+                     uc.setStatus(UserCouponStatusEnum.DISABLE.getKey());
+                     uc.setUpdateTime(new Date());
+                     mtUserCouponMapper.updateById(uc);
+                 }
             }
         }
 
+        LambdaQueryWrapper<MtUserCoupon> lambdaQueryWrapper = Wrappers.lambdaQuery();
+        lambdaQueryWrapper.ne(MtUserCoupon::getStatus, StatusEnum.DISABLE.getKey());
         if (StringUtil.isNotEmpty(status)) {
             lambdaQueryWrapper.eq(MtUserCoupon::getStatus, status);
         }
@@ -368,6 +366,7 @@ public class UserCouponServiceImpl extends ServiceImpl<MtUserCouponMapper, MtUse
         }
 
         lambdaQueryWrapper.orderByDesc(MtUserCoupon::getId);
+        Page<MtUserCoupon> pageHelper = PageHelper.startPage(pageNumber, pageSize);
         List<MtUserCoupon> userCouponList = mtUserCouponMapper.selectList(lambdaQueryWrapper);
         List<MyCouponDto> dataList = new ArrayList<>();
 

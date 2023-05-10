@@ -10,11 +10,11 @@
     </select>
 
     <select id="queryMemberByOpenId" resultType="com.fuint.repository.model.MtUser">
-        select * from mt_user t where t.OPEN_ID = #{openId} and t.STATUS = 'A'
+        select * from mt_user t where t.OPEN_ID = #{openId} and t.STATUS = 'A' limit 1
     </select>
 
     <select id="findMembersByUserNo" resultType="com.fuint.repository.model.MtUser">
-        select * from mt_user t where t.USER_NO = #{userNo} and t.STATUS = 'A'
+        select * from mt_user t where t.USER_NO = #{userNo} and t.STATUS = 'A' limit 1
     </select>
 
     <update id="updateActiveTime">
