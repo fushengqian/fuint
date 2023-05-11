@@ -7,6 +7,7 @@ import com.fuint.common.enums.StatusEnum;
 import com.fuint.common.enums.UserGradeCatchTypeEnum;
 import com.fuint.common.service.UserGradeService;
 import com.fuint.framework.annoation.OperationServiceLog;
+import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.pagination.PaginationRequest;
 import com.fuint.framework.pagination.PaginationResponse;
 import com.fuint.repository.mapper.MtUserGradeMapper;
@@ -85,7 +86,13 @@ public class UserGradeServiceImpl extends ServiceImpl<MtUserGradeMapper, MtUserG
     @Override
     @Transactional(rollbackFor = Exception.class)
     @OperationServiceLog(description = "新增会员等级")
-    public MtUserGrade addUserGrade(MtUserGrade mtUserGrade) {
+    public MtUserGrade addUserGrade(MtUserGrade mtUserGrade) throws BusinessCheckException {
+        if (mtUserGrade.getGrade() != null && (mtUserGrade.getGrade() <= 0)) {
+            throw new BusinessCheckException("会员等级需大于0");
+        }
+        if (mtUserGrade.getDiscount() != null && (mtUserGrade.getDiscount() > 10 || mtUserGrade.getDiscount() < 0)) {
+            throw new BusinessCheckException("会员折扣需在0和10之间");
+        }
         mtUserGradeMapper.insert(mtUserGrade);
         return mtUserGrade;
     }
@@ -109,7 +116,13 @@ public class UserGradeServiceImpl extends ServiceImpl<MtUserGradeMapper, MtUserG
     @Override
     @Transactional(rollbackFor = Exception.class)
     @OperationServiceLog(description = "修改会员等级")
-    public MtUserGrade updateUserGrade(MtUserGrade mtUserGrade) {
+    public MtUserGrade updateUserGrade(MtUserGrade mtUserGrade) throws BusinessCheckException {
+        if (mtUserGrade.getDiscount() != null && (mtUserGrade.getDiscount() > 10 || mtUserGrade.getDiscount() < 0)) {
+            throw new BusinessCheckException("会员折扣需在0和10之间");
+        }
+        if (mtUserGrade.getGrade() != null && (mtUserGrade.getGrade() <= 0)) {
+            throw new BusinessCheckException("会员等级需大于0");
+        }
         MtUserGrade userGrade = mtUserGradeMapper.selectById(mtUserGrade.getId());
         if (null != userGrade) {
             mtUserGradeMapper.updateById(mtUserGrade);

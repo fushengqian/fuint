@@ -4,10 +4,10 @@ import java.io.Serializable;
 import java.util.Date;
 
 /**
- * 焦点图实体类
+ * 文章实体类
  * Created by FSQ
  */
-public class BannerDto implements Serializable {
+public class ArticleDto implements Serializable {
 
     /**
     * 自增ID 
@@ -20,6 +20,11 @@ public class BannerDto implements Serializable {
     private String title;
 
     /**
+     * 简介
+     */
+    private String brief;
+
+    /**
      * 所属店铺
      * */
     private Integer storeId;
@@ -28,6 +33,11 @@ public class BannerDto implements Serializable {
      * 链接地址
      */
     private String url;
+
+    /**
+     * 点击数
+     */
+    private Long click;
 
    /**
     * 图片地址 
@@ -76,6 +86,12 @@ public class BannerDto implements Serializable {
     public void setTitle(String title){
     this.title=title;
     }
+    public String getBrief(){
+        return brief;
+    }
+    public void setBrief(String brief){
+        this.brief=brief;
+    }
     public Integer getStoreId(){
         return storeId;
     }
@@ -87,6 +103,12 @@ public class BannerDto implements Serializable {
     }
     public void setUrl(String url){
         this.url=url;
+    }
+    public Long getClick(){
+        return click;
+    }
+    public void setClick(Long click){
+        this.click=click;
     }
     public String getImage(){
         return image;
