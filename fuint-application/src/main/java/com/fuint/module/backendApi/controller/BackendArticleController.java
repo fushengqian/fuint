@@ -95,7 +95,7 @@ public class BackendArticleController extends BaseController {
             params.put("storeId", storeId);
         }
         paginationRequest.setSearchParams(params);
-        PaginationResponse<MtArticle> paginationResponse = articleService.queryArticleListByPagination(paginationRequest);
+        PaginationResponse<ArticleDto> paginationResponse = articleService.queryArticleListByPagination(paginationRequest);
 
         String imagePath = settingService.getUploadBasePath();
         Map<String, Object> paramsStore = new HashMap<>();

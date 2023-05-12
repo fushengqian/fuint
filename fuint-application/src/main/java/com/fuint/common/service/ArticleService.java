@@ -23,7 +23,7 @@ public interface ArticleService extends IService<MtArticle> {
      * @param paginationRequest
      * @return
      */
-    PaginationResponse<MtArticle> queryArticleListByPagination(PaginationRequest paginationRequest) throws BusinessCheckException;
+    PaginationResponse<ArticleDto> queryArticleListByPagination(PaginationRequest paginationRequest) throws BusinessCheckException;
 
     /**
      * 添加文章
@@ -40,6 +40,14 @@ public interface ArticleService extends IService<MtArticle> {
      * @throws BusinessCheckException
      */
     MtArticle queryArticleById(Integer id) throws BusinessCheckException;
+
+    /**
+     * 根据ID获取文章详情
+     *
+     * @param  id 文章ID
+     * @throws BusinessCheckException
+     */
+    ArticleDto getArticleDetail(Integer id) throws BusinessCheckException;
 
     /**
      * 更新文章

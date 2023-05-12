@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 
 import com.fuint.common.dto.ArticleDto;
 import com.fuint.common.service.ArticleService;
+import com.fuint.common.util.DateUtil;
 import com.fuint.framework.annoation.OperationServiceLog;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.pagination.PaginationRequest;
@@ -18,6 +19,7 @@ import com.fuint.common.enums.StatusEnum;
 import com.github.pagehelper.PageHelper;
 import org.apache.commons.lang.StringUtils;
 import com.github.pagehelper.Page;
+import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -47,7 +49,7 @@ public class ArticleServiceImpl extends ServiceImpl<MtArticleMapper, MtArticle> 
      * @return
      */
     @Override
-    public PaginationResponse<MtArticle> queryArticleListByPagination(PaginationRequest paginationRequest) {
+    public PaginationResponse<ArticleDto> queryArticleListByPagination(PaginationRequest paginationRequest) {
         Page<MtArticle> pageHelper = PageHelper.startPage(paginationRequest.getCurrentPage(), paginationRequest.getPageSize());
         LambdaQueryWrapper<MtArticle> lambdaQueryWrapper = Wrappers.lambdaQuery();
         lambdaQueryWrapper.ne(MtArticle::getStatus, StatusEnum.DISABLE.getKey());
@@ -66,11 +68,20 @@ public class ArticleServiceImpl extends ServiceImpl<MtArticleMapper, MtArticle> 
         }
 
         lambdaQueryWrapper.orderByAsc(MtArticle::getSort);
-        List<MtArticle> dataList = mtArticleMapper.selectList(lambdaQueryWrapper);
+        List<MtArticle> articleList = mtArticleMapper.selectList(lambdaQueryWrapper);
+        List<ArticleDto> dataList = new ArrayList<>();
+
+        String basePath = settingService.getUploadBasePath();
+        for (MtArticle mtArticle : articleList) {
+            ArticleDto articleDto = new ArticleDto();
+            BeanUtils.copyProperties(mtArticle, articleDto);
+            articleDto.setImage(basePath + mtArticle.getImage());
+            dataList.add(articleDto);
+        }
 
         PageRequest pageRequest = PageRequest.of(paginationRequest.getCurrentPage(), paginationRequest.getPageSize());
         PageImpl pageImpl = new PageImpl(dataList, pageRequest, pageHelper.getTotal());
-        PaginationResponse<MtArticle> paginationResponse = new PaginationResponse(pageImpl, MtArticle.class);
+        PaginationResponse<ArticleDto> paginationResponse = new PaginationResponse(pageImpl, ArticleDto.class);
         paginationResponse.setTotalPages(pageHelper.getPages());
         paginationResponse.setTotalElements(pageHelper.getTotal());
         paginationResponse.setContent(dataList);
@@ -117,6 +128,22 @@ public class ArticleServiceImpl extends ServiceImpl<MtArticleMapper, MtArticle> 
     @Override
     public MtArticle queryArticleById(Integer id) {
         return mtArticleMapper.selectById(id);
+    }
+
+    /**
+     * 根据ID获取文章详情
+     *
+     * @param id 文章ID
+     * @return
+     */
+    @Override
+    public ArticleDto getArticleDetail(Integer id) {
+        MtArticle mtArticle = mtArticleMapper.selectById(id);
+        ArticleDto articleDto = new ArticleDto();
+        BeanUtils.copyProperties(mtArticle, articleDto);
+        String baseImage = settingService.getUploadBasePath();
+        articleDto.setImage(baseImage + mtArticle.getImage());
+        return articleDto;
     }
 
     /**

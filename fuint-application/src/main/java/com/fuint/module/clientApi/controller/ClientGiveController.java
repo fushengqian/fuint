@@ -129,17 +129,13 @@ public class ClientGiveController extends BaseController {
         paginationRequest.setSearchParams(searchParams);
         PaginationResponse<GiveDto> paginationResponse = giveService.queryGiveListByPagination(paginationRequest);
 
-        ResponseObject responseObject;
         Map<String, Object> outParams = new HashMap();
         outParams.put("content", paginationResponse.getContent());
         outParams.put("pageSize", paginationResponse.getPageSize());
         outParams.put("pageNumber", paginationResponse.getCurrentPage());
         outParams.put("totalRow", paginationResponse.getTotalElements());
         outParams.put("totalPage", paginationResponse.getTotalPages());
-
-        responseObject = getSuccessResult(outParams);
-
-        return getSuccessResult(responseObject.getData());
+        return getSuccessResult(outParams);
     }
 }
 

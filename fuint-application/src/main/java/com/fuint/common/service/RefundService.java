@@ -61,14 +61,14 @@ public interface RefundService extends IService<MtRefund> {
 
     /**
      * 更新售后订单
-     * @param reqDto
+     * @param  reqDto
      * @throws BusinessCheckException
      * */
     MtRefund updateRefund(RefundDto reqDto) throws BusinessCheckException;
 
     /**
      * 同意售后订单
-     * @param reqDto
+     * @param  reqDto
      * @throws BusinessCheckException
      * */
     MtRefund agreeRefund(RefundDto reqDto) throws BusinessCheckException;

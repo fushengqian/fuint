@@ -35,7 +35,6 @@ public class DateUtil {
         if(StringUtils.isEmpty(pattern)) {
             pattern = "yyyy-MM-dd";
         }
-
         return DateFormatUtils.format(date, pattern);
     }
 
@@ -43,7 +42,6 @@ public class DateUtil {
         if(StringUtils.isEmpty(pattern)) {
             pattern = "yyyy-MM-dd";
         }
-
         return DateFormatUtils.format(calendar, pattern);
     }
 
