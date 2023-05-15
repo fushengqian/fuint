@@ -127,8 +127,16 @@ public class UserCouponServiceImpl extends ServiceImpl<MtUserCouponMapper, MtUse
         String receiveCode = paramMap.get("receiveCode") == null ? "" : paramMap.get("receiveCode").toString();
 
         MtCoupon couponInfo = couponService.queryCouponById(couponId);
-        if (null == couponInfo) {
-            throw new BusinessCheckException(Message.COUPON_NOT_EXIST);
+        if (couponInfo == null) {
+            MtUserCoupon userCoupon = mtUserCouponMapper.findByCode(receiveCode);
+            if (userCoupon != null) {
+                couponInfo = couponService.queryCouponById(userCoupon.getCouponId());
+            } else {
+                throw new BusinessCheckException(Message.CODE_ERROR);
+            }
+            if (couponInfo == null) {
+                throw new BusinessCheckException(Message.COUPON_NOT_EXIST);
+            }
         }
 
         // 卡券类型检查

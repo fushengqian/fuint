@@ -49,12 +49,6 @@ public class MerchantMemberController extends BaseController {
     private UserGradeService userGradeService;
 
     /**
-     * 店铺员工服务接口
-     * */
-    @Autowired
-    private StaffService staffService;
-
-    /**
      * 会员列表查询
      *
      * @param request  HttpServletRequest对象
@@ -116,12 +110,6 @@ public class MerchantMemberController extends BaseController {
         UserInfo userInfo = TokenUtil.getUserInfoByToken(token);
         if (userInfo == null) {
             return getFailureResult(1001, "请先登录");
-        }
-
-        MtUser mtUser = memberService.queryMemberById(userInfo.getId());
-        MtStaff staffInfo = staffService.queryStaffByMobile(mtUser.getMobile());
-        if (staffInfo != null && staffInfo.getStoreId() != null) {
-            params.put("storeId", staffInfo.getStoreId());
         }
 
         // 注册时间比对
