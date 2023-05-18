@@ -1,8 +1,8 @@
 package com.fuint.module.backendApi.controller;
 
-import com.fuint.common.Constants;
 import com.fuint.common.dto.*;
 import com.fuint.common.enums.*;
+import com.fuint.common.param.OrderListParam;
 import com.fuint.common.service.*;
 import com.fuint.common.util.TokenUtil;
 import com.fuint.framework.exception.BusinessCheckException;
@@ -69,62 +69,23 @@ public class BackendOrderController extends BaseController {
     /**
      * 订单列表查询
      *
-     * @param request  HttpServletRequest对象
+     * @param request HttpServletRequest对象
      * @return
      */
-    @RequestMapping(value = "/list", method = RequestMethod.GET)
+    @RequestMapping(value = "/list", method = RequestMethod.POST)
     @CrossOrigin
-    public ResponseObject list(HttpServletRequest request) throws BusinessCheckException {
+    public ResponseObject list(HttpServletRequest request, @RequestBody OrderListParam orderListParam) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
-        Integer page = request.getParameter("page") == null ? Constants.PAGE_NUMBER : Integer.parseInt(request.getParameter("page"));
-        Integer pageSize = request.getParameter("pageSize") == null ? Constants.PAGE_SIZE : Integer.parseInt(request.getParameter("pageSize"));
-        String type = request.getParameter("type");
-        String orderSn = request.getParameter("orderSn");
-        String status = request.getParameter("status");
-        String payStatus = request.getParameter("payStatus");
-        String userId = request.getParameter("userId");
-        String mobile = request.getParameter("mobile");
-        String orderMode = request.getParameter("orderMode");
-        String storeIds = request.getParameter("storeIds");
-
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
         if (accountInfo == null) {
             return getFailureResult(1001, "请先登录");
         }
-
-        Map<String, Object> param = new HashMap<>();
-        param.put("pageNumber", page);
-        param.put("pageSize", pageSize);
-        if (StringUtil.isNotEmpty(type)) {
-            param.put("type", type);
-        }
-        if (StringUtil.isNotEmpty(orderSn)) {
-            param.put("orderSn", orderSn);
-        }
-        if (StringUtil.isNotEmpty(status)) {
-            param.put("status", status);
-        }
-        if (StringUtil.isNotEmpty(payStatus)) {
-            param.put("payStatus", payStatus);
-        }
-        if (StringUtil.isNotEmpty(userId)) {
-            param.put("userId", userId);
-        }
-        if (StringUtil.isNotEmpty(mobile)) {
-            param.put("mobile", mobile);
-        }
-        if (StringUtil.isNotEmpty(orderMode)) {
-            param.put("orderMode", orderMode);
-        }
-        if (StringUtil.isNotEmpty(storeIds)) {
-            param.put("storeIds", storeIds);
-        }
         TAccount account = accountService.getAccountInfoById(accountInfo.getId());
         Integer storeId = account.getStoreId();
         if (storeId > 0) {
-            param.put("storeId", storeId);
+            orderListParam.setStoreId(storeId.toString());
         }
-        ResponseObject response = orderService.getUserOrderList(param);
+        ResponseObject response = orderService.getUserOrderList(orderListParam);
         // 订单类型列表
         OrderTypeEnum[] typeListEnum = OrderTypeEnum.values();
         List<ParamDto> typeList = new ArrayList<>();
@@ -397,16 +358,13 @@ public class BackendOrderController extends BaseController {
 
     /**
      * 最新订单列表查询
-     * @param request  HttpServletRequest对象
+     * @param request HttpServletRequest对象
      * @return
      */
-    @RequestMapping(value = "/latest", method = RequestMethod.GET)
+    @RequestMapping(value = "/latest", method = RequestMethod.POST)
     @CrossOrigin
-    public ResponseObject latest(HttpServletRequest request) throws BusinessCheckException {
+    public ResponseObject latest(HttpServletRequest request, @RequestBody OrderListParam orderListParam) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
-        Integer pageSize = request.getParameter("pageSize") == null ? Constants.PAGE_SIZE : Integer.parseInt(request.getParameter("pageSize"));
-        Integer page = request.getParameter("page") == null ? Constants.PAGE_NUMBER : Integer.parseInt(request.getParameter("page"));
-
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
         if (accountInfo == null) {
             return getFailureResult(1001, "请先登录");
@@ -418,21 +376,17 @@ public class BackendOrderController extends BaseController {
             return getSuccessResult(result);
         }
 
-        Map<String, Object> param = new HashMap<>();
-        param.put("pageNumber", page);
-        param.put("pageSize", pageSize);
-
         TAccount account = accountService.getAccountInfoById(accountInfo.getId());
         Integer storeId = account.getStoreId();
         Integer staffId = account.getStaffId();
         if (storeId > 0) {
-            param.put("storeId", storeId.toString());
+            orderListParam.setStoreId(storeId.toString());
         }
         if (staffId > 0) {
-            param.put("staffId", staffId.toString());
+            orderListParam.setStaffId(staffId.toString());
         }
 
-        ResponseObject response = orderService.getUserOrderList(param);
+        ResponseObject response = orderService.getUserOrderList(orderListParam);
         return getSuccessResult(response.getData());
     }
 

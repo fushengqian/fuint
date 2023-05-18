@@ -2,6 +2,7 @@ package com.fuint.common.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.fuint.common.dto.ReqCouponDto;
+import com.fuint.common.param.CouponListParam;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.pagination.PaginationRequest;
 import com.fuint.framework.pagination.PaginationResponse;
@@ -12,7 +13,6 @@ import com.fuint.repository.model.MtUserCoupon;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.util.List;
-import java.util.Map;
 
 /**
  * 卡券业务接口
@@ -57,10 +57,10 @@ public interface CouponService extends IService<MtCoupon> {
 
     /**
      * 获取卡券列表
-     * @param paramMap 查询参数
+     * @param  couponListParam 查询参数
      * @throws BusinessCheckException
      * */
-    ResponseObject findCouponList(Map<String, Object> paramMap) throws BusinessCheckException;
+    ResponseObject findCouponList(CouponListParam couponListParam) throws BusinessCheckException;
 
     /**
      * 发放卡券

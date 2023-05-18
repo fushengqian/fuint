@@ -9,6 +9,7 @@ import com.fuint.framework.web.ResponseObject;
 import com.fuint.utils.StringUtil;
 import com.aliyun.oss.OSS;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,6 +54,7 @@ public class ClientFileController extends BaseController {
      * @param request
      * @throws IOException
      */
+    @ApiOperation(value = "上传文件")
     @RequestMapping(value = "/upload", method = RequestMethod.POST)
     @CrossOrigin
     public ResponseObject upload(HttpServletRequest request) {

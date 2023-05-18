@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fuint.common.dto.GiveDto;
 import com.fuint.common.enums.StatusEnum;
+import com.fuint.common.param.GiveParam;
 import com.fuint.common.service.*;
 import com.fuint.common.util.DateUtil;
 import com.fuint.framework.exception.BusinessCheckException;
@@ -128,26 +129,26 @@ public class GiveServiceImpl extends ServiceImpl<MtGiveMapper, MtGive> implement
     /**
      * 卡券转赠
      *
-     * @param  paramMap
+     * @param  giveParam
      * @throws BusinessCheckException
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public ResponseObject addGive(Map<String, Object> paramMap) throws BusinessCheckException {
+    public ResponseObject addGive(GiveParam giveParam) throws BusinessCheckException {
         MtGive give = new MtGive();
 
-        String mobile = paramMap.get("mobile") == null ? "" : paramMap.get("mobile").toString();
-        String couponId = paramMap.get("couponId") == null ? "" : paramMap.get("couponId").toString();
-        String note = paramMap.get("note") == null ? "" : paramMap.get("note").toString();
-        String message = paramMap.get("message") == null ? "" : paramMap.get("message").toString();
-        Integer userId = paramMap.get("userId") == null ? 0 : (Integer) paramMap.get("userId");
-        Integer storeId = paramMap.get("storeId") == null ? 0 : (Integer) paramMap.get("storeId");
+        String mobile = giveParam.getMobile() == null ? "" : giveParam.getMobile();
+        String couponId = giveParam.getCouponId() == null ? "" : giveParam.getCouponId();
+        String note = giveParam.getNote() == null ? "" : giveParam.getNote();
+        String message = giveParam.getMessage() == null ? "" : giveParam.getMessage();
+        Integer userId = giveParam.getUserId() == null ? 0 : giveParam.getUserId();
+        Integer storeId = giveParam.getStoreId() == null ? 0 : giveParam.getStoreId();
 
         if (StringUtil.isEmpty(mobile) || mobile.length() > 11 || mobile.length() < 11) {
             throw new BusinessCheckException("转增对象手机号有误");
         }
 
-        if (StringUtil.isEmpty(couponId)) {
+        if (couponId == null) {
             throw new BusinessCheckException("转增卡券不能为空");
         }
 

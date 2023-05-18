@@ -5,6 +5,7 @@ import com.fuint.common.dto.AccountInfo;
 import com.fuint.common.dto.UserDto;
 import com.fuint.common.dto.UserInfo;
 import com.fuint.common.enums.StatusEnum;
+import com.fuint.common.param.MemberListParam;
 import com.fuint.common.service.*;
 import com.fuint.common.util.DateUtil;
 import com.fuint.common.util.TokenUtil;
@@ -51,27 +52,27 @@ public class MerchantMemberController extends BaseController {
     /**
      * 会员列表查询
      *
-     * @param request  HttpServletRequest对象
+     * @param  request HttpServletRequest对象
      * @return 会员列表
      */
-    @RequestMapping(value = "/list", method = RequestMethod.GET)
+    @RequestMapping(value = "/list", method = RequestMethod.POST)
     @CrossOrigin
-    public ResponseObject list(HttpServletRequest request) throws BusinessCheckException {
+    public ResponseObject list(HttpServletRequest request, @RequestBody MemberListParam memberListParam) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
-        String mobile = request.getParameter("mobile");
-        String userId = request.getParameter("id");
-        String name = request.getParameter("name");
-        String birthday = request.getParameter("birthday");
-        String userNo = request.getParameter("userNo");
-        String gradeId = request.getParameter("gradeId");
-        String orderBy = request.getParameter("orderBy") == null ? "" : request.getParameter("orderBy");
-        String regTime = request.getParameter("regTime") == null ? "" : request.getParameter("regTime");
-        String activeTime = request.getParameter("activeTime") == null ? "" : request.getParameter("activeTime");
-        String memberTime = request.getParameter("memberTime") == null ? "" : request.getParameter("memberTime");
-        String status = request.getParameter("status");
-        String dataType = request.getParameter("dataType");
-        Integer page = request.getParameter("page") == null ? Constants.PAGE_NUMBER : Integer.parseInt(request.getParameter("page"));
-        Integer pageSize = request.getParameter("pageSize") == null ? Constants.PAGE_SIZE : Integer.parseInt(request.getParameter("pageSize"));
+        String mobile = memberListParam.getMobile();
+        String userId = memberListParam.getId();
+        String name = memberListParam.getName();
+        String birthday = memberListParam.getBirthday();
+        String userNo = memberListParam.getUserNo();
+        String gradeId = memberListParam.getGradeId();
+        String orderBy = memberListParam.getOrderBy() == null ? "" : memberListParam.getOrderBy();
+        String regTime = memberListParam.getRegTime() == null ? "" : memberListParam.getRegTime();
+        String activeTime = memberListParam.getActiveTime() == null ? "" : memberListParam.getActiveTime();
+        String memberTime = memberListParam.getMemberTime() == null ? "" : memberListParam.getMemberTime();
+        String status = memberListParam.getStatus();
+        String dataType = memberListParam.getDataType();
+        Integer page = memberListParam.getPage() == null ? Constants.PAGE_NUMBER : memberListParam.getPage();
+        Integer pageSize = memberListParam.getPageSize() == null ? Constants.PAGE_SIZE : memberListParam.getPageSize();
 
         // 今日注册、今日活跃
         if (dataType.equals("todayRegister")) {
@@ -168,6 +169,7 @@ public class MerchantMemberController extends BaseController {
      * 会员详情
      *
      * @param request
+     * @param id 会员ID
      * @return
      */
     @RequestMapping(value = "/info/{id}", method = RequestMethod.GET)

@@ -14,6 +14,7 @@ import com.fuint.framework.pagination.PaginationRequest;
 import com.fuint.framework.pagination.PaginationResponse;
 import com.fuint.framework.web.BaseController;
 import com.fuint.framework.web.ResponseObject;
+import com.fuint.module.backendApi.request.DutyStatusRequest;
 import com.fuint.repository.model.TDuty;
 import com.fuint.repository.model.TSource;
 import com.fuint.utils.StringUtil;
@@ -237,6 +238,23 @@ public class BackendDutyController extends BaseController {
             tDutyService.deleteDuty(roleId);
         } catch (BusinessRuntimeException e) {
             return getFailureResult(201, e.getMessage() == null ? "角色删除失败" : e.getMessage());
+        }
+        return getSuccessResult(true);
+    }
+
+    /**
+     * 修改状态
+     *
+     * @return
+     * @throws BusinessCheckException
+     */
+    @RequestMapping(value = "/changeStatus", method = RequestMethod.POST)
+    @CrossOrigin
+    public ResponseObject changeStatus(@RequestBody DutyStatusRequest dutyStatusRequest) {
+        try {
+            tDutyService.updateStatus(dutyStatusRequest);
+        } catch (BusinessCheckException e) {
+            return getFailureResult(201, e.getMessage() == null ? "操作失败" : e.getMessage());
         }
         return getSuccessResult(true);
     }

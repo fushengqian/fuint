@@ -4,6 +4,7 @@ import com.fuint.common.dto.AccountInfo;
 import com.fuint.common.dto.OrderDto;
 import com.fuint.common.dto.UserInfo;
 import com.fuint.common.enums.*;
+import com.fuint.common.param.SettlementParam;
 import com.fuint.common.service.*;
 import com.fuint.common.util.CommonUtil;
 import com.fuint.common.util.DateUtil;
@@ -18,7 +19,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
@@ -99,33 +99,34 @@ public class SettlementServiceImpl implements SettlementService {
     private PaymentService paymentService;
 
     /**
-     * 订单提交结算
+     * 订单结算
      * @return
      * */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public Map<String, Object> doSubmit(HttpServletRequest request, @RequestBody Map<String, Object> param) throws BusinessCheckException {
+    public Map<String, Object> doSubmit(HttpServletRequest request, SettlementParam param) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
-        String platform = request.getHeader("platform") == null ? "" : request.getHeader("platform");
-        String cartIds = param.get("cartIds") == null ? "" : param.get("cartIds").toString();
-        Integer targetId = param.get("targetId") == null ? 0 : Integer.parseInt(param.get("targetId").toString()); // 储值卡、升级等级必填
-        String selectNum = param.get("selectNum") == null ? "" : param.get("selectNum").toString(); // 储值卡必填
-        String remark = param.get("remark") == null ? "" : param.get("remark").toString();
-        String type = param.get("type") == null ? "" : param.get("type").toString(); // 订单类型
-        String payAmount = param.get("payAmount") == null ? "0" : StringUtil.isEmpty(param.get("payAmount").toString()) ? "0" : param.get("payAmount").toString(); // 支付金额
-        Integer usePoint = param.get("usePoint") == null ? 0 : Integer.parseInt(param.get("usePoint").toString()); // 使用积分数量
-        Integer couponId = param.get("couponId") == null ? 0 : Integer.parseInt(param.get("couponId").toString()); // 会员卡券ID
-        String payType = param.get("payType") == null ? PayTypeEnum.JSAPI.getKey() : param.get("payType").toString();
-        String authCode = param.get("authCode") == null ? "" : param.get("authCode").toString();
         Integer storeId = request.getHeader("storeId") == null ? 0 : Integer.parseInt(request.getHeader("storeId"));
-        Integer userId = param.get("userId") == null ? 0 : (StringUtil.isNotEmpty(param.get("userId").toString()) ? Integer.parseInt(param.get("userId").toString()) : 0); // 指定下单会员 eg:收银功能
-        String cashierPayAmount = param.get("cashierPayAmount") == null ? "" : param.get("cashierPayAmount").toString(); // 收银台实付金额
-        String cashierDiscountAmount = param.get("cashierDiscountAmount") == null ? "" : param.get("cashierDiscountAmount").toString(); // 收银台优惠金额
-        Integer goodsId = param.get("goodsId") == null ? 0 : Integer.parseInt(param.get("goodsId").toString()); // 立即购买商品ID
-        Integer skuId = param.get("skuId") == null ? 0 : Integer.parseInt(param.get("skuId").toString()); // 立即购买商品skuId
-        Integer buyNum = param.get("buyNum") == null ? 1 : Integer.parseInt(param.get("buyNum").toString()); // 立即购买商品数量
-        String orderMode = param.get("orderMode") == null ? "" : param.get("orderMode").toString(); // 订单模式(配送or自取)
-        Integer orderId = param.get("orderId") == null ? null : Integer.parseInt(param.get("orderId").toString()); // 订单ID
+        String platform = request.getHeader("platform") == null ? "" : request.getHeader("platform");
+
+        String cartIds = param.getCartIds() == null ? "" : param.getCartIds();
+        Integer targetId = param.getTargetId() == null ? 0 : Integer.parseInt(param.getTargetId()); // 储值卡、升级等级必填
+        String selectNum = param.getSelectNum() == null ? "" : param.getSelectNum(); // 储值卡必填
+        String remark = param.getRemark() == null ? "" : param.getRemark();
+        String type = param.getType() == null ? "" : param.getType(); // 订单类型
+        String payAmount = param.getPayAmount() == null ? "0" : StringUtil.isEmpty(param.getPayAmount()) ? "0" : param.getPayAmount(); // 支付金额
+        Integer usePoint = param.getUsePoint() == null ? 0 : param.getUsePoint(); // 使用积分数量
+        Integer couponId = param.getCouponId() == null ? 0 : param.getCouponId(); // 会员卡券ID
+        String payType = param.getPayType() == null ? PayTypeEnum.JSAPI.getKey() : param.getPayType();
+        String authCode = param.getAuthCode() == null ? "" : param.getAuthCode();
+        Integer userId = param.getUserId() == null ? 0 : param.getUserId(); // 指定下单会员 eg:收银功能
+        String cashierPayAmount = param.getCashierPayAmount() == null ? "" : param.getCashierPayAmount(); // 收银台实付金额
+        String cashierDiscountAmount = param.getCashierDiscountAmount() == null ? "" : param.getCashierDiscountAmount(); // 收银台优惠金额
+        Integer goodsId = param.getGoodsId() == null ? 0 : param.getGoodsId(); // 立即购买商品ID
+        Integer skuId = param.getSkuId() == null ? 0 : param.getSkuId(); // 立即购买商品skuId
+        Integer buyNum = param.getBuyNum() == null ? 1 : param.getBuyNum(); // 立即购买商品数量
+        String orderMode = param.getOrderMode()== null ? "" : param.getOrderMode(); // 订单模式(配送or自取)
+        Integer orderId = param.getOrderId() == null ? null : param.getOrderId(); // 订单ID
 
         UserInfo loginInfo = TokenUtil.getUserInfoByToken(token);
         MtUser userInfo = null;
@@ -165,7 +166,7 @@ public class SettlementServiceImpl implements SettlementService {
 
         // 收银台通过手机号自动注册会员信息
         if ((userInfo == null || StringUtil.isEmpty(token))) {
-            String mobile = param.get("mobile") == null ? "" : param.get("mobile").toString();
+            String mobile = param.getMobile() == null ? "" : param.getMobile();
             if (StringUtil.isNotEmpty(operator) && StringUtil.isNotEmpty(mobile)) {
                 userInfo = memberService.queryMemberByMobile(mobile);
                 // 自动注册会员
@@ -190,7 +191,7 @@ public class SettlementServiceImpl implements SettlementService {
                 userInfo = memberService.queryMemberById(userId);
             }
         }
-        param.put("userId", userId);
+        param.setUserId(userId);
 
         // 订单所属店铺
         if (storeId < 1) {
@@ -314,7 +315,7 @@ public class SettlementServiceImpl implements SettlementService {
         }
 
         orderDto.setId(orderInfo.getId());
-        param.put("orderId", orderInfo.getId());
+        param.setOrderId(orderInfo.getId());
 
         // 收银台实付金额、优惠金额
         if ((StringUtil.isNotEmpty(cashierPayAmount) || StringUtil.isNotEmpty(cashierDiscountAmount)) && StringUtil.isNotEmpty(operator)) {

@@ -1,10 +1,12 @@
 package com.fuint.module.clientApi.controller;
 
+import com.fuint.common.param.SettlementParam;
 import com.fuint.common.service.SettlementService;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.web.BaseController;
 import com.fuint.framework.web.ResponseObject;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
@@ -28,11 +30,12 @@ public class ClientSettlementController extends BaseController {
     SettlementService settlementService;
 
     /**
-     * 结算提交
+     * 订单结算
      */
+    @ApiOperation(value = "提交订单结算")
     @RequestMapping(value = "/submit", method = RequestMethod.POST)
     @CrossOrigin
-    public ResponseObject submit(HttpServletRequest request, @RequestBody Map<String, Object> param) {
+    public ResponseObject submit(HttpServletRequest request, @RequestBody SettlementParam param) {
         try {
             Map<String, Object> result = settlementService.doSubmit(request, param);
             return getSuccessResult(result);

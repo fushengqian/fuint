@@ -2,6 +2,7 @@ package com.fuint.common.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.fuint.common.dto.GiveDto;
+import com.fuint.common.param.GiveParam;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.pagination.PaginationRequest;
 import com.fuint.framework.pagination.PaginationResponse;
@@ -31,10 +32,10 @@ public interface GiveService extends IService<MtGive> {
     /**
      * 转赠卡券
      *
-     * @param paramMap
+     * @param giveParam
      * @throws BusinessCheckException
      */
-    ResponseObject addGive(Map<String, Object> paramMap) throws BusinessCheckException;
+    ResponseObject addGive(GiveParam giveParam) throws BusinessCheckException;
 
     /**
      * 根据组ID获取信息

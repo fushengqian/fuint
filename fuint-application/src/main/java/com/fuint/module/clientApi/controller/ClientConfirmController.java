@@ -2,6 +2,7 @@ package com.fuint.module.clientApi.controller;
 
 import com.fuint.common.dto.UserInfo;
 import com.fuint.common.enums.StatusEnum;
+import com.fuint.common.param.ConfirmParam;
 import com.fuint.common.service.CouponService;
 import com.fuint.common.service.MemberService;
 import com.fuint.common.service.StaffService;
@@ -16,6 +17,7 @@ import com.fuint.repository.model.MtUser;
 import com.fuint.repository.model.MtUserCoupon;
 import com.fuint.utils.StringUtil;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -61,15 +63,16 @@ public class ClientConfirmController extends BaseController {
     /**
      * 核销卡券
      *
-     * @param param Request对象
+     * @param confirmParam Request对象
      */
+    @ApiOperation(value = "核销卡券")
     @RequestMapping(value = "/doConfirm", method = RequestMethod.POST)
     @CrossOrigin
-    public ResponseObject doConfirm(HttpServletRequest request, @RequestBody Map<String, Object> param) throws BusinessCheckException {
+    public ResponseObject doConfirm(HttpServletRequest request, @RequestBody ConfirmParam confirmParam) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
-        String code = param.get("code") == null ? "" : param.get("code").toString();
-        String amount = (param.get("amount") == null || param.get("amount") == "") ? "0" : param.get("amount").toString();
-        String remark = param.get("remark") == null ? "" : param.get("remark").toString();
+        String code = confirmParam.getCode() == null ? "" : confirmParam.getCode();
+        String amount = (confirmParam.getAmount() == null || confirmParam.getAmount() == "") ? "0" : confirmParam.getAmount();
+        String remark = confirmParam.getRemark() == null ? "" : confirmParam.getRemark();
 
         if (StringUtil.isEmpty(token)) {
             return getFailureResult(1001);

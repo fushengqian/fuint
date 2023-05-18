@@ -4,6 +4,7 @@ import com.fuint.common.dto.AddressDto;
 import com.fuint.common.dto.UserInfo;
 import com.fuint.common.enums.StatusEnum;
 import com.fuint.common.enums.YesOrNoEnum;
+import com.fuint.common.param.AddressDetailParam;
 import com.fuint.common.service.AddressService;
 import com.fuint.common.util.TokenUtil;
 import com.fuint.framework.exception.BusinessCheckException;
@@ -158,19 +159,17 @@ public class ClientAddressController extends BaseController {
      * 获取收货地址详情
      */
     @ApiOperation(value="获取收货地址详情", notes="根据ID获取会员收货地址详情")
-    @RequestMapping(value = "/detail", method = RequestMethod.GET)
+    @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @CrossOrigin
-    public ResponseObject detail(HttpServletRequest request) throws BusinessCheckException, InvocationTargetException, IllegalAccessException {
-        String addressIdStr = request.getParameter("addressId") == null ? "" : request.getParameter("addressId");
+    public ResponseObject detail(HttpServletRequest request, @RequestBody AddressDetailParam addressDetailParam) throws BusinessCheckException, InvocationTargetException, IllegalAccessException {
+        String token = request.getHeader("Access-Token");
+        String addressIdStr = addressDetailParam.getAddressId() == null ? "" : addressDetailParam.getAddressId();
         Integer addressId = 0;
         if (StringUtil.isNotEmpty(addressIdStr)) {
             addressId = Integer.parseInt(addressIdStr);
         }
 
-        String token = request.getHeader("Access-Token");
-
         Map<String, Object> result = new HashMap<>();
-
         UserInfo mtUser = TokenUtil.getUserInfoByToken(token);
 
         if (null == mtUser || StringUtil.isEmpty(token)) {

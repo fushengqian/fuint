@@ -2,6 +2,8 @@ package com.fuint.module.merchantApi.controller;
 
 import com.fuint.common.dto.UserInfo;
 import com.fuint.common.dto.UserOrderDto;
+import com.fuint.common.param.OrderDetailParam;
+import com.fuint.common.param.OrderListParam;
 import com.fuint.common.service.OrderService;
 import com.fuint.common.util.TokenUtil;
 import com.fuint.framework.exception.BusinessCheckException;
@@ -13,7 +15,6 @@ import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
-import java.util.Map;
 
 /**
  * 订单类controller
@@ -33,11 +34,11 @@ public class MerchantOrderController extends BaseController {
     private OrderService orderService;
 
     /**
-     * 获取我的订单列表
+     * 获取订单列表
      */
-    @RequestMapping(value = "/list", method = RequestMethod.GET)
+    @RequestMapping(value = "/list", method = RequestMethod.POST)
     @CrossOrigin
-    public ResponseObject list(HttpServletRequest request, @RequestParam Map<String, Object> param) throws BusinessCheckException {
+    public ResponseObject list(HttpServletRequest request, @RequestBody OrderListParam orderListParam) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
         UserInfo userInfo = TokenUtil.getUserInfoByToken(token);
 
@@ -45,29 +46,29 @@ public class MerchantOrderController extends BaseController {
             return getFailureResult(1001, "用户未登录");
         }
 
-        ResponseObject orderData = orderService.getUserOrderList(param);
+        ResponseObject orderData = orderService.getUserOrderList(orderListParam);
         return getSuccessResult(orderData.getData());
     }
 
     /**
      * 获取订单详情
      */
-    @RequestMapping(value = "/detail", method = RequestMethod.GET)
+    @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @CrossOrigin
-    public ResponseObject detail(HttpServletRequest request) throws BusinessCheckException {
+    public ResponseObject detail(HttpServletRequest request, @RequestBody OrderDetailParam orderDetailParam) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
-        String orderId = request.getParameter("orderId");
 
         UserInfo userInfo = TokenUtil.getUserInfoByToken(token);
         if (userInfo == null) {
             return getFailureResult(1001, "用户未登录");
         }
 
-        if (StringUtil.isEmpty(orderId)) {
+        String orderId = orderDetailParam.getOrderId();
+        if (orderId == null || StringUtil.isEmpty(orderId)) {
             return getFailureResult(2000, "订单不能为空");
         }
 
-        UserOrderDto orderInfo = orderService.getMyOrderById(Integer.parseInt(orderId));
+        UserOrderDto orderInfo = orderService.getMyOrderById(Integer.parseInt(orderDetailParam.getOrderId()));
 
         return getSuccessResult(orderInfo);
     }
@@ -75,9 +76,9 @@ public class MerchantOrderController extends BaseController {
     /**
      * 取消订单
      */
-    @RequestMapping(value = "/cancel", method = RequestMethod.GET)
+    @RequestMapping(value = "/cancel", method = RequestMethod.POST)
     @CrossOrigin
-    public ResponseObject cancel(HttpServletRequest request) throws BusinessCheckException {
+    public ResponseObject cancel(HttpServletRequest request, @RequestBody OrderDetailParam orderDetailParam) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
         UserInfo mtUser = TokenUtil.getUserInfoByToken(token);
 
@@ -85,8 +86,8 @@ public class MerchantOrderController extends BaseController {
             return getFailureResult(1001, "用户未登录");
         }
 
-        String orderId = request.getParameter("orderId");
-        if (StringUtil.isEmpty(orderId)) {
+        String orderId = orderDetailParam.getOrderId();
+        if (orderId == null || StringUtil.isEmpty(orderId)) {
             return getFailureResult(2000, "订单不能为空");
         }
 

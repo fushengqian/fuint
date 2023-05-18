@@ -7,6 +7,7 @@ import com.fuint.common.Constants;
 import com.fuint.common.dto.CouponDto;
 import com.fuint.common.dto.ReqCouponDto;
 import com.fuint.common.enums.*;
+import com.fuint.common.param.CouponListParam;
 import com.fuint.common.service.*;
 import com.fuint.common.util.CommonUtil;
 import com.fuint.common.util.DateUtil;
@@ -363,19 +364,19 @@ public class CouponServiceImpl extends ServiceImpl<MtCouponMapper, MtCoupon> imp
 
     /**
      * 获取卡券列表
-     * @param paramMap
+     * @param couponListParam
      * */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public ResponseObject findCouponList(Map<String, Object> paramMap) {
-        Integer pageNumber = paramMap.get("pageNumber") == null ? Constants.PAGE_NUMBER : Integer.parseInt(paramMap.get("pageNumber").toString());
-        Integer pageSize = paramMap.get("pageSize") == null ? Constants.PAGE_SIZE : Integer.parseInt(paramMap.get("pageSize").toString());
-        String status =  paramMap.get("status") == null ? StatusEnum.ENABLED.getKey(): paramMap.get("status").toString();
-        String type =  paramMap.get("type") == null ? "" : paramMap.get("type").toString();
-        Integer userId =  paramMap.get("userId") == null ? 0 : Integer.parseInt(paramMap.get("userId").toString());
-        String needPoint =  paramMap.get("needPoint") == null ? "0" : paramMap.get("needPoint").toString();
-        String sendWay =  paramMap.get("sendWay") == null ? "front" : paramMap.get("sendWay").toString();
-        String sortType = paramMap.get("sortType") == null ? "createTime" : paramMap.get("sortType").toString();
+    public ResponseObject findCouponList(CouponListParam couponListParam) {
+        Integer pageNumber = couponListParam.getPage() == null ? Constants.PAGE_NUMBER : couponListParam.getPage();
+        Integer pageSize = couponListParam.getPageSize() == null ? Constants.PAGE_SIZE : couponListParam.getPageSize();
+        String status = couponListParam.getStatus() == null ? StatusEnum.ENABLED.getKey() : couponListParam.getStatus();
+        String type = couponListParam.getType() == null ? "" : couponListParam.getType();
+        Integer userId = couponListParam.getUserId() == null ? 0 : couponListParam.getUserId();
+        Integer needPoint = couponListParam.getNeedPoint() == null ? 0 : couponListParam.getNeedPoint();
+        String sendWay = couponListParam.getSendWay() == null ? "front" : couponListParam.getSendWay();
+        String sortType = couponListParam.getSortType() == null ? "createTime" : couponListParam.getSortType();
 
         Page<MtCoupon> pageHelper = PageHelper.startPage(pageNumber, pageSize);
         LambdaQueryWrapper<MtCoupon> lambdaQueryWrapper = Wrappers.lambdaQuery();
@@ -389,7 +390,7 @@ public class CouponServiceImpl extends ServiceImpl<MtCouponMapper, MtCoupon> imp
         if (StringUtil.isNotEmpty(type)) {
             lambdaQueryWrapper.eq(MtCoupon::getType, type);
         }
-        if (Integer.parseInt(needPoint) > 0) {
+        if (needPoint != null && needPoint > 0) {
             lambdaQueryWrapper.eq(MtCoupon::getPoint, 0);
         }
 

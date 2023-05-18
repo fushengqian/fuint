@@ -11,6 +11,7 @@ import com.fuint.common.enums.CouponTypeEnum;
 import com.fuint.common.enums.SendWayEnum;
 import com.fuint.common.enums.StatusEnum;
 import com.fuint.common.enums.UserCouponStatusEnum;
+import com.fuint.common.param.CouponReceiveParam;
 import com.fuint.common.service.*;
 import com.fuint.common.util.DateUtil;
 import com.fuint.common.util.SeqUtil;
@@ -115,16 +116,16 @@ public class UserCouponServiceImpl extends ServiceImpl<MtUserCouponMapper, MtUse
 
     /**
      * 领取卡券(优惠券、计次卡)
-     * @param paramMap
+     * @param receiveParam
      * @return
      * */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public boolean receiveCoupon(Map<String, Object> paramMap) throws BusinessCheckException {
-        Integer couponId = paramMap.get("couponId") == null ? 0 : Integer.parseInt(paramMap.get("couponId").toString());
-        Integer userId = paramMap.get("userId") == null ? 0 : Integer.parseInt(paramMap.get("userId").toString());
-        Integer num = paramMap.get("num") == null ? 1 : Integer.parseInt(paramMap.get("num").toString());
-        String receiveCode = paramMap.get("receiveCode") == null ? "" : paramMap.get("receiveCode").toString();
+    public boolean receiveCoupon(CouponReceiveParam receiveParam) throws BusinessCheckException {
+        Integer couponId = receiveParam.getCouponId() == null ? 0 : receiveParam.getCouponId();
+        Integer userId = receiveParam.getUserId() == null ? 0 : receiveParam.getUserId();
+        Integer num = receiveParam.getNum() == null ? 1 : receiveParam.getNum();
+        String receiveCode = receiveParam.getReceiveCode() == null ? "" : receiveParam.getReceiveCode();
 
         MtCoupon couponInfo = couponService.queryCouponById(couponId);
         if (couponInfo == null) {

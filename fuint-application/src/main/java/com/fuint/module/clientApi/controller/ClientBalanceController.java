@@ -3,6 +3,8 @@ package com.fuint.module.clientApi.controller;
 import com.fuint.common.Constants;
 import com.fuint.common.dto.*;
 import com.fuint.common.enums.*;
+import com.fuint.common.param.BalanceListParam;
+import com.fuint.common.param.RechargeParam;
 import com.fuint.common.service.*;
 import com.fuint.common.util.CommonUtil;
 import com.fuint.common.util.TokenUtil;
@@ -126,7 +128,7 @@ public class ClientBalanceController extends BaseController {
      * */
     @RequestMapping(value = "/doRecharge", method = RequestMethod.POST)
     @CrossOrigin
-    public ResponseObject doRecharge(HttpServletRequest request, @RequestBody Map<String, Object> param) throws BusinessCheckException {
+    public ResponseObject doRecharge(HttpServletRequest request, @RequestBody RechargeParam rechargeParam) throws BusinessCheckException {
         Integer storeId = request.getHeader("storeId") == null ? 0 : Integer.parseInt(request.getHeader("storeId"));
         String platform = request.getHeader("platform") == null ? "" : request.getHeader("platform");
 
@@ -140,8 +142,8 @@ public class ClientBalanceController extends BaseController {
             return getFailureResult(1001);
         }
 
-        String rechargeAmount = param.get("rechargeAmount") == null ? "" : param.get("rechargeAmount").toString();
-        String customAmount = param.get("customAmount") == null ? "" : param.get("customAmount").toString();
+        String rechargeAmount = rechargeParam.getRechargeAmount() == null ? "" : rechargeParam.getRechargeAmount();
+        String customAmount = rechargeParam.getCustomAmount() == null ? "" : rechargeParam.getCustomAmount();
         if (StringUtil.isEmpty(rechargeAmount) && StringUtil.isEmpty(customAmount)) {
             return getFailureResult(2000, "请确认充值金额");
         }
@@ -214,14 +216,16 @@ public class ClientBalanceController extends BaseController {
     /**
      * 余额明细
      *
-     * @param request  Request对象
+     * @param request Request对象
+     * @param balanceListParam
+     * @return
      */
-    @RequestMapping(value = "/list", method = RequestMethod.GET)
+    @RequestMapping(value = "/list", method = RequestMethod.POST)
     @CrossOrigin
-    public ResponseObject list(HttpServletRequest request) throws BusinessCheckException {
+    public ResponseObject list(HttpServletRequest request, @RequestBody BalanceListParam balanceListParam) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
-        Integer page = request.getParameter("page") == null ? Constants.PAGE_NUMBER : Integer.parseInt(request.getParameter("page"));
-        Integer pageSize = request.getParameter("pageSize") == null ? Constants.PAGE_SIZE : Integer.parseInt(request.getParameter("pageSize"));
+        Integer page = balanceListParam.getPage() == null ? Constants.PAGE_NUMBER : balanceListParam.getPage();
+        Integer pageSize = balanceListParam.getPageSize() == null ? Constants.PAGE_SIZE : balanceListParam.getPageSize();
         if (StringUtil.isEmpty(token)) {
             return getFailureResult(1001);
         }
@@ -236,9 +240,8 @@ public class ClientBalanceController extends BaseController {
         paginationRequest.setPageSize(pageSize);
 
         Map<String, Object> searchParams = new HashMap<>();
-        searchParams.put("user_id", mtUser.getId());
+        searchParams.put("userId", mtUser.getId());
         paginationRequest.setSearchParams(searchParams);
-        paginationRequest.setSortColumn(new String[]{"createTime desc", "status asc"});
         PaginationResponse<BalanceDto> paginationResponse = balanceService.queryBalanceListByPagination(paginationRequest);
 
         Map<String, Object> result = new HashMap<>();

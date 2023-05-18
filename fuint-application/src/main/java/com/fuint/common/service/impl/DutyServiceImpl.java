@@ -11,6 +11,7 @@ import com.fuint.common.domain.TreeNode;
 import com.fuint.framework.exception.BusinessRuntimeException;
 import com.fuint.framework.pagination.PaginationRequest;
 import com.fuint.framework.pagination.PaginationResponse;
+import com.fuint.module.backendApi.request.DutyStatusRequest;
 import com.fuint.repository.mapper.TDutyMapper;
 import com.fuint.repository.mapper.TDutySourceMapper;
 import com.fuint.repository.model.TDuty;
@@ -72,7 +73,7 @@ public class DutyServiceImpl extends ServiceImpl<TDutyMapper, TDuty> implements 
     }
 
     /**
-     * 删除方法
+     * 删除角色
      *
      * @param dutyId
      */
@@ -89,6 +90,25 @@ public class DutyServiceImpl extends ServiceImpl<TDutyMapper, TDuty> implements 
     }
 
     /**
+     * 更新角色状态
+     *
+     * @param dutyStatusRequest
+     * @return
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    @OperationServiceLog(description = "更新后台角色状态")
+    public void updateStatus(DutyStatusRequest dutyStatusRequest) throws BusinessCheckException {
+        TDuty tDuty = tDutyMapper.selectById(dutyStatusRequest.getRoleId());
+        if (tDuty != null) {
+            tDuty.setStatus(dutyStatusRequest.getStatus());
+            tDutyMapper.updateById(tDuty);
+        } else {
+            throw new BusinessCheckException("角色不存在.");
+        }
+    }
+
+    /**
      * 修改角色
      *
      * @param tduty
@@ -97,7 +117,7 @@ public class DutyServiceImpl extends ServiceImpl<TDutyMapper, TDuty> implements 
     @Transactional(rollbackFor = Exception.class)
     @OperationServiceLog(description = "更新后台角色")
     public void updateDuty(TDuty tduty, List<TSource> sources) throws BusinessCheckException {
-        TDuty existsDuty = this.tDutyMapper.selectById(tduty.getDutyId());
+        TDuty existsDuty = tDutyMapper.selectById(tduty.getDutyId());
         if (existsDuty == null) {
             throw new BusinessCheckException("角色不存在.");
         }

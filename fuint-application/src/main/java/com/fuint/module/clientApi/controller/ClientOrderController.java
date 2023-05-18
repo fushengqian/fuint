@@ -4,6 +4,7 @@ import com.fuint.common.dto.OrderDto;
 import com.fuint.common.dto.UserInfo;
 import com.fuint.common.dto.UserOrderDto;
 import com.fuint.common.enums.OrderStatusEnum;
+import com.fuint.common.param.OrderListParam;
 import com.fuint.common.service.OrderService;
 import com.fuint.common.util.TokenUtil;
 import com.fuint.framework.exception.BusinessCheckException;
@@ -39,9 +40,9 @@ public class ClientOrderController extends BaseController {
     /**
      * 获取我的订单列表
      */
-    @RequestMapping(value = "/list", method = RequestMethod.GET)
+    @RequestMapping(value = "/list", method = RequestMethod.POST)
     @CrossOrigin
-    public ResponseObject list(HttpServletRequest request, @RequestParam Map<String, Object> param) throws BusinessCheckException {
+    public ResponseObject list(HttpServletRequest request, @RequestBody OrderListParam orderListParam) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
         UserInfo userInfo = TokenUtil.getUserInfoByToken(token);
 
@@ -49,8 +50,8 @@ public class ClientOrderController extends BaseController {
             return getFailureResult(1001, "用户未登录");
         }
 
-        param.put("userId", userInfo.getId());
-        ResponseObject orderData = orderService.getUserOrderList(param);
+        orderListParam.setUserId(userInfo.getId().toString());
+        ResponseObject orderData = orderService.getUserOrderList(orderListParam);
 
         return getSuccessResult(orderData.getData());
     }
@@ -74,7 +75,6 @@ public class ClientOrderController extends BaseController {
         }
 
         UserOrderDto orderInfo = orderService.getMyOrderById(Integer.parseInt(orderId));
-
         return getSuccessResult(orderInfo);
     }
 

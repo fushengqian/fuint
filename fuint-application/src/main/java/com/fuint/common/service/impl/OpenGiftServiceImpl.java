@@ -8,6 +8,7 @@ import com.fuint.common.dto.OpenGiftDto;
 import com.fuint.common.enums.MessageEnum;
 import com.fuint.common.enums.StatusEnum;
 import com.fuint.common.enums.YesOrNoEnum;
+import com.fuint.common.param.CouponReceiveParam;
 import com.fuint.common.service.*;
 import com.fuint.common.util.DateUtil;
 import com.fuint.framework.annoation.OperationServiceLog;
@@ -261,10 +262,10 @@ public class OpenGiftServiceImpl extends ServiceImpl<MtOpenGiftMapper, MtOpenGif
                    try {
                        MtCoupon mtCoupon = couponService.queryCouponById(item.getCouponId());
                        if (mtCoupon != null && mtCoupon.getStatus() == StatusEnum.ENABLED.getKey()) {
-                           Map<String, Object> param = new HashMap<>();
-                           param.put("couponId", item.getCouponId());
-                           param.put("userId", userId);
-                           param.put("num", item.getCouponNum());
+                           CouponReceiveParam param = new CouponReceiveParam();
+                           param.setCouponId(item.getCouponId());
+                           param.setUserId(userId);
+                           param.setNum(item.getCouponNum() == null ? 1 : item.getCouponNum());
                            userCouponService.receiveCoupon(param);
                            totalAmount = totalAmount.add(mtCoupon.getAmount());
                        }

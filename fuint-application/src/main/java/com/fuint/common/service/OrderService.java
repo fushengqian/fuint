@@ -3,6 +3,7 @@ package com.fuint.common.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.fuint.common.dto.UserOrderDto;
 import com.fuint.common.dto.OrderDto;
+import com.fuint.common.param.OrderListParam;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.web.ResponseObject;
 import com.fuint.repository.model.MtCart;
@@ -23,10 +24,10 @@ public interface OrderService extends IService<MtOrder> {
 
     /**
      * 获取用户的订单
-     * @param paramMap
+     * @param  orderListParam
      * @throws BusinessCheckException
      * */
-    ResponseObject getUserOrderList(Map<String, Object> paramMap) throws BusinessCheckException;
+    ResponseObject getUserOrderList(OrderListParam orderListParam) throws BusinessCheckException;
 
     /**
      * 创建订单

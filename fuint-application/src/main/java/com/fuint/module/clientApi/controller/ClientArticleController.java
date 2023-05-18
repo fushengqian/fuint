@@ -3,6 +3,8 @@ package com.fuint.module.clientApi.controller;
 import com.fuint.common.Constants;
 import com.fuint.common.dto.ArticleDto;
 import com.fuint.common.enums.StatusEnum;
+import com.fuint.common.param.ArticleDetailParam;
+import com.fuint.common.param.ArticleListParam;
 import com.fuint.common.service.ArticleService;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.pagination.PaginationRequest;
@@ -18,7 +20,6 @@ import java.lang.reflect.InvocationTargetException;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -46,13 +47,12 @@ public class ClientArticleController extends BaseController {
      * 获取文章列表
      */
     @ApiOperation(value="获取文章列表", notes="获取文章列表")
-    @RequestMapping(value = "/list", method = RequestMethod.GET)
+    @RequestMapping(value = "/list", method = RequestMethod.POST)
     @CrossOrigin
-    public ResponseObject list(HttpServletRequest request) throws BusinessCheckException, InvocationTargetException, IllegalAccessException {
-        String token = request.getHeader("Access-Token");
-        String title = request.getParameter("title");
-        Integer page = request.getParameter("page") == null ? Constants.PAGE_NUMBER : Integer.parseInt(request.getParameter("page"));
-        Integer pageSize = request.getParameter("pageSize") == null ? Constants.PAGE_SIZE : Integer.parseInt(request.getParameter("pageSize"));
+    public ResponseObject list(@RequestBody ArticleListParam articleListParam) throws BusinessCheckException, InvocationTargetException, IllegalAccessException {
+        String title = articleListParam.getTitle();
+        Integer page = articleListParam.getPage() == null ? Constants.PAGE_NUMBER : articleListParam.getPage();
+        Integer pageSize = articleListParam.getPageSize() == null ? Constants.PAGE_SIZE : articleListParam.getPageSize();
 
         PaginationRequest paginationRequest = new PaginationRequest();
         paginationRequest.setCurrentPage(page);
@@ -80,11 +80,10 @@ public class ClientArticleController extends BaseController {
      * 获取文章详情
      */
     @ApiOperation(value="获取文章详情", notes="根据ID获取文章详情")
-    @RequestMapping(value = "/detail", method = RequestMethod.GET)
+    @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @CrossOrigin
-    public ResponseObject detail(HttpServletRequest request) throws BusinessCheckException, InvocationTargetException, IllegalAccessException {
-        String token = request.getHeader("Access-Token");
-        String articleIdStr = request.getParameter("articleId") == null ? "" : request.getParameter("articleId");
+    public ResponseObject detail(@RequestBody ArticleDetailParam articleDetailParam) throws BusinessCheckException, InvocationTargetException, IllegalAccessException {
+        String articleIdStr = articleDetailParam.getArticleId() == null ? "" : articleDetailParam.getArticleId();
         Integer articleId = 0;
         if (StringUtil.isNotEmpty(articleIdStr)) {
             articleId = Integer.parseInt(articleIdStr);

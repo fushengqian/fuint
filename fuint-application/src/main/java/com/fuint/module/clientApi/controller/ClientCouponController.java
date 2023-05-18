@@ -2,6 +2,9 @@ package com.fuint.module.clientApi.controller;
 
 import com.fuint.common.dto.CouponDto;
 import com.fuint.common.dto.UserInfo;
+import com.fuint.common.param.CouponInfoParam;
+import com.fuint.common.param.CouponListParam;
+import com.fuint.common.param.CouponReceiveParam;
 import com.fuint.common.service.CouponService;
 import com.fuint.common.service.SettingService;
 import com.fuint.common.service.UserCouponService;
@@ -15,6 +18,7 @@ import com.fuint.repository.model.MtCoupon;
 import com.fuint.repository.model.MtUserCoupon;
 import com.fuint.utils.StringUtil;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -58,18 +62,19 @@ public class ClientCouponController extends BaseController {
     /**
      * 获取卡券列表数据
      */
-    @RequestMapping(value = "/list", method = RequestMethod.GET)
+    @ApiOperation(value = "获取卡券列表数据")
+    @RequestMapping(value = "/list", method = RequestMethod.POST)
     @CrossOrigin
-    public ResponseObject list(HttpServletRequest request, @RequestParam Map<String, Object> param) throws BusinessCheckException {
+    public ResponseObject list(HttpServletRequest request, @RequestBody CouponListParam couponListParam) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
         UserInfo mtUser = TokenUtil.getUserInfoByToken(token);
         if (null != mtUser) {
-            param.put("userId", mtUser.getId());
+            couponListParam.setUserId(mtUser.getId());
         }
 
         Map<String, Object> outParams = new HashMap();
 
-        ResponseObject couponData = couponService.findCouponList(param);
+        ResponseObject couponData = couponService.findCouponList(couponListParam);
         outParams.put("coupon", couponData.getData());
 
         ResponseObject responseObject = getSuccessResult(outParams);
@@ -80,20 +85,21 @@ public class ClientCouponController extends BaseController {
     /**
      * 领取卡券
      * */
+    @ApiOperation(value = "领取卡券")
     @RequestMapping(value = "/receive", method = RequestMethod.POST)
     @CrossOrigin
-    public ResponseObject receive(HttpServletRequest request, @RequestBody Map<String, Object> param) {
+    public ResponseObject receive(HttpServletRequest request, @RequestBody CouponReceiveParam couponReceiveParam) {
         String token = request.getHeader("Access-Token");
         UserInfo mtUser = TokenUtil.getUserInfoByToken(token);
 
         if (null != mtUser) {
-            param.put("userId", mtUser.getId());
+            couponReceiveParam.setUserId(mtUser.getId());
         } else {
             return getFailureResult(1001);
         }
 
         try {
-            userCouponService.receiveCoupon(param);
+            userCouponService.receiveCoupon(couponReceiveParam);
         } catch (BusinessCheckException e) {
             return getFailureResult(1006, e.getMessage());
         }
@@ -108,20 +114,17 @@ public class ClientCouponController extends BaseController {
     /**
      * 查询卡券详情
      *
-     * @param param  Request对象
+     * @param couponInfoParam Request对象
      */
-    @RequestMapping(value = "/detail", method = RequestMethod.GET)
+    @ApiOperation(value = "查询卡券详情")
+    @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @CrossOrigin
-    public ResponseObject detail(HttpServletRequest request, @RequestParam Map<String, Object> param) throws BusinessCheckException, InvocationTargetException, IllegalAccessException {
+    public ResponseObject detail(HttpServletRequest request, @RequestBody CouponInfoParam couponInfoParam) throws BusinessCheckException, InvocationTargetException, IllegalAccessException {
         String token = request.getHeader("Access-Token");
         UserInfo mtUser = TokenUtil.getUserInfoByToken(token);
 
-        String couponIdStr = param.get("couponId") == null ? "0" : param.get("couponId").toString();
-        String userCouponCode = param.get("userCouponCode") == null ? "" : param.get("userCouponCode").toString();
-        Integer couponId = 0;
-        if (StringUtil.isNotEmpty(couponIdStr)) {
-            couponId = Integer.parseInt(couponIdStr);
-        }
+        Integer couponId = couponInfoParam.getCouponId() == null ? 0 : couponInfoParam.getCouponId();
+        String userCouponCode = couponInfoParam.getUserCouponCode() == null ? "" : couponInfoParam.getUserCouponCode();
 
         MtCoupon couponInfo = new MtCoupon();
         if (StringUtil.isNotEmpty(userCouponCode)) {
@@ -137,34 +140,32 @@ public class ClientCouponController extends BaseController {
             return getFailureResult(201);
         }
 
-        CouponDto dto = new CouponDto();
-        BeanUtils.copyProperties(couponInfo, dto);
-        dto.setIsReceive(false);
+        CouponDto couponDto = new CouponDto();
+        BeanUtils.copyProperties(couponInfo, couponDto);
+        couponDto.setIsReceive(false);
 
         // 是否需要领取码
         if (couponInfo.getReceiveCode() != null && StringUtil.isNotEmpty(couponInfo.getReceiveCode())) {
-            dto.setNeedReceiveCode(true);
+            couponDto.setNeedReceiveCode(true);
         } else {
-            dto.setNeedReceiveCode(false);
+            couponDto.setNeedReceiveCode(false);
         }
 
         if (null != mtUser) {
             List<MtUserCoupon> userCoupon = userCouponService.getUserCouponDetail(mtUser.getId(), couponId);
             if (userCoupon.size() >= couponInfo.getLimitNum() && couponInfo.getLimitNum() > 0) {
-                dto.setIsReceive(true);
-                dto.setUserCouponId(userCoupon.get(0).getId());
+                couponDto.setIsReceive(true);
+                couponDto.setUserCouponId(userCoupon.get(0).getId());
             }
         }
 
         String baseImage = settingService.getUploadBasePath();
-        dto.setImage(baseImage + couponInfo.getImage());
-
+        couponDto.setImage(baseImage + couponInfo.getImage());
         String effectiveDate = DateUtil.formatDate(couponInfo.getBeginTime(), "yyyy.MM.dd") + " - " + DateUtil.formatDate(couponInfo.getEndTime(), "yyyy.MM.dd");
-        dto.setEffectiveDate(effectiveDate);
+        couponDto.setEffectiveDate(effectiveDate);
+        couponDto.setGotNum(0);
+        couponDto.setLimitNum(0);
 
-        dto.setGotNum(0);
-        dto.setLimitNum(0);
-
-        return getSuccessResult(dto);
+        return getSuccessResult(couponDto);
     }
 }

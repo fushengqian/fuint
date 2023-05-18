@@ -1,8 +1,7 @@
 package com.fuint.common.service;
 
+import com.fuint.common.param.SettlementParam;
 import com.fuint.framework.exception.BusinessCheckException;
-import org.springframework.web.bind.annotation.RequestBody;
-
 import javax.servlet.http.HttpServletRequest;
 import java.util.Map;
 
@@ -17,6 +16,6 @@ public interface SettlementService {
     /**
      * 订单提交结算
      * */
-    Map<String, Object> doSubmit(HttpServletRequest request, @RequestBody Map<String, Object> param) throws BusinessCheckException;
+    Map<String, Object> doSubmit(HttpServletRequest request, SettlementParam settlementParam) throws BusinessCheckException;
 
 }

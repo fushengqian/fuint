@@ -2,6 +2,7 @@ package com.fuint.common.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.fuint.common.dto.CouponDto;
+import com.fuint.common.param.CouponReceiveParam;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.pagination.PaginationRequest;
 import com.fuint.framework.pagination.PaginationResponse;
@@ -29,10 +30,10 @@ public interface UserCouponService extends IService<MtUserCoupon> {
 
     /**
      * 领取卡券
-     * @param paramMap
+     * @param couponReceiveParam
      * @return
      * */
-    boolean receiveCoupon(Map<String, Object> paramMap) throws BusinessCheckException;
+    boolean receiveCoupon(CouponReceiveParam couponReceiveParam) throws BusinessCheckException;
 
     /**
      * 预存

@@ -37,6 +37,7 @@ fuint侧重于线下实体店的私域流量的运营，同时提供会员端小
 2.1 Vue2<br>
 2.2 Uniapp<br>
 2.3 Element UI
+2.4 Nodejs 14或16版本 
 
 后端使用技术<br>
 1.1 SpringBoot 2.5<br>
@@ -49,7 +50,7 @@ fuint侧重于线下实体店的私域流量的运营，同时提供会员端小
 1.8 JWT<br>
 1.9 Redis<br>
 1.10 Quartz<br>
-1.11 Mysql 5.8<br>
+1.11 Mysql 5.7或8版<br>
 1.12 Swagger UI<br>
 
 

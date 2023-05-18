@@ -13,27 +13,15 @@ import java.io.Serializable;
 @Data
 public class LoginRequest implements Serializable {
 
-    /**
-     * 用户名
-     */
     @ApiModelProperty(value="用户名", name="username")
     private String username;
 
-    /**
-     * 密码
-     */
     @ApiModelProperty(value="密码", name="password")
     private String password;
 
-    /**
-     * 图形验证码
-     */
     @ApiModelProperty(value="captchaCode", name="captchaCode")
     private String captchaCode;
 
-    /**
-     * 图形验证码uuid
-     */
-    @ApiModelProperty(value="uuid", name="uuid")
+    @ApiModelProperty(value="图形验证码uuid", name="uuid")
     private String uuid;
 }

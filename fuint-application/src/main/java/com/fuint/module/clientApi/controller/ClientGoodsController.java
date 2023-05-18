@@ -5,6 +5,7 @@ import com.fuint.common.Constants;
 import com.fuint.common.dto.*;
 import com.fuint.common.enums.StatusEnum;
 import com.fuint.common.enums.YesOrNoEnum;
+import com.fuint.common.param.GoodsInfoParam;
 import com.fuint.common.service.CateService;
 import com.fuint.common.service.GoodsService;
 import com.fuint.common.service.SettingService;
@@ -19,6 +20,7 @@ import com.fuint.repository.model.MtGoodsSku;
 import com.fuint.repository.model.MtGoodsSpec;
 import com.fuint.utils.StringUtil;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
@@ -57,6 +59,7 @@ public class ClientGoodsController extends BaseController {
     /**
      * 获取商品分类列表
      */
+    @ApiOperation(value = "获取商品分类列表")
     @RequestMapping(value = "/cateList", method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject cateList(HttpServletRequest request) throws BusinessCheckException {
@@ -97,6 +100,7 @@ public class ClientGoodsController extends BaseController {
     /**
      * 获取商品列表
      */
+    @ApiOperation(value = "获取商品列表")
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject list(HttpServletRequest request) throws BusinessCheckException {
@@ -108,6 +112,7 @@ public class ClientGoodsController extends BaseController {
     /**
      * 搜索商品
      * */
+    @ApiOperation(value = "搜索商品")
     @RequestMapping(value = "/search", method = RequestMethod.POST)
     @CrossOrigin
     public ResponseObject search(@RequestBody Map<String, Object> params) throws BusinessCheckException {
@@ -140,10 +145,11 @@ public class ClientGoodsController extends BaseController {
     /**
      * 获取商品详情
      */
+    @ApiOperation(value = "获取商品详情")
     @RequestMapping(value = "/detail", method = RequestMethod.GET)
     @CrossOrigin
-    public ResponseObject detail(HttpServletRequest request) throws BusinessCheckException, InvocationTargetException, IllegalAccessException {
-        String goodsId = request.getParameter("goodsId") == null ? "0" : request.getParameter("goodsId");
+    public ResponseObject detail(@RequestBody GoodsInfoParam goodsInfoParam) throws BusinessCheckException, InvocationTargetException, IllegalAccessException {
+        String goodsId = goodsInfoParam.getGoodsId() == null ? "0" : goodsInfoParam.getGoodsId();
         if (StringUtil.isEmpty(goodsId)) {
             return getFailureResult(2000, "商品ID不能为空");
         }
@@ -254,10 +260,11 @@ public class ClientGoodsController extends BaseController {
     /**
      * 通过sku编码获取商品信息
      * */
-    @RequestMapping(value = "/getGoodsInfoBySkuNo", method = RequestMethod.GET)
+    @ApiOperation(value = "通过sku编码获取商品信息")
+    @RequestMapping(value = "/getGoodsInfoBySkuNo", method = RequestMethod.POST)
     @CrossOrigin
-    public ResponseObject getGoodsInfoBySkuNo(HttpServletRequest request) throws BusinessCheckException, InvocationTargetException, IllegalAccessException {
-        String skuNo = request.getParameter("skuNo") == null ? "" : request.getParameter("skuNo");
+    public ResponseObject getGoodsInfoBySkuNo(@RequestBody GoodsInfoParam goodsInfoParam) throws BusinessCheckException, InvocationTargetException, IllegalAccessException {
+        String skuNo = goodsInfoParam.getSkuNo() == null ? "" : goodsInfoParam.getSkuNo();
         if (StringUtil.isEmpty(skuNo)) {
             return getFailureResult(201, "商品编码不能为空");
         }
@@ -277,11 +284,9 @@ public class ClientGoodsController extends BaseController {
 
         if (goodsId > 0) {
             GoodsDto goodsDto = goodsService.getGoodsDetail(goodsId, false);
-
             Map<String, Object> data = new HashMap();
             data.put("skuId", skuId);
             data.put("goodsInfo", goodsDto);
-
             return getSuccessResult(data);
         } else {
             return getFailureResult(201, "未查询到商品信息");

@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fuint.common.Constants;
 import com.fuint.common.dto.*;
 import com.fuint.common.enums.*;
+import com.fuint.common.param.OrderListParam;
 import com.fuint.common.service.*;
 import com.fuint.common.util.CommonUtil;
 import com.fuint.common.util.DateUtil;
@@ -107,26 +108,26 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
 
     /**
      * 获取用户订单列表
-     * @param  paramMap
+     * @param  orderListParam
      * @throws BusinessCheckException
      * */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public ResponseObject getUserOrderList(Map<String, Object> paramMap) throws BusinessCheckException {
-        Integer pageNumber = paramMap.get("pageNumber") == null ? Constants.PAGE_NUMBER : Integer.parseInt(paramMap.get("pageNumber").toString());
-        Integer pageSize = paramMap.get("pageSize") == null ? Constants.PAGE_SIZE : Integer.parseInt(paramMap.get("pageSize").toString());
-        String userId = paramMap.get("userId") == null ? "" : paramMap.get("userId").toString();
-        String storeId = paramMap.get("storeId") == null ? "" : paramMap.get("storeId").toString();
-        String status =  paramMap.get("status") == null ? "": paramMap.get("status").toString();
-        String payStatus =  paramMap.get("payStatus") == null ? "": paramMap.get("payStatus").toString();
-        String dataType =  paramMap.get("dataType") == null ? "": paramMap.get("dataType").toString();
-        String type =  paramMap.get("type") == null ? "": paramMap.get("type").toString();
-        String orderSn =  paramMap.get("orderSn") == null ? "": paramMap.get("orderSn").toString();
-        String mobile =  paramMap.get("mobile") == null ? "": paramMap.get("mobile").toString();
-        String orderMode =  paramMap.get("orderMode") == null ? "": paramMap.get("orderMode").toString();
-        String staffId = paramMap.get("staffId") == null ? "" : paramMap.get("staffId").toString();
-        String couponId = paramMap.get("couponId") == null ? "" : paramMap.get("couponId").toString();
-        String storeIds = paramMap.get("storeIds") == null ? "" : paramMap.get("storeIds").toString();
+    public ResponseObject getUserOrderList(OrderListParam orderListParam) throws BusinessCheckException {
+        Integer pageNumber = orderListParam.getPage() == null ? Constants.PAGE_NUMBER : orderListParam.getPage();
+        Integer pageSize = orderListParam.getPageSize() == null ? Constants.PAGE_SIZE : orderListParam.getPageSize();
+        String userId = orderListParam.getUserId() == null ? "" : orderListParam.getUserId();
+        String storeId = orderListParam.getStoreId() == null ? "" : orderListParam.getStoreId();
+        String status =  orderListParam.getStatus() == null ? "": orderListParam.getStatus();
+        String payStatus =  orderListParam.getPayStatus() == null ? "": orderListParam.getPayStatus();
+        String dataType =  orderListParam.getDataType() == null ? "": orderListParam.getDataType();
+        String type =  orderListParam.getType() == null ? "": orderListParam.getType();
+        String orderSn =  orderListParam.getOrderSn() == null ? "": orderListParam.getOrderSn();
+        String mobile =  orderListParam.getMobile() == null ? "": orderListParam.getMobile();
+        String orderMode =  orderListParam.getOrderMode() == null ? "": orderListParam.getOrderMode();
+        String staffId = orderListParam.getStaffId() == null ? "" : orderListParam.getStaffId();
+        String couponId = orderListParam.getCouponId() == null ? "" : orderListParam.getCouponId();
+        String storeIds = orderListParam.getStoreIds() == null ? "" : orderListParam.getStoreIds();
 
         if (dataType.equals("toPay")) {
             status = OrderStatusEnum.CREATED.getKey(); // 待支付

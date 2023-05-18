@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.pagination.PaginationRequest;
 import com.fuint.framework.pagination.PaginationResponse;
+import com.fuint.module.backendApi.request.DutyStatusRequest;
 import com.fuint.repository.model.TDuty;
 import com.fuint.repository.model.TSource;
 import com.fuint.common.domain.TreeNode;
@@ -61,6 +62,13 @@ public interface DutyService extends IService<TDuty> {
      * @param dutyId
      */
     void deleteDuty(long dutyId);
+
+    /**
+     * 更新状态
+     *
+     * @param dutyStatusRequest
+     */
+    void updateStatus(DutyStatusRequest dutyStatusRequest) throws BusinessCheckException;
 
     /**
      * 修改角色
