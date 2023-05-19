@@ -68,6 +68,9 @@ public class UserCouponServiceImpl extends ServiceImpl<MtUserCouponMapper, MtUse
     @Autowired
     private SettingService settingService;
 
+    @Autowired
+    private OrderService orderService;
+
     /**
      * 分页查询券列表
      *
@@ -545,7 +548,6 @@ public class UserCouponServiceImpl extends ServiceImpl<MtUserCouponMapper, MtUse
      * */
     public boolean buyCouponItem(Integer orderId, Integer couponId, Integer userId, String mobile) throws BusinessCheckException {
         MtCoupon couponInfo = couponService.queryCouponById(couponId);
-
         MtUserCoupon userCoupon = new MtUserCoupon();
         userCoupon.setCouponId(couponId);
         userCoupon.setType(couponInfo.getType());
@@ -556,8 +558,31 @@ public class UserCouponServiceImpl extends ServiceImpl<MtUserCouponMapper, MtUse
         userCoupon.setCreateTime(new Date());
         userCoupon.setUpdateTime(new Date());
         userCoupon.setExpireTime(couponInfo.getEndTime());
-
         userCoupon.setOrderId(orderId);
+
+        // 如果购买的是储值卡
+        if (couponInfo.getType().equals(CouponTypeEnum.PRESTORE.getKey()) && couponInfo.getInRule() != null) {
+            String[] paramArr = couponInfo.getInRule().split(","); // 100_200,300_500
+            MtOrder orderInfo = orderService.getOrderInfo(orderId);
+            if (orderInfo != null) {
+                BigDecimal payAmount = orderInfo.getPayAmount();
+                BigDecimal totalAmount = new BigDecimal(0);
+                if (paramArr.length > 0) {
+                    for (int i = 0; i < paramArr.length; i++) {
+                        String[] storeItem = paramArr[i].split("_");
+                        if (storeItem.length > 0) {
+                            BigDecimal amount = new BigDecimal(paramArr[i].split("_")[0]);
+                            if (payAmount.compareTo(amount) >= 0) {
+                                totalAmount = new BigDecimal(paramArr[i].split("_")[1]);
+                                payAmount = payAmount.subtract(amount);
+                            }
+                        }
+                    }
+                }
+                couponInfo.setAmount(totalAmount);
+            }
+        }
+
         userCoupon.setAmount(couponInfo.getAmount());
         userCoupon.setBalance(couponInfo.getAmount());
 

@@ -14,6 +14,7 @@ import com.fuint.framework.pagination.PaginationRequest;
 import com.fuint.framework.pagination.PaginationResponse;
 import com.fuint.framework.web.ResponseObject;
 import com.fuint.repository.mapper.MtConfirmLogMapper;
+import com.fuint.repository.mapper.MtPointMapper;
 import com.fuint.repository.mapper.MtRefundMapper;
 import com.fuint.repository.mapper.MtUserCouponMapper;
 import com.fuint.repository.model.*;
@@ -43,6 +44,9 @@ import java.util.*;
 public class RefundServiceImpl extends ServiceImpl<MtRefundMapper, MtRefund> implements RefundService {
 
     private static final Logger logger = LoggerFactory.getLogger(RefundServiceImpl.class);
+
+    @Resource
+    private MtPointMapper mtPointMapper;
 
     @Resource
     private MtRefundMapper mtRefundMapper;
@@ -82,6 +86,24 @@ public class RefundServiceImpl extends ServiceImpl<MtRefundMapper, MtRefund> imp
      * */
     @Autowired
     private WeixinService weixinService;
+
+    /**
+     * 会员服务接口
+     * */
+    @Autowired
+    private MemberService memberService;
+
+    /**
+     * 系统设置服务接口
+     * */
+    @Autowired
+    private SettingService settingService;
+
+    /**
+     * 会员等级服务接口
+     * */
+    @Autowired
+    private UserGradeService userGradeService;
 
     /**
      * 分页查询售后订单列表
@@ -415,6 +437,25 @@ public class RefundServiceImpl extends ServiceImpl<MtRefundMapper, MtRefund> imp
                     log.setStatus(StatusEnum.DISABLE.getKey());
                     mtConfirmLogMapper.updateById(log);
                 }
+            }
+        }
+
+        // 退回积分
+        Map<String, Object> params = new HashMap<>();
+        params.put("USER_ID", orderInfo.getUserId());
+        params.put("ORDER_ID", orderInfo.getId());
+        List<MtPoint> pointList = mtPointMapper.selectByMap(params);
+        if (pointList != null && pointList.size() > 0) {
+            Integer pointNum = pointList.get(0).getAmount();
+            if (pointNum > 0) {
+                Integer amount = pointNum - (pointNum) * 2;
+                MtPoint mtPoint = new MtPoint();
+                mtPoint.setAmount(amount.intValue());
+                mtPoint.setUserId(orderInfo.getUserId());
+                mtPoint.setOrderSn(orderInfo.getOrderSn());
+                mtPoint.setDescription("退款￥" + orderInfo.getPayAmount() + "退回" + pointNum + "积分");
+                mtPoint.setOperator(refundDto.getOperator() == null ? "系统" : refundDto.getOperator());
+                pointService.addPoint(mtPoint);
             }
         }
 

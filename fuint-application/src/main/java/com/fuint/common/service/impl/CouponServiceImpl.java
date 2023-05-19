@@ -528,7 +528,6 @@ public class CouponServiceImpl extends ServiceImpl<MtCouponMapper, MtCoupon> imp
                          storeParams = paramArr[i] + "_" + num;
                      }
                 }
-
                 Map<String, Object> param = new HashMap<>();
                 param.put("couponId", couponInfo.getId());
                 param.put("userId", userInfo.getId());
