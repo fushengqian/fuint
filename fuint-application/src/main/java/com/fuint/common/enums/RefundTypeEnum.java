@@ -9,7 +9,7 @@ package com.fuint.common.enums;
 public enum RefundTypeEnum {
 
     RETURN("return", "退货退款"),
-    REJECT("exchange", "换货");
+    EXCHANGE("exchange", "换货");
 
     private String key;
 

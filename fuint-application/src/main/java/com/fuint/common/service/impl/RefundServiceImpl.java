@@ -380,6 +380,11 @@ public class RefundServiceImpl extends ServiceImpl<MtRefundMapper, MtRefund> imp
         reqDto.setStatus(OrderStatusEnum.REFUND.getKey());
         orderService.updateOrder(reqDto);
 
+        // 换货
+        if (refund.getType().equals(RefundTypeEnum.EXCHANGE.getKey())) {
+            return refund;
+        }
+
         // 如果是余额支付，返还余额
         if (orderInfo.getPayType().equals(PayTypeEnum.BALANCE.getKey())) {
             List<MtBalance> balanceList = balanceService.getBalanceListByOrderSn(orderInfo.getOrderSn());
@@ -443,7 +448,7 @@ public class RefundServiceImpl extends ServiceImpl<MtRefundMapper, MtRefund> imp
         // 退回积分
         Map<String, Object> params = new HashMap<>();
         params.put("USER_ID", orderInfo.getUserId());
-        params.put("ORDER_ID", orderInfo.getId());
+        params.put("ORDER_SN", orderInfo.getOrderSn());
         List<MtPoint> pointList = mtPointMapper.selectByMap(params);
         if (pointList != null && pointList.size() > 0) {
             Integer pointNum = pointList.get(0).getAmount();
