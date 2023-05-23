@@ -27,7 +27,7 @@ public class ClientSettlementController extends BaseController {
      * 会员等级接口
      * */
     @Autowired
-    SettlementService settlementService;
+    private SettlementService settlementService;
 
     /**
      * 订单结算

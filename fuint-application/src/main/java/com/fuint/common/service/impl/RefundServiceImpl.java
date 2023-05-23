@@ -88,24 +88,6 @@ public class RefundServiceImpl extends ServiceImpl<MtRefundMapper, MtRefund> imp
     private WeixinService weixinService;
 
     /**
-     * 会员服务接口
-     * */
-    @Autowired
-    private MemberService memberService;
-
-    /**
-     * 系统设置服务接口
-     * */
-    @Autowired
-    private SettingService settingService;
-
-    /**
-     * 会员等级服务接口
-     * */
-    @Autowired
-    private UserGradeService userGradeService;
-
-    /**
      * 分页查询售后订单列表
      *
      * @param  paginationRequest
