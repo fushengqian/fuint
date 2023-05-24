@@ -313,7 +313,7 @@ public class PaymentServiceImpl implements PaymentService {
         }
 
         // 实付金额 = 总金额 - 优惠金额 - 积分金额
-        BigDecimal realPayAmount = orderInfo.getAmount().subtract(new BigDecimal(orderInfo.getDiscount().toString())).subtract(new BigDecimal(orderInfo.getPointAmount().toString()));
+        BigDecimal realPayAmount = orderInfo.getAmount().subtract(new BigDecimal(orderInfo.getDiscount().toString())).subtract(new BigDecimal(orderInfo.getPointAmount().toString())).add(orderInfo.getDeliveryFee());
         Object payment = null;
         if (payType.equals(PayTypeEnum.BALANCE.getKey())) {
             // 余额支付

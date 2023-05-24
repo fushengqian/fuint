@@ -136,7 +136,7 @@ public class UserCouponServiceImpl extends ServiceImpl<MtUserCouponMapper, MtUse
             if (userCoupon != null) {
                 couponInfo = couponService.queryCouponById(userCoupon.getCouponId());
             } else {
-                throw new BusinessCheckException(Message.CODE_ERROR);
+                throw new BusinessCheckException(Message.CODE_ERROR_1);
             }
             if (couponInfo == null) {
                 throw new BusinessCheckException(Message.COUPON_NOT_EXIST);
@@ -176,7 +176,7 @@ public class UserCouponServiceImpl extends ServiceImpl<MtUserCouponMapper, MtUse
             if (couponInfo.getSendWay().equals(SendWayEnum.OFFLINE.getKey())) {
                 MtUserCoupon userCoupon = mtUserCouponMapper.findByCode(receiveCode);
                 if (userCoupon == null || !userCoupon.getCode().equals(receiveCode)) {
-                    throw new BusinessCheckException(Message.CODE_ERROR);
+                    throw new BusinessCheckException(Message.CODE_ERROR_1);
                 } else {
                     userCouponId = userCoupon.getId();
                 }

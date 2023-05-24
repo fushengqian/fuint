@@ -4,10 +4,12 @@ import com.fuint.common.dto.*;
 import com.fuint.common.enums.*;
 import com.fuint.common.param.OrderListParam;
 import com.fuint.common.service.*;
+import com.fuint.common.util.CommonUtil;
 import com.fuint.common.util.TokenUtil;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.web.BaseController;
 import com.fuint.framework.web.ResponseObject;
+import com.fuint.repository.model.MtSetting;
 import com.fuint.repository.model.MtStore;
 import com.fuint.repository.model.MtUser;
 import com.fuint.repository.model.TAccount;
@@ -65,6 +67,12 @@ public class BackendOrderController extends BaseController {
      */
     @Autowired
     private StoreService storeService;
+
+    /**
+     * 配置服务接口
+     * */
+    @Autowired
+    private SettingService settingService;
 
     /**
      * 订单列表查询
@@ -407,6 +415,83 @@ public class BackendOrderController extends BaseController {
 
         String operator = accountInfo.getAccountName();
         orderService.deleteOrder(id, operator);
+
+        return getSuccessResult(true);
+    }
+
+    /**
+     * 积分设置详情
+     *
+     * @param request
+     * @return
+     */
+    @RequestMapping(value = "/setting", method = RequestMethod.GET)
+    @CrossOrigin
+    public ResponseObject setting(HttpServletRequest request) throws BusinessCheckException {
+        String token = request.getHeader("Access-Token");
+        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
+        if (accountInfo == null) {
+            return getFailureResult(1001, "请先登录");
+        }
+
+        List<MtSetting> settingList = settingService.getSettingList(SettingTypeEnum.ORDER.getKey());
+        Map<String, Object> result = new HashMap();
+        String deliveryFee = "";
+        String isClose = "";
+
+        for (MtSetting setting : settingList) {
+            if (setting.getName().equals("deliveryFee")) {
+                deliveryFee = setting.getValue();
+            } else if (setting.getName().equals("isClose")) {
+                isClose = setting.getValue();
+            }
+        }
+
+        result.put("deliveryFee", deliveryFee);
+        result.put("isClose", isClose);
+
+        return getSuccessResult(result);
+    }
+
+    /**
+     * 保存设置
+     *
+     * @param request HttpServletRequest对象
+     * @return
+     */
+    @RequestMapping(value = "/saveSetting", method = RequestMethod.POST)
+    @CrossOrigin
+    public ResponseObject saveSetting(HttpServletRequest request, @RequestBody Map<String, Object> param) throws BusinessCheckException {
+        String token = request.getHeader("Access-Token");
+        String deliveryFee = param.get("deliveryFee") != null ? param.get("deliveryFee").toString() : "0";
+        String isClose = param.get("isClose") != null ? param.get("isClose").toString() : "false";
+
+        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
+        if (accountInfo == null) {
+            return getFailureResult(1001, "请先登录");
+        }
+
+        String operator = accountInfo.getAccountName();
+
+        OrderSettingEnum[] settingList = OrderSettingEnum.values();
+        for (OrderSettingEnum setting : settingList) {
+            MtSetting info = new MtSetting();
+            info.setType(SettingTypeEnum.ORDER.getKey());
+            info.setName(setting.getKey());
+
+            if (setting.getKey().equals("deliveryFee")) {
+                info.setValue(deliveryFee);
+            } else if (setting.getKey().equals("isClose")) {
+                info.setValue(isClose);
+            }
+
+            info.setDescription(setting.getValue());
+            info.setStatus(StatusEnum.ENABLED.getKey());
+            info.setOperator(operator);
+            info.setUpdateTime(new Date());
+
+            settingService.saveSetting(info);
+        }
 
         return getSuccessResult(true);
     }

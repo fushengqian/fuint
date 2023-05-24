@@ -2,15 +2,13 @@ package com.fuint.module.clientApi.controller;
 
 import com.fuint.common.dto.AccountInfo;
 import com.fuint.common.dto.UserInfo;
+import com.fuint.common.enums.OrderSettingEnum;
 import com.fuint.common.enums.StatusEnum;
 import com.fuint.common.enums.YesOrNoEnum;
 import com.fuint.common.param.CartClearParam;
 import com.fuint.common.param.CartListParam;
 import com.fuint.common.param.CartSaveParam;
-import com.fuint.common.service.CartService;
-import com.fuint.common.service.GoodsService;
-import com.fuint.common.service.MemberService;
-import com.fuint.common.service.OrderService;
+import com.fuint.common.service.*;
 import com.fuint.common.util.TokenUtil;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.web.BaseController;
@@ -18,6 +16,7 @@ import com.fuint.framework.web.ResponseObject;
 import com.fuint.repository.mapper.MtGoodsSkuMapper;
 import com.fuint.repository.model.MtCart;
 import com.fuint.repository.model.MtGoodsSku;
+import com.fuint.repository.model.MtSetting;
 import com.fuint.repository.model.MtUser;
 import com.fuint.utils.StringUtil;
 import io.swagger.annotations.Api;
@@ -27,6 +26,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -66,6 +66,12 @@ public class ClientCartController extends BaseController {
      * */
     @Autowired
     private MemberService memberService;
+
+    /**
+     * 配置服务接口
+     * */
+    @Autowired
+    private SettingService settingService;
 
     @Resource
     private MtGoodsSkuMapper mtGoodsSkuMapper;
@@ -198,6 +204,7 @@ public class ClientCartController extends BaseController {
         result.put("totalPrice", 0);
         result.put("couponList", new ArrayList<>());
         result.put("useCouponInfo", null);
+        result.put("deliveryFee", 0);
 
         Map<String, Object> param = new HashMap<>();
         UserInfo userInfo = TokenUtil.getUserInfoByToken(token);

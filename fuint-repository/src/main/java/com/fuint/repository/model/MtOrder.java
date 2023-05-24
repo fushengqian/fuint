@@ -71,6 +71,9 @@ public class MtOrder implements Serializable {
     @ApiModelProperty("折扣金额")
     private BigDecimal discount;
 
+    @ApiModelProperty("配送费用")
+    private BigDecimal deliveryFee;
+
     @ApiModelProperty("订单参数")
     private String param;
 

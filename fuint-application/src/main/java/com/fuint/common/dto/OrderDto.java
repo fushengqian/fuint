@@ -110,6 +110,11 @@ public class OrderDto implements Serializable {
     private BigDecimal discount;
 
     /**
+     * 配送费用
+     */
+    private BigDecimal deliveryFee;
+
+    /**
      * 物流信息
      * */
     private ExpressDto expressInfo;
@@ -312,6 +317,14 @@ public class OrderDto implements Serializable {
 
     public void setDiscount(BigDecimal discount) {
         this.discount = discount;
+    }
+
+    public BigDecimal getDeliveryFee() {
+        return deliveryFee;
+    }
+
+    public void setDeliveryFee(BigDecimal deliveryFee) {
+        this.deliveryFee = deliveryFee;
     }
 
     public ExpressDto getExpressInfo() {

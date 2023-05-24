@@ -128,6 +128,11 @@ public class SettlementServiceImpl implements SettlementService {
         String orderMode = param.getOrderMode()== null ? "" : param.getOrderMode(); // 订单模式(配送or自取)
         Integer orderId = param.getOrderId() == null ? null : param.getOrderId(); // 订单ID
 
+        MtSetting config = settingService.querySettingByName(OrderSettingEnum.IS_CLOSE.getKey());
+        if (config != null && config.getValue().equals("true")) {
+            throw new BusinessCheckException("系统已关闭交易功能，请稍后再试！");
+        }
+
         UserInfo loginInfo = TokenUtil.getUserInfoByToken(token);
         MtUser userInfo = null;
         if (loginInfo != null) {
@@ -282,6 +287,17 @@ public class SettlementServiceImpl implements SettlementService {
             orderDto.setCouponId(couponId);
         }
 
+        // 商品订单且配送要加上配送费用
+        if (orderDto.getType().equals(OrderTypeEnum.GOOGS.getKey()) && orderDto.getOrderMode().equals(OrderModeEnum.EXPRESS.getKey())) {
+            MtSetting mtSetting = settingService.querySettingByName(OrderSettingEnum.DELIVERY_FEE.getKey());
+            if (mtSetting != null && StringUtil.isNotEmpty(mtSetting.getValue())) {
+                BigDecimal deliveryFee = new BigDecimal(mtSetting.getValue());
+                if (deliveryFee.compareTo(new BigDecimal("0")) > 0) {
+                    orderDto.setDeliveryFee(deliveryFee);
+                }
+            }
+        }
+
         // 使用积分抵扣
         if (usePoint > 0) {
             List<MtSetting> settingList = settingService.getSettingList(SettingTypeEnum.POINT.getKey());
@@ -391,7 +407,7 @@ public class SettlementServiceImpl implements SettlementService {
         // 生成支付订单
         orderInfo = orderService.getOrderInfo(orderInfo.getId());
         String ip = CommonUtil.getIPFromHttpRequest(request);
-        BigDecimal realPayAmount = orderInfo.getAmount().subtract(new BigDecimal(orderInfo.getDiscount().toString())).subtract(new BigDecimal(orderInfo.getPointAmount().toString()));
+        BigDecimal realPayAmount = orderInfo.getAmount().subtract(new BigDecimal(orderInfo.getDiscount().toString())).subtract(new BigDecimal(orderInfo.getPointAmount().toString())).add(orderInfo.getDeliveryFee());
 
         // 支付类的订单，检查余额是否充足
         if (type.equals(OrderTypeEnum.PAYMENT.getKey()) && payType.equals(PayTypeEnum.BALANCE.getKey())) {

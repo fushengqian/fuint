@@ -149,7 +149,7 @@ public class BackendBannerController extends BaseController {
     /**
      * 保存banner
      *
-     * @param request  HttpServletRequest对象
+     * @param request HttpServletRequest对象
      * @return
      */
     @RequestMapping(value = "/save", method = RequestMethod.POST)

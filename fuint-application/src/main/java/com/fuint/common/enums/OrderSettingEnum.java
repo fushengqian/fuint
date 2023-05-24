@@ -1,23 +1,20 @@
 package com.fuint.common.enums;
 
 /**
- * 配置类型枚举
+ * 交易配置项枚举
  *
  * Created by FSQ
  * CopyRight https://www.fuint.cn
  */
-public enum SettingTypeEnum {
-    POINT("point", "积分配置"),
-    BALANCE("balance", "余额配置"),
-    USER("user", "会员配置"),
-    ORDER("order", "交易配置"),
-    SUB_MESSAGE("sub_message", "订阅消息");
+public enum OrderSettingEnum {
+    DELIVERY_FEE("deliveryFee", "订单配送费用"),
+    IS_CLOSE("isClose", "关闭交易功能");
 
     private String key;
 
     private String value;
 
-    SettingTypeEnum(String key, String value) {
+    OrderSettingEnum(String key, String value) {
         this.key = key;
         this.value = value;
     }
@@ -40,7 +37,7 @@ public enum SettingTypeEnum {
 
     // 普通方法，通过key获取value
     public static String getValue(String k) {
-        for (SettingTypeEnum c : SettingTypeEnum.values()) {
+        for (OrderSettingEnum c : OrderSettingEnum.values()) {
             if (c.getKey().equals(k)) {
                 return c.getValue();
             }
@@ -50,7 +47,7 @@ public enum SettingTypeEnum {
 
     // 普通方法，通过Value获取key
     public static String getKey(String v) {
-        for (SettingTypeEnum c : SettingTypeEnum.values()) {
+        for (OrderSettingEnum c : OrderSettingEnum.values()) {
             if (c.getValue() == v) {
                 return c.getKey();
             }

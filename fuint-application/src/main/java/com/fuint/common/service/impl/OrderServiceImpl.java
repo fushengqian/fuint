@@ -257,6 +257,8 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
         mtOrder.setStaffId(orderDto.getStaffId());
         mtOrder.setIsVisitor(orderDto.getIsVisitor());
         mtOrder.setUpdateTime(new Date());
+        mtOrder.setDeliveryFee(orderDto.getDeliveryFee() == null ? new BigDecimal(0) : orderDto.getDeliveryFee());
+
         if (mtOrder.getId() == null || mtOrder.getId() <= 0) {
             mtOrder.setCreateTime(new Date());
         }
@@ -734,6 +736,7 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
         dto.setIsVisitor(orderInfo.getIsVisitor());
         dto.setStaffId(orderInfo.getStaffId());
         dto.setVerifyCode("");
+        dto.setDeliveryFee(orderInfo.getDeliveryFee());
 
         // 核销码为空，说明已经核销
         if (orderInfo.getVerifyCode() == null || StringUtil.isEmpty(orderInfo.getVerifyCode())) {
@@ -1183,6 +1186,13 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
             payPrice = new BigDecimal("0");
         }
 
+        // 配送费用
+        BigDecimal deliveryFee = new BigDecimal("0");
+        MtSetting mtSetting = settingService.querySettingByName(OrderSettingEnum.DELIVERY_FEE.getKey());
+        if (mtSetting != null && StringUtil.isNotEmpty(mtSetting.getValue())) {
+            deliveryFee = new BigDecimal(mtSetting.getValue());
+        }
+
         result.put("list", cartDtoList);
         result.put("totalNum", totalNum);
         result.put("totalPrice", totalPrice);
@@ -1193,6 +1203,7 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
         result.put("myPoint", myPoint);
         result.put("couponAmount", couponAmount);
         result.put("usePointAmount", usePointAmount);
+        result.put("deliveryFee", deliveryFee);
 
         return result;
     }

@@ -90,6 +90,11 @@ public class UserOrderDto implements Serializable {
     private BigDecimal discount;
 
     /**
+     * 配送费用
+     */
+    private BigDecimal deliveryFee;
+
+    /**
      * 使用积分
      * */
     private Integer usePoint;
@@ -292,6 +297,14 @@ public class UserOrderDto implements Serializable {
 
     public void setDiscount(BigDecimal discount) {
         this.discount = discount;
+    }
+
+    public BigDecimal getDeliveryFee() {
+        return deliveryFee;
+    }
+
+    public void setDeliveryFee(BigDecimal deliveryFee) {
+        this.deliveryFee = deliveryFee;
     }
 
     public Integer getUsePoint() {
