@@ -705,6 +705,35 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
         reqDto.setPayTime(new Date());
         reqDto.setUpdateTime(new Date());
         updateOrder(reqDto);
+
+        // 处理购物订单
+        UserOrderDto orderInfo = getOrderByOrderSn(mtOrder.getOrderSn());
+        if (orderInfo.getType().equals(OrderTypeEnum.GOOGS.getKey())) {
+            try {
+                List<OrderGoodsDto> goodsList = orderInfo.getGoods();
+                if (goodsList != null && goodsList.size() > 0) {
+                    for (OrderGoodsDto goodsDto : goodsList) {
+                        MtGoods mtGoods = goodsService.queryGoodsById(goodsDto.getGoodsId());
+                        if (mtGoods != null) {
+                            // 卡券购买
+                            if (mtGoods.getCouponIds() != null && StringUtil.isNotEmpty(mtGoods.getCouponIds())) {
+                                String couponIds[] = mtGoods.getCouponIds().split(",");
+                                if (couponIds.length > 0) {
+                                    for (int i = 0; i < couponIds.length; i++) {
+                                        userCouponService.buyCouponItem(orderInfo.getId(), Integer.parseInt(couponIds[i]), orderInfo.getUserId(), orderInfo.getUserInfo().getMobile());
+                                    }
+                                }
+                            }
+                            // 将已销售数量+1
+                            goodsService.updateInitSale(mtGoods.getId());
+                        }
+                    }
+                }
+            } catch (BusinessCheckException e) {
+                logger.error("会员购买的卡券发送给会员失败......" + e.getMessage());
+            }
+        }
+
         return true;
     }
 

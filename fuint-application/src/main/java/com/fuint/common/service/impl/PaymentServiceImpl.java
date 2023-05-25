@@ -81,9 +81,6 @@ public class PaymentServiceImpl implements PaymentService {
     @Autowired
     private OpenGiftService openGiftService;
 
-    @Autowired
-    private GoodsService goodsService;
-
     /**
      * 创建支付订单
      * @return
@@ -124,33 +121,6 @@ public class PaymentServiceImpl implements PaymentService {
         // 会员升级订单
         if (mtOrder.getType().equals(OrderTypeEnum.MEMBER.getKey())) {
             openGiftService.openGift(mtOrder.getUserId(), Integer.parseInt(mtOrder.getParam()), false);
-        }
-
-        // 处理购物订单
-        if (orderInfo.getType().equals(OrderTypeEnum.GOOGS.getKey())) {
-            try {
-                List<OrderGoodsDto> goodsList = orderInfo.getGoods();
-                if (goodsList != null && goodsList.size() > 0) {
-                    for (OrderGoodsDto goodsDto : goodsList) {
-                        MtGoods mtGoods = goodsService.queryGoodsById(goodsDto.getGoodsId());
-                        if (mtGoods != null) {
-                            // 卡券购买
-                            if (mtGoods.getCouponIds() != null && StringUtil.isNotEmpty(mtGoods.getCouponIds())) {
-                                String couponIds[] = mtGoods.getCouponIds().split(",");
-                                if (couponIds.length > 0) {
-                                    for (int i = 0; i < couponIds.length; i++) {
-                                         userCouponService.buyCouponItem(orderInfo.getId(), Integer.parseInt(couponIds[i]), orderInfo.getUserId(), orderInfo.getUserInfo().getMobile());
-                                    }
-                                }
-                            }
-                            // 将已销售数量+1
-                            goodsService.updateInitSale(mtGoods.getId());
-                        }
-                    }
-                }
-            } catch (BusinessCheckException e) {
-                logger.error("会员购买的卡券发送给会员失败......" + e.getMessage());
-            }
         }
 
         // 储值卡订单
