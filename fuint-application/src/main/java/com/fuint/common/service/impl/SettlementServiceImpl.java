@@ -347,7 +347,11 @@ public class SettlementServiceImpl implements SettlementService {
             } else {
                 reqOrder.setDiscount(orderInfo.getDiscount());
             }
-            reqOrder.setPayAmount(reqOrder.getAmount().subtract(reqOrder.getDiscount()));
+            BigDecimal realPayAmount = reqOrder.getAmount().subtract(reqOrder.getDiscount());
+            if (realPayAmount.compareTo(new BigDecimal("0")) < 0) {
+                realPayAmount = new BigDecimal("0");
+            }
+            reqOrder.setPayAmount(realPayAmount);
             orderService.updateOrder(reqOrder);
             orderInfo = orderService.getOrderInfo(orderInfo.getId());
         }

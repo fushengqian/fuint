@@ -147,7 +147,7 @@ public class ClientCartController extends BaseController {
     @CrossOrigin
     public ResponseObject clear(HttpServletRequest request, @RequestBody CartClearParam cartClearParam) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
-        String cartIds = cartClearParam.getCartId() == null ? "" : cartClearParam.getCartId().replace("[", "").replace("]", "");
+        String cartIds = cartClearParam.getCartId() == null ? "" : String.join(",", cartClearParam.getCartId());
         Integer userId = cartClearParam.getUserId() == null ? 0 : cartClearParam.getUserId();
         String hangNo = cartClearParam.getHangNo() == null ? "" : cartClearParam.getHangNo();
 

@@ -352,7 +352,11 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
                     BigDecimal percent = new BigDecimal(userGrade.getDiscount()).divide(new BigDecimal("10"), BigDecimal.ROUND_CEILING, 2);
                     BigDecimal payAmountDiscount = mtOrder.getPayAmount().multiply(percent);
                     mtOrder.setDiscount(mtOrder.getDiscount().add(mtOrder.getPayAmount().subtract(payAmountDiscount)));
-                    mtOrder.setPayAmount(payAmountDiscount);
+                    if (payAmountDiscount.compareTo(new BigDecimal("0")) > 0) {
+                        mtOrder.setPayAmount(payAmountDiscount);
+                    } else {
+                        mtOrder.setPayAmount(new BigDecimal("0"));
+                    }
                 }
             }
         }
