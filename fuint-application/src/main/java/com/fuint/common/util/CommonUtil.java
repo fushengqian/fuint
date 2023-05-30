@@ -121,23 +121,33 @@ public class CommonUtil {
      * @return String
      */
     public static String getIPFromHttpRequest(HttpServletRequest request) {
-        String remoteIp = request.getHeader("X-Real-IP");
-        if (remoteIp == null) {
-            remoteIp = request.getHeader("x-forwarded-for");
+        String ip = request.getHeader("x-forwarded-for");
+
+        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+            ip = request.getHeader("Proxy-Client-IP");
         }
-        if (remoteIp == null) {
-            remoteIp = request.getRemoteAddr();
+        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+            ip = request.getHeader("WL-Proxy-Client-IP");
+        }
+        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+            ip = request.getHeader("HTTP_CLIENT_IP");
+        }
+        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+            ip = request.getHeader("HTTP_X_FORWARDED_FOR");
+        }
+        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+            ip = request.getRemoteAddr();
         }
 
         // 校验IP格式
         String regex = "\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}";
         Pattern pattern = Pattern.compile(regex);
-        Matcher matcher = pattern.matcher(remoteIp);
+        Matcher matcher = pattern.matcher(ip);
         if (!matcher.matches()) {
-            remoteIp = "127.0.0.1";
+            ip = "127.0.0.1";
         }
 
-        return remoteIp;
+        return ip;
     }
 
     public static void saveMultipartFile(MultipartFile file, String filePath) {
