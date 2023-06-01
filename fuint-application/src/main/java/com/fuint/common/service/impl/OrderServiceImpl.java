@@ -332,7 +332,7 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
             }
 
             // 购物使用了卡券
-            if (mtOrder.getCouponId() > 0 && (mtOrder.getDiscount().compareTo(new BigDecimal("0")) > 0)) {
+            if (mtOrder.getCouponId() > 0) {
                 String useCode = couponService.useCoupon(mtOrder.getCouponId(), mtOrder.getUserId(), mtOrder.getStoreId(), mtOrder.getId(), mtOrder.getDiscount(), "购物使用卡券");
                 // 卡券使用失败
                 if (StringUtil.isEmpty(useCode)) {
@@ -719,7 +719,7 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
                     for (OrderGoodsDto goodsDto : goodsList) {
                         MtGoods mtGoods = goodsService.queryGoodsById(goodsDto.getGoodsId());
                         if (mtGoods != null) {
-                            // 卡券购买
+                            // 购买的商品是虚拟卡券
                             if (mtGoods.getCouponIds() != null && StringUtil.isNotEmpty(mtGoods.getCouponIds())) {
                                 String couponIds[] = mtGoods.getCouponIds().split(",");
                                 if (couponIds.length > 0) {
@@ -838,7 +838,6 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
         } else if(dto.getStatus().equals(OrderStatusEnum.REFUND.getKey())) {
             dto.setStatusText(OrderStatusEnum.REFUND.getValue());
         }
-
 
         // 订单所属店铺
         MtStore storeInfo = storeService.queryStoreById(orderInfo.getStoreId());
