@@ -1,8 +1,6 @@
 package com.fuint.common.dto;
 
 import com.fuint.repository.model.MtConfirmLog;
-import com.sun.org.apache.xpath.internal.operations.Bool;
-
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.List;
@@ -108,7 +106,6 @@ public class UserCouponDto implements Serializable {
     public Integer getId() {
         return id;
     }
-
     public void setId(Integer id) {
         this.id = id;
     }
@@ -137,7 +134,6 @@ public class UserCouponDto implements Serializable {
     public Integer getCouponId() {
         return couponId;
     }
-
     public void setCouponId(Integer couponId) {
         this.couponId = couponId;
     }

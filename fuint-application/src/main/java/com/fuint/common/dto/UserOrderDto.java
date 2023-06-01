@@ -179,6 +179,11 @@ public class UserOrderDto implements Serializable {
      * */
     private MtRefund refundInfo;
 
+    /**
+     * 使用卡券
+     * */
+    private UserCouponDto couponInfo;
+
     public Integer getId() {
         return id;
     }
@@ -441,6 +446,14 @@ public class UserOrderDto implements Serializable {
 
     public void setRefundInfo(MtRefund refundInfo) {
         this.refundInfo = refundInfo;
+    }
+
+    public UserCouponDto getCouponInfo() {
+        return couponInfo;
+    }
+
+    public void setCouponInfo(UserCouponDto couponInfo) {
+        this.couponInfo = couponInfo;
     }
 }
 

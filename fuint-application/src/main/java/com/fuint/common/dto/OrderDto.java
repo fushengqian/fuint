@@ -20,6 +20,11 @@ public class OrderDto implements Serializable {
     private String type;
 
     /**
+     * 下单平台
+     */
+    private String platform;
+
+    /**
      * 支付类型
      */
     private String payType;
@@ -173,6 +178,14 @@ public class OrderDto implements Serializable {
 
     public void setType(String type) {
         this.type = type;
+    }
+
+    public String getPlatform() {
+        return platform;
+    }
+
+    public void setPlatform(String platform) {
+        this.platform = platform;
     }
 
     public String getPayType() {

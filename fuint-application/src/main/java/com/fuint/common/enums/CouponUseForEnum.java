@@ -8,7 +8,7 @@ package com.fuint.common.enums;
  */
 public enum CouponUseForEnum {
     MEMBER_GRADE("memberGrade", "升级会员等级专用"),
-    OFF_LINE_PAYMENT("offLinePayment", "到店买单支付专用");
+    OFF_LINE_PAYMENT("offLinePayment", "到店收银买单专用");
 
     private String key;
 

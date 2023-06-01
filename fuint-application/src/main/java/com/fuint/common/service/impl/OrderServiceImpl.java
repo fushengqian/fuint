@@ -317,7 +317,7 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
             }
 
             boolean isUsePoint = orderDto.getUsePoint() > 0 ? true : false;
-            cartData = calculateCartGoods(orderDto.getUserId(), cartList, orderDto.getCouponId(), isUsePoint);
+            cartData = calculateCartGoods(orderDto.getUserId(), cartList, orderDto.getCouponId(), isUsePoint, orderDto.getPlatform());
 
             mtOrder.setAmount(new BigDecimal(cartData.get("totalPrice").toString()));
             mtOrder.setUsePoint(Integer.parseInt(cartData.get("usePoint").toString()));
@@ -961,6 +961,25 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
             dto.setExpressInfo(expressInfo);
         }
 
+        // 使用的卡券
+        if (dto.getCouponId() != null && dto.getCouponId() > 0) {
+            MtUserCoupon mtUserCoupon = userCouponService.getUserCouponDetail(dto.getCouponId());
+            if (mtUserCoupon != null) {
+                MtCoupon mtCoupon = couponService.queryCouponById(mtUserCoupon.getCouponId());
+                if (mtCoupon != null) {
+                    UserCouponDto couponInfo = new UserCouponDto();
+                    couponInfo.setId(mtUserCoupon.getId());
+                    couponInfo.setCouponId(mtCoupon.getId());
+                    couponInfo.setName(mtCoupon.getName());
+                    couponInfo.setAmount(mtUserCoupon.getAmount());
+                    couponInfo.setBalance(mtUserCoupon.getBalance());
+                    couponInfo.setStatus(mtUserCoupon.getStatus());
+                    couponInfo.setType(mtCoupon.getType());
+                    dto.setCouponInfo(couponInfo);
+                }
+            }
+        }
+
         dto.setGoods(goodsList);
         return dto;
     }
@@ -1034,7 +1053,7 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
      * @return
      * */
     @Override
-    public Map<String, Object> calculateCartGoods(Integer userId, List<MtCart> cartList, Integer couponId, boolean isUsePoint) throws BusinessCheckException {
+    public Map<String, Object> calculateCartGoods(Integer userId, List<MtCart> cartList, Integer couponId, boolean isUsePoint, String platform) throws BusinessCheckException {
         MtUser userInfo = memberService.queryMemberById(userId);
 
         // 设置是否不能用积分抵扣
@@ -1126,7 +1145,15 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
                     couponDto.setStatus(UserCouponStatusEnum.DISABLE.getKey());
                     // 购物不能用专用的卡券
                     if (couponInfo.getUseFor() != null && StringUtil.isNotEmpty(couponInfo.getUseFor())) {
-                        continue;
+                        if (couponInfo.getUseFor().equals(CouponUseForEnum.MEMBER_GRADE.getKey())) {
+                            continue;
+                        }
+                        if (couponInfo.getUseFor().equals(CouponUseForEnum.OFF_LINE_PAYMENT.getKey())) {
+                            // 只有PC收银端能用
+                            if (!platform.equals(PlatformTypeEnum.PC.getCode())) {
+                                continue;
+                            }
+                        }
                     }
                     boolean isEffective = couponService.isCouponEffective(couponInfo);
                     // 优惠券

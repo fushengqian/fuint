@@ -2,7 +2,6 @@ package com.fuint.module.clientApi.controller;
 
 import com.fuint.common.dto.AccountInfo;
 import com.fuint.common.dto.UserInfo;
-import com.fuint.common.enums.OrderSettingEnum;
 import com.fuint.common.enums.StatusEnum;
 import com.fuint.common.enums.YesOrNoEnum;
 import com.fuint.common.param.CartClearParam;
@@ -16,7 +15,6 @@ import com.fuint.framework.web.ResponseObject;
 import com.fuint.repository.mapper.MtGoodsSkuMapper;
 import com.fuint.repository.model.MtCart;
 import com.fuint.repository.model.MtGoodsSku;
-import com.fuint.repository.model.MtSetting;
 import com.fuint.repository.model.MtUser;
 import com.fuint.utils.StringUtil;
 import io.swagger.annotations.Api;
@@ -26,7 +24,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -66,12 +63,6 @@ public class ClientCartController extends BaseController {
      * */
     @Autowired
     private MemberService memberService;
-
-    /**
-     * 配置服务接口
-     * */
-    @Autowired
-    private SettingService settingService;
 
     @Resource
     private MtGoodsSkuMapper mtGoodsSkuMapper;
@@ -185,6 +176,7 @@ public class ClientCartController extends BaseController {
     public ResponseObject list(HttpServletRequest request, @RequestBody CartListParam cartListParam) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
         Integer storeId = request.getHeader("storeId") == null ? 0 : Integer.parseInt(request.getHeader("storeId"));
+        String platform = request.getHeader("platform") == null ? "" : request.getHeader("platform");
         Integer goodsId = cartListParam.getGoodsId() == null ? 0 : cartListParam.getGoodsId();
         Integer skuId = cartListParam.getSkuId() == null ? 0 : cartListParam.getSkuId();
         Integer buyNum = cartListParam.getBuyNum() == null ? 1 : cartListParam.getBuyNum();
@@ -269,7 +261,7 @@ public class ClientCartController extends BaseController {
             cartList.add(mtCart);
         }
 
-        result = orderService.calculateCartGoods(mtUser.getId(), cartList, userCouponId, isUsePoint);
+        result = orderService.calculateCartGoods(mtUser.getId(), cartList, userCouponId, isUsePoint, platform);
 
         return getSuccessResult(result);
     }

@@ -1,6 +1,7 @@
 package com.fuint.module.backendApi.controller;
 
 import com.fuint.common.dto.*;
+import com.fuint.common.enums.PlatformTypeEnum;
 import com.fuint.common.enums.StatusEnum;
 import com.fuint.common.enums.YesOrNoEnum;
 import com.fuint.common.service.*;
@@ -357,7 +358,7 @@ public class BackendCashierController extends BaseController {
              if (cartList.size() > 0) {
                  Integer userId = cartList.get(0).getUserId();
                  String isVisitor = cartList.get(0).getIsVisitor();
-                 Map<String, Object> cartInfo = orderService.calculateCartGoods(userId, cartList, 0, false);
+                 Map<String, Object> cartInfo = orderService.calculateCartGoods(userId, cartList, 0, false, PlatformTypeEnum.PC.getCode());
                  dto.setNum(Integer.parseInt(cartInfo.get("totalNum").toString()));
                  dto.setAmount(new BigDecimal(cartInfo.get("totalPrice").toString()));
                  if (isVisitor.equals(YesOrNoEnum.NO.getKey())) {

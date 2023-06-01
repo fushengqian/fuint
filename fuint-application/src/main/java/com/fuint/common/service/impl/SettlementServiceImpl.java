@@ -221,6 +221,7 @@ public class SettlementServiceImpl implements SettlementService {
         orderDto.setCouponId(0);
         orderDto.setStaffId(staffId);
         orderDto.setIsVisitor(isVisitor);
+        orderDto.setPlatform(platform);
 
         MtSetting pointSetting = settingService.querySettingByName(PointSettingEnum.CAN_USE_AS_MONEY.getKey());
         // 使用积分数量
