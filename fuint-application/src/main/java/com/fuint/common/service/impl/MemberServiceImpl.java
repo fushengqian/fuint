@@ -598,6 +598,12 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
             mtUser.setIdcard("");
             mtUser.setStatus(StatusEnum.ENABLED.getKey());
             mtUser.setAddress(country + province + city);
+            // 微信用户 1：男；2：女 0：未知
+            if (gender.equals(GenderEnum.FEMALE.getKey().toString())) {
+                gender = GenderEnum.UNKNOWN.getKey().toString();
+            } else if (gender.equals(GenderEnum.UNKNOWN.getKey().toString())) {
+                gender = GenderEnum.FEMALE.getKey().toString();
+            }
             mtUser.setSex(Integer.parseInt(gender));
             if (StringUtil.isNotEmpty(storeId)) {
                 mtUser.setStoreId(Integer.parseInt(storeId));

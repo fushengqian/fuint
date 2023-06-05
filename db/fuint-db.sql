@@ -480,7 +480,7 @@ CREATE TABLE `mt_user` (
   `END_TIME` datetime DEFAULT NULL COMMENT '会员结束时间',
   `BALANCE` float(10,2) DEFAULT '0.00' COMMENT '余额',
   `POINT` int DEFAULT '0' COMMENT '积分',
-  `SEX` int DEFAULT '0' COMMENT '性别 0男；1女',
+  `SEX` int DEFAULT '0' COMMENT '性别 1男；0女',
   `BIRTHDAY` varchar(20) DEFAULT '' COMMENT '出生日期',
   `CAR_NO` varchar(10) DEFAULT '' COMMENT '车牌号',
   `PASSWORD` varchar(32) DEFAULT '' COMMENT '密码',

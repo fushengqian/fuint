@@ -58,7 +58,7 @@ public class UserDto implements Serializable {
     @ApiModelProperty("积分")
     private Integer point;
 
-    @ApiModelProperty("性别 0男；1女")
+    @ApiModelProperty("性别 1男；0女")
     private Integer sex;
 
     @ApiModelProperty("出生日期")
