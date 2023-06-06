@@ -272,6 +272,15 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
         MtOrder orderInfo = mtOrderMapper.selectById(mtOrder.getId());
         mtOrder.setId(orderInfo.getId());
 
+        // 会员相关信息
+        MtUser userInfo = memberService.queryMemberById(orderDto.getUserId());
+        MtUserGrade userGrade = userGradeService.queryUserGradeById(userInfo.getGradeId() != null ? Integer.parseInt(userInfo.getGradeId()) : 1);
+        BigDecimal percent = new BigDecimal("0");
+        if (userGrade != null && userGrade.getDiscount() != null && userGrade.getDiscount() > 0) {
+            // 会员折扣
+            percent = new BigDecimal(userGrade.getDiscount()).divide(new BigDecimal("10"), BigDecimal.ROUND_CEILING, 2);
+        }
+
         // 如果没有指定店铺，则读取默认的店铺
         if (orderDto.getStoreId() == null || orderDto.getStoreId() <= 0) {
             Map<String, Object> params = new HashMap<>();
@@ -342,17 +351,14 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
             }
         }
 
-        // 会员付款类订单、商品类订单的会员折扣
-        if (orderDto.getType().equals(OrderTypeEnum.PAYMENT.getKey()) || orderDto.getType().equals(OrderTypeEnum.GOOGS.getKey())) {
-            MtUser userInfo = memberService.queryMemberById(orderDto.getUserId());
+        // 会员付款类订单
+        if (orderDto.getType().equals(OrderTypeEnum.PAYMENT.getKey())) {
             if (userInfo != null && userInfo.getGradeId() != null && orderDto.getIsVisitor().equals(YesOrNoEnum.NO.getKey())) {
-                MtUserGrade userGrade = userGradeService.queryUserGradeById(Integer.parseInt(userInfo.getGradeId()));
-                if (userGrade != null && userGrade.getDiscount() != null && userGrade.getDiscount() > 0) {
-                    // 是否有会员折扣
-                    BigDecimal percent = new BigDecimal(userGrade.getDiscount()).divide(new BigDecimal("10"), BigDecimal.ROUND_CEILING, 2);
+                if (percent.compareTo(new BigDecimal("0")) > 0) {
+                    // 会员折扣
                     BigDecimal payAmountDiscount = mtOrder.getPayAmount().multiply(percent);
-                    mtOrder.setDiscount(mtOrder.getDiscount().add(mtOrder.getPayAmount().subtract(payAmountDiscount)));
                     if (payAmountDiscount.compareTo(new BigDecimal("0")) > 0) {
+                        mtOrder.setDiscount(mtOrder.getDiscount().add(mtOrder.getPayAmount().subtract(payAmountDiscount)));
                         mtOrder.setPayAmount(payAmountDiscount);
                     } else {
                         mtOrder.setPayAmount(new BigDecimal("0"));
@@ -389,14 +395,25 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
         if (orderDto.getType().equals(OrderTypeEnum.GOOGS.getKey()) && cartList.size() > 0) {
             Object listObject = cartData.get("list");
             List<ResCartDto> lists =(ArrayList<ResCartDto>)listObject;
+            BigDecimal memberDiscount = new BigDecimal("0");
             for (ResCartDto cart : lists) {
                  MtOrderGoods orderGoods = new MtOrderGoods();
                  orderGoods.setOrderId(orderInfo.getId());
                  orderGoods.setGoodsId(cart.getGoodsId());
                  orderGoods.setSkuId(cart.getSkuId());
                  orderGoods.setNum(cart.getNum());
-                 orderGoods.setPrice(cart.getGoodsInfo().getPrice());
-                 orderGoods.setDiscount(new BigDecimal("0"));
+                 // 计算会员折扣
+                 BigDecimal price = cart.getGoodsInfo().getPrice();
+                 boolean isDiscount = cart.getGoodsInfo().getIsMemberDiscount().equals(YesOrNoEnum.YES.getKey()) ? true : false;
+                 if (percent.compareTo(new BigDecimal("0")) > 0 && isDiscount) {
+                     orderGoods.setPrice(price.multiply(percent));
+                     BigDecimal discount = price.subtract(price.multiply(percent)).multiply(new BigDecimal(cart.getNum()));
+                     orderGoods.setDiscount(discount);
+                     memberDiscount = memberDiscount.add(discount);
+                 } else {
+                     orderGoods.setPrice(price);
+                     orderGoods.setDiscount(new BigDecimal("0"));
+                 }
                  orderGoods.setStatus(StatusEnum.ENABLED.getKey());
                  orderGoods.setCreateTime(new Date());
                  orderGoods.setUpdateTime(new Date());
@@ -426,6 +443,18 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
                  if (cart.getId() > 0) {
                      mtCartMapper.deleteById(cart.getId());
                  }
+            }
+
+            // 会员折扣
+            if (memberDiscount.compareTo(new BigDecimal("0")) > 0) {
+                orderInfo.setDiscount(orderInfo.getDiscount().add(memberDiscount));
+                if (orderInfo.getPayAmount().subtract(memberDiscount).compareTo(new BigDecimal("0")) > 0) {
+                    orderInfo.setPayAmount(orderInfo.getPayAmount().subtract(memberDiscount));
+                } else {
+                    orderInfo.setPayAmount(new BigDecimal("0"));
+                }
+                orderInfo.setUpdateTime(new Date());
+                orderInfo = updateOrder(orderInfo);
             }
 
             // 需要配送的订单，生成配送地址
@@ -684,7 +713,10 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
     @Override
     @Transactional(rollbackFor = Exception.class)
     public MtOrder updateOrder(MtOrder mtOrder) {
-        mtOrderMapper.updateById(mtOrder);
+        Integer id = mtOrderMapper.updateById(mtOrder);
+        if (id > 0) {
+            mtOrder = mtOrderMapper.selectById(mtOrder.getId());
+        }
         return mtOrder;
     }
 
@@ -895,7 +927,6 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
                     if (goodsInfo.getLogo().indexOf(baseImage) == -1) {
                         orderGoodsDto.setImage(baseImage + goodsInfo.getLogo());
                     }
-
                     orderGoodsDto.setType(OrderTypeEnum.GOOGS.getKey());
                     orderGoodsDto.setNum(orderGoods.getNum());
                     orderGoodsDto.setSkuId(orderGoods.getSkuId());
