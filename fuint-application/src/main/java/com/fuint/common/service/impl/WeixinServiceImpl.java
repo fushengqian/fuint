@@ -433,7 +433,7 @@ public class WeixinServiceImpl implements WeixinService {
      * 查询支付订单
      * */
     @Override
-    public String queryPaidOrder(Integer storeId, String transactionId, String orderSn) {
+    public Map<String, String> queryPaidOrder(Integer storeId, String transactionId, String orderSn) {
         try {
             getApiConfig(storeId, PlatformTypeEnum.MP_WEIXIN.getCode());
             WxPayApiConfig wxPayApiConfig = WxPayApiConfigKit.getWxPayApiConfig();
@@ -447,11 +447,15 @@ public class WeixinServiceImpl implements WeixinService {
                     .createSign(wxPayApiConfig.getPartnerKey(), SignType.MD5);
             logger.info("请求参数：{}", WxPayKit.toXml(params));
             String query = WxPayApi.orderQuery(params);
-            logger.info("查询结果: {}", query);
-            return query;
+            Map<String, String> result = WxPayKit.xmlToMap(query);
+            logger.info("查询结果: {}", result);
+            if (result.get("result_code").equals("FAIL")) {
+                result.put("trade_state", "FAIL");
+            }
+            return result;
         } catch (Exception e) {
             e.printStackTrace();
-            return "FAIL";
+            return null;
         }
     }
 
@@ -489,7 +493,7 @@ public class WeixinServiceImpl implements WeixinService {
             String returnMsg = respMap.get("return_msg");
             if (!WxPayKit.codeIsOk(returnCode)) {
                 // 通讯失败
-                String payResult = "";
+                Map<String, String> payResult = null;
                 String errCode = respMap.get("err_code");
                 if (StringUtil.isNotEmpty(errCode)) {
                     // 用户支付中，需要输入密码
@@ -503,7 +507,7 @@ public class WeixinServiceImpl implements WeixinService {
                         payResult = queryPaidOrder(storeId, respMap.get("transaction_id"), orderSn);
                     }
                 }
-                if (StringUtil.isEmpty(payResult) || payResult.equals("FAIL")) {
+                if (payResult == null || !payResult.get("trade_state").equals("SUCCESS")) {
                     logger.info("提交刷卡支付失败>>" + xmlResult);
                     return respMap;
                 }

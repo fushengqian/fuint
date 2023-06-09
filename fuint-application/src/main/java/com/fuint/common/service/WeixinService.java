@@ -38,7 +38,7 @@ public interface WeixinService {
 
     Boolean doSendSubscribeMessage(String reqDataJsonStr);
 
-    String queryPaidOrder(Integer storeId, String transactionId, String orderSn);
+    Map<String, String> queryPaidOrder(Integer storeId, String transactionId, String orderSn);
 
     Boolean doRefund(Integer storeId, String orderSn, BigDecimal totalAmount, BigDecimal refundAmount, String platform) throws BusinessCheckException;
 

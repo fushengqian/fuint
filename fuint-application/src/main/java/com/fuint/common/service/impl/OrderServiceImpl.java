@@ -106,6 +106,9 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
     @Autowired
     private RefundService refundService;
 
+    @Autowired
+    private WeixinService weixinService;
+
     /**
      * 获取用户订单列表
      * @param  orderListParam
@@ -1008,6 +1011,16 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
                     couponInfo.setType(mtCoupon.getType());
                     dto.setCouponInfo(couponInfo);
                 }
+            }
+        }
+
+        // 查询支付状态
+        if (!orderInfo.getPayStatus().equals(PayStatusEnum.SUCCESS.getKey())) {
+            Map<String, String> payResult = weixinService.queryPaidOrder(orderInfo.getStoreId(), "", orderInfo.getOrderSn());
+            if (payResult != null && payResult.get("trade_state").equals("SUCCESS")) {
+                BigDecimal payAmount = new BigDecimal(payResult.get("total_fee")).divide(new BigDecimal("100"));
+                setOrderPayed(orderInfo.getId(), payAmount);
+                dto.setPayStatus(PayStatusEnum.SUCCESS.getKey());
             }
         }
 
