@@ -107,7 +107,14 @@ public class ClientCartController extends BaseController {
             if (mtGoodsSku != null) {
                 goodsId = mtGoodsSku.getGoodsId();
                 skuId = mtGoodsSku.getId();
+            } else {
+                return getFailureResult(201, "该商品条码异常，可能已删除");
             }
+        }
+
+        // 商品ID不能为空
+        if (goodsId == null || goodsId <= 0) {
+            return getFailureResult(201, "该商品ID异常");
         }
 
         MtCart mtCart = new MtCart();
