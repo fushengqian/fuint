@@ -45,7 +45,7 @@ public class SettingServiceImpl extends ServiceImpl<MtSettingMapper, MtSetting> 
     @Override
     @OperationServiceLog(description = "删除配置信息")
     public void removeSetting(String name) {
-        MtSetting info = this.querySettingByName(name);
+        MtSetting info = querySettingByName(name);
         if (info != null) {
             mtSettingMapper.deleteById(info.getId());
         }
@@ -62,7 +62,7 @@ public class SettingServiceImpl extends ServiceImpl<MtSettingMapper, MtSetting> 
     @Transactional(rollbackFor = Exception.class)
     @OperationServiceLog(description = "保存配置信息")
     public MtSetting saveSetting(MtSetting mtSetting) {
-        MtSetting info = this.querySettingByName(mtSetting.getName());
+        MtSetting info = querySettingByName(mtSetting.getName());
         if (null != info) {
             if (mtSetting.getValue() != null) {
                 info.setValue(mtSetting.getValue());
