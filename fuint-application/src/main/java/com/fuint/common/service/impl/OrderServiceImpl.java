@@ -135,7 +135,8 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
         if (dataType.equals("toPay")) {
             status = OrderStatusEnum.CREATED.getKey(); // 待支付
         } else if(dataType.equals("paid")) {
-            status = OrderStatusEnum.PAID.getKey();    // 已支付
+            status = "";
+            payStatus = PayStatusEnum.SUCCESS.getKey(); // 已支付
         } else if(dataType.equals("cancel")) {
             status = OrderStatusEnum.CANCEL.getKey();  // 已取消
         }

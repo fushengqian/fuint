@@ -112,12 +112,12 @@ public class CartServiceImpl extends ServiceImpl<MtCartMapper, MtCart> implement
         params.put("skuId", mtCart.getSkuId());
         params.put("hangNo", reqDto.getHangNo() == null ? "" : reqDto.getHangNo());
 
-        List<MtCart> cartList = this.queryCartListByParams(params);
+        List<MtCart> cartList = queryCartListByParams(params);
         if (action.equals("-") && cartList.size() == 0) {
             return cartId;
         }
         // 已存在，仅操作数量增加或减少
-        if (cartList.size() > 0) {
+        if (cartList.size() > 0 && (mtCart.getId() == null || mtCart.getId() < 1)) {
             mtCart = cartList.get(0);
             if (action.equals("+")) {
                 mtCart.setNum(mtCart.getNum() + reqDto.getNum());
@@ -214,7 +214,7 @@ public class CartServiceImpl extends ServiceImpl<MtCartMapper, MtCart> implement
         if (StringUtil.isNotEmpty(goodsId)) {
             lambdaQueryWrapper.eq(MtCart::getGoodsId, goodsId);
         }
-        if (StringUtil.isNotEmpty(storeId)) {
+        if (StringUtil.isNotEmpty(storeId) && Integer.parseInt(storeId) > 0) {
             lambdaQueryWrapper.eq(MtCart::getStoreId, storeId);
         }
         if (StringUtil.isNotEmpty(skuId)) {

@@ -71,9 +71,6 @@ public class ClientPageController extends BaseController {
         Map<String, Object> outParams = new HashMap();
         outParams.put("banner", bannerData);
         outParams.put("goods", goodsData);
-
-        ResponseObject responseObject = getSuccessResult(outParams);
-
-        return getSuccessResult(responseObject.getData());
+        return getSuccessResult(outParams);
     }
 }

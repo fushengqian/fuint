@@ -88,7 +88,7 @@ public class BackendLoginController extends BaseController {
             TAccount tAccount = accountService.getAccountInfoById(accountInfo.getId());
             String myPassword = tAccount.getPassword();
             String inputPassword = accountService.getEntryptPassword(password, tAccount.getSalt());
-            if (!myPassword.equals(inputPassword)) {
+            if (!myPassword.equals(inputPassword) || !tAccount.getAccountStatus().toString().equals("1")) {
                 return getFailureResult(201, "账号或密码有误");
             }
 
@@ -113,12 +113,12 @@ public class BackendLoginController extends BaseController {
     public ResponseObject getInfo(HttpServletRequest request) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
-        if (accountInfo == null) {
+        TAccount tAccount = accountService.getAccountInfoById(accountInfo.getId());
+        if (accountInfo == null || tAccount == null || !tAccount.getAccountStatus().toString().equals("1")) {
             return getFailureResult(Constants.HTTP_RESPONSE_CODE_NOLOGIN);
         }
 
         List<Long> roleIds = accountService.getRoleIdsByAccountId(accountInfo.getId());
-
         List<String> roles = new ArrayList<>();
         if (roleIds.size() > 0) {
             for (int i = 0; i < roleIds.size(); i++) {
