@@ -3,6 +3,7 @@ package com.fuint.common.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.fuint.common.dto.MessageResDto;
+import com.fuint.common.enums.StatusEnum;
 import com.fuint.common.service.SendSmsService;
 import com.fuint.common.service.SmsTemplateService;
 import com.fuint.framework.exception.BusinessCheckException;
@@ -71,7 +72,7 @@ public class SendSmsServiceImpl implements SendSmsService {
                 if (mode != null && mode.intValue() == 1) {
                     // 手机号以","分隔拼接
                     String mobilePhones = phones.stream().collect(Collectors.joining(","));
-                    MessageResDto res = this.sendMessage(mobilePhones, templateUname, contentParams);
+                    MessageResDto res = sendMessage(mobilePhones, templateUname, contentParams);
                     result.put(res.getResult(), phones);
                 } else {
                     result.put(Boolean.TRUE,phones);
@@ -117,6 +118,9 @@ public class SendSmsServiceImpl implements SendSmsService {
                 throw new BusinessCheckException("该短信模板不存在！");
             }
             templateInfo = templateList.get(0);
+            if (!templateInfo.getStatus().equals(StatusEnum.ENABLED.getKey())) {
+                throw new BusinessCheckException("该短信模板未启用！");
+            }
         } catch (BusinessCheckException e) {
             e.getStackTrace();
         }
@@ -169,7 +173,7 @@ public class SendSmsServiceImpl implements SendSmsService {
                 e.printStackTrace();
             }
             logger.info("sendMessage outParams:{}", res);
-            this.smsSendedLogRecord(phoneNo, smsContent);
+            saveSendLog(phoneNo, smsContent);
             flag = true;
         } catch (Exception e) {
             flag = false;
@@ -187,7 +191,7 @@ public class SendSmsServiceImpl implements SendSmsService {
      * @param message   短信内容
      * @return
      */
-    public void smsSendedLogRecord(String phoneNo, String message) {
+    public void saveSendLog(String phoneNo, String message) {
         MtSmsSendedLog mtSmsSendedLog = new MtSmsSendedLog();
         mtSmsSendedLog.setMobilePhone(phoneNo);
         mtSmsSendedLog.setContent(message);

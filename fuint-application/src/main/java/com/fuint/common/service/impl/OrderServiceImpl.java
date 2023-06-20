@@ -109,6 +109,9 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
     @Autowired
     private WeixinService weixinService;
 
+    @Autowired
+    private SendSmsService sendSmsService;
+
     /**
      * 获取用户订单列表
      * @param  orderListParam
@@ -745,6 +748,20 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
         reqDto.setPayTime(new Date());
         reqDto.setUpdateTime(new Date());
         updateOrder(reqDto);
+
+        // 给商家发送通知短信
+        try {
+            MtStore mtStore = storeService.queryStoreById(mtOrder.getStoreId());
+            if (mtStore != null) {
+                Map<String, String> params = new HashMap<>();
+                params.put("orderSn", mtOrder.getOrderSn());
+                List<String> mobileList = new ArrayList<>();
+                mobileList.add(mtStore.getPhone());
+                sendSmsService.sendSms("new-order", mobileList, params);
+            }
+        } catch (Exception e) {
+            // empty
+        }
 
         // 处理购物订单
         UserOrderDto orderInfo = getOrderByOrderSn(mtOrder.getOrderSn());

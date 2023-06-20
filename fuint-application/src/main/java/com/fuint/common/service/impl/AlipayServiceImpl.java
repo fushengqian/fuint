@@ -65,7 +65,7 @@ public class AlipayServiceImpl implements AlipayService {
         AlipayTradePayModel model = new AlipayTradePayModel();
         model.setAuthCode(authCode);
         model.setSubject(goodsInfo);
-        model.setTotalAmount(payAmount.toString());
+        model.setTotalAmount(payAmount1.toString());
         model.setOutTradeNo(orderInfo.getOrderSn());
         model.setStoreId(orderInfo.getStoreId().toString());
         model.setScene("bar_code");
