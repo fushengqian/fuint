@@ -75,11 +75,11 @@ public class AlipayServiceImpl implements AlipayService {
             AlipayTradePayResponse response = AliPayApi.tradePayToResponse(model, notifyUrl);
             code = response.getCode();
             String msg = response.getMsg();
-            if (!msg.equals("SUCCESS")) {
-                throw new BusinessCheckException("支付宝支付出错，请检查配置项.");
+            if (!code.equals("10000") || !msg.equalsIgnoreCase("Success")) {
+                throw new BusinessCheckException("支付宝支付出错：" + msg);
             }
         } catch (Exception e) {
-            throw new BusinessCheckException("支付宝支付出错，请检查配置项.");
+            throw new BusinessCheckException("支付宝支付出错，请检查配置项");
         }
 
         Map<String, String> respData = new HashMap<>();
