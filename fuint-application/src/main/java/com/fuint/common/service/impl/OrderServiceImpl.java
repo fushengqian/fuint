@@ -270,7 +270,7 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
             mtOrder.setCreateTime(new Date());
         }
         // 核销码
-        if (mtOrder.getVerifyCode() == null) {
+        if (mtOrder.getVerifyCode() == null && !orderDto.getPlatform().equals(PlatformTypeEnum.PC.getCode())) {
             mtOrder.setVerifyCode(SeqUtil.getRandomNumber(6));
         }
 
