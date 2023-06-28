@@ -9,7 +9,7 @@ package com.fuint.common.enums;
 public enum UserGradeCatchTypeEnum {
     INIT("init", "默认获取"),
     PAY("pay", "付费升级"),
-    FREQUENCY("frequency:", "累计消费次数升级"),
+    FREQUENCY("frequency", "累计消费次数升级"),
     AMOUNT("amount", "累积消费金额升级");
 
     private String key;

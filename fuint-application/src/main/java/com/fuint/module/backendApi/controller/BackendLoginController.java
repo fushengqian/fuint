@@ -113,6 +113,9 @@ public class BackendLoginController extends BaseController {
     public ResponseObject getInfo(HttpServletRequest request) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
+        if (accountInfo == null) {
+            return getFailureResult(401, "登录信息已失效，请重新登录");
+        }
         TAccount tAccount = accountService.getAccountInfoById(accountInfo.getId());
         if (accountInfo == null || tAccount == null || !tAccount.getAccountStatus().toString().equals("1")) {
             return getFailureResult(Constants.HTTP_RESPONSE_CODE_NOLOGIN);
