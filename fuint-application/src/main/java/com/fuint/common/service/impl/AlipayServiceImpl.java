@@ -76,7 +76,16 @@ public class AlipayServiceImpl implements AlipayService {
             code = response.getCode();
             String msg = response.getMsg();
             if (!code.equals("10000") || !msg.equalsIgnoreCase("Success")) {
-                throw new BusinessCheckException("支付宝支付出错：" + msg);
+                if (code.equals("10003")) {
+                    // 需要会员输入支付密码，等待10秒后查询订单
+                    try {
+                        Thread.sleep(10000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                } else {
+                    throw new BusinessCheckException("支付宝支付出错：" + msg);
+                }
             }
         } catch (Exception e) {
             throw new BusinessCheckException("支付宝支付出错，请检查配置项");

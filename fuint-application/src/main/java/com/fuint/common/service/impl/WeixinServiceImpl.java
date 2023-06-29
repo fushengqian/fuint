@@ -498,9 +498,9 @@ public class WeixinServiceImpl implements WeixinService {
                 if (StringUtil.isNotEmpty(errCode)) {
                     // 用户支付中，需要输入密码
                     if (errCode.equals("USERPAYING")) {
-                        // 等待5秒后调用
+                        // 等待10秒后查询订单
                         try {
-                            Thread.sleep(5000);
+                            Thread.sleep(10000);
                         } catch (InterruptedException e) {
                             e.printStackTrace();
                         }

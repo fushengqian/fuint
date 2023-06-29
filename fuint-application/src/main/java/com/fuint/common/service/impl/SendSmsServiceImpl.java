@@ -136,6 +136,9 @@ public class SendSmsServiceImpl implements SendSmsService {
 
             // 装配参数
             String smsContent = templateInfo.getContent();
+            if (smsContent == null) {
+                smsContent = "";
+            }
             String paramJson = "";
             if (contentParams.size() > 0) {
                 for (Map.Entry<String, String> entry : contentParams.entrySet()){

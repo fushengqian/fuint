@@ -261,7 +261,7 @@ public class OpenGiftServiceImpl extends ServiceImpl<MtOpenGiftMapper, MtOpenGif
                if (item.getCouponId() > 0) {
                    try {
                        MtCoupon mtCoupon = couponService.queryCouponById(item.getCouponId());
-                       if (mtCoupon != null && mtCoupon.getStatus() == StatusEnum.ENABLED.getKey()) {
+                       if (mtCoupon != null && mtCoupon.getStatus().equals(StatusEnum.ENABLED.getKey())) {
                            CouponReceiveParam param = new CouponReceiveParam();
                            param.setCouponId(item.getCouponId());
                            param.setUserId(userId);

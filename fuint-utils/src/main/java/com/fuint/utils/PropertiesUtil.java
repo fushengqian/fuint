@@ -20,9 +20,16 @@ public class PropertiesUtil {
      * @return
      */
     public static String getResponseErrorMessageByCode(int code, String...params) {
+        if (messageResource == null) {
+            return "";
+        }
         String pStr = messageResource.getString("response.error." + code);
-        if(StringUtils.isEmpty(pStr)) return "";
-        if(params == null || params.length == 0) return pStr;
+        if (StringUtils.isEmpty(pStr) || pStr == null) {
+           return "";
+        }
+        if (params == null || params.length == 0) {
+            return pStr;
+        }
         MessageFormat format = new MessageFormat(pStr, Locale.getDefault());
         return format.format(params);
     }
@@ -35,8 +42,15 @@ public class PropertiesUtil {
      */
     public static String getValueByKey(String key, String...params) {
         String pStr = messageResource.getString(key);
-        if(StringUtils.isEmpty(pStr)) return "";
-        if(params == null || params.length == 0) return pStr;
+        if (messageResource == null) {
+            return "";
+        }
+        if (StringUtils.isEmpty(pStr)) {
+            return "";
+        }
+        if (params == null || params.length == 0) {
+            return pStr;
+        }
         MessageFormat format = new MessageFormat(pStr, Locale.getDefault());
         return format.format(params);
     }
