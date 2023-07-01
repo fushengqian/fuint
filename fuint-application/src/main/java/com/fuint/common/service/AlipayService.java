@@ -18,4 +18,6 @@ public interface AlipayService {
 
     Boolean checkCallBack( Map<String, String> params) throws Exception;
 
+    Map<String, String> queryPaidOrder(Integer storeId, String tradeNo, String orderSn);
+
 }

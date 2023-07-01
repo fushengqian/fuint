@@ -1,8 +1,11 @@
 package com.fuint.common.service.impl;
 
+import com.alipay.api.AlipayApiException;
 import com.alipay.api.domain.AlipayTradePayModel;
+import com.alipay.api.domain.AlipayTradeQueryModel;
 import com.alipay.api.internal.util.AlipaySignature;
 import com.alipay.api.response.AlipayTradePayResponse;
+import com.alipay.api.response.AlipayTradeQueryResponse;
 import com.fuint.common.bean.AliPayBean;
 import com.fuint.common.dto.OrderDto;
 import com.fuint.common.enums.*;
@@ -10,6 +13,7 @@ import com.fuint.common.service.*;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.web.ResponseObject;
 import com.fuint.repository.model.*;
+import com.fuint.utils.StringUtil;
 import com.ijpay.alipay.AliPayApi;
 import com.ijpay.alipay.AliPayApiConfig;
 import com.ijpay.alipay.AliPayApiConfigKit;
@@ -83,6 +87,10 @@ public class AlipayServiceImpl implements AlipayService {
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
+                    Map<String, String> payResult = queryPaidOrder(orderInfo.getStoreId(), response.getTradeNo(), orderInfo.getOrderSn());
+                    if (payResult == null) {
+                        throw new BusinessCheckException("支付宝支付失败");
+                    }
                 } else {
                     throw new BusinessCheckException("支付宝支付出错：" + msg);
                 }
@@ -102,8 +110,8 @@ public class AlipayServiceImpl implements AlipayService {
 
     @Override
     public Boolean checkCallBack( Map<String, String> params) throws Exception {
-       getApiConfig();
-       return AlipaySignature.rsaCheckV1(params, aliPayBean.getPublicKey(), "UTF-8", "RSA2");
+        getApiConfig();
+        return AlipaySignature.rsaCheckV1(params, aliPayBean.getPublicKey(), "UTF-8", "RSA2");
     }
 
     /**
@@ -129,5 +137,36 @@ public class AlipayServiceImpl implements AlipayService {
         AliPayApiConfigKit.setThreadLocalAliPayApiConfig(aliPayApiConfig);
 
         return aliPayApiConfig;
+    }
+
+    /**
+     * 查询支付订单
+     * */
+    @Override
+    public Map<String, String> queryPaidOrder(Integer storeId, String tradeNo, String orderSn) {
+        Map<String, String> result = null;
+        try {
+            AlipayTradeQueryModel model = new AlipayTradeQueryModel();
+            if (StringUtil.isNotEmpty(orderSn)) {
+                model.setOutTradeNo(orderSn);
+            }
+            if (StringUtil.isNotEmpty(tradeNo)) {
+                model.setTradeNo(tradeNo);
+            }
+            getApiConfig();
+            AlipayTradeQueryResponse response = AliPayApi.tradeQueryToResponse(model);
+            if (response != null) {
+                // TradeStatus：TRADE_SUCCESS（交易支付成功，可进行退款）或 TRADE_FINISHED（交易结束，不可退款）
+                if (response.getTradeStatus() != null && response.getTradeStatus().equals("TRADE_SUCCESS")) {
+                    result.put("tradeNo", response.getTradeNo());
+                    result.put("status", response.getTradeStatus());
+                    result.put("payAmount", response.getBuyerPayAmount());
+                }
+            }
+        } catch (AlipayApiException e) {
+            e.printStackTrace();
+        }
+
+        return result;
     }
 }
