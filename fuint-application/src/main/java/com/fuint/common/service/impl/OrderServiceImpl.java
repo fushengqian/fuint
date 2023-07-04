@@ -1039,20 +1039,28 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
         if (!orderInfo.getPayStatus().equals(PayStatusEnum.SUCCESS.getKey())) {
             // 微信支付
             if (orderInfo.getPayType().equals(PayTypeEnum.MICROPAY.getKey()) || orderInfo.getPayType().equals(PayTypeEnum.JSAPI.getKey())) {
-                Map<String, String> payResult = weixinService.queryPaidOrder(orderInfo.getStoreId(), "", orderInfo.getOrderSn());
-                if (payResult != null && payResult.get("trade_state").equals("SUCCESS")) {
-                    BigDecimal payAmount = new BigDecimal(payResult.get("total_fee")).divide(new BigDecimal("100"));
-                    setOrderPayed(orderInfo.getId(), payAmount);
-                    dto.setPayStatus(PayStatusEnum.SUCCESS.getKey());
+                try {
+                    Map<String, String> payResult = weixinService.queryPaidOrder(orderInfo.getStoreId(), "", orderInfo.getOrderSn());
+                    if (payResult != null && payResult.get("trade_state").equals("SUCCESS")) {
+                        BigDecimal payAmount = new BigDecimal(payResult.get("total_fee")).divide(new BigDecimal("100"));
+                        setOrderPayed(orderInfo.getId(), payAmount);
+                        dto.setPayStatus(PayStatusEnum.SUCCESS.getKey());
+                    }
+                } catch (Exception e) {
+                    // empty
                 }
             }
             // 支付宝支付
             if (orderInfo.getPayType().equals(PayTypeEnum.ALISCAN.getKey())) {
-                Map<String, String> payResult = alipayService.queryPaidOrder(orderInfo.getStoreId(), "", orderInfo.getOrderSn());
-                if (payResult != null) {
-                    BigDecimal payAmount = new BigDecimal(payResult.get("payAmount"));
-                    setOrderPayed(orderInfo.getId(), payAmount);
-                    dto.setPayStatus(PayStatusEnum.SUCCESS.getKey());
+                try {
+                    Map<String, String> payResult = alipayService.queryPaidOrder(orderInfo.getStoreId(), "", orderInfo.getOrderSn());
+                    if (payResult != null) {
+                        BigDecimal payAmount = new BigDecimal(payResult.get("payAmount"));
+                        setOrderPayed(orderInfo.getId(), payAmount);
+                        dto.setPayStatus(PayStatusEnum.SUCCESS.getKey());
+                    }
+                } catch (Exception e) {
+                    // empty
                 }
             }
         }

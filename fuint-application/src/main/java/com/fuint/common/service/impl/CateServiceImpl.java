@@ -10,6 +10,8 @@ import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.pagination.PaginationRequest;
 import com.fuint.framework.pagination.PaginationResponse;
 import com.fuint.repository.mapper.MtGoodsCateMapper;
+import com.fuint.repository.mapper.MtGoodsMapper;
+import com.fuint.repository.model.MtGoods;
 import com.fuint.repository.model.MtGoodsCate;
 import com.fuint.utils.StringUtil;
 import com.github.pagehelper.Page;
@@ -37,7 +39,10 @@ public class CateServiceImpl extends ServiceImpl<MtGoodsCateMapper, MtGoodsCate>
     private static final Logger log = LoggerFactory.getLogger(CateServiceImpl.class);
 
     @Resource
-    private MtGoodsCateMapper cateRepository;
+    private MtGoodsMapper mtGoodsMapper;
+
+    @Resource
+    private MtGoodsCateMapper cateMapper;
 
     /**
      * 分页查询分类列表
@@ -61,7 +66,7 @@ public class CateServiceImpl extends ServiceImpl<MtGoodsCateMapper, MtGoodsCate>
         }
 
         lambdaQueryWrapper.orderByAsc(MtGoodsCate::getSort);
-        List<MtGoodsCate> dataList = cateRepository.selectList(lambdaQueryWrapper);
+        List<MtGoodsCate> dataList = cateMapper.selectList(lambdaQueryWrapper);
 
         PageRequest pageRequest = PageRequest.of(paginationRequest.getCurrentPage(), paginationRequest.getPageSize());
         PageImpl pageImpl = new PageImpl(dataList, pageRequest, pageHelper.getTotal());
@@ -108,7 +113,7 @@ public class CateServiceImpl extends ServiceImpl<MtGoodsCateMapper, MtGoodsCate>
      */
     @Override
     public MtGoodsCate queryCateById(Integer id) {
-        return cateRepository.selectById(id);
+        return cateMapper.selectById(id);
     }
 
     /**
@@ -120,12 +125,19 @@ public class CateServiceImpl extends ServiceImpl<MtGoodsCateMapper, MtGoodsCate>
      */
     @Override
     @OperationServiceLog(description = "删除商品分类")
-    public void deleteCate(Integer id, String operator) {
-        MtGoodsCate cateInfo = this.queryCateById(id);
+    public void deleteCate(Integer id, String operator) throws BusinessCheckException {
+        MtGoodsCate cateInfo = queryCateById(id);
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("cate_id", id);
+        params.put("status", StatusEnum.ENABLED.getKey());
+        List<MtGoods> goodsList = mtGoodsMapper.selectByMap(params);
+        if (goodsList != null && goodsList.size() > 0) {
+            throw new BusinessCheckException("删除失败，该分类有商品存在");
+        }
         if (null == cateInfo) {
             return;
         }
-
         cateInfo.setStatus(StatusEnum.DISABLE.getKey());
         cateInfo.setUpdateTime(new Date());
 
@@ -163,6 +175,9 @@ public class CateServiceImpl extends ServiceImpl<MtGoodsCateMapper, MtGoodsCate>
             mtCate.setOperator(reqDto.getOperator());
         }
         if (reqDto.getStatus() != null) {
+            if (reqDto.getStatus().equals(StatusEnum.DISABLE.getKey())) {
+                deleteCate(mtCate.getId(), reqDto.getOperator());
+            }
             mtCate.setStatus(reqDto.getStatus());
         }
         if (reqDto.getSort() != null) {
@@ -188,7 +203,7 @@ public class CateServiceImpl extends ServiceImpl<MtGoodsCateMapper, MtGoodsCate>
         }
 
         lambdaQueryWrapper.orderByAsc(MtGoodsCate::getSort);
-        List<MtGoodsCate> dataList = cateRepository.selectList(lambdaQueryWrapper);
+        List<MtGoodsCate> dataList = cateMapper.selectList(lambdaQueryWrapper);
         return dataList;
     }
 }

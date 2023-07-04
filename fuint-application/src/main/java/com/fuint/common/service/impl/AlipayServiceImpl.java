@@ -144,7 +144,6 @@ public class AlipayServiceImpl implements AlipayService {
      * */
     @Override
     public Map<String, String> queryPaidOrder(Integer storeId, String tradeNo, String orderSn) {
-        Map<String, String> result = null;
         try {
             AlipayTradeQueryModel model = new AlipayTradeQueryModel();
             if (StringUtil.isNotEmpty(orderSn)) {
@@ -158,15 +157,17 @@ public class AlipayServiceImpl implements AlipayService {
             if (response != null) {
                 // TradeStatus：TRADE_SUCCESS（交易支付成功，可进行退款）或 TRADE_FINISHED（交易结束，不可退款）
                 if (response.getTradeStatus() != null && response.getTradeStatus().equals("TRADE_SUCCESS")) {
+                    Map<String, String> result = new HashMap<>();
                     result.put("tradeNo", response.getTradeNo());
                     result.put("status", response.getTradeStatus());
                     result.put("payAmount", response.getBuyerPayAmount());
+                    return result;
                 }
             }
         } catch (AlipayApiException e) {
-            e.printStackTrace();
+            logger.info("AlipayService queryPaidOrder response", e.getMessage());
         }
 
-        return result;
+        return null;
     }
 }

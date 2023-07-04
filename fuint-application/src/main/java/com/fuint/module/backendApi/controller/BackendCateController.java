@@ -85,26 +85,6 @@ public class BackendCateController extends BaseController {
     }
 
     /**
-     * 删除分类
-     *
-     * @param request
-     * @return
-     */
-    @RequestMapping(value = "/delete/{id}", method = RequestMethod.GET)
-    public ResponseObject delete(HttpServletRequest request, @PathVariable("id") Integer id) throws BusinessCheckException {
-        String token = request.getHeader("Access-Token");
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
-        if (accountInfo == null) {
-            return getFailureResult(1001, "请先登录");
-        }
-
-        String operator = accountInfo.getAccountName();
-        cateService.deleteCate(id, operator);
-
-        return getSuccessResult(true);
-    }
-
-    /**
      * 更新状态
      *
      * @return
@@ -132,7 +112,12 @@ public class BackendCateController extends BaseController {
         cate.setOperator(operator);
         cate.setId(id);
         cate.setStatus(status);
-        cateService.updateCate(cate);
+
+        try {
+            cateService.updateCate(cate);
+        } catch (BusinessCheckException e) {
+            return getFailureResult(201, e.getMessage() == null ? "操作失败" : e.getMessage());
+        }
 
         return getSuccessResult(true);
     }
