@@ -191,6 +191,7 @@ public class ClientBalanceController extends BaseController {
         orderDto.setPointAmount(new BigDecimal("0"));
         orderDto.setOrderMode("");
         orderDto.setCouponId(0);
+        orderDto.setPlatform(platform);
 
         MtOrder orderInfo = orderService.saveOrder(orderDto);
 

@@ -115,19 +115,22 @@ public class ClientGoodsController extends BaseController {
     @ApiOperation(value = "搜索商品")
     @RequestMapping(value = "/search", method = RequestMethod.POST)
     @CrossOrigin
-    public ResponseObject search(@RequestBody Map<String, Object> params) throws BusinessCheckException {
+    public ResponseObject search(HttpServletRequest request, @RequestBody Map<String, Object> params) throws BusinessCheckException {
+        Integer storeId = request.getHeader("storeId") == null ? 0 : Integer.parseInt(request.getHeader("storeId"));
         Integer page = params.get("page") == null ? 1 : Integer.parseInt(params.get("page").toString());
         Integer pageSize = params.get("pageSize") == null ? Constants.PAGE_SIZE : Integer.parseInt(params.get("pageSize").toString());
         String name = params.get("name") == null ? "" : params.get("name").toString();
         Integer cateId = params.get("cateId") == null ? 0 : Integer.parseInt(params.get("cateId").toString());
 
         PaginationRequest paginationRequest = new PaginationRequest();
-
         paginationRequest.setCurrentPage(page);
         paginationRequest.setPageSize(pageSize);
 
         Map<String, Object> searchParams = new HashMap<>();
         searchParams.put("status", StatusEnum.ENABLED.getKey());
+        if (storeId > 0) {
+            searchParams.put("storeId", storeId.toString());
+        }
         if (cateId > 0) {
             searchParams.put("cateId", cateId);
         }

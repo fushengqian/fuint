@@ -8,7 +8,6 @@ import com.fuint.framework.pagination.PaginationResponse;
 import com.fuint.repository.model.MtGoods;
 import com.fuint.repository.model.MtGoodsSku;
 import com.fuint.repository.model.MtGoodsSpec;
-
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
@@ -31,7 +30,7 @@ public interface GoodsService {
     /**
      * 保存商品
      *
-     * @param reqDto
+     * @param  reqDto
      * @throws BusinessCheckException
      */
     MtGoods saveGoods(MtGoods reqDto) throws BusinessCheckException;
@@ -47,7 +46,7 @@ public interface GoodsService {
     /**
      * 根据编码获取商品信息
      *
-     * @param goodsNo
+     * @param  goodsNo
      * @throws BusinessCheckException
      */
     MtGoods queryGoodsByGoodsNo(String goodsNo) throws BusinessCheckException;
@@ -55,7 +54,7 @@ public interface GoodsService {
     /**
      * 根据条码获取sku信息
      *
-     * @param skuNo skuNo
+     * @param  skuNo skuNo
      * @throws BusinessCheckException
      * */
     MtGoodsSku getSkuInfoBySkuNo(String skuNo) throws BusinessCheckException;
@@ -63,7 +62,7 @@ public interface GoodsService {
     /**
      * 根据ID获取商品详情
      *
-     * @param id
+     * @param  id
      * @throws BusinessCheckException
      */
     GoodsDto getGoodsDetail(Integer id, boolean getDeleteSpec) throws InvocationTargetException, IllegalAccessException;

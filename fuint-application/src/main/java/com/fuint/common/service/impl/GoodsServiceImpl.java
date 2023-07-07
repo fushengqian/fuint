@@ -87,7 +87,10 @@ public class GoodsServiceImpl extends ServiceImpl<MtGoodsMapper, MtGoods> implem
         }
         String storeId = paginationRequest.getSearchParams().get("storeId") == null ? "" : paginationRequest.getSearchParams().get("storeId").toString();
         if (StringUtils.isNotBlank(storeId)) {
-            lambdaQueryWrapper.eq(MtGoods::getStoreId, storeId);
+            lambdaQueryWrapper.and(wq -> wq
+                    .eq(MtGoods::getStoreId, 0)
+                    .or()
+                    .eq(MtGoods::getStoreId, storeId));
         }
         String type = paginationRequest.getSearchParams().get("type") == null ? "" : paginationRequest.getSearchParams().get("type").toString();
         if (StringUtils.isNotBlank(type)) {
@@ -151,7 +154,7 @@ public class GoodsServiceImpl extends ServiceImpl<MtGoodsMapper, MtGoods> implem
     public MtGoods saveGoods(MtGoods reqDto) {
         MtGoods mtGoods = new MtGoods();
         if (reqDto.getId() > 0) {
-            mtGoods = this.queryGoodsById(reqDto.getId());
+            mtGoods = queryGoodsById(reqDto.getId());
         }
         if (reqDto.getStoreId() != null) {
             mtGoods.setStoreId(reqDto.getStoreId() >= 0 ? reqDto.getStoreId() : 0);
@@ -377,7 +380,7 @@ public class GoodsServiceImpl extends ServiceImpl<MtGoodsMapper, MtGoods> implem
     @Override
     @OperationServiceLog(description = "删除商品信息")
     public void deleteGoods(Integer id, String operator) {
-        MtGoods cateInfo = this.queryGoodsById(id);
+        MtGoods cateInfo = queryGoodsById(id);
         if (null == cateInfo) {
             return;
         }

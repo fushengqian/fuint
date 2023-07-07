@@ -3,7 +3,6 @@ package com.fuint.repository.mapper;
 import com.fuint.repository.model.MtGoods;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Param;
-
 import java.util.List;
 
 /**
