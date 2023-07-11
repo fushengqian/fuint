@@ -86,7 +86,7 @@ public class ClientGoodsController extends BaseController {
             dto.setLogo(baseImage + cate.getLogo());
             List<MtGoods> goodsArr = new ArrayList<>();
             for (MtGoods goods : goodsList) {
-                if (goods.getCateId() == cate.getId()) {
+                if (goods.getCateId().compareTo(cate.getId()) == 0) {
                     goodsArr.add(goods);
                 }
             }
