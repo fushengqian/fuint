@@ -129,12 +129,13 @@ public class UserCouponServiceImpl extends ServiceImpl<MtUserCouponMapper, MtUse
         Integer userId = receiveParam.getUserId() == null ? 0 : receiveParam.getUserId();
         Integer num = receiveParam.getNum() == null ? 1 : receiveParam.getNum();
         String receiveCode = receiveParam.getReceiveCode() == null ? "" : receiveParam.getReceiveCode();
-
+        Integer userCouponId = 0;
         MtCoupon couponInfo = couponService.queryCouponById(couponId);
         if (couponInfo == null) {
             MtUserCoupon userCoupon = mtUserCouponMapper.findByCode(receiveCode);
             if (userCoupon != null) {
                 couponInfo = couponService.queryCouponById(userCoupon.getCouponId());
+                userCouponId = userCoupon.getId();
             } else {
                 throw new BusinessCheckException(Message.CODE_ERROR_1);
             }
@@ -164,8 +165,6 @@ public class UserCouponServiceImpl extends ServiceImpl<MtUserCouponMapper, MtUse
                 }
             }
         }
-
-        Integer userCouponId = 0;
 
         // 是否需要领取码
         if (couponInfo.getReceiveCode() != null && StringUtil.isNotEmpty(couponInfo.getReceiveCode())) {

@@ -198,7 +198,7 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
         List<UserOrderDto> dataList = new ArrayList<>();
         if (orderList.size() > 0) {
             for (MtOrder order : orderList) {
-                 UserOrderDto dto = getOrderDetail(order,false);
+                 UserOrderDto dto = getOrderDetail(order,false, false);
                  dataList.add(dto);
             }
         }
@@ -519,7 +519,7 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
     @Override
     public UserOrderDto getOrderById(Integer id) throws BusinessCheckException {
         MtOrder mtOrder = mtOrderMapper.selectById(id);
-        return getOrderDetail(mtOrder, true);
+        return getOrderDetail(mtOrder, true, true);
     }
 
     /**
@@ -531,7 +531,7 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
     @Override
     public UserOrderDto getMyOrderById(Integer id) throws BusinessCheckException {
         MtOrder mtOrder = mtOrderMapper.selectById(id);
-        UserOrderDto orderInfo = getOrderDetail(mtOrder, true);
+        UserOrderDto orderInfo = getOrderDetail(mtOrder, true, true);
 
         // 售后订单
         MtRefund refund = refundService.getRefundByOrderId(id);
@@ -641,7 +641,7 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
         if (orderInfo == null) {
             return null;
         }
-        return getOrderDetail(orderInfo, true);
+        return getOrderDetail(orderInfo, true, true);
     }
 
     /**
@@ -809,9 +809,11 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
     /**
      * 处理订单详情
      * @param  orderInfo
+     * @param  needAddress  是否获取订单地址
+     * @param  getPayStatus 是否获取支付状态
      * @return UserOrderDto
      * */
-    private UserOrderDto getOrderDetail(MtOrder orderInfo, boolean needAddress) throws BusinessCheckException {
+    private UserOrderDto getOrderDetail(MtOrder orderInfo, boolean needAddress, boolean getPayStatus) throws BusinessCheckException {
         UserOrderDto dto = new UserOrderDto();
 
         dto.setId(orderInfo.getId());
@@ -1039,7 +1041,7 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
         }
 
         // 查询支付状态
-        if (!orderInfo.getPayStatus().equals(PayStatusEnum.SUCCESS.getKey())) {
+        if (getPayStatus && !orderInfo.getPayStatus().equals(PayStatusEnum.SUCCESS.getKey())) {
             // 微信支付
             if (orderInfo.getPayType().equals(PayTypeEnum.MICROPAY.getKey()) || orderInfo.getPayType().equals(PayTypeEnum.JSAPI.getKey())) {
                 try {
@@ -1067,7 +1069,6 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
                 }
             }
         }
-
         dto.setGoods(goodsList);
         return dto;
     }
