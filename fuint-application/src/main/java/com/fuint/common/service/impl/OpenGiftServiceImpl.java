@@ -212,6 +212,9 @@ public class OpenGiftServiceImpl extends ServiceImpl<MtOpenGiftMapper, MtOpenGif
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void openGift(Integer userId, Integer gradeId, boolean isNewMember) throws BusinessCheckException {
+        if (gradeId == null || gradeId.compareTo(0) <= 0) {
+            return;
+        }
         Map<String, Object> params = new HashMap<>();
         params.put("grade_id", gradeId.toString());
         params.put("status", StatusEnum.ENABLED.getKey());
