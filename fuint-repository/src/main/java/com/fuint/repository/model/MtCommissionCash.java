@@ -19,7 +19,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @TableName("mt_commission_cash")
-@ApiModel(value = "MtCommissionCash对象", description = "分佣提现记录表")
+@ApiModel(value = "分佣提现记录表对象", description = "分佣提现记录表")
 public class MtCommissionCash implements Serializable {
 
     private static final long serialVersionUID = 1L;

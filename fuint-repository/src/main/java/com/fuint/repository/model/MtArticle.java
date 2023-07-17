@@ -19,7 +19,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @TableName("mt_article")
-@ApiModel(value = "MtArticle对象", description = "MtArticle对象")
+@ApiModel(value = "MtArticle对象", description = "MtArticle表对象")
 public class MtArticle implements Serializable {
 
     private static final long serialVersionUID = 1L;

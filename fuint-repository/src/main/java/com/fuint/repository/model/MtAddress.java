@@ -61,5 +61,4 @@ public class MtAddress implements Serializable {
     @ApiModelProperty("状态")
     private String status;
 
-
 }
