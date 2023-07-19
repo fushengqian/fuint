@@ -28,6 +28,9 @@ public class MtGoodsCate implements Serializable {
     @TableId(value = "ID", type = IdType.AUTO)
     private Integer id;
 
+    @ApiModelProperty("所属店铺ID")
+    private Integer storeId;
+
     @ApiModelProperty("分类名称")
     private String name;
 
@@ -51,6 +54,5 @@ public class MtGoodsCate implements Serializable {
 
     @ApiModelProperty("A：正常；D：删除")
     private String status;
-
 
 }

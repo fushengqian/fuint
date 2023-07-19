@@ -120,8 +120,8 @@ public class BackendMemberController extends BaseController {
         }
 
         TAccount account = accountService.getAccountInfoById(accountInfo.getId());
-        Integer storeId = account.getStoreId();
-        if (storeId != null && storeId > 0) {
+        Integer storeId = account.getStoreId() == null ? 0 : account.getStoreId();
+        if (storeId > 0) {
             params.put("storeId", storeId.toString());
         }
 

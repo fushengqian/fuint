@@ -97,7 +97,7 @@ public class BackendGoodsController extends BaseController {
         }
 
         TAccount account = accountService.getAccountInfoById(accountInfo.getId());
-        Integer storeId = account.getStoreId();
+        Integer storeId = account.getStoreId() == null ? 0 : account.getStoreId();
 
         PaginationRequest paginationRequest = new PaginationRequest();
         paginationRequest.setCurrentPage(page);

@@ -64,7 +64,13 @@ public class CateServiceImpl extends ServiceImpl<MtGoodsCateMapper, MtGoodsCate>
         if (StringUtils.isNotBlank(status)) {
             lambdaQueryWrapper.eq(MtGoodsCate::getStatus, status);
         }
-
+        String storeId = paginationRequest.getSearchParams().get("storeId") == null ? "" : paginationRequest.getSearchParams().get("storeId").toString();
+        if (StringUtils.isNotBlank(storeId)) {
+            lambdaQueryWrapper.and(wq -> wq
+                    .eq(MtGoodsCate::getStoreId, 0)
+                    .or()
+                    .eq(MtGoodsCate::getStoreId, storeId));
+        }
         lambdaQueryWrapper.orderByAsc(MtGoodsCate::getSort);
         List<MtGoodsCate> dataList = cateMapper.selectList(lambdaQueryWrapper);
 

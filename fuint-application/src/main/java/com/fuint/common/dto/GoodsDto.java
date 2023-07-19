@@ -4,12 +4,16 @@ import com.fuint.repository.model.MtGoodsCate;
 import com.fuint.repository.model.MtGoodsSku;
 import com.fuint.repository.model.MtGoodsSpec;
 import com.fuint.repository.model.MtStore;
-
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
+/**
+ * 商品DTO
+ * Created by FSQ
+ * CopyRight https://www.fuint.cn
+ */
 public class GoodsDto implements Serializable {
 
     /**

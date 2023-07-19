@@ -89,7 +89,7 @@ public class BackendOrderController extends BaseController {
             return getFailureResult(1001, "请先登录");
         }
         TAccount account = accountService.getAccountInfoById(accountInfo.getId());
-        Integer storeId = account.getStoreId();
+        Integer storeId = account.getStoreId() == null ? 0 : account.getStoreId();
         if (storeId > 0) {
             orderListParam.setStoreId(storeId.toString());
         }
@@ -385,7 +385,7 @@ public class BackendOrderController extends BaseController {
         }
 
         TAccount account = accountService.getAccountInfoById(accountInfo.getId());
-        Integer storeId = account.getStoreId();
+        Integer storeId = account.getStoreId() == null ? 0 : account.getStoreId();
         Integer staffId = account.getStaffId();
         if (storeId > 0) {
             orderListParam.setStoreId(storeId.toString());

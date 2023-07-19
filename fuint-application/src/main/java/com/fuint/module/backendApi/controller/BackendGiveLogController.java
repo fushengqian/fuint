@@ -94,7 +94,7 @@ public class BackendGiveLogController extends BaseController {
         paginationRequest.setPageSize(pageSize);
 
         TAccount account = accountService.getAccountInfoById(accountInfo.getId());
-        Integer storeId = account.getStoreId();
+        Integer storeId = account.getStoreId() == null ? 0 : account.getStoreId();
         Map<String, Object> params = new HashMap<>();
         if (StringUtil.isNotEmpty(mobile)) {
             params.put("mobile", mobile);

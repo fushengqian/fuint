@@ -164,7 +164,7 @@ public class BackendDoConfirmController extends BaseController {
         }
 
         TAccount account = accountService.getAccountInfoById(accountInfo.getId());
-        Integer storeId = account.getStoreId();
+        Integer storeId = account.getStoreId() == null ? 0 : account.getStoreId();
 
         MtUserCoupon mtUserCoupon = mtUserCouponMapper.selectById(Integer.parseInt(userCouponId));
         if (mtUserCoupon.getType().equals(CouponTypeEnum.PRESTORE.getKey()) && StringUtil.isEmpty(amount)) {

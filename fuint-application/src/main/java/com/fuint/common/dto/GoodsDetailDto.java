@@ -5,6 +5,12 @@ import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
+/**
+ * 商品详情DTO
+ *
+ * Created by FSQ
+ * CopyRight https://www.fuint.cn
+ */
 public class GoodsDetailDto implements Serializable {
     /**
      * 自增ID

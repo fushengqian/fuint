@@ -115,7 +115,7 @@ public class BackendHomeController extends BaseController {
         }
 
         TAccount account = accountService.getAccountInfoById(accountInfo.getId());
-        Integer storeId = account.getStoreId();
+        Integer storeId = account.getStoreId() == null ? 0 : account.getStoreId();
 
         ArrayList<String> days = TimeUtils.getDays(5);
         days.add("昨天");

@@ -3,6 +3,7 @@ package com.fuint.module.backendApi.controller;
 import com.fuint.common.Constants;
 import com.fuint.common.dto.AccountInfo;
 import com.fuint.common.enums.StatusEnum;
+import com.fuint.common.service.AccountService;
 import com.fuint.common.service.CateService;
 import com.fuint.common.service.SettingService;
 import com.fuint.common.util.CommonUtil;
@@ -13,6 +14,7 @@ import com.fuint.framework.pagination.PaginationResponse;
 import com.fuint.framework.web.BaseController;
 import com.fuint.framework.web.ResponseObject;
 import com.fuint.repository.model.MtGoodsCate;
+import com.fuint.repository.model.TAccount;
 import com.fuint.utils.StringUtil;
 import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,6 +48,12 @@ public class BackendCateController extends BaseController {
     private SettingService settingService;
 
     /**
+     * 后台账户服务接口
+     */
+    @Autowired
+    private AccountService accountService;
+
+    /**
      * 商品分类列表
      *
      * @param request
@@ -55,10 +63,19 @@ public class BackendCateController extends BaseController {
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject list(HttpServletRequest request) throws BusinessCheckException {
+        String token = request.getHeader("Access-Token");
         Integer page = request.getParameter("page") == null ? Constants.PAGE_NUMBER : Integer.parseInt(request.getParameter("page"));
         Integer pageSize = request.getParameter("pageSize") == null ? Constants.PAGE_SIZE : Integer.parseInt(request.getParameter("pageSize"));
         String name = request.getParameter("name");
         String status = request.getParameter("status");
+
+        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
+        if (accountInfo == null) {
+            return getFailureResult(1001, "请先登录");
+        }
+
+        TAccount account = accountService.getAccountInfoById(accountInfo.getId());
+        Integer storeId = account.getStoreId() == null ? 0 : account.getStoreId();
 
         PaginationRequest paginationRequest = new PaginationRequest();
         paginationRequest.setCurrentPage(page);
@@ -71,6 +88,10 @@ public class BackendCateController extends BaseController {
         if (StringUtil.isNotEmpty(status)) {
             params.put("status", status);
         }
+        if (storeId > 0) {
+            params.put("storeId", storeId);
+        }
+
         paginationRequest.setSearchParams(params);
         paginationRequest.setSortColumn(new String[]{"sort asc", "status asc"});
         PaginationResponse<MtGoodsCate> paginationResponse = cateService.queryCateListByPagination(paginationRequest);
