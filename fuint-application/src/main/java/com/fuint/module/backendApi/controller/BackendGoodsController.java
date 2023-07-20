@@ -6,6 +6,7 @@ import com.fuint.common.Constants;
 import com.fuint.common.dto.*;
 import com.fuint.common.enums.GoodsTypeEnum;
 import com.fuint.common.enums.StatusEnum;
+import com.fuint.common.enums.YesOrNoEnum;
 import com.fuint.common.service.*;
 import com.fuint.common.util.CommonUtil;
 import com.fuint.common.util.TokenUtil;
@@ -40,6 +41,12 @@ import java.util.*;
 @RequestMapping(value = "/backendApi/goods/goods")
 public class BackendGoodsController extends BaseController {
 
+    @Resource
+    private MtGoodsSpecMapper mtGoodsSpecMapper;
+
+    @Resource
+    private MtGoodsSkuMapper mtGoodsSkuMapper;
+
     /**
      * 商品服务接口
      */
@@ -64,12 +71,6 @@ public class BackendGoodsController extends BaseController {
     @Autowired
     private AccountService accountService;
 
-    @Resource
-    private MtGoodsSpecMapper mtGoodsSpecMapper;
-
-    @Resource
-    private MtGoodsSkuMapper mtGoodsSkuMapper;
-
     @Autowired
     private SettingService settingService;
 
@@ -90,6 +91,7 @@ public class BackendGoodsController extends BaseController {
         String goodsNo = request.getParameter("goodsNo");
         String type = request.getParameter("type");
         String status = request.getParameter("status");
+        String searchStoreId = request.getParameter("storeId");
 
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
         if (accountInfo == null) {
@@ -104,6 +106,9 @@ public class BackendGoodsController extends BaseController {
         paginationRequest.setPageSize(pageSize);
 
         Map<String, Object> params = new HashMap<>();
+        if (StringUtil.isNotEmpty(searchStoreId)) {
+            params.put("storeId", searchStoreId);
+        }
         if (storeId > 0) {
             params.put("storeId", storeId);
         }
@@ -134,9 +139,17 @@ public class BackendGoodsController extends BaseController {
             typeList.add(paramDto);
         }
 
+        Map<String, Object> param = new HashMap<>();
+        param.put("status", StatusEnum.ENABLED.getKey());
+        if (storeId != null && storeId > 0) {
+            param.put("storeId", storeId.toString());
+        }
+        List<MtStore> storeList = storeService.queryStoresByParams(param);
+
         Map<String, Object> result = new HashMap<>();
         result.put("paginationResponse", paginationResponse);
         result.put("typeList", typeList);
+        result.put("storeList", storeList);
 
         return getSuccessResult(result);
     }
@@ -351,7 +364,7 @@ public class BackendGoodsController extends BaseController {
         String isMemberDiscount = param.get("isMemberDiscount") == null ? "" : param.get("isMemberDiscount").toString();
         String isSingleSpec = param.get("isSingleSpec") == null ? "" : param.get("isSingleSpec").toString();
         Integer cateId = (param.get("cateId") == null || StringUtil.isEmpty(param.get("cateId").toString())) ? 0 : Integer.parseInt(param.get("cateId").toString());
-        Integer storeId = (param.get("storeId") == null || StringUtil.isEmpty(param.get("storeId").toString())) ? null : Integer.parseInt(param.get("storeId").toString());
+        Integer storeId = (param.get("storeId") == null || StringUtil.isEmpty(param.get("storeId").toString())) ? 0 : Integer.parseInt(param.get("storeId").toString());
         String type = param.get("type") == null ? "" : param.get("type").toString();
         String couponIds = param.get("couponIds") == null ? "" : param.get("couponIds").toString();
         String serviceTime = param.get("serviceTime") == null ? "0" : param.get("serviceTime").toString();
@@ -447,6 +460,19 @@ public class BackendGoodsController extends BaseController {
             }
         }
 
+        // 多规格商品，价格默认取第一个sku
+        if (skuList.size() > 0 && isSingleSpec.equals(YesOrNoEnum.NO.getKey())) {
+            price = skuList.get(0).get("price").toString();
+            linePrice = skuList.get(0).get("linePrice").toString();
+            weight = skuList.get(0).get("weight").toString();
+            // 库存等于所有sku库存相加
+            Integer allStock = 0;
+            for (LinkedHashMap item : skuList) {
+                 allStock = allStock + Integer.parseInt(item.get("stock").toString());
+            }
+            stock = allStock.toString();
+        }
+
         Integer myStoreId = accountInfo.getStoreId();
         if (myStoreId > 0) {
             storeId = myStoreId;
@@ -510,7 +536,6 @@ public class BackendGoodsController extends BaseController {
             String imagesJson = JSONObject.toJSONString(images);
             info.setImages(imagesJson);
         }
-
         info.setOperator(accountInfo.getAccountName());
 
         MtGoods goodsInfo = goodsService.saveGoods(info);
