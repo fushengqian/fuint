@@ -134,6 +134,13 @@ public class UserCouponServiceImpl extends ServiceImpl<MtUserCouponMapper, MtUse
         if (couponInfo == null) {
             MtUserCoupon userCoupon = mtUserCouponMapper.findByCode(receiveCode);
             if (userCoupon != null) {
+                if (userCoupon.getUserId() != null && userCoupon.getUserId() > 0) {
+                    if (userCoupon.getUserId().compareTo(userId) == 0) {
+                        throw new BusinessCheckException(Message.HAS_COUPON);
+                    } else {
+                        throw new BusinessCheckException(Message.CODE_ERROR);
+                    }
+                }
                 couponInfo = couponService.queryCouponById(userCoupon.getCouponId());
                 userCouponId = userCoupon.getId();
             } else {

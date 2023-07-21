@@ -80,9 +80,8 @@ public class BackendMemberController extends BaseController {
         String userNo = request.getParameter("userNo");
         String gradeId = request.getParameter("gradeId");
         String orderBy = request.getParameter("orderBy") == null ? "" : request.getParameter("orderBy");
-        String regTime = request.getParameter("regTime") == null ? "" : request.getParameter("regTime");
-        String activeTime = request.getParameter("activeTime") == null ? "" : request.getParameter("activeTime");
-        String memberTime = request.getParameter("memberTime") == null ? "" : request.getParameter("memberTime");
+        String startTime = request.getParameter("startTime") == null ? "" : request.getParameter("startTime");
+        String endTime = request.getParameter("endTime") == null ? "" : request.getParameter("endTime");
         String status = request.getParameter("status");
         Integer page = request.getParameter("page") == null ? Constants.PAGE_NUMBER : Integer.parseInt(request.getParameter("page"));
         Integer pageSize = request.getParameter("pageSize") == null ? Constants.PAGE_SIZE : Integer.parseInt(request.getParameter("pageSize"));
@@ -124,51 +123,11 @@ public class BackendMemberController extends BaseController {
         if (storeId > 0) {
             params.put("storeId", storeId.toString());
         }
-
-        // 注册时间比对
-        if (StringUtil.isNotEmpty(regTime)) {
-            String[] dateTime = regTime.split("~");
-            if (dateTime.length == 2) {
-                params.put("createTime", dateTime[0].trim() + ":00");
-                params.put("createTime", dateTime[1].trim() + ":00");
-            }
+        if (StringUtil.isNotEmpty(startTime)) {
+            params.put("startTime", startTime);
         }
-
-        // 活跃时间比对
-        if (StringUtil.isNotEmpty(activeTime)) {
-            String[] dateTime = activeTime.split("~");
-            if (dateTime.length == 2) {
-                params.put("updateTime", dateTime[0].trim() + ":00");
-                params.put("updateTime", dateTime[1].trim() + ":00");
-            }
-        }
-
-        // 会员有效期比对
-        if (StringUtil.isNotEmpty(memberTime)) {
-            String[] dateTime = memberTime.split("~");
-            if (dateTime.length == 2) {
-                params.put("startTime", dateTime[0].trim() + ":00");
-                params.put("endTime", dateTime[1].trim() + ":00");
-            }
-        }
-
-        // 会员排序方式
-        if (StringUtil.isNotEmpty(orderBy)) {
-            if (orderBy.equals("balance")) {
-                paginationRequest.setSortColumn(new String[]{"balance desc"});
-            } else if (orderBy.equals("point")) {
-                paginationRequest.setSortColumn(new String[]{"point desc"});
-            } else if (orderBy.equals("memberGrade")) {
-                paginationRequest.setSortColumn(new String[]{"gradeId desc"});
-            } else if (orderBy.equals("payAmount")) {
-                paginationRequest.setSortColumn(new String[]{"balance desc"});
-            } else if (orderBy.equals("memberTime")) {
-                paginationRequest.setSortColumn(new String[]{"endTime desc", "gradeId desc"});
-                MtUserGrade defaultGrade = userGradeService.getInitUserGrade();
-                if (defaultGrade != null) {
-                    params.put("gradeId", defaultGrade.getId().toString());
-                }
-            }
+        if (StringUtil.isNotEmpty(endTime)) {
+            params.put("endTime", endTime);
         }
         paginationRequest.setSearchParams(params);
         PaginationResponse<UserDto> paginationResponse = memberService.queryMemberListByPagination(paginationRequest);

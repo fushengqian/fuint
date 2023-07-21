@@ -137,6 +137,8 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
         String staffId = orderListParam.getStaffId() == null ? "" : orderListParam.getStaffId();
         String couponId = orderListParam.getCouponId() == null ? "" : orderListParam.getCouponId();
         String storeIds = orderListParam.getStoreIds() == null ? "" : orderListParam.getStoreIds();
+        String startTime = orderListParam.getStartTime() == null ? "" : orderListParam.getStartTime();
+        String endTime = orderListParam.getEndTime() == null ? "" : orderListParam.getEndTime();
 
         if (dataType.equals("toPay")) {
             status = OrderStatusEnum.CREATED.getKey(); // 待支付
@@ -191,7 +193,12 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
                 lambdaQueryWrapper.in(MtOrder::getStoreId, idList);
             }
         }
-
+        if (StringUtil.isNotEmpty(startTime)) {
+            lambdaQueryWrapper.ge(MtOrder::getCreateTime, startTime);
+        }
+        if (StringUtil.isNotEmpty(endTime)) {
+            lambdaQueryWrapper.le(MtOrder::getCreateTime, endTime);
+        }
         lambdaQueryWrapper.orderByDesc(MtOrder::getId);
         List<MtOrder> orderList = mtOrderMapper.selectList(lambdaQueryWrapper);
 

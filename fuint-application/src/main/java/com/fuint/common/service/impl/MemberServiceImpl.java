@@ -170,7 +170,6 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
                 }
             }
         }
-
         return mtUser;
     }
 
@@ -218,25 +217,14 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
         if (StringUtils.isNotBlank(status)) {
             lambdaQueryWrapper.eq(MtUser::getStatus, status);
         }
-        // 今日注册
-        String createTime = paginationRequest.getSearchParams().get("createTime") == null ? "" : paginationRequest.getSearchParams().get("createTime").toString();
-        if (StringUtils.isNotBlank(createTime)) {
-            String time[] = createTime.split("~");
-            if (time.length == 2) {
-                lambdaQueryWrapper.gt(MtUser::getCreateTime, time[0] + " 00:00:00");
-                lambdaQueryWrapper.lt(MtUser::getCreateTime, time[0] + " 23:59:59");
-            }
+        String startTime = paginationRequest.getSearchParams().get("startTime") == null ? "" : paginationRequest.getSearchParams().get("startTime").toString();
+        String endTime = paginationRequest.getSearchParams().get("endTime") == null ? "" : paginationRequest.getSearchParams().get("endTime").toString();
+        if (StringUtil.isNotEmpty(startTime)) {
+            lambdaQueryWrapper.ge(MtUser::getCreateTime, startTime);
         }
-        // 今日活跃
-        String updateTime = paginationRequest.getSearchParams().get("updateTime") == null ? "" : paginationRequest.getSearchParams().get("updateTime").toString();
-        if (StringUtils.isNotBlank(updateTime)) {
-            String time[] = updateTime.split("~");
-            if (time.length == 2) {
-                lambdaQueryWrapper.gt(MtUser::getUpdateTime, time[0] + " 00:00:00");
-                lambdaQueryWrapper.lt(MtUser::getUpdateTime, time[0] + " 23:59:59");
-            }
+        if (StringUtil.isNotEmpty(endTime)) {
+            lambdaQueryWrapper.le(MtUser::getCreateTime, endTime);
         }
-
         lambdaQueryWrapper.orderByDesc(MtUser::getUpdateTime);
         List<MtUser> userList = mtUserMapper.selectList(lambdaQueryWrapper);
         List<UserDto> dataList = new ArrayList<>();

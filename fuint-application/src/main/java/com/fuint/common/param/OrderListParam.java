@@ -51,4 +51,13 @@ public class OrderListParam extends PageParam implements Serializable {
     @ApiModelProperty(value="卡券ID", name="couponId")
     private String couponId;
 
+    @ApiModelProperty(value="时间类型", name="timeType")
+    private String timeType;
+
+    @ApiModelProperty(value="开始时间", name="startTime")
+    private String startTime;
+
+    @ApiModelProperty(value="结束时间", name="endTime")
+    private String endTime;
+
 }
