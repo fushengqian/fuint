@@ -109,14 +109,16 @@ public class BackendCashierController extends BaseController {
         } else {
             storeInfo = storeService.queryStoreById(storeId);
         }
-
+        storeId = storeInfo.getId();
         MtUser memberInfo = null;
         if (userId != null && userId > 0) {
             memberInfo = memberService.queryMemberById(userId);
         }
-
         Map<String, Object> param = new HashMap<>();
         param.put("status", StatusEnum.ENABLED.getKey());
+        if (storeId > 0) {
+            param.put("storeId", storeId);
+        }
         List<MtGoodsCate> cateList = cateService.queryCateListByParams(param);
 
         param.put("status", StatusEnum.ENABLED.getKey());
