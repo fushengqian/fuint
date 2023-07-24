@@ -71,6 +71,9 @@ public class BackendGoodsController extends BaseController {
     @Autowired
     private AccountService accountService;
 
+    /**
+     * 系统设置服务接口
+     * */
     @Autowired
     private SettingService settingService;
 
@@ -401,8 +404,8 @@ public class BackendGoodsController extends BaseController {
             }
         }
 
-        // 先删除旧的sku数据
-        if (skuList.size() > 0) {
+        // 保存新规格或或单规格商品，要先删除旧的sku数据
+        if (skuList.size() > 0 || isSingleSpec.equals(YesOrNoEnum.YES.getKey())) {
             Map<String, Object> param0 = new HashMap<>();
             param0.put("goods_id", goodsId);
             List<MtGoodsSku> goodsSkuList = mtGoodsSkuMapper.selectByMap(param0);

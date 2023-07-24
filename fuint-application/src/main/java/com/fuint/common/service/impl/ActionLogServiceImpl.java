@@ -54,6 +54,10 @@ public class ActionLogServiceImpl extends ServiceImpl<TActionLogMapper, TActionL
         if (StringUtils.isNotBlank(endTime)) {
             lambdaQueryWrapper.lt(TActionLog::getActionTime, endTime);
         }
+        String ip = paginationRequest.getSearchParams().get("ip") == null ? "" : paginationRequest.getSearchParams().get("ip").toString();
+        if (StringUtils.isNotBlank(ip)) {
+            lambdaQueryWrapper.eq(TActionLog::getClientIp, ip);
+        }
 
         lambdaQueryWrapper.orderByDesc(TActionLog::getId);
         List<TActionLog> dataList = tActionLogMapper.selectList(lambdaQueryWrapper);

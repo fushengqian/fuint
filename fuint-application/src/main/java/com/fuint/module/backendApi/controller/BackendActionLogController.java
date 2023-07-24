@@ -18,7 +18,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * 日志管理控制器
+ * 后台日志管理控制器
  *
  * Created by FSQ
  * CopyRight https://www.fuint.cn
@@ -42,6 +42,7 @@ public class BackendActionLogController extends BaseController {
         Integer pageSize = request.getParameter("pageSize") == null ? Constants.PAGE_SIZE : Integer.parseInt(request.getParameter("pageSize"));
         String accountName = request.getParameter("accountName") == null ? "" : request.getParameter("accountName");
         String keyword = request.getParameter("keyword") == null ? "" : request.getParameter("keyword");
+        String ip = request.getParameter("ip") == null ? "" : request.getParameter("ip");
         String beginTime = request.getParameter("params[beginTime]") == null ? "" : request.getParameter("params[beginTime]");
         String endTime = request.getParameter("params[endTime]") == null ? "" : request.getParameter("params[endTime]");
 
@@ -57,10 +58,13 @@ public class BackendActionLogController extends BaseController {
             searchParams.put("module", keyword);
         }
         if (StringUtil.isNotEmpty(beginTime)) {
-            searchParams.put("startTime", beginTime + " 00:00:00");
+            searchParams.put("startTime", beginTime);
         }
         if (StringUtil.isNotEmpty(endTime)) {
-            searchParams.put("endTime", endTime + " 23:59:59");
+            searchParams.put("endTime", endTime);
+        }
+        if (StringUtil.isNotEmpty(ip)) {
+            searchParams.put("ip", ip);
         }
 
         paginationRequest.setSearchParams(searchParams);

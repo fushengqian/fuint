@@ -1,7 +1,7 @@
 package com.fuint.framework.exception;
 
 /**
- * 业务异常
+ * 业务运行异常
  *
  * Created by FSQ
  * CopyRight https://www.fuint.cn
