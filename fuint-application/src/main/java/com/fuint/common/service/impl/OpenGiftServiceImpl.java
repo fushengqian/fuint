@@ -210,10 +210,9 @@ public class OpenGiftServiceImpl extends ServiceImpl<MtOpenGiftMapper, MtOpenGif
      * @return
      * */
     @Override
-    @Transactional(rollbackFor = Exception.class)
-    public void openGift(Integer userId, Integer gradeId, boolean isNewMember) throws BusinessCheckException {
+    public boolean openGift(Integer userId, Integer gradeId, boolean isNewMember) throws BusinessCheckException {
         if (gradeId == null || gradeId.compareTo(0) <= 0) {
-            return;
+            return false;
         }
         Map<String, Object> params = new HashMap<>();
         params.put("grade_id", gradeId.toString());
@@ -243,7 +242,7 @@ public class OpenGiftServiceImpl extends ServiceImpl<MtOpenGiftMapper, MtOpenGif
         mtUserMapper.updateById(user);
         // 会员往低了改变，没有开卡赠礼
         if (!isNewMember && oldGrade != null && oldGrade.getGrade() >= gradeInfo.getGrade()) {
-            return;
+            return false;
         }
         List<MtOpenGift> openGiftList = mtOpenGiftMapper.selectByMap(params);
         if (openGiftList.size() > 0) {
@@ -296,6 +295,7 @@ public class OpenGiftServiceImpl extends ServiceImpl<MtOpenGiftMapper, MtOpenGif
                 messageService.addMessage(msg);
             }
         }
+        return true;
     }
 
     /**

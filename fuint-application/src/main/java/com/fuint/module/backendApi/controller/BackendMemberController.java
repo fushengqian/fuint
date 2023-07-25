@@ -58,12 +58,6 @@ public class BackendMemberController extends BaseController {
     private AccountService accountService;
 
     /**
-     * 会员等级服务接口
-     * */
-    @Autowired
-    private UserGradeService userGradeService;
-
-    /**
      * 会员列表查询
      *
      * @param request  HttpServletRequest对象
@@ -79,7 +73,6 @@ public class BackendMemberController extends BaseController {
         String birthday = request.getParameter("birthday");
         String userNo = request.getParameter("userNo");
         String gradeId = request.getParameter("gradeId");
-        String orderBy = request.getParameter("orderBy") == null ? "" : request.getParameter("orderBy");
         String startTime = request.getParameter("startTime") == null ? "" : request.getParameter("startTime");
         String endTime = request.getParameter("endTime") == null ? "" : request.getParameter("endTime");
         String status = request.getParameter("status");
@@ -188,7 +181,11 @@ public class BackendMemberController extends BaseController {
         }
 
         String operator = accountInfo.getAccountName();
-        memberService.deleteMember(id, operator);
+        try {
+            memberService.deleteMember(id, operator);
+        } catch (BusinessCheckException e) {
+            return getFailureResult(201, e.getMessage() == null ? "删除失败" : e.getMessage());
+        }
 
         return getSuccessResult(true);
     }

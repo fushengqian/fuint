@@ -179,13 +179,16 @@ public class BackendStaffController extends BaseController {
             return getFailureResult(201, "手机号码不能为空");
         } else {
             MtStaff tempUser = staffService.queryStaffByMobile(mtStaff.getMobile());
-            if (tempUser  != null && !tempUser.getId().equals(mtStaff.getId())) {
+            if (tempUser != null && !tempUser.getId().equals(mtStaff.getId())) {
                 return getFailureResult(201, "该手机号码已经存在");
             }
         }
-
-        staffService.saveStaff(mtStaff);
-        return getSuccessResult(true);
+        try {
+            staffService.saveStaff(mtStaff);
+            return getSuccessResult(true);
+        } catch (BusinessCheckException e) {
+            return getFailureResult(201, e.getMessage());
+        }
     }
 
     /**

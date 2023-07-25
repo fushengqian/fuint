@@ -6,10 +6,10 @@
     </update>
 
     <select id="queryStaffByMobile" resultType="com.fuint.repository.model.MtStaff">
-        select * from mt_staff t where t.MOBILE = #{mobile}
+        select * from mt_staff t where t.MOBILE = #{mobile} and t.AUDITED_STATUS != 'D'
     </select>
 
     <select id="queryStaffByUserId" resultType="com.fuint.repository.model.MtStaff">
-        select * from mt_staff t where t.USER_ID = #{userId}
+        select * from mt_staff t where t.USER_ID = #{userId} and t.AUDITED_STATUS != 'D'
     </select>
 </mapper>

@@ -111,7 +111,6 @@ public class StaffServiceImpl extends ServiceImpl<MtStaffMapper, MtStaff> implem
      * @throws BusinessCheckException
      */
     @Override
-    @Transactional(rollbackFor = Exception.class)
     @OperationServiceLog(description = "保存店铺员工")
     public MtStaff saveStaff(MtStaff mtStaff) throws BusinessCheckException {
         mtStaff.setUpdateTime(new Date());
@@ -140,6 +139,8 @@ public class StaffServiceImpl extends ServiceImpl<MtStaffMapper, MtStaff> implem
             MtUser mtUser = memberService.addMember(userInfo);
             if (mtUser != null) {
                 mtStaff.setUserId(mtUser.getId());
+            } else {
+                throw new BusinessCheckException("新增员工失败");
             }
         }
 
@@ -207,8 +208,7 @@ public class StaffServiceImpl extends ServiceImpl<MtStaffMapper, MtStaff> implem
         if (params == null) {
             params = new HashMap<>();
         }
-        List<MtStaff> result = mtStaffMapper.selectByMap(params);
-        return result;
+        return mtStaffMapper.selectByMap(params);
     }
 
     /**
@@ -219,8 +219,7 @@ public class StaffServiceImpl extends ServiceImpl<MtStaffMapper, MtStaff> implem
      */
     @Override
     public MtStaff queryStaffByMobile(String mobile) {
-        MtStaff mtStaff = mtStaffMapper.queryStaffByMobile(mobile);
-        return mtStaff;
+        return mtStaffMapper.queryStaffByMobile(mobile);
     }
 
     /**
@@ -231,7 +230,6 @@ public class StaffServiceImpl extends ServiceImpl<MtStaffMapper, MtStaff> implem
      */
     @Override
     public MtStaff queryStaffByUserId(Integer userId) {
-        MtStaff mtStaff = mtStaffMapper.queryStaffByUserId(userId);
-        return mtStaff;
+        return mtStaffMapper.queryStaffByUserId(userId);
     }
 }

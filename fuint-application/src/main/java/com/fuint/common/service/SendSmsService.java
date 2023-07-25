@@ -24,7 +24,7 @@ public interface SendSmsService {
      *                                      FALSE:推送失败的手机号码集合
      * @throws Exception
      */
-    Map<Boolean, List<String>> sendSms(String tUname, List<String> phones, Map<String, String> contentParams) throws Exception;
+    Map<Boolean, List<String>> sendSms(String tUname, List<String> phones, Map<String, String> contentParams) throws BusinessCheckException;
 
     /**
      * 分页已发短信列表

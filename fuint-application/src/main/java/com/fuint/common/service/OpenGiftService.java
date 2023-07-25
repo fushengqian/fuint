@@ -60,5 +60,5 @@ public interface OpenGiftService {
      * @param isNewMember
      * @throws BusinessCheckException
      * */
-    void openGift(Integer userId, Integer gradeId, boolean isNewMember) throws BusinessCheckException;
+    boolean openGift(Integer userId, Integer gradeId, boolean isNewMember) throws BusinessCheckException;
 }

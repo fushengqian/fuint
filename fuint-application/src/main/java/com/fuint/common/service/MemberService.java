@@ -47,7 +47,7 @@ public interface MemberService extends IService<MtUser> {
     /**
      * 添加会员
      *
-     * @param reqUserDto
+     * @param  reqUserDto
      * @throws BusinessCheckException
      */
     MtUser addMember(MtUser reqUserDto) throws BusinessCheckException;

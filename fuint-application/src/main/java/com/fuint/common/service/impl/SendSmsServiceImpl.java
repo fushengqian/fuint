@@ -59,10 +59,10 @@ public class SendSmsServiceImpl implements SendSmsService {
      private SmsTemplateService smsTemplateService;
 
     @Override
-    public Map<Boolean,List<String>> sendSms(String templateUname, List<String> phones, Map<String, String> contentParams) throws Exception {
+    public Map<Boolean,List<String>> sendSms(String templateUname, List<String> phones, Map<String, String> contentParams) throws BusinessCheckException {
         logger.info("使用短信平台发送短信.....");
         Integer mode = Integer.parseInt(env.getProperty("aliyun.sms.mode"));
-        if (mode != 1) {
+        if (mode.intValue() != 1) {
             throw new BusinessCheckException("未开启短信发送开关，请联系管理员！");
         }
 

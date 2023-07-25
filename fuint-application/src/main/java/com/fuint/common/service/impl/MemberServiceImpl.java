@@ -337,13 +337,13 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
         // 新增用户发短信通知
         if (mtUser.getId() > 0 && mtUser.getStatus().equals(StatusEnum.ENABLED.getKey())) {
             // 发送短信
-            List<String> mobileList = new ArrayList<String>();
+            List<String> mobileList = new ArrayList<>();
             mobileList.add(mtUser.getMobile());
             // 短信模板
             try {
                 Map<String, String> params = new HashMap<>();
                 sendSmsService.sendSms("register-sms", mobileList, params);
-            } catch (Exception e) {
+            } catch (BusinessCheckException e) {
                 // empty
             }
         }
@@ -641,7 +641,7 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
     }
 
     /**
-     * 禁用会员
+     * 删除会员
      *
      * @param id 会员ID
      * @param operator 操作人
@@ -649,10 +649,15 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
      */
     @Override
     @OperationServiceLog(description = "删除会员信息")
-    public Integer deleteMember(Integer id, String operator) {
+    public Integer deleteMember(Integer id, String operator) throws BusinessCheckException {
         MtUser mtUser = mtUserMapper.selectById(id);
         if (null == mtUser) {
-            return 0;
+            throw new BusinessCheckException("该会员不存在，请确认");
+        }
+        // 是否是店铺员工
+        MtStaff mtStaff = staffService.queryStaffByUserId(id);
+        if (mtStaff != null && mtStaff.getAuditedStatus().equals(StatusEnum.ENABLED.getKey())) {
+            throw new BusinessCheckException("该会员已关联店铺员工”"+ mtStaff.getRealName()+"“，若要删除请先删除该员工信息");
         }
         mtUser.setStatus(StatusEnum.DISABLE.getKey());
         mtUser.setUpdateTime(new Date());
