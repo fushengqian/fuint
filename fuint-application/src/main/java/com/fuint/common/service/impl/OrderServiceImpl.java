@@ -567,7 +567,7 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
             mtOrder.setStatus(OrderStatusEnum.CANCEL.getKey());
             mtOrderMapper.updateById(mtOrder);
 
-            // 返回积分
+            // 返还积分
             if (mtOrder.getPointAmount() != null && mtOrder.getUsePoint() > 0) {
                 MtPoint reqPointDto = new MtPoint();
                 reqPointDto.setUserId(mtOrder.getUserId());
@@ -607,6 +607,23 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
                         log.setStatus(StatusEnum.DISABLE.getKey());
                         mtConfirmLogMapper.updateById(log);
                     }
+                }
+            }
+
+            // 返还库存
+            Map<String, Object> params = new HashMap<>();
+            params.put("ORDER_ID", mtOrder.getId());
+            List<MtOrderGoods> orderGoodsList = mtOrderGoodsMapper.selectByMap(params);
+            if (orderGoodsList != null && orderGoodsList.size() > 0) {
+                for (MtOrderGoods mtOrderGoods : orderGoodsList) {
+                     MtGoods mtGoods = mtGoodsMapper.selectById(mtOrderGoods.getGoodsId());
+                     mtGoods.setStock(mtOrderGoods.getNum() + mtGoods.getStock());
+                     mtGoodsMapper.updateById(mtGoods);
+                     if (mtOrderGoods.getSkuId() != null && mtOrderGoods.getSkuId() > 0) {
+                         MtGoodsSku mtGoodsSku = mtGoodsSkuMapper.selectById(mtOrderGoods.getSkuId());
+                         mtGoodsSku.setStock(mtGoodsSku.getStock() + mtOrderGoods.getNum());
+                         mtGoodsSkuMapper.updateById(mtGoodsSku);
+                     }
                 }
             }
         }

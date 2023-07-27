@@ -13,10 +13,7 @@ import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.pagination.PaginationRequest;
 import com.fuint.framework.pagination.PaginationResponse;
 import com.fuint.framework.web.ResponseObject;
-import com.fuint.repository.mapper.MtConfirmLogMapper;
-import com.fuint.repository.mapper.MtPointMapper;
-import com.fuint.repository.mapper.MtRefundMapper;
-import com.fuint.repository.mapper.MtUserCouponMapper;
+import com.fuint.repository.mapper.*;
 import com.fuint.repository.model.*;
 import com.fuint.utils.StringUtil;
 import com.github.pagehelper.Page;
@@ -56,6 +53,15 @@ public class RefundServiceImpl extends ServiceImpl<MtRefundMapper, MtRefund> imp
 
     @Resource
     private MtUserCouponMapper mtUserCouponMapper;
+
+    @Resource
+    private MtGoodsSkuMapper mtGoodsSkuMapper;
+
+    @Resource
+    private MtGoodsMapper mtGoodsMapper;
+
+    @Resource
+    private MtOrderGoodsMapper mtOrderGoodsMapper;
 
     /**
      * 卡券接口
@@ -450,6 +456,23 @@ public class RefundServiceImpl extends ServiceImpl<MtRefundMapper, MtRefund> imp
                 mtPoint.setDescription("退款￥" + orderInfo.getPayAmount() + "退回" + pointNum + "积分");
                 mtPoint.setOperator(refundDto.getOperator() == null ? "系统" : refundDto.getOperator());
                 pointService.addPoint(mtPoint);
+            }
+        }
+
+        // 返还库存
+        Map<String, Object> eParam = new HashMap<>();
+        eParam.put("ORDER_ID", orderInfo.getId());
+        List<MtOrderGoods> orderGoodsList = mtOrderGoodsMapper.selectByMap(eParam);
+        if (orderGoodsList != null && orderGoodsList.size() > 0) {
+            for (MtOrderGoods mtOrderGoods : orderGoodsList) {
+                MtGoods mtGoods = mtGoodsMapper.selectById(mtOrderGoods.getGoodsId());
+                mtGoods.setStock(mtOrderGoods.getNum() + mtGoods.getStock());
+                mtGoodsMapper.updateById(mtGoods);
+                if (mtOrderGoods.getSkuId() != null && mtOrderGoods.getSkuId() > 0) {
+                    MtGoodsSku mtGoodsSku = mtGoodsSkuMapper.selectById(mtOrderGoods.getSkuId());
+                    mtGoodsSku.setStock(mtGoodsSku.getStock() + mtOrderGoods.getNum());
+                    mtGoodsSkuMapper.updateById(mtGoodsSku);
+                }
             }
         }
 
