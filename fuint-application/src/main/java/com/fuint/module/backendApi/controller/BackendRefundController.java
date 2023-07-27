@@ -79,6 +79,8 @@ public class BackendRefundController extends BaseController {
         String status = request.getParameter("status");
         Integer page = request.getParameter("page") == null ? Constants.PAGE_NUMBER : Integer.parseInt(request.getParameter("page"));
         Integer pageSize = request.getParameter("pageSize") == null ? Constants.PAGE_SIZE : Integer.parseInt(request.getParameter("pageSize"));
+        String startTime = request.getParameter("startTime") == null ? "" : request.getParameter("startTime");
+        String endTime = request.getParameter("endTime") == null ? "" : request.getParameter("endTime");
 
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
         if (accountInfo == null) {
@@ -118,7 +120,12 @@ public class BackendRefundController extends BaseController {
         if (storeId != null && storeId > 0) {
             params.put("storeId", storeId);
         }
-
+        if (StringUtil.isNotEmpty(startTime)) {
+            params.put("startTime", startTime);
+        }
+        if (StringUtil.isNotEmpty(endTime)) {
+            params.put("endTime", endTime);
+        }
         paginationRequest.setSearchParams(params);
         PaginationResponse<MtRefund> paginationResponse = refundService.getRefundListByPagination(paginationRequest);
 

@@ -119,7 +119,14 @@ public class RefundServiceImpl extends ServiceImpl<MtRefundMapper, MtRefund> imp
         if (StringUtils.isNotBlank(storeId)) {
             lambdaQueryWrapper.eq(MtRefund::getStoreId, storeId);
         }
-
+        String startTime = paginationRequest.getSearchParams().get("startTime") == null ? "" : paginationRequest.getSearchParams().get("startTime").toString();
+        String endTime = paginationRequest.getSearchParams().get("endTime") == null ? "" : paginationRequest.getSearchParams().get("endTime").toString();
+        if (StringUtil.isNotEmpty(startTime)) {
+            lambdaQueryWrapper.ge(MtRefund::getCreateTime, startTime);
+        }
+        if (StringUtil.isNotEmpty(endTime)) {
+            lambdaQueryWrapper.le(MtRefund::getCreateTime, endTime);
+        }
         lambdaQueryWrapper.orderByDesc(MtRefund::getId);
         List<MtRefund> dataList = mtRefundMapper.selectList(lambdaQueryWrapper);
 

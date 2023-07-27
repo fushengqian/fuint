@@ -105,12 +105,10 @@ public class BackendMemberController extends BaseController {
         if (StringUtil.isNotEmpty(status)) {
             params.put("status", status);
         }
-
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
         if (accountInfo == null) {
             return getFailureResult(1001, "请先登录");
         }
-
         TAccount account = accountService.getAccountInfoById(accountInfo.getId());
         Integer storeId = account.getStoreId() == null ? 0 : account.getStoreId();
         if (storeId > 0) {
