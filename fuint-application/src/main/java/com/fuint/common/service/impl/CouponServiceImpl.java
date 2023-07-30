@@ -30,7 +30,6 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.text.ParseException;
@@ -509,7 +508,7 @@ public class CouponServiceImpl extends ServiceImpl<MtCouponMapper, MtCoupon> imp
             throw new BusinessCheckException("该会员不存在或已禁用，请先注册会员");
         }
 
-        MtCoupon couponInfo = this.queryCouponById(couponId);
+        MtCoupon couponInfo = queryCouponById(couponId);
 
         // 判断券是否有效
         if (!couponInfo.getStatus().equals(StatusEnum.ENABLED.getKey())) {
@@ -616,7 +615,7 @@ public class CouponServiceImpl extends ServiceImpl<MtCouponMapper, MtCoupon> imp
         }
 
         // 是否处于有效期
-        MtCoupon couponInfo = this.queryCouponById(userCoupon.getCouponId());
+        MtCoupon couponInfo = queryCouponById(userCoupon.getCouponId());
         Date begin = couponInfo.getBeginTime();
         Date end = couponInfo.getEndTime();
         Date now = new Date();
@@ -755,14 +754,14 @@ public class CouponServiceImpl extends ServiceImpl<MtCouponMapper, MtCoupon> imp
     /**
      * 根据券ID删除会员卡券
      *
-     * @param id       券ID
-     * @param operator 操作人
+     * @param  id       券ID
+     * @param  operator 操作人
      * @throws BusinessCheckException
      */
     @Override
     @OperationServiceLog(description = "删除会员卡券")
     public void deleteUserCoupon(Integer id, String operator) throws BusinessCheckException {
-        MtUserCoupon userCoupon = this.mtUserCouponMapper.selectById(id);
+        MtUserCoupon userCoupon = mtUserCouponMapper.selectById(id);
         if (null == userCoupon) {
             return;
         }
@@ -780,7 +779,7 @@ public class CouponServiceImpl extends ServiceImpl<MtCouponMapper, MtCoupon> imp
         userCoupon.setOperator(operator);
 
         // 更新发券日志为部分作废状态
-        this.mtSendLogMapper.updateSingleForRemove(userCoupon.getUuid(),UserCouponStatusEnum.USED.getKey());
+        mtSendLogMapper.updateSingleForRemove(userCoupon.getUuid(),UserCouponStatusEnum.USED.getKey());
 
         mtUserCouponMapper.updateById(userCoupon);
     }
@@ -797,8 +796,8 @@ public class CouponServiceImpl extends ServiceImpl<MtCouponMapper, MtCoupon> imp
     @Transactional(rollbackFor = Exception.class)
     @OperationServiceLog(description = "撤销卡券核销")
     public void rollbackUserCoupon(Integer id, Integer userCouponId,String operator) throws BusinessCheckException {
-        MtConfirmLog mtConfirmLog = this.mtConfirmLogMapper.selectById(id);
-        MtUserCoupon userCoupon = this.mtUserCouponMapper.selectById(userCouponId);
+        MtConfirmLog mtConfirmLog = mtConfirmLogMapper.selectById(id);
+        MtUserCoupon userCoupon = mtUserCouponMapper.selectById(userCouponId);
 
         if (null == mtConfirmLog || !mtConfirmLog.getUserCouponId().equals(userCouponId)) {
             throw new BusinessCheckException("卡券核销流水不存在！");
@@ -861,12 +860,12 @@ public class CouponServiceImpl extends ServiceImpl<MtCouponMapper, MtCoupon> imp
 
     /**
      * 根据ID获取用户卡券信息
-     * @param userCouponId 查询参数
+     * @param  userCouponId 查询参数
      * @throws BusinessCheckException
      * */
     @Override
     public MtUserCoupon queryUserCouponById(Integer userCouponId) {
-        MtUserCoupon userCoupon = this.mtUserCouponMapper.selectById(userCouponId);
+        MtUserCoupon userCoupon = mtUserCouponMapper.selectById(userCouponId);
         return userCoupon;
     }
 
@@ -895,17 +894,17 @@ public class CouponServiceImpl extends ServiceImpl<MtCouponMapper, MtCoupon> imp
 
         for (int i = 0; i < coupondIdList.size(); i++) {
             Integer couponId = coupondIdList.get(i);
-            MtCoupon couponInfo = this.queryCouponById(couponId);
+            MtCoupon couponInfo = queryCouponById(couponId);
             if (couponInfo.getStatus().equals("A") && couponInfo.getEndTime().after(nowDate)) {
                 couponIds.add(couponId);
             }
         }
 
-        Integer row = this.mtUserCouponMapper.removeUserCoupon(uuid, couponIds, operator);
+        Integer row = mtUserCouponMapper.removeUserCoupon(uuid, couponIds, operator);
         if (row.compareTo( total.intValue()) != -1) {
-            this.mtSendLogMapper.updateForRemove(uuid, UserCouponStatusEnum.DISABLE.getKey(), total.intValue(), 0);
+            mtSendLogMapper.updateForRemove(uuid, UserCouponStatusEnum.DISABLE.getKey(), total.intValue(), 0);
         } else {
-            this.mtSendLogMapper.updateForRemove(uuid, UserCouponStatusEnum.USED.getKey(), row, (total.intValue()-row));
+            mtSendLogMapper.updateForRemove(uuid, UserCouponStatusEnum.USED.getKey(), row, (total.intValue()-row));
         }
 
         return;

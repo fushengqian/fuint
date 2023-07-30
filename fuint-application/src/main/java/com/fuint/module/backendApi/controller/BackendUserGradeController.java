@@ -18,7 +18,6 @@ import com.fuint.utils.StringUtil;
 import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -177,7 +176,15 @@ public class BackendUserGradeController extends BaseController {
         if (StringUtil.isEmpty(grade) || StringUtil.isEmpty(name)) {
             return getFailureResult(201, "参数有误");
         }
-
+        if (!CommonUtil.isNumeric(grade) || Integer.parseInt(grade) < 1) {
+            return getFailureResult(201, "会员等级必须为正整数");
+        }
+        if (!CommonUtil.isNumeric(validDay) || Integer.parseInt(validDay) < 0) {
+            return getFailureResult(201, "有效天数必须为正整数");
+        }
+        if (!CommonUtil.isNumeric(speedPoint) || Integer.parseInt(speedPoint) < 0) {
+            return getFailureResult(201, "积分加速必须为正整数");
+        }
         MtUserGrade info;
         if (StringUtil.isEmpty(id)) {
             info = new MtUserGrade();
@@ -191,27 +198,21 @@ public class BackendUserGradeController extends BaseController {
         if (StringUtil.isNotEmpty(catchType)) {
             info.setCatchType(catchType);
         }
-
         if (StringUtil.isNotEmpty(condition)) {
             info.setCatchCondition(condition);
         }
-
         if (StringUtil.isNotEmpty(privilege)) {
             info.setUserPrivilege(privilege);
         }
-
         if (StringUtil.isNotEmpty(catchValue)) {
             info.setCatchValue(Integer.parseInt(catchValue));
         }
-
         if (StringUtil.isNotEmpty(validDay)) {
             info.setValidDay(Integer.parseInt(validDay));
         }
-
         if (StringUtil.isNotEmpty(discount)) {
             info.setDiscount(Float.parseFloat(discount));
         }
-
         if (StringUtil.isNotEmpty(speedPoint)) {
             info.setSpeedPoint(Float.parseFloat(speedPoint));
         }
@@ -231,7 +232,7 @@ public class BackendUserGradeController extends BaseController {
     }
 
     /**
-     * 会员等级信息
+     * 获取会员等级信息
      *
      * @param request
      * @return
