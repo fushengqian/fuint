@@ -24,4 +24,5 @@ public class CouponNumBean implements Serializable {
 
     @ApiModelProperty("数量")
     private Long num;
+
 }

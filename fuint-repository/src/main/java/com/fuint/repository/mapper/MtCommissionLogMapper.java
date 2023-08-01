@@ -10,5 +10,5 @@ import com.fuint.repository.model.MtCommissionLog;
  * CopyRight https://www.fuint.cn
  */
 public interface MtCommissionLogMapper extends BaseMapper<MtCommissionLog> {
-
+   // empty
 }

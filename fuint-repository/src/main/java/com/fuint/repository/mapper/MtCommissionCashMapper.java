@@ -10,5 +10,5 @@ import com.fuint.repository.model.MtCommissionCash;
  * CopyRight https://www.fuint.cn
  */
 public interface MtCommissionCashMapper extends BaseMapper<MtCommissionCash> {
-
+   // empty
 }

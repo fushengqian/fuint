@@ -10,5 +10,5 @@ import com.fuint.repository.model.MtCommissionRuleItem;
  * CopyRight https://www.fuint.cn
  */
 public interface MtCommissionRuleItemMapper extends BaseMapper<MtCommissionRuleItem> {
-
+   // empty
 }

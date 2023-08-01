@@ -9,7 +9,6 @@ import com.fuint.framework.pagination.PaginationResponse;
 import com.fuint.framework.web.ResponseObject;
 import com.fuint.repository.model.MtCoupon;
 import com.fuint.repository.model.MtUserCoupon;
-
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.util.List;

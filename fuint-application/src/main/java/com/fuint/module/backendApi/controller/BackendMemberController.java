@@ -20,7 +20,6 @@ import com.fuint.utils.StringUtil;
 import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
 import javax.servlet.http.HttpServletRequest;
 import java.text.ParseException;
 import java.util.Date;
@@ -58,6 +57,12 @@ public class BackendMemberController extends BaseController {
     private AccountService accountService;
 
     /**
+     * 店铺服务接口
+     */
+    @Autowired
+    private StoreService storeService;
+
+    /**
      * 会员列表查询
      *
      * @param request  HttpServletRequest对象
@@ -76,6 +81,7 @@ public class BackendMemberController extends BaseController {
         String startTime = request.getParameter("startTime") == null ? "" : request.getParameter("startTime");
         String endTime = request.getParameter("endTime") == null ? "" : request.getParameter("endTime");
         String status = request.getParameter("status");
+        String storeIds = request.getParameter("storeIds");
         Integer page = request.getParameter("page") == null ? Constants.PAGE_NUMBER : Integer.parseInt(request.getParameter("page"));
         Integer pageSize = request.getParameter("pageSize") == null ? Constants.PAGE_SIZE : Integer.parseInt(request.getParameter("pageSize"));
 
@@ -105,6 +111,9 @@ public class BackendMemberController extends BaseController {
         if (StringUtil.isNotEmpty(status)) {
             params.put("status", status);
         }
+        if (StringUtil.isNotEmpty(storeIds)) {
+            params.put("storeIds", storeIds);
+        }
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
         if (accountInfo == null) {
             return getFailureResult(1001, "请先登录");
@@ -128,9 +137,18 @@ public class BackendMemberController extends BaseController {
         param.put("status", StatusEnum.ENABLED.getKey());
         List<MtUserGrade> userGradeList = memberService.queryMemberGradeByParams(param);
 
+        // 店铺列表
+        Map<String, Object> paramsStore = new HashMap<>();
+        paramsStore.put("status", StatusEnum.ENABLED.getKey());
+        if (storeId != null && storeId > 0) {
+            paramsStore.put("storeId", storeId.toString());
+        }
+        List<MtStore> storeList = storeService.queryStoresByParams(paramsStore);
+
         Map<String, Object> result = new HashMap<>();
         result.put("paginationResponse", paginationResponse);
         result.put("userGradeList", userGradeList);
+        result.put("storeList", storeList);
 
         return getSuccessResult(result);
     }

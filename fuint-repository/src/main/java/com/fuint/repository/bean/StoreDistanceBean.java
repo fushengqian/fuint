@@ -24,4 +24,5 @@ public class StoreDistanceBean implements Serializable {
 
     @ApiModelProperty("数量")
     private String distance;
+
 }

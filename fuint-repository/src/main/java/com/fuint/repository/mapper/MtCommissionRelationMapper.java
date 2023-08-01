@@ -10,5 +10,5 @@ import com.fuint.repository.model.MtCommissionRelation;
  * CopyRight https://www.fuint.cn
  */
 public interface MtCommissionRelationMapper extends BaseMapper<MtCommissionRelation> {
-
+   // empty
 }

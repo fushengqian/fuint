@@ -213,6 +213,13 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
         if (StringUtils.isNotBlank(storeId)) {
             lambdaQueryWrapper.eq(MtUser::getStoreId, storeId);
         }
+        String storeIds = paginationRequest.getSearchParams().get("storeIds") == null ? "" : paginationRequest.getSearchParams().get("storeIds").toString();
+        if (StringUtils.isNotBlank(storeIds)) {
+            List<String> idList = Arrays.asList(storeIds.split(","));
+            if (idList.size() > 0) {
+                lambdaQueryWrapper.in(MtUser::getStoreId, idList);
+            }
+        }
         String status = paginationRequest.getSearchParams().get("status") == null ? "" : paginationRequest.getSearchParams().get("status").toString();
         if (StringUtils.isNotBlank(status)) {
             lambdaQueryWrapper.eq(MtUser::getStatus, status);
