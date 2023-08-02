@@ -8,7 +8,7 @@
     <select id="searchStoreGoodsList" resultType="com.fuint.repository.model.MtGoods">
         select * from mt_goods t where t.STATUS = 'A'
         <if test="storeId != null and storeId > 0">
-            and t.STORE_ID = #{storeId}
+            and (t.STORE_ID = #{storeId} or t.STORE_ID = 0)
         </if>
         and (t.name like concat('%',#{keyword},'%') or t.goods_no = #{keyword} or t.ID = #{keyword} or t.description like concat('%',#{keyword},'%'))
         order by t.sort asc

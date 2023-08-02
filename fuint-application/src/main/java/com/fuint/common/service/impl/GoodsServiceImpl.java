@@ -373,8 +373,8 @@ public class GoodsServiceImpl extends ServiceImpl<MtGoodsMapper, MtGoods> implem
     /**
      * 根据ID删除商品信息
      *
-     * @param id       ID
-     * @param operator 操作人
+     * @param  id       ID
+     * @param  operator 操作人
      * @throws BusinessCheckException
      */
     @Override

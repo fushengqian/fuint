@@ -5,6 +5,7 @@ import com.fuint.common.dto.AccountInfo;
 import com.fuint.common.dto.StoreDto;
 import com.fuint.common.enums.StatusEnum;
 import com.fuint.common.enums.YesOrNoEnum;
+import com.fuint.common.service.MerchantService;
 import com.fuint.common.service.StoreService;
 import com.fuint.common.util.CommonUtil;
 import com.fuint.common.util.TokenUtil;
@@ -13,6 +14,7 @@ import com.fuint.framework.pagination.PaginationRequest;
 import com.fuint.framework.pagination.PaginationResponse;
 import com.fuint.framework.web.BaseController;
 import com.fuint.framework.web.ResponseObject;
+import com.fuint.repository.model.MtMerchant;
 import com.fuint.repository.model.MtStore;
 import com.fuint.utils.StringUtil;
 import io.swagger.annotations.Api;
@@ -42,9 +44,15 @@ public class BackendStoreController extends BaseController {
     private StoreService storeService;
 
     /**
+     * 商户接口
+     */
+    @Autowired
+    private MerchantService merchantService;
+
+    /**
      * 分页查询店铺列表
      *
-     * @param request  HttpServletRequest对象
+     * @param  request HttpServletRequest对象
      * @return 店铺列表
      */
     @RequestMapping(value = "/list")
@@ -81,9 +89,17 @@ public class BackendStoreController extends BaseController {
             params.put("status", storeStatus);
         }
         paginationRequest.setSearchParams(params);
-        PaginationResponse<MtStore> paginationResponse = storeService.queryStoreListByPagination(paginationRequest);
+        PaginationResponse<StoreDto> paginationResponse = storeService.queryStoreListByPagination(paginationRequest);
 
-        return getSuccessResult(paginationResponse);
+        Map<String, Object> param = new HashMap<>();
+        param.put("status", StatusEnum.ENABLED.getKey());
+        List<MtMerchant> merchantList = merchantService.queryMerchantByParams(param);
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("paginationResponse", paginationResponse);
+        result.put("merchantList", merchantList);
+
+        return getSuccessResult(result);
     }
 
     /**
@@ -174,6 +190,7 @@ public class BackendStoreController extends BaseController {
         String wxMchId = params.get("wxMchId") == null ? "" : CommonUtil.replaceXSS(params.get("wxMchId").toString());
         String wxApiV2 = params.get("wxApiV2") == null ? "" : CommonUtil.replaceXSS(params.get("wxApiV2").toString());
         String status = params.get("status") != null ? params.get("status").toString() : StatusEnum.ENABLED.getKey();
+        String merchantId = params.get("merchantId").toString();
 
         if ((StringUtil.isEmpty(latitude) || StringUtil.isEmpty(longitude)) && StringUtil.isNotEmpty(address)) {
             Map<String, Object> latAndLng = CommonUtil.getLatAndLngByAddress(address);
@@ -197,7 +214,9 @@ public class BackendStoreController extends BaseController {
         storeInfo.setStatus(status);
         storeInfo.setWxMchId(wxMchId);
         storeInfo.setWxApiV2(wxApiV2);
-
+        if (StringUtil.isNotEmpty(merchantId)) {
+            storeInfo.setMerchantId(Integer.parseInt(merchantId));
+        }
         if (StringUtil.isEmpty(storeName)) {
             return getFailureResult(201, "店铺名称不能为空");
         } else {

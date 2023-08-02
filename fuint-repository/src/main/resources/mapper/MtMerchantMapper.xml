@@ -1,5 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.fuint.repository.mapper.MtMerchantMapper">
+    <select id="queryMerchantByName" resultType="com.fuint.repository.model.MtMerchant">
+        select * from mt_merchant t where t.NAME = #{name} and t.status != 'D'
+    </select>
 
+    <select id="queryMerchantByNo" resultType="com.fuint.repository.model.MtMerchant">
+        select * from mt_merchant t where t.NO = #{merchantNo} and t.status != 'D'
+    </select>
 </mapper>

@@ -28,9 +28,9 @@ public class ClientStoreController extends BaseController {
     private StoreService storeService;
 
     /**
-     * 店铺列表
+     * 获取店铺列表（根据距离排序）
      *
-     * @param request  Request对象
+     * @param request Request对象
      */
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @CrossOrigin
@@ -38,8 +38,9 @@ public class ClientStoreController extends BaseController {
         String keyword = param.get("keyword") == null ? "" : param.get("keyword").toString();
         String latitude = request.getHeader("latitude") == null ? "" : request.getHeader("latitude");
         String longitude = request.getHeader("longitude") == null ? "" : request.getHeader("longitude");
+        String merchantNo = request.getHeader("merchantNo") == null ? "" : request.getHeader("merchantNo");
 
-        List<MtStore> storeList = storeService.queryByDistance(keyword, latitude, longitude);
+        List<MtStore> storeList = storeService.queryByDistance(merchantNo, keyword, latitude, longitude);
 
         Map<String, Object> outParams = new HashMap<>();
         outParams.put("data", storeList);

@@ -86,6 +86,12 @@ public class BackendCashierController extends BaseController {
     private MemberService memberService;
 
     /**
+     * 商户接口
+     */
+    @Autowired
+    private MerchantService merchantService;
+
+    /**
      * 收银台初始化
      *
      * @param request HttpServletRequest对象
@@ -105,7 +111,8 @@ public class BackendCashierController extends BaseController {
         Integer storeId = accountInfo.getStoreId();
         MtStore storeInfo;
         if (storeId == null || storeId < 1) {
-            storeInfo = storeService.getDefaultStore();
+            MtMerchant mtMerchant = merchantService.queryMerchantById(accountInfo.getMerchantId());
+            storeInfo = storeService.getDefaultStore(mtMerchant.getNo());
         } else {
             storeInfo = storeService.queryStoreById(storeId);
         }

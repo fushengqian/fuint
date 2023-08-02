@@ -14,8 +14,6 @@ import com.fuint.framework.web.ResponseObject;
 import com.fuint.repository.model.*;
 import com.fuint.utils.PropertiesUtil;
 import com.fuint.utils.StringUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,8 +30,6 @@ import java.util.*;
  */
 @Service
 public class SettlementServiceImpl implements SettlementService {
-
-    private static final Logger logger = LoggerFactory.getLogger(SettlementServiceImpl.class);
 
     @Autowired
     private WeixinService weixinService;
@@ -108,6 +104,7 @@ public class SettlementServiceImpl implements SettlementService {
         String token = request.getHeader("Access-Token");
         Integer storeId = request.getHeader("storeId") == null ? 0 : Integer.parseInt(request.getHeader("storeId"));
         String platform = request.getHeader("platform") == null ? "" : request.getHeader("platform");
+        String merchantNo = request.getHeader("merchantNo") == null ? "" : request.getHeader("merchantNo");
 
         String cartIds = param.getCartIds() == null ? "" : param.getCartIds();
         Integer targetId = param.getTargetId() == null ? 0 : Integer.parseInt(param.getTargetId()); // 储值卡、升级等级必填
@@ -149,7 +146,7 @@ public class SettlementServiceImpl implements SettlementService {
             staffId = accountInfo.getStaffId() == null ? 0 : accountInfo.getStaffId();
             storeId = accountInfo.getStoreId();
             if (storeId <= 0) {
-                MtStore mtStore = storeService.getDefaultStore();
+                MtStore mtStore = storeService.getDefaultStore(merchantNo);
                 if (mtStore != null) {
                     storeId = mtStore.getId();
                 }

@@ -1,5 +1,7 @@
 package com.fuint.common.dto;
 
+import io.swagger.annotations.ApiModelProperty;
+
 import java.io.Serializable;
 import java.util.Date;
 
@@ -11,6 +13,16 @@ public class StoreDto implements Serializable {
      * 自增ID
      */
     private Integer id;
+
+    /**
+     * 所属商户ID
+     * */
+    private Integer merchantId;
+
+    /**
+     * 所属商户名称
+     * */
+    private String merchantName;
 
     /**
      * 店铺名称
@@ -92,6 +104,18 @@ public class StoreDto implements Serializable {
     }
     public void setId(Integer id){
         this.id=id;
+    }
+    public Integer getMerchantId(){
+        return merchantId;
+    }
+    public void setMerchantId(Integer merchantId){
+        this.merchantId=merchantId;
+    }
+    public String getMerchantName(){
+        return merchantName;
+    }
+    public void setMerchantName(String merchantName){
+        this.merchantName=merchantName;
     }
     public String getName(){
         return name;

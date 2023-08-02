@@ -6,24 +6,27 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fuint.common.dto.StoreDto;
 import com.fuint.common.enums.StatusEnum;
 import com.fuint.common.enums.YesOrNoEnum;
+import com.fuint.common.service.MerchantService;
 import com.fuint.common.service.StoreService;
 import com.fuint.framework.annoation.OperationServiceLog;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.pagination.PaginationRequest;
 import com.fuint.framework.pagination.PaginationResponse;
 import com.fuint.repository.bean.StoreDistanceBean;
+import com.fuint.repository.mapper.MtMerchantMapper;
 import com.fuint.repository.mapper.MtStoreMapper;
+import com.fuint.repository.model.MtMerchant;
 import com.fuint.repository.model.MtStore;
 import com.fuint.utils.StringUtil;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.util.*;
@@ -40,14 +43,23 @@ public class StoreServiceImpl extends ServiceImpl<MtStoreMapper, MtStore> implem
     @Resource
     private MtStoreMapper mtStoreMapper;
 
+    @Resource
+    private MtMerchantMapper mtMerchantMapper;
+
+    /**
+     * 商户接口
+     */
+    @Autowired
+    private MerchantService merchantService;
+
     /**
      * 分页查询店铺列表
      *
-     * @param  paginationRequest
+     * @param paginationRequest
      * @return
      */
     @Override
-    public PaginationResponse<MtStore> queryStoreListByPagination(PaginationRequest paginationRequest) {
+    public PaginationResponse<StoreDto> queryStoreListByPagination(PaginationRequest paginationRequest) {
         Page<MtStore> pageHelper = PageHelper.startPage(paginationRequest.getCurrentPage(), paginationRequest.getPageSize());
         LambdaQueryWrapper<MtStore> lambdaQueryWrapper = Wrappers.lambdaQuery();
         lambdaQueryWrapper.ne(MtStore::getStatus, StatusEnum.DISABLE.getKey());
@@ -66,11 +78,22 @@ public class StoreServiceImpl extends ServiceImpl<MtStoreMapper, MtStore> implem
         }
 
         lambdaQueryWrapper.orderByAsc(MtStore::getStatus).orderByDesc(MtStore::getIsDefault);
-        List<MtStore> dataList = mtStoreMapper.selectList(lambdaQueryWrapper);
+        List<MtStore> storeList = mtStoreMapper.selectList(lambdaQueryWrapper);
+        List<StoreDto> dataList = new ArrayList<>();
+
+        for (MtStore mtStore : storeList) {
+             StoreDto storeDto = new StoreDto();
+             BeanUtils.copyProperties(mtStore, storeDto);
+             MtMerchant mtMerchant = mtMerchantMapper.selectById(mtStore.getMerchantId());
+             if (mtMerchant != null) {
+                 storeDto.setMerchantName(mtMerchant.getName());
+             }
+             dataList.add(storeDto);
+        }
 
         PageRequest pageRequest = PageRequest.of(paginationRequest.getCurrentPage(), paginationRequest.getPageSize());
         PageImpl pageImpl = new PageImpl(dataList, pageRequest, pageHelper.getTotal());
-        PaginationResponse<MtStore> paginationResponse = new PaginationResponse(pageImpl, MtStore.class);
+        PaginationResponse<StoreDto> paginationResponse = new PaginationResponse(pageImpl, StoreDto.class);
         paginationResponse.setTotalPages(pageHelper.getPages());
         paginationResponse.setTotalElements(pageHelper.getTotal());
         paginationResponse.setContent(dataList);
@@ -81,7 +104,7 @@ public class StoreServiceImpl extends ServiceImpl<MtStoreMapper, MtStore> implem
     /**
      * 保存店铺信息
      *
-     * @param storeDto
+     * @param  storeDto
      * @throws BusinessCheckException
      */
     @Override
@@ -123,6 +146,9 @@ public class StoreServiceImpl extends ServiceImpl<MtStoreMapper, MtStore> implem
         mtStore.setLatitude(storeDto.getLatitude());
         mtStore.setLongitude(storeDto.getLongitude());
         mtStore.setStatus(storeDto.getStatus());
+        if (storeDto.getMerchantId() != null) {
+            mtStore.setMerchantId(storeDto.getMerchantId());
+        }
 
         if (mtStore.getStatus() == null) {
             mtStore.setStatus(StatusEnum.ENABLED.getKey());
@@ -152,14 +178,21 @@ public class StoreServiceImpl extends ServiceImpl<MtStoreMapper, MtStore> implem
     /**
      * 获取系统默认店铺
      *
+     * @param  merchantNo
      * @throws BusinessCheckException
      */
     @Override
-    public MtStore getDefaultStore() {
+    public MtStore getDefaultStore(String merchantNo) throws BusinessCheckException {
         Map<String, Object> params = new HashMap<>();
         params.put("status", StatusEnum.ENABLED.getKey());
         params.put("is_default", YesOrNoEnum.YES.getKey());
-        List<MtStore> storeList = this.queryStoresByParams(params);
+        if (StringUtil.isNotEmpty(merchantNo)) {
+            MtMerchant mtMerchant = merchantService.queryMerchantByNo(merchantNo);
+            if (mtMerchant != null) {
+                params.put("merchantId", mtMerchant.getId());
+            }
+        }
+        List<MtStore> storeList = queryStoresByParams(params);
         if (storeList.size() > 0) {
             return storeList.get(0);
         } else {
@@ -177,7 +210,7 @@ public class StoreServiceImpl extends ServiceImpl<MtStoreMapper, MtStore> implem
     /**
      * 根据店铺id列表获取店铺信息
      *
-     * @param ids 店铺ID列表
+     * @param  ids 店铺ID列表
      * @throws BusinessCheckException
      */
     @Override
@@ -266,6 +299,10 @@ public class StoreServiceImpl extends ServiceImpl<MtStoreMapper, MtStore> implem
         if (StringUtils.isNotBlank(status)) {
             lambdaQueryWrapper.eq(MtStore::getStatus, status);
         }
+        String merchantId = params.get("merchantId") == null ? "" : params.get("merchantId").toString();
+        if (StringUtils.isNotBlank(merchantId)) {
+            lambdaQueryWrapper.eq(MtStore::getMerchantId, merchantId);
+        }
 
         lambdaQueryWrapper.orderByAsc(MtStore::getStatus).orderByDesc(MtStore::getIsDefault);
         List<MtStore> dataList = mtStoreMapper.selectList(lambdaQueryWrapper);
@@ -273,10 +310,23 @@ public class StoreServiceImpl extends ServiceImpl<MtStoreMapper, MtStore> implem
         return dataList;
     }
 
+    /**
+     * 根据距离远近获取店铺列表
+     *
+     * @param merchantNo
+     * @param keyword
+     * @param latitude
+     * @param longitude
+     * @return
+     * */
     @Override
-    public List<MtStore> queryByDistance(String keyword, String latitude, String longitude) {
+    public List<MtStore> queryByDistance(String merchantNo, String keyword, String latitude, String longitude) throws BusinessCheckException {
         List<MtStore> dataList = new ArrayList<>();
-        List<StoreDistanceBean> distanceList = mtStoreMapper.queryByDistance(keyword, latitude, longitude);
+
+        MtMerchant mtMerchant = merchantService.queryMerchantByNo(merchantNo);
+        Integer merchantId = (mtMerchant == null) ? 0 : mtMerchant.getId();
+
+        List<StoreDistanceBean> distanceList = mtStoreMapper.queryByDistance(merchantId, keyword, latitude, longitude);
         Map<String, Object> param = new HashMap<>();
         param.put("status", StatusEnum.ENABLED.getKey());
         List<MtStore> storeList = mtStoreMapper.selectByMap(param);

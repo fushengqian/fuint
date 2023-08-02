@@ -621,8 +621,10 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
                      mtGoodsMapper.updateById(mtGoods);
                      if (mtOrderGoods.getSkuId() != null && mtOrderGoods.getSkuId() > 0) {
                          MtGoodsSku mtGoodsSku = mtGoodsSkuMapper.selectById(mtOrderGoods.getSkuId());
-                         mtGoodsSku.setStock(mtGoodsSku.getStock() + mtOrderGoods.getNum());
-                         mtGoodsSkuMapper.updateById(mtGoodsSku);
+                         if (mtGoodsSku != null && mtGoodsSku.getStock() != null && mtOrderGoods.getNum() != null) {
+                             mtGoodsSku.setStock(mtGoodsSku.getStock() + mtOrderGoods.getNum());
+                             mtGoodsSkuMapper.updateById(mtGoodsSku);
+                         }
                      }
                 }
             }

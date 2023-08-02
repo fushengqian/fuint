@@ -3,16 +3,11 @@ package com.fuint.common.util;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.JSONArray;
-import com.fuint.utils.IpUtil;
 import com.fuint.utils.StringUtil;
-import jdk.nashorn.internal.runtime.regexp.joni.Regex;
 import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletRequest;
 import java.io.*;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLDecoder;
-import java.net.URLConnection;
+import java.net.*;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.regex.Pattern;
@@ -84,6 +79,16 @@ public class CommonUtil {
     }
 
     /**
+     * 生成随机商户号
+     * */
+    public static String createMerchantNo() {
+        StringBuilder sb = new StringBuilder("8");
+        sb.append(SeqUtil.getRandomNumber(4));
+        sb.append(SeqUtil.getRandomNumber(4));
+        return sb.toString();
+    }
+
+    /**
      * 生成随机订单号
      * @param userId
      * */
@@ -117,37 +122,42 @@ public class CommonUtil {
     /**
      * 获取IP地址
      *
-     * @param request
+     * @param  request
      * @return String
      */
     public static String getIPFromHttpRequest(HttpServletRequest request) {
-        String ip = request.getHeader("x-forwarded-for");
-
-        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
-            ip = request.getHeader("Proxy-Client-IP");
+        String ipAddress;
+        try {
+            ipAddress = request.getHeader("x-forwarded-for");
+            if (ipAddress == null || ipAddress.length() == 0 || "unknown".equalsIgnoreCase(ipAddress)) {
+                ipAddress = request.getHeader("Proxy-Client-IP");
+            }
+            if (ipAddress == null || ipAddress.length() == 0 || "unknown".equalsIgnoreCase(ipAddress)) {
+                ipAddress = request.getHeader("WL-Proxy-Client-IP");
+            }
+            if (ipAddress == null || ipAddress.length() == 0 || "unknown".equalsIgnoreCase(ipAddress)) {
+                ipAddress = request.getRemoteAddr();
+                if (ipAddress.equals("127.0.0.1")) {
+                    // 根据网卡取本机配置的IP
+                    InetAddress inet = null;
+                    try {
+                        inet = InetAddress.getLocalHost();
+                    } catch (UnknownHostException e) {
+                        e.printStackTrace();
+                    }
+                    ipAddress = inet.getHostAddress();
+                }
+            }
+            // 对于通过多个代理的情况，第一个IP为客户端真实IP,多个IP按照','分割
+            if (ipAddress != null && ipAddress.length() > 15) {
+                if (ipAddress.indexOf(",") > 0) {
+                    ipAddress = ipAddress.substring(0, ipAddress.indexOf(","));
+                }
+            }
+        } catch (Exception e) {
+            ipAddress = "";
         }
-        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
-            ip = request.getHeader("WL-Proxy-Client-IP");
-        }
-        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
-            ip = request.getHeader("HTTP_CLIENT_IP");
-        }
-        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
-            ip = request.getHeader("HTTP_X_FORWARDED_FOR");
-        }
-        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
-            ip = request.getRemoteAddr();
-        }
-
-        // 校验IP格式
-        String regex = "\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}";
-        Pattern pattern = Pattern.compile(regex);
-        Matcher matcher = pattern.matcher(ip);
-        if (!matcher.matches()) {
-            ip = "127.0.0.1";
-        }
-
-        return ip;
+        return ipAddress;
     }
 
     public static void saveMultipartFile(MultipartFile file, String filePath) {

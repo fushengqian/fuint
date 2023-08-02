@@ -21,6 +21,6 @@ public interface MtStoreMapper extends BaseMapper<MtStore> {
 
     List<MtStore> findStoresByIds(@Param("ids") List<Integer> ids);
 
-    List<StoreDistanceBean> queryByDistance(@Param("keyword") String keyword, @Param("latitude") String latitude, @Param("longitude") String longitude);
+    List<StoreDistanceBean> queryByDistance(@Param("merchantId") Integer merchantId, @Param("keyword") String keyword, @Param("latitude") String latitude, @Param("longitude") String longitude);
 
 }

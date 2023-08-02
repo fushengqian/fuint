@@ -55,7 +55,7 @@ public interface MemberService extends IService<MtUser> {
     /**
      * 编辑会员
      *
-     * @param reqUserDto
+     * @param  reqUserDto
      * @throws BusinessCheckException
      */
     MtUser updateMember(MtUser reqUserDto) throws BusinessCheckException;
@@ -63,7 +63,7 @@ public interface MemberService extends IService<MtUser> {
     /**
      * 通过手机号添加会员
      *
-     * @param mobile
+     * @param  mobile
      * @throws BusinessCheckException
      */
     MtUser addMemberByMobile(String mobile) throws BusinessCheckException;

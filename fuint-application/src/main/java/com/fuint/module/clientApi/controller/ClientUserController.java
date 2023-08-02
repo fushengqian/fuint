@@ -240,7 +240,6 @@ public class ClientUserController extends BaseController {
         UserInfo userInfo = TokenUtil.getUserInfoByToken(token);
         if (userInfo != null && storeId > 0) {
             MtUser mtUser = memberService.queryMemberById(userInfo.getId());
-            mtUser.setStoreId(storeId);
             memberService.updateMember(mtUser);
         }
 

@@ -6,7 +6,6 @@ import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.pagination.PaginationRequest;
 import com.fuint.framework.pagination.PaginationResponse;
 import com.fuint.repository.model.MtStore;
-
 import java.util.List;
 import java.util.Map;
 
@@ -24,7 +23,7 @@ public interface StoreService extends IService<MtStore> {
      * @param paginationRequest
      * @return
      */
-    PaginationResponse<MtStore> queryStoreListByPagination(PaginationRequest paginationRequest) throws BusinessCheckException;
+    PaginationResponse<StoreDto> queryStoreListByPagination(PaginationRequest paginationRequest) throws BusinessCheckException;
 
     /**
      * 保存店铺信息
@@ -39,7 +38,7 @@ public interface StoreService extends IService<MtStore> {
      *
      * @throws BusinessCheckException
      */
-    MtStore getDefaultStore() throws BusinessCheckException;
+    MtStore getDefaultStore(String merchantNo) throws BusinessCheckException;
 
     /**
      * 根据店铺ID获取店铺信息
@@ -90,10 +89,13 @@ public interface StoreService extends IService<MtStore> {
     List<MtStore> queryStoresByParams(Map<String, Object> params) throws BusinessCheckException;
 
     /**
-     * 根据距离查找店铺
+     * 根据距离远近查找店铺
+     *
+     * @param merchantNo
+     * @param keyword
      * @param latitude
      * @param longitude
      * @return
      * */
-    List<MtStore> queryByDistance(String keyword, String latitude, String longitude);
+    List<MtStore> queryByDistance(String merchantNo, String keyword, String latitude, String longitude) throws BusinessCheckException;
 }

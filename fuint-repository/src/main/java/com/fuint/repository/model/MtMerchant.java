@@ -28,8 +28,14 @@ public class MtMerchant implements Serializable {
     @TableId(value = "ID", type = IdType.AUTO)
     private Integer id;
 
+    @ApiModelProperty("商户号")
+    private String no;
+
     @ApiModelProperty("商户名称")
     private String name;
+
+    @ApiModelProperty("商户logo")
+    private String logo;
 
     @ApiModelProperty("联系人姓名")
     private String contact;
@@ -42,6 +48,21 @@ public class MtMerchant implements Serializable {
 
     @ApiModelProperty("备注信息")
     private String description;
+
+    @ApiModelProperty("营业执照")
+    private String license;
+
+    @ApiModelProperty("统一社会信用代码")
+    private String creditCode;
+
+    @ApiModelProperty("银行名称")
+    private String bankName;
+
+    @ApiModelProperty("银行卡账户名")
+    private String bankCardName;
+
+    @ApiModelProperty("银行卡卡号")
+    private String bankCardNo;
 
     @ApiModelProperty("创建时间")
     private Date createTime;

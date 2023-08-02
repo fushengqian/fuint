@@ -24,7 +24,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.web.bind.annotation.*;
-
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -208,7 +207,7 @@ public class BackendAccountController extends BaseController {
      */
     @RequestMapping(value = "/doCreate", method = RequestMethod.POST)
     @CrossOrigin
-    public ResponseObject doCreate(HttpServletRequest request, @RequestBody Map<String, Object> param) throws BusinessCheckException {
+    public ResponseObject doCreate(HttpServletRequest request, @RequestBody Map<String, Object> param) {
         String token = request.getHeader("Access-Token");
         AccountInfo loginAccount = TokenUtil.getAccountInfoByToken(token);
         if (loginAccount == null) {
@@ -221,6 +220,8 @@ public class BackendAccountController extends BaseController {
         String realName = param.get("realName").toString();
         String password = param.get("password").toString();
         String storeId = param.get("storeId") == null ? "0" : param.get("storeId").toString();
+        String merchantId = param.get("merchantId") == null ? "0" : param.get("merchantId").toString();
+        String staffId = param.get("staffId") == null ? "0" : param.get("staffId").toString();
 
         AccountInfo accountInfo = tAccountService.getAccountByName(accountName);
         if (accountInfo != null) {
@@ -240,23 +241,18 @@ public class BackendAccountController extends BaseController {
             }
         }
 
-        TAccount account = new TAccount();
-        account.setRealName(realName);
-        account.setAccountName(accountName);
-        account.setAccountStatus(Integer.parseInt(accountStatus));
-        account.setPassword(password);
-        account.setIsActive(1);
-        account.setLocked(0);
-        account.setStoreId(Integer.parseInt(storeId));
+        TAccount tAccount = new TAccount();
+        tAccount.setRealName(realName);
+        tAccount.setAccountName(accountName);
+        tAccount.setAccountStatus(Integer.parseInt(accountStatus));
+        tAccount.setPassword(password);
+        tAccount.setIsActive(1);
+        tAccount.setLocked(0);
+        tAccount.setStoreId(Integer.parseInt(storeId));
+        tAccount.setMerchantId(Integer.parseInt(merchantId));
+        tAccount.setStaffId(Integer.parseInt(staffId));
 
-        if (StringUtil.isNotEmpty(storeId)) {
-            MtStore storeInfo = storeService.queryStoreById(Integer.parseInt(storeId));
-            if (storeInfo != null) {
-                account.setStoreName(storeInfo.getName());
-            }
-        }
-
-        tAccountService.createAccountInfo(account, duties);
+        tAccountService.createAccountInfo(tAccount, duties);
         return getSuccessResult(true);
     }
 
@@ -277,6 +273,7 @@ public class BackendAccountController extends BaseController {
         String accountStatus = param.get("accountStatus").toString();
         String storeId = param.get("storeId") == null ? "" : param.get("storeId").toString();
         String staffId = param.get("staffId") == null ? "" : param.get("staffId").toString();
+        String merchantId = param.get("merchantId") == null ? "" : param.get("merchantId").toString();
         Long id = Long.parseLong(param.get("id").toString());
 
         AccountInfo loginAccount = TokenUtil.getAccountInfoByToken(token);
@@ -300,6 +297,9 @@ public class BackendAccountController extends BaseController {
         if (StringUtil.isNotEmpty(staffId)) {
             tAccount.setStaffId(Integer.parseInt(staffId));
         }
+        if (StringUtil.isNotEmpty(merchantId)) {
+            tAccount.setMerchantId(Integer.parseInt(merchantId));
+        }
 
         AccountInfo accountInfo = tAccountService.getAccountByName(accountName);
         if (accountInfo != null && accountInfo.getId() != id.intValue()) {
@@ -316,13 +316,6 @@ public class BackendAccountController extends BaseController {
             duties = tDutyService.findDatasByIds(ids);
             if (duties.size() < roleIds.size()) {
                 return getFailureResult(201, "您分配的角色不存在");
-            }
-        }
-
-        if (StringUtil.isNotEmpty(storeId)) {
-            MtStore storeInfo = storeService.queryStoreById(Integer.parseInt(storeId));
-            if (storeInfo != null) {
-                tAccount.setStoreName(storeInfo.getName());
             }
         }
 

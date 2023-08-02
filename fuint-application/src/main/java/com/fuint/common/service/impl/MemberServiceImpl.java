@@ -29,7 +29,6 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
@@ -280,7 +279,7 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
     public MtUser addMember(MtUser mtUser) throws BusinessCheckException {
         // 手机号已存在
         if (StringUtil.isNotEmpty(mtUser.getMobile())) {
-            MtUser userInfo = this.queryMemberByMobile(mtUser.getMobile());
+            MtUser userInfo = queryMemberByMobile(mtUser.getMobile());
             if (userInfo != null) {
                 return userInfo;
             }

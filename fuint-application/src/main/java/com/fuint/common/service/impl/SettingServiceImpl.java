@@ -96,7 +96,7 @@ public class SettingServiceImpl extends ServiceImpl<MtSettingMapper, MtSetting> 
     /**
      * 获取配置列表
      *
-     * @param type
+     * @param  type
      * @throws BusinessCheckException
      */
     @Override
@@ -108,7 +108,7 @@ public class SettingServiceImpl extends ServiceImpl<MtSettingMapper, MtSetting> 
     /**
      * 根据ID获取配置信息
      *
-     * @param name
+     * @param  name
      * @throws BusinessCheckException
      */
     @Override

@@ -25,7 +25,7 @@ public interface SettingService extends IService<MtSetting> {
     /**
      * 保存配置
      *
-     * @param reqDto
+     * @param  reqDto
      * @throws BusinessCheckException
      */
     MtSetting saveSetting(MtSetting reqDto) throws BusinessCheckException;
@@ -33,7 +33,7 @@ public interface SettingService extends IService<MtSetting> {
     /**
      * 获取配置列表
      *
-     * @param type
+     * @param  type
      * @throws BusinessCheckException
      */
     List<MtSetting> getSettingList(String type) throws BusinessCheckException;
@@ -41,7 +41,7 @@ public interface SettingService extends IService<MtSetting> {
     /**
      * 根据配置名称获取配置信息
      *
-     * @param name name
+     * @param  name name
      * @throws BusinessCheckException
      */
     MtSetting querySettingByName(String name) throws BusinessCheckException;
