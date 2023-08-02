@@ -168,7 +168,7 @@ public class CouponGroupServiceImpl extends ServiceImpl<MtCouponGroupMapper, MtC
     @Override
     @OperationServiceLog(description = "删除卡券分组")
     public void deleteCouponGroup(Integer id, String operator) {
-        MtCouponGroup couponGroup = this.queryCouponGroupById(id);
+        MtCouponGroup couponGroup = queryCouponGroupById(id);
         if (null == couponGroup) {
             return;
         }
@@ -190,7 +190,7 @@ public class CouponGroupServiceImpl extends ServiceImpl<MtCouponGroupMapper, MtC
     @Transactional(rollbackFor = Exception.class)
     @OperationServiceLog(description = "更新卡券分组")
     public MtCouponGroup updateCouponGroup(ReqCouponGroupDto reqcouponGroupDto) throws BusinessCheckException {
-        MtCouponGroup couponGroup = this.queryCouponGroupById(reqcouponGroupDto.getId());
+        MtCouponGroup couponGroup = queryCouponGroupById(reqcouponGroupDto.getId());
         if (null == couponGroup || StatusEnum.DISABLE.getKey().equalsIgnoreCase(couponGroup.getStatus())) {
             log.error("该分组不存在或已被删除");
             throw new BusinessCheckException("该分组不存在或已被删除");
@@ -239,7 +239,7 @@ public class CouponGroupServiceImpl extends ServiceImpl<MtCouponGroupMapper, MtC
     @Transactional(rollbackFor = Exception.class)
     public BigDecimal getCouponMoney(Integer groupId) {
         List<MtCoupon> couponList = mtCouponMapper.queryByGroupId(groupId.intValue());
-        MtCouponGroup groupInfo = this.queryCouponGroupById(groupId);
+        MtCouponGroup groupInfo = queryCouponGroupById(groupId);
         BigDecimal money = BigDecimal.valueOf(0);
         if (couponList.size() > 0) {
             for (int i = 0; i<couponList.size(); i++) {
@@ -525,7 +525,7 @@ public class CouponGroupServiceImpl extends ServiceImpl<MtCouponGroupMapper, MtC
      * @param groupId 分组ID
      * */
     public GroupDataDto getGroupData(Integer groupId, HttpServletRequest request, Model model) throws BusinessCheckException {
-        MtCouponGroup groupInfo = this.queryCouponGroupById(groupId);
+        MtCouponGroup groupInfo = queryCouponGroupById(groupId);
 
         // 已发放套数
         Integer sendNum = 0;

@@ -582,8 +582,8 @@ CREATE TABLE `t_account` (
   `locked` int NOT NULL DEFAULT '0',
   `owner_id` int DEFAULT NULL COMMENT '所属平台',
   `real_name` varchar(255) DEFAULT NULL,
-  `store_id` int DEFAULT NULL COMMENT '管辖店铺id  : -1 代表全部',
-  `store_name` varchar(255) DEFAULT NULL COMMENT '管辖店铺名称',
+  `store_id` int DEFAULT NULL COMMENT '所属店铺id  : -1 代表全部',
+  `store_name` varchar(255) DEFAULT NULL COMMENT '所属店铺名称',
   PRIMARY KEY (`acct_id`),
   KEY `FKmlsqc08c6khxhoed7abkl2s9l` (`owner_id`),
   CONSTRAINT `FKmlsqc08c6khxhoed7abkl2s9l` FOREIGN KEY (`owner_id`) REFERENCES `t_platform` (`owner_id`)

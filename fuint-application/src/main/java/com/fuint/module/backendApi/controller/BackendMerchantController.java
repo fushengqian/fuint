@@ -16,7 +16,6 @@ import com.fuint.repository.model.MtMerchant;
 import com.fuint.utils.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.List;
@@ -97,7 +96,7 @@ public class BackendMerchantController extends BaseController {
 
         Map<String, Object> params = new HashMap<>();
         if (StringUtil.isNotEmpty(merchantId)) {
-            params.put("id", merchantId);
+            params.put("merchantId", merchantId);
         }
         if (StringUtil.isNotEmpty(name)) {
             params.put("name", name);
@@ -152,6 +151,7 @@ public class BackendMerchantController extends BaseController {
 
         Integer merchantId = StringUtil.isEmpty(params.get("id").toString()) ? Integer.parseInt("0") : Integer.parseInt(params.get("id").toString());
         String name = CommonUtil.replaceXSS(params.get("name").toString());
+        String merchantNo = CommonUtil.replaceXSS(params.get("no").toString());
         String contact = CommonUtil.replaceXSS(params.get("contact").toString());
         String phone = CommonUtil.replaceXSS(params.get("phone").toString());
         String description = params.get("description") == null ? "" : CommonUtil.replaceXSS(params.get("description").toString());
@@ -166,6 +166,7 @@ public class BackendMerchantController extends BaseController {
 
         MtMerchant merchantInfo = new MtMerchant();
         merchantInfo.setName(name);
+        merchantInfo.setNo(merchantNo);
         merchantInfo.setContact(contact);
         merchantInfo.setPhone(phone);
         merchantInfo.setDescription(description);

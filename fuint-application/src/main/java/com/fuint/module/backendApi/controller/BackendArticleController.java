@@ -103,6 +103,9 @@ public class BackendArticleController extends BaseController {
         if (accountInfo.getStoreId() != null && accountInfo.getStoreId() > 0) {
             paramsStore.put("storeId", accountInfo.getStoreId().toString());
         }
+        if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
+            paramsStore.put("merchantId", accountInfo.getMerchantId());
+        }
         List<MtStore> storeList = storeService.queryStoresByParams(paramsStore);
 
         Map<String, Object> result = new HashMap<>();

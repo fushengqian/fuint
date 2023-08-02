@@ -115,7 +115,7 @@ public class StoreServiceImpl extends ServiceImpl<MtStoreMapper, MtStore> implem
 
         // 编辑店铺
         if (storeDto.getId() != null) {
-            mtStore = this.queryStoreById(storeDto.getId());
+            mtStore = queryStoreById(storeDto.getId());
         }
 
         mtStore.setName(storeDto.getName());
@@ -198,7 +198,7 @@ public class StoreServiceImpl extends ServiceImpl<MtStoreMapper, MtStore> implem
         } else {
             Map<String, Object> param = new HashMap<>();
             param.put("status", StatusEnum.ENABLED.getKey());
-            List<MtStore> dataList = this.queryStoresByParams(param);
+            List<MtStore> dataList = queryStoresByParams(param);
             if (dataList.size() > 0) {
                 return dataList.get(0);
             } else {
@@ -246,7 +246,7 @@ public class StoreServiceImpl extends ServiceImpl<MtStoreMapper, MtStore> implem
      */
     @Override
     public StoreDto queryStoreDtoById(Integer id) throws BusinessCheckException {
-        MtStore mtStore = this.queryStoreById(id);
+        MtStore mtStore = queryStoreById(id);
         if (null == mtStore || StatusEnum.DISABLE.getKey().equals(mtStore.getStatus())) {
             throw new BusinessCheckException("该店铺状态异常");
         }
@@ -260,16 +260,16 @@ public class StoreServiceImpl extends ServiceImpl<MtStoreMapper, MtStore> implem
     /**
      * 更新店铺状态
      *
-     * @param id       店铺ID
-     * @param operator 操作人
-     * @param status   状态
+     * @param  id       店铺ID
+     * @param  operator 操作人
+     * @param  status   状态
      * @throws BusinessCheckException
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
     @OperationServiceLog(description = "修改店铺状态")
     public void updateStatus(Integer id, String operator, String status) throws BusinessCheckException {
-        MtStore mtStore = this.queryStoreById(id);
+        MtStore mtStore = queryStoreById(id);
         if (null == mtStore) {
             throw new BusinessCheckException("该店铺不存在.");
         }

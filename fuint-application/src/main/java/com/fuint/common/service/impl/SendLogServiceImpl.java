@@ -121,13 +121,13 @@ public class SendLogServiceImpl extends ServiceImpl<MtSendLogMapper, MtSendLog> 
     /**
      * 根据ID 删除发券记录
      *
-     * @param id       发券记录ID
-     * @param operator 操作人
+     * @param  id       发券记录ID
+     * @param  operator 操作人
      * @throws BusinessCheckException
      */
     @Override
     public void deleteSendLog(Long id, String operator) {
-        MtSendLog couponGroup = this.querySendLogById(id);
+        MtSendLog couponGroup = querySendLogById(id);
 
         if (null == couponGroup) {
             return;

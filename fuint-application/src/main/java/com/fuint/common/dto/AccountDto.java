@@ -3,14 +3,14 @@ package com.fuint.common.dto;
 import java.util.Date;
 
 /**
- * 账户信息实体类
+ * 后台账户实体类
  */
 public class AccountDto {
 
     /**
      * 账户主键id
      */
-    private Long id;
+    private Integer id;
 
     /**
      * 账户编码
@@ -64,25 +64,35 @@ public class AccountDto {
     private String realName;
 
     /**
-     * 管辖店铺id
+     * 所属店铺id
      */
-    private int storeId;
+    private Integer storeId;
+
+    /**
+     * 所属店铺名称
+     */
+    private String storeName;
 
     /**
      * 员工ID
      */
-    private int staffId;
+    private Integer staffId;
 
     /**
-     * 管辖店铺名称
+     * 所属商户
      */
-    private String storeName;
+    private Integer merchantId;
 
-    public Long getId() {
+    /**
+     * 所属商户名称
+     */
+    private String merchantName;
+
+    public Integer getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -174,19 +184,35 @@ public class AccountDto {
         this.storeId = storeId;
     }
 
-    public Integer getStaffId() {
-        return staffId;
-    }
-
-    public void setStaffId(Integer staffId) {
-        this.staffId = staffId;
+    public void setStoreName(String storeName) {
+        this.storeName = storeName;
     }
 
     public String getStoreName() {
         return storeName;
     }
 
-    public void setStoreName(String storeName) {
-        this.storeName = storeName;
+    public void setStaffId(Integer staffId) {
+        this.staffId = staffId;
+    }
+
+    public Integer getStaffId() {
+        return staffId;
+    }
+
+    public Integer getMerchantId() {
+        return merchantId;
+    }
+
+    public void setMerchantId(Integer merchantId) {
+        this.merchantId = merchantId;
+    }
+
+    public void setMerchantName(String merchantName) {
+        this.merchantName = merchantName;
+    }
+
+    public String getMerchantName() {
+        return merchantName;
     }
 }

@@ -2,10 +2,12 @@ package com.fuint.module.backendApi.controller;
 
 import com.fuint.common.Constants;
 import com.fuint.common.dto.AccountInfo;
+import com.fuint.common.dto.GoodsCateDto;
 import com.fuint.common.enums.StatusEnum;
 import com.fuint.common.service.AccountService;
 import com.fuint.common.service.CateService;
 import com.fuint.common.service.SettingService;
+import com.fuint.common.service.StoreService;
 import com.fuint.common.util.CommonUtil;
 import com.fuint.common.util.TokenUtil;
 import com.fuint.framework.exception.BusinessCheckException;
@@ -14,6 +16,7 @@ import com.fuint.framework.pagination.PaginationResponse;
 import com.fuint.framework.web.BaseController;
 import com.fuint.framework.web.ResponseObject;
 import com.fuint.repository.model.MtGoodsCate;
+import com.fuint.repository.model.MtStore;
 import com.fuint.repository.model.TAccount;
 import com.fuint.utils.StringUtil;
 import io.swagger.annotations.Api;
@@ -22,6 +25,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -54,6 +58,12 @@ public class BackendCateController extends BaseController {
     private AccountService accountService;
 
     /**
+     * 店铺服务接口
+     */
+    @Autowired
+    private StoreService storeService;
+
+    /**
      * 商品分类列表
      *
      * @param request
@@ -68,6 +78,7 @@ public class BackendCateController extends BaseController {
         Integer pageSize = request.getParameter("pageSize") == null ? Constants.PAGE_SIZE : Integer.parseInt(request.getParameter("pageSize"));
         String name = request.getParameter("name");
         String status = request.getParameter("status");
+        String searchStoreId = request.getParameter("storeId");
 
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
         if (accountInfo == null) {
@@ -88,19 +99,32 @@ public class BackendCateController extends BaseController {
         if (StringUtil.isNotEmpty(status)) {
             params.put("status", status);
         }
+        if (StringUtil.isNotEmpty(searchStoreId)) {
+            params.put("storeId", searchStoreId);
+        }
         if (storeId > 0) {
             params.put("storeId", storeId);
         }
 
         paginationRequest.setSearchParams(params);
         paginationRequest.setSortColumn(new String[]{"sort asc", "status asc"});
-        PaginationResponse<MtGoodsCate> paginationResponse = cateService.queryCateListByPagination(paginationRequest);
+        PaginationResponse<GoodsCateDto> paginationResponse = cateService.queryCateListByPagination(paginationRequest);
 
+        Map<String, Object> paramsStore = new HashMap<>();
+        paramsStore.put("status", StatusEnum.ENABLED.getKey());
+        if (storeId != null && storeId > 0) {
+            paramsStore.put("storeId", storeId.toString());
+        }
+        if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
+            paramsStore.put("merchantId", accountInfo.getMerchantId());
+        }
+        List<MtStore> storeList = storeService.queryStoresByParams(paramsStore);
         String imagePath = settingService.getUploadBasePath();
 
         Map<String, Object> result = new HashMap<>();
-        result.put("paginationResponse", paginationResponse);
         result.put("imagePath", imagePath);
+        result.put("storeList", storeList);
+        result.put("paginationResponse", paginationResponse);
 
         return getSuccessResult(result);
     }
@@ -158,10 +182,16 @@ public class BackendCateController extends BaseController {
         String logo = params.get("logo") == null ? "" : CommonUtil.replaceXSS(params.get("logo").toString());
         String sort = params.get("sort") == null ? "0" : params.get("sort").toString();
         String status = params.get("status") == null ? StatusEnum.ENABLED.getKey() : params.get("status").toString();
+        Integer storeId = (params.get("storeId") == null || StringUtil.isEmpty(params.get("storeId").toString())) ? 0 : Integer.parseInt(params.get("storeId").toString());
 
         AccountInfo accountDto = TokenUtil.getAccountInfoByToken(token);
         if (accountDto == null) {
             return getFailureResult(1001, "请先登录");
+        }
+
+        Integer myStoreId = accountDto.getStoreId();
+        if (myStoreId > 0) {
+            storeId = myStoreId;
         }
 
         MtGoodsCate info = new MtGoodsCate();
@@ -170,7 +200,7 @@ public class BackendCateController extends BaseController {
         info.setLogo(logo);
         info.setSort(Integer.parseInt(sort));
         info.setStatus(status);
-
+        info.setStoreId(storeId);
         String operator = accountDto.getAccountName();
         info.setOperator(operator);
 

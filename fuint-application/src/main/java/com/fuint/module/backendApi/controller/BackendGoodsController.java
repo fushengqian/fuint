@@ -142,12 +142,15 @@ public class BackendGoodsController extends BaseController {
             typeList.add(paramDto);
         }
 
-        Map<String, Object> param = new HashMap<>();
-        param.put("status", StatusEnum.ENABLED.getKey());
+        Map<String, Object> paramsStore = new HashMap<>();
+        paramsStore.put("status", StatusEnum.ENABLED.getKey());
         if (storeId != null && storeId > 0) {
-            param.put("storeId", storeId.toString());
+            paramsStore.put("storeId", storeId.toString());
         }
-        List<MtStore> storeList = storeService.queryStoresByParams(param);
+        if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
+            paramsStore.put("merchantId", accountInfo.getMerchantId());
+        }
+        List<MtStore> storeList = storeService.queryStoresByParams(paramsStore);
 
         Map<String, Object> result = new HashMap<>();
         result.put("paginationResponse", paginationResponse);
@@ -312,8 +315,10 @@ public class BackendGoodsController extends BaseController {
         if (storeId != null && storeId > 0) {
             paramsStore.put("storeId", storeId.toString());
         }
+        if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
+            paramsStore.put("merchantId", accountInfo.getMerchantId());
+        }
         List<MtStore> storeList = storeService.queryStoresByParams(paramsStore);
-        result.put("storeList", storeList);
 
         // 商品类型列表
         GoodsTypeEnum[] typeListEnum = GoodsTypeEnum.values();
@@ -325,8 +330,10 @@ public class BackendGoodsController extends BaseController {
              paramDto.setValue(enumItem.getKey());
              typeList.add(paramDto);
         }
+
         result.put("typeList", typeList);
         result.put("storeId", storeId);
+        result.put("storeList", storeList);
 
         return getSuccessResult(result);
     }

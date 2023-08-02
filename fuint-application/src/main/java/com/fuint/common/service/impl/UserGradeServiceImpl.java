@@ -140,7 +140,7 @@ public class UserGradeServiceImpl extends ServiceImpl<MtUserGradeMapper, MtUserG
     @Transactional(rollbackFor = Exception.class)
     @OperationServiceLog(description = "删除会员等级")
     public Integer deleteUserGrade(Integer id, String operator) {
-        MtUserGrade mtUserGrade = this.queryUserGradeById(id);
+        MtUserGrade mtUserGrade = queryUserGradeById(id);
         if (null == mtUserGrade) {
             return 0;
         }

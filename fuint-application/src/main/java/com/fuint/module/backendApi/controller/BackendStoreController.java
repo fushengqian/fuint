@@ -93,6 +93,12 @@ public class BackendStoreController extends BaseController {
 
         Map<String, Object> param = new HashMap<>();
         param.put("status", StatusEnum.ENABLED.getKey());
+        if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
+            param.put("merchantId", accountInfo.getMerchantId());
+        }
+        if (StringUtil.isNotEmpty(storeId)) {
+            param.put("storeId", storeId);
+        }
         List<MtMerchant> merchantList = merchantService.queryMerchantByParams(param);
 
         Map<String, Object> result = new HashMap<>();
@@ -107,7 +113,7 @@ public class BackendStoreController extends BaseController {
      * */
     @RequestMapping(value = "/searchStore",  method = RequestMethod.GET)
     @CrossOrigin
-    public ResponseObject searchStore(HttpServletRequest request) throws BusinessCheckException {
+    public ResponseObject search(HttpServletRequest request) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
         String storeId = request.getParameter("id") == null ? "" : request.getParameter("id");
         String storeName = request.getParameter("name") == null ? "" : request.getParameter("name");
@@ -121,16 +127,16 @@ public class BackendStoreController extends BaseController {
             storeId = accountInfo.getStoreId().toString();
         }
 
-        Map<String, Object> params = new HashMap<>();
+        Map<String, Object> paramsStore = new HashMap<>();
         if (StringUtil.isNotEmpty(storeId)) {
-            params.put("storeId", storeId);
+            paramsStore.put("storeId", storeId);
         }
         if (StringUtil.isNotEmpty(storeName)) {
-            params.put("name", storeName);
+            paramsStore.put("name", storeName);
         }
 
-        params.put("status", StatusEnum.ENABLED.getKey());
-        List<MtStore> storeList = storeService.queryStoresByParams(params);
+        paramsStore.put("status", StatusEnum.ENABLED.getKey());
+        List<MtStore> storeList = storeService.queryStoresByParams(paramsStore);
         Map<String, Object> result = new HashMap<>();
         result.put("storeList", storeList);
 

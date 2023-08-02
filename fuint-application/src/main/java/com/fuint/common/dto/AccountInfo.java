@@ -12,6 +12,7 @@ import java.util.Date;
  */
 @Data
 public class AccountInfo implements Serializable {
+
     private Integer id;
     private String accountKey;
     private String accountName;
@@ -24,8 +25,10 @@ public class AccountInfo implements Serializable {
     private int locked;
     private int ownerId;
     private String realName;
+    private Integer merchantId;
     private Integer storeId;
     private String storeName;
     private Integer staffId;
     private String token;
+
 }

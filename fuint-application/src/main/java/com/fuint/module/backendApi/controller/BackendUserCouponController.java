@@ -108,12 +108,15 @@ public class BackendUserCouponController extends BaseController {
 
         ResponseObject result = userCouponService.getUserCouponList(param);
 
-        Map<String, Object> storeParams = new HashMap<>();
-        storeParams.put("status", StatusEnum.ENABLED.getKey());
+        Map<String, Object> paramsStore = new HashMap<>();
+        paramsStore.put("status", StatusEnum.ENABLED.getKey());
         if (accountInfo.getStoreId() != null && accountInfo.getStoreId() > 0) {
-            storeParams.put("storeId", accountInfo.getStoreId().toString());
+            paramsStore.put("storeId", accountInfo.getStoreId().toString());
         }
-        List<MtStore> storeList = storeService.queryStoresByParams(storeParams);
+        if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
+            paramsStore.put("merchantId", accountInfo.getMerchantId());
+        }
+        List<MtStore> storeList = storeService.queryStoresByParams(paramsStore);
 
         // 卡券类型列表
         CouponTypeEnum[] typeListEnum = CouponTypeEnum.values();

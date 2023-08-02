@@ -130,11 +130,10 @@ public class BannerServiceImpl extends ServiceImpl<MtBannerMapper, MtBanner> imp
     @Transactional(rollbackFor = Exception.class)
     @OperationServiceLog(description = "删除Banner图")
     public void deleteBanner(Integer id, String operator) {
-        MtBanner mtBanner = this.queryBannerById(id);
+        MtBanner mtBanner = queryBannerById(id);
         if (null == mtBanner) {
             return;
         }
-
         mtBanner.setStatus(StatusEnum.DISABLE.getKey());
         mtBanner.setUpdateTime(new Date());
         mtBannerMapper.updateById(mtBanner);
@@ -150,7 +149,7 @@ public class BannerServiceImpl extends ServiceImpl<MtBannerMapper, MtBanner> imp
     @Transactional(rollbackFor = Exception.class)
     @OperationServiceLog(description = "更新Banner图")
     public MtBanner updateBanner(BannerDto bannerDto) throws BusinessCheckException {
-        MtBanner mtBanner = this.queryBannerById(bannerDto.getId());
+        MtBanner mtBanner = queryBannerById(bannerDto.getId());
         if (mtBanner == null) {
             throw new BusinessCheckException("该Banner状态异常");
         }

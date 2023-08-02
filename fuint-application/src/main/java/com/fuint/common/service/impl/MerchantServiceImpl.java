@@ -11,7 +11,9 @@ import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.pagination.PaginationRequest;
 import com.fuint.framework.pagination.PaginationResponse;
 import com.fuint.repository.mapper.MtMerchantMapper;
+import com.fuint.repository.mapper.MtStoreMapper;
 import com.fuint.repository.model.MtMerchant;
+import com.fuint.repository.model.MtStore;
 import com.fuint.utils.StringUtil;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
@@ -34,6 +36,9 @@ public class MerchantServiceImpl extends ServiceImpl<MtMerchantMapper, MtMerchan
 
     @Resource
     private MtMerchantMapper mtMerchantMapper;
+
+    @Resource
+    private MtStoreMapper mtStoreMapper;
 
     /**
      * 分页查询商户列表
@@ -87,11 +92,13 @@ public class MerchantServiceImpl extends ServiceImpl<MtMerchantMapper, MtMerchan
 
         // 编辑商户
         if (merchant.getId() != null) {
-            mtMerchant = this.queryMerchantById(merchant.getId());
+            mtMerchant = queryMerchantById(merchant.getId());
         }
 
-        if (mtMerchant.getNo() == null || StringUtil.isEmpty(mtMerchant.getNo())) {
+        if (merchant.getNo() == null || StringUtil.isEmpty(merchant.getNo())) {
             mtMerchant.setNo(CommonUtil.createMerchantNo());
+        } else {
+            mtMerchant.setNo(merchant.getNo());
         }
 
         mtMerchant.setName(merchant.getName());
@@ -151,8 +158,7 @@ public class MerchantServiceImpl extends ServiceImpl<MtMerchantMapper, MtMerchan
      */
     @Override
     public MtMerchant queryMerchantByNo(String merchantNo) {
-        MtMerchant mtMerchant = mtMerchantMapper.queryMerchantByNo(merchantNo);
-        return mtMerchant;
+        return mtMerchantMapper.queryMerchantByNo(merchantNo);
     }
 
     /**
@@ -187,6 +193,13 @@ public class MerchantServiceImpl extends ServiceImpl<MtMerchantMapper, MtMerchan
         String merchantId = params.get("merchantId") == null ? "" : params.get("merchantId").toString();
         if (StringUtils.isNotBlank(merchantId)) {
             lambdaQueryWrapper.eq(MtMerchant::getId, merchantId);
+        }
+        String storeId = params.get("storeId") == null ? "" : params.get("storeId").toString();
+        if (StringUtils.isNotBlank(storeId) && StringUtil.isEmpty(merchantId)) {
+            MtStore mtStore = mtStoreMapper.selectById(storeId);
+            if (mtStore != null && mtStore.getMerchantId() > 0) {
+                lambdaQueryWrapper.eq(MtMerchant::getId, mtStore.getMerchantId());
+            }
         }
         String name = params.get("name") == null ? "" : params.get("name").toString();
         if (StringUtils.isNotBlank(name)) {

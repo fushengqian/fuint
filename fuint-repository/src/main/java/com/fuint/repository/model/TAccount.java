@@ -61,7 +61,7 @@ public class TAccount implements Serializable {
 
     private String realName;
 
-    @ApiModelProperty("管辖店铺ID")
+    @ApiModelProperty("所属店铺ID")
     private Integer storeId;
 
     @ApiModelProperty("所属商户ID")

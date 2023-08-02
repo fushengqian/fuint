@@ -4,7 +4,6 @@ import com.fuint.common.dto.*;
 import com.fuint.common.enums.*;
 import com.fuint.common.param.OrderListParam;
 import com.fuint.common.service.*;
-import com.fuint.common.util.CommonUtil;
 import com.fuint.common.util.TokenUtil;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.web.BaseController;
@@ -143,6 +142,9 @@ public class BackendOrderController extends BaseController {
         paramsStore.put("status", StatusEnum.ENABLED.getKey());
         if (storeId != null && storeId > 0) {
             paramsStore.put("storeId", storeId.toString());
+        }
+        if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
+            paramsStore.put("merchantId", accountInfo.getMerchantId());
         }
         List<MtStore> storeList = storeService.queryStoresByParams(paramsStore);
 

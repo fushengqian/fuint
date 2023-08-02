@@ -74,8 +74,9 @@ public class BackendAccountController extends BaseController {
         String accountName = request.getParameter("accountName") == null ? "" : request.getParameter("accountName");
         String realName = request.getParameter("realName") == null ? "" : request.getParameter("realName");
         String accountStatus = request.getParameter("accountStatus") == null ? "" : request.getParameter("accountStatus");
-        AccountInfo accountDto = TokenUtil.getAccountInfoByToken(token);
-        if (accountDto == null) {
+
+        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
+        if (accountInfo == null) {
             return getFailureResult(1001, "请先登录");
         }
 
@@ -93,39 +94,16 @@ public class BackendAccountController extends BaseController {
         if (StringUtil.isNotEmpty(accountStatus)) {
             searchParams.put("status", accountStatus);
         }
-        paginationRequest.setSearchParams(searchParams);
-        PaginationResponse<TAccount> paginationResponse = tAccountService.getAccountListByPagination(paginationRequest);
-        List<AccountDto> content = new ArrayList<>();
-        if (paginationResponse.getContent().size() > 0) {
-            for (TAccount tAccount : paginationResponse.getContent()) {
-                AccountDto account = new AccountDto();
-                account.setId(tAccount.getAcctId().longValue());
-                account.setAccountKey(tAccount.getAccountKey());
-                account.setAccountName(tAccount.getAccountName());
-                account.setAccountStatus(tAccount.getAccountStatus());
-                account.setCreateDate(tAccount.getCreateDate());
-                account.setRealName(tAccount.getRealName());
-                account.setModifyDate(tAccount.getModifyDate());
-                account.setStaffId(tAccount.getStaffId());
-                account.setStoreId(tAccount.getStoreId());
-                if (account.getStoreId() > 0) {
-                    MtStore mtStore = storeService.queryStoreById(tAccount.getStoreId());
-                    if (mtStore != null) {
-                        account.setStoreName(mtStore.getName());
-                    }
-                }
-                content.add(account);
-            }
+        if (StringUtil.isNotEmpty(accountStatus)) {
+            searchParams.put("status", accountStatus);
+        }
+        if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
+            searchParams.put("merchantId", accountInfo.getMerchantId());
         }
 
-        PageRequest pageRequest = PageRequest.of(paginationRequest.getCurrentPage(), paginationRequest.getPageSize());
-        Page pageImpl = new PageImpl(content, pageRequest, paginationResponse.getTotalElements());
-        PaginationResponse<AccountDto> result = new PaginationResponse(pageImpl, AccountDto.class);
-        result.setTotalPages(paginationResponse.getTotalPages());
-        result.setTotalElements(paginationResponse.getTotalElements());
-        result.setContent(content);
-
-        return getSuccessResult(result);
+        paginationRequest.setSearchParams(searchParams);
+        PaginationResponse<AccountDto> paginationResponse = tAccountService.getAccountListByPagination(paginationRequest);
+        return getSuccessResult(paginationResponse);
     }
 
     /**
@@ -161,7 +139,10 @@ public class BackendAccountController extends BaseController {
         Map<String, Object> params = new HashMap<>();
         params.put("status", StatusEnum.ENABLED.getKey());
         if (accountInfo.getStoreId() != null && accountInfo.getStoreId() > 0) {
-            params.put("storeId", accountInfo.getStoreId().toString());
+            params.put("storeId", accountInfo.getStoreId());
+        }
+        if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
+            params.put("merchantId", accountInfo.getMerchantId());
         }
         List<MtStore> stores = storeService.queryStoresByParams(params);
         result.put("stores", stores);
@@ -170,7 +151,7 @@ public class BackendAccountController extends BaseController {
         if (userId > 0) {
             TAccount tAccount = tAccountService.getAccountInfoById(userId.intValue());
             accountDto = new AccountDto();
-            accountDto.setId((long) tAccount.getAcctId());
+            accountDto.setId(tAccount.getAcctId());
             accountDto.setAccountKey(tAccount.getAccountKey());
             accountDto.setAccountName(tAccount.getAccountName());
             accountDto.setAccountStatus(tAccount.getAccountStatus());

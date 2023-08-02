@@ -3,6 +3,7 @@ package com.fuint.common.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.fuint.common.dto.AccountDto;
 import com.fuint.common.dto.AccountInfo;
 import com.fuint.common.service.AccountService;
 import com.fuint.framework.annoation.OperationServiceLog;
@@ -10,15 +11,14 @@ import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.exception.BusinessRuntimeException;
 import com.fuint.framework.pagination.PaginationRequest;
 import com.fuint.framework.pagination.PaginationResponse;
-import com.fuint.repository.mapper.TAccountDutyMapper;
-import com.fuint.repository.mapper.TAccountMapper;
-import com.fuint.repository.mapper.TDutyMapper;
+import com.fuint.repository.mapper.*;
 import com.fuint.repository.model.*;
 import com.fuint.utils.Digests;
 import com.fuint.utils.Encodes;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -45,6 +45,12 @@ public class AccountServiceImpl extends ServiceImpl<TAccountMapper, TAccount> im
     @Resource
     private TAccountDutyMapper tAccountDutyMapper;
 
+    @Resource
+    private MtMerchantMapper mtMerchantMapper;
+
+    @Resource
+    private MtStoreMapper mtStoreMapper;
+
     /**
      * 分页查询账号列表
      *
@@ -52,7 +58,7 @@ public class AccountServiceImpl extends ServiceImpl<TAccountMapper, TAccount> im
      * @return
      */
     @Override
-    public PaginationResponse<TAccount> getAccountListByPagination(PaginationRequest paginationRequest) {
+    public PaginationResponse<AccountDto> getAccountListByPagination(PaginationRequest paginationRequest) {
         Page<MtBanner> pageHelper = PageHelper.startPage(paginationRequest.getCurrentPage(), paginationRequest.getPageSize());
         LambdaQueryWrapper<TAccount> lambdaQueryWrapper = Wrappers.lambdaQuery();
         lambdaQueryWrapper.ne(TAccount::getAccountStatus, -1); // 1:启用；0:禁用；-1:删除
@@ -69,13 +75,33 @@ public class AccountServiceImpl extends ServiceImpl<TAccountMapper, TAccount> im
         if (StringUtils.isNotBlank(status)) {
             lambdaQueryWrapper.eq(TAccount::getAccountStatus, status);
         }
+        String merchantId = paginationRequest.getSearchParams().get("merchantId") == null ? "" : paginationRequest.getSearchParams().get("merchantId").toString();
+        if (StringUtils.isNotBlank(merchantId)) {
+            lambdaQueryWrapper.eq(TAccount::getMerchantId, merchantId);
+        }
 
         lambdaQueryWrapper.orderByDesc(TAccount::getAcctId);
-        List<TAccount> dataList = tAccountMapper.selectList(lambdaQueryWrapper);
+        List<TAccount> accountList = tAccountMapper.selectList(lambdaQueryWrapper);
+        List<AccountDto> dataList = new ArrayList<>();
+
+        for (TAccount tAccount : accountList) {
+             AccountDto accountDto = new AccountDto();
+             BeanUtils.copyProperties(tAccount, accountDto);
+             accountDto.setId(tAccount.getAcctId());
+             MtMerchant mtMerchant = mtMerchantMapper.selectById(tAccount.getMerchantId());
+             if (mtMerchant != null) {
+                 accountDto.setMerchantName(mtMerchant.getName());
+             }
+             MtStore mtStore = mtStoreMapper.selectById(tAccount.getStoreId());
+             if (mtStore != null) {
+                 accountDto.setStoreName(mtStore.getName());
+             }
+             dataList.add(accountDto);
+        }
 
         PageRequest pageRequest = PageRequest.of(paginationRequest.getCurrentPage(), paginationRequest.getPageSize());
         PageImpl pageImpl = new PageImpl(dataList, pageRequest, pageHelper.getTotal());
-        PaginationResponse<TAccount> paginationResponse = new PaginationResponse(pageImpl, TAccount.class);
+        PaginationResponse<AccountDto> paginationResponse = new PaginationResponse(pageImpl, AccountDto.class);
         paginationResponse.setTotalPages(pageHelper.getPages());
         paginationResponse.setTotalElements(pageHelper.getTotal());
         paginationResponse.setContent(dataList);
