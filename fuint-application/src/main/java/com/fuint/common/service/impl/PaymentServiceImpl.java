@@ -161,7 +161,7 @@ public class PaymentServiceImpl implements PaymentService {
             Integer needPayAmountInt = Math.round(Integer.parseInt(needPayAmount));
             Double pointNum = 0d;
             if (needPayAmountInt > 0 && orderInfo.getPayAmount().compareTo(new BigDecimal(needPayAmountInt)) > 0) {
-                BigDecimal point = orderInfo.getPayAmount().divide(new BigDecimal(needPayAmountInt), BigDecimal.ROUND_CEILING, 2);
+                BigDecimal point = orderInfo.getPayAmount().divide(new BigDecimal(needPayAmountInt), BigDecimal.ROUND_CEILING, 3);
                 pointNum = Math.ceil(point.doubleValue());
             }
             logger.info("PaymentService paymentCallback Point orderSn = {} , pointNum ={}", orderInfo.getOrderSn(), pointNum);

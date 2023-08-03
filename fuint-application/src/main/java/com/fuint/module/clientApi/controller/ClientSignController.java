@@ -6,15 +6,13 @@ import com.fuint.common.dto.UserInfo;
 import com.fuint.common.enums.GenderEnum;
 import com.fuint.common.enums.MemberSourceEnum;
 import com.fuint.common.enums.StatusEnum;
-import com.fuint.common.service.CaptchaService;
-import com.fuint.common.service.MemberService;
-import com.fuint.common.service.VerifyCodeService;
-import com.fuint.common.service.WeixinService;
+import com.fuint.common.service.*;
 import com.fuint.common.util.CommonUtil;
 import com.fuint.common.util.TokenUtil;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.web.BaseController;
 import com.fuint.framework.web.ResponseObject;
+import com.fuint.repository.model.MtStore;
 import com.fuint.repository.model.MtUser;
 import com.fuint.repository.model.MtVerifyCode;
 import com.fuint.utils.StringUtil;
@@ -61,6 +59,12 @@ public class ClientSignController extends BaseController {
     @Autowired
     private CaptchaService captchaService;
 
+    /**
+     * 店铺服务接口
+     * */
+    @Autowired
+    private StoreService storeService;
+
     @Autowired
     private Environment env;
 
@@ -72,6 +76,7 @@ public class ClientSignController extends BaseController {
     @CrossOrigin
     public ResponseObject mpWxLogin(HttpServletRequest request, @RequestBody Map<String, Object> param) throws BusinessCheckException {
         String storeId = request.getHeader("storeId") == null ? "0" : request.getHeader("storeId");
+        String merchantNo = request.getHeader("merchantNo") == null ? "" : request.getHeader("merchantNo");
         JSONObject paramsObj = new JSONObject(param);
 
         JSONObject userInfo = paramsObj.getJSONObject("userInfo");
@@ -88,8 +93,14 @@ public class ClientSignController extends BaseController {
             String phone = weixinService.getPhoneNumber(userInfo.get("encryptedData").toString(), loginInfo.get("session_key").toString(), userInfo.get("iv").toString());
             userInfo.put("phone", phone);
         }
+        // 默认店铺
+        if (storeId == null || StringUtil.isEmpty(storeId)) {
+            MtStore mtStore = storeService.getDefaultStore(merchantNo);
+            if (mtStore != null) {
+                storeId = mtStore.getId().toString();
+            }
+        }
         userInfo.put("storeId", storeId);
-
         MtUser mtUser = memberService.queryMemberByOpenId(loginInfo.get("openid").toString(), userInfo);
         if (mtUser == null) {
             return getFailureResult(0, "用户状态异常");

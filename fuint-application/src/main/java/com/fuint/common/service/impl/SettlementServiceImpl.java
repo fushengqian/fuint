@@ -313,7 +313,7 @@ public class SettlementServiceImpl implements SettlementService {
             // 是否可以使用积分，并且积分数量足够
             if (canUsedAsMoney.equals("true") && Float.parseFloat(exchangeNeedPoint) > 0 && (userInfo.getPoint() >= usePoint)) {
                 orderDto.setUsePoint(usePoint);
-                orderDto.setPointAmount(new BigDecimal(usePoint).divide(new BigDecimal(exchangeNeedPoint), BigDecimal.ROUND_CEILING, 2));
+                orderDto.setPointAmount(new BigDecimal(usePoint).divide(new BigDecimal(exchangeNeedPoint), BigDecimal.ROUND_CEILING, 3));
                 if (orderDto.getPayAmount().compareTo(orderDto.getPointAmount()) > 0) {
                     orderDto.setPayAmount(orderDto.getPayAmount().subtract(orderDto.getPointAmount()));
                 } else {

@@ -71,7 +71,7 @@ public interface MemberService extends IService<MtUser> {
     /**
      * 根据会员ID获取会员信息
      *
-     * @param id 会员ID
+     * @param  id 会员ID
      * @throws BusinessCheckException
      */
     MtUser queryMemberById(Integer id) throws BusinessCheckException;
@@ -79,7 +79,7 @@ public interface MemberService extends IService<MtUser> {
     /**
      * 根据会员名称获取会员信息
      *
-     * @param name 会员名称
+     * @param  name 会员名称
      * @throws BusinessCheckException
      */
     MtUser queryMemberByName(String name) throws BusinessCheckException;
@@ -87,7 +87,7 @@ public interface MemberService extends IService<MtUser> {
     /**
      * 根据会员ID获取会员信息
      *
-     * @param openId 微信openId
+     * @param  openId 微信openId
      * @throws BusinessCheckException
      */
     MtUser queryMemberByOpenId(String openId, JSONObject userInfo) throws BusinessCheckException;
@@ -95,7 +95,7 @@ public interface MemberService extends IService<MtUser> {
     /**
      * 根据会员组ID获取会员组信息
      *
-     * @param id 会员组ID
+     * @param  id 会员组ID
      * @throws BusinessCheckException
      */
     MtUserGrade queryMemberGradeByGradeId(Integer id) throws BusinessCheckException;
@@ -103,7 +103,7 @@ public interface MemberService extends IService<MtUser> {
     /**
      * 根据会员手机获取会员信息
      *
-     * @param mobile 会员手机
+     * @param  mobile 会员手机
      * @throws BusinessCheckException
      */
     MtUser queryMemberByMobile(String mobile) throws BusinessCheckException;
@@ -119,8 +119,8 @@ public interface MemberService extends IService<MtUser> {
     /**
      * 根据会员ID 删除店铺信息
      *
-     * @param id      会员ID
-     * @param operator 操作人
+     * @param  id      会员ID
+     * @param  operator 操作人
      * @throws BusinessCheckException
      */
     Integer deleteMember(Integer id, String operator) throws BusinessCheckException;

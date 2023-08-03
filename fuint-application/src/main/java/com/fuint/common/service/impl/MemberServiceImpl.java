@@ -107,7 +107,6 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
             if (!mtUser.getStatus().equals(StatusEnum.ENABLED.getKey())) {
                 return false;
             }
-
             Date lastUpdateTime = mtUser.getUpdateTime();
             Date registerTime = mtUser.getCreateTime();
             if (lastUpdateTime != null) {
@@ -360,7 +359,7 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
     /**
      * 更新会员信息
      *
-     * @param mtUser
+     * @param  mtUser
      * @throws BusinessCheckException
      */
     @Override
@@ -403,7 +402,7 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
     /**
      * 通过手机号新增会员
      *
-     * @param mobile
+     * @param  mobile
      * @throws BusinessCheckException
      */
     @Override
@@ -440,7 +439,7 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
     /**
      * 根据手机号获取会员信息
      *
-     * @param mobile 手机号
+     * @param  mobile 手机号
      * @throws BusinessCheckException
      */
     @Override
@@ -478,7 +477,7 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
     /**
      * 根据会员ID获取会员信息
      *
-     * @param id 会员ID
+     * @param  id 会员ID
      * @return
      * @throws BusinessCheckException
      */
@@ -523,7 +522,7 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
     /**
      * 根据会员名称获取会员信息
      *
-     * @param name 会员名称
+     * @param  name 会员名称
      * @throws BusinessCheckException
      */
     @Override
@@ -637,7 +636,7 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
     /**
      * 根据等级ID获取会员等级信息
      *
-     * @param id 等级ID
+     * @param  id 等级ID
      * @throws BusinessCheckException
      */
     @Override
@@ -649,8 +648,8 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
     /**
      * 删除会员
      *
-     * @param id 会员ID
-     * @param operator 操作人
+     * @param  id 会员ID
+     * @param  operator 操作人
      * @throws BusinessCheckException
      */
     @Override

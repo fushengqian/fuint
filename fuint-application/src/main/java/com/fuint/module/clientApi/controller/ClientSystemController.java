@@ -35,6 +35,9 @@ import java.util.Map;
 @RequestMapping(value = "/clientApi/system")
 public class ClientSystemController extends BaseController {
 
+    /**
+     * 店铺服务接口
+     * */
     @Autowired
     private StoreService storeService;
 

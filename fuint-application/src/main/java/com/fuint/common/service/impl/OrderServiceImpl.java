@@ -30,7 +30,6 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.util.*;
@@ -298,7 +297,7 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
         BigDecimal percent = new BigDecimal("0");
         if (userGrade != null && userGrade.getDiscount() != null && userGrade.getDiscount() > 0) {
             // 会员折扣
-            percent = new BigDecimal(userGrade.getDiscount()).divide(new BigDecimal("10"), BigDecimal.ROUND_CEILING, 2);
+            percent = new BigDecimal(userGrade.getDiscount()).divide(new BigDecimal("10"), BigDecimal.ROUND_CEILING, 3);
         }
 
         // 如果没有指定店铺，则读取默认的店铺
@@ -1338,7 +1337,7 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
         if (myPoint > 0 && setting != null && isUsePoint) {
             if (StringUtil.isNotEmpty(setting.getValue()) && !setting.getValue().equals("0")) {
                 BigDecimal usePoints = new BigDecimal(myPoint);
-                usePointAmount = usePoints.divide(new BigDecimal(setting.getValue()), BigDecimal.ROUND_CEILING, 2);
+                usePointAmount = usePoints.divide(new BigDecimal(setting.getValue()), BigDecimal.ROUND_CEILING, 3);
                 usePoint = myPoint;
                 if (usePointAmount.compareTo(totalCanUsePointAmount) >= 0) {
                     usePointAmount = totalCanUsePointAmount;
