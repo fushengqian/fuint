@@ -22,6 +22,8 @@ import com.fuint.repository.model.*;
 import com.fuint.utils.StringUtil;
 import io.swagger.annotations.Api;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -41,6 +43,8 @@ import java.util.*;
 @RestController
 @RequestMapping(value = "/backendApi/userCoupon")
 public class BackendUserCouponController extends BaseController {
+
+    private static final Logger logger = LoggerFactory.getLogger(BackendUserCouponController.class);
 
     @Resource
     private MtUserCouponMapper mtUserCouponMapper;
@@ -248,6 +252,7 @@ public class BackendUserCouponController extends BaseController {
 
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
         if (accountInfo == null) {
+            logger.error("导出会员卡券失败：token = ", token);
             return;
         }
 
@@ -306,5 +311,8 @@ public class BackendUserCouponController extends BaseController {
         // 创建HSSFWorkbook
         HSSFWorkbook wb = ExcelUtil.getHSSFWorkbook(sheetName, title, content, null);
         ExcelUtil.setResponseHeader(response, fileName, wb);
+
+        logger.info("导出会员卡券成功：token = ", token);
+        return;
     }
 }

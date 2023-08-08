@@ -98,7 +98,7 @@ public class ClientSystemController extends BaseController {
                 if (!storeInfo.getStatus().equals(StatusEnum.ENABLED.getKey())) {
                     storeInfo = null;
                 }
-                if (mtMerchant != null && !mtMerchant.getId().equals(storeInfo.getMerchantId())) {
+                if (storeInfo != null && mtMerchant != null && !mtMerchant.getId().equals(storeInfo.getMerchantId())) {
                     storeInfo = null;
                 }
             }
