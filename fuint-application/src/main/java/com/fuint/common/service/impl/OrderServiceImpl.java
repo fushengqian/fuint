@@ -1197,16 +1197,15 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
                 cartDto.setNum(cart.getNum());
                 cartDto.setSkuId(cart.getSkuId());
                 cartDto.setUserId(cart.getUserId());
-
+                // 购物车是否有效
+                Boolean isEffect = true;
                 if (cart.getSkuId() > 0) {
                     List<GoodsSpecValueDto> specList = goodsService.getSpecListBySkuId(cart.getSkuId());
                     cartDto.setSpecList(specList);
                 }
-
                 if (StringUtil.isNotEmpty(mtGoodsInfo.getLogo()) && (mtGoodsInfo.getLogo().indexOf(basePath) == -1)) {
                     mtGoodsInfo.setLogo(basePath + mtGoodsInfo.getLogo());
                 }
-
                 // 读取sku的数据
                 if (cart.getSkuId() > 0) {
                     MtGoods mtGoods = new MtGoods();
@@ -1227,15 +1226,16 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
                 } else {
                     cartDto.setGoodsInfo(mtGoodsInfo);
                 }
-
+                if (mtGoodsInfo.getStock() != null && mtGoodsInfo.getStock() < cartDto.getNum()) {
+                    isEffect = false;
+                }
+                cartDto.setIsEffect(isEffect);
                 // 计算总价
                 totalPrice = totalPrice.add(cartDto.getGoodsInfo().getPrice().multiply(new BigDecimal(cart.getNum())));
-
                 // 累加可用积分去抵扣的金额
                 if (mtGoodsInfo.getCanUsePoint() != null && mtGoodsInfo.getCanUsePoint().equals(YesOrNoEnum.YES.getKey())) {
                     totalCanUsePointAmount = totalCanUsePointAmount.add(cartDto.getGoodsInfo().getPrice().multiply(new BigDecimal(cart.getNum())));
                 }
-
                 cartDtoList.add(cartDto);
             }
         }

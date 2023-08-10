@@ -49,23 +49,32 @@ public class CartServiceImpl extends ServiceImpl<MtCartMapper, MtCart> implement
 
         // 检查库存是否充足
         if (action.equals("+") || action.equals("=") && reqDto.getNum() > 0) {
-            Integer cartNum = 0;
             MtGoods mtGoods = mtGoodsMapper.selectById(reqDto.getGoodsId());
-            if (reqDto.getId() != null && reqDto.getId() > 0) {
-                MtCart cartInfo = mtCartMapper.selectById(reqDto.getId());
-                if (cartInfo != null) {
-                    cartNum = cartInfo.getNum();
-                }
+            Map<String, Object> param = new HashMap<>();
+            param.put("status", StatusEnum.ENABLED.getKey());
+            param.put("USER_ID", reqDto.getUserId());
+            param.put("GOODS_ID", reqDto.getGoodsId());
+            if (reqDto.getSkuId() != null && reqDto.getSkuId() > 0) {
+                param.put("SKU_ID", reqDto.getSkuId());
             }
+            List<MtCart> cartList = mtCartMapper.selectByMap(param);
+            Integer cartNum = 0;
+            if (cartList != null && cartList.size() > 0) {
+                cartNum = cartList.get(0).getNum();
+            }
+            // 剩余库存数量
+            Integer totalStock = 0;
             if (reqDto.getSkuId() != null && reqDto.getSkuId() > 0) {
                 MtGoodsSku mtGoodsSku = mtGoodsSkuMapper.selectById(reqDto.getSkuId());
-                if (mtGoodsSku != null && mtGoodsSku.getStock() < reqDto.getNum() && cartNum < reqDto.getNum()) {
-                    throw new BusinessCheckException(mtGoods.getName() + "库存不足");
+                if (mtGoodsSku != null && mtGoodsSku.getStock() != null) {
+                    totalStock = mtGoodsSku.getStock();
                 }
             } else {
-                if (mtGoods != null && mtGoods.getStock() < reqDto.getNum() && cartNum < reqDto.getNum()) {
-                    throw new BusinessCheckException(mtGoods.getName() + "库存不足了");
-                }
+                totalStock = mtGoods.getStock();
+            }
+            // 判断库存，库存小于要添加的购物车数量、已添加的购物车数量大于库存
+            if ((totalStock < reqDto.getNum() || totalStock <= cartNum) && (reqDto.getNum() >= cartNum)) {
+                throw new BusinessCheckException(mtGoods.getName() + "库存不足了");
             }
         }
 

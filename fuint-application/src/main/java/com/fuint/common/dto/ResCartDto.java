@@ -38,6 +38,11 @@ public class ResCartDto implements Serializable {
     private Integer num;
 
     /**
+     * 是否有效
+     * */
+    private Boolean isEffect;
+
+    /**
      * 商品规格
      * */
     private List<GoodsSpecValueDto> specList;
@@ -84,6 +89,14 @@ public class ResCartDto implements Serializable {
 
     public void setNum(Integer num) {
         this.num = num;
+    }
+
+    public Boolean getIsEffect() {
+        return isEffect;
+    }
+
+    public void setIsEffect(Boolean isEffect) {
+        this.isEffect = isEffect;
     }
 
     public MtGoods getGoodsInfo() {
