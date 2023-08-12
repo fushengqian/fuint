@@ -73,8 +73,12 @@ public class CartServiceImpl extends ServiceImpl<MtCartMapper, MtCart> implement
                 totalStock = mtGoods.getStock();
             }
             // 判断库存，库存小于要添加的购物车数量、已添加的购物车数量大于库存
-            if ((totalStock < reqDto.getNum() || totalStock <= cartNum) && (reqDto.getNum() >= cartNum)) {
-                throw new BusinessCheckException(mtGoods.getName() + "库存不足了");
+            if (totalStock < reqDto.getNum() || totalStock <= cartNum) {
+                if (action.equals("=") && reqDto.getNum() < cartNum) {
+                    // empty
+                } else {
+                    throw new BusinessCheckException(mtGoods.getName() + "库存不足了");
+                }
             }
         }
 

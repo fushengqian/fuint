@@ -1,10 +1,11 @@
 package com.fuint.common.dto;
 
-import io.swagger.annotations.ApiModelProperty;
-
 import java.io.Serializable;
 import java.util.Date;
 
+/**
+ * 店铺实体
+ * */
 public class StoreDto implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -28,6 +29,11 @@ public class StoreDto implements Serializable {
      * 店铺名称
      */
     private String name;
+
+    /**
+     * 店铺LOGO
+     * */
+    private String logo;
 
     /**
      * 是否默认店铺
@@ -80,6 +86,31 @@ public class StoreDto implements Serializable {
     private String wxApiV2;
 
     /**
+     * 营业执照
+     * */
+    private String license;
+
+    /**
+     * 统一社会信用代码
+     * */
+    private String creditCode;
+
+    /**
+     * 银行名称
+     * */
+    private String bankName;
+
+    /**
+     * 银行卡账户名
+     * */
+    private String bankCardName;
+
+    /**
+     * 银行卡卡号
+     * */
+    private String bankCardNo;
+
+    /**
      * 创建时间
      */
     private Date createTime;
@@ -122,6 +153,12 @@ public class StoreDto implements Serializable {
     }
     public void setName(String name){
         this.name=name;
+    }
+    public String getLogo(){
+        return logo;
+    }
+    public void setLogo(String logo){
+        this.logo=logo;
     }
     public String getIsDefault(){
         return isDefault;
@@ -182,6 +219,36 @@ public class StoreDto implements Serializable {
     }
     public void setWxApiV2(String wxApiV2){
         this.wxApiV2=wxApiV2;
+    }
+    public String getLicense(){
+        return license;
+    }
+    public void setLicense(String license){
+        this.license=license;
+    }
+    public String getCreditCode(){
+        return creditCode;
+    }
+    public void setCreditCode(String creditCode){
+        this.creditCode=creditCode;
+    }
+    public String getBankName(){
+        return bankName;
+    }
+    public void setBankName(String bankName){
+        this.bankName=bankName;
+    }
+    public String getBankCardName(){
+        return bankCardName;
+    }
+    public void setBankCardName(String bankCardName){
+        this.bankCardName=bankCardName;
+    }
+    public String getBankCardNo(){
+        return bankCardNo;
+    }
+    public void setBankCardNo(String bankCardNo){
+        this.bankCardNo=bankCardNo;
     }
     public Date getCreateTime(){
         return createTime;
