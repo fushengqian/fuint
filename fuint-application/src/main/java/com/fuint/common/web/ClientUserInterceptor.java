@@ -9,7 +9,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.web.servlet.AsyncHandlerInterceptor;
-
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -55,7 +54,7 @@ public class ClientUserInterceptor implements AsyncHandlerInterceptor {
             if (!StringUtils.isEmpty(loginInfo.getToken()) && loginInfo.getToken().equals(accessToken)) {
                 // 更新活跃时间
                 boolean isActive = memberService.updateActiveTime(loginInfo.getId());
-                if (!isActive) {
+                if (!isActive && !requestURI.equals("/clientApi/system/config")) {
                     return false;
                 }
                 return true;
