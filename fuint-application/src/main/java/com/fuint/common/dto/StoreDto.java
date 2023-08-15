@@ -86,6 +86,21 @@ public class StoreDto implements Serializable {
     private String wxApiV2;
 
     /**
+     * 支付宝支付appId
+     * */
+    private String alipayAppId;
+
+    /**
+     * 支付宝支付应用私钥
+     * */
+    private String alipayPrivateKey;
+
+    /**
+     * 支付宝支付公钥
+     * */
+    private String alipayPublicKey;
+
+    /**
      * 营业执照
      * */
     private String license;
@@ -219,6 +234,24 @@ public class StoreDto implements Serializable {
     }
     public void setWxApiV2(String wxApiV2){
         this.wxApiV2=wxApiV2;
+    }
+    public String getAlipayAppId(){
+        return alipayAppId;
+    }
+    public void setAlipayAppId(String alipayAppId){
+        this.alipayAppId=alipayAppId;
+    }
+    public String getAlipayPrivateKey(){
+        return alipayPrivateKey;
+    }
+    public void setAlipayPrivateKey(String alipayPrivateKey){
+        this.alipayPrivateKey=alipayPrivateKey;
+    }
+    public String getAlipayPublicKey(){
+        return alipayPublicKey;
+    }
+    public void setAlipayPublicKey(String alipayPublicKey){
+        this.alipayPublicKey=alipayPublicKey;
     }
     public String getLicense(){
         return license;
