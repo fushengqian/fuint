@@ -86,12 +86,12 @@ public class StoreDto implements Serializable {
     private String wxApiV2;
 
     /**
-     * 支付宝支付appId
+     * 支付宝appId
      * */
     private String alipayAppId;
 
     /**
-     * 支付宝支付应用私钥
+     * 支付宝应用私钥
      * */
     private String alipayPrivateKey;
 

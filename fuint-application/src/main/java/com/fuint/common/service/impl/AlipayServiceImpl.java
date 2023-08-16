@@ -8,6 +8,7 @@ import com.alipay.api.response.AlipayTradePayResponse;
 import com.alipay.api.response.AlipayTradeQueryResponse;
 import com.fuint.common.bean.AliPayBean;
 import com.fuint.common.dto.OrderDto;
+import com.fuint.common.dto.UserOrderDto;
 import com.fuint.common.enums.*;
 import com.fuint.common.service.*;
 import com.fuint.framework.exception.BusinessCheckException;
@@ -40,6 +41,9 @@ public class AlipayServiceImpl implements AlipayService {
     private OrderService orderService;
 
     @Autowired
+    private StoreService storeService;
+
+    @Autowired
     AliPayBean aliPayBean;
 
     /**
@@ -64,7 +68,7 @@ public class AlipayServiceImpl implements AlipayService {
         reqDto.setPayType(orderInfo.getPayType());
         orderService.updateOrder(reqDto);
 
-        getApiConfig();
+        getApiConfig(orderInfo.getStoreId());
         String notifyUrl = aliPayBean.getDomain();
         AlipayTradePayModel model = new AlipayTradePayModel();
         model.setAuthCode(authCode);
@@ -109,31 +113,44 @@ public class AlipayServiceImpl implements AlipayService {
     }
 
     @Override
-    public Boolean checkCallBack( Map<String, String> params) throws Exception {
-        getApiConfig();
+    public Boolean checkCallBack(Map<String, String> params) throws Exception {
+        String orderSn = params.get("out_trade_no") != null ? params.get("out_trade_no") : "";
+        Integer storeId = 0;
+        UserOrderDto orderDto = orderService.getOrderByOrderSn(orderSn);
+        if (orderDto != null && orderDto.getStoreInfo() != null) {
+            storeId = orderDto.getStoreInfo().getId();
+        }
+        getApiConfig(storeId);
         return AlipaySignature.rsaCheckV1(params, aliPayBean.getPublicKey(), "UTF-8", "RSA2");
     }
 
     /**
      * 获取支付配置
      * */
-    public AliPayApiConfig getApiConfig() {
+    public AliPayApiConfig getApiConfig(Integer storeId) throws BusinessCheckException {
         AliPayApiConfig aliPayApiConfig;
+        String appId = aliPayBean.getAppId();
+        String privateKey = aliPayBean.getPrivateKey();
+        String publicKey = aliPayBean.getPublicKey();
 
-        try {
-            aliPayApiConfig = AliPayApiConfigKit.getApiConfig(aliPayBean.getAppId());
-        } catch (Exception e) {
-            aliPayApiConfig = AliPayApiConfig.builder()
-                    .setAppId(aliPayBean.getAppId())
-                    .setAliPayPublicKey(aliPayBean.getPublicKey())
-                    .setCharset("UTF-8")
-                    .setPrivateKey(aliPayBean.getPrivateKey())
-                    .setServiceUrl(aliPayBean.getServerUrl())
-                    .setSignType("RSA2")
-                    .build();
+        // 优先读取店铺的支付账号
+        MtStore mtStore = storeService.queryStoreById(storeId);
+        if (mtStore != null && StringUtil.isNotEmpty(mtStore.getAlipayAppId()) && StringUtil.isNotEmpty(mtStore.getAlipayPrivateKey()) && StringUtil.isNotEmpty(mtStore.getAlipayPublicKey())) {
+            appId = mtStore.getAlipayAppId();
+            privateKey = mtStore.getAlipayPrivateKey();
+            publicKey = mtStore.getAlipayPublicKey();
         }
 
-        AliPayApiConfigKit.setThreadLocalAppId(aliPayBean.getAppId());
+        aliPayApiConfig = AliPayApiConfig.builder()
+                .setAppId(appId)
+                .setAliPayPublicKey(publicKey)
+                .setCharset("UTF-8")
+                .setPrivateKey(privateKey)
+                .setServiceUrl(aliPayBean.getServerUrl())
+                .setSignType("RSA2")
+                .build();
+
+        AliPayApiConfigKit.setThreadLocalAppId(appId);
         AliPayApiConfigKit.setThreadLocalAliPayApiConfig(aliPayApiConfig);
 
         return aliPayApiConfig;
@@ -143,7 +160,7 @@ public class AlipayServiceImpl implements AlipayService {
      * 查询支付订单
      * */
     @Override
-    public Map<String, String> queryPaidOrder(Integer storeId, String tradeNo, String orderSn) {
+    public Map<String, String> queryPaidOrder(Integer storeId, String tradeNo, String orderSn) throws BusinessCheckException {
         try {
             AlipayTradeQueryModel model = new AlipayTradeQueryModel();
             if (StringUtil.isNotEmpty(orderSn)) {
@@ -152,7 +169,7 @@ public class AlipayServiceImpl implements AlipayService {
             if (StringUtil.isNotEmpty(tradeNo)) {
                 model.setTradeNo(tradeNo);
             }
-            getApiConfig();
+            getApiConfig(storeId);
             AlipayTradeQueryResponse response = AliPayApi.tradeQueryToResponse(model);
             if (response != null) {
                 // TradeStatus：TRADE_SUCCESS（交易支付成功，可进行退款）或 TRADE_FINISHED（交易结束，不可退款）

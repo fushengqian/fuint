@@ -12,7 +12,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * 门店表
+ * 店铺表
  *
  * Created by FSQ
  * CopyRight https://www.fuint.cn
@@ -20,7 +20,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @TableName("mt_store")
-@ApiModel(value = "MtStore对象", description = "门店表")
+@ApiModel(value = "MtStore对象", description = "店铺表")
 public class MtStore implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -35,6 +35,9 @@ public class MtStore implements Serializable {
     @ApiModelProperty("店铺名称")
     private String name;
 
+    @ApiModelProperty("商户logo")
+    private String logo;
+
     @ApiModelProperty("是否默认")
     private String isDefault;
 
@@ -46,6 +49,15 @@ public class MtStore implements Serializable {
 
     @ApiModelProperty("微信支付APIv2密钥")
     private String wxApiV2;
+
+    @ApiModelProperty("支付宝appId")
+    private String alipayAppId;
+
+    @ApiModelProperty("支付宝应用私钥")
+    private String alipayPrivateKey;
+
+    @ApiModelProperty("支付宝应用公钥")
+    private String alipayPublicKey;
 
     @ApiModelProperty("联系电话")
     private String phone;
@@ -64,6 +76,21 @@ public class MtStore implements Serializable {
 
     @ApiModelProperty("营业时间")
     private String hours;
+
+    @ApiModelProperty("营业执照")
+    private String license;
+
+    @ApiModelProperty("统一社会信用代码")
+    private String creditCode;
+
+    @ApiModelProperty("银行名称")
+    private String bankName;
+
+    @ApiModelProperty("银行卡账户名")
+    private String bankCardName;
+
+    @ApiModelProperty("银行卡卡号")
+    private String bankCardNo;
 
     @ApiModelProperty("备注信息")
     private String description;

@@ -16,8 +16,8 @@ public interface AlipayService {
 
     ResponseObject createPrepayOrder(MtUser userInfo, MtOrder orderInfo, Integer payAmount, String authCode, Integer giveAmount, String ip, String platform) throws BusinessCheckException;
 
-    Boolean checkCallBack( Map<String, String> params) throws Exception;
+    Boolean checkCallBack(Map<String, String> params) throws Exception;
 
-    Map<String, String> queryPaidOrder(Integer storeId, String tradeNo, String orderSn);
+    Map<String, String> queryPaidOrder(Integer storeId, String tradeNo, String orderSn) throws BusinessCheckException;
 
 }

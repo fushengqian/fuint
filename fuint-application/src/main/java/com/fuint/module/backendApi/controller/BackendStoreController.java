@@ -6,6 +6,7 @@ import com.fuint.common.dto.StoreDto;
 import com.fuint.common.enums.StatusEnum;
 import com.fuint.common.enums.YesOrNoEnum;
 import com.fuint.common.service.MerchantService;
+import com.fuint.common.service.SettingService;
 import com.fuint.common.service.StoreService;
 import com.fuint.common.util.CommonUtil;
 import com.fuint.common.util.TokenUtil;
@@ -20,7 +21,6 @@ import com.fuint.utils.StringUtil;
 import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.List;
@@ -48,6 +48,12 @@ public class BackendStoreController extends BaseController {
      */
     @Autowired
     private MerchantService merchantService;
+
+    /**
+     * 系统设置服务接口
+     * */
+    @Autowired
+    private SettingService settingService;
 
     /**
      * 分页查询店铺列表
@@ -100,10 +106,12 @@ public class BackendStoreController extends BaseController {
             param.put("storeId", storeId);
         }
         List<MtMerchant> merchantList = merchantService.queryMerchantByParams(param);
+        String imagePath = settingService.getUploadBasePath();
 
         Map<String, Object> result = new HashMap<>();
         result.put("paginationResponse", paginationResponse);
         result.put("merchantList", merchantList);
+        result.put("imagePath", imagePath);
 
         return getSuccessResult(result);
     }
@@ -193,8 +201,17 @@ public class BackendStoreController extends BaseController {
         String hours = params.get("hours") == null ? "" : CommonUtil.replaceXSS(params.get("hours").toString());
         String latitude = params.get("latitude") == null ? "" : CommonUtil.replaceXSS(params.get("latitude").toString());
         String longitude = params.get("longitude") == null ? "" : CommonUtil.replaceXSS(params.get("longitude").toString());
-        String wxMchId = params.get("wxMchId") == null ? "" : CommonUtil.replaceXSS(params.get("wxMchId").toString());
-        String wxApiV2 = params.get("wxApiV2") == null ? "" : CommonUtil.replaceXSS(params.get("wxApiV2").toString());
+        String wxMchId = params.get("wxMchId") == null ? null : CommonUtil.replaceXSS(params.get("wxMchId").toString());
+        String wxApiV2 = params.get("wxApiV2") == null ? null : CommonUtil.replaceXSS(params.get("wxApiV2").toString());
+        String alipayAppId = params.get("alipayAppId") == null ? null : CommonUtil.replaceXSS(params.get("alipayAppId").toString());
+        String alipayPrivateKey = params.get("alipayPrivateKey") == null ? null : CommonUtil.replaceXSS(params.get("alipayPrivateKey").toString());
+        String alipayPublicKey = params.get("alipayPublicKey") == null ? null : CommonUtil.replaceXSS(params.get("alipayPublicKey").toString());
+        String logo = params.get("logo") == null ? "" : CommonUtil.replaceXSS(params.get("logo").toString());
+        String license = params.get("license") == null ? "" : CommonUtil.replaceXSS(params.get("license").toString());
+        String creditCode = params.get("creditCode") == null ? "" : CommonUtil.replaceXSS(params.get("creditCode").toString());
+        String bankName = params.get("bankName") == null ? "" : CommonUtil.replaceXSS(params.get("bankName").toString());
+        String bankCardName = params.get("bankCardName") == null ? "" : CommonUtil.replaceXSS(params.get("bankCardName").toString());
+        String bankCardNo = params.get("bankCardNo") == null ? "" : CommonUtil.replaceXSS(params.get("bankCardNo").toString());
         String status = params.get("status") != null ? params.get("status").toString() : StatusEnum.ENABLED.getKey();
         String merchantId = params.get("merchantId").toString();
 
@@ -209,6 +226,7 @@ public class BackendStoreController extends BaseController {
         }
 
         storeInfo.setName(storeName);
+        storeInfo.setLogo(logo);
         storeInfo.setContact(contact);
         storeInfo.setPhone(phone);
         storeInfo.setDescription(description);
@@ -220,6 +238,14 @@ public class BackendStoreController extends BaseController {
         storeInfo.setStatus(status);
         storeInfo.setWxMchId(wxMchId);
         storeInfo.setWxApiV2(wxApiV2);
+        storeInfo.setLicense(license);
+        storeInfo.setCreditCode(creditCode);
+        storeInfo.setBankName(bankName);
+        storeInfo.setBankCardName(bankCardName);
+        storeInfo.setBankCardNo(bankCardNo);
+        storeInfo.setAlipayAppId(alipayAppId);
+        storeInfo.setAlipayPrivateKey(alipayPrivateKey);
+        storeInfo.setAlipayPublicKey(alipayPublicKey);
         if (StringUtil.isNotEmpty(merchantId)) {
             storeInfo.setMerchantId(Integer.parseInt(merchantId));
         }

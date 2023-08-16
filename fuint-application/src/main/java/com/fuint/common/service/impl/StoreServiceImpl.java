@@ -119,18 +119,33 @@ public class StoreServiceImpl extends ServiceImpl<MtStoreMapper, MtStore> implem
         }
 
         mtStore.setName(storeDto.getName());
+        mtStore.setLogo(storeDto.getLogo());
         mtStore.setContact(storeDto.getContact());
         mtStore.setOperator(storeDto.getOperator());
-        mtStore.setWxMchId(storeDto.getWxMchId());
-        if (storeDto.getWxApiV2() != null && !storeDto.getWxApiV2().equals(mtStore.getId()+"")) {
+        if (storeDto.getWxMchId() != null) {
+            mtStore.setWxMchId(storeDto.getWxMchId());
+        }
+        if (storeDto.getWxApiV2() != null) {
             mtStore.setWxApiV2(storeDto.getWxApiV2());
         }
-
+        if (storeDto.getAlipayAppId() != null) {
+            mtStore.setAlipayAppId(storeDto.getAlipayAppId());
+        }
+        if (storeDto.getAlipayPrivateKey() != null) {
+            mtStore.setAlipayPrivateKey(storeDto.getAlipayPrivateKey());
+        }
+        if (storeDto.getAlipayPublicKey() != null) {
+            mtStore.setAlipayPublicKey(storeDto.getAlipayPublicKey());
+        }
+        mtStore.setLicense(storeDto.getLicense());
+        mtStore.setCreditCode(storeDto.getCreditCode());
+        mtStore.setBankName(storeDto.getBankName());
+        mtStore.setBankCardName(storeDto.getBankCardName());
+        mtStore.setBankCardNo(storeDto.getBankCardNo());
         mtStore.setUpdateTime(new Date());
         if (storeDto.getId() == null) {
             mtStore.setCreateTime(new Date());
         }
-
         mtStore.setDescription(storeDto.getDescription());
         mtStore.setPhone(storeDto.getPhone());
 
