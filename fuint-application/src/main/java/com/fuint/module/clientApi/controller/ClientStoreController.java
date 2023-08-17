@@ -6,6 +6,7 @@ import com.fuint.framework.web.BaseController;
 import com.fuint.framework.web.ResponseObject;
 import com.fuint.repository.model.MtStore;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
@@ -32,6 +33,7 @@ public class ClientStoreController extends BaseController {
      *
      * @param request Request对象
      */
+    @ApiOperation(value = "获取店铺列表（根据距离排序）")
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @CrossOrigin
     public ResponseObject list(HttpServletRequest request, @RequestBody Map<String, Object> param) throws BusinessCheckException {
@@ -49,10 +51,11 @@ public class ClientStoreController extends BaseController {
     }
 
     /**
-     * 店铺详情
+     * 获取店铺详情
      *
-     * @param request  Request对象
+     * @param request Request对象
      */
+    @ApiOperation(value = "获取店铺详情")
     @RequestMapping(value = "/detail", method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject detail(HttpServletRequest request) throws BusinessCheckException {

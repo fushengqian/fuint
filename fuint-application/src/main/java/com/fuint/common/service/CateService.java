@@ -1,6 +1,7 @@
 package com.fuint.common.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.fuint.common.dto.GoodsCateDto;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.pagination.PaginationRequest;
 import com.fuint.framework.pagination.PaginationResponse;
@@ -22,7 +23,7 @@ public interface CateService extends IService<MtGoodsCate> {
      * @param paginationRequest
      * @return
      */
-    PaginationResponse<MtGoodsCate> queryCateListByPagination(PaginationRequest paginationRequest) throws BusinessCheckException;
+    PaginationResponse<GoodsCateDto> queryCateListByPagination(PaginationRequest paginationRequest) throws BusinessCheckException;
 
     /**
      * 添加商品分类
@@ -41,7 +42,7 @@ public interface CateService extends IService<MtGoodsCate> {
     MtGoodsCate queryCateById(Integer id) throws BusinessCheckException;
 
     /**
-     * 根据ID 删除
+     * 根据ID删除
      *
      * @param  id       ID
      * @param  operator 操作人

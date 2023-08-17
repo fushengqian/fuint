@@ -17,6 +17,7 @@ import com.fuint.repository.model.MtUser;
 import com.fuint.repository.model.MtVerifyCode;
 import com.fuint.utils.StringUtil;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.web.bind.annotation.*;
@@ -71,6 +72,7 @@ public class ClientSignController extends BaseController {
     /**
      * 微信授权登录（小程序）
      * */
+    @ApiOperation(value = "微信授权登录（小程序）")
     @RequestMapping(value = "/mpWxLogin", method = RequestMethod.POST)
     @ResponseBody
     @CrossOrigin
@@ -125,6 +127,7 @@ public class ClientSignController extends BaseController {
     /**
      * 微信授权登录（公众号）
      * */
+    @ApiOperation(value = "微信授权登录（公众号）")
     @RequestMapping(value = "/mpWxAuth", method = RequestMethod.POST)
     @ResponseBody
     @CrossOrigin
@@ -165,6 +168,7 @@ public class ClientSignController extends BaseController {
     /**
      * 通过账号密码注册
      * */
+    @ApiOperation(value = "通过账号密码注册")
     @RequestMapping(value = "/register", method = RequestMethod.POST)
     @CrossOrigin
     public ResponseObject register(HttpServletRequest request, @RequestBody Map<String, Object> param) throws BusinessCheckException {
@@ -227,6 +231,7 @@ public class ClientSignController extends BaseController {
     /**
      * 会员登录（通过短信或账号密码）
      */
+    @ApiOperation(value = "通过短信或账号密码登录")
     @RequestMapping(value = "/signIn", method = RequestMethod.POST)
     @CrossOrigin
     public ResponseObject signIn(HttpServletRequest request, @RequestBody Map<String, Object> param) throws BusinessCheckException {
@@ -332,6 +337,7 @@ public class ClientSignController extends BaseController {
     /**
      * 获取会员信息
      */
+    @ApiOperation(value = "获取会员信息")
     @RequestMapping(value = "/doGetUserInfo", method = RequestMethod.POST)
     @CrossOrigin
     public ResponseObject doGetUserInfo(HttpServletRequest request) {
@@ -346,6 +352,7 @@ public class ClientSignController extends BaseController {
     /**
      * 退出登录
      */
+    @ApiOperation(value = "退出登录")
     @RequestMapping(value = "/signOut", method = RequestMethod.POST)
     @CrossOrigin
     public ResponseObject doLogout(HttpServletRequest request) {

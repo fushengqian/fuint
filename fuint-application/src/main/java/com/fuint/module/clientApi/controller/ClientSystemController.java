@@ -16,6 +16,7 @@ import com.fuint.repository.model.MtStore;
 import com.fuint.repository.model.MtUser;
 import com.fuint.utils.StringUtil;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
@@ -60,10 +61,11 @@ public class ClientSystemController extends BaseController {
     private MerchantService merchantService;
 
     /**
-     * 系统配置
+     * 获取系统配置
      *
      * @param request Request对象
      */
+    @ApiOperation(value = "获取系统配置")
     @RequestMapping(value = "/config", method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject config(HttpServletRequest request) throws BusinessCheckException {

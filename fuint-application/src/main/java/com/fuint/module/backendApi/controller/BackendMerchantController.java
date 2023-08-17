@@ -14,6 +14,8 @@ import com.fuint.framework.web.BaseController;
 import com.fuint.framework.web.ResponseObject;
 import com.fuint.repository.model.MtMerchant;
 import com.fuint.utils.StringUtil;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
@@ -27,6 +29,7 @@ import java.util.Map;
  * Created by FSQ
  * CopyRight https://www.fuint.cn
  */
+@Api(tags="管理端-商户管理相关接口")
 @RestController
 @RequestMapping(value = "/backendApi/merchant")
 public class BackendMerchantController extends BaseController {
@@ -49,6 +52,7 @@ public class BackendMerchantController extends BaseController {
      * @param  request  HttpServletRequest对象
      * @return 商户列表
      */
+    @ApiOperation(value = "分页查询商户列表")
     @RequestMapping(value = "/list")
     @CrossOrigin
     public ResponseObject list(HttpServletRequest request) throws BusinessCheckException {
@@ -88,6 +92,7 @@ public class BackendMerchantController extends BaseController {
     /**
      * 查询商户列表
      * */
+    @ApiOperation(value = "查询商户列表")
     @RequestMapping(value = "/searchMerchant",  method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject searchMerchant(HttpServletRequest request) throws BusinessCheckException {
@@ -116,6 +121,7 @@ public class BackendMerchantController extends BaseController {
      * @param request
      * @return
      */
+    @ApiOperation(value = "更新商户状态")
     @RequestMapping(value = "/updateStatus")
     @CrossOrigin
     public ResponseObject updateStatus(HttpServletRequest request, @RequestBody Map<String, Object> params) throws BusinessCheckException {
@@ -135,11 +141,12 @@ public class BackendMerchantController extends BaseController {
     }
 
     /**
-     * 保存商户
+     * 保存商户信息
      *
-     * @param request  HttpServletRequest对象
+     * @param request HttpServletRequest对象
      * @return
      */
+    @ApiOperation(value = "保存商户信息")
     @RequestMapping(value = "/save", method = RequestMethod.POST)
     @CrossOrigin
     public ResponseObject saveHandler(HttpServletRequest request, @RequestBody Map<String, Object> params) throws BusinessCheckException {
@@ -158,11 +165,6 @@ public class BackendMerchantController extends BaseController {
         String address = params.get("address") == null ? "" : CommonUtil.replaceXSS(params.get("address").toString());
         String status = params.get("status") == null ? "" : CommonUtil.replaceXSS(params.get("status").toString());
         String logo = params.get("logo") == null ? "" : CommonUtil.replaceXSS(params.get("logo").toString());
-        String license = params.get("license") == null ? "" : CommonUtil.replaceXSS(params.get("license").toString());
-        String creditCode = params.get("creditCode") == null ? "" : CommonUtil.replaceXSS(params.get("creditCode").toString());
-        String bankName = params.get("bankName") == null ? "" : CommonUtil.replaceXSS(params.get("bankName").toString());
-        String bankCardName = params.get("bankCardName") == null ? "" : CommonUtil.replaceXSS(params.get("bankCardName").toString());
-        String bankCardNo = params.get("bankCardNo") == null ? "" : CommonUtil.replaceXSS(params.get("bankCardNo").toString());
 
         MtMerchant merchantInfo = new MtMerchant();
         merchantInfo.setName(name);
@@ -172,11 +174,6 @@ public class BackendMerchantController extends BaseController {
         merchantInfo.setDescription(description);
         merchantInfo.setAddress(address);
         merchantInfo.setLogo(logo);
-        merchantInfo.setLicense(license);
-        merchantInfo.setCreditCode(creditCode);
-        merchantInfo.setBankName(bankName);
-        merchantInfo.setBankCardName(bankCardName);
-        merchantInfo.setBankCardNo(bankCardNo);
         merchantInfo.setStatus(status);
 
         if (StringUtil.isEmpty(name)) {
@@ -206,6 +203,7 @@ public class BackendMerchantController extends BaseController {
      * @param id
      * @return
      */
+    @ApiOperation(value = "获取商户详情")
     @RequestMapping(value = "/info/{id}", method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject getMerchantInfo(@PathVariable("id") Integer id) throws BusinessCheckException {

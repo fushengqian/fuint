@@ -18,6 +18,7 @@ import com.fuint.framework.web.ResponseObject;
 import com.fuint.repository.model.*;
 import com.fuint.utils.StringUtil;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -66,6 +67,7 @@ public class ClientUserController extends BaseController {
     /**
      * 获取会员信息
      */
+    @ApiOperation(value = "获取会员信息")
     @RequestMapping(value = "/info", method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject info(HttpServletRequest request) throws BusinessCheckException {
@@ -115,8 +117,9 @@ public class ClientUserController extends BaseController {
     }
 
     /**
-     * 获取会员数据信息
+     * 获取会员资产数据
      */
+    @ApiOperation(value = "获取会员资产数据")
     @RequestMapping(value = "/asset", method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject asset(HttpServletRequest request) throws BusinessCheckException {
@@ -162,6 +165,7 @@ public class ClientUserController extends BaseController {
     /**
      * 获取会员设置
      */
+    @ApiOperation(value = "获取会员设置")
     @RequestMapping(value = "/setting", method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject setting() throws BusinessCheckException {
@@ -185,6 +189,7 @@ public class ClientUserController extends BaseController {
     /**
      * 保存会员信息
      */
+    @ApiOperation(value = "保存会员信息")
     @RequestMapping(value = "/saveInfo", method = RequestMethod.POST)
     @CrossOrigin
     public ResponseObject saveInfo(HttpServletRequest request, @RequestBody Map<String, Object> param) throws BusinessCheckException {
@@ -231,6 +236,7 @@ public class ClientUserController extends BaseController {
     /**
      * 设置会员的默认店铺
      */
+    @ApiOperation(value = "设置会员的默认店铺")
     @RequestMapping(value = "/defaultStore", method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject defaultStore(HttpServletRequest request) throws BusinessCheckException {
@@ -248,8 +254,9 @@ public class ClientUserController extends BaseController {
     }
 
     /**
-     * 获取会员码
+     * 获取会员二维码
      * */
+    @ApiOperation(value = "获取会员二维码")
     @RequestMapping(value = "/qrCode", method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject qrCode(HttpServletRequest request) throws BusinessCheckException {

@@ -13,6 +13,7 @@ import com.fuint.framework.web.ResponseObject;
 import com.fuint.repository.model.MtRefund;
 import com.fuint.utils.StringUtil;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
@@ -45,6 +46,7 @@ public class ClientRefundController extends BaseController {
     /**
      * 获取售后订单列表
      */
+    @ApiOperation(value = "获取售后订单列表")
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject list(HttpServletRequest request, @RequestParam Map<String, Object> param) throws BusinessCheckException {
@@ -77,6 +79,7 @@ public class ClientRefundController extends BaseController {
     /**
      * 售后订单提交
      */
+    @ApiOperation(value = "售后订单提交")
     @RequestMapping(value = "/submit", method = RequestMethod.POST)
     @CrossOrigin
     public ResponseObject submit(HttpServletRequest request, @RequestBody Map<String, Object> param) throws BusinessCheckException {
@@ -120,6 +123,7 @@ public class ClientRefundController extends BaseController {
     /**
      * 获取售后订单详情
      */
+    @ApiOperation(value = "获取售后订单详情")
     @RequestMapping(value = "/detail", method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject detail(HttpServletRequest request) throws BusinessCheckException {

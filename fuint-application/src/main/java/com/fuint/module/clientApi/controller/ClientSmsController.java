@@ -10,6 +10,7 @@ import com.fuint.framework.web.ResponseObject;
 import com.fuint.repository.model.MtVerifyCode;
 import com.fuint.utils.StringUtil;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.web.bind.annotation.*;
@@ -52,6 +53,7 @@ public class ClientSmsController extends BaseController {
     /**
      * 发送验证码短信
      */
+    @ApiOperation(value = "发送验证码短信")
     @RequestMapping(value = "/sendVerifyCode", method = RequestMethod.POST)
     @CrossOrigin
     public ResponseObject sendVerifyCode(HttpServletRequest request, @RequestBody Map<String, Object> param) throws Exception {

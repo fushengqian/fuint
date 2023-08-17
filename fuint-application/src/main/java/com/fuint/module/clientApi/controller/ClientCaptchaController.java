@@ -5,6 +5,7 @@ import com.fuint.framework.web.BaseController;
 import com.fuint.framework.web.ResponseObject;
 import com.fuint.common.util.Base64Util;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.*;
 import javax.annotation.Resource;
 import javax.imageio.ImageIO;
@@ -31,6 +32,7 @@ public class ClientCaptchaController extends BaseController {
     @Resource
     private CaptchaService captchaService;
 
+    @ApiOperation(value = "获取图形验证码")
     @RequestMapping(value = "/getCode", method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject getCode(HttpServletResponse response) {
@@ -59,6 +61,7 @@ public class ClientCaptchaController extends BaseController {
         return getSuccessResult(outParams);
     }
 
+    @ApiOperation(value = "校验图形验证码")
     @RequestMapping(value = "/checkCode", method = RequestMethod.POST)
     @CrossOrigin
     public ResponseObject checkCode(@RequestParam String code, HttpServletRequest request) {

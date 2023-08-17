@@ -17,6 +17,7 @@ import com.fuint.repository.mapper.MtUserCouponMapper;
 import com.fuint.repository.model.*;
 import com.fuint.utils.StringUtil;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -69,8 +70,9 @@ public class ClientUserCouponController extends BaseController {
     /**
      * 查询会员卡券详情
      *
-     * @param param  Request对象
+     * @param param Request对象
      */
+    @ApiOperation(value = "查询会员卡券详情")
     @RequestMapping(value = "/detail", method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject detail(HttpServletRequest request, @RequestParam Map<String, Object> param) throws BusinessCheckException, InvocationTargetException, IllegalAccessException {
@@ -183,7 +185,6 @@ public class ClientUserCouponController extends BaseController {
                 }
             }
         }
-
         return getSuccessResult(responseObject.getData());
     }
 }
