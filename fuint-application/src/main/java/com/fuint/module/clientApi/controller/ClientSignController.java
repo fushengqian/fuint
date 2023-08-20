@@ -18,6 +18,8 @@ import com.fuint.repository.model.MtVerifyCode;
 import com.fuint.utils.StringUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.web.bind.annotation.*;
@@ -69,6 +71,8 @@ public class ClientSignController extends BaseController {
     @Autowired
     private Environment env;
 
+    private Logger logger = LoggerFactory.getLogger(ClientSignController.class);
+
     /**
      * 微信授权登录（小程序）
      * */
@@ -80,6 +84,8 @@ public class ClientSignController extends BaseController {
         String storeId = request.getHeader("storeId") == null ? "0" : request.getHeader("storeId");
         String merchantNo = request.getHeader("merchantNo") == null ? "" : request.getHeader("merchantNo");
         JSONObject paramsObj = new JSONObject(param);
+
+        logger.info("微信授权登录参数：{}", param);
 
         JSONObject userInfo = paramsObj.getJSONObject("userInfo");
         JSONObject loginInfo = weixinService.getWxProfile(param.get("code").toString());

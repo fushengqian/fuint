@@ -159,8 +159,8 @@ public class BackendMerchantController extends BaseController {
         Integer merchantId = StringUtil.isEmpty(params.get("id").toString()) ? Integer.parseInt("0") : Integer.parseInt(params.get("id").toString());
         String name = CommonUtil.replaceXSS(params.get("name").toString());
         String merchantNo = CommonUtil.replaceXSS(params.get("no").toString());
-        String contact = CommonUtil.replaceXSS(params.get("contact").toString());
-        String phone = CommonUtil.replaceXSS(params.get("phone").toString());
+        String contact = params.get("contact") == null ? "" : CommonUtil.replaceXSS(params.get("contact").toString());
+        String phone = params.get("phone") == null ? "" : CommonUtil.replaceXSS(params.get("phone").toString());
         String description = params.get("description") == null ? "" : CommonUtil.replaceXSS(params.get("description").toString());
         String address = params.get("address") == null ? "" : CommonUtil.replaceXSS(params.get("address").toString());
         String status = params.get("status") == null ? "" : CommonUtil.replaceXSS(params.get("status").toString());
