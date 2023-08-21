@@ -1,6 +1,7 @@
 package com.fuint.module.backendApi.controller;
 
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -34,6 +35,7 @@ public class BackendCaptchaController {
     @Resource
     private CaptchaService captchaService;
 
+    @ApiOperation(value = "获取图形验证码")
     @RequestMapping(value="/getCode", method = RequestMethod.GET)
     public void getCode(HttpServletResponse response) {
         // 生成验证码
@@ -65,6 +67,7 @@ public class BackendCaptchaController {
         }
     }
 
+    @ApiOperation(value = "验证图形验证码")
     @RequestMapping(value="/checkCode", method = RequestMethod.POST)
     @ResponseBody
     public String checkCode(@RequestParam String code, HttpServletRequest request) {

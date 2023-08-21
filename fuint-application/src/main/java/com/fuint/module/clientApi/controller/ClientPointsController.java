@@ -13,6 +13,7 @@ import com.fuint.framework.web.BaseController;
 import com.fuint.framework.web.ResponseObject;
 import com.fuint.utils.StringUtil;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
@@ -41,6 +42,7 @@ public class ClientPointsController extends BaseController {
      *
      * @param request Request对象
      */
+    @ApiOperation(value = "查询我的积分明细")
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject list(HttpServletRequest request) throws BusinessCheckException {
@@ -76,6 +78,7 @@ public class ClientPointsController extends BaseController {
      *
      * @param param Request对象
      */
+    @ApiOperation(value = "转赠积分")
     @RequestMapping(value = "/doGive", method = RequestMethod.POST)
     @CrossOrigin
     public ResponseObject doGive(HttpServletRequest request, @RequestBody Map<String, Object> param) {

@@ -9,6 +9,7 @@ import com.fuint.framework.web.ResponseObject;
 import com.fuint.repository.model.TActionLog;
 import com.fuint.utils.StringUtil;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -32,10 +33,11 @@ public class BackendActionLogController extends BaseController {
     private ActionLogService tActionLogService;
 
     /**
-     * 日志列表
+     * 操作日志列表
      *
      * @return
      */
+    @ApiOperation(value = "操作日志列表")
     @RequestMapping(value = "/list")
     public ResponseObject list(HttpServletRequest request) {
         Integer page = request.getParameter("page") == null ? Constants.PAGE_NUMBER : Integer.parseInt(request.getParameter("page"));

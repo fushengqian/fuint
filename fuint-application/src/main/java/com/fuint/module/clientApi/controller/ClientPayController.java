@@ -17,6 +17,7 @@ import com.ijpay.core.kit.HttpKit;
 import com.ijpay.core.kit.WxPayKit;
 import com.ijpay.wxpay.WxPayApiConfigKit;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
@@ -87,6 +88,7 @@ public class ClientPayController extends BaseController {
     /**
      * 支付前查询
      * */
+    @ApiOperation(value = "支付前查询")
     @RequestMapping(value = "/prePay", method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject prePay(HttpServletRequest request) throws BusinessCheckException {
@@ -147,8 +149,9 @@ public class ClientPayController extends BaseController {
     }
 
     /**
-     * 请求支付
+     * 发起支付
      * */
+    @ApiOperation(value = "发起支付")
     @RequestMapping(value = "/doPay", method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject doPay(HttpServletRequest request) {

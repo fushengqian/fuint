@@ -19,6 +19,7 @@ import com.fuint.repository.model.TAccount;
 import com.fuint.repository.model.TDuty;
 import com.fuint.utils.StringUtil;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -65,6 +66,7 @@ public class BackendAccountController extends BaseController {
      * @param  request HttpServletRequest对象
      * @return 账户信息列表
      */
+    @ApiOperation(value = "账户信息列表")
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject list(HttpServletRequest request) throws BusinessCheckException {
@@ -113,6 +115,7 @@ public class BackendAccountController extends BaseController {
      * @param  userId 账号ID
      * @return 账户详情
      */
+    @ApiOperation(value = "获取账户详情")
     @RequestMapping(value = "/info/{userId}", method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject info(HttpServletRequest request, @PathVariable("userId") Long userId) throws BusinessCheckException {
@@ -186,6 +189,7 @@ public class BackendAccountController extends BaseController {
      * @return 新增账户
      * @throws BusinessCheckException
      */
+    @ApiOperation(value = "新增账户")
     @RequestMapping(value = "/doCreate", method = RequestMethod.POST)
     @CrossOrigin
     public ResponseObject doCreate(HttpServletRequest request, @RequestBody Map<String, Object> param) {
@@ -243,6 +247,7 @@ public class BackendAccountController extends BaseController {
      * @return
      * @throws BusinessCheckException
      */
+    @ApiOperation(value = "修改账户信息")
     @RequestMapping(value = "/update", method = RequestMethod.POST)
     @CrossOrigin
     public ResponseObject update(HttpServletRequest request, @RequestBody Map<String, Object> param) throws BusinessCheckException {
@@ -312,6 +317,7 @@ public class BackendAccountController extends BaseController {
      * @return
      * @throws BusinessCheckException
      */
+    @ApiOperation(value = "删除账户信息")
     @RequestMapping(value = "/delete/{userIds}", method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject deleteAccount(HttpServletRequest request, @PathVariable("userIds") String userIds) {
@@ -349,6 +355,7 @@ public class BackendAccountController extends BaseController {
      *
      * @return
      */
+    @ApiOperation(value = "更新账户状态")
     @RequestMapping(value = "/updateStatus", method = RequestMethod.POST)
     @CrossOrigin
     public ResponseObject updateStatus(HttpServletRequest request, @RequestBody Map<String, Object> param) throws BusinessCheckException {
@@ -377,6 +384,7 @@ public class BackendAccountController extends BaseController {
      *
      * @return
      */
+    @ApiOperation(value = "修改账户密码")
     @RequestMapping(value = "/resetPwd", method = RequestMethod.POST)
     @CrossOrigin
     public ResponseObject resetPwd(HttpServletRequest request, @RequestBody Map<String, Object> param) {

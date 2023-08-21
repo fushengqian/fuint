@@ -20,6 +20,7 @@ import com.fuint.repository.model.MtStore;
 import com.fuint.repository.model.TAccount;
 import com.fuint.utils.StringUtil;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -64,12 +65,13 @@ public class BackendCateController extends BaseController {
     private StoreService storeService;
 
     /**
-     * 商品分类列表
+     * 获取商品分类列表
      *
      * @param request
      * @return
      * @throws BusinessCheckException
      */
+    @ApiOperation(value = "获取商品分类列表")
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject list(HttpServletRequest request) throws BusinessCheckException {
@@ -130,10 +132,11 @@ public class BackendCateController extends BaseController {
     }
 
     /**
-     * 更新状态
+     * 更新商品分类状态
      *
      * @return
      */
+    @ApiOperation(value = "更新商品分类状态")
     @RequestMapping(value = "/updateStatus", method = RequestMethod.POST)
     @CrossOrigin
     public ResponseObject updateStatus(HttpServletRequest request, @RequestBody Map<String, Object> params) throws BusinessCheckException {
@@ -173,6 +176,7 @@ public class BackendCateController extends BaseController {
      * @param request  HttpServletRequest对象
      * @return
      */
+    @ApiOperation(value = "保存商品分类")
     @RequestMapping(value = "/save", method = RequestMethod.POST)
     public ResponseObject save(HttpServletRequest request, @RequestBody Map<String, Object> params) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
@@ -215,11 +219,12 @@ public class BackendCateController extends BaseController {
     }
 
     /**
-     * 分类详情
+     * 商品分类详情
      *
      * @param request
      * @return
      */
+    @ApiOperation(value = "商品分类详情")
     @RequestMapping(value = "/info/{id}", method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject info(HttpServletRequest request, @PathVariable("id") Integer id) throws BusinessCheckException {

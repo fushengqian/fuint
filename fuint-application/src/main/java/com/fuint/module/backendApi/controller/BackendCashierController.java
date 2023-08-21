@@ -14,10 +14,10 @@ import com.fuint.framework.web.ResponseObject;
 import com.fuint.repository.model.*;
 import com.fuint.utils.StringUtil;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
 import javax.servlet.http.HttpServletRequest;
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
@@ -97,6 +97,7 @@ public class BackendCashierController extends BaseController {
      * @param request HttpServletRequest对象
      * @return
      */
+    @ApiOperation(value = "收银台初始化")
     @RequestMapping(value = "/init/{userId}", method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject init(HttpServletRequest request, @PathVariable("userId") Integer userId) throws BusinessCheckException {
@@ -145,12 +146,13 @@ public class BackendCashierController extends BaseController {
     }
 
     /**
-     * 查询商品
+     * 查询商品列表
      *
      * @param request
      * @param param
      * @return
      */
+    @ApiOperation(value = "查询商品列表")
     @RequestMapping(value = "/searchGoods", method = RequestMethod.POST)
     @CrossOrigin
     public ResponseObject searchGoods(HttpServletRequest request, @RequestBody Map<String, Object> param) throws BusinessCheckException {
@@ -170,15 +172,16 @@ public class BackendCashierController extends BaseController {
     }
 
     /**
-     * 商品详情
+     * 获取商品详情
      *
      * @param request
      * @param goodsId
      * @return
      */
+    @ApiOperation(value = "获取商品详情")
     @RequestMapping(value = "/getGoodsInfo/{id}", method = RequestMethod.GET)
     @CrossOrigin
-    public ResponseObject getGoodsInfo(HttpServletRequest request, @PathVariable("id") Integer goodsId) throws BusinessCheckException, InvocationTargetException, IllegalAccessException {
+    public ResponseObject getGoodsInfo(HttpServletRequest request, @PathVariable("id") Integer goodsId) throws InvocationTargetException, IllegalAccessException {
         String token = request.getHeader("Access-Token");
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
         if (accountInfo == null) {
@@ -250,8 +253,9 @@ public class BackendCashierController extends BaseController {
     }
 
     /**
-     * 获取会员信息
+     * 搜索会员信息
      */
+    @ApiOperation(value = "搜索会员信息")
     @RequestMapping(value = "/getMemberInfo", method = RequestMethod.POST)
     @CrossOrigin
     public ResponseObject getMemberInfo(HttpServletRequest request, @RequestBody Map<String, Object> param) throws BusinessCheckException {
@@ -285,6 +289,7 @@ public class BackendCashierController extends BaseController {
     /**
      * 获取会员信息
      */
+    @ApiOperation(value = "获取会员信息")
     @RequestMapping(value = "/getMemberInfoById/{userId}", method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject getMemberInfoById(HttpServletRequest request, @PathVariable("userId") String userId) throws BusinessCheckException {
@@ -308,6 +313,7 @@ public class BackendCashierController extends BaseController {
     /**
      * 执行挂单
      */
+    @ApiOperation(value = "执行挂单")
     @RequestMapping(value = "/doHangUp", method = RequestMethod.POST)
     @CrossOrigin
     public ResponseObject doHangUp(HttpServletRequest request, @RequestBody Map<String, Object> param) {
@@ -345,6 +351,7 @@ public class BackendCashierController extends BaseController {
     /**
      * 获取挂单列表
      */
+    @ApiOperation(value = "获取挂单列表")
     @RequestMapping(value = "/getHangUpList", method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject getHangUpList(HttpServletRequest request) throws BusinessCheckException {

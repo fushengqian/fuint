@@ -8,6 +8,7 @@ import com.fuint.framework.web.ResponseObject;
 import com.fuint.repository.mapper.MtRegionMapper;
 import com.fuint.repository.model.MtRegion;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -32,8 +33,9 @@ public class ClientRegionController extends BaseController {
     private MtRegionMapper mtRegionMapper;
 
     /**
-     * 获取树状结构列表
+     * 获取地区树状结构
      */
+    @ApiOperation(value = "获取地区树状结构")
     @RequestMapping(value = "/tree", method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject tree(HttpServletRequest request) {

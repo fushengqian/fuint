@@ -22,6 +22,7 @@ import com.fuint.repository.model.MtSetting;
 import com.fuint.repository.model.MtUser;
 import com.fuint.utils.StringUtil;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -64,6 +65,7 @@ public class BackendBalanceController extends BaseController {
      * @param   request  HttpServletRequest对象
      * @return 余额明细列表
      */
+    @ApiOperation(value = "余额明细列表查询")
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject list(HttpServletRequest request) throws BusinessCheckException {
@@ -112,6 +114,7 @@ public class BackendBalanceController extends BaseController {
      * @param request  HttpServletRequest对象
      * @return
      */
+    @ApiOperation(value = "提交充值")
     @RequestMapping(value = "/doRecharge", method = RequestMethod.POST)
     @CrossOrigin
     public ResponseObject doRecharge(HttpServletRequest request, @RequestBody Map<String, Object> param) throws BusinessCheckException {
@@ -163,6 +166,7 @@ public class BackendBalanceController extends BaseController {
      * @param request
      * @return
      */
+    @ApiOperation(value = "充值设置详情")
     @RequestMapping(value = "/setting", method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject setting(HttpServletRequest request) throws BusinessCheckException {
@@ -208,11 +212,12 @@ public class BackendBalanceController extends BaseController {
     }
 
     /**
-     * 提交保存
+     * 保存充值设置
      *
-     * @param request  HttpServletRequest对象
+     * @param request HttpServletRequest对象
      * @return
      */
+    @ApiOperation(value = "保存充值设置")
     @RequestMapping(value = "/saveSetting", method = RequestMethod.POST)
     @CrossOrigin
     public ResponseObject saveSettingHandler(HttpServletRequest request, @RequestBody Map<String, Object> param) throws BusinessCheckException {

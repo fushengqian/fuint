@@ -13,6 +13,7 @@ import com.fuint.repository.model.MtMessage;
 import com.fuint.repository.model.MtSetting;
 import com.fuint.utils.StringUtil;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
@@ -44,8 +45,9 @@ public class ClientMessageController extends BaseController {
     /**
      * 查询最新一条未读消息
      *
-     * @param request  Request对象
+     * @param request Request对象
      */
+    @ApiOperation(value = "查询最新一条未读消息")
     @RequestMapping(value = "/getOne", method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject getOne(HttpServletRequest request) throws BusinessCheckException {
@@ -76,6 +78,7 @@ public class ClientMessageController extends BaseController {
     /**
      * 将消息置为已读
      */
+    @ApiOperation(value = "将消息置为已读")
     @RequestMapping(value = "/readed", method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject readed(HttpServletRequest request) throws BusinessCheckException {
@@ -97,6 +100,7 @@ public class ClientMessageController extends BaseController {
     /**
      * 微信推送消息
      */
+    @ApiOperation(value = "微信推送消息")
     @RequestMapping(value = "/wxPush", method = RequestMethod.GET)
     @CrossOrigin
     public String wxPush(HttpServletRequest request) {
@@ -112,6 +116,7 @@ public class ClientMessageController extends BaseController {
     /**
      * 微信订阅消息模板
      */
+    @ApiOperation(value = "微信订阅消息模板")
     @RequestMapping(value = "/getSubTemplate", method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject getSubTemplate(HttpServletRequest request) throws BusinessCheckException {

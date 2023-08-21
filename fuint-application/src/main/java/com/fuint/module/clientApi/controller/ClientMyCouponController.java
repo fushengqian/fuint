@@ -11,6 +11,7 @@ import com.fuint.framework.web.ResponseObject;
 import com.fuint.repository.model.MtUserCoupon;
 import com.fuint.utils.StringUtil;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
@@ -43,8 +44,9 @@ public class ClientMyCouponController extends BaseController {
     /**
      * 查询我的卡券
      *
-     * @param request  Request对象
+     * @param request Request对象
      */
+    @ApiOperation(value = "查询我的卡券")
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject list(HttpServletRequest request) throws BusinessCheckException {
@@ -76,6 +78,7 @@ public class ClientMyCouponController extends BaseController {
      *
      * @param param  Request对象
      */
+    @ApiOperation(value = "查询我的卡券是否已使用")
     @RequestMapping(value = "/isUsed", method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject isUsed(HttpServletRequest request, @RequestParam Map<String, Object> param) throws BusinessCheckException {

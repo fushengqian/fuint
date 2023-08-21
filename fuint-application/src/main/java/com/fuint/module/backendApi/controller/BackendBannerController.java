@@ -17,6 +17,7 @@ import com.fuint.repository.model.MtBanner;
 import com.fuint.repository.model.MtStore;
 import com.fuint.utils.StringUtil;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
@@ -25,18 +26,18 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Banner管理类controller
+ * 焦点图管理类controller
  *
  * Created by FSQ
  * CopyRight https://www.fuint.cn
  */
-@Api(tags="管理端-Banner相关接口")
+@Api(tags="管理端-焦点图相关接口")
 @RestController
 @RequestMapping(value = "/backendApi/banner")
 public class BackendBannerController extends BaseController {
 
     /**
-     * Banner服务接口
+     * 焦点图服务接口
      */
     @Autowired
     private BannerService bannerService;
@@ -54,11 +55,12 @@ public class BackendBannerController extends BaseController {
     private StoreService storeService;
 
     /**
-     * banner列表查询
+     * 焦点图列表查询
      *
-     * @param request  HttpServletRequest对象
+     * @param  request HttpServletRequest对象
      * @return banner列表
      */
+    @ApiOperation(value = "焦点图列表查询")
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject list(HttpServletRequest request) throws BusinessCheckException {
@@ -118,10 +120,11 @@ public class BackendBannerController extends BaseController {
     }
 
     /**
-     * 更新状态
+     * 更新焦点图状态
      *
      * @return
      */
+    @ApiOperation(value = "更新焦点图状态")
     @RequestMapping(value = "/updateStatus", method = RequestMethod.POST)
     @CrossOrigin
     public ResponseObject updateStatus(HttpServletRequest request, @RequestBody Map<String, Object> params) throws BusinessCheckException {
@@ -151,11 +154,12 @@ public class BackendBannerController extends BaseController {
     }
 
     /**
-     * 保存banner
+     * 保存焦点图
      *
      * @param request HttpServletRequest对象
      * @return
      */
+    @ApiOperation(value = "保存焦点图")
     @RequestMapping(value = "/save", method = RequestMethod.POST)
     @CrossOrigin
     public ResponseObject saveHandler(HttpServletRequest request, @RequestBody Map<String, Object> params) throws BusinessCheckException {
@@ -195,11 +199,12 @@ public class BackendBannerController extends BaseController {
     }
 
     /**
-     * banner详情
+     * 获取焦点图详情
      *
      * @param id
      * @return
      */
+    @ApiOperation(value = "获取焦点图详情")
     @RequestMapping(value = "/info/{id}", method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject info(HttpServletRequest request, @PathVariable("id") Integer id) throws BusinessCheckException {

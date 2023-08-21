@@ -13,6 +13,7 @@ import com.fuint.framework.web.ResponseObject;
 import com.fuint.repository.model.MtOrder;
 import com.fuint.utils.StringUtil;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
@@ -40,6 +41,7 @@ public class ClientOrderController extends BaseController {
     /**
      * 获取我的订单列表
      */
+    @ApiOperation(value = "获取我的订单列表")
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @CrossOrigin
     public ResponseObject list(HttpServletRequest request, @RequestBody OrderListParam orderListParam) throws BusinessCheckException {
@@ -59,6 +61,7 @@ public class ClientOrderController extends BaseController {
     /**
      * 获取订单详情
      */
+    @ApiOperation(value = "获取订单详情")
     @RequestMapping(value = "/detail", method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject detail(HttpServletRequest request) throws BusinessCheckException {
@@ -81,6 +84,7 @@ public class ClientOrderController extends BaseController {
     /**
      * 取消订单
      */
+    @ApiOperation(value = "取消订单")
     @RequestMapping(value = "/cancel", method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject cancel(HttpServletRequest request) throws BusinessCheckException {
@@ -109,6 +113,7 @@ public class ClientOrderController extends BaseController {
     /**
      * 确认收货
      */
+    @ApiOperation(value = "确认收货")
     @RequestMapping(value = "/receipt", method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject receipt(HttpServletRequest request) throws BusinessCheckException {
@@ -138,8 +143,9 @@ public class ClientOrderController extends BaseController {
     }
 
     /**
-     * 获取待办订单
+     * 获取待办订单数量
      */
+    @ApiOperation(value = "获取待办订单数量")
     @RequestMapping(value = "/todoCounts", method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject todoCounts(HttpServletRequest request) throws BusinessCheckException {

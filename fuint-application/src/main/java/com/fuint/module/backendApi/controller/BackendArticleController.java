@@ -17,6 +17,7 @@ import com.fuint.repository.model.MtArticle;
 import com.fuint.repository.model.MtStore;
 import com.fuint.utils.StringUtil;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
@@ -59,6 +60,7 @@ public class BackendArticleController extends BaseController {
      * @param  request  HttpServletRequest对象
      * @return 文章列表
      */
+    @ApiOperation(value = "文章列表查询")
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject list(HttpServletRequest request) throws BusinessCheckException {
@@ -117,10 +119,11 @@ public class BackendArticleController extends BaseController {
     }
 
     /**
-     * 更新状态
+     * 更新文章状态
      *
      * @return
      */
+    @ApiOperation(value = "更新文章状态")
     @RequestMapping(value = "/updateStatus", method = RequestMethod.POST)
     @CrossOrigin
     public ResponseObject updateStatus(HttpServletRequest request, @RequestBody Map<String, Object> params) throws BusinessCheckException {
@@ -155,6 +158,7 @@ public class BackendArticleController extends BaseController {
      * @param request  HttpServletRequest对象
      * @return
      */
+    @ApiOperation(value = "保存文章")
     @RequestMapping(value = "/save", method = RequestMethod.POST)
     @CrossOrigin
     public ResponseObject saveHandler(HttpServletRequest request, @RequestBody Map<String, Object> params) throws BusinessCheckException {
@@ -196,11 +200,12 @@ public class BackendArticleController extends BaseController {
     }
 
     /**
-     * 文章详情
+     * 获取文章详情
      *
      * @param id
      * @return
      */
+    @ApiOperation(value = "获取文章详情")
     @RequestMapping(value = "/info/{id}", method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject info(HttpServletRequest request, @PathVariable("id") Integer id) throws BusinessCheckException {
