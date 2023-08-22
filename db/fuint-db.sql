@@ -185,7 +185,7 @@ CREATE TABLE `mt_give_item` (
   `GIVE_ID` int NOT NULL COMMENT '转赠ID',
   `USER_COUPON_ID` int NOT NULL COMMENT '用户电子券ID',
   `CREATE_TIME` datetime NOT NULL COMMENT '创建时间',
-  `UPDATE_TIEM` datetime NOT NULL COMMENT '更新时间',
+  `UPDATE_TIME` datetime NOT NULL COMMENT '更新时间',
   `STATUS` char(1) NOT NULL COMMENT '状态，A正常；D删除',
   PRIMARY KEY (`ID`),
   KEY `index_give_id` (`GIVE_ID`) USING BTREE
@@ -263,7 +263,7 @@ DROP TABLE IF EXISTS `mt_open_gift`;
 
 CREATE TABLE `mt_open_gift` (
   `ID` int NOT NULL AUTO_INCREMENT COMMENT '自增ID',
-  `STORE_ID` int NOT NULL DEFAULT '0' COMMENT '门店ID',
+  `STORE_ID` int NOT NULL DEFAULT '0' COMMENT '店铺ID',
   `GRADE_ID` int NOT NULL DEFAULT '0' COMMENT '会员等级ID',
   `POINT` int NOT NULL DEFAULT '0' COMMENT '赠送积分',
   `COUPON_ID` int NOT NULL DEFAULT '0' COMMENT '卡券ID',

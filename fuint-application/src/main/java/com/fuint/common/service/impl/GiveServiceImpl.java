@@ -263,7 +263,7 @@ public class GiveServiceImpl extends ServiceImpl<MtGiveMapper, MtGive> implement
             item.setCreateTime(new Date());
             item.setGiveId(giveInfo.getId());
             item.setStatus(StatusEnum.ENABLED.getKey());
-            item.setUpdateTiem(new Date());
+            item.setUpdateTime(new Date());
             item.setUserCouponId(Integer.parseInt(id));
 
             mtGiveItemMapper.insert(item);

@@ -11,16 +11,16 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * 转赠明细表
+ * 库存管理明细表
  *
  * Created by FSQ
  * CopyRight https://www.fuint.cn
  */
 @Getter
 @Setter
-@TableName("mt_give_item")
-@ApiModel(value = "MtGiveItem对象", description = "转赠明细表")
-public class MtGiveItem implements Serializable {
+@TableName("mt_stock_item")
+@ApiModel(value="MtStockItem对象", description="库存管理明细表")
+public class MtStockItem implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -28,11 +28,17 @@ public class MtGiveItem implements Serializable {
     @TableId(value = "ID", type = IdType.AUTO)
     private Integer id;
 
-    @ApiModelProperty("转赠ID")
-    private Integer giveId;
+    @ApiModelProperty("库存管理ID")
+    private Integer stockId;
 
-    @ApiModelProperty("用户电子券ID")
-    private Integer userCouponId;
+    @ApiModelProperty("商品ID")
+    private Integer goodsId;
+
+    @ApiModelProperty("SKU")
+    private Integer skuId;
+
+    @ApiModelProperty("备注说明")
+    private String description;
 
     @ApiModelProperty("创建时间")
     private Date createTime;
@@ -42,6 +48,5 @@ public class MtGiveItem implements Serializable {
 
     @ApiModelProperty("状态，A正常；D删除")
     private String status;
-
 
 }

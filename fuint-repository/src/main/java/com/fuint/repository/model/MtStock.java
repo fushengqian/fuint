@@ -11,37 +11,42 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * 转赠明细表
+ * 库存管理记录表
  *
  * Created by FSQ
  * CopyRight https://www.fuint.cn
  */
 @Getter
 @Setter
-@TableName("mt_give_item")
-@ApiModel(value = "MtGiveItem对象", description = "转赠明细表")
-public class MtGiveItem implements Serializable {
+@TableName("mt_stock")
+@ApiModel(value = "MtStock对象", description = "库存管理记录表")
+public class MtStock implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @ApiModelProperty("自增ID")
+    @ApiModelProperty("自增")
     @TableId(value = "ID", type = IdType.AUTO)
     private Integer id;
 
-    @ApiModelProperty("转赠ID")
-    private Integer giveId;
+    @ApiModelProperty("店铺ID")
+    private Integer storeId;
 
-    @ApiModelProperty("用户电子券ID")
-    private Integer userCouponId;
+    @ApiModelProperty("类型，increase:入库，reduce:出库")
+    private String type;
 
-    @ApiModelProperty("创建时间")
+    @ApiModelProperty("备注说明")
+    private String description;
+
+    @ApiModelProperty("赠送时间")
     private Date createTime;
 
     @ApiModelProperty("更新时间")
     private Date updateTime;
 
-    @ApiModelProperty("状态，A正常；D删除")
-    private String status;
+    @ApiModelProperty("最后操作人")
+    private String operator;
 
+    @ApiModelProperty("状态，A正常；C取消")
+    private String status;
 
 }
