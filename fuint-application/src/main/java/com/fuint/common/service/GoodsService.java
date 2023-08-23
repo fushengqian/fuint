@@ -10,6 +10,7 @@ import com.fuint.repository.model.MtGoodsSku;
 import com.fuint.repository.model.MtGoodsSpec;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 商品业务接口
@@ -78,6 +79,7 @@ public interface GoodsService {
 
     /**
      * 获取店铺的商品列表
+     *
      * @param storeId
      * @param keyword
      * @return
@@ -86,16 +88,33 @@ public interface GoodsService {
 
     /**
      * 根据skuId获取规格列表
+     *
+     * @param skuId
+     * @return
      * */
     List<GoodsSpecValueDto> getSpecListBySkuId(Integer skuId) throws BusinessCheckException;
 
     /**
      * 获取规格详情
+     *
+     * @param specId
+     * @return
      * */
     MtGoodsSpec getSpecDetail(Integer specId);
 
     /**
      * 更新已售数量
+     *
+     * @param goodsId
+     * @return
      * */
     Boolean updateInitSale(Integer goodsId);
+
+    /**
+     * 获取选择商品列表
+     *
+     * @param params
+     * @return
+     */
+    PaginationResponse<GoodsDto> selectGoodsList(Map<String, Object> params);
 }

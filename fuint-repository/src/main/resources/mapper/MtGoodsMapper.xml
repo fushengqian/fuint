@@ -21,4 +21,19 @@
     <update id="updateInitSale">
         update mt_goods t set t.INIT_SALE = t.INIT_SALE + 1 where t.ID = #{goodsId}
     </update>
+
+    <select id="selectGoodsList" resultType="com.fuint.repository.bean.GoodsBean">
+        SELECT g.LOGO as logo,g.STORE_ID as storeId,g.ID AS goodsId,g.CATE_ID AS cateId,g.GOODS_NO AS goodsNo,g.NAME as name,g.PRICE as price, g.STOCK as stock,s.`SPEC_IDS` as specIds,s.`PRICE` as skuPrice, s.STOCK as skuStock FROM `mt_goods` g LEFT JOIN `mt_goods_sku` s ON g.id = s.`GOODS_ID`
+        WHERE g.`status` = 'A'
+        <if test="storeId != null and storeId > 0">
+            AND (g.STORE_ID = #{storeId} OR g.STORE_ID = 0)
+        </if>
+        <if test="cateId != null and cateId > 0">
+            AND g.CATE_ID = #{cateId}
+        </if>
+        <if test="keyword != null">
+            AND (g.name LIKE concat('%',#{keyword},'%') OR g.GOODS_NO = #{keyword} OR s.SKU_NO = #{keyword})
+        </if>
+        ORDER BY g.`SORT` ASC
+    </select>
 </mapper>

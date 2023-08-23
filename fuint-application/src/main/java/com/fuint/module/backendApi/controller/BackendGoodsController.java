@@ -20,6 +20,7 @@ import com.fuint.repository.mapper.MtGoodsSpecMapper;
 import com.fuint.repository.model.*;
 import com.fuint.utils.StringUtil;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -78,12 +79,13 @@ public class BackendGoodsController extends BaseController {
     private SettingService settingService;
 
     /**
-     * 查询列表
+     * 分页查询商品列表
      *
      * @param request
      * @return
      * @throws BusinessCheckException
      */
+    @ApiOperation(value = "分页查询商品列表")
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject list(HttpServletRequest request) throws BusinessCheckException {
@@ -166,6 +168,7 @@ public class BackendGoodsController extends BaseController {
      * @param request
      * @return
      */
+    @ApiOperation(value = "删除商品")
     @RequestMapping(value = "/delete/{id}", method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject delete(HttpServletRequest request, @PathVariable("id") Integer id) throws BusinessCheckException {
@@ -186,10 +189,11 @@ public class BackendGoodsController extends BaseController {
     }
 
     /**
-     * 更新状态
+     * 更新商品状态
      *
      * @return
      */
+    @ApiOperation(value = "更新商品状态")
     @RequestMapping(value = "/updateStatus", method = RequestMethod.POST)
     @CrossOrigin
     public ResponseObject updateStatus(HttpServletRequest request, @RequestBody Map<String, Object> params) throws BusinessCheckException {
@@ -219,12 +223,13 @@ public class BackendGoodsController extends BaseController {
     }
 
     /**
-     * 商品详情
+     * 获取商品详情
      *
      * @param request
      * @param goodsId
      * @return
      */
+    @ApiOperation(value = "获取商品详情")
     @RequestMapping(value = "/info/{id}", method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject info(HttpServletRequest request, @PathVariable("id") Integer goodsId) throws BusinessCheckException, InvocationTargetException, IllegalAccessException {
@@ -341,9 +346,10 @@ public class BackendGoodsController extends BaseController {
     /**
      * 保存商品信息
      *
-     * @param request  HttpServletRequest对象
+     * @param request HttpServletRequest对象
      * @return
      */
+    @ApiOperation(value = "保存商品信息")
     @RequestMapping(value = "/save", method = RequestMethod.POST)
     @CrossOrigin
     public ResponseObject saveHandler(HttpServletRequest request, @RequestBody Map<String, Object> param) throws BusinessCheckException {
@@ -561,9 +567,10 @@ public class BackendGoodsController extends BaseController {
      *
      * @param request  HttpServletRequest对象
      */
+    @ApiOperation(value = "保存商品规格")
     @RequestMapping(value = "/saveSpecName", method = RequestMethod.POST)
     @CrossOrigin
-    public ResponseObject saveSpecName(HttpServletRequest request, @RequestBody Map<String, Object> param) throws BusinessCheckException {
+    public ResponseObject saveSpecName(HttpServletRequest request, @RequestBody Map<String, Object> param) {
         String token = request.getHeader("Access-Token");
         String goodsId = param.get("goodsId") == null ? "0" : param.get("goodsId").toString();
         String name = param.get("name") == null ? "" : param.get("name").toString();
@@ -613,9 +620,10 @@ public class BackendGoodsController extends BaseController {
      * @param request  HttpServletRequest对象
      * @return
      */
+    @ApiOperation(value = "保存商品规格值")
     @RequestMapping(value = "/saveSpecValue", method = RequestMethod.POST)
     @CrossOrigin
-    public ResponseObject saveSpecValue(HttpServletRequest request, @RequestBody Map<String, Object> param) throws BusinessCheckException {
+    public ResponseObject saveSpecValue(HttpServletRequest request, @RequestBody Map<String, Object> param) {
         String token = request.getHeader("Access-Token");
         String specName = param.get("specName") == null ? "" : param.get("specName").toString();
         String goodsId = param.get("goodsId") == null ? "" : param.get("goodsId").toString();
@@ -687,10 +695,10 @@ public class BackendGoodsController extends BaseController {
         }
 
         // 4.返回新增的ID
-        Map<String, Object> outParams = new HashMap();
-        outParams.put("id", id);
+        Map<String, Object> result = new HashMap();
+        result.put("id", id);
 
-        return getSuccessResult(outParams);
+        return getSuccessResult(result);
     }
 
     /**
@@ -699,6 +707,7 @@ public class BackendGoodsController extends BaseController {
      * @param request HttpServletRequest对象
      * @return
      */
+    @ApiOperation(value = "删除商品规格")
     @RequestMapping(value = "/deleteSpec", method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject deleteSpec(HttpServletRequest request) {
@@ -728,6 +737,7 @@ public class BackendGoodsController extends BaseController {
      *
      * @param request  HttpServletRequest对象
      */
+    @ApiOperation(value = "删除商品规格值")
     @RequestMapping(value = "/deleteSpecValue", method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject deleteSpecValue(HttpServletRequest request) {
@@ -760,5 +770,29 @@ public class BackendGoodsController extends BaseController {
         }
 
         return getSuccessResult(true);
+    }
+
+    /**
+     * 获取选择商品列表
+     *
+     * @param request HttpServletRequest对象
+     * @return
+     */
+    @ApiOperation(value = "获取选择商品列表")
+    @RequestMapping(value = "/selectGoods", method = RequestMethod.POST)
+    @CrossOrigin
+    public ResponseObject selectGoods(HttpServletRequest request, @RequestBody Map<String, Object> params) {
+        String token = request.getHeader("Access-Token");
+        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
+        if (accountInfo == null) {
+            return getFailureResult(1001, "请先登录");
+        }
+
+        PaginationResponse<GoodsDto> paginationResponse = goodsService.selectGoodsList(params);
+
+        Map<String, Object> result = new HashMap();
+        result.put("paginationResponse", paginationResponse);
+
+        return getSuccessResult(result);
     }
 }

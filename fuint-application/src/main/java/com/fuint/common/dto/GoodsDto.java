@@ -152,6 +152,11 @@ public class GoodsDto implements Serializable {
     private String status;
 
     /**
+     * sku
+     */
+    private Integer skuId;
+
+    /**
      * sku列表
      * */
     private List<MtGoodsSku> skuList;
@@ -160,6 +165,7 @@ public class GoodsDto implements Serializable {
      * 规格列表
      * */
     private List<MtGoodsSpec> specList;
+
 
     public Integer getId(){
         return id;
@@ -323,6 +329,14 @@ public class GoodsDto implements Serializable {
     public void setStatus(String status){
         this.status=status;
     }
+
+    public Integer getSkuId(){
+        return skuId;
+    }
+    public void setSkuId(Integer skuId){
+        this.skuId=skuId;
+    }
+
     public List<MtGoodsSku> getSkuList(){
         return skuList;
     }

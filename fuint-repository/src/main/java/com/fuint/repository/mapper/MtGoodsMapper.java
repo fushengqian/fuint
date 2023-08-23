@@ -1,5 +1,6 @@
 package com.fuint.repository.mapper;
 
+import com.fuint.repository.bean.GoodsBean;
 import com.fuint.repository.model.MtGoods;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Param;
@@ -20,5 +21,7 @@ public interface MtGoodsMapper extends BaseMapper<MtGoods> {
     MtGoods getByGoodsNo(@Param("goodsNo") String goodsNo);
 
     Boolean updateInitSale(@Param("goodsId") Integer goodsId);
+
+    List<GoodsBean> selectGoodsList(@Param("storeId") Integer storeId, @Param("cateId") Integer cateId, @Param("keyword") String keyword);
 
 }

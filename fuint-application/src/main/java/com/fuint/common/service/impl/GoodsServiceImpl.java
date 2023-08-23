@@ -3,6 +3,7 @@ package com.fuint.common.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.fuint.common.Constants;
 import com.fuint.common.dto.GoodsDto;
 import com.fuint.common.dto.GoodsSpecValueDto;
 import com.fuint.common.enums.StatusEnum;
@@ -15,6 +16,7 @@ import com.fuint.framework.annoation.OperationServiceLog;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.pagination.PaginationRequest;
 import com.fuint.framework.pagination.PaginationResponse;
+import com.fuint.repository.bean.GoodsBean;
 import com.fuint.repository.mapper.MtGoodsMapper;
 import com.fuint.repository.mapper.MtGoodsSkuMapper;
 import com.fuint.repository.mapper.MtGoodsSpecMapper;
@@ -145,7 +147,7 @@ public class GoodsServiceImpl extends ServiceImpl<MtGoodsMapper, MtGoods> implem
     /**
      * 保存商品信息
      *
-     * @param reqDto
+     * @param  reqDto
      * @throws BusinessCheckException
      */
     @Override
@@ -282,17 +284,15 @@ public class GoodsServiceImpl extends ServiceImpl<MtGoodsMapper, MtGoods> implem
     /**
      * 根据条码获取sku信息
      *
-     * @param skuNo skuNo
+     * @param  skuNo skuNo
      * @throws BusinessCheckException
      * */
     @Override
     public MtGoodsSku getSkuInfoBySkuNo(String skuNo) {
         List<MtGoodsSku> mtGoodsSkuList = mtGoodsSkuMapper.getBySkuNo(skuNo);
-
         if (mtGoodsSkuList.size() > 0) {
             return mtGoodsSkuList.get(0);
         }
-
         return null;
     }
 
@@ -393,6 +393,7 @@ public class GoodsServiceImpl extends ServiceImpl<MtGoodsMapper, MtGoods> implem
 
     /**
      * 获取店铺的商品列表
+     *
      * @param storeId
      * @param keyword
      * @return
@@ -441,6 +442,12 @@ public class GoodsServiceImpl extends ServiceImpl<MtGoodsMapper, MtGoods> implem
         return dataList;
     }
 
+    /**
+     * 通过SKU获取规格列表
+     *
+     * @param skuId
+     * @return
+     * */
     @Override
     public List<GoodsSpecValueDto> getSpecListBySkuId(Integer skuId) {
         if (skuId < 0 || skuId == null) {
@@ -467,6 +474,12 @@ public class GoodsServiceImpl extends ServiceImpl<MtGoodsMapper, MtGoods> implem
         return result;
     }
 
+    /**
+     * 获取商品规格详情
+     *
+     * @param specId
+     * @return
+     * */
     @Override
     public MtGoodsSpec getSpecDetail(Integer specId) {
         MtGoodsSpec mtGoodsSpec = mtGoodsSpecMapper.selectById(specId);
@@ -475,9 +488,79 @@ public class GoodsServiceImpl extends ServiceImpl<MtGoodsMapper, MtGoods> implem
 
     /**
      * 更新已售数量
+     *
+     * @param goodsId
+     * @return
      * */
     @Override
     public Boolean updateInitSale(Integer goodsId) {
         return mtGoodsMapper.updateInitSale(goodsId);
+    }
+
+    /**
+     * 获取选择商品列表
+     *
+     * @param params
+     * @return
+     */
+    @Override
+    public PaginationResponse<GoodsDto> selectGoodsList(Map<String, Object> params) {
+        Integer page = params.get("page") == null ? Constants.PAGE_NUMBER : Integer.parseInt(params.get("page").toString());
+        Integer pageSize = params.get("pageSize") == null ? Constants.PAGE_SIZE : Integer.parseInt(params.get("pageSize").toString());
+        Integer storeId = params.get("storeId") == null ? 0 : Integer.parseInt(params.get("storeId").toString());
+        Integer cateId = params.get("cateId") == null ? 0 : Integer.parseInt(params.get("cateId").toString());
+        String keyword = params.get("keyword") == null ? "" : params.get("keyword").toString();
+
+        Page<MtGoods> pageHelper = PageHelper.startPage(page, pageSize);
+        List<GoodsDto> dataList = new ArrayList<>();
+        List<GoodsBean> goodsList = mtGoodsMapper.selectGoodsList(storeId, cateId, keyword);
+
+        for (GoodsBean goodsBean : goodsList) {
+             GoodsDto goodsDto = new GoodsDto();
+             goodsDto.setId(goodsBean.getGoodsId());
+             goodsDto.setLogo(goodsBean.getLogo());
+             goodsDto.setName(goodsBean.getName());
+             goodsDto.setGoodsNo(goodsBean.getGoodsNo());
+             goodsDto.setStoreId(goodsBean.getStoreId());
+             goodsDto.setPrice(goodsBean.getPrice());
+             goodsDto.setCateId(goodsBean.getCateId());
+             goodsDto.setStock(goodsBean.getStock());
+             if (goodsBean.getSpecIds() != null) {
+                 Map<String, Object> param = new HashMap<>();
+                 param.put("GOODS_ID", goodsBean.getGoodsId());
+                 param.put("SPEC_IDS", goodsBean.getSpecIds());
+                 param.put("STATUS", StatusEnum.ENABLED.getKey());
+                 List<MtGoodsSku> goodsSkuList = mtGoodsSkuMapper.selectByMap(param);
+                 if (goodsSkuList != null && goodsSkuList.size() > 0) {
+                     goodsDto.setSkuId(goodsSkuList.get(0).getId());
+                     goodsDto.setPrice(goodsSkuList.get(0).getPrice());
+                     if (goodsSkuList.get(0).getLogo() != null) {
+                         goodsDto.setLogo(goodsSkuList.get(0).getLogo());
+                     }
+                     goodsDto.setStock(goodsSkuList.get(0).getStock());
+                     List<MtGoodsSpec> specList = new ArrayList<>();
+                     String[] specIds = goodsBean.getSpecIds().split("-");
+                     if (specIds.length > 0) {
+                         for (String specId : specIds) {
+                              MtGoodsSpec mtGoodsSpec = mtGoodsSpecMapper.selectById(Integer.parseInt(specId));
+                              if (mtGoodsSpec != null) {
+                                  specList.add(mtGoodsSpec);
+                              }
+                         }
+                     }
+                     goodsDto.setSpecList(specList);
+                 }
+             }
+             dataList.add(goodsDto);
+        }
+
+        PageRequest pageRequest = PageRequest.of(page, pageSize);
+        PageImpl pageImpl = new PageImpl(dataList, pageRequest, pageHelper.getTotal());
+        PaginationResponse<GoodsDto> paginationResponse = new PaginationResponse(pageImpl, GoodsDto.class);
+        paginationResponse.setTotalPages(pageHelper.getPages());
+        paginationResponse.setTotalElements(pageHelper.getTotal());
+        paginationResponse.setContent(dataList);
+
+        return paginationResponse;
     }
 }
