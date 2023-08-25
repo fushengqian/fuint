@@ -692,9 +692,13 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
         }
 
         if (null != orderDto.getStatus()) {
-            mtOrder.setStatus(orderDto.getStatus());
             if (orderDto.getStatus().equals(OrderStatusEnum.CANCEL.getKey()) || orderDto.getStatus().equals(OrderStatusEnum.CREATED.getKey())) {
                 orderDto.setPayStatus(PayStatusEnum.WAIT.getKey());
+            }
+            if (orderDto.getStatus().equals(OrderStatusEnum.CANCEL.getKey())) {
+                cancelOrder(orderDto.getId(), "取消订单");
+            } else {
+                mtOrder.setStatus(orderDto.getStatus());
             }
         }
 

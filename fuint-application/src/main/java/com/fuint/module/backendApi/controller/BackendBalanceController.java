@@ -236,12 +236,18 @@ public class BackendBalanceController extends BaseController {
         }
 
         String rechargeRule = "";
+        List<String> amounts = new ArrayList<>();
         for (LinkedHashMap item : rechargeItems) {
-            if (rechargeRule.length() == 0) {
-                rechargeRule = item.get("rechargeAmount").toString() + '_' + item.get("giveAmount").toString();
-            } else {
-                rechargeRule = rechargeRule + ',' + item.get("rechargeAmount").toString() + '_' + item.get("giveAmount").toString();
-            }
+             String amount = item.get("rechargeAmount").toString();
+             if (amounts.contains(amount)) {
+                 return getFailureResult(201, "充值金额设置不能有重复");
+             }
+             if (rechargeRule.length() == 0) {
+                 rechargeRule = item.get("rechargeAmount").toString() + '_' + item.get("giveAmount").toString();
+             } else {
+                 rechargeRule = rechargeRule + ',' + item.get("rechargeAmount").toString() + '_' + item.get("giveAmount").toString();
+             }
+             amounts.add(amount);
         }
 
         MtSetting setting = new MtSetting();
