@@ -19,6 +19,7 @@ import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -205,7 +206,7 @@ public class BackendUserGradeController extends BaseController {
             info.setUserPrivilege(privilege);
         }
         if (StringUtil.isNotEmpty(catchValue)) {
-            info.setCatchValue(Integer.parseInt(catchValue));
+            info.setCatchValue(new BigDecimal(catchValue));
         }
         if (StringUtil.isNotEmpty(validDay)) {
             info.setValidDay(Integer.parseInt(validDay));

@@ -87,6 +87,11 @@ public class GoodsDto implements Serializable {
     private Integer stock;
 
     /**
+     * 数量
+     */
+    private Integer num;
+
+    /**
      * 服务时长
      */
     private Integer serviceTime;
@@ -262,6 +267,12 @@ public class GoodsDto implements Serializable {
     }
     public void setStock(Integer stock){
         this.stock=stock;
+    }
+    public Integer getNum(){
+        return num;
+    }
+    public void setNum(Integer num){
+        this.num=num;
     }
     public BigDecimal getWeight(){
         return weight;

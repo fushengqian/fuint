@@ -37,6 +37,9 @@ public class MtStockItem implements Serializable {
     @ApiModelProperty("SKU")
     private Integer skuId;
 
+    @ApiModelProperty("数量")
+    private Integer num;
+
     @ApiModelProperty("备注说明")
     private String description;
 

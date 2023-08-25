@@ -7,6 +7,8 @@ import com.fuint.framework.pagination.PaginationResponse;
 import com.fuint.framework.web.ResponseObject;
 import com.fuint.repository.model.MtStock;
 import com.fuint.repository.model.MtStockItem;
+
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -29,10 +31,11 @@ public interface StockService extends IService<MtStock> {
     /**
      * 新增库存管理记录
      *
-     * @param  params
+     * @param mtStock
+     * @param goodsList
      * @throws BusinessCheckException
      */
-    ResponseObject addStock(MtStock params) throws BusinessCheckException;
+    ResponseObject addStock(MtStock mtStock, List<LinkedHashMap> goodsList) throws BusinessCheckException;
 
     /**
      * 删除库存管理记录

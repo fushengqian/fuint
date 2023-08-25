@@ -6,7 +6,6 @@ import com.fuint.framework.pagination.PaginationRequest;
 import com.fuint.framework.pagination.PaginationResponse;
 import com.fuint.repository.model.MtUser;
 import com.fuint.repository.model.MtUserGrade;
-
 import java.util.List;
 
 /**
@@ -28,7 +27,7 @@ public interface UserGradeService extends IService<MtUserGrade> {
     /**
      * 添加会员等级
      *
-     * @param reqDto
+     * @param  reqDto
      * @throws BusinessCheckException
      */
     MtUserGrade addUserGrade(MtUserGrade reqDto) throws BusinessCheckException;
@@ -36,7 +35,7 @@ public interface UserGradeService extends IService<MtUserGrade> {
     /**
      * 修改会员等级
      *
-     * @param reqDto
+     * @param  reqDto
      * @throws BusinessCheckException
      */
     MtUserGrade updateUserGrade(MtUserGrade reqDto) throws BusinessCheckException;
@@ -44,7 +43,7 @@ public interface UserGradeService extends IService<MtUserGrade> {
     /**
      * 根据ID获取会员等级信息
      *
-     * @param id ID
+     * @param  id ID
      * @throws BusinessCheckException
      */
     MtUserGrade queryUserGradeById(Integer id) throws BusinessCheckException;
@@ -52,8 +51,8 @@ public interface UserGradeService extends IService<MtUserGrade> {
     /**
      * 根据ID删除会员等级
      *
-     * @param id      ID
-     * @param operator 操作人
+     * @param  id      ID
+     * @param  operator 操作人
      * @throws BusinessCheckException
      */
     Integer deleteUserGrade(Integer id, String operator) throws BusinessCheckException;
@@ -67,7 +66,7 @@ public interface UserGradeService extends IService<MtUserGrade> {
 
     /**
      * 获取付费会员等级列表
-     * @param userInfo
+     * @param  userInfo
      * @throws BusinessCheckException
      * */
     List<MtUserGrade> getPayUserGradeList(MtUser userInfo) throws BusinessCheckException;

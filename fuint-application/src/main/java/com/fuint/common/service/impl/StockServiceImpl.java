@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fuint.common.enums.StatusEnum;
+import com.fuint.common.enums.YesOrNoEnum;
 import com.fuint.common.service.*;
 import com.fuint.framework.annoation.OperationServiceLog;
 import com.fuint.framework.exception.BusinessCheckException;
@@ -12,6 +13,7 @@ import com.fuint.framework.pagination.PaginationResponse;
 import com.fuint.framework.web.ResponseObject;
 import com.fuint.repository.mapper.*;
 import com.fuint.repository.model.*;
+import com.fuint.utils.StringUtil;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import org.apache.commons.lang.StringUtils;
@@ -36,6 +38,12 @@ public class StockServiceImpl extends ServiceImpl<MtStockMapper, MtStock> implem
 
     @Resource
     private MtStockItemMapper mtStockItemMapper;
+
+    @Resource
+    private MtGoodsMapper mtGoodsMapper;
+
+    @Resource
+    private MtGoodsSkuMapper mtGoodsSkuMapper;
 
     /**
      * 分页查询库存管理记录列表
@@ -74,23 +82,76 @@ public class StockServiceImpl extends ServiceImpl<MtStockMapper, MtStock> implem
     /**
      * 新增库存管理记录
      *
-     * @param  params
+     * @param stockParam
+     * @param goodsList
      * @throws BusinessCheckException
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public ResponseObject addStock(MtStock params) {
+    public ResponseObject addStock(MtStock stockParam, List<LinkedHashMap> goodsList) throws BusinessCheckException {
         MtStock mtStock = new MtStock();
 
-        mtStock.setStoreId(params.getStoreId());
+        mtStock.setStoreId(stockParam.getStoreId());
         mtStock.setStatus(StatusEnum.ENABLED.getKey());
-        mtStock.setType(params.getType());
+        mtStock.setType(stockParam.getType());
         Date createTime = new Date();
         mtStock.setCreateTime(createTime);
         mtStock.setUpdateTime(createTime);
-        mtStock.setDescription(params.getDescription());
+        mtStock.setDescription(stockParam.getDescription());
+        mtStock.setOperator(stockParam.getOperator());
         this.save(mtStock);
 
+        Integer stockId = mtStock.getId();
+        for (LinkedHashMap goods : goodsList) {
+             MtStockItem mtStockItem = new MtStockItem();
+             mtStockItem.setStockId(stockId);
+             Integer goodsId = Integer.parseInt(goods.get("id").toString());
+             Integer skuId = null;
+             Integer num = Integer.parseInt(goods.get("num").toString());
+             mtStockItem.setGoodsId(goodsId);
+             if (goods.get("skuId") != null && StringUtil.isNotEmpty(goods.get("skuId").toString())) {
+                 skuId = Integer.parseInt(goods.get("skuId").toString());
+                 mtStockItem.setSkuId(skuId);
+             }
+             mtStockItem.setStatus(StatusEnum.ENABLED.getKey());
+             mtStockItem.setNum(num);
+             mtStockItem.setCreateTime(createTime);
+             mtStockItem.setUpdateTime(createTime);
+             mtStockItemMapper.insert(mtStockItem);
+
+            // 库存操作
+            MtGoods goodsInfo = mtGoodsMapper.selectById(goodsId);
+            if (goodsInfo.getIsSingleSpec().equals(YesOrNoEnum.YES.getKey())) {
+                // 单规格库存
+                Integer stock;
+                if (mtStock.getType().equals("increase")) {
+                    stock = goodsInfo.getStock() + num;
+                } else {
+                    stock = goodsInfo.getStock() - num;
+                }
+                if (stock < 0) {
+                    throw new BusinessCheckException("商品“" + goodsInfo.getName() + "”库存不足，提交失败");
+                }
+                goodsInfo.setStock(stock);
+                mtGoodsMapper.updateById(goodsInfo);
+            } else {
+                // 多规格库存
+                MtGoodsSku mtGoodsSku = mtGoodsSkuMapper.selectById(skuId);
+                if (mtGoodsSku != null) {
+                    Integer stock;
+                    if (mtStock.getType().equals("increase")) {
+                        stock = mtGoodsSku.getStock() + num;
+                    } else {
+                        stock = mtGoodsSku.getStock() - num;
+                    }
+                    if (stock < 0) {
+                        throw new BusinessCheckException("商品sku编码“" + mtGoodsSku.getSkuNo() +"”库存不足，提交失败");
+                    }
+                    mtGoodsSku.setStock(stock);
+                    mtGoodsSkuMapper.updateById(mtGoodsSku);
+                }
+            }
+        }
         ResponseObject result = new ResponseObject(200, "", mtStock);
         return result;
     }
@@ -98,8 +159,8 @@ public class StockServiceImpl extends ServiceImpl<MtStockMapper, MtStock> implem
     /**
      * 删除库存管理记录
      *
-     * @param id       ID
-     * @param operator 操作人
+     * @param  id       ID
+     * @param  operator 操作人
      * @throws BusinessCheckException
      */
     @Override

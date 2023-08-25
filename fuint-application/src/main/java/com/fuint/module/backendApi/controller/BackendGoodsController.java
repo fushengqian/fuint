@@ -789,9 +789,11 @@ public class BackendGoodsController extends BaseController {
         }
 
         PaginationResponse<GoodsDto> paginationResponse = goodsService.selectGoodsList(params);
+        String imagePath = settingService.getUploadBasePath();
 
         Map<String, Object> result = new HashMap();
         result.put("paginationResponse", paginationResponse);
+        result.put("imagePath", imagePath);
 
         return getSuccessResult(result);
     }

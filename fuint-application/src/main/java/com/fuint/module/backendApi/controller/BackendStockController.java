@@ -2,6 +2,7 @@ package com.fuint.module.backendApi.controller;
 
 import com.fuint.common.Constants;
 import com.fuint.common.dto.AccountInfo;
+import com.fuint.common.dto.GoodsDto;
 import com.fuint.common.enums.StatusEnum;
 import com.fuint.common.service.*;
 import com.fuint.common.util.CommonUtil;
@@ -11,19 +12,18 @@ import com.fuint.framework.pagination.PaginationRequest;
 import com.fuint.framework.pagination.PaginationResponse;
 import com.fuint.framework.web.BaseController;
 import com.fuint.framework.web.ResponseObject;
-import com.fuint.repository.model.MtStock;
-import com.fuint.repository.model.MtStore;
-import com.fuint.repository.model.TAccount;
+import com.fuint.repository.mapper.MtGoodsMapper;
+import com.fuint.repository.mapper.MtGoodsSkuMapper;
+import com.fuint.repository.model.*;
 import com.fuint.utils.StringUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * 商品库存管理管理controller
@@ -35,6 +35,12 @@ import java.util.Map;
 @RestController
 @RequestMapping(value = "/backendApi/stock")
 public class BackendStockController extends BaseController {
+
+    @Resource
+    private MtGoodsMapper mtGoodsMapper;
+
+    @Resource
+    private MtGoodsSkuMapper mtGoodsSkuMapper;
 
     /**
      * 商品分类服务接口
@@ -169,6 +175,7 @@ public class BackendStockController extends BaseController {
         String description = params.get("description") == null ? "" : CommonUtil.replaceXSS(params.get("description").toString());
         String status = params.get("status") == null ? StatusEnum.ENABLED.getKey() : params.get("status").toString();
         Integer storeId = (params.get("storeId") == null || StringUtil.isEmpty(params.get("storeId").toString())) ? 0 : Integer.parseInt(params.get("storeId").toString());
+        List<LinkedHashMap> goodsList = (List) params.get("goodsList");
 
         AccountInfo accountDto = TokenUtil.getAccountInfoByToken(token);
         if (accountDto == null) {
@@ -187,8 +194,11 @@ public class BackendStockController extends BaseController {
         info.setType(type);
         String operator = accountDto.getAccountName();
         info.setOperator(operator);
-
-        stockService.addStock(info);
+        try {
+            stockService.addStock(info, goodsList);
+        } catch (BusinessCheckException e) {
+            return getFailureResult(201, e.getMessage());
+        }
 
         return getSuccessResult(true);
     }
@@ -210,9 +220,35 @@ public class BackendStockController extends BaseController {
         }
 
         MtStock mtStock = stockService.queryStockById(id.longValue());
+        Map<String, Object> param = new HashMap<>();
+        param.put("STOCK_ID", mtStock.getId());
+        List<MtStockItem> stockItems = stockService.queryItemByParams(param);
+        List<GoodsDto> goodsList = new ArrayList<>();
+        if (stockItems != null && stockItems.size() > 0) {
+            for (MtStockItem stockItem : stockItems) {
+                 MtGoods mtGoods = mtGoodsMapper.selectById(stockItem.getGoodsId());
+                 GoodsDto goodsDto = new GoodsDto();
+                 goodsDto.setGoodsNo(mtGoods.getGoodsNo());
+                 goodsDto.setName(mtGoods.getName());
+                 goodsDto.setLogo(mtGoods.getLogo());
+                 goodsDto.setNum(stockItem.getNum());
+                 goodsDto.setStatus(mtGoods.getStatus());
+                 if (stockItem.getSkuId() != null && stockItem.getSkuId() > 0) {
+                     MtGoodsSku mtGoodsSku = mtGoodsSkuMapper.selectById(stockItem.getSkuId());
+                     if (mtGoodsSku != null) {
+                         goodsDto.setGoodsNo(mtGoodsSku.getSkuNo());
+                         if (StringUtil.isNotEmpty(mtGoodsSku.getLogo())) {
+                             goodsDto.setLogo(mtGoodsSku.getLogo());
+                         }
+                     }
+                 }
+                 goodsList.add(goodsDto);
+            }
+        }
 
         Map<String, Object> result = new HashMap<>();
         result.put("stockInfo", mtStock);
+        result.put("goodsList", goodsList);
 
         return getSuccessResult(result);
     }

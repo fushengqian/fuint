@@ -534,7 +534,7 @@ public class GoodsServiceImpl extends ServiceImpl<MtGoodsMapper, MtGoods> implem
                  if (goodsSkuList != null && goodsSkuList.size() > 0) {
                      goodsDto.setSkuId(goodsSkuList.get(0).getId());
                      goodsDto.setPrice(goodsSkuList.get(0).getPrice());
-                     if (goodsSkuList.get(0).getLogo() != null) {
+                     if (goodsSkuList.get(0).getLogo() != null && StringUtil.isNotEmpty(goodsSkuList.get(0).getLogo())) {
                          goodsDto.setLogo(goodsSkuList.get(0).getLogo());
                      }
                      goodsDto.setStock(goodsSkuList.get(0).getStock());

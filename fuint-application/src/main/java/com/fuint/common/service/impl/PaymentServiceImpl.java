@@ -199,16 +199,17 @@ public class PaymentServiceImpl implements PaymentService {
                         BigDecimal payMoney = orderService.getUserPayMoney(orderInfo.getUserId());
                         // 会员支付订单笔数
                         Integer payOrderCount = orderService.getUserPayOrderCount(orderInfo.getUserId());
+                        BigDecimal payOrderCountValue = new BigDecimal(payOrderCount);
                         for (MtUserGrade grade : userGradeList) {
                             if (grade.getCatchValue() != null && grade.getCatchType() != null) {
                                 // 累计消费金额已达到
                                 if (grade.getCatchType().equals(UserGradeCatchTypeEnum.AMOUNT.getKey())) {
-                                    if (grade.getGrade().compareTo(mtUserGrade.getGrade()) > 0 && payMoney.compareTo(new BigDecimal(grade.getCatchValue())) >= 0) {
+                                    if (grade.getGrade().compareTo(mtUserGrade.getGrade()) > 0 && payMoney.compareTo(grade.getCatchValue()) >= 0) {
                                         openGiftService.openGift(mtOrder.getUserId(), grade.getId(), false);
                                     }
                                 }
                                 // 累计消费次数已达到
-                                if (grade.getCatchType().equals(UserGradeCatchTypeEnum.FREQUENCY.getKey()) && payOrderCount.compareTo(grade.getCatchValue()) >= 0) {
+                                if (grade.getCatchType().equals(UserGradeCatchTypeEnum.FREQUENCY.getKey()) && payOrderCountValue.compareTo(grade.getCatchValue()) >= 0) {
                                     if (grade.getGrade().compareTo(mtUserGrade.getGrade()) > 0) {
                                         openGiftService.openGift(mtOrder.getUserId(), grade.getId(), false);
                                     }

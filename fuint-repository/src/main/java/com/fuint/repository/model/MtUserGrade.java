@@ -4,6 +4,8 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import java.io.Serializable;
+import java.math.BigDecimal;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
@@ -42,7 +44,7 @@ public class MtUserGrade implements Serializable {
     private String catchType;
 
     @ApiModelProperty("达到升级条件的值")
-    private Integer catchValue;
+    private BigDecimal catchValue;
 
     @ApiModelProperty("会员权益描述")
     private String userPrivilege;
