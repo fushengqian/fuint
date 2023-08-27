@@ -345,7 +345,7 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
             }
 
             boolean isUsePoint = orderDto.getUsePoint() > 0 ? true : false;
-            cartData = calculateCartGoods(orderDto.getUserId(), cartList, orderDto.getCouponId(), isUsePoint, orderDto.getPlatform());
+            cartData = calculateCartGoods(orderDto.getUserId(), cartList, orderDto.getCouponId(), isUsePoint, orderDto.getPlatform(), orderInfo.getOrderMode());
 
             mtOrder.setAmount(new BigDecimal(cartData.get("totalPrice").toString()));
             mtOrder.setUsePoint(Integer.parseInt(cartData.get("usePoint").toString()));
@@ -1168,10 +1168,11 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
      * @param cartList
      * @param couponId
      * @param isUsePoint
+     * @param orderMode
      * @return
      * */
     @Override
-    public Map<String, Object> calculateCartGoods(Integer userId, List<MtCart> cartList, Integer couponId, boolean isUsePoint, String platform) throws BusinessCheckException {
+    public Map<String, Object> calculateCartGoods(Integer userId, List<MtCart> cartList, Integer couponId, boolean isUsePoint, String platform, String orderMode) throws BusinessCheckException {
         MtUser userInfo = memberService.queryMemberById(userId);
 
         // 设置是否不能用积分抵扣
@@ -1366,7 +1367,7 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
         // 配送费用
         BigDecimal deliveryFee = new BigDecimal("0");
         MtSetting mtSetting = settingService.querySettingByName(OrderSettingEnum.DELIVERY_FEE.getKey());
-        if (mtSetting != null && StringUtil.isNotEmpty(mtSetting.getValue())) {
+        if (mtSetting != null && StringUtil.isNotEmpty(mtSetting.getValue()) && orderMode.equals(OrderModeEnum.EXPRESS.getKey())) {
             deliveryFee = new BigDecimal(mtSetting.getValue());
         }
 

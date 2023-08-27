@@ -2,6 +2,7 @@ package com.fuint.module.clientApi.controller;
 
 import com.fuint.common.dto.AccountInfo;
 import com.fuint.common.dto.UserInfo;
+import com.fuint.common.enums.OrderModeEnum;
 import com.fuint.common.enums.StatusEnum;
 import com.fuint.common.enums.YesOrNoEnum;
 import com.fuint.common.param.CartClearParam;
@@ -268,7 +269,7 @@ public class ClientCartController extends BaseController {
             cartList.add(mtCart);
         }
 
-        result = orderService.calculateCartGoods(mtUser.getId(), cartList, userCouponId, isUsePoint, platform);
+        result = orderService.calculateCartGoods(mtUser.getId(), cartList, userCouponId, isUsePoint, platform, OrderModeEnum.EXPRESS.getKey());
 
         return getSuccessResult(result);
     }
