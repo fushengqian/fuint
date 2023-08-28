@@ -18,6 +18,7 @@ import com.fuint.repository.mapper.MtCouponGroupMapper;
 import com.fuint.repository.model.*;
 import com.fuint.utils.StringUtil;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -91,6 +92,7 @@ public class BackendCouponController extends BaseController {
      * @return
      * @throws BusinessCheckException
      */
+    @ApiOperation(value = "查询卡券列表")
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject list(HttpServletRequest request) throws BusinessCheckException {
@@ -234,6 +236,7 @@ public class BackendCouponController extends BaseController {
      * @param request
      * @return
      */
+    @ApiOperation(value = "删除卡券")
     @RequestMapping(value = "/delete/{id}", method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject delete(HttpServletRequest request, @PathVariable("id") Long id) throws BusinessCheckException {
@@ -258,6 +261,7 @@ public class BackendCouponController extends BaseController {
      * @param request  HttpServletRequest对象
      * @return
      */
+    @ApiOperation(value = "保存卡券")
     @RequestMapping(value = "/save", method = RequestMethod.POST)
     @CrossOrigin
     public ResponseObject saveCouponHandler(HttpServletRequest request, @RequestBody ReqCouponDto reqCouponDto) throws BusinessCheckException {
@@ -304,6 +308,7 @@ public class BackendCouponController extends BaseController {
      * @param request
      * @return
      */
+    @ApiOperation(value = "卡券详情")
     @RequestMapping(value = "/info/{id}", method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject info(HttpServletRequest request, @PathVariable("id") Integer id) throws BusinessCheckException {
@@ -403,6 +408,7 @@ public class BackendCouponController extends BaseController {
      * @param request
      * @return
      */
+    @ApiOperation(value = "发放卡券")
     @RequestMapping(value = "/sendCoupon", method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject sendCoupon(HttpServletRequest request) throws BusinessCheckException {

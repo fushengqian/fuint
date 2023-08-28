@@ -15,6 +15,7 @@ import com.fuint.repository.model.MtCommissionRule;
 import com.fuint.repository.model.MtStore;
 import com.fuint.utils.StringUtil;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
@@ -51,6 +52,7 @@ public class BackendCommissionRuleController extends BaseController {
      * @param  request  HttpServletRequest对象
      * @return 规则列表
      */
+    @ApiOperation(value = "规则列表查询")
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject list(HttpServletRequest request) throws BusinessCheckException {
@@ -111,6 +113,7 @@ public class BackendCommissionRuleController extends BaseController {
      *
      * @return
      */
+    @ApiOperation(value = "更新分销提成规则状态")
     @RequestMapping(value = "/updateStatus", method = RequestMethod.POST)
     @CrossOrigin
     public ResponseObject updateStatus(HttpServletRequest request, @RequestBody Map<String, Object> params) throws BusinessCheckException {
@@ -145,6 +148,7 @@ public class BackendCommissionRuleController extends BaseController {
      * @param request HttpServletRequest对象
      * @return
      */
+    @ApiOperation(value = "保存分销提成规则")
     @RequestMapping(value = "/save", method = RequestMethod.POST)
     @CrossOrigin
     public ResponseObject saveHandler(HttpServletRequest request, @RequestBody Map<String, Object> params) throws BusinessCheckException {
@@ -181,6 +185,7 @@ public class BackendCommissionRuleController extends BaseController {
      * @param  id
      * @return
      */
+    @ApiOperation(value = "获取分销提成规则详情")
     @RequestMapping(value = "/info/{id}", method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject info(HttpServletRequest request, @PathVariable("id") Integer id) throws BusinessCheckException {

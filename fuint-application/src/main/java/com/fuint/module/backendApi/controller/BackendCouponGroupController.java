@@ -19,6 +19,7 @@ import com.fuint.repository.model.MtCoupon;
 import com.fuint.repository.model.MtCouponGroup;
 import com.fuint.utils.StringUtil;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -74,6 +75,7 @@ public class BackendCouponGroupController extends BaseController {
      * @return
      * @throws BusinessCheckException
      */
+    @ApiOperation(value = "查询卡券分组列表")
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject list(HttpServletRequest request) throws BusinessCheckException {
@@ -145,6 +147,7 @@ public class BackendCouponGroupController extends BaseController {
      * @param reqCouponGroupDto
      * @return
      */
+    @ApiOperation(value = "保存卡券分组信息")
     @RequestMapping(value = "/save", method = RequestMethod.POST)
     @CrossOrigin
     public ResponseObject save(HttpServletRequest request, @RequestBody ReqCouponGroupDto reqCouponGroupDto) throws BusinessCheckException {
@@ -171,6 +174,7 @@ public class BackendCouponGroupController extends BaseController {
      * @param request
      * @return
      */
+    @ApiOperation(value = "删除卡券分组")
     @RequestMapping(value = "/delete/{id}", method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject delete(HttpServletRequest request, @PathVariable("id") Integer id) throws BusinessCheckException {
@@ -195,10 +199,11 @@ public class BackendCouponGroupController extends BaseController {
     }
 
     /**
-     * 更新状态
+     * 更新分组状态
      *
      * @return
      */
+    @ApiOperation(value = "更新分组状态")
     @RequestMapping(value = "/updateStatus", method = RequestMethod.POST)
     @CrossOrigin
     public ResponseObject updateStatus(HttpServletRequest request, @RequestBody Map<String, Object> params) throws BusinessCheckException {
@@ -226,11 +231,12 @@ public class BackendCouponGroupController extends BaseController {
     }
 
     /**
-     * 分组详情
+     * 获取分组详情
      *
      * @param request
      * @return
      */
+    @ApiOperation(value = "获取分组详情")
     @RequestMapping(value = "/info/{id}", method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject info(HttpServletRequest request, @PathVariable("id") Integer id) throws BusinessCheckException {
@@ -255,6 +261,7 @@ public class BackendCouponGroupController extends BaseController {
      * @param response
      * @throws BusinessCheckException
      */
+    @ApiOperation(value = "导出模板文件")
     @RequestMapping(value = "/exportTemplate", method = RequestMethod.GET)
     @CrossOrigin
     public void exportTemplate(HttpServletRequest request, HttpServletResponse response) throws BusinessCheckException {
@@ -284,6 +291,7 @@ public class BackendCouponGroupController extends BaseController {
      * @param request
      * @throws
      */
+    @ApiOperation(value = "上传文件")
     @RequestMapping(value = "/upload/", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @CrossOrigin
     public ResponseObject uploadFile(HttpServletRequest request, @RequestParam("fileInput") MultipartFile file) {
@@ -307,6 +315,7 @@ public class BackendCouponGroupController extends BaseController {
     /**
      * 查询分组列表
      * */
+    @ApiOperation(value = "查询分组列表")
     @RequestMapping(value = "/quickSearch", method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject quickSearch(HttpServletRequest request) throws BusinessCheckException {

@@ -19,6 +19,7 @@ import com.fuint.repository.model.MtUser;
 import com.fuint.repository.model.TAccount;
 import com.fuint.utils.StringUtil;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -64,11 +65,12 @@ public class BackendConfirmLogController extends BaseController {
     private AccountService tAccountService;
 
     /**
-     * 会员卡券核销记录列表
+     * 获取会员卡券核销记录列表
      *
      * @param request  HttpServletRequest对象
      * @return
      */
+    @ApiOperation(value = "获取会员卡券核销记录列表")
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject list(HttpServletRequest request) throws BusinessCheckException {
@@ -146,6 +148,7 @@ public class BackendConfirmLogController extends BaseController {
      * @param request
      * @return
      */
+    @ApiOperation(value = "撤销已使用的卡券")
     @RequestMapping(value = "/rollbackUserCoupon/{id}", method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject rollbackUserCoupon(HttpServletRequest request, @PathVariable("id") Integer id) throws BusinessCheckException {
