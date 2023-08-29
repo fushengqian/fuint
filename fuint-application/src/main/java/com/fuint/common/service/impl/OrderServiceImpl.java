@@ -700,6 +700,10 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
             } else {
                 mtOrder.setStatus(orderDto.getStatus());
             }
+            if (orderDto.getStatus().equals(OrderStatusEnum.PAID.getKey())) {
+                mtOrder.setPayStatus(PayStatusEnum.SUCCESS.getKey());
+                mtOrder.setPayTime(new Date());
+            }
         }
 
         if (null != orderDto.getPayAmount()) {

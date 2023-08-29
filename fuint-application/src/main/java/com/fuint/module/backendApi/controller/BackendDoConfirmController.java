@@ -152,7 +152,7 @@ public class BackendDoConfirmController extends BaseController {
     @ApiOperation(value = "确认核销")
     @RequestMapping(value = "/doConfirm", method = RequestMethod.POST)
     @CrossOrigin
-    public ResponseObject doConfirm(HttpServletRequest request, @RequestBody Map<String, Object> param) throws BusinessCheckException {
+    public ResponseObject doConfirm(HttpServletRequest request, @RequestBody Map<String, Object> param) {
         String token = request.getHeader("Access-Token");
         String userCouponId = param.get("userCouponId") == null ? "" : param.get("userCouponId").toString();
         String amount = (param.get("amount") == null || StringUtil.isEmpty(param.get("amount").toString())) ? "0" : param.get("amount").toString();

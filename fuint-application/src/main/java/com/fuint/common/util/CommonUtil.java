@@ -157,7 +157,25 @@ public class CommonUtil {
         } catch (Exception e) {
             ipAddress = "";
         }
+
+        if (!isValidIP(ipAddress)) {
+            return "127.0.0.1";
+        }
+
         return ipAddress;
+    }
+
+    /**
+     * 验证ip地址是否正确
+     *
+     * @param ip
+     * @return
+     * */
+    public static boolean isValidIP(String ip) {
+        if ((ip != null) && (!ip.isEmpty())) {
+            return Pattern.matches("^([1-9]|[1-9]\\d|1\\d{2}|2[0-4]\\d|25[0-5])(\\.(\\d|[1-9]\\d|1\\d{2}|2[0-4]\\d|25[0-5])){3}$", ip);
+        }
+        return false;
     }
 
     public static void saveMultipartFile(MultipartFile file, String filePath) {
