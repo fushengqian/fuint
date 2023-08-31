@@ -13,6 +13,7 @@ import com.fuint.framework.web.BaseController;
 import com.fuint.framework.web.ResponseObject;
 import com.fuint.repository.model.TAccount;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.annotation.Resource;
@@ -47,6 +48,7 @@ public class BackendHomeController extends BaseController {
      *
      * @return
      */
+    @ApiOperation(value = "首页数据")
     @RequestMapping(value = "/index", method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject index(HttpServletRequest request) throws BusinessCheckException {
@@ -103,6 +105,7 @@ public class BackendHomeController extends BaseController {
      * @param request
      * @return
      */
+    @ApiOperation(value = "首页图表统计数据")
     @RequestMapping(value = "/statistic", method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject statistic(HttpServletRequest request) throws BusinessCheckException {
@@ -153,11 +156,12 @@ public class BackendHomeController extends BaseController {
     }
 
     /**
-     * 收款结果页面
+     * 获取收款结果
      *
      * @param request
      * @return
      */
+    @ApiOperation(value = "获取收款结果")
     @RequestMapping(value = "/cashierResult", method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject cashierResult(HttpServletRequest request) throws BusinessCheckException {

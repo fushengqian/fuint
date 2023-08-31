@@ -3,9 +3,11 @@ package com.fuint.common.service.impl;
 import com.alipay.api.AlipayApiException;
 import com.alipay.api.domain.AlipayTradePayModel;
 import com.alipay.api.domain.AlipayTradeQueryModel;
+import com.alipay.api.domain.AlipayTradeRefundModel;
 import com.alipay.api.internal.util.AlipaySignature;
 import com.alipay.api.response.AlipayTradePayResponse;
 import com.alipay.api.response.AlipayTradeQueryResponse;
+import com.alipay.api.response.AlipayTradeRefundResponse;
 import com.fuint.common.bean.AliPayBean;
 import com.fuint.common.dto.OrderDto;
 import com.fuint.common.dto.UserOrderDto;
@@ -83,6 +85,7 @@ public class AlipayServiceImpl implements AlipayService {
             AlipayTradePayResponse response = AliPayApi.tradePayToResponse(model, notifyUrl);
             code = response.getCode();
             String msg = response.getMsg();
+            logger.info("AlipayService createPrepayOrder return code: {}, msg ", code, msg);
             if (!code.equals("10000") || !msg.equalsIgnoreCase("Success")) {
                 if (code.equals("10003")) {
                     // 需要会员输入支付密码，等待10秒后查询订单
@@ -100,6 +103,7 @@ public class AlipayServiceImpl implements AlipayService {
                 }
             }
         } catch (Exception e) {
+            logger.error("AlipayService createPrepayOrder exception {}", e.getMessage());
             throw new BusinessCheckException("支付宝支付出错，请检查配置项");
         }
 
@@ -186,5 +190,44 @@ public class AlipayServiceImpl implements AlipayService {
         }
 
         return null;
+    }
+
+    /**
+     * 支付宝发起退款
+     *
+     * @param storeId
+     * @param orderSn
+     * @param totalAmount
+     * @param refundAmount
+     * @param platform
+     * @return
+     * */
+    public Boolean doRefund(Integer storeId, String orderSn, BigDecimal totalAmount, BigDecimal refundAmount, String platform) throws BusinessCheckException {
+        try {
+            logger.info("AlipayService.doRefund orderSn = {}, totalFee = {}, refundFee = {}", orderSn, totalAmount, refundAmount);
+            if (StringUtil.isEmpty(orderSn)) {
+                throw new BusinessCheckException("退款订单号不能为空...");
+            }
+            if (refundAmount.compareTo(totalAmount) > 0) {
+                throw new BusinessCheckException("退款金额不能大于总金额...");
+            }
+            getApiConfig(storeId);
+            AlipayTradeRefundModel model = new AlipayTradeRefundModel();
+            model.setOutTradeNo(orderSn);
+            model.setRefundAmount(refundAmount.toString());
+            model.setRefundReason("申请退款");
+            AlipayTradeRefundResponse refundResponse = AliPayApi.tradeRefundToResponse(model);
+            String code = refundResponse.getCode();
+            String msg = refundResponse.getMsg();
+            String subMsg = refundResponse.getSubMsg() == null ? msg : refundResponse.getSubMsg();
+            logger.info("AlipayService refundResult response Body = {}", refundResponse.getBody());
+            if (!code.equals("10000") || !msg.equalsIgnoreCase("Success")) {
+                throw new BusinessCheckException("支付宝退款失败，" + subMsg);
+            }
+        } catch (AlipayApiException e) {
+            logger.error("AlipayService.doRefund error = {}", e.getMessage());
+            e.printStackTrace();
+        }
+        return true;
     }
 }

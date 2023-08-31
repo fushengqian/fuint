@@ -11,6 +11,7 @@ import com.fuint.framework.web.BaseController;
 import com.fuint.framework.web.ResponseObject;
 import com.fuint.utils.StringUtil;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.ResourceUtils;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -49,11 +50,12 @@ public class BackendFileController extends BaseController {
     private SettingService settingService;
 
     /**
-     * 上传文件
+     * 后台上传文件
      *
      * @param request
      * @throws
      */
+    @ApiOperation(value = "后台上传文件")
     @RequestMapping(value = "/upload", method = RequestMethod.POST)
     @CrossOrigin
     public ResponseObject uploadFileLocal(HttpServletRequest request) {

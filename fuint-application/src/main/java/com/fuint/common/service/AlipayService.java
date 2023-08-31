@@ -4,6 +4,7 @@ import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.web.ResponseObject;
 import com.fuint.repository.model.MtOrder;
 import com.fuint.repository.model.MtUser;
+import java.math.BigDecimal;
 import java.util.Map;
 
 /**
@@ -19,5 +20,7 @@ public interface AlipayService {
     Boolean checkCallBack(Map<String, String> params) throws Exception;
 
     Map<String, String> queryPaidOrder(Integer storeId, String tradeNo, String orderSn) throws BusinessCheckException;
+
+    Boolean doRefund(Integer storeId, String orderSn, BigDecimal totalAmount, BigDecimal refundAmount, String platform) throws BusinessCheckException;
 
 }

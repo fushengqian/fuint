@@ -94,6 +94,12 @@ public class RefundServiceImpl extends ServiceImpl<MtRefundMapper, MtRefund> imp
     private WeixinService weixinService;
 
     /**
+     * 支付宝服务接口
+     * */
+    @Autowired
+    private AlipayService alipayService;
+
+    /**
      * 分页查询售后订单列表
      *
      * @param  paginationRequest
@@ -479,6 +485,11 @@ public class RefundServiceImpl extends ServiceImpl<MtRefundMapper, MtRefund> imp
         // 微信支付发起退款
         if (orderInfo.getPayType().equals(PayTypeEnum.JSAPI.getKey()) || orderInfo.getPayType().equals(PayTypeEnum.MICROPAY.getKey())) {
             weixinService.doRefund(orderInfo.getStoreInfo() != null ? orderInfo.getStoreInfo().getId() : 0, orderInfo.getOrderSn(), orderInfo.getPayAmount(), mtRefund.getAmount(), PlatformTypeEnum.MP_WEIXIN.getCode());
+        }
+
+        // 支付宝发起退款
+        if (orderInfo.getPayType().equals(PayTypeEnum.ALISCAN.getKey())) {
+            alipayService.doRefund(orderInfo.getStoreInfo() != null ? orderInfo.getStoreInfo().getId() : 0, orderInfo.getOrderSn(), orderInfo.getPayAmount(), mtRefund.getAmount(), PlatformTypeEnum.PC.getCode());
         }
 
         return mtRefund;

@@ -19,6 +19,7 @@ import com.fuint.repository.model.TDuty;
 import com.fuint.repository.model.TSource;
 import com.fuint.utils.StringUtil;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -51,9 +52,10 @@ public class BackendDutyController extends BaseController {
     /**
      * 角色列表
      *
-     * @param request  HttpServletRequest对象
+     * @param request HttpServletRequest对象
      * @return 角色信息列表
      */
+    @ApiOperation(value = "获取角色列表")
     @RequestMapping(value = "/list")
     @CrossOrigin
     public ResponseObject list(HttpServletRequest request) {
@@ -106,6 +108,7 @@ public class BackendDutyController extends BaseController {
      * @return 角色列表页面
      * @throws BusinessCheckException
      */
+    @ApiOperation(value = "新增角色")
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     @CrossOrigin
     public ResponseObject addHandler(HttpServletRequest request, @RequestBody Map<String, Object> param) throws BusinessCheckException {
@@ -145,11 +148,12 @@ public class BackendDutyController extends BaseController {
     }
 
     /**
-     * 角色详情
+     * 获取角色详情
      *
-     * @param roleId
+     * @param  roleId
      * @return 账户信息
      */
+    @ApiOperation(value = "获取角色详情")
     @RequestMapping(value = "/info/{roleId}", method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject info(HttpServletRequest request, @PathVariable("roleId") Long roleId) {
@@ -179,11 +183,12 @@ public class BackendDutyController extends BaseController {
     }
 
     /**
-     * 修改角色处理
+     * 修改角色
      *
      * @param request
      * @return
      */
+    @ApiOperation(value = "修改角色")
     @RequestMapping(value = "/update", method = RequestMethod.POST)
     @CrossOrigin
     public ResponseObject updateHandler(HttpServletRequest request, @RequestBody Map<String, Object> param) throws BusinessCheckException {
@@ -231,6 +236,7 @@ public class BackendDutyController extends BaseController {
      * @return
      * @throws BusinessCheckException
      */
+    @ApiOperation(value = "删除角色信息")
     @RequestMapping(value = "/delete/{roleId}", method = RequestMethod.POST)
     @CrossOrigin
     public ResponseObject deleteAccount(@PathVariable("roleId") Long roleId) {
@@ -243,11 +249,12 @@ public class BackendDutyController extends BaseController {
     }
 
     /**
-     * 修改状态
+     * 修改角色状态
      *
      * @return
      * @throws BusinessCheckException
      */
+    @ApiOperation(value = "修改角色状态")
     @RequestMapping(value = "/changeStatus", method = RequestMethod.POST)
     @CrossOrigin
     public ResponseObject changeStatus(@RequestBody DutyStatusRequest dutyStatusRequest) {

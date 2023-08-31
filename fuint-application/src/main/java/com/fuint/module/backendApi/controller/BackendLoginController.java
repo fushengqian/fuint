@@ -61,8 +61,9 @@ public class BackendLoginController extends BaseController {
     private CaptchaService captchaService;
 
     /**
-     * 后台登录接口
+     * 后台登录
      * */
+    @ApiOperation(value = "后台登录")
     @RequestMapping(value="/doLogin", method = RequestMethod.POST)
     @OperationServiceLog(description = "登录后台系统")
     public ResponseObject doLogin(HttpServletRequest request, @RequestBody LoginRequest loginRequest) {
@@ -159,6 +160,7 @@ public class BackendLoginController extends BaseController {
      *
      * @return
      */
+    @ApiOperation(value = "获取登录路由菜单接口")
     @RequestMapping(value = "/getRouters", method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject getRouters(HttpServletRequest request) throws BusinessCheckException {
@@ -197,8 +199,9 @@ public class BackendLoginController extends BaseController {
     }
 
     /**
-     * 退出后台登录接口
+     * 退出后台登录
      * */
+    @ApiOperation(value = "退出后台登录")
     @RequestMapping(value = "/logout", method = RequestMethod.POST)
     @OperationServiceLog(description = "退出后台系统")
     public ResponseObject logout(HttpServletRequest request) {

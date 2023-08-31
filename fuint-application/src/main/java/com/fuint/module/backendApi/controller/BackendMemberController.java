@@ -18,6 +18,7 @@ import com.fuint.framework.web.ResponseObject;
 import com.fuint.repository.model.*;
 import com.fuint.utils.StringUtil;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
@@ -63,11 +64,12 @@ public class BackendMemberController extends BaseController {
     private StoreService storeService;
 
     /**
-     * 会员列表查询
+     * 查询会员列表
      *
      * @param request  HttpServletRequest对象
      * @return 会员列表
      */
+    @ApiOperation(value = "查询会员列表")
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject list(HttpServletRequest request) throws BusinessCheckException {
@@ -161,6 +163,7 @@ public class BackendMemberController extends BaseController {
      *
      * @return
      */
+    @ApiOperation(value = "更新会员状态")
     @RequestMapping(value = "/updateStatus", method = RequestMethod.POST)
     @CrossOrigin
     public ResponseObject updateStatus(HttpServletRequest request, @RequestBody Map<String, Object> param) throws BusinessCheckException {
@@ -190,6 +193,7 @@ public class BackendMemberController extends BaseController {
      * @param request
      * @return
      */
+    @ApiOperation(value = "删除会员")
     @RequestMapping(value = "/delete/{id}", method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject delete(HttpServletRequest request, @PathVariable("id") Integer id) throws BusinessCheckException {
@@ -215,6 +219,7 @@ public class BackendMemberController extends BaseController {
      * @param request  HttpServletRequest对象
      * @return
      */
+    @ApiOperation(value = "保存会员信息")
     @RequestMapping(value = "/save", method = RequestMethod.POST)
     @CrossOrigin
     public ResponseObject save(HttpServletRequest request, @RequestBody Map<String, Object> param) throws BusinessCheckException, ParseException {
@@ -283,11 +288,12 @@ public class BackendMemberController extends BaseController {
     }
 
     /**
-     * 会员详情
+     * 获取会员详情
      *
      * @param request
      * @return
      */
+    @ApiOperation(value = "获取会员详情")
     @RequestMapping(value = "/info/{id}", method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject info(HttpServletRequest request, @PathVariable("id") Integer id) throws BusinessCheckException {
@@ -310,11 +316,12 @@ public class BackendMemberController extends BaseController {
     }
 
     /**
-     * 会员设置信息
+     * 获取会员设置
      *
      * @param request
      * @return
      */
+    @ApiOperation(value = "获取会员设置")
     @RequestMapping(value = "/setting", method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject setting(HttpServletRequest request) throws BusinessCheckException {
@@ -349,11 +356,12 @@ public class BackendMemberController extends BaseController {
     }
 
     /**
-     * 提交设置保存
+     * 保存设置
      *
-     * @param request  HttpServletRequest对象
+     * @param request HttpServletRequest对象
      * @return
      */
+    @ApiOperation(value = "保存设置")
     @RequestMapping(value = "/saveSetting", method = RequestMethod.POST)
     @CrossOrigin
     public ResponseObject saveSetting(HttpServletRequest request, @RequestBody Map<String, Object> param) throws BusinessCheckException {

@@ -23,6 +23,7 @@ import com.fuint.utils.StringUtil;
 import static com.fuint.common.util.XlsUtil.objectConvertToString;
 
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -46,6 +47,15 @@ import java.util.Map;
 @RequestMapping(value = "/backendApi/give")
 public class BackendGiveLogController extends BaseController {
 
+    @Resource
+    private MtUserCouponMapper mtUserCouponMapper;
+
+    @Resource
+    private MtCouponGroupMapper mtCouponGroupMapper;
+
+    @Resource
+    private MtCouponMapper mtCouponMapper;
+
     /**
      * 转赠服务接口
      */
@@ -58,22 +68,14 @@ public class BackendGiveLogController extends BaseController {
     @Autowired
     private AccountService accountService;
 
-    @Resource
-    private MtUserCouponMapper mtUserCouponMapper;
-
-    @Resource
-    private MtCouponGroupMapper mtCouponGroupMapper;
-
-    @Resource
-    private MtCouponMapper mtCouponMapper;
-
     /**
-     * 查询列表
+     * 查询转赠列表
      *
      * @param request
      * @return
      * @throws BusinessCheckException
      */
+    @ApiOperation(value = "查询转赠列表")
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject list(HttpServletRequest request) throws BusinessCheckException {
@@ -118,8 +120,9 @@ public class BackendGiveLogController extends BaseController {
     }
 
     /**
-     * 快速查询详情
+     * 查询转赠详情
      * */
+    @ApiOperation(value = "查询转赠详情")
     @RequestMapping(value = "/giveItem", method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject giveItem(HttpServletRequest request) throws BusinessCheckException {
@@ -175,10 +178,11 @@ public class BackendGiveLogController extends BaseController {
     }
 
     /**
-     * 导出数据
+     * 导出转赠记录
      *
      * @return
      */
+    @ApiOperation(value = "导出转赠记录")
     @RequestMapping(value = "/export", method = RequestMethod.GET)
     @ResponseBody
     public void export(HttpServletRequest request, HttpServletResponse response) throws Exception {
