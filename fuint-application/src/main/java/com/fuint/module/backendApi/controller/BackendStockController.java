@@ -80,9 +80,10 @@ public class BackendStockController extends BaseController {
         String token = request.getHeader("Access-Token");
         Integer page = request.getParameter("page") == null ? Constants.PAGE_NUMBER : Integer.parseInt(request.getParameter("page"));
         Integer pageSize = request.getParameter("pageSize") == null ? Constants.PAGE_SIZE : Integer.parseInt(request.getParameter("pageSize"));
-        String name = request.getParameter("name");
+        String description = request.getParameter("description");
         String status = request.getParameter("status");
         String searchStoreId = request.getParameter("storeId");
+        String type = request.getParameter("type");
 
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
         if (accountInfo == null) {
@@ -97,11 +98,14 @@ public class BackendStockController extends BaseController {
         paginationRequest.setPageSize(pageSize);
 
         Map<String, Object> params = new HashMap<>();
-        if (StringUtil.isNotEmpty(name)) {
-            params.put("name", name);
+        if (StringUtil.isNotEmpty(description)) {
+            params.put("description", description);
         }
         if (StringUtil.isNotEmpty(status)) {
             params.put("status", status);
+        }
+        if (StringUtil.isNotEmpty(type)) {
+            params.put("type", type);
         }
         if (StringUtil.isNotEmpty(searchStoreId)) {
             params.put("storeId", searchStoreId);
