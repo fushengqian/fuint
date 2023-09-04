@@ -293,7 +293,7 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
 
         // 会员相关信息
         MtUser userInfo = memberService.queryMemberById(orderDto.getUserId());
-        MtUserGrade userGrade = userGradeService.queryUserGradeById(userInfo.getGradeId() != null ? Integer.parseInt(userInfo.getGradeId()) : 1);
+        MtUserGrade userGrade = userGradeService.queryUserGradeById(userInfo.getGradeId() != null ? Integer.parseInt(userInfo.getGradeId()) : 1, orderDto.getUserId());
         BigDecimal percent = new BigDecimal("0");
         if (userGrade != null && userGrade.getDiscount() != null && userGrade.getDiscount() > 0) {
             // 会员折扣

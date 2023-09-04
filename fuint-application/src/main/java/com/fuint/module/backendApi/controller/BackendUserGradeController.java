@@ -115,7 +115,7 @@ public class BackendUserGradeController extends BaseController {
         Integer userGradeId = param.get("userGradeId") == null ? 0 : Integer.parseInt(param.get("userGradeId").toString());
         String status = param.get("status") == null ? StatusEnum.ENABLED.getKey() : param.get("status").toString();
 
-        MtUserGrade gradeInfo = userGradeService.queryUserGradeById(userGradeId);
+        MtUserGrade gradeInfo = userGradeService.queryUserGradeById(userGradeId, 0);
         if (gradeInfo == null) {
             return getFailureResult(201, "会员等级不存在");
         }
@@ -150,7 +150,7 @@ public class BackendUserGradeController extends BaseController {
     /**
      * 提交保存
      *
-     * @param request  HttpServletRequest对象
+     * @param request HttpServletRequest对象
      * @return
      */
     @RequestMapping(value = "/save", method = RequestMethod.POST)
@@ -190,7 +190,7 @@ public class BackendUserGradeController extends BaseController {
         if (StringUtil.isEmpty(id)) {
             info = new MtUserGrade();
         } else {
-            info = userGradeService.queryUserGradeById(Integer.parseInt(id));
+            info = userGradeService.queryUserGradeById(Integer.parseInt(id), 0);
         }
 
         info.setGrade(Integer.parseInt(grade));
@@ -247,7 +247,7 @@ public class BackendUserGradeController extends BaseController {
             return getFailureResult(1001, "请先登录");
         }
 
-        MtUserGrade userGradeInfo = userGradeService.queryUserGradeById(id);
+        MtUserGrade userGradeInfo = userGradeService.queryUserGradeById(id, 0);
 
         Map<String, Object> result = new HashMap<>();
         result.put("userGradeInfo", userGradeInfo);

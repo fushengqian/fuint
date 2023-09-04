@@ -248,7 +248,7 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
                 }
             }
             if (userDto.getGradeId() != null) {
-                MtUserGrade mtGrade = userGradeService.queryUserGradeById(Integer.parseInt(userDto.getGradeId()));
+                MtUserGrade mtGrade = userGradeService.queryUserGradeById(Integer.parseInt(userDto.getGradeId()), user.getId());
                 if (mtGrade != null) {
                     userDto.setGradeName(mtGrade.getName());
                 }
@@ -507,7 +507,7 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
                     openGiftService.openGift(mtUser.getId(), initGrade.getId(), false);
                 } else {
                     // 会员等级不存在或已禁用、删除，就把会员等级置为初始等级
-                    MtUserGrade myGrade = userGradeService.queryUserGradeById(Integer.parseInt(userGradeId));
+                    MtUserGrade myGrade = userGradeService.queryUserGradeById(Integer.parseInt(userGradeId), id);
                     if (myGrade == null || !myGrade.getStatus().equals(StatusEnum.ENABLED.getKey())) {
                         mtUser.setGradeId(initGrade.getId().toString());
                         updateById(mtUser);

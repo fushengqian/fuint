@@ -10,8 +10,10 @@ import com.fuint.framework.annoation.OperationServiceLog;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.pagination.PaginationRequest;
 import com.fuint.framework.pagination.PaginationResponse;
+import com.fuint.repository.mapper.MtStaffMapper;
 import com.fuint.repository.mapper.MtUserGradeMapper;
 import com.fuint.repository.model.MtBanner;
+import com.fuint.repository.model.MtStaff;
 import com.fuint.repository.model.MtUser;
 import com.fuint.repository.model.MtUserGrade;
 import com.github.pagehelper.Page;
@@ -21,7 +23,6 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -39,6 +40,9 @@ public class UserGradeServiceImpl extends ServiceImpl<MtUserGradeMapper, MtUserG
 
     @Resource
     private MtUserGradeMapper mtUserGradeMapper;
+
+    @Resource
+    private MtStaffMapper mtStaffMapper;
 
     /**
      * 分页查询会员等级列表
@@ -101,10 +105,21 @@ public class UserGradeServiceImpl extends ServiceImpl<MtUserGradeMapper, MtUserG
      * 根据ID获取会员等级信息
      *
      * @param id 会员等级ID
+     * @param userId 会员ID
      * @return
      */
     @Override
-    public MtUserGrade queryUserGradeById(Integer id) {
+    public MtUserGrade queryUserGradeById(Integer id, Integer userId) {
+        if (userId != null && userId > 0) {
+            Map<String, Object> params = new HashMap<>();
+            params.put("STATUS", StatusEnum.ENABLED.getKey());
+            params.put("USER_ID", userId);
+            List<MtStaff> staffList = mtStaffMapper.selectByMap(params);
+            // 如果是员工关联的会员，就返回默认的会员等级
+            if (staffList != null && staffList.size() > 0) {
+                return getInitUserGrade();
+            }
+        }
         return mtUserGradeMapper.selectById(id);
     }
 
@@ -140,7 +155,7 @@ public class UserGradeServiceImpl extends ServiceImpl<MtUserGradeMapper, MtUserG
     @Transactional(rollbackFor = Exception.class)
     @OperationServiceLog(description = "删除会员等级")
     public Integer deleteUserGrade(Integer id, String operator) {
-        MtUserGrade mtUserGrade = queryUserGradeById(id);
+        MtUserGrade mtUserGrade = queryUserGradeById(id, 0);
         if (null == mtUserGrade) {
             return 0;
         }

@@ -124,7 +124,7 @@ public class ClientPayController extends BaseController {
         // 会员折扣
         BigDecimal payDiscount = new BigDecimal("1");
         if (mtUser != null) {
-            MtUserGrade userGrade = userGradeService.queryUserGradeById(Integer.parseInt(mtUser.getGradeId()));
+            MtUserGrade userGrade = userGradeService.queryUserGradeById(Integer.parseInt(mtUser.getGradeId()), mtUser.getId());
             if (userGrade != null) {
                 if (userGrade.getDiscount() > 0) {
                     payDiscount = new BigDecimal(userGrade.getDiscount()).divide(new BigDecimal("10"), BigDecimal.ROUND_CEILING, 3);

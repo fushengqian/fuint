@@ -167,7 +167,7 @@ public class PaymentServiceImpl implements PaymentService {
             logger.info("PaymentService paymentCallback Point orderSn = {} , pointNum ={}", orderInfo.getOrderSn(), pointNum);
             if (pointNum > 0) {
                 MtUser userInfo = memberService.queryMemberById(orderInfo.getUserId());
-                MtUserGrade userGrade = userGradeService.queryUserGradeById(Integer.parseInt(userInfo.getGradeId()));
+                MtUserGrade userGrade = userGradeService.queryUserGradeById(Integer.parseInt(userInfo.getGradeId()), orderInfo.getUserId());
                 // 是否会员积分加倍
                 if (userGrade.getSpeedPoint() > 1) {
                     pointNum = pointNum * userGrade.getSpeedPoint();

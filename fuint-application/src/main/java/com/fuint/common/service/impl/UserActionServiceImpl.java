@@ -80,7 +80,7 @@ public class UserActionServiceImpl extends ServiceImpl<MtUserActionMapper, MtUse
         }
 
         Map<String, Object> params = new HashMap<>();
-        params.put("user_id", reqUserAction.getUserId());
+        params.put("USER_ID", reqUserAction.getUserId());
         params.put("action", reqUserAction.getAction());
         if (reqUserAction.getParam() != null) {
             params.put("param", reqUserAction.getParam());

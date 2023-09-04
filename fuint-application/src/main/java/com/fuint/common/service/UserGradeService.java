@@ -46,7 +46,7 @@ public interface UserGradeService extends IService<MtUserGrade> {
      * @param  id ID
      * @throws BusinessCheckException
      */
-    MtUserGrade queryUserGradeById(Integer id) throws BusinessCheckException;
+    MtUserGrade queryUserGradeById(Integer id, Integer userId) throws BusinessCheckException;
 
     /**
      * 根据ID删除会员等级
