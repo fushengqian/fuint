@@ -112,7 +112,7 @@ public class UserGradeServiceImpl extends ServiceImpl<MtUserGradeMapper, MtUserG
     public MtUserGrade queryUserGradeById(Integer id, Integer userId) {
         if (userId != null && userId > 0) {
             Map<String, Object> params = new HashMap<>();
-            params.put("STATUS", StatusEnum.ENABLED.getKey());
+            params.put("AUDITED_STATUS", StatusEnum.ENABLED.getKey());
             params.put("USER_ID", userId);
             List<MtStaff> staffList = mtStaffMapper.selectByMap(params);
             // 如果是员工关联的会员，就返回默认的会员等级
