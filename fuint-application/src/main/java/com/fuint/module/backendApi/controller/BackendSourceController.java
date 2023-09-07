@@ -12,6 +12,7 @@ import com.fuint.framework.web.ResponseObject;
 import com.fuint.repository.model.TSource;
 import com.fuint.utils.StringUtil;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -40,10 +41,11 @@ public class BackendSourceController extends BaseController {
     private SourceService sourceService;
 
     /**
-     * 菜单信息列表
+     * 获取菜单列表
      *
      * @return 账户信息列表展现页面
      */
+    @ApiOperation(value = "获取菜单列表")
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     public ResponseObject list() {
         List<TreeNode> sources = sSourceService.getSourceTree();
@@ -51,11 +53,12 @@ public class BackendSourceController extends BaseController {
     }
 
     /**
-     * 菜单信息
+     * 获取菜单详情
      *
-     * @param sourceId   菜单ID
+     * @param sourceId 菜单ID
      * @return 菜单信息
      */
+    @ApiOperation(value = "获取菜单详情")
     @RequestMapping(value = "/info/{sourceId}", method = RequestMethod.GET)
     public ResponseObject info( @PathVariable("sourceId") Long sourceId) {
         TSource tSource = sSourceService.getById(sourceId);
@@ -85,6 +88,7 @@ public class BackendSourceController extends BaseController {
      * @return
      * @throws BusinessCheckException
      */
+    @ApiOperation(value = "新增菜单")
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     public ResponseObject addSource(@RequestBody Map<String, Object> param) {
         String name = param.get("name").toString();
@@ -123,18 +127,21 @@ public class BackendSourceController extends BaseController {
         } else {
             addSource.setSourceLevel(1);
         }
-
-        sSourceService.addSource(addSource);
-
+        try {
+            sSourceService.addSource(addSource);
+        } catch (Exception e) {
+            return getFailureResult(201, e.getMessage());
+        }
         return getSuccessResult(true);
     }
 
     /**
-     * 修改菜单处理
+     * 修改菜单
      *
      * @param param
      * @return
      */
+    @ApiOperation(value = "修改菜单")
     @RequestMapping(value = "/update", method = RequestMethod.POST)
     public ResponseObject update(@RequestBody Map<String, Object> param) {
         String name = param.get("name").toString();
@@ -178,16 +185,21 @@ public class BackendSourceController extends BaseController {
         } else {
             editSource.setSourceLevel(1);
         }
-        sSourceService.editSource(editSource);
+        try {
+            sSourceService.editSource(editSource);
+        } catch (Exception e) {
+            return getFailureResult(201, e.getMessage());
+        }
         return getSuccessResult(true);
     }
 
     /**
-     * 删除菜单信息
+     * 删除菜单
      *
      * @return
      * @throws BusinessCheckException
      */
+    @ApiOperation(value = "删除菜单")
     @RequestMapping(value = "/delete/{sourceId}", method = RequestMethod.GET)
     public ResponseObject delete(HttpServletRequest request, @PathVariable("sourceId") Long sourceId) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
@@ -209,6 +221,7 @@ public class BackendSourceController extends BaseController {
     /**
      * 获取菜单下拉树列表
      * */
+    @ApiOperation(value = "获取菜单下拉树列表")
     @RequestMapping(value = "/treeselect", method = RequestMethod.GET)
     public ResponseObject treeselect(HttpServletRequest request) {
         String token = request.getHeader("Access-Token");

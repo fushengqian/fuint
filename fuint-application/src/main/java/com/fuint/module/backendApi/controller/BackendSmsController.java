@@ -12,12 +12,12 @@ import com.fuint.framework.web.ResponseObject;
 import com.fuint.repository.model.MtSmsSendedLog;
 import com.fuint.utils.StringUtil;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.Map;
@@ -46,6 +46,7 @@ public class BackendSmsController extends BaseController {
      * @return
      * @throws BusinessCheckException
      */
+    @ApiOperation(value = "查询已发短信列表")
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject list(HttpServletRequest request) throws BusinessCheckException {

@@ -19,6 +19,7 @@ import com.fuint.repository.model.MtMerchant;
 import com.fuint.repository.model.MtStore;
 import com.fuint.utils.StringUtil;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
@@ -56,12 +57,13 @@ public class BackendStoreController extends BaseController {
     private SettingService settingService;
 
     /**
-     * 分页查询店铺列表
+     * 获取店铺列表
      *
-     * @param  request HttpServletRequest对象
+     * @param request HttpServletRequest对象
      * @return 店铺列表
      */
-    @RequestMapping(value = "/list")
+    @ApiOperation(value = "获取店铺列表")
+    @RequestMapping(value = "/list", method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject list(HttpServletRequest request) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
@@ -117,8 +119,9 @@ public class BackendStoreController extends BaseController {
     }
 
     /**
-     * 查询店铺列表
+     * 搜索店铺
      * */
+    @ApiOperation(value = "搜索店铺")
     @RequestMapping(value = "/searchStore",  method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject search(HttpServletRequest request) throws BusinessCheckException {
@@ -157,7 +160,8 @@ public class BackendStoreController extends BaseController {
      * @param request
      * @return
      */
-    @RequestMapping(value = "/updateStatus")
+    @ApiOperation(value = "更新店铺状态")
+    @RequestMapping(value = "/updateStatus", method = RequestMethod.POST)
     @CrossOrigin
     public ResponseObject updateStatus(HttpServletRequest request, @RequestBody Map<String, Object> params) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
@@ -181,6 +185,7 @@ public class BackendStoreController extends BaseController {
      * @param request HttpServletRequest对象
      * @return
      */
+    @ApiOperation(value = "保存店铺")
     @RequestMapping(value = "/save", method = RequestMethod.POST)
     @CrossOrigin
     public ResponseObject saveHandler(HttpServletRequest request, @RequestBody Map<String, Object> params) throws BusinessCheckException {
@@ -273,11 +278,12 @@ public class BackendStoreController extends BaseController {
     }
 
     /**
-     * 店铺信息
+     * 获取店铺详情
      *
      * @param id
      * @return
      */
+    @ApiOperation(value = "获取店铺详情")
     @RequestMapping(value = "/info/{id}", method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject getStoreInfo(HttpServletRequest request, @PathVariable("id") Integer id) throws BusinessCheckException {

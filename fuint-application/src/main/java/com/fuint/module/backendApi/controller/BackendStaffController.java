@@ -17,6 +17,7 @@ import com.fuint.framework.web.ResponseObject;
 import com.fuint.repository.model.MtStaff;
 import com.fuint.utils.StringUtil;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -44,11 +45,12 @@ public class BackendStaffController extends BaseController {
     private StaffService staffService;
 
     /**
-     * 员工列表查询
+     * 获取员工列表
      *
-     * @param request  HttpServletRequest对象
+     * @param request HttpServletRequest对象
      * @return 员工列表页面
      */
+    @ApiOperation(value = "获取员工列表")
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject list(HttpServletRequest request) throws BusinessCheckException {
@@ -116,6 +118,7 @@ public class BackendStaffController extends BaseController {
      * 更新员工状态
      * @return
      */
+    @ApiOperation(value = "更新员工状态")
     @RequestMapping(value = "/updateStatus", method = RequestMethod.POST)
     @CrossOrigin
     public ResponseObject updateStatus(HttpServletRequest request, @RequestBody Map<String, Object> params) throws BusinessCheckException {
@@ -138,6 +141,7 @@ public class BackendStaffController extends BaseController {
      * @param request
      * @return
      */
+    @ApiOperation(value = "保存员工信息")
     @RequestMapping(value = "/save", method = RequestMethod.POST)
     @CrossOrigin
     public ResponseObject saveHandler(HttpServletRequest request, @RequestBody Map<String, Object> params) throws BusinessCheckException {
@@ -192,11 +196,12 @@ public class BackendStaffController extends BaseController {
     }
 
     /**
-     * 查询员工信息
+     * 查询员工详情
      *
      * @param id
      * @return
      */
+    @ApiOperation(value = "查询员工详情")
     @RequestMapping(value = "/info/{id}", method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject getStaffInfo(HttpServletRequest request, @PathVariable("id") Integer id) throws BusinessCheckException {
@@ -221,6 +226,7 @@ public class BackendStaffController extends BaseController {
      * @param storeId
      * @return
      */
+    @ApiOperation(value = "店铺员工列表")
     @RequestMapping(value = "/storeStaffList/{storeId}", method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject storeStaffList(HttpServletRequest request, @PathVariable("storeId") Integer storeId) throws BusinessCheckException {
@@ -243,11 +249,12 @@ public class BackendStaffController extends BaseController {
     }
 
     /**
-     * 删除员工信息
+     * 删除员工
      *
      * @param id
      * @return
      */
+    @ApiOperation(value = "删除员工")
     @RequestMapping(value = "/delete/{id}", method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject deleteStaff(HttpServletRequest request, @PathVariable("id") Integer id) throws BusinessCheckException {

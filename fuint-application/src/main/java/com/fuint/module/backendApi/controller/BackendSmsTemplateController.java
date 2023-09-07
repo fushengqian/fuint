@@ -13,6 +13,7 @@ import com.fuint.framework.web.ResponseObject;
 import com.fuint.repository.model.MtSmsTemplate;
 import com.fuint.utils.StringUtil;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -44,6 +45,7 @@ public class BackendSmsTemplateController extends BaseController {
      * @return
      * @throws BusinessCheckException
      */
+    @ApiOperation(value = "查询短信模板列表")
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject list(HttpServletRequest request) throws BusinessCheckException {
@@ -78,11 +80,12 @@ public class BackendSmsTemplateController extends BaseController {
     }
 
     /**
-     * 保存模板页面
+     * 保存短信模板
      *
-     * @param request  HttpServletRequest对象
+     * @param request HttpServletRequest对象
      * @return
      */
+    @ApiOperation(value = "保存短信模板")
     @RequestMapping(value = "/save", method = RequestMethod.POST)
     @CrossOrigin
     public ResponseObject saveHandler(HttpServletRequest request, @RequestBody SmsTemplateDto smsTemplateDto) throws BusinessCheckException {
@@ -102,6 +105,7 @@ public class BackendSmsTemplateController extends BaseController {
      * @param request
      * @return
      */
+    @ApiOperation(value = "模板详情")
     @RequestMapping(value = "/info/{id}", method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject info(HttpServletRequest request, @PathVariable("id") Long id) throws BusinessCheckException {
@@ -120,11 +124,12 @@ public class BackendSmsTemplateController extends BaseController {
     }
 
     /**
-     * 删除数据项
+     * 删除短信模板
      *
      * @param request
      * @return
      */
+    @ApiOperation(value = "删除短信模板")
     @RequestMapping(value = "/delete/{id}", method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject delete(HttpServletRequest request, @PathVariable("id") Integer id) throws BusinessCheckException {

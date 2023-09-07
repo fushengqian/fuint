@@ -16,6 +16,7 @@ import com.fuint.framework.web.ResponseObject;
 import com.fuint.repository.model.MtUserGrade;
 import com.fuint.utils.StringUtil;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
@@ -45,9 +46,10 @@ public class BackendUserGradeController extends BaseController {
     /**
      * 会员等级列表查询
      *
-     * @param   request  HttpServletRequest对象
+     * @param request HttpServletRequest对象
      * @return 会员等级列表
      */
+    @ApiOperation(value = "会员等级列表查询")
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject list(HttpServletRequest request) throws BusinessCheckException {
@@ -105,10 +107,11 @@ public class BackendUserGradeController extends BaseController {
     }
 
     /**
-     * 更新等级状态
+     * 更新会员等级状态
      *
      * @return
      */
+    @ApiOperation(value = "更新会员等级状态")
     @RequestMapping(value = "/updateStatus", method = RequestMethod.POST)
     @CrossOrigin
     public ResponseObject updateStatus(@RequestBody Map<String, Object> param) throws BusinessCheckException {
@@ -132,6 +135,7 @@ public class BackendUserGradeController extends BaseController {
      * @param request
      * @return
      */
+    @ApiOperation(value = "删除会员等级")
     @RequestMapping(value = "/delete/{id}", method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject delete(HttpServletRequest request, @PathVariable("id") Integer id) throws BusinessCheckException {
@@ -148,11 +152,12 @@ public class BackendUserGradeController extends BaseController {
     }
 
     /**
-     * 提交保存
+     * 保存会员等级
      *
      * @param request HttpServletRequest对象
      * @return
      */
+    @ApiOperation(value = "保存会员等级")
     @RequestMapping(value = "/save", method = RequestMethod.POST)
     @CrossOrigin
     public ResponseObject saveHandler(HttpServletRequest request, @RequestBody Map<String, Object> param) throws BusinessCheckException {
@@ -238,6 +243,7 @@ public class BackendUserGradeController extends BaseController {
      * @param request
      * @return
      */
+    @ApiOperation(value = "获取会员等级信息")
     @RequestMapping(value = "/info/{id}", method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject info(HttpServletRequest request, @PathVariable("id") Integer id) throws BusinessCheckException {

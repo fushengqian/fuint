@@ -15,6 +15,7 @@ import com.fuint.repository.model.MtSendLog;
 import com.fuint.repository.model.MtUser;
 import com.fuint.utils.StringUtil;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -58,6 +59,7 @@ public class BackendSendLogController extends BaseController {
      * @return
      * @throws BusinessCheckException
      */
+    @ApiOperation(value = "查询发券记录列表")
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject list(HttpServletRequest request) throws BusinessCheckException {
@@ -117,6 +119,7 @@ public class BackendSendLogController extends BaseController {
      * @param id 日志ID
      * @return
      */
+    @ApiOperation(value = "废除用户卡券")
     @RequestMapping(value = "/removeUserCoupon/{id}", method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject removeUserCoupon(HttpServletRequest request, @PathVariable("id") Long id) throws BusinessCheckException {

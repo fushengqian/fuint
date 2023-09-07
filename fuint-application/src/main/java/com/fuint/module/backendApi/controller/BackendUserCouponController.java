@@ -21,6 +21,7 @@ import com.fuint.repository.mapper.MtUserCouponMapper;
 import com.fuint.repository.model.*;
 import com.fuint.utils.StringUtil;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -86,6 +87,7 @@ public class BackendUserCouponController extends BaseController {
      * @return
      * @throws BusinessCheckException
      */
+    @ApiOperation(value = "查询会员卡券列表")
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject list(HttpServletRequest request) throws BusinessCheckException {
@@ -156,6 +158,7 @@ public class BackendUserCouponController extends BaseController {
     /**
      * 核销用户卡券
      * */
+    @ApiOperation(value = "核销用户卡券")
     @RequestMapping(value = "/doConfirm", method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject doConfirm(HttpServletRequest request) throws BusinessCheckException {
@@ -190,11 +193,12 @@ public class BackendUserCouponController extends BaseController {
     }
 
     /**
-     * 作废会员卡券
+     * 删除会员卡券
      *
      * @param request
      * @return
      */
+    @ApiOperation(value = "删除会员卡券")
     @RequestMapping(value = "/delete/{id}", method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject delete(HttpServletRequest request, @PathVariable("id") Integer id) throws BusinessCheckException {
@@ -241,6 +245,7 @@ public class BackendUserCouponController extends BaseController {
      *
      * @return
      */
+    @ApiOperation(value = "导出会员卡券")
     @RequestMapping(value = "/exportList", method = RequestMethod.GET)
     @CrossOrigin
     public void exportList(HttpServletRequest request, HttpServletResponse response) throws Exception {

@@ -16,6 +16,7 @@ import com.fuint.framework.web.ResponseObject;
 import com.fuint.repository.model.MtSetting;
 import com.fuint.utils.StringUtil;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.core.env.Environment;
@@ -43,11 +44,12 @@ public class BackendSubMessageController extends BaseController {
     private Environment env;
 
     /**
-     * 订阅消息管理
+     * 订阅消息模板列表
      *
-     * @param  request  HttpServletRequest对象
-     * @return 列表展现
+     * @param request HttpServletRequest对象
+     * @return
      */
+    @ApiOperation(value = "订阅消息模板列表")
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject list(HttpServletRequest request) throws BusinessCheckException {
@@ -109,11 +111,12 @@ public class BackendSubMessageController extends BaseController {
     }
 
     /**
-     * 消息详情
+     * 订阅消息模板详情
      *
      * @param key 消息键值
      * @return
      */
+    @ApiOperation(value = "订阅消息模板详情")
     @RequestMapping(value = "/info/{key}", method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject info(HttpServletRequest request, @PathVariable("key") String key) throws BusinessCheckException {
@@ -182,11 +185,12 @@ public class BackendSubMessageController extends BaseController {
     }
 
     /**
-     * 保存消息设置
+     * 保存订阅消息模板
      *
      * @param request  HttpServletRequest对象
      * @return
      */
+    @ApiOperation(value = "保存订阅消息模板")
     @RequestMapping(value = "/save", method = RequestMethod.POST)
     @CrossOrigin
     public ResponseObject saveHandler(HttpServletRequest request, @RequestBody Map<String, Object> param) {

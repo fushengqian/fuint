@@ -19,6 +19,7 @@ import com.fuint.repository.model.MtUser;
 import com.fuint.repository.model.TAccount;
 import com.fuint.utils.StringUtil;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
@@ -65,9 +66,10 @@ public class BackendRefundController extends BaseController {
     /**
      * 退款列表查询
      *
-     * @param request  HttpServletRequest对象
+     * @param request HttpServletRequest对象
      * @return
      */
+    @ApiOperation(value = "退款列表查询")
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject list(HttpServletRequest request) throws BusinessCheckException {
@@ -159,10 +161,11 @@ public class BackendRefundController extends BaseController {
     }
 
     /**
-     * 退款详情
+     * 查询退款详情
      * @param request HttpServletRequest对象
      * @return
      * */
+    @ApiOperation(value = "查询退款详情")
     @RequestMapping(value = "/info/{refundId}", method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject info(HttpServletRequest request, @PathVariable("refundId") Integer refundId) throws BusinessCheckException {
@@ -189,6 +192,7 @@ public class BackendRefundController extends BaseController {
      * 保存售后订单
      * @return
      */
+    @ApiOperation(value = "保存售后订单")
     @RequestMapping(value = "save", method = RequestMethod.POST)
     @CrossOrigin
     public ResponseObject save(HttpServletRequest request, @RequestBody Map<String, Object> param) throws BusinessCheckException {
@@ -201,20 +205,24 @@ public class BackendRefundController extends BaseController {
             return getFailureResult(1001, "请先登录");
         }
         String operator = accountInfo.getAccountName();
-        if (status.equals(RefundStatusEnum.REJECT.getKey())) {
-            RefundDto dto = new RefundDto();
-            dto.setId(refundId);
-            dto.setOperator(operator);
-            dto.setStatus(RefundStatusEnum.REJECT.getKey());
-            dto.setRemark(remark);
-            refundService.updateRefund(dto);
-        } else {
-            RefundDto dto = new RefundDto();
-            dto.setId(refundId);
-            dto.setOperator(operator);
-            dto.setStatus(RefundStatusEnum.APPROVED.getKey());
-            dto.setRemark(remark);
-            refundService.agreeRefund(dto);
+        try {
+            if (status.equals(RefundStatusEnum.REJECT.getKey())) {
+                RefundDto dto = new RefundDto();
+                dto.setId(refundId);
+                dto.setOperator(operator);
+                dto.setStatus(RefundStatusEnum.REJECT.getKey());
+                dto.setRemark(remark);
+                refundService.updateRefund(dto);
+            } else {
+                RefundDto dto = new RefundDto();
+                dto.setId(refundId);
+                dto.setOperator(operator);
+                dto.setStatus(RefundStatusEnum.APPROVED.getKey());
+                dto.setRemark(remark);
+                refundService.agreeRefund(dto);
+            }
+        } catch (Exception e) {
+            return getFailureResult(201, e.getMessage());
         }
         return getSuccessResult(true);
     }
@@ -223,6 +231,7 @@ public class BackendRefundController extends BaseController {
      * 发起退款
      * @return
      */
+    @ApiOperation(value = "发起退款")
     @RequestMapping(value = "doRefund", method = RequestMethod.POST)
     @CrossOrigin
     public ResponseObject doRefund(HttpServletRequest request, @RequestBody Map<String, Object> param) {
