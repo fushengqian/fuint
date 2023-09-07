@@ -393,6 +393,9 @@ public class UserCouponServiceImpl extends ServiceImpl<MtUserCouponMapper, MtUse
                 MtCoupon couponInfo = couponService.queryCouponById(userCouponDto.getCouponId());
                 MtUser userInfo = memberService.queryMemberById(userCouponDto.getUserId());
                 MtStore storeInfo = storeService.queryStoreById(userCouponDto.getStoreId());
+                if (couponInfo == null || userInfo == null || storeInfo == null) {
+                    continue;
+                }
 
                 MyCouponDto dto = new MyCouponDto();
                 dto.setId(userCouponDto.getId());

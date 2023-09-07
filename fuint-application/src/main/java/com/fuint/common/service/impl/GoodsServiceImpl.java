@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fuint.common.Constants;
 import com.fuint.common.dto.GoodsDto;
 import com.fuint.common.dto.GoodsSpecValueDto;
+import com.fuint.common.enums.GoodsTypeEnum;
 import com.fuint.common.enums.StatusEnum;
 import com.fuint.common.enums.YesOrNoEnum;
 import com.fuint.common.service.CateService;
@@ -241,6 +242,9 @@ public class GoodsServiceImpl extends ServiceImpl<MtGoodsMapper, MtGoods> implem
         }
         if (StringUtil.isNotEmpty(reqDto.getImages())) {
             mtGoods.setImages(reqDto.getImages());
+        }
+        if (!mtGoods.getType().equals(GoodsTypeEnum.COUPON.getKey())) {
+            mtGoods.setCouponIds("");
         }
 
         mtGoods.setUpdateTime(new Date());

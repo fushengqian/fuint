@@ -811,12 +811,12 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
                     for (OrderGoodsDto goodsDto : goodsList) {
                         MtGoods mtGoods = goodsService.queryGoodsById(goodsDto.getGoodsId());
                         if (mtGoods != null) {
-                            // 购买的商品是虚拟卡券
-                            if (mtGoods.getCouponIds() != null && StringUtil.isNotEmpty(mtGoods.getCouponIds())) {
+                            // 购买虚拟卡券商品发放处理
+                            if (mtGoods.getType().equals(GoodsTypeEnum.COUPON.getKey()) && mtGoods.getCouponIds() != null && StringUtil.isNotEmpty(mtGoods.getCouponIds())) {
                                 String couponIds[] = mtGoods.getCouponIds().split(",");
                                 if (couponIds.length > 0) {
                                     for (int i = 0; i < couponIds.length; i++) {
-                                        userCouponService.buyCouponItem(orderInfo.getId(), Integer.parseInt(couponIds[i]), orderInfo.getUserId(), orderInfo.getUserInfo().getMobile());
+                                         userCouponService.buyCouponItem(orderInfo.getId(), Integer.parseInt(couponIds[i]), orderInfo.getUserId(), orderInfo.getUserInfo().getMobile());
                                     }
                                 }
                             }

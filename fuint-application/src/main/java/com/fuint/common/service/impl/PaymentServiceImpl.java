@@ -42,9 +42,15 @@ public class PaymentServiceImpl implements PaymentService {
     @Resource
     private MtUserGradeMapper mtUserGradeMapper;
 
+    /**
+     * 微信服务接口
+     * */
     @Autowired
     private WeixinService weixinService;
 
+    /**
+     * 支付宝服务接口
+     * */
     @Autowired
     private AlipayService alipayService;
 
