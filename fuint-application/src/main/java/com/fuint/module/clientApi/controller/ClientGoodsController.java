@@ -53,6 +53,9 @@ public class ClientGoodsController extends BaseController {
     @Autowired
     private CateService cateService;
 
+    /**
+     * 系统设置服务接口
+     * */
     @Autowired
     private SettingService settingService;
 
@@ -67,10 +70,11 @@ public class ClientGoodsController extends BaseController {
 
         Map<String, Object> param = new HashMap<>();
         param.put("status", StatusEnum.ENABLED.getKey());
+        if (storeId > 0) {
+            param.put("storeId", storeId);
+        }
         List<MtGoodsCate> cateList = cateService.queryCateListByParams(param);
-
         List<MtGoods> goodsList = goodsService.getStoreGoodsList(storeId, "");
-
         String baseImage = settingService.getUploadBasePath();
         if (goodsList.size() > 0) {
             for (MtGoods goods : goodsList) {

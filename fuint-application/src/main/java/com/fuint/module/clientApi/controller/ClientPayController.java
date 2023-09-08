@@ -76,12 +76,21 @@ public class ClientPayController extends BaseController {
     @Autowired
     private MemberService memberService;
 
+    /**
+     * 系统设置接口
+     * */
     @Autowired
     private SettingService settingService;
 
+    /**
+     * 会员卡券接口
+     * */
     @Autowired
     private UserCouponService userCouponService;
 
+    /**
+     * 会员等级接口
+     * */
     @Autowired
     UserGradeService userGradeService;
 

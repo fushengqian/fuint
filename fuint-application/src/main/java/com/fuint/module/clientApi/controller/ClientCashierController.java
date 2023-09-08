@@ -25,6 +25,9 @@ import java.util.Map;
 @RequestMapping(value = "/clientApi/cashier")
 public class ClientCashierController extends BaseController {
 
+    /**
+     * 会员服务接口
+     * */
     @Autowired
     private MemberService memberService;
 

@@ -49,15 +49,27 @@ public class ClientUserCouponController extends BaseController {
     @Resource
     private MtUserCouponMapper mtUserCouponMapper;
 
+    /**
+     * 卡券服务接口
+     * */
     @Autowired
     private CouponService couponService;
 
+    /**
+     * 核销记录服务接口
+     * */
     @Autowired
     private ConfirmLogService confirmLogService;
 
+    /**
+     * 员工服务接口
+     * */
     @Autowired
     private StaffService staffService;
 
+    /**
+     * 系统设置服务接口
+     * */
     @Autowired
     private SettingService settingService;
 

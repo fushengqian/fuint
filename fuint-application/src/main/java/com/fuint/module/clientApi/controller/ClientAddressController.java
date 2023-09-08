@@ -21,7 +21,6 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import java.lang.reflect.InvocationTargetException;
 import org.springframework.web.bind.annotation.*;
-
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
@@ -40,14 +39,14 @@ import java.util.Map;
 @RequestMapping(value = "/clientApi/address")
 public class ClientAddressController extends BaseController {
 
+    @Resource
+    private MtRegionMapper mtRegionMapper;
+
     /**
      * 收货地址服务接口
      * */
     @Autowired
     private AddressService addressService;
-
-    @Resource
-    private MtRegionMapper mtRegionMapper;
 
     /**
      * 保存收货地址
@@ -162,8 +161,8 @@ public class ClientAddressController extends BaseController {
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @CrossOrigin
     public ResponseObject detail(HttpServletRequest request, @RequestBody AddressDetailParam addressDetailParam) throws BusinessCheckException, InvocationTargetException, IllegalAccessException {
-        String token = request.getHeader("Access-Token");
-        String addressIdStr = addressDetailParam.getAddressId() == null ? "" : addressDetailParam.getAddressId();
+        String token = request.getHeader("Access-Token") == null ? "" : request.getHeader("Access-Token");
+        String addressIdStr = addressDetailParam.getAddressId() == null ? "0" : addressDetailParam.getAddressId();
         Integer addressId = 0;
         if (StringUtil.isNotEmpty(addressIdStr)) {
             addressId = Integer.parseInt(addressIdStr);
@@ -171,7 +170,6 @@ public class ClientAddressController extends BaseController {
 
         Map<String, Object> result = new HashMap<>();
         UserInfo mtUser = TokenUtil.getUserInfoByToken(token);
-
         if (null == mtUser || StringUtil.isEmpty(token)) {
             return getFailureResult(1001);
         }

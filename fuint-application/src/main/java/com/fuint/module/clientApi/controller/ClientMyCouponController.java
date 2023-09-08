@@ -36,7 +36,7 @@ public class ClientMyCouponController extends BaseController {
     private CouponService couponService;
 
     /**
-     * 会员卡券接口
+     * 会员卡券服务接口
      * */
     @Autowired
     private UserCouponService userCouponService;

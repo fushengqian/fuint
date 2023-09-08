@@ -43,24 +43,45 @@ public class ClientUserController extends BaseController {
 
     private static final Logger logger = LoggerFactory.getLogger(ClientUserController.class);
 
+    /**
+     * 会员服务接口
+     * */
     @Autowired
     private MemberService memberService;
 
+    /**
+     * 会员卡券服务接口
+     * */
     @Autowired
     private UserCouponService userCouponService;
 
+    /**
+     * 员工服务接口
+     * */
     @Autowired
     private StaffService staffService;
 
+    /**
+     * 卡券服务接口
+     * */
     @Autowired
     private CouponService couponService;
 
+    /**
+     * 会员等级服务接口
+     **/
     @Autowired
     private UserGradeService userGradeService;
 
+    /**
+     * 系统配置服务接口
+     * */
     @Autowired
     private SettingService settingService;
 
+    /**
+     * 微信服务接口
+     * */
     @Autowired
     private WeixinService weixinService;
 

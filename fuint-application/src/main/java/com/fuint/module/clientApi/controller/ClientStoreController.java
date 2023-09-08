@@ -25,6 +25,9 @@ import java.util.Map;
 @RequestMapping(value = "/clientApi/store")
 public class ClientStoreController extends BaseController {
 
+    /**
+     * 店铺服务接口
+     * */
     @Autowired
     private StoreService storeService;
 

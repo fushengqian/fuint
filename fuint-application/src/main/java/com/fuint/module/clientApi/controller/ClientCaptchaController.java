@@ -29,6 +29,9 @@ import java.util.UUID;
 @RequestMapping("/clientApi/captcha")
 public class ClientCaptchaController extends BaseController {
 
+    /**
+     * 图形验证码服务接口
+     * */
     @Resource
     private CaptchaService captchaService;
 

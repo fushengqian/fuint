@@ -41,6 +41,9 @@ import java.util.Map;
 @RequestMapping(value = "/clientApi/cart")
 public class ClientCartController extends BaseController {
 
+    @Resource
+    private MtGoodsSkuMapper mtGoodsSkuMapper;
+
     /**
      * 购物车服务接口
      * */
@@ -64,9 +67,6 @@ public class ClientCartController extends BaseController {
      * */
     @Autowired
     private MemberService memberService;
-
-    @Resource
-    private MtGoodsSkuMapper mtGoodsSkuMapper;
 
     /**
      * 保存购物车

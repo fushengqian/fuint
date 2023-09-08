@@ -45,6 +45,9 @@ public class ClientFileController extends BaseController {
     @Autowired
     private Environment env;
 
+    /**
+     * 系统设置服务接口
+     * */
     @Autowired
     private SettingService settingService;
 

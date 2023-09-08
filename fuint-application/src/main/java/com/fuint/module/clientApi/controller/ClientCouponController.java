@@ -56,6 +56,9 @@ public class ClientCouponController extends BaseController {
     @Autowired
     private UserCouponService userCouponService;
 
+    /**
+     * 系统设置服务接口
+     * */
     @Autowired
     private SettingService settingService;
 
