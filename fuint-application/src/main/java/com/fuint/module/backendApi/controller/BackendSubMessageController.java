@@ -154,7 +154,9 @@ public class BackendSubMessageController extends BaseController {
                         JSONObject obj = jsonArray.getJSONObject(i);
                         ParamDto dto = new ParamDto();
                         dto.setKey(obj.get("key").toString());
-                        dto.setName(obj.get("name").toString());
+                        // 解决中文乱码
+                        String pName = new String(obj.get("name").toString().getBytes("ISO8859-1"), "UTF-8");
+                        dto.setName(pName);
                         if (paramArray != null) {
                             dto.setValue("");
                             for (int j = 0; j < paramArray.size(); j++) {

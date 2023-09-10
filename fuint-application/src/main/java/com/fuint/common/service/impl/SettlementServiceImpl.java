@@ -122,7 +122,7 @@ public class SettlementServiceImpl implements SettlementService {
         Integer goodsId = param.getGoodsId() == null ? 0 : param.getGoodsId(); // 立即购买商品ID
         Integer skuId = param.getSkuId() == null ? 0 : param.getSkuId(); // 立即购买商品skuId
         Integer buyNum = param.getBuyNum() == null ? 1 : param.getBuyNum(); // 立即购买商品数量
-        String orderMode = param.getOrderMode()== null ? "" : param.getOrderMode(); // 订单模式(配送or自取)
+        String orderMode = param.getOrderMode()== null ? OrderModeEnum.ONESELF.getKey() : param.getOrderMode(); // 订单模式(配送or自取)
         Integer orderId = param.getOrderId() == null ? null : param.getOrderId(); // 订单ID
 
         MtSetting config = settingService.querySettingByName(OrderSettingEnum.IS_CLOSE.getKey());
