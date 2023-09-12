@@ -17,9 +17,9 @@ import com.fuint.framework.web.ResponseObject;
 import com.fuint.repository.model.*;
 import com.fuint.utils.StringUtil;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
 import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
 import java.util.HashMap;
@@ -50,11 +50,18 @@ public class MerchantMemberController extends BaseController {
     private UserGradeService userGradeService;
 
     /**
+     * 店铺员工服务接口
+     * */
+    @Autowired
+    private StaffService staffService;
+
+    /**
      * 会员列表查询
      *
      * @param  request HttpServletRequest对象
      * @return 会员列表
      */
+    @ApiOperation(value = "查询会员列表")
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @CrossOrigin
     public ResponseObject list(HttpServletRequest request, @RequestBody MemberListParam memberListParam) throws BusinessCheckException {
@@ -81,11 +88,28 @@ public class MerchantMemberController extends BaseController {
             activeTime = DateUtil.formatDate(new Date(), "yyyy-MM-dd") + "~" + DateUtil.formatDate(new Date(), "yyyy-MM-dd");
         }
 
+        UserInfo userInfo = TokenUtil.getUserInfoByToken(token);
+        if (userInfo == null) {
+            return getFailureResult(1001, "请先登录");
+        }
+
+        MtUser mtUser = memberService.queryMemberById(userInfo.getId());
+        MtStaff staffInfo = null;
+        if (mtUser != null && mtUser.getMobile() != null) {
+            staffInfo = staffService.queryStaffByMobile(mtUser.getMobile());
+        }
+        if (staffInfo == null) {
+            return getFailureResult(1002, "该账号不是商户");
+        }
+
         PaginationRequest paginationRequest = new PaginationRequest();
         paginationRequest.setCurrentPage(page);
         paginationRequest.setPageSize(pageSize);
 
         Map<String, Object> params = new HashMap<>();
+        if (staffInfo.getStoreId() != null && staffInfo.getStoreId() > 0) {
+            params.put("storeId", staffInfo.getStoreId());
+        }
         if (StringUtil.isNotEmpty(userId)) {
             params.put("id", userId);
         }
@@ -106,11 +130,6 @@ public class MerchantMemberController extends BaseController {
         }
         if (StringUtil.isNotEmpty(status)) {
             params.put("status", status);
-        }
-
-        UserInfo userInfo = TokenUtil.getUserInfoByToken(token);
-        if (userInfo == null) {
-            return getFailureResult(1001, "请先登录");
         }
 
         // 注册时间比对
@@ -172,6 +191,7 @@ public class MerchantMemberController extends BaseController {
      * @param id 会员ID
      * @return
      */
+    @ApiOperation(value = "查询会员详情")
     @RequestMapping(value = "/info/{id}", method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject info(HttpServletRequest request, @PathVariable("id") Integer id) throws BusinessCheckException {
