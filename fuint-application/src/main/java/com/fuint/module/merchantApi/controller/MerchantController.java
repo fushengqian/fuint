@@ -13,6 +13,7 @@ import com.fuint.framework.web.ResponseObject;
 import com.fuint.repository.model.MtStaff;
 import com.fuint.repository.model.MtUser;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
@@ -49,6 +50,7 @@ public class MerchantController extends BaseController {
      *
      * @param request Request对象
      */
+    @ApiOperation(value = "查询商户信息")
     @RequestMapping(value = "/info", method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject info(HttpServletRequest request) throws BusinessCheckException {

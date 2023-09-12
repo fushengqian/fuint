@@ -7,6 +7,7 @@ import com.fuint.framework.web.BaseController;
 import com.fuint.framework.web.ResponseObject;
 import com.fuint.utils.StringUtil;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
@@ -25,8 +26,9 @@ public class ClientHelpController extends BaseController {
     /**
      * 查询帮助内容列表
      *
-     * @param request  Request对象
+     * @param request Request对象
      */
+    @ApiOperation(value = "查询帮助列表")
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject list(HttpServletRequest request) throws BusinessCheckException {
