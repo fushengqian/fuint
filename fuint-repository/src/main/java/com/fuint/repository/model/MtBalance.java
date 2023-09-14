@@ -29,6 +29,9 @@ public class MtBalance implements Serializable {
     @TableId(value = "ID", type = IdType.AUTO)
     private Integer id;
 
+    @ApiModelProperty("所属店铺ID")
+    private Integer storeId;
+
     @ApiModelProperty("手机号")
     private String mobile;
 
@@ -55,6 +58,5 @@ public class MtBalance implements Serializable {
 
     @ApiModelProperty("状态，A正常；D作废")
     private String status;
-
 
 }

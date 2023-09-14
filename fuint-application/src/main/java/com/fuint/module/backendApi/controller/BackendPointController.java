@@ -21,6 +21,7 @@ import com.fuint.repository.model.MtSetting;
 import com.fuint.repository.model.MtUser;
 import com.fuint.utils.StringUtil;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -62,9 +63,10 @@ public class BackendPointController extends BaseController {
     /**
      * 积分明细列表查询
      *
-     * @param  request  HttpServletRequest对象
+     * @param  request HttpServletRequest对象
      * @return 积分明细列表
      */
+    @ApiOperation(value = "积分明细列表查询")
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject list(HttpServletRequest request) throws BusinessCheckException {
@@ -100,6 +102,11 @@ public class BackendPointController extends BaseController {
             searchParams.put("status", status);
         }
 
+        Integer storeId = accountInfo.getStoreId();
+        if (storeId != null && storeId > 0) {
+            searchParams.put("storeId", storeId);
+        }
+
         paginationRequest.setSearchParams(searchParams);
         PaginationResponse<PointDto> paginationResponse = pointService.queryPointListByPagination(paginationRequest);
 
@@ -115,6 +122,7 @@ public class BackendPointController extends BaseController {
      * @param request
      * @return
      */
+    @ApiOperation(value = "积分设置详情")
     @RequestMapping(value = "/setting", method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject setting(HttpServletRequest request) throws BusinessCheckException {
@@ -155,11 +163,12 @@ public class BackendPointController extends BaseController {
     }
 
     /**
-     * 提交保存
+     * 提交积分设置
      *
-     * @param request  HttpServletRequest对象
+     * @param request HttpServletRequest对象
      * @return
      */
+    @ApiOperation(value = "提交积分设置")
     @RequestMapping(value = "/saveSetting", method = RequestMethod.POST)
     @CrossOrigin
     public ResponseObject saveSettingHandler(HttpServletRequest request, @RequestBody Map<String, Object> param) throws BusinessCheckException {
@@ -211,9 +220,10 @@ public class BackendPointController extends BaseController {
     /**
      * 提交积分充值
      *
-     * @param request  HttpServletRequest对象
+     * @param request HttpServletRequest对象
      * @return
      */
+    @ApiOperation(value = "提交积分充值")
     @RequestMapping(value = "/doRecharge", method = RequestMethod.POST)
     @CrossOrigin
     public ResponseObject doRecharge(HttpServletRequest request, @RequestBody Map<String, Object> param) throws BusinessCheckException {

@@ -85,6 +85,10 @@ public class BalanceServiceImpl extends ServiceImpl<MtBalanceMapper, MtBalance> 
         if (StringUtils.isNotBlank(mobile)) {
             lambdaQueryWrapper.eq(MtBalance::getMobile, mobile);
         }
+        String storeId = paginationRequest.getSearchParams().get("storeId") == null ? "" : paginationRequest.getSearchParams().get("storeId").toString();
+        if (StringUtils.isNotBlank(storeId)) {
+            lambdaQueryWrapper.eq(MtBalance::getStoreId, storeId);
+        }
 
         lambdaQueryWrapper.orderByDesc(MtBalance::getId);
         List<MtBalance> balanceList = mtBalanceMapper.selectList(lambdaQueryWrapper);
@@ -119,7 +123,7 @@ public class BalanceServiceImpl extends ServiceImpl<MtBalanceMapper, MtBalance> 
     /**
      * 添加余额记录
      *
-     * @param mtBalance
+     * @param  mtBalance
      * @throws BusinessCheckException
      */
     @Override
@@ -138,7 +142,9 @@ public class BalanceServiceImpl extends ServiceImpl<MtBalanceMapper, MtBalance> 
         if (newAmount.compareTo(new BigDecimal("0")) < 0) {
            return false;
         }
-
+        if (mtUser.getStoreId() != null) {
+            mtBalance.setStoreId(mtUser.getStoreId());
+        }
         mtUser.setBalance(newAmount);
         mtUserMapper.updateById(mtUser);
 

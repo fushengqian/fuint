@@ -11,9 +11,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * <p>
- * 积分变化表
- * </p>
+ * 会员积分记录表
  *
  * Created by FSQ
  * CopyRight https://www.fuint.cn
@@ -21,7 +19,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @TableName("mt_point")
-@ApiModel(value = "MtPoint对象", description = "积分变化表")
+@ApiModel(value = "MtPoint对象", description = "会员积分记录表")
 public class MtPoint implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -29,6 +27,9 @@ public class MtPoint implements Serializable {
     @ApiModelProperty("自增ID")
     @TableId(value = "ID", type = IdType.AUTO)
     private Integer id;
+
+    @ApiModelProperty("所属店铺ID")
+    private Integer storeId;
 
     @ApiModelProperty("用户ID")
     private Integer userId;
@@ -53,6 +54,5 @@ public class MtPoint implements Serializable {
 
     @ApiModelProperty("状态，A正常；D作废")
     private String status;
-
 
 }

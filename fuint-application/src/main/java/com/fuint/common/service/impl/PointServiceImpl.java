@@ -76,6 +76,10 @@ public class PointServiceImpl extends ServiceImpl<MtPointMapper, MtPoint> implem
         if (StringUtils.isNotBlank(userId)) {
             lambdaQueryWrapper.eq(MtPoint::getUserId, userId);
         }
+        String storeId = paginationRequest.getSearchParams().get("storeId") == null ? "" : paginationRequest.getSearchParams().get("storeId").toString();
+        if (StringUtils.isNotBlank(storeId)) {
+            lambdaQueryWrapper.eq(MtPoint::getStoreId, storeId);
+        }
 
         lambdaQueryWrapper.orderByDesc(MtPoint::getId);
         List<MtPoint> pointList = mtPointMapper.selectList(lambdaQueryWrapper);
@@ -110,7 +114,7 @@ public class PointServiceImpl extends ServiceImpl<MtPointMapper, MtPoint> implem
     /**
      * 添加积分记录
      *
-     * @param mtPoint
+     * @param  mtPoint
      * @throws BusinessCheckException
      */
     @Override
@@ -132,14 +136,16 @@ public class PointServiceImpl extends ServiceImpl<MtPointMapper, MtPoint> implem
             mtPoint.setOrderSn(mtPoint.getOrderSn());
         }
 
-        MtUser user = mtUserMapper.selectById(mtPoint.getUserId());
-        Integer newAmount = user.getPoint() + mtPoint.getAmount();
+        MtUser mtUser = mtUserMapper.selectById(mtPoint.getUserId());
+        Integer newAmount = mtUser.getPoint() + mtPoint.getAmount();
         if (newAmount < 0) {
             return;
         }
-        user.setPoint(newAmount);
-
-        mtUserMapper.updateById(user);
+        mtUser.setPoint(newAmount);
+        if (mtUser.getStoreId() != null) {
+            mtPoint.setStoreId(mtUser.getStoreId());
+        }
+        mtUserMapper.updateById(mtUser);
         mtPointMapper.insert(mtPoint);
 
         // 发送小程序订阅消息
@@ -150,7 +156,7 @@ public class PointServiceImpl extends ServiceImpl<MtPointMapper, MtPoint> implem
         params.put("amount", mtPoint.getAmount());
         params.put("time", dateTime);
         params.put("remark", "您的积分发生了变动，请留意~");
-        weixinService.sendSubscribeMessage(mtPoint.getUserId(), user.getOpenId(), WxMessageEnum.POINT_CHANGE.getKey(), "pages/user/index", params, sendTime);
+        weixinService.sendSubscribeMessage(mtPoint.getUserId(), mtUser.getOpenId(), WxMessageEnum.POINT_CHANGE.getKey(), "pages/user/index", params, sendTime);
 
         return;
     }

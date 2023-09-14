@@ -62,7 +62,7 @@ public class BackendBalanceController extends BaseController {
     /**
      * 余额明细列表查询
      *
-     * @param   request  HttpServletRequest对象
+     * @param  request HttpServletRequest对象
      * @return 余额明细列表
      */
     @ApiOperation(value = "余额明细列表查询")
@@ -81,7 +81,6 @@ public class BackendBalanceController extends BaseController {
         if (accountInfo == null) {
             return getFailureResult(1001, "请先登录");
         }
-
         Map<String, Object> searchParams = new HashMap<>();
         if (StringUtil.isNotEmpty(mobile)) {
             searchParams.put("mobile", mobile);
@@ -94,6 +93,10 @@ public class BackendBalanceController extends BaseController {
         }
         if (StringUtil.isNotEmpty(status)) {
             searchParams.put("status", status);
+        }
+        Integer storeId = accountInfo.getStoreId();
+        if (storeId != null && storeId > 0) {
+            searchParams.put("storeId", storeId);
         }
 
         PaginationRequest paginationRequest = new PaginationRequest();
@@ -111,7 +114,7 @@ public class BackendBalanceController extends BaseController {
     /**
      * 提交充值
      *
-     * @param request  HttpServletRequest对象
+     * @param request HttpServletRequest对象
      * @return
      */
     @ApiOperation(value = "提交充值")
