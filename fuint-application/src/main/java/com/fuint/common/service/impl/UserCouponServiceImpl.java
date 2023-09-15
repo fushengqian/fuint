@@ -393,7 +393,7 @@ public class UserCouponServiceImpl extends ServiceImpl<MtUserCouponMapper, MtUse
                 MtCoupon couponInfo = couponService.queryCouponById(userCouponDto.getCouponId());
                 MtUser userInfo = memberService.queryMemberById(userCouponDto.getUserId());
                 MtStore storeInfo = storeService.queryStoreById(userCouponDto.getStoreId());
-                if (couponInfo == null || userInfo == null || storeInfo == null) {
+                if (couponInfo == null || userInfo == null) {
                     continue;
                 }
 
@@ -429,7 +429,7 @@ public class UserCouponServiceImpl extends ServiceImpl<MtUserCouponMapper, MtUse
 
                 // 优惠券tips
                 if (couponInfo.getType().equals(CouponTypeEnum.COUPON.getKey())) {
-                    if (StringUtil.isNotEmpty(couponInfo.getOutRule()) && Integer.parseInt(couponInfo.getOutRule()) > 0) {
+                    if (StringUtil.isNotEmpty(couponInfo.getOutRule()) && Float.parseFloat(couponInfo.getOutRule()) > 0) {
                         tips = "满" + couponInfo.getOutRule() + "可用";
                     } else {
                         tips = "无门槛券";
