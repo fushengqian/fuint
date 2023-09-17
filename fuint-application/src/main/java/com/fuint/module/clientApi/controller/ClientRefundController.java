@@ -108,6 +108,10 @@ public class ClientRefundController extends BaseController {
         if (order.getStoreInfo() != null) {
             refundDto.setStoreId(order.getStoreInfo().getId());
         }
+        refundDto.setMerchantId(order.getMerchantId());
+        if (order.getStoreInfo() != null) {
+            refundDto.setStoreId(order.getStoreInfo().getId());
+        }
         refundDto.setAmount(order.getPayAmount());
         refundDto.setImages(images);
         MtRefund refundInfo = refundService.createRefund(refundDto);

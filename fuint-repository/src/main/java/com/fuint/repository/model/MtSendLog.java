@@ -28,6 +28,12 @@ public class MtSendLog implements Serializable {
     @TableId(value = "ID", type = IdType.AUTO)
     private Integer id;
 
+    @ApiModelProperty("商户ID")
+    private Integer merchantId;
+
+    @ApiModelProperty("店铺ID")
+    private Integer storeId;
+
     @ApiModelProperty("1：单用户发券；2：批量发券")
     private Integer type;
 

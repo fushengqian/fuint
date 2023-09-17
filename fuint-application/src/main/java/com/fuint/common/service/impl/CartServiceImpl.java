@@ -110,6 +110,7 @@ public class CartServiceImpl extends ServiceImpl<MtCartMapper, MtCart> implement
             }
         }
 
+        mtCart.setMerchantId(reqDto.getMerchantId());
         mtCart.setStoreId(reqDto.getStoreId() == null ? 0 : reqDto.getStoreId());
         mtCart.setStatus(StatusEnum.ENABLED.getKey());
         mtCart.setUpdateTime(new Date());
@@ -208,6 +209,7 @@ public class CartServiceImpl extends ServiceImpl<MtCartMapper, MtCart> implement
         String goodsId =  params.get("goodsId") == null ? "" : params.get("goodsId").toString();
         String skuId =  params.get("skuId") == null ? "" : params.get("skuId").toString();
         String storeId =  params.get("storeId") == null ? "" : params.get("storeId").toString();
+        String merchantId =  params.get("merchantId") == null ? "" : params.get("merchantId").toString();
 
         LambdaQueryWrapper<MtCart> lambdaQueryWrapper = new LambdaQueryWrapper<>();
         lambdaQueryWrapper.eq(MtCart::getStatus, status);
@@ -226,6 +228,9 @@ public class CartServiceImpl extends ServiceImpl<MtCartMapper, MtCart> implement
         }
         if (StringUtil.isNotEmpty(goodsId)) {
             lambdaQueryWrapper.eq(MtCart::getGoodsId, goodsId);
+        }
+        if (StringUtil.isNotEmpty(merchantId) && Integer.parseInt(merchantId) > 0) {
+            lambdaQueryWrapper.eq(MtCart::getMerchantId, merchantId);
         }
         if (StringUtil.isNotEmpty(storeId) && Integer.parseInt(storeId) > 0) {
             lambdaQueryWrapper.eq(MtCart::getStoreId, storeId);

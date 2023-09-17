@@ -63,7 +63,7 @@ public class BackendPointController extends BaseController {
     /**
      * 积分明细列表查询
      *
-     * @param  request HttpServletRequest对象
+     * @param request HttpServletRequest对象
      * @return 积分明细列表
      */
     @ApiOperation(value = "积分明细列表查询")
@@ -102,6 +102,11 @@ public class BackendPointController extends BaseController {
             searchParams.put("status", status);
         }
 
+        Integer merchantId = accountInfo.getMerchantId();
+        if (merchantId != null && merchantId > 0) {
+            searchParams.put("merchantId", merchantId);
+        }
+
         Integer storeId = accountInfo.getStoreId();
         if (storeId != null && storeId > 0) {
             searchParams.put("storeId", storeId);
@@ -132,7 +137,7 @@ public class BackendPointController extends BaseController {
             return getFailureResult(1001, "请先登录");
         }
 
-        List<MtSetting> settingList = settingService.getSettingList(SettingTypeEnum.POINT.getKey());
+        List<MtSetting> settingList = settingService.getSettingList(accountInfo.getMerchantId(), SettingTypeEnum.POINT.getKey());
         Map<String, Object> result = new HashMap();
         String pointNeedConsume = "";
         String canUsedAsMoney = "";

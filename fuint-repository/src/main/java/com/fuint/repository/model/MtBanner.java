@@ -19,7 +19,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @TableName("mt_banner")
-@ApiModel(value = "MtBanner对象", description = "MtBanner对象")
+@ApiModel(value = "MtBanner对象", description = "MtBanner表对象")
 public class MtBanner implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -30,6 +30,9 @@ public class MtBanner implements Serializable {
 
     @ApiModelProperty("标题")
     private String title;
+
+    @ApiModelProperty("所属商户ID")
+    private Integer merchantId;
 
     @ApiModelProperty("所属店铺ID")
     private Integer storeId;

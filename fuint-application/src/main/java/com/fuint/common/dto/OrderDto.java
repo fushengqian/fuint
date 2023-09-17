@@ -85,6 +85,11 @@ public class OrderDto implements Serializable {
     private Integer storeId;
 
     /**
+     * 商户ID
+     */
+    private Integer merchantId;
+
+    /**
      * 员工ID
      */
     private Integer staffId;
@@ -282,6 +287,14 @@ public class OrderDto implements Serializable {
 
     public void setStoreId(Integer storeId) {
         this.storeId = storeId;
+    }
+
+    public Integer getMerchantId() {
+        return merchantId;
+    }
+
+    public void setMerchantId(Integer merchantId) {
+        this.merchantId = merchantId;
     }
 
     public Integer getStaffId() {

@@ -95,6 +95,12 @@ public class SettlementServiceImpl implements SettlementService {
     private PaymentService paymentService;
 
     /**
+     * 商户服务接口
+     */
+    @Autowired
+    private MerchantService merchantService;
+
+    /**
      * 订单结算
      * @return
      * */
@@ -125,7 +131,8 @@ public class SettlementServiceImpl implements SettlementService {
         String orderMode = param.getOrderMode()== null ? OrderModeEnum.ONESELF.getKey() : param.getOrderMode(); // 订单模式(配送or自取)
         Integer orderId = param.getOrderId() == null ? null : param.getOrderId(); // 订单ID
 
-        MtSetting config = settingService.querySettingByName(OrderSettingEnum.IS_CLOSE.getKey());
+        Integer merchantId = merchantService.getMerchantId(merchantNo);
+        MtSetting config = settingService.querySettingByName(merchantId, OrderSettingEnum.IS_CLOSE.getKey());
         if (config != null && config.getValue().equals("true")) {
             throw new BusinessCheckException("系统已关闭交易功能，请稍后再试！");
         }
@@ -209,6 +216,7 @@ public class SettlementServiceImpl implements SettlementService {
         orderDto.setId(orderId);
         orderDto.setRemark(remark);
         orderDto.setUserId(userId);
+        orderDto.setMerchantId(merchantId);
         orderDto.setStoreId(storeId);
         orderDto.setType(type);
         orderDto.setGoodsId(goodsId);
@@ -222,7 +230,7 @@ public class SettlementServiceImpl implements SettlementService {
         orderDto.setIsVisitor(isVisitor);
         orderDto.setPlatform(platform);
 
-        MtSetting pointSetting = settingService.querySettingByName(PointSettingEnum.CAN_USE_AS_MONEY.getKey());
+        MtSetting pointSetting = settingService.querySettingByName(merchantId, PointSettingEnum.CAN_USE_AS_MONEY.getKey());
         // 使用积分数量
         if (pointSetting != null && pointSetting.getValue().equals("true")) {
             orderDto.setUsePoint(usePoint);
@@ -289,7 +297,7 @@ public class SettlementServiceImpl implements SettlementService {
 
         // 商品订单且配送要加上配送费用
         if (orderDto.getType().equals(OrderTypeEnum.GOOGS.getKey()) && orderDto.getOrderMode().equals(OrderModeEnum.EXPRESS.getKey())) {
-            MtSetting mtSetting = settingService.querySettingByName(OrderSettingEnum.DELIVERY_FEE.getKey());
+            MtSetting mtSetting = settingService.querySettingByName(merchantId, OrderSettingEnum.DELIVERY_FEE.getKey());
             if (mtSetting != null && StringUtil.isNotEmpty(mtSetting.getValue())) {
                 BigDecimal deliveryFee = new BigDecimal(mtSetting.getValue());
                 if (deliveryFee.compareTo(new BigDecimal("0")) > 0) {
@@ -300,7 +308,7 @@ public class SettlementServiceImpl implements SettlementService {
 
         // 使用积分抵扣
         if (usePoint > 0) {
-            List<MtSetting> settingList = settingService.getSettingList(SettingTypeEnum.POINT.getKey());
+            List<MtSetting> settingList = settingService.getSettingList(merchantId, SettingTypeEnum.POINT.getKey());
             String canUsedAsMoney = "false";
             String exchangeNeedPoint = "0";
             for (MtSetting setting : settingList) {
@@ -485,7 +493,7 @@ public class SettlementServiceImpl implements SettlementService {
         params.put("time", dateTime);
         params.put("orderSn", orderInfo.getOrderSn());
         params.put("remark", "您的订单已生成，请留意~");
-        weixinService.sendSubscribeMessage(userInfo.getId(), userInfo.getOpenId(), WxMessageEnum.ORDER_CREATED.getKey(), "pages/order/index", params, sendTime);
+        weixinService.sendSubscribeMessage(merchantId, userInfo.getId(), userInfo.getOpenId(), WxMessageEnum.ORDER_CREATED.getKey(), "pages/order/index", params, sendTime);
 
         if (StringUtil.isNotEmpty(errorMessage)) {
             throw new BusinessCheckException(errorMessage);

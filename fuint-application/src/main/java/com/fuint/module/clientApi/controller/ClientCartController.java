@@ -69,6 +69,12 @@ public class ClientCartController extends BaseController {
     private MemberService memberService;
 
     /**
+     * 商户服务接口
+     */
+    @Autowired
+    private MerchantService merchantService;
+
+    /**
      * 保存购物车
      */
     @ApiOperation(value = "添加、保存购物车")
@@ -76,6 +82,7 @@ public class ClientCartController extends BaseController {
     @CrossOrigin
     public ResponseObject save(HttpServletRequest request, @RequestBody CartSaveParam cartSaveParam) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
+        String merchantNo = request.getHeader("merchantNo") == null ? "" : request.getHeader("merchantNo");
         Integer storeId = request.getHeader("storeId") == null ? 0 : Integer.parseInt(request.getHeader("storeId"));
         Integer cartId = cartSaveParam.getCartId() == null ? 0 : cartSaveParam.getCartId();
         Integer goodsId = cartSaveParam.getGoodsId() == null ? 0 : cartSaveParam.getGoodsId();
@@ -118,6 +125,8 @@ public class ClientCartController extends BaseController {
             return getFailureResult(201, "该商品ID异常");
         }
 
+        Integer merchantId = merchantService.getMerchantId(merchantNo);
+
         MtCart mtCart = new MtCart();
         mtCart.setGoodsId(goodsId);
         mtCart.setUserId(mtUser.getId());
@@ -127,6 +136,7 @@ public class ClientCartController extends BaseController {
         mtCart.setId(cartId);
         mtCart.setHangNo(hangNo);
         mtCart.setIsVisitor(YesOrNoEnum.NO.getKey());
+        mtCart.setMerchantId(merchantId);
 
         try {
             Integer id = cartService.saveCart(mtCart, action);
@@ -183,6 +193,7 @@ public class ClientCartController extends BaseController {
     @CrossOrigin
     public ResponseObject list(HttpServletRequest request, @RequestBody CartListParam cartListParam) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
+        String merchantNo = request.getHeader("merchantNo") == null ? "" : request.getHeader("merchantNo");
         Integer storeId = request.getHeader("storeId") == null ? 0 : Integer.parseInt(request.getHeader("storeId"));
         String platform = request.getHeader("platform") == null ? "" : request.getHeader("platform");
         Integer goodsId = cartListParam.getGoodsId() == null ? 0 : cartListParam.getGoodsId();
@@ -269,7 +280,8 @@ public class ClientCartController extends BaseController {
             cartList.add(mtCart);
         }
 
-        result = orderService.calculateCartGoods(mtUser.getId(), cartList, userCouponId, isUsePoint, platform, OrderModeEnum.EXPRESS.getKey());
+        Integer merchantId = merchantService.getMerchantId(merchantNo);
+        result = orderService.calculateCartGoods(merchantId, mtUser.getId(), cartList, userCouponId, isUsePoint, platform, OrderModeEnum.EXPRESS.getKey());
 
         return getSuccessResult(result);
     }

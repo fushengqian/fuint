@@ -126,7 +126,7 @@ public interface OrderService extends IService<MtOrder> {
     /**
      * 计算购物车
      * */
-    Map<String, Object> calculateCartGoods(Integer userId, List<MtCart> cartList, Integer couponId, boolean isUsePoint, String platform, String orderMode) throws BusinessCheckException;
+    Map<String, Object> calculateCartGoods(Integer merchantId, Integer userId, List<MtCart> cartList, Integer couponId, boolean isUsePoint, String platform, String orderMode) throws BusinessCheckException;
 
     /**
      * 获取支付金额

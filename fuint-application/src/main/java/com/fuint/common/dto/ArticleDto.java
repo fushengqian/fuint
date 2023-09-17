@@ -25,6 +25,11 @@ public class ArticleDto implements Serializable {
     private String brief;
 
     /**
+     * 所属商户
+     * */
+    private Integer merchantId;
+
+    /**
      * 所属店铺
      * */
     private Integer storeId;
@@ -91,6 +96,12 @@ public class ArticleDto implements Serializable {
     }
     public void setBrief(String brief){
         this.brief=brief;
+    }
+    public Integer getMerchantId(){
+        return merchantId;
+    }
+    public void setMerchantId(Integer merchantId){
+        this.merchantId=merchantId;
     }
     public Integer getStoreId(){
         return storeId;

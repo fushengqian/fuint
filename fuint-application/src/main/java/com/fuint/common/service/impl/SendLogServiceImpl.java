@@ -54,6 +54,14 @@ public class SendLogServiceImpl extends ServiceImpl<MtSendLogMapper, MtSendLog> 
         if (StringUtils.isNotBlank(userId)) {
             lambdaQueryWrapper.eq(MtSendLog::getUserId, userId);
         }
+        String merchantId = paginationRequest.getSearchParams().get("merchantId") == null ? "" : paginationRequest.getSearchParams().get("merchantId").toString();
+        if (StringUtils.isNotBlank(merchantId)) {
+            lambdaQueryWrapper.eq(MtSendLog::getMerchantId, merchantId);
+        }
+        String storeId = paginationRequest.getSearchParams().get("storeId") == null ? "" : paginationRequest.getSearchParams().get("storeId").toString();
+        if (StringUtils.isNotBlank(storeId)) {
+            lambdaQueryWrapper.eq(MtSendLog::getStoreId, storeId);
+        }
         String couponId = paginationRequest.getSearchParams().get("couponId") == null ? "" : paginationRequest.getSearchParams().get("couponId").toString();
         if (StringUtils.isNotBlank(couponId)) {
             lambdaQueryWrapper.eq(MtSendLog::getCouponId, couponId);
@@ -85,7 +93,8 @@ public class SendLogServiceImpl extends ServiceImpl<MtSendLogMapper, MtSendLog> 
     @Override
     public MtSendLog addSendLog(ReqSendLogDto reqSendLogDto) {
         MtSendLog mtLog = new MtSendLog();
-
+        mtLog.setMerchantId(reqSendLogDto.getMerchantId());
+        mtLog.setStoreId(reqSendLogDto.getStoreId());
         mtLog.setType(reqSendLogDto.getType());
         mtLog.setUserId(reqSendLogDto.getUserId());
         mtLog.setFileName(reqSendLogDto.getFileName());
@@ -101,9 +110,7 @@ public class SendLogServiceImpl extends ServiceImpl<MtSendLogMapper, MtSendLog> 
         mtLog.setCreateTime(new Date());
         mtLog.setOperator(reqSendLogDto.getOperator());
         mtLog.setUuid(reqSendLogDto.getUuid());
-
         mtSendLogMapper.insert(mtLog);
-
         return mtLog;
     }
 

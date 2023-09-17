@@ -207,6 +207,10 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
         if (StringUtils.isNotBlank(gradeId)) {
             lambdaQueryWrapper.eq(MtUser::getGradeId, gradeId);
         }
+        String merchantId = paginationRequest.getSearchParams().get("merchantId") == null ? "" : paginationRequest.getSearchParams().get("merchantId").toString();
+        if (StringUtils.isNotBlank(merchantId)) {
+            lambdaQueryWrapper.eq(MtUser::getMerchantId, merchantId);
+        }
         String storeId = paginationRequest.getSearchParams().get("storeId") == null ? "" : paginationRequest.getSearchParams().get("storeId").toString();
         if (StringUtils.isNotBlank(storeId)) {
             lambdaQueryWrapper.eq(MtUser::getStoreId, storeId);
@@ -222,6 +226,7 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
         if (StringUtils.isNotBlank(status)) {
             lambdaQueryWrapper.eq(MtUser::getStatus, status);
         }
+        // 注册开始、结束时间
         String startTime = paginationRequest.getSearchParams().get("startTime") == null ? "" : paginationRequest.getSearchParams().get("startTime").toString();
         String endTime = paginationRequest.getSearchParams().get("endTime") == null ? "" : paginationRequest.getSearchParams().get("endTime").toString();
         if (StringUtil.isNotEmpty(startTime)) {
@@ -230,6 +235,34 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
         if (StringUtil.isNotEmpty(endTime)) {
             lambdaQueryWrapper.le(MtUser::getCreateTime, endTime);
         }
+        // 注册时间
+        String regTime = paginationRequest.getSearchParams().get("regTime") == null ? "" : paginationRequest.getSearchParams().get("regTime").toString();
+        if (StringUtil.isNotEmpty(regTime)) {
+            String[] dateTime = regTime.split("~");
+            if (dateTime.length == 2) {
+                lambdaQueryWrapper.ge(MtUser::getCreateTime, dateTime[0]);
+                lambdaQueryWrapper.le(MtUser::getCreateTime, dateTime[1]);
+            }
+        }
+        // 活跃时间
+        String activeTime = paginationRequest.getSearchParams().get("activeTime") == null ? "" : paginationRequest.getSearchParams().get("activeTime").toString();
+        if (StringUtil.isNotEmpty(activeTime)) {
+            String[] dateTime = activeTime.split("~");
+            if (dateTime.length == 2) {
+                lambdaQueryWrapper.ge(MtUser::getUpdateTime, dateTime[0]);
+                lambdaQueryWrapper.le(MtUser::getUpdateTime, dateTime[1]);
+            }
+        }
+        // 会员有效期
+        String memberTime = paginationRequest.getSearchParams().get("memberTime") == null ? "" : paginationRequest.getSearchParams().get("memberTime").toString();
+        if (StringUtil.isNotEmpty(memberTime)) {
+            String[] dateTime = memberTime.split("~");
+            if (dateTime.length == 2) {
+                lambdaQueryWrapper.ge(MtUser::getStartTime, dateTime[0]);
+                lambdaQueryWrapper.le(MtUser::getEndTime, dateTime[1]);
+            }
+        }
+
         lambdaQueryWrapper.orderByDesc(MtUser::getUpdateTime);
         List<MtUser> userList = mtUserMapper.selectList(lambdaQueryWrapper);
         List<UserDto> dataList = new ArrayList<>();

@@ -31,6 +31,12 @@ public class MtCouponGroup implements Serializable {
     @TableId(value = "ID", type = IdType.AUTO)
     private Integer id;
 
+    @ApiModelProperty("所属商户ID")
+    private Integer merchantId;
+
+    @ApiModelProperty("店铺ID")
+    private Integer storeId;
+
     @ApiModelProperty("券组名称")
     private String name;
 

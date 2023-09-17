@@ -5,16 +5,13 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import java.io.Serializable;
 import java.math.BigDecimal;
-
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
 
 /**
- * <p>
- * 
- * </p>
+ * 会员等级表
  *
  * Created by FSQ
  * CopyRight https://www.fuint.cn
@@ -30,6 +27,9 @@ public class MtUserGrade implements Serializable {
     @ApiModelProperty("自增ID")
     @TableId(value = "ID", type = IdType.AUTO)
     private Integer id;
+
+    @ApiModelProperty("商户ID")
+    private Integer merchantId;
 
     @ApiModelProperty("等级")
     private Integer grade;

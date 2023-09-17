@@ -43,5 +43,4 @@ public class MtGiveItem implements Serializable {
     @ApiModelProperty("状态，A正常；D删除")
     private String status;
 
-
 }

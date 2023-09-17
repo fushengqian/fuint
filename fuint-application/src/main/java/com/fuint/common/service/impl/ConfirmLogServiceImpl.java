@@ -70,6 +70,10 @@ public class ConfirmLogServiceImpl extends ServiceImpl<MtConfirmLogMapper, MtCon
         if (StringUtils.isNotBlank(couponId)) {
             lambdaQueryWrapper.eq(MtConfirmLog::getCouponId, couponId);
         }
+        String merchantId = paginationRequest.getSearchParams().get("merchantId") == null ? "" : paginationRequest.getSearchParams().get("merchantId").toString();
+        if (StringUtils.isNotBlank(merchantId)) {
+            lambdaQueryWrapper.eq(MtConfirmLog::getMerchantId, merchantId);
+        }
         String storeId = paginationRequest.getSearchParams().get("storeId") == null ? "" : paginationRequest.getSearchParams().get("storeId").toString();
         if (StringUtils.isNotBlank(storeId)) {
             lambdaQueryWrapper.eq(MtConfirmLog::getStoreId, storeId);

@@ -105,6 +105,7 @@ public class BackendGoodsController extends BaseController {
 
         TAccount account = accountService.getAccountInfoById(accountInfo.getId());
         Integer storeId = account.getStoreId() == null ? 0 : account.getStoreId();
+        Integer merchantId = account.getMerchantId() == null ? 0 : account.getMerchantId();
 
         PaginationRequest paginationRequest = new PaginationRequest();
         paginationRequest.setCurrentPage(page);
@@ -113,6 +114,9 @@ public class BackendGoodsController extends BaseController {
         Map<String, Object> params = new HashMap<>();
         if (StringUtil.isNotEmpty(searchStoreId)) {
             params.put("storeId", searchStoreId);
+        }
+        if (merchantId > 0) {
+            params.put("merchantId", merchantId);
         }
         if (storeId > 0) {
             params.put("storeId", storeId);
@@ -496,6 +500,7 @@ public class BackendGoodsController extends BaseController {
 
         MtGoods info = new MtGoods();
         info.setId(Integer.parseInt(goodsId));
+        info.setMerchantId(accountInfo.getMerchantId());
         if (StringUtil.isNotEmpty(type)) {
             info.setType(type);
         }

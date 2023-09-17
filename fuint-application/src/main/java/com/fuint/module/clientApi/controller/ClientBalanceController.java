@@ -69,22 +69,29 @@ public class ClientBalanceController extends BaseController {
     private MemberService memberService;
 
     /**
+     * 商户服务接口
+     */
+    @Autowired
+    private MerchantService merchantService;
+
+    /**
      * 充值配置
      *
-     * @param request  Request对象
+     * @param request Request对象
      */
     @RequestMapping(value = "/setting", method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject setting(HttpServletRequest request) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
+        String merchantNo = request.getHeader("merchantNo");
         UserInfo userInfo = TokenUtil.getUserInfoByToken(token);
         if (userInfo == null) {
             return getFailureResult(1001, "请先登录");
         }
 
         Map<String, Object> outParams = new HashMap<>();
-
-        List<MtSetting> settingList = settingService.getSettingList(SettingTypeEnum.BALANCE.getKey());
+        Integer merchantId = merchantService.getMerchantId(merchantNo);
+        List<MtSetting> settingList = settingService.getSettingList(merchantId, SettingTypeEnum.BALANCE.getKey());
 
         List<RechargeRuleDto> rechargeRuleList = new ArrayList<>();
         String status = StatusEnum.DISABLE.getKey();
@@ -131,6 +138,7 @@ public class ClientBalanceController extends BaseController {
     public ResponseObject doRecharge(HttpServletRequest request, @RequestBody RechargeParam rechargeParam) throws BusinessCheckException {
         Integer storeId = request.getHeader("storeId") == null ? 0 : Integer.parseInt(request.getHeader("storeId"));
         String platform = request.getHeader("platform") == null ? "" : request.getHeader("platform");
+        String merchantNo = request.getHeader("merchantNo") == null ? "" : request.getHeader("merchantNo");
 
         String token = request.getHeader("Access-Token");
         if (StringUtil.isEmpty(token)) {
@@ -148,9 +156,11 @@ public class ClientBalanceController extends BaseController {
             return getFailureResult(2000, "请确认充值金额");
         }
 
+        Integer merchantId = merchantService.getMerchantId(merchantNo);
+
         // 充值赠送金额
         String ruleParam = "";
-        MtSetting mtSetting = settingService.querySettingByName(BalanceSettingEnum.RECHARGE_RULE.getKey());
+        MtSetting mtSetting = settingService.querySettingByName(merchantId, BalanceSettingEnum.RECHARGE_RULE.getKey());
         if (StringUtil.isNotEmpty(rechargeAmount) && mtSetting != null) {
             if (mtSetting.getValue() != null && StringUtil.isNotEmpty(mtSetting.getValue())) {
                 String rules[] = mtSetting.getValue().split(",");
@@ -192,6 +202,7 @@ public class ClientBalanceController extends BaseController {
         orderDto.setOrderMode("");
         orderDto.setCouponId(0);
         orderDto.setPlatform(platform);
+        orderDto.setMerchantId(merchantId);
 
         MtOrder orderInfo = orderService.saveOrder(orderDto);
 

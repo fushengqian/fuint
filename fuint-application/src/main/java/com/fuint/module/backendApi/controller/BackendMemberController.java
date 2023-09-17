@@ -125,6 +125,9 @@ public class BackendMemberController extends BaseController {
         if (storeId > 0) {
             params.put("storeId", storeId.toString());
         }
+        if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
+            params.put("merchantId", accountInfo.getMerchantId());
+        }
         if (StringUtil.isNotEmpty(startTime)) {
             params.put("startTime", startTime);
         }
@@ -331,7 +334,7 @@ public class BackendMemberController extends BaseController {
             return getFailureResult(1001, "请先登录");
         }
 
-        List<MtSetting> settingList = settingService.getSettingList(SettingTypeEnum.USER.getKey());
+        List<MtSetting> settingList = settingService.getSettingList(accountInfo.getMerchantId(), SettingTypeEnum.USER.getKey());
 
         String getCouponNeedPhone = "false";
         String submitOrderNeedPhone = "false";
@@ -394,6 +397,8 @@ public class BackendMemberController extends BaseController {
             info.setDescription(setting.getValue());
             info.setOperator(operator);
             info.setUpdateTime(new Date());
+            info.setMerchantId(accountInfo.getMerchantId());
+            info.setStoreId(accountInfo.getStoreId());
 
             settingService.saveSetting(info);
         }

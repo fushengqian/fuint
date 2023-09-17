@@ -234,6 +234,8 @@ public class RefundServiceImpl extends ServiceImpl<MtRefundMapper, MtRefund> imp
         if (refundDto.getId() != null) {
             refund.setId(refund.getId());
         }
+        refund.setMerchantId(refundDto.getMerchantId());
+        refund.setStoreId(refundDto.getStoreId());
 
         // 检查是否已存在
         Map<String, Object> params = new HashMap<>();

@@ -37,6 +37,9 @@ public class MtCommissionRule implements Serializable {
     @ApiModelProperty("分佣对象")
     private String target;
 
+    @ApiModelProperty("商户ID")
+    private Integer merchantId;
+
     @ApiModelProperty("适用店铺ID")
     private Integer storeId;
 

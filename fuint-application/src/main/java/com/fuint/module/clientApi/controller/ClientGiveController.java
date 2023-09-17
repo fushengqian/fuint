@@ -68,6 +68,7 @@ public class ClientGiveController extends BaseController {
         MtUser mtUser = memberService.queryMemberById(userInfo.getId());
         giveParam.setUserId(mtUser.getId());
         giveParam.setStoreId(mtUser.getStoreId());
+        giveParam.setMerchantId(mtUser.getMerchantId());
 
         try {
             /*

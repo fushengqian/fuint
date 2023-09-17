@@ -28,6 +28,9 @@ public class MtStock implements Serializable {
     @TableId(value = "ID", type = IdType.AUTO)
     private Integer id;
 
+    @ApiModelProperty("商户ID")
+    private Integer merchantId;
+
     @ApiModelProperty("店铺ID")
     private Integer storeId;
 

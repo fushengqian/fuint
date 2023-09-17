@@ -34,7 +34,7 @@ public interface WeixinService {
 
     String getPhoneNumber(String encryptedData, String session_key, String iv);
 
-    Boolean sendSubscribeMessage(Integer userId, String toUserOpenId, String key, String page, Map<String,Object> params, Date sendTime) throws BusinessCheckException;
+    Boolean sendSubscribeMessage(Integer merchantId, Integer userId, String toUserOpenId, String key, String page, Map<String,Object> params, Date sendTime) throws BusinessCheckException;
 
     Boolean doSendSubscribeMessage(String reqDataJsonStr);
 

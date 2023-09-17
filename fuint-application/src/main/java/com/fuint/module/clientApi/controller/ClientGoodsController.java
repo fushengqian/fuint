@@ -8,6 +8,7 @@ import com.fuint.common.enums.YesOrNoEnum;
 import com.fuint.common.param.GoodsInfoParam;
 import com.fuint.common.service.CateService;
 import com.fuint.common.service.GoodsService;
+import com.fuint.common.service.MerchantService;
 import com.fuint.common.service.SettingService;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.pagination.PaginationRequest;
@@ -58,6 +59,12 @@ public class ClientGoodsController extends BaseController {
      * */
     @Autowired
     private SettingService settingService;
+
+    /**
+     * 商户服务接口
+     */
+    @Autowired
+    private MerchantService merchantService;
 
     /**
      * 获取商品分类列表
@@ -121,6 +128,7 @@ public class ClientGoodsController extends BaseController {
     @CrossOrigin
     public ResponseObject search(HttpServletRequest request, @RequestBody Map<String, Object> params) throws BusinessCheckException {
         Integer storeId = request.getHeader("storeId") == null ? 0 : Integer.parseInt(request.getHeader("storeId"));
+        String merchantNo = request.getHeader("merchantNo") == null ? "" : request.getHeader("merchantNo");
         Integer page = params.get("page") == null ? 1 : Integer.parseInt(params.get("page").toString());
         Integer pageSize = params.get("pageSize") == null ? Constants.PAGE_SIZE : Integer.parseInt(params.get("pageSize").toString());
         String name = params.get("name") == null ? "" : params.get("name").toString();
@@ -140,6 +148,10 @@ public class ClientGoodsController extends BaseController {
         }
         if (StringUtil.isNotEmpty(name)) {
             searchParams.put("name", name);
+        }
+        Integer merchantId = merchantService.getMerchantId(merchantNo);
+        if (merchantId > 0 ) {
+            searchParams.put("merchantId", merchantId);
         }
 
         paginationRequest.setSearchParams(searchParams);

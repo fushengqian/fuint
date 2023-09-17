@@ -21,7 +21,6 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
@@ -88,7 +87,7 @@ public class BackendCouponController extends BaseController {
     /**
      * 查询卡券列表
      *
-     * @param request
+     * @param  request
      * @return
      * @throws BusinessCheckException
      */
@@ -115,6 +114,12 @@ public class BackendCouponController extends BaseController {
         paginationRequest.setPageSize(pageSize);
 
         Map<String, Object> params = new HashMap<>();
+        if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
+            params.put("merchantId", accountInfo.getMerchantId());
+        }
+        if (accountInfo.getStoreId() != null && accountInfo.getStoreId() > 0) {
+            params.put("storeId", accountInfo.getStoreId());
+        }
         if (groupId > 0) {
             params.put("groupId", groupId.toString());
         }
@@ -129,6 +134,12 @@ public class BackendCouponController extends BaseController {
         }
         if (StringUtil.isNotEmpty(status)) {
             params.put("status", status);
+        }
+        if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
+            params.put("merchantId", accountInfo.getMerchantId());
+        }
+        if (accountInfo.getStoreId() != null && accountInfo.getStoreId() > 0) {
+            params.put("storeId", accountInfo.getStoreId());
         }
 
         paginationRequest.setSearchParams(params);
@@ -258,7 +269,7 @@ public class BackendCouponController extends BaseController {
     /**
      * 保存卡券
      *
-     * @param request  HttpServletRequest对象
+     * @param request HttpServletRequest对象
      * @return
      */
     @ApiOperation(value = "保存卡券")
@@ -288,9 +299,11 @@ public class BackendCouponController extends BaseController {
         }
 
         TAccount account = accountService.getAccountInfoById(accountInfo.getId());
-        Integer storeId = account.getStoreId() == null ? 0 : account.getStoreId();
-        if (storeId > 0) {
-            reqCouponDto.setStoreIds(storeId.toString());
+        if (account.getStoreId() != null && account.getStoreId() > 0) {
+            reqCouponDto.setStoreId(account.getStoreId());
+        }
+        if (account.getMerchantId() != null && account.getMerchantId() > 0) {
+            reqCouponDto.setMerchantId(account.getMerchantId());
         }
 
         try {
@@ -464,6 +477,8 @@ public class BackendCouponController extends BaseController {
         String operator = accountInfo.getAccountName();
         dto.setOperator(operator);
         dto.setUuid(uuid);
+        dto.setMerchantId(accountInfo.getMerchantId());
+        dto.setStoreId(accountInfo.getStoreId());
         sendLogService.addSendLog(dto);
 
         // 发送短信

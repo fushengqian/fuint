@@ -86,6 +86,12 @@ public class ClientUserController extends BaseController {
     private WeixinService weixinService;
 
     /**
+     * 商户服务接口
+     */
+    @Autowired
+    private MerchantService merchantService;
+
+    /**
      * 获取会员信息
      */
     @ApiOperation(value = "获取会员信息")
@@ -189,10 +195,12 @@ public class ClientUserController extends BaseController {
     @ApiOperation(value = "获取会员设置")
     @RequestMapping(value = "/setting", method = RequestMethod.GET)
     @CrossOrigin
-    public ResponseObject setting() throws BusinessCheckException {
+    public ResponseObject setting(HttpServletRequest request) throws BusinessCheckException {
+        String merchantNo = request.getHeader("merchantNo");
         Map<String, Object> outParams = new HashMap<>();
 
-        List<MtSetting> settingList = settingService.getSettingList(SettingTypeEnum.USER.getKey());
+        Integer merchantId = merchantService.getMerchantId(merchantNo);
+        List<MtSetting> settingList = settingService.getSettingList(merchantId, SettingTypeEnum.USER.getKey());
 
         for (MtSetting setting : settingList) {
             if (setting.getName().equals("getCouponNeedPhone")) {

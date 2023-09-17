@@ -88,6 +88,10 @@ public class GoodsServiceImpl extends ServiceImpl<MtGoodsMapper, MtGoods> implem
         if (StringUtils.isNotBlank(goodsNo)) {
             lambdaQueryWrapper.eq(MtGoods::getGoodsNo, goodsNo);
         }
+        String merchantId = paginationRequest.getSearchParams().get("merchantId") == null ? "" : paginationRequest.getSearchParams().get("merchantId").toString();
+        if (StringUtils.isNotBlank(merchantId)) {
+            lambdaQueryWrapper.eq(MtGoods::getMerchantId, merchantId);
+        }
         String storeId = paginationRequest.getSearchParams().get("storeId") == null ? "" : paginationRequest.getSearchParams().get("storeId").toString();
         if (StringUtils.isNotBlank(storeId)) {
             lambdaQueryWrapper.and(wq -> wq
@@ -158,6 +162,9 @@ public class GoodsServiceImpl extends ServiceImpl<MtGoodsMapper, MtGoods> implem
         MtGoods mtGoods = new MtGoods();
         if (reqDto.getId() > 0) {
             mtGoods = queryGoodsById(reqDto.getId());
+        }
+        if (reqDto.getMerchantId() != null) {
+            mtGoods.setMerchantId(reqDto.getMerchantId() >= 0 ? reqDto.getMerchantId() : 0);
         }
         if (reqDto.getStoreId() != null) {
             mtGoods.setStoreId(reqDto.getStoreId() >= 0 ? reqDto.getStoreId() : 0);

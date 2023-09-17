@@ -81,6 +81,7 @@ public class BackendConfirmLogController extends BaseController {
         String userId = request.getParameter("userId") == null ? "" : request.getParameter("userId");
         String mobile = request.getParameter("mobile") == null ? "" : request.getParameter("mobile");
         String couponId = request.getParameter("couponId") == null ? "" : request.getParameter("couponId");
+        String merchantId = request.getParameter("merchantId") == null ? "" : request.getParameter("merchantId");
 
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
         if (accountInfo == null) {
@@ -92,18 +93,18 @@ public class BackendConfirmLogController extends BaseController {
         paginationRequest.setPageSize(pageSize);
 
         Map<String, Object> searchParams = new HashMap<>();
+        if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
+            searchParams.put("merchantId", accountInfo.getMerchantId());
+        }
         if (StringUtil.isNotEmpty(status)) {
             searchParams.put("status", status);
         }
-
         if (StringUtil.isNotEmpty(userId)) {
             searchParams.put("userId", userId);
         }
-
         if (StringUtil.isNotEmpty(couponId)) {
             searchParams.put("couponId", couponId);
         }
-
         if (StringUtil.isNotEmpty(mobile)) {
             MtUser userInfo = memberService.queryMemberByMobile(mobile);
             if (userInfo != null) {
@@ -151,7 +152,7 @@ public class BackendConfirmLogController extends BaseController {
     @ApiOperation(value = "撤销已使用的卡券")
     @RequestMapping(value = "/rollbackUserCoupon/{id}", method = RequestMethod.GET)
     @CrossOrigin
-    public ResponseObject rollbackUserCoupon(HttpServletRequest request, @PathVariable("id") Integer id) throws BusinessCheckException {
+    public ResponseObject rollbackUserCoupon(HttpServletRequest request, @PathVariable("id") Integer id) {
         String token = request.getHeader("Access-Token");
         String userCouponId = (request.getParameter("userCouponId") == null || StringUtil.isEmpty(request.getParameter("userCouponId"))) ? "0" : request.getParameter("userCouponId");
 

@@ -39,13 +39,14 @@ public class SettingServiceImpl extends ServiceImpl<MtSettingMapper, MtSetting> 
     /**
      * 删除配置
      *
+     * @param  merchantId
      * @param  name
      * @throws BusinessCheckException
      */
     @Override
     @OperationServiceLog(description = "删除配置信息")
-    public void removeSetting(String name) {
-        MtSetting info = querySettingByName(name);
+    public void removeSetting(Integer merchantId, String name) {
+        MtSetting info = querySettingByName(merchantId, name);
         if (info != null) {
             mtSettingMapper.deleteById(info.getId());
         }
@@ -55,14 +56,14 @@ public class SettingServiceImpl extends ServiceImpl<MtSettingMapper, MtSetting> 
     /**
      * 保存配置
      *
-     * @param mtSetting
+     * @param  mtSetting
      * @throws BusinessCheckException
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
     @OperationServiceLog(description = "保存配置信息")
     public MtSetting saveSetting(MtSetting mtSetting) {
-        MtSetting info = querySettingByName(mtSetting.getName());
+        MtSetting info = querySettingByName(mtSetting.getMerchantId(), mtSetting.getName());
         if (null != info) {
             if (mtSetting.getValue() != null) {
                 info.setValue(mtSetting.getValue());
@@ -96,24 +97,26 @@ public class SettingServiceImpl extends ServiceImpl<MtSettingMapper, MtSetting> 
     /**
      * 获取配置列表
      *
+     * @param  merchantId
      * @param  type
      * @throws BusinessCheckException
      */
     @Override
-    public List<MtSetting> getSettingList(String type) {
-        List<MtSetting> dataList = mtSettingMapper.querySettingByType(type);
+    public List<MtSetting> getSettingList(Integer merchantId, String type) {
+        List<MtSetting> dataList = mtSettingMapper.querySettingByType(merchantId, type);
         return dataList;
     }
 
     /**
      * 根据ID获取配置信息
      *
+     * @param  merchantId
      * @param  name
      * @throws BusinessCheckException
      */
     @Override
-    public MtSetting querySettingByName(String name) {
-        return mtSettingMapper.querySettingByName(name);
+    public MtSetting querySettingByName(Integer merchantId, String name) {
+        return mtSettingMapper.querySettingByName(merchantId, name);
     }
 
     /**

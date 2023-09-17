@@ -23,6 +23,11 @@ public class RefundDto implements Serializable {
     private Integer orderId;
 
     /**
+     * 商户ID
+     */
+    private Integer merchantId;
+
+    /**
      * 店铺ID
      */
     private Integer storeId;
@@ -114,6 +119,14 @@ public class RefundDto implements Serializable {
 
     public void setUserId(Integer userId) {
         this.userId = userId;
+    }
+
+    public Integer getMerchantId(){
+        return merchantId;
+    }
+
+    public void setMerchantId(Integer merchantId){
+        this.merchantId=merchantId;
     }
 
     public Integer getStoreId(){

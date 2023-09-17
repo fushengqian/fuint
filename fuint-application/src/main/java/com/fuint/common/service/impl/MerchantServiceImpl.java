@@ -102,6 +102,7 @@ public class MerchantServiceImpl extends ServiceImpl<MtMerchantMapper, MtMerchan
         }
 
         mtMerchant.setName(merchant.getName());
+        mtMerchant.setLogo(merchant.getLogo());
         mtMerchant.setContact(merchant.getContact());
         mtMerchant.setOperator(merchant.getOperator());
         mtMerchant.setUpdateTime(new Date());
@@ -154,11 +155,30 @@ public class MerchantServiceImpl extends ServiceImpl<MtMerchantMapper, MtMerchan
      * 根据商户号获取商户信息
      *
      * @param  merchantNo 商户号
-     * @throws BusinessCheckException
+     * @return
      */
     @Override
     public MtMerchant queryMerchantByNo(String merchantNo) {
         return mtMerchantMapper.queryMerchantByNo(merchantNo);
+    }
+
+    /**
+     * 根据商户号获取商户ID
+     *
+     * @param  merchantNo 商户号
+     * @return
+     */
+    @Override
+    public Integer getMerchantId(String merchantNo) {
+       if (merchantNo == null || StringUtil.isEmpty(merchantNo)) {
+           return 0;
+       }
+       MtMerchant mtMerchant = queryMerchantByNo(merchantNo);
+       if (mtMerchant != null) {
+           return  mtMerchant.getId();
+       } else {
+           return 0;
+       }
     }
 
     /**

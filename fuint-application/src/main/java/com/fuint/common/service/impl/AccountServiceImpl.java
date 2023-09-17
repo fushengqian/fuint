@@ -79,6 +79,10 @@ public class AccountServiceImpl extends ServiceImpl<TAccountMapper, TAccount> im
         if (StringUtils.isNotBlank(merchantId)) {
             lambdaQueryWrapper.eq(TAccount::getMerchantId, merchantId);
         }
+        String storeId = paginationRequest.getSearchParams().get("storeId") == null ? "" : paginationRequest.getSearchParams().get("storeId").toString();
+        if (StringUtils.isNotBlank(storeId)) {
+            lambdaQueryWrapper.eq(TAccount::getStoreId, storeId);
+        }
 
         lambdaQueryWrapper.orderByDesc(TAccount::getAcctId);
         List<TAccount> accountList = tAccountMapper.selectList(lambdaQueryWrapper);
@@ -123,6 +127,7 @@ public class AccountServiceImpl extends ServiceImpl<TAccountMapper, TAccount> im
             accountInfo.setRoleIds(account.getRoleIds());
             accountInfo.setStaffId(account.getStaffId());
             accountInfo.setStoreId(account.getStoreId());
+            accountInfo.setMerchantId(account.getMerchantId());
             return accountInfo;
         } else {
             return null;
@@ -150,6 +155,7 @@ public class AccountServiceImpl extends ServiceImpl<TAccountMapper, TAccount> im
         account.setRealName(tAccount.getRealName());
         account.setRoleIds(tAccount.getRoleIds());
         account.setStaffId(tAccount.getStaffId());
+        account.setMerchantId(tAccount.getMerchantId());
         account.setStoreId(tAccount.getStoreId());
         account.setCreateDate(new Date());
         account.setModifyDate(new Date());

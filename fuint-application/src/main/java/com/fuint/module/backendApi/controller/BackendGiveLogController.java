@@ -110,6 +110,9 @@ public class BackendGiveLogController extends BaseController {
         if (storeId > 0) {
             params.put("storeId", storeId);
         }
+        if (account.getMerchantId() != null && account.getMerchantId() > 0) {
+            params.put("merchantId", account.getMerchantId());
+        }
         paginationRequest.setSearchParams(params);
         PaginationResponse<GiveDto> paginationResponse = giveService.queryGiveListByPagination(paginationRequest);
 

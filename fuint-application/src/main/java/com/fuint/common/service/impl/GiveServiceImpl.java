@@ -80,6 +80,10 @@ public class GiveServiceImpl extends ServiceImpl<MtGiveMapper, MtGive> implement
         if (StringUtils.isNotBlank(status)) {
             lambdaQueryWrapper.eq(MtGive::getStatus, status);
         }
+        String merchantId = paginationRequest.getSearchParams().get("merchantId") == null ? "" : paginationRequest.getSearchParams().get("merchantId").toString();
+        if (StringUtils.isNotBlank(merchantId)) {
+            lambdaQueryWrapper.eq(MtGive::getMerchantId, merchantId);
+        }
         String storeId = paginationRequest.getSearchParams().get("storeId") == null ? "" : paginationRequest.getSearchParams().get("storeId").toString();
         if (StringUtils.isNotBlank(storeId)) {
             lambdaQueryWrapper.eq(MtGive::getStoreId, storeId);
@@ -143,6 +147,7 @@ public class GiveServiceImpl extends ServiceImpl<MtGiveMapper, MtGive> implement
         String message = giveParam.getMessage() == null ? "" : giveParam.getMessage();
         Integer userId = giveParam.getUserId() == null ? 0 : giveParam.getUserId();
         Integer storeId = giveParam.getStoreId() == null ? 0 : giveParam.getStoreId();
+        Integer merchantId = giveParam.getMerchantId() == null ? 0 : giveParam.getMerchantId();
 
         if (StringUtil.isEmpty(mobile) || mobile.length() > 11 || mobile.length() < 11) {
             throw new BusinessCheckException("转增对象手机号有误");
@@ -161,6 +166,7 @@ public class GiveServiceImpl extends ServiceImpl<MtGiveMapper, MtGive> implement
         MtUser user = memberService.queryMemberByMobile(mobile);
         if (null == user) {
             MtUser userInfo = new MtUser();
+            userInfo.setMerchantId(merchantId);
             userInfo.setName(mobile);
             userInfo.setMobile(mobile);
             MtUserGrade grade = userGradeService.getInitUserGrade();
@@ -222,21 +228,19 @@ public class GiveServiceImpl extends ServiceImpl<MtGiveMapper, MtGive> implement
         give.setMobile(mobile);
         give.setGiveUserId(userId);
         give.setUserId(user.getId());
+        give.setMerchantId(merchantId);
         give.setStoreId(storeId);
         give.setMoney(money);
         give.setNum(couponIds.length);
         give.setNote(note);
         give.setMessage(message);
         give.setUserMobile(myUser.getMobile());
-
         String couponIdsStr = StringUtil.join(couponIdList.toArray(), ",");
         give.setGroupIds(StringUtil.join(groupIds.toArray(), ","));
         give.setGroupNames(StringUtil.join(groupNames.toArray(), ","));
         give.setCouponIds(couponIdsStr);
         give.setCouponNames(StringUtil.join(couponNames.toArray(), ","));
-
         give.setStatus(StatusEnum.ENABLED.getKey());
-
         Date createTime = new Date();
         give.setCreateTime(createTime);
         give.setUpdateTime(createTime);

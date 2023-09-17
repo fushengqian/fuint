@@ -43,7 +43,10 @@ public class MtStaff implements Serializable {
     @ApiModelProperty("微信号")
     private String wechat;
 
-    @ApiModelProperty("对应的核销店铺id")
+    @ApiModelProperty("商户ID")
+    private Integer merchantId;
+
+    @ApiModelProperty("店铺ID")
     private Integer storeId;
 
     @ApiModelProperty("创建时间")

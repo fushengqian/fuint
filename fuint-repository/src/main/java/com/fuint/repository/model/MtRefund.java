@@ -32,6 +32,9 @@ public class MtRefund implements Serializable {
     @ApiModelProperty("订单ID")
     private Integer orderId;
 
+    @ApiModelProperty("商户ID")
+    private Integer merchantId;
+
     @ApiModelProperty("店铺ID")
     private Integer storeId;
 

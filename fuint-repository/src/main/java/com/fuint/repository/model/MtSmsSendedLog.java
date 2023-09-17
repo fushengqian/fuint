@@ -28,6 +28,12 @@ public class MtSmsSendedLog implements Serializable {
     @TableId(value = "LOG_ID", type = IdType.AUTO)
     private Integer logId;
 
+    @ApiModelProperty("商户ID")
+    private Integer merchantId;
+
+    @ApiModelProperty("店铺ID")
+    private Integer storeId;
+
     @ApiModelProperty("手机号")
     private String mobilePhone;
 

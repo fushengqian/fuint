@@ -27,6 +27,9 @@ public class GiveParam implements Serializable {
     @ApiModelProperty(value="转赠人ID", name="userId")
     private Integer userId;
 
+    @ApiModelProperty(value="商户ID", name="merchantId")
+    private Integer merchantId;
+
     @ApiModelProperty(value="店铺ID", name="storeId")
     private Integer storeId;
 

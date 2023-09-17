@@ -52,9 +52,17 @@ public interface MerchantService extends IService<MtMerchant> {
      * 根据商户号获取商户信息
      *
      * @param  merchantNo 商户号
-     * @throws BusinessCheckException
+     * @return
      */
-    MtMerchant queryMerchantByNo(String merchantNo) throws BusinessCheckException;
+    MtMerchant queryMerchantByNo(String merchantNo);
+
+    /**
+     * 根据商户号获取商户ID
+     *
+     * @param  merchantNo 商户号
+     * @return
+     */
+    Integer getMerchantId(String merchantNo);
 
     /**
      * 更新商户状态

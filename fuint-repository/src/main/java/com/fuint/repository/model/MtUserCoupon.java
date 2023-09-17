@@ -50,6 +50,9 @@ public class MtUserCoupon implements Serializable {
     @ApiModelProperty("用户ID")
     private Integer userId;
 
+    @ApiModelProperty("商户ID")
+    private Integer merchantId;
+
     @ApiModelProperty("使用店铺ID")
     private Integer storeId;
 

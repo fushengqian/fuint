@@ -161,7 +161,7 @@ public class PaymentServiceImpl implements PaymentService {
         }
 
         // 处理消费返积分，查询返1积分所需消费金额
-        MtSetting setting = settingService.querySettingByName("pointNeedConsume");
+        MtSetting setting = settingService.querySettingByName(mtOrder.getMerchantId(), "pointNeedConsume");
         if (setting != null) {
             String needPayAmount = setting.getValue();
             Integer needPayAmountInt = Math.round(Integer.parseInt(needPayAmount));

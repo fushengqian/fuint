@@ -57,7 +57,7 @@ public class BackendArticleController extends BaseController {
     /**
      * 文章列表查询
      *
-     * @param  request  HttpServletRequest对象
+     * @param request HttpServletRequest对象
      * @return 文章列表
      */
     @ApiOperation(value = "文章列表查询")
@@ -95,6 +95,9 @@ public class BackendArticleController extends BaseController {
         }
         if (storeId != null && storeId > 0) {
             params.put("storeId", storeId);
+        }
+        if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
+            params.put("merchantId", accountInfo.getMerchantId());
         }
         paginationRequest.setSearchParams(params);
         PaginationResponse<ArticleDto> paginationResponse = articleService.queryArticleListByPagination(paginationRequest);

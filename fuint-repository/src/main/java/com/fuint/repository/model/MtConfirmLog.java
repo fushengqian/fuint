@@ -38,6 +38,9 @@ public class MtConfirmLog implements Serializable {
     @ApiModelProperty("卡券ID")
     private Integer couponId;
 
+    @ApiModelProperty("商户ID")
+    private Integer merchantId;
+
     @ApiModelProperty("用户券ID")
     private Integer userCouponId;
 

@@ -335,12 +335,12 @@ public class WeixinServiceImpl implements WeixinService {
      * @return
      * */
     @Override
-    public Boolean sendSubscribeMessage(Integer userId, String toUserOpenId, String key, String page, Map<String,Object> params, Date sendTime) throws BusinessCheckException {
+    public Boolean sendSubscribeMessage(Integer merchantId, Integer userId, String toUserOpenId, String key, String page, Map<String,Object> params, Date sendTime) throws BusinessCheckException {
         if (StringUtil.isEmpty(toUserOpenId) || StringUtil.isEmpty(key) || userId < 1) {
             return false;
         }
 
-        MtSetting mtSetting = settingService.querySettingByName(key);
+        MtSetting mtSetting = settingService.querySettingByName(merchantId, key);
         if (mtSetting == null) {
             return false;
         }

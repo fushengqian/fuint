@@ -107,6 +107,9 @@ public class BackendCateController extends BaseController {
         if (storeId > 0) {
             params.put("storeId", storeId);
         }
+        if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
+            params.put("merchantId", accountInfo.getMerchantId());
+        }
 
         paginationRequest.setSearchParams(params);
         paginationRequest.setSortColumn(new String[]{"sort asc", "status asc"});
@@ -173,7 +176,7 @@ public class BackendCateController extends BaseController {
     /**
      * 保存商品分类
      *
-     * @param request  HttpServletRequest对象
+     * @param request HttpServletRequest对象
      * @return
      */
     @ApiOperation(value = "保存商品分类")
@@ -204,6 +207,7 @@ public class BackendCateController extends BaseController {
         info.setLogo(logo);
         info.setSort(Integer.parseInt(sort));
         info.setStatus(status);
+        info.setMerchantId(accountDto.getMerchantId());
         info.setStoreId(storeId);
         String operator = accountDto.getAccountName();
         info.setOperator(operator);

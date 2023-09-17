@@ -65,6 +65,9 @@ public class BackendCouponGroupController extends BaseController {
     @Autowired
     CouponService couponService;
 
+    /**
+     * 导出服务接口
+     * */
     @Autowired
     private ExportService exportService;
 
@@ -79,11 +82,17 @@ public class BackendCouponGroupController extends BaseController {
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject list(HttpServletRequest request) throws BusinessCheckException {
+        String token = request.getHeader("Access-Token");
         Integer page = request.getParameter("page") == null ? 1 : Integer.parseInt(request.getParameter("page"));
         Integer pageSize = request.getParameter("pageSize") == null ? Constants.PAGE_SIZE : Integer.parseInt(request.getParameter("pageSize"));
         String name = request.getParameter("name") == null ? "" : request.getParameter("name");
         String id = request.getParameter("id") == null ? "" : request.getParameter("id");
         String status = request.getParameter("status") == null ? StatusEnum.ENABLED.getKey() : request.getParameter("status");
+
+        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
+        if (accountInfo == null) {
+            return getFailureResult(1001, "请先登录");
+        }
 
         PaginationRequest paginationRequest = new PaginationRequest();
         paginationRequest.setCurrentPage(page);
@@ -98,6 +107,12 @@ public class BackendCouponGroupController extends BaseController {
         }
         if (StringUtil.isNotEmpty(status)) {
             searchParams.put("status", status);
+        }
+        if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
+            searchParams.put("merchantId", accountInfo.getMerchantId());
+        }
+        if (accountInfo.getStoreId() != null && accountInfo.getStoreId() > 0) {
+            searchParams.put("storeId", accountInfo.getStoreId());
         }
 
         paginationRequest.setSearchParams(searchParams);

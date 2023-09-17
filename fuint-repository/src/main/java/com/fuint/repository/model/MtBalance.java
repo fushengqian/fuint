@@ -29,6 +29,9 @@ public class MtBalance implements Serializable {
     @TableId(value = "ID", type = IdType.AUTO)
     private Integer id;
 
+    @ApiModelProperty("所属商户ID")
+    private Integer merchantId;
+
     @ApiModelProperty("所属店铺ID")
     private Integer storeId;
 

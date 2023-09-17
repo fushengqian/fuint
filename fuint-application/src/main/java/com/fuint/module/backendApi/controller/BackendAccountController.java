@@ -7,6 +7,7 @@ import com.fuint.common.dto.RoleDto;
 import com.fuint.common.enums.StatusEnum;
 import com.fuint.common.service.AccountService;
 import com.fuint.common.service.DutyService;
+import com.fuint.common.service.MerchantService;
 import com.fuint.common.service.StoreService;
 import com.fuint.common.util.TokenUtil;
 import com.fuint.framework.exception.BusinessCheckException;
@@ -14,6 +15,7 @@ import com.fuint.framework.pagination.PaginationRequest;
 import com.fuint.framework.pagination.PaginationResponse;
 import com.fuint.framework.web.BaseController;
 import com.fuint.framework.web.ResponseObject;
+import com.fuint.repository.model.MtMerchant;
 import com.fuint.repository.model.MtStore;
 import com.fuint.repository.model.TAccount;
 import com.fuint.repository.model.TDuty;
@@ -21,9 +23,6 @@ import com.fuint.utils.StringUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
@@ -59,6 +58,12 @@ public class BackendAccountController extends BaseController {
      */
     @Autowired
     private StoreService storeService;
+
+    /**
+     * 商户服务接口
+     */
+    @Autowired
+    private MerchantService merchantService;
 
     /**
      * 账户信息列表
@@ -101,6 +106,9 @@ public class BackendAccountController extends BaseController {
         }
         if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
             searchParams.put("merchantId", accountInfo.getMerchantId());
+        }
+        if (accountInfo.getStoreId() != null && accountInfo.getStoreId() > 0) {
+            searchParams.put("storeId", accountInfo.getStoreId());
         }
 
         paginationRequest.setSearchParams(searchParams);
@@ -150,6 +158,9 @@ public class BackendAccountController extends BaseController {
         List<MtStore> stores = storeService.queryStoresByParams(params);
         result.put("stores", stores);
 
+        List<MtMerchant> merchants = merchantService.queryMerchantByParams(params);
+        result.put("merchants", merchants);
+
         AccountDto accountDto = null;
         if (userId > 0) {
             TAccount tAccount = tAccountService.getAccountInfoById(userId.intValue());
@@ -162,6 +173,7 @@ public class BackendAccountController extends BaseController {
             accountDto.setRealName(tAccount.getRealName());
             accountDto.setModifyDate(tAccount.getModifyDate());
             accountDto.setStaffId(tAccount.getStaffId());
+            accountDto.setMerchantId(tAccount.getMerchantId());
             if (tAccount.getStoreId() > 0) {
                 accountDto.setStoreId(tAccount.getStoreId());
             }

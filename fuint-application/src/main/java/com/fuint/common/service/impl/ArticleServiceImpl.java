@@ -3,10 +3,9 @@ package com.fuint.common.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-
 import com.fuint.common.dto.ArticleDto;
 import com.fuint.common.service.ArticleService;
-import com.fuint.common.util.DateUtil;
+import com.fuint.common.service.MerchantService;
 import com.fuint.framework.annoation.OperationServiceLog;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.pagination.PaginationRequest;
@@ -15,7 +14,6 @@ import com.fuint.repository.mapper.MtArticleMapper;
 import com.fuint.repository.model.MtArticle;
 import com.fuint.common.service.SettingService;
 import com.fuint.common.enums.StatusEnum;
-
 import com.github.pagehelper.PageHelper;
 import org.apache.commons.lang.StringUtils;
 import com.github.pagehelper.Page;
@@ -42,6 +40,9 @@ public class ArticleServiceImpl extends ServiceImpl<MtArticleMapper, MtArticle> 
     @Resource
     private SettingService settingService;
 
+    @Resource
+    private MerchantService merchantService;
+
     /**
      * 分页查询文章列表
      *
@@ -62,21 +63,32 @@ public class ArticleServiceImpl extends ServiceImpl<MtArticleMapper, MtArticle> 
         if (StringUtils.isNotBlank(status)) {
             lambdaQueryWrapper.eq(MtArticle::getStatus, status);
         }
+        String merchantId = paginationRequest.getSearchParams().get("merchantId") == null ? "" : paginationRequest.getSearchParams().get("merchantId").toString();
+        if (StringUtils.isNotBlank(merchantId)) {
+            lambdaQueryWrapper.eq(MtArticle::getMerchantId, merchantId);
+        }
+        String merchantNo = paginationRequest.getSearchParams().get("merchantNo") == null ? "" : paginationRequest.getSearchParams().get("merchantNo").toString();
+        Integer mchId = merchantService.getMerchantId(merchantNo);
+        if (mchId > 0) {
+            lambdaQueryWrapper.eq(MtArticle::getMerchantId, mchId);
+        }
         String storeId = paginationRequest.getSearchParams().get("storeId") == null ? "" : paginationRequest.getSearchParams().get("storeId").toString();
         if (StringUtils.isNotBlank(storeId)) {
-            lambdaQueryWrapper.eq(MtArticle::getStoreId, storeId);
+            lambdaQueryWrapper.and(wq -> wq
+                    .eq(MtArticle::getStoreId, 0)
+                    .or()
+                    .eq(MtArticle::getStoreId, storeId));
         }
-
         lambdaQueryWrapper.orderByAsc(MtArticle::getSort);
         List<MtArticle> articleList = mtArticleMapper.selectList(lambdaQueryWrapper);
         List<ArticleDto> dataList = new ArrayList<>();
 
         String basePath = settingService.getUploadBasePath();
         for (MtArticle mtArticle : articleList) {
-            ArticleDto articleDto = new ArticleDto();
-            BeanUtils.copyProperties(mtArticle, articleDto);
-            articleDto.setImage(basePath + mtArticle.getImage());
-            dataList.add(articleDto);
+             ArticleDto articleDto = new ArticleDto();
+             BeanUtils.copyProperties(mtArticle, articleDto);
+             articleDto.setImage(basePath + mtArticle.getImage());
+             dataList.add(articleDto);
         }
 
         PageRequest pageRequest = PageRequest.of(paginationRequest.getCurrentPage(), paginationRequest.getPageSize());
@@ -101,6 +113,7 @@ public class ArticleServiceImpl extends ServiceImpl<MtArticleMapper, MtArticle> 
         MtArticle mtArticle = new MtArticle();
         mtArticle.setTitle(articleDto.getTitle());
         mtArticle.setBrief(articleDto.getBrief());
+        mtArticle.setMerchantId(articleDto.getMerchantId());
         mtArticle.setStoreId(articleDto.getStoreId() == null ? 0 : articleDto.getStoreId());
         mtArticle.setUrl(articleDto.getUrl());
         mtArticle.setClick(0l);
@@ -111,6 +124,7 @@ public class ArticleServiceImpl extends ServiceImpl<MtArticleMapper, MtArticle> 
         mtArticle.setUpdateTime(new Date());
         mtArticle.setCreateTime(new Date());
         mtArticle.setSort(articleDto.getSort());
+        mtArticle.setMerchantId(articleDto.getMerchantId());
         Integer id = mtArticleMapper.insert(mtArticle);
         if (id > 0) {
             return mtArticle;
@@ -173,6 +187,12 @@ public class ArticleServiceImpl extends ServiceImpl<MtArticleMapper, MtArticle> 
         if (articleDto.getClick() != null) {
             mtArticle.setClick(articleDto.getClick());
         }
+        if (articleDto.getMerchantId() != null) {
+            mtArticle.setMerchantId(articleDto.getMerchantId());
+        }
+        if (articleDto.getMerchantId() != null) {
+            mtArticle.setMerchantId(articleDto.getMerchantId());
+        }
         if (articleDto.getStoreId() != null) {
             mtArticle.setStoreId(articleDto.getStoreId());
         }
@@ -201,8 +221,12 @@ public class ArticleServiceImpl extends ServiceImpl<MtArticleMapper, MtArticle> 
         String status =  params.get("status") == null ? StatusEnum.ENABLED.getKey(): params.get("status").toString();
         String storeId =  params.get("storeId") == null ? "" : params.get("storeId").toString();
         String title = params.get("title") == null ? "" : params.get("title").toString();
+        String merchantId = params.get("merchantId") == null ? "" : params.get("merchantId").toString();
 
         LambdaQueryWrapper<MtArticle> lambdaQueryWrapper = Wrappers.lambdaQuery();
+        if (StringUtils.isNotBlank(merchantId)) {
+            lambdaQueryWrapper.like(MtArticle::getMerchantId, merchantId);
+        }
         if (StringUtils.isNotBlank(title)) {
             lambdaQueryWrapper.like(MtArticle::getTitle, title);
         }

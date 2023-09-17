@@ -108,6 +108,14 @@ public class CouponGroupServiceImpl extends ServiceImpl<MtCouponGroupMapper, MtC
         if (StringUtils.isNotBlank(id)) {
             lambdaQueryWrapper.eq(MtCouponGroup::getId, id);
         }
+        String merchantId = paginationRequest.getSearchParams().get("merchantId") == null ? "" : paginationRequest.getSearchParams().get("merchantId").toString();
+        if (StringUtils.isNotBlank(merchantId)) {
+            lambdaQueryWrapper.eq(MtCouponGroup::getMerchantId, merchantId);
+        }
+        String storeId = paginationRequest.getSearchParams().get("storeId") == null ? "" : paginationRequest.getSearchParams().get("storeId").toString();
+        if (StringUtils.isNotBlank(storeId)) {
+            lambdaQueryWrapper.eq(MtCouponGroup::getStoreId, storeId);
+        }
 
         lambdaQueryWrapper.orderByDesc(MtCouponGroup::getId);
         List<MtCouponGroup> dataList = mtCouponGroupMapper.selectList(lambdaQueryWrapper);

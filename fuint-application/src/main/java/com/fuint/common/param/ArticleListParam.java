@@ -15,4 +15,7 @@ public class ArticleListParam extends PageParam implements Serializable {
     @ApiModelProperty(value="文章标题", name="title")
     private String title;
 
+    @ApiModelProperty(value="商户号", name="merchantNo")
+    private String merchantNo;
+
 }

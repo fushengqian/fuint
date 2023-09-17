@@ -88,6 +88,9 @@ public class MtUser implements Serializable {
     @ApiModelProperty("地址")
     private String address;
 
+    @ApiModelProperty("所属商户ID")
+    private Integer merchantId;
+
     @ApiModelProperty("默认店铺")
     private Integer storeId;
 

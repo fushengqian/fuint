@@ -15,6 +15,7 @@ import com.fuint.repository.model.TAccount;
 import com.fuint.utils.StringUtil;
 import com.fuint.utils.TimeUtils;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -79,6 +80,7 @@ public class BackendOrderController extends BaseController {
      * @param request HttpServletRequest对象
      * @return
      */
+    @ApiOperation(value = "订单列表查询")
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @CrossOrigin
     public ResponseObject list(HttpServletRequest request, @RequestBody OrderListParam orderListParam) throws BusinessCheckException {
@@ -88,6 +90,9 @@ public class BackendOrderController extends BaseController {
             return getFailureResult(1001, "请先登录");
         }
         TAccount account = accountService.getAccountInfoById(accountInfo.getId());
+        if (account.getMerchantId() != null && account.getMerchantId() > 0) {
+            orderListParam.setMerchantId(account.getMerchantId());
+        }
         Integer storeId = account.getStoreId() == null ? 0 : account.getStoreId();
         if (storeId > 0) {
             orderListParam.setStoreId(storeId.toString());
@@ -172,10 +177,11 @@ public class BackendOrderController extends BaseController {
     }
 
     /**
-     * 订单详情
-     * @param request  HttpServletRequest对象
+     * 获取订单详情
+     * @param request HttpServletRequest对象
      * @return
      * */
+    @ApiOperation(value = "获取订单详情")
     @RequestMapping(value = "/info/{orderId}", method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject info(HttpServletRequest request, @PathVariable("orderId") Integer orderId) throws BusinessCheckException {
@@ -219,9 +225,10 @@ public class BackendOrderController extends BaseController {
 
     /**
      * 确认发货
-     * @param request  HttpServletRequest对象
+     * @param request HttpServletRequest对象
      * @return
      * */
+    @ApiOperation(value = "确认发货")
     @RequestMapping(value = "/delivered", method = RequestMethod.POST)
     @CrossOrigin
     public ResponseObject delivered(HttpServletRequest request, @RequestBody Map<String, Object> param) throws BusinessCheckException {
@@ -266,7 +273,7 @@ public class BackendOrderController extends BaseController {
             params.put("orderSn", orderInfo.getOrderSn());
             params.put("expressCompany", expressCompany);
             params.put("expressNo", expressNo);
-            weixinService.sendSubscribeMessage(userInfo.getId(), userInfo.getOpenId(), WxMessageEnum.DELIVER_GOODS.getKey(), "pages/order/index", params, sendTime);
+            weixinService.sendSubscribeMessage(userInfo.getMerchantId(), userInfo.getId(), userInfo.getOpenId(), WxMessageEnum.DELIVER_GOODS.getKey(), "pages/order/index", params, sendTime);
         }
 
         return getSuccessResult(true);
@@ -277,6 +284,7 @@ public class BackendOrderController extends BaseController {
      * @param request HttpServletRequest对象
      * @return
      * */
+    @ApiOperation(value = "修改订单")
     @RequestMapping(value = "/save", method = RequestMethod.POST)
     @CrossOrigin
     public ResponseObject save(HttpServletRequest request, @RequestBody Map<String, Object> param) throws BusinessCheckException {
@@ -327,9 +335,10 @@ public class BackendOrderController extends BaseController {
 
     /**
      * 验证并核销订单
-     * @param request  HttpServletRequest对象
+     * @param request HttpServletRequest对象
      * @return
      * */
+    @ApiOperation(value = "验证并核销订单")
     @RequestMapping(value = "/verify", method = RequestMethod.POST)
     @CrossOrigin
     public ResponseObject verify(HttpServletRequest request, @RequestBody Map<String, Object> param) {
@@ -371,6 +380,7 @@ public class BackendOrderController extends BaseController {
      * @param request HttpServletRequest对象
      * @return
      */
+    @ApiOperation(value = "最新订单列表查询")
     @RequestMapping(value = "/latest", method = RequestMethod.POST)
     @CrossOrigin
     public ResponseObject latest(HttpServletRequest request, @RequestBody OrderListParam orderListParam) throws BusinessCheckException {
@@ -406,6 +416,7 @@ public class BackendOrderController extends BaseController {
      * @param request
      * @return
      */
+    @ApiOperation(value = "删除订单")
     @RequestMapping(value = "/delete/{id}", method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject delete(HttpServletRequest request, @PathVariable("id") Integer id) throws BusinessCheckException {
@@ -422,11 +433,12 @@ public class BackendOrderController extends BaseController {
     }
 
     /**
-     * 积分设置详情
+     * 订单设置详情
      *
      * @param request
      * @return
      */
+    @ApiOperation(value = "订单设置详情")
     @RequestMapping(value = "/setting", method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject setting(HttpServletRequest request) throws BusinessCheckException {
@@ -436,7 +448,7 @@ public class BackendOrderController extends BaseController {
             return getFailureResult(1001, "请先登录");
         }
 
-        List<MtSetting> settingList = settingService.getSettingList(SettingTypeEnum.ORDER.getKey());
+        List<MtSetting> settingList = settingService.getSettingList(accountInfo.getMerchantId(), SettingTypeEnum.ORDER.getKey());
         Map<String, Object> result = new HashMap();
         String deliveryFee = "";
         String isClose = "";
@@ -456,11 +468,12 @@ public class BackendOrderController extends BaseController {
     }
 
     /**
-     * 保存设置
+     * 保存订单设置
      *
      * @param request HttpServletRequest对象
      * @return
      */
+    @ApiOperation(value = "保存订单设置")
     @RequestMapping(value = "/saveSetting", method = RequestMethod.POST)
     @CrossOrigin
     public ResponseObject saveSetting(HttpServletRequest request, @RequestBody Map<String, Object> param) throws BusinessCheckException {
@@ -486,7 +499,8 @@ public class BackendOrderController extends BaseController {
             } else if (setting.getKey().equals("isClose")) {
                 info.setValue(isClose);
             }
-
+            info.setMerchantId(accountInfo.getMerchantId());
+            info.setStoreId(accountInfo.getStoreId());
             info.setDescription(setting.getValue());
             info.setStatus(StatusEnum.ENABLED.getKey());
             info.setOperator(operator);

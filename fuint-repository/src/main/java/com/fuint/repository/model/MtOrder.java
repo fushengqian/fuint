@@ -44,6 +44,9 @@ public class MtOrder implements Serializable {
     @ApiModelProperty("卡券ID")
     private Integer couponId;
 
+    @ApiModelProperty("商户ID")
+    private Integer merchantId;
+
     @ApiModelProperty("所属店铺ID")
     private Integer storeId;
 

@@ -125,6 +125,7 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
         Integer pageNumber = orderListParam.getPage() == null ? Constants.PAGE_NUMBER : orderListParam.getPage();
         Integer pageSize = orderListParam.getPageSize() == null ? Constants.PAGE_SIZE : orderListParam.getPageSize();
         String userId = orderListParam.getUserId() == null ? "" : orderListParam.getUserId();
+        Integer merchantId = orderListParam.getMerchantId() == null ? 0 : orderListParam.getMerchantId();
         String storeId = orderListParam.getStoreId() == null ? "" : orderListParam.getStoreId();
         String status =  orderListParam.getStatus() == null ? "": orderListParam.getStatus();
         String payStatus =  orderListParam.getPayStatus() == null ? "": orderListParam.getPayStatus();
@@ -170,6 +171,9 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
         }
         if (StringUtil.isNotEmpty(userId)) {
             lambdaQueryWrapper.eq(MtOrder::getUserId, userId);
+        }
+        if (merchantId > 0) {
+            lambdaQueryWrapper.eq(MtOrder::getMerchantId, merchantId);
         }
         if (StringUtil.isNotEmpty(storeId)) {
             lambdaQueryWrapper.eq(MtOrder::getStoreId, storeId);
@@ -255,6 +259,7 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
         }
 
         mtOrder.setUserId(orderDto.getUserId());
+        mtOrder.setMerchantId(orderDto.getMerchantId());
         mtOrder.setStoreId(orderDto.getStoreId());
         mtOrder.setCouponId(orderDto.getCouponId());
         mtOrder.setParam(orderDto.getParam());
@@ -345,7 +350,7 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
             }
 
             boolean isUsePoint = orderDto.getUsePoint() > 0 ? true : false;
-            cartData = calculateCartGoods(orderDto.getUserId(), cartList, orderDto.getCouponId(), isUsePoint, orderDto.getPlatform(), orderInfo.getOrderMode());
+            cartData = calculateCartGoods(orderInfo.getMerchantId(), orderDto.getUserId(), cartList, orderDto.getCouponId(), isUsePoint, orderDto.getPlatform(), orderInfo.getOrderMode());
 
             mtOrder.setAmount(new BigDecimal(cartData.get("totalPrice").toString()));
             mtOrder.setUsePoint(Integer.parseInt(cartData.get("usePoint").toString()));
@@ -850,6 +855,7 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
         UserOrderDto dto = new UserOrderDto();
 
         dto.setId(orderInfo.getId());
+        dto.setMerchantId(orderInfo.getMerchantId());
         dto.setUserId(orderInfo.getUserId());
         dto.setCouponId(orderInfo.getCouponId());
         dto.setOrderSn(orderInfo.getOrderSn());
@@ -1168,6 +1174,8 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
 
     /**
      * 计算商品总价
+     *
+     * @param merchantId
      * @param userId
      * @param cartList
      * @param couponId
@@ -1176,11 +1184,11 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
      * @return
      * */
     @Override
-    public Map<String, Object> calculateCartGoods(Integer userId, List<MtCart> cartList, Integer couponId, boolean isUsePoint, String platform, String orderMode) throws BusinessCheckException {
+    public Map<String, Object> calculateCartGoods(Integer merchantId, Integer userId, List<MtCart> cartList, Integer couponId, boolean isUsePoint, String platform, String orderMode) throws BusinessCheckException {
         MtUser userInfo = memberService.queryMemberById(userId);
 
         // 设置是否不能用积分抵扣
-        MtSetting pointSetting = settingService.querySettingByName(PointSettingEnum.CAN_USE_AS_MONEY.getKey());
+        MtSetting pointSetting = settingService.querySettingByName(merchantId, PointSettingEnum.CAN_USE_AS_MONEY.getKey());
         if (pointSetting != null && !pointSetting.getValue().equals("true")) {
             isUsePoint = false;
         }
@@ -1342,7 +1350,7 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
         Integer myPoint = userInfo.getPoint() == null ? 0 : userInfo.getPoint();
         Integer usePoint = 0;
         BigDecimal usePointAmount = new BigDecimal("0");
-        MtSetting setting = settingService.querySettingByName(PointSettingEnum.EXCHANGE_NEED_POINT.getKey());
+        MtSetting setting = settingService.querySettingByName(merchantId, PointSettingEnum.EXCHANGE_NEED_POINT.getKey());
         if (myPoint > 0 && setting != null && isUsePoint) {
             if (StringUtil.isNotEmpty(setting.getValue()) && !setting.getValue().equals("0")) {
                 BigDecimal usePoints = new BigDecimal(myPoint);
@@ -1370,7 +1378,7 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
 
         // 配送费用
         BigDecimal deliveryFee = new BigDecimal("0");
-        MtSetting mtSetting = settingService.querySettingByName(OrderSettingEnum.DELIVERY_FEE.getKey());
+        MtSetting mtSetting = settingService.querySettingByName(merchantId, OrderSettingEnum.DELIVERY_FEE.getKey());
         if (mtSetting != null && StringUtil.isNotEmpty(mtSetting.getValue()) && orderMode.equals(OrderModeEnum.EXPRESS.getKey())) {
             deliveryFee = new BigDecimal(mtSetting.getValue());
         }

@@ -109,6 +109,14 @@ public class CouponServiceImpl extends ServiceImpl<MtCouponMapper, MtCoupon> imp
         if (StringUtils.isNotBlank(type)) {
             lambdaQueryWrapper.eq(MtCoupon::getType, type);
         }
+        String merchantId = paginationRequest.getSearchParams().get("merchantId") == null ? "" : paginationRequest.getSearchParams().get("merchantId").toString();
+        if (StringUtils.isNotBlank(merchantId)) {
+            lambdaQueryWrapper.eq(MtCoupon::getMerchantId, merchantId);
+        }
+        String storeId = paginationRequest.getSearchParams().get("storeId") == null ? "" : paginationRequest.getSearchParams().get("storeId").toString();
+        if (StringUtils.isNotBlank(storeId)) {
+            lambdaQueryWrapper.eq(MtCoupon::getStoreId, storeId);
+        }
 
         lambdaQueryWrapper.orderByDesc(MtCoupon::getId);
         List<MtCoupon> dataList = mtCouponMapper.selectList(lambdaQueryWrapper);
@@ -126,7 +134,7 @@ public class CouponServiceImpl extends ServiceImpl<MtCouponMapper, MtCoupon> imp
     /**
      * 保存卡券信息
      *
-     * @param reqCouponDto
+     * @param  reqCouponDto
      * @throws BusinessCheckException
      */
     @Override
@@ -146,7 +154,12 @@ public class CouponServiceImpl extends ServiceImpl<MtCouponMapper, MtCoupon> imp
         if (endTime.before(startTime)) {
             throw new BusinessCheckException("生效期结束时间不能早于开始时间");
         }
-
+        if (reqCouponDto.getMerchantId() != null) {
+            mtCoupon.setMerchantId(reqCouponDto.getMerchantId());
+        }
+        if (reqCouponDto.getStoreId() != null) {
+            mtCoupon.setStoreId(reqCouponDto.getStoreId());
+        }
         mtCoupon.setGroupId(reqCouponDto.getGroupId());
         if (reqCouponDto.getType() != null) {
             mtCoupon.setType(reqCouponDto.getType());
@@ -289,6 +302,8 @@ public class CouponServiceImpl extends ServiceImpl<MtCouponMapper, MtCoupon> imp
 
                 for (int i = 1; i <= total; i++) {
                     MtUserCoupon userCoupon = new MtUserCoupon();
+                    userCoupon.setMerchantId(mtCoupon.getMerchantId());
+                    userCoupon.setStoreId(mtCoupon.getStoreId());
                     userCoupon.setCouponId(couponInfo.getId());
                     userCoupon.setGroupId(mtCoupon.getGroupId());
                     userCoupon.setMobile("");
@@ -577,7 +592,7 @@ public class CouponServiceImpl extends ServiceImpl<MtCouponMapper, MtCoupon> imp
             params.put("name", couponInfo.getName());
             params.put("amount", couponInfo.getAmount());
             params.put("tips", "您的卡券已到账，请查收~");
-            weixinService.sendSubscribeMessage(userInfo.getId(), userInfo.getOpenId(), WxMessageEnum.COUPON_ARRIVAL.getKey(), "pages/user/index", params, sendTime);
+            weixinService.sendSubscribeMessage(userInfo.getMerchantId(), userInfo.getId(), userInfo.getOpenId(), WxMessageEnum.COUPON_ARRIVAL.getKey(), "pages/user/index", params, sendTime);
         }
     }
 
@@ -692,6 +707,7 @@ public class CouponServiceImpl extends ServiceImpl<MtCouponMapper, MtCoupon> imp
 
         // 生成核销流水
         MtConfirmLog confirmLog = new MtConfirmLog();
+        confirmLog.setMerchantId(couponInfo.getMerchantId());
         StringBuilder code = new StringBuilder();
         String sStoreId="00000"+storeId.toString();
         code.append(new SimpleDateFormat("yyMMddHHmmss").format(new Date()));
@@ -743,7 +759,7 @@ public class CouponServiceImpl extends ServiceImpl<MtCouponMapper, MtCoupon> imp
             String dateTime = DateUtil.formatDate(Calendar.getInstance().getTime(), "yyyy-MM-dd HH:mm");
             params.put("name", couponInfo.getName());
             params.put("time", dateTime);
-            weixinService.sendSubscribeMessage(userInfo.getId(), userInfo.getOpenId(), WxMessageEnum.COUPON_CONFIRM.getKey(), "pages/user/index", param, sendTime);
+            weixinService.sendSubscribeMessage(userInfo.getMerchantId(), userInfo.getId(), userInfo.getOpenId(), WxMessageEnum.COUPON_CONFIRM.getKey(), "pages/user/index", param, sendTime);
         } catch (Exception e) {
             //empty
         }

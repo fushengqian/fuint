@@ -19,7 +19,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @TableName("mt_cart")
-@ApiModel(value = "MtCart对象", description = "购物车")
+@ApiModel(value = "MtCart对象", description = "购物车对象")
 public class MtCart implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -30,6 +30,9 @@ public class MtCart implements Serializable {
 
     @ApiModelProperty("会员ID")
     private Integer userId;
+
+    @ApiModelProperty("所属商户ID")
+    private Integer merchantId;
 
     @ApiModelProperty("店铺ID")
     private Integer storeId;

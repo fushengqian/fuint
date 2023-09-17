@@ -25,7 +25,6 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
 import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
 import java.util.*;
@@ -62,7 +61,7 @@ public class BackendBalanceController extends BaseController {
     /**
      * 余额明细列表查询
      *
-     * @param  request HttpServletRequest对象
+     * @param request HttpServletRequest对象
      * @return 余额明细列表
      */
     @ApiOperation(value = "余额明细列表查询")
@@ -97,6 +96,9 @@ public class BackendBalanceController extends BaseController {
         Integer storeId = accountInfo.getStoreId();
         if (storeId != null && storeId > 0) {
             searchParams.put("storeId", storeId);
+        }
+        if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
+            searchParams.put("merchantId", accountInfo.getMerchantId());
         }
 
         PaginationRequest paginationRequest = new PaginationRequest();
@@ -179,7 +181,7 @@ public class BackendBalanceController extends BaseController {
             return getFailureResult(1001, "请先登录");
         }
 
-        List<MtSetting> settingList = settingService.getSettingList(SettingTypeEnum.BALANCE.getKey());
+        List<MtSetting> settingList = settingService.getSettingList(accountInfo.getMerchantId(), SettingTypeEnum.BALANCE.getKey());
 
         List<RechargeRuleDto> rechargeRuleList = new ArrayList<>();
         String remark = "";

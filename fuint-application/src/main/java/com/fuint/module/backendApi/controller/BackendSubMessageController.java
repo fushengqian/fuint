@@ -65,7 +65,7 @@ public class BackendSubMessageController extends BaseController {
         List<SubMessageDto> dataList = new ArrayList<>();
         for (WxMessageEnum wxMessageEnum : WxMessageEnum.values()) {
             SubMessageDto e = new SubMessageDto();
-            MtSetting setting = settingService.querySettingByName(wxMessageEnum.getKey());
+            MtSetting setting = settingService.querySettingByName(accountInfo.getMerchantId(), wxMessageEnum.getKey());
             e.setKey(wxMessageEnum.getKey());
             e.setTitle(wxMessageEnum.getValue());
             JSONObject jsonObject = null;
@@ -130,7 +130,7 @@ public class BackendSubMessageController extends BaseController {
 
         String name = WxMessageEnum.getValue(key);
         if (StringUtil.isNotEmpty(name)) {
-            MtSetting mtSetting = settingService.querySettingByName(key);
+            MtSetting mtSetting = settingService.querySettingByName(accountInfo.getMerchantId(), key);
             JSONObject jsonObject = null;
             try {
                 if (mtSetting != null && mtSetting.getValue().indexOf('}') > 0) {
@@ -241,8 +241,8 @@ public class BackendSubMessageController extends BaseController {
             subMessageDto.setParams(params);
             String json = JSONObject.toJSONString(subMessageDto);
 
-            // 保存
-            settingService.removeSetting(key);
+            // 保存配置
+            settingService.removeSetting(accountInfo.getMerchantId(), key);
             MtSetting info = new MtSetting();
             info.setType(SettingTypeEnum.SUB_MESSAGE.getKey());
             info.setName(key);

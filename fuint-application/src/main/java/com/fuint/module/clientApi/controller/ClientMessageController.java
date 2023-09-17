@@ -3,6 +3,7 @@ package com.fuint.module.clientApi.controller;
 import com.alibaba.fastjson.JSONObject;
 import com.fuint.common.dto.UserInfo;
 import com.fuint.common.enums.SettingTypeEnum;
+import com.fuint.common.service.MerchantService;
 import com.fuint.common.service.MessageService;
 import com.fuint.common.service.SettingService;
 import com.fuint.common.util.TokenUtil;
@@ -41,6 +42,12 @@ public class ClientMessageController extends BaseController {
      * */
     @Autowired
     private SettingService settingService;
+
+    /**
+     * 商户服务接口
+     */
+    @Autowired
+    private MerchantService merchantService;
 
     /**
      * 查询最新一条未读消息
@@ -120,11 +127,12 @@ public class ClientMessageController extends BaseController {
     @RequestMapping(value = "/getSubTemplate", method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject getSubTemplate(HttpServletRequest request) throws BusinessCheckException {
+        String merchantNo = request.getHeader("merchantNo");
         String keys =  request.getParameter("keys") == null ? "" :request.getParameter("keys");
 
         List<String> dataList = new ArrayList<>();
-
-        List<MtSetting> settingList = settingService.getSettingList(SettingTypeEnum.SUB_MESSAGE.getKey());
+        Integer merchantId = merchantService.getMerchantId(merchantNo);
+        List<MtSetting> settingList = settingService.getSettingList(merchantId, SettingTypeEnum.SUB_MESSAGE.getKey());
         for (MtSetting mtSetting : settingList) {
             if (keys.indexOf(mtSetting.getName()) >= 0) {
                 try {

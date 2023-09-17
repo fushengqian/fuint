@@ -110,7 +110,7 @@ public class ClientPayController extends BaseController {
         MtUser mtUser = memberService.queryMemberById(userInfo.getId());
         Map<String, Object> outParams = new HashMap<>();
 
-        List<MtSetting> settingList = settingService.getSettingList(SettingTypeEnum.POINT.getKey());
+        List<MtSetting> settingList = settingService.getSettingList(mtUser.getMerchantId(), SettingTypeEnum.POINT.getKey());
         String canUsedAsMoney = "false";
         String exchangeNeedPoint = "0";
         for (MtSetting setting : settingList) {

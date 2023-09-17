@@ -32,6 +32,9 @@ public class MtGive implements Serializable {
     @ApiModelProperty("获赠者用户ID")
     private Integer userId;
 
+    @ApiModelProperty("商户ID")
+    private Integer merchantId;
+
     @ApiModelProperty("店铺ID")
     private Integer storeId;
 

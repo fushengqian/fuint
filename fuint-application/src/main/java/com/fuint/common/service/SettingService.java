@@ -17,10 +17,11 @@ public interface SettingService extends IService<MtSetting> {
     /**
      * 删除配置
      *
+     * @param  merchantId
      * @param  name
      * @throws BusinessCheckException
      */
-    void removeSetting(String name) throws BusinessCheckException;
+    void removeSetting(Integer merchantId, String name) throws BusinessCheckException;
 
     /**
      * 保存配置
@@ -36,15 +37,16 @@ public interface SettingService extends IService<MtSetting> {
      * @param  type
      * @throws BusinessCheckException
      */
-    List<MtSetting> getSettingList(String type) throws BusinessCheckException;
+    List<MtSetting> getSettingList(Integer merchantId, String type) throws BusinessCheckException;
 
     /**
      * 根据配置名称获取配置信息
      *
+     * @param  merchantId
      * @param  name name
      * @throws BusinessCheckException
      */
-    MtSetting querySettingByName(String name) throws BusinessCheckException;
+    MtSetting querySettingByName(Integer merchantId, String name) throws BusinessCheckException;
 
     /**
      * 获取系统上传文件的根路径

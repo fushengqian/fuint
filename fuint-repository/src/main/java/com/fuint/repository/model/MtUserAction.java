@@ -31,6 +31,9 @@ public class MtUserAction implements Serializable {
     @ApiModelProperty("会员ID")
     private Integer userId;
 
+    @ApiModelProperty("商户ID")
+    private Integer merchantId;
+
     @ApiModelProperty("店铺ID")
     private Integer storeId;
 

@@ -53,6 +53,7 @@ public class ClientArticleController extends BaseController {
         String title = articleListParam.getTitle();
         Integer page = articleListParam.getPage() == null ? Constants.PAGE_NUMBER : articleListParam.getPage();
         Integer pageSize = articleListParam.getPageSize() == null ? Constants.PAGE_SIZE : articleListParam.getPageSize();
+        String merchantNo = articleListParam.getMerchantNo() == null ? "" : articleListParam.getMerchantNo();
 
         PaginationRequest paginationRequest = new PaginationRequest();
         paginationRequest.setCurrentPage(page);
@@ -62,6 +63,9 @@ public class ClientArticleController extends BaseController {
         params.put("status", StatusEnum.ENABLED.getKey());
         if (StringUtil.isNotEmpty(title)) {
             params.put("title", title);
+        }
+        if (StringUtil.isNotEmpty(merchantNo)) {
+            params.put("merchantNo", merchantNo);
         }
         paginationRequest.setSearchParams(params);
         PaginationResponse<ArticleDto> paginationResponse = articleService.queryArticleListByPagination(paginationRequest);

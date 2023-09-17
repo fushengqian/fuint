@@ -85,11 +85,14 @@ public class BalanceServiceImpl extends ServiceImpl<MtBalanceMapper, MtBalance> 
         if (StringUtils.isNotBlank(mobile)) {
             lambdaQueryWrapper.eq(MtBalance::getMobile, mobile);
         }
+        String merchantId = paginationRequest.getSearchParams().get("merchantId") == null ? "" : paginationRequest.getSearchParams().get("merchantId").toString();
+        if (StringUtils.isNotBlank(merchantId)) {
+            lambdaQueryWrapper.eq(MtBalance::getMerchantId, merchantId);
+        }
         String storeId = paginationRequest.getSearchParams().get("storeId") == null ? "" : paginationRequest.getSearchParams().get("storeId").toString();
         if (StringUtils.isNotBlank(storeId)) {
             lambdaQueryWrapper.eq(MtBalance::getStoreId, storeId);
         }
-
         lambdaQueryWrapper.orderByDesc(MtBalance::getId);
         List<MtBalance> balanceList = mtBalanceMapper.selectList(lambdaQueryWrapper);
 
@@ -161,7 +164,7 @@ public class BalanceServiceImpl extends ServiceImpl<MtBalanceMapper, MtBalance> 
         params.put("amount", mtBalance.getAmount());
         params.put("time", dateTime);
         params.put("tips", "您的余额发生了变动，请留意~");
-        weixinService.sendSubscribeMessage(mtBalance.getUserId(), mtUser.getOpenId(), WxMessageEnum.BALANCE_CHANGE.getKey(), "pages/user/index", params, sendTime);
+        weixinService.sendSubscribeMessage(mtBalance.getMerchantId(), mtBalance.getUserId(), mtUser.getOpenId(), WxMessageEnum.BALANCE_CHANGE.getKey(), "pages/user/index", params, sendTime);
 
         return true;
     }
