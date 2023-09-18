@@ -46,8 +46,8 @@ public class DutyServiceImpl extends ServiceImpl<TDutyMapper, TDuty> implements 
     private TDutySourceMapper tDutySourceMapper;
 
     @Override
-    public List<TDuty> getAvailableRoles() {
-        List<TDuty> result = tDutyMapper.findByStatus(StatusEnum.ENABLED.getKey());
+    public List<TDuty> getAvailableRoles(Integer merchantId) {
+        List<TDuty> result = tDutyMapper.findByStatus(merchantId, StatusEnum.ENABLED.getKey());
         return result;
     }
 
@@ -122,7 +122,7 @@ public class DutyServiceImpl extends ServiceImpl<TDutyMapper, TDuty> implements 
             throw new BusinessCheckException("角色不存在.");
         }
         if (!StringUtil.equals(tduty.getDutyName(), existsDuty.getDutyName())) {
-            TDuty tDuty = this.findByName(tduty.getDutyName());
+            TDuty tDuty = findByName(existsDuty.getMerchantId(), tduty.getDutyName());
             if (tDuty != null) {
                 throw new BusinessCheckException("角色名已存在.");
             }
@@ -149,11 +149,12 @@ public class DutyServiceImpl extends ServiceImpl<TDutyMapper, TDuty> implements 
     /**
      * 根据角色名称合状态查询角色
      *
+     * @param merchantId
      * @param name
      * @return
      */
     @Override
-    public TDuty findByName(String name) {
+    public TDuty findByName(Integer merchantId, String name) {
         return this.tDutyMapper.findByName(name);
     }
 
@@ -210,6 +211,10 @@ public class DutyServiceImpl extends ServiceImpl<TDutyMapper, TDuty> implements 
         if (StringUtils.isNotBlank(status)) {
             lambdaQueryWrapper.eq(TDuty::getStatus, status);
         }
+        String merchantId = paginationRequest.getSearchParams().get("merchantId") == null ? "" : paginationRequest.getSearchParams().get("merchantId").toString();
+        if (StringUtils.isNotBlank(merchantId)) {
+            lambdaQueryWrapper.eq(TDuty::getMerchantId, merchantId);
+        }
 
         lambdaQueryWrapper.orderByDesc(TDuty::getDutyId);
         List<TDuty> dataList = tDutyMapper.selectList(lambdaQueryWrapper);
@@ -227,11 +232,12 @@ public class DutyServiceImpl extends ServiceImpl<TDutyMapper, TDuty> implements 
     /**
      * 获取菜单的属性结构
      *
+     * @param merchantId 商户ID
      * @return
      */
     @Override
-    public List<TreeNode> getDutyTree() {
-        List<TDuty> tDuties = this.getAvailableRoles();
+    public List<TreeNode> getDutyTree(Integer merchantId) {
+        List<TDuty> tDuties = getAvailableRoles(merchantId);
         List<TreeNode> trees = new ArrayList<TreeNode>();
         if (tDuties != null && tDuties.size() > 0) {
             TreeNode sourceTreeNode;

@@ -198,6 +198,8 @@ public class BackendPointController extends BaseController {
         PointSettingEnum[] settingList = PointSettingEnum.values();
         for (PointSettingEnum setting : settingList) {
             MtSetting info = new MtSetting();
+            info.setMerchantId(accountInfo.getMerchantId());
+            info.setStoreId(0);
             info.setType(SettingTypeEnum.POINT.getKey());
             info.setName(setting.getKey());
 

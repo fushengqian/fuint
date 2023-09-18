@@ -76,7 +76,10 @@ public class OpenGiftServiceImpl extends ServiceImpl<MtOpenGiftMapper, MtOpenGif
         Page<MtOpenGift> pageHelper = PageHelper.startPage(pageNumber, pageSize);
         LambdaQueryWrapper<MtOpenGift> lambdaQueryWrapper = Wrappers.lambdaQuery();
         lambdaQueryWrapper.ne(MtOpenGift::getStatus, StatusEnum.DISABLE.getKey());
-
+        String merchantId = paramMap.get("merchantId") == null ? "" : paramMap.get("merchantId").toString();
+        if (StringUtils.isNotBlank(merchantId)) {
+            lambdaQueryWrapper.eq(MtOpenGift::getMerchantId, merchantId);
+        }
         String couponId = paramMap.get("couponId") == null ? "" : paramMap.get("couponId").toString();
         if (StringUtils.isNotBlank(couponId)) {
             lambdaQueryWrapper.eq(MtOpenGift::getCouponId, couponId);
@@ -225,8 +228,8 @@ public class OpenGiftServiceImpl extends ServiceImpl<MtOpenGiftMapper, MtOpenGif
         if (user.getGradeId() == null && StringUtil.isEmpty(user.getGradeId())) {
             user.setGradeId("0");
         }
-        MtUserGrade oldGrade = userGradeService.queryUserGradeById(Integer.parseInt(user.getGradeId()), user.getId());
-        MtUserGrade gradeInfo = userGradeService.queryUserGradeById(gradeId, user.getId());
+        MtUserGrade oldGrade = userGradeService.queryUserGradeById(user.getMerchantId(), Integer.parseInt(user.getGradeId()), user.getId());
+        MtUserGrade gradeInfo = userGradeService.queryUserGradeById(user.getMerchantId(), gradeId, user.getId());
         // 设置有效期
         if (gradeInfo.getValidDay() > 0) {
             user.setStartTime(new Date());
@@ -317,7 +320,7 @@ public class OpenGiftServiceImpl extends ServiceImpl<MtOpenGiftMapper, MtOpenGif
         MtCoupon couponInfo = couponService.queryCouponById(openGiftInfo.getCouponId());
         dto.setCouponInfo(couponInfo);
 
-        MtUserGrade gradeInfo = userGradeService.queryUserGradeById(openGiftInfo.getGradeId(), 0);
+        MtUserGrade gradeInfo = userGradeService.queryUserGradeById(openGiftInfo.getMerchantId(), openGiftInfo.getGradeId(), 0);
         dto.setGradeInfo(gradeInfo);
 
         return dto;

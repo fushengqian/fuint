@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fuint.common.enums.StatusEnum;
 import com.fuint.common.enums.UserGradeCatchTypeEnum;
+import com.fuint.common.service.MemberService;
 import com.fuint.common.service.UserGradeService;
 import com.fuint.framework.annoation.OperationServiceLog;
 import com.fuint.framework.exception.BusinessCheckException;
@@ -43,6 +44,9 @@ public class UserGradeServiceImpl extends ServiceImpl<MtUserGradeMapper, MtUserG
 
     @Resource
     private MtStaffMapper mtStaffMapper;
+
+    @Resource
+    private MemberService memberService;
 
     /**
      * 分页查询会员等级列表
@@ -108,12 +112,13 @@ public class UserGradeServiceImpl extends ServiceImpl<MtUserGradeMapper, MtUserG
     /**
      * 根据ID获取会员等级信息
      *
-     * @param id 会员等级ID
+     * @param merchantId
+     * @param gradeId 会员等级ID
      * @param userId 会员ID
      * @return
      */
     @Override
-    public MtUserGrade queryUserGradeById(Integer id, Integer userId) {
+    public MtUserGrade queryUserGradeById(Integer merchantId, Integer gradeId, Integer userId) {
         if (userId != null && userId > 0) {
             Map<String, Object> params = new HashMap<>();
             params.put("AUDITED_STATUS", StatusEnum.ENABLED.getKey());
@@ -121,10 +126,10 @@ public class UserGradeServiceImpl extends ServiceImpl<MtUserGradeMapper, MtUserG
             List<MtStaff> staffList = mtStaffMapper.selectByMap(params);
             // 如果是员工关联的会员，就返回默认的会员等级
             if (staffList != null && staffList.size() > 0) {
-                return getInitUserGrade();
+                return getInitUserGrade(merchantId);
             }
         }
-        return mtUserGradeMapper.selectById(id);
+        return mtUserGradeMapper.selectById(gradeId);
     }
 
     /**
@@ -159,7 +164,7 @@ public class UserGradeServiceImpl extends ServiceImpl<MtUserGradeMapper, MtUserG
     @Transactional(rollbackFor = Exception.class)
     @OperationServiceLog(description = "删除会员等级")
     public Integer deleteUserGrade(Integer id, String operator) {
-        MtUserGrade mtUserGrade = queryUserGradeById(id, 0);
+        MtUserGrade mtUserGrade = queryUserGradeById(0, id, 0);
         if (null == mtUserGrade) {
             return 0;
         }
@@ -170,23 +175,31 @@ public class UserGradeServiceImpl extends ServiceImpl<MtUserGradeMapper, MtUserG
 
     /**
      * 获取默认的会员等级
+     *
+     * @param merchantId
+     * @return
      */
     @Override
-    public MtUserGrade getInitUserGrade() {
+    public MtUserGrade getInitUserGrade(Integer merchantId) {
         Map<String, Object> param = new HashMap<>();
         param.put("status", StatusEnum.ENABLED.getKey());
         param.put("CATCH_TYPE", UserGradeCatchTypeEnum.INIT.getKey());
+        param.put("MERCHANT_ID", merchantId);
+
         List<MtUserGrade> dataList = mtUserGradeMapper.selectByMap(param);
-        MtUserGrade initGrade = new MtUserGrade();
-        initGrade.setId(0);
+        MtUserGrade initGrade;
         if (dataList != null && dataList.size() > 0) {
             initGrade = dataList.get(0);
+        } else {
+            initGrade = new MtUserGrade();
+            initGrade.setId(0);
         }
         return initGrade;
     }
 
     /**
      * 获取付费会员等级列表
+     *
      * @param userInfo
      * */
     @Override
@@ -194,6 +207,7 @@ public class UserGradeServiceImpl extends ServiceImpl<MtUserGradeMapper, MtUserG
         Map<String, Object> param = new HashMap<>();
         param.put("status", StatusEnum.ENABLED.getKey());
         param.put("catch_type", UserGradeCatchTypeEnum.PAY.getKey());
+        param.put("merchant_id", userInfo.getMerchantId());
         List<MtUserGrade> userGrades = mtUserGradeMapper.selectByMap(param);
         List<MtUserGrade> dataList = new ArrayList<>();
         if (userGrades.size() > 0 && userInfo != null) {

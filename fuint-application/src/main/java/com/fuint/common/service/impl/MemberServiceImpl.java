@@ -281,7 +281,7 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
                 }
             }
             if (userDto.getGradeId() != null) {
-                MtUserGrade mtGrade = userGradeService.queryUserGradeById(Integer.parseInt(userDto.getGradeId()), user.getId());
+                MtUserGrade mtGrade = userGradeService.queryUserGradeById(Integer.parseInt(merchantId), Integer.parseInt(userDto.getGradeId()), user.getId());
                 if (mtGrade != null) {
                     userDto.setGradeName(mtGrade.getName());
                 }
@@ -325,7 +325,7 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
         }
         // 默认会员等级
         if (StringUtil.isEmpty(mtUser.getGradeId())) {
-            MtUserGrade grade = userGradeService.getInitUserGrade();
+            MtUserGrade grade = userGradeService.getInitUserGrade(mtUser.getMerchantId());
             if (grade != null) {
                 mtUser.setGradeId(grade.getId().toString());
             }
@@ -380,7 +380,7 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
             // 短信模板
             try {
                 Map<String, String> params = new HashMap<>();
-                sendSmsService.sendSms("register-sms", mobileList, params);
+                sendSmsService.sendSms(mtUser.getMerchantId(), "register-sms", mobileList, params);
             } catch (BusinessCheckException e) {
                 // empty
             }
@@ -447,7 +447,7 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
         String nickName = mobile.replaceAll("(\\d{3})\\d{4}(\\d{4})","$1****$2");
         mtUser.setName(nickName);
         mtUser.setMobile(mobile);
-        MtUserGrade grade = userGradeService.getInitUserGrade();
+        MtUserGrade grade = userGradeService.getInitUserGrade(merchantId);
         if (grade != null) {
             mtUser.setGradeId(grade.getId() + "");
         }
@@ -522,7 +522,7 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
 
         if (mtUser != null) {
             // 检查会员是否过期，过期就把会员等级置为初始等级
-            MtUserGrade initGrade = userGradeService.getInitUserGrade();
+            MtUserGrade initGrade = userGradeService.getInitUserGrade(mtUser.getMerchantId());
             if (initGrade != null) {
                 Date endTime = mtUser.getEndTime();
                 if (endTime != null) {
@@ -542,7 +542,7 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
                     openGiftService.openGift(mtUser.getId(), initGrade.getId(), false);
                 } else {
                     // 会员等级不存在或已禁用、删除，就把会员等级置为初始等级
-                    MtUserGrade myGrade = userGradeService.queryUserGradeById(Integer.parseInt(userGradeId), id);
+                    MtUserGrade myGrade = userGradeService.queryUserGradeById(mtUser.getMerchantId(), Integer.parseInt(userGradeId), id);
                     if (myGrade == null || !myGrade.getStatus().equals(StatusEnum.ENABLED.getKey())) {
                         mtUser.setGradeId(initGrade.getId().toString());
                         updateById(mtUser);
@@ -606,6 +606,7 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
             if (StringUtil.isEmpty(nickName) && StringUtil.isNotEmpty(mobile)) {
                 nickName = mobile.replaceAll("(\\d{3})\\d{4}(\\d{4})","$1****$2");
             }
+            mtUser.setMerchantId(merchantId);
             String userNo = CommonUtil.createUserNo();
             mobile = CommonUtil.replaceXSS(mobile);
             avatar = CommonUtil.replaceXSS(avatar);
@@ -615,7 +616,7 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
             mtUser.setAvatar(avatar);
             mtUser.setName(nickName);
             mtUser.setOpenId(openId);
-            MtUserGrade grade = userGradeService.getInitUserGrade();
+            MtUserGrade grade = userGradeService.getInitUserGrade(merchantId);
             if (grade != null) {
                 mtUser.setGradeId(grade.getId() + "");
             }

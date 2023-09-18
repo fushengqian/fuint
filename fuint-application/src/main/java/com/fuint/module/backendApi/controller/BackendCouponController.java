@@ -466,6 +466,7 @@ public class BackendCouponController extends BaseController {
 
         // 发放记录
         ReqSendLogDto dto = new ReqSendLogDto();
+        dto.setMerchantId(couponInfo.getMerchantId());
         dto.setType(1);
         dto.setMobile(mobile);
         dto.setUserId(mtUser.getId());
@@ -498,7 +499,7 @@ public class BackendCouponController extends BaseController {
             Map<String, String> params = new HashMap<>();
             params.put("totalNum", totalNum+"");
             params.put("totalMoney", totalMoney+"");
-            sendSmsService.sendSms("received-coupon", mobileList, params);
+            sendSmsService.sendSms(couponInfo.getMerchantId(), "received-coupon", mobileList, params);
         } catch (Exception e) {
             //empty
         }

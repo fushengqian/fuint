@@ -2,6 +2,7 @@ package com.fuint.common.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fuint.common.domain.TreeSelect;
+import com.fuint.common.enums.StatusEnum;
 import com.fuint.common.service.SourceService;
 import com.fuint.common.vo.MetaVo;
 import com.fuint.common.vo.RouterVo;
@@ -37,8 +38,8 @@ public class SourceServiceImpl extends ServiceImpl<TSourceMapper, TSource> imple
      * @return
      */
     @Override
-    public List<TSource> getAvailableSources() {
-        return tSourceMapper.findByStatus("A");
+    public List<TSource> getAvailableSources(Integer merchantId) {
+        return tSourceMapper.findByStatus(merchantId, StatusEnum.ENABLED.getKey());
     }
 
     /**
@@ -47,8 +48,8 @@ public class SourceServiceImpl extends ServiceImpl<TSourceMapper, TSource> imple
      * @return
      */
     @Override
-    public List<TreeNode> getSourceTree() {
-        List<TSource> tSources = this.getAvailableSources();
+    public List<TreeNode> getSourceTree(Integer merchantId) {
+        List<TSource> tSources = getAvailableSources(merchantId);
         List<TreeNode> trees = new ArrayList<>();
         if (tSources != null && tSources.size() > 0) {
             TreeNode sourceTreeNode = null;

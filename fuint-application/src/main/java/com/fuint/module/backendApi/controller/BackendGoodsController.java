@@ -740,7 +740,7 @@ public class BackendGoodsController extends BaseController {
     /**
      * 删除商品规格值
      *
-     * @param request  HttpServletRequest对象
+     * @param request HttpServletRequest对象
      */
     @ApiOperation(value = "删除商品规格值")
     @RequestMapping(value = "/deleteSpecValue", method = RequestMethod.GET)

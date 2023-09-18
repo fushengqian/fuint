@@ -169,7 +169,7 @@ public class GiveServiceImpl extends ServiceImpl<MtGiveMapper, MtGive> implement
             userInfo.setMerchantId(merchantId);
             userInfo.setName(mobile);
             userInfo.setMobile(mobile);
-            MtUserGrade grade = userGradeService.getInitUserGrade();
+            MtUserGrade grade = userGradeService.getInitUserGrade(merchantId);
             userInfo.setGradeId(grade.getId()+"");
             userInfo.setBalance(new BigDecimal(0));
             userInfo.setStatus(StatusEnum.ENABLED.getKey());
@@ -279,7 +279,7 @@ public class GiveServiceImpl extends ServiceImpl<MtGiveMapper, MtGive> implement
             Map<String, String> params = new HashMap<>();
             params.put("totalNum", couponIds.length+"");
             params.put("totalMoney", money+"");
-            sendSmsService.sendSms("received-coupon", mobileList, params);
+            sendSmsService.sendSms(merchantId, "received-coupon", mobileList, params);
         } catch (Exception e) {
             //empty
         }

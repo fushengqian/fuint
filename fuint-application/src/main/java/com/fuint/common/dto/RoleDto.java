@@ -11,6 +11,11 @@ public class RoleDto {
     private Long id;
 
     /**
+     * 商户ID
+     * */
+    private Integer merchantId;
+
+    /**
      * 名称
      */
     private String name;
@@ -36,6 +41,14 @@ public class RoleDto {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public Integer getMerchantId() {
+        return merchantId;
+    }
+
+    public void setMerchantId(Integer merchantId) {
+        this.merchantId = merchantId;
     }
 
     public String getName() {

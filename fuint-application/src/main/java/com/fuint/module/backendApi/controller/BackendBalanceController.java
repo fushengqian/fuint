@@ -256,6 +256,7 @@ public class BackendBalanceController extends BaseController {
         }
 
         MtSetting setting = new MtSetting();
+        setting.setMerchantId(accountInfo.getMerchantId());
         setting.setType(SettingTypeEnum.BALANCE.getKey());
         setting.setName(BalanceSettingEnum.RECHARGE_RULE.getKey());
         setting.setValue(rechargeRule);
@@ -267,6 +268,7 @@ public class BackendBalanceController extends BaseController {
 
         // 保存充值说明
         MtSetting settingRemark = new MtSetting();
+        settingRemark.setMerchantId(accountInfo.getMerchantId());
         settingRemark.setType(SettingTypeEnum.BALANCE.getKey());
         settingRemark.setName(BalanceSettingEnum.RECHARGE_REMARK.getKey());
         settingRemark.setValue(remark);

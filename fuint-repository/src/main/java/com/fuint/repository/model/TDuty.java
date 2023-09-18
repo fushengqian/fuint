@@ -27,6 +27,9 @@ public class TDuty implements Serializable {
     @TableId(value = "duty_id", type = IdType.AUTO)
     private Integer dutyId;
 
+    @ApiModelProperty("商户ID")
+    private Integer merchantId;
+
     @ApiModelProperty("角色名称")
     private String dutyName;
 

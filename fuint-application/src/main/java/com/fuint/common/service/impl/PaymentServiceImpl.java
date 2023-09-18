@@ -173,7 +173,7 @@ public class PaymentServiceImpl implements PaymentService {
             logger.info("PaymentService paymentCallback Point orderSn = {} , pointNum ={}", orderInfo.getOrderSn(), pointNum);
             if (pointNum > 0) {
                 MtUser userInfo = memberService.queryMemberById(orderInfo.getUserId());
-                MtUserGrade userGrade = userGradeService.queryUserGradeById(Integer.parseInt(userInfo.getGradeId()), orderInfo.getUserId());
+                MtUserGrade userGrade = userGradeService.queryUserGradeById(orderInfo.getMerchantId(), Integer.parseInt(userInfo.getGradeId()), orderInfo.getUserId());
                 // 是否会员积分加倍
                 if (userGrade.getSpeedPoint() > 1) {
                     pointNum = pointNum * userGrade.getSpeedPoint();
@@ -197,7 +197,7 @@ public class PaymentServiceImpl implements PaymentService {
                     MtUser mtUser = memberService.queryMemberById(orderInfo.getUserId());
                     MtUserGrade mtUserGrade = mtUserGradeMapper.selectById(mtUser.getGradeId());
                     if (mtUserGrade == null) {
-                        mtUserGrade = userGradeService.getInitUserGrade();
+                        mtUserGrade = userGradeService.getInitUserGrade(orderInfo.getMerchantId());
                     }
                     List<MtUserGrade> userGradeList = mtUserGradeMapper.selectByMap(param);
                     if (mtUserGrade != null && userGradeList != null && userGradeList.size() > 0) {

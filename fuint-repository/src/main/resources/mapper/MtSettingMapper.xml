@@ -6,18 +6,13 @@
         <if test="merchantId != null and merchantId > 0">
             and (t.MERCHANT_ID = #{merchantId} or t.MERCHANT_ID = 0)
         </if>
-        <if test="storeId != null and storeId > 0">
-            and (t.STORE_ID = #{storeId} or t.STORE_ID = 0)
-        </if>
     </select>
 
     <select id="querySettingByName" resultType="com.fuint.repository.model.MtSetting">
-        select * from mt_setting t where t.NAME = #{name} limit 1
+        select * from mt_setting t where t.NAME = #{name}
         <if test="merchantId != null and merchantId > 0">
             and (t.MERCHANT_ID = #{merchantId} or t.MERCHANT_ID = 0)
         </if>
-        <if test="storeId != null and storeId > 0">
-            and (t.STORE_ID = #{storeId} or t.STORE_ID = 0)
-        </if>
+        limit 1
     </select>
 </mapper>

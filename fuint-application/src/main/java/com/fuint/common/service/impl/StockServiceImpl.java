@@ -65,6 +65,10 @@ public class StockServiceImpl extends ServiceImpl<MtStockMapper, MtStock> implem
         if (StringUtils.isNotBlank(type)) {
             lambdaQueryWrapper.eq(MtStock::getType, type);
         }
+        String merchantId = paginationRequest.getSearchParams().get("merchantId") == null ? "" : paginationRequest.getSearchParams().get("merchantId").toString();
+        if (StringUtils.isNotBlank(merchantId)) {
+            lambdaQueryWrapper.eq(MtStock::getMerchantId, merchantId);
+        }
         String storeId = paginationRequest.getSearchParams().get("storeId") == null ? "" : paginationRequest.getSearchParams().get("storeId").toString();
         if (StringUtils.isNotBlank(storeId)) {
             lambdaQueryWrapper.eq(MtStock::getStoreId, storeId);

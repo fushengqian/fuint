@@ -14,6 +14,7 @@ import com.fuint.repository.model.MtOpenGift;
 import com.fuint.repository.model.MtUserGrade;
 import com.fuint.utils.StringUtil;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -46,14 +47,21 @@ public class BackendOpenGiftController extends BaseController {
     private OpenGiftService openGiftService;
 
     /**
-     * 开卡礼列表查询
+     * 开卡赠礼列表查询
      *
-     * @param request  HttpServletRequest对象
+     * @param request HttpServletRequest对象
      * @return
      */
+    @ApiOperation(value = "开卡赠礼列表查询")
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject list(HttpServletRequest request) throws BusinessCheckException {
+        String token = request.getHeader("Access-Token");
+        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
+        if (accountInfo == null) {
+            return getFailureResult(1001, "请先登录");
+        }
+
         Integer page = request.getParameter("page") == null ? Constants.PAGE_NUMBER : Integer.parseInt(request.getParameter("page"));
         Integer pageSize = request.getParameter("pageSize") == null ? Constants.PAGE_SIZE : Integer.parseInt(request.getParameter("pageSize"));
         String couponId = request.getParameter("couponId");
@@ -61,6 +69,9 @@ public class BackendOpenGiftController extends BaseController {
         String status = request.getParameter("status");
 
         Map<String, Object> param = new HashMap<>();
+        if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
+            param.put("merchantId", accountInfo.getMerchantId());
+        }
         if (StringUtil.isNotEmpty(couponId)) {
             param.put("couponId", couponId);
         }
@@ -86,10 +97,11 @@ public class BackendOpenGiftController extends BaseController {
     }
 
     /**
-     * 详情信息
-     * @param request  HttpServletRequest对象
+     * 开卡赠礼详情
+     * @param request HttpServletRequest对象
      * @return
      * */
+    @ApiOperation(value = "开卡赠礼详情")
     @RequestMapping(value = "/info/{id}", method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject info(HttpServletRequest request, @PathVariable("id") Integer id) throws BusinessCheckException {
@@ -112,11 +124,12 @@ public class BackendOpenGiftController extends BaseController {
     }
 
     /**
-     * 提交处理
+     * 提交开卡赠礼
      *
-     * @param request  HttpServletRequest对象
+     * @param request HttpServletRequest对象
      * @return
      */
+    @ApiOperation(value = "提交开卡赠礼")
     @RequestMapping(value = "/save", method = RequestMethod.POST)
     @CrossOrigin
     public ResponseObject handleSave(HttpServletRequest request, @RequestBody Map<String, Object> param) throws BusinessCheckException {
@@ -162,6 +175,7 @@ public class BackendOpenGiftController extends BaseController {
         } else {
             reqDto.setPoint(0);
         }
+        reqDto.setMerchantId(accountInfo.getMerchantId());
         reqDto.setStoreId(0);
         reqDto.setStatus(status);
         String operator = accountInfo.getAccountName();
@@ -178,10 +192,11 @@ public class BackendOpenGiftController extends BaseController {
     }
 
     /**
-     * 更新状态
+     * 更新开卡赠礼
      *
      * @return
      */
+    @ApiOperation(value = "更新开卡赠礼")
     @RequestMapping(value = "/updateStatus", method = RequestMethod.POST)
     @CrossOrigin
     public ResponseObject updateStatus(@RequestBody Map<String, Object> param) throws BusinessCheckException {
@@ -207,11 +222,12 @@ public class BackendOpenGiftController extends BaseController {
     }
 
     /**
-     * 删除数据项
+     * 删除开卡赠礼
      *
      * @param request
      * @return
      */
+    @ApiOperation(value = "删除开卡赠礼")
     @RequestMapping(value = "/delete/{id}", method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject delete(HttpServletRequest request, @PathVariable("id") Integer id) throws BusinessCheckException {

@@ -1,6 +1,7 @@
 package com.fuint.module.clientApi.controller;
 
 import com.fuint.common.service.CaptchaService;
+import com.fuint.common.service.MerchantService;
 import com.fuint.common.service.SendSmsService;
 import com.fuint.common.service.VerifyCodeService;
 import com.fuint.common.util.BizCodeGenerator;
@@ -46,6 +47,12 @@ public class ClientSmsController extends BaseController {
      * */
     @Autowired
     private CaptchaService captchaService;
+
+    /**
+     * 商户服务接口
+     */
+    @Autowired
+    private MerchantService merchantService;
 
     @Autowired
     private Environment env;
@@ -103,11 +110,14 @@ public class ClientSmsController extends BaseController {
         List<String> mobileList = new ArrayList<>();
         mobileList.add(mobile);
 
+        String merchantNo = request.getHeader("merchantNo") == null ? "" : request.getHeader("merchantNo");
+        Integer merchantId = merchantService.getMerchantId(merchantNo);
+
         // 短信模板
         try {
             Map<String, String> params = new HashMap<>();
             params.put("code", verifyCode);
-            result = sendSmsService.sendSms("login-code", mobileList, params);
+            result = sendSmsService.sendSms(merchantId,"login-code", mobileList, params);
             return getSuccessResult(result);
         } catch (Exception e) {
             return getFailureResult(201, e.getMessage());

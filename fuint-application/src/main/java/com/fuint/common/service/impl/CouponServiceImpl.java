@@ -749,7 +749,7 @@ public class CouponServiceImpl extends ServiceImpl<MtCouponMapper, MtCoupon> imp
                 params.put("storeName", mtStore.getName());
             }
             params.put("sn", code.toString());
-            sendSmsService.sendSms("confirm-coupon", mobileList, params);
+            sendSmsService.sendSms(couponInfo.getMerchantId(), "confirm-coupon", mobileList, params);
 
             // 发送小程序订阅消息
             Date nowTime = new Date();

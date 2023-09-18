@@ -14,6 +14,11 @@ public class SourceDto {
     private long id;
 
     /**
+     * 商户ID
+     */
+    private Integer merchantId;
+
+    /**
      * 菜单名称
      */
     private String name;
@@ -94,6 +99,14 @@ public class SourceDto {
 
     public void setId(long id) {
         this.id = id;
+    }
+
+    public Integer getMerchantId() {
+        return merchantId;
+    }
+
+    public void setMerchantId(Integer merchantId) {
+        this.merchantId = merchantId;
     }
 
     public String getName() {

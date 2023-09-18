@@ -398,7 +398,7 @@ public class BackendMemberController extends BaseController {
             info.setOperator(operator);
             info.setUpdateTime(new Date());
             info.setMerchantId(accountInfo.getMerchantId());
-            info.setStoreId(accountInfo.getStoreId());
+            info.setStoreId(0);
 
             settingService.saveSetting(info);
         }

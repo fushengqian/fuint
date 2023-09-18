@@ -134,7 +134,7 @@ public class BackendAccountController extends BaseController {
         }
         Map<String, Object> result = new HashMap<>();
 
-        List<TDuty> roleList = tDutyService.getAvailableRoles();
+        List<TDuty> roleList = tDutyService.getAvailableRoles(accountInfo.getMerchantId());
         List<RoleDto> roles = new ArrayList<>();
         if (roleList.size() > 0) {
             for (TDuty duty : roleList) {

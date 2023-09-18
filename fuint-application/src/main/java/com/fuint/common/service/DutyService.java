@@ -28,9 +28,10 @@ public interface DutyService extends IService<TDuty> {
     /**
      * 获取有效的角色集合
      *
+     * @param merchantId 商户ID
      * @return
      */
-    List<TDuty> getAvailableRoles();
+    List<TDuty> getAvailableRoles(Integer merchantId);
 
     /**
      * 根据ID获取角色实体
@@ -80,10 +81,11 @@ public interface DutyService extends IService<TDuty> {
     /**
      * 根据角色名称合状态查询角色
      *
+     * @param merchantId
      * @param name
      * @return
      */
-    TDuty findByName(String name);
+    TDuty findByName(Integer merchantId, String name);
 
     /**
      * 根据角色名称获取已经分配的菜单ID集合
@@ -96,9 +98,10 @@ public interface DutyService extends IService<TDuty> {
     /**
      * 获取角色的树形结构
      *
+     * @param merchantId
      * @return
      */
-    List<TreeNode> getDutyTree();
+    List<TreeNode> getDutyTree(Integer merchantId);
 
     /**
      * 根据账户获取角色

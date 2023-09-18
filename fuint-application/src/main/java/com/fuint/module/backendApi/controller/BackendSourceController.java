@@ -2,10 +2,12 @@ package com.fuint.module.backendApi.controller;
 
 import com.fuint.common.domain.TreeNode;
 import com.fuint.common.domain.TreeSelect;
+import com.fuint.common.dto.AccountInfo;
 import com.fuint.common.dto.SourceDto;
 import com.fuint.common.enums.StatusEnum;
 import com.fuint.common.service.SourceService;
 import com.fuint.common.util.CommonUtil;
+import com.fuint.common.util.TokenUtil;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.web.BaseController;
 import com.fuint.framework.web.ResponseObject;
@@ -47,8 +49,14 @@ public class BackendSourceController extends BaseController {
      */
     @ApiOperation(value = "获取菜单列表")
     @RequestMapping(value = "/list", method = RequestMethod.GET)
-    public ResponseObject list() {
-        List<TreeNode> sources = sSourceService.getSourceTree();
+    public ResponseObject list(HttpServletRequest request) {
+        String token = request.getHeader("Access-Token");
+        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
+        if (accountInfo == null) {
+            return getFailureResult(1001, "请先登录");
+        }
+
+        List<TreeNode> sources = sSourceService.getSourceTree(accountInfo.getMerchantId());
         return getSuccessResult(sources);
     }
 
@@ -69,6 +77,7 @@ public class BackendSourceController extends BaseController {
         if (tSource.getParentId() != null) {
             sourceDto.setParentId(tSource.getParentId());
         }
+        sourceDto.setMerchantId(tSource.getMerchantId());
         sourceDto.setPath(tSource.getPath());
         sourceDto.setIcon(tSource.getNewIcon());
         sourceDto.setNewIcon(tSource.getNewIcon());
@@ -90,7 +99,13 @@ public class BackendSourceController extends BaseController {
      */
     @ApiOperation(value = "新增菜单")
     @RequestMapping(value = "/add", method = RequestMethod.POST)
-    public ResponseObject addSource(@RequestBody Map<String, Object> param) {
+    public ResponseObject addSource(HttpServletRequest request, @RequestBody Map<String, Object> param) {
+        String token = request.getHeader("Access-Token");
+        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
+        if (accountInfo == null) {
+            return getFailureResult(1001, "请先登录");
+        }
+
         String name = param.get("name").toString();
         String status = param.get("status").toString();
         String parentId = param.get("parentId").toString();
@@ -101,6 +116,7 @@ public class BackendSourceController extends BaseController {
 
         TSource addSource = new TSource();
         addSource.setSourceName(name);
+        addSource.setMerchantId(accountInfo.getMerchantId());
         addSource.setStatus(status);
         addSource.setNewIcon(icon);
         addSource.setIsLog(1);
@@ -143,7 +159,13 @@ public class BackendSourceController extends BaseController {
      */
     @ApiOperation(value = "修改菜单")
     @RequestMapping(value = "/update", method = RequestMethod.POST)
-    public ResponseObject update(@RequestBody Map<String, Object> param) {
+    public ResponseObject update(HttpServletRequest request, @RequestBody Map<String, Object> param) {
+        String token = request.getHeader("Access-Token");
+        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
+        if (accountInfo == null) {
+            return getFailureResult(1001, "请先登录");
+        }
+
         String name = param.get("name").toString();
         String status = param.get("status").toString();
         String parentId = param.get("parentId").toString();
@@ -162,6 +184,7 @@ public class BackendSourceController extends BaseController {
         editSource.setSourceStyle(sort);
         editSource.setIsMenu(isMenu);
         editSource.setSourceCode(editSource.getPath());
+        editSource.setMerchantId(accountInfo.getMerchantId());
 
         String eName = "";
         String[] paths = path.split("/");
@@ -203,8 +226,9 @@ public class BackendSourceController extends BaseController {
     @RequestMapping(value = "/delete/{sourceId}", method = RequestMethod.GET)
     public ResponseObject delete(HttpServletRequest request, @PathVariable("sourceId") Long sourceId) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
-        if (StringUtil.isEmpty(token)) {
-            return getFailureResult(201,"请求参数有误");
+        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
+        if (accountInfo == null) {
+            return getFailureResult(1001, "请先登录");
         }
 
         try {
@@ -225,11 +249,12 @@ public class BackendSourceController extends BaseController {
     @RequestMapping(value = "/treeselect", method = RequestMethod.GET)
     public ResponseObject treeselect(HttpServletRequest request) {
         String token = request.getHeader("Access-Token");
-        if (StringUtil.isEmpty(token)) {
-            return getFailureResult(201,"请求参数有误");
+        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
+        if (accountInfo == null) {
+            return getFailureResult(1001, "请先登录");
         }
 
-        List<TreeNode> sources = sSourceService.getSourceTree();
+        List<TreeNode> sources = sSourceService.getSourceTree(accountInfo.getMerchantId());
         List<TreeSelect> data = sourceService.buildMenuTreeSelect(sources);
 
         return getSuccessResult(data);

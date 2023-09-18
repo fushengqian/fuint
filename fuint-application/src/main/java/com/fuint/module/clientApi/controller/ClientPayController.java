@@ -95,6 +95,12 @@ public class ClientPayController extends BaseController {
     UserGradeService userGradeService;
 
     /**
+     * 商户服务接口
+     */
+    @Autowired
+    private MerchantService merchantService;
+
+    /**
      * 支付前查询
      * */
     @ApiOperation(value = "支付前查询")
@@ -103,6 +109,7 @@ public class ClientPayController extends BaseController {
     public ResponseObject prePay(HttpServletRequest request) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
         String useFor = request.getParameter("type") == null ? "" : request.getParameter("type");
+        String merchantNo = request.getHeader("merchantNo");
         UserInfo userInfo = TokenUtil.getUserInfoByToken(token);
         if (userInfo == null) {
             return getFailureResult(201, "请先登录");
@@ -132,8 +139,9 @@ public class ClientPayController extends BaseController {
 
         // 会员折扣
         BigDecimal payDiscount = new BigDecimal("1");
+        Integer merchantId = merchantService.getMerchantId(merchantNo);
         if (mtUser != null) {
-            MtUserGrade userGrade = userGradeService.queryUserGradeById(Integer.parseInt(mtUser.getGradeId()), mtUser.getId());
+            MtUserGrade userGrade = userGradeService.queryUserGradeById(merchantId, Integer.parseInt(mtUser.getGradeId()), mtUser.getId());
             if (userGrade != null) {
                 if (userGrade.getDiscount() > 0) {
                     payDiscount = new BigDecimal(userGrade.getDiscount()).divide(new BigDecimal("10"), BigDecimal.ROUND_CEILING, 3);

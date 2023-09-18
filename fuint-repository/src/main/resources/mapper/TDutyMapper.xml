@@ -4,12 +4,18 @@
 
     <select id="findByStatus" resultType="com.fuint.repository.model.TDuty">
         select * from t_duty u
-        where u.status = 'A'
+        where u.status = #{status}
+        <if test="merchantId != null and merchantId > 0">
+            and u.MERCHANT_ID = #{merchantId}
+        </if>
     </select>
 
     <select id="findByName" resultType="com.fuint.repository.model.TDuty">
         select * from t_duty u
         where u.DUTY_NAME = #{name}
+        <if test="merchantId != null and merchantId > 0">
+            and u.MERCHANT_ID = #{merchantId}
+        </if>
     </select>
 
     <select id="findByIdIn" resultType="com.fuint.repository.model.TDuty">

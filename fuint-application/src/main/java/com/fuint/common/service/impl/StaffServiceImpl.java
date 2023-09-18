@@ -193,7 +193,7 @@ public class StaffServiceImpl extends ServiceImpl<MtStaffMapper, MtStaff> implem
                 Map<String, String> params = new HashMap<>();
                 params.put("name", mtStaff.getRealName());
                 params.put("storeId", mtStaff.getStoreId().toString());
-                sendSmsService.sendSms("confirmer-authed", mobileList, params);
+                sendSmsService.sendSms(mtStaff.getMerchantId(), "confirmer-authed", mobileList, params);
             } catch (Exception e) {
                 // empty
             }

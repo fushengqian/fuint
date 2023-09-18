@@ -59,10 +59,16 @@ public class BackendDutyController extends BaseController {
     @RequestMapping(value = "/list")
     @CrossOrigin
     public ResponseObject list(HttpServletRequest request) {
+        String token = request.getHeader("Access-Token");
         Integer page = request.getParameter("page") == null ? Constants.PAGE_NUMBER : Integer.parseInt(request.getParameter("page"));
         Integer pageSize = request.getParameter("pageSize") == null ? Constants.PAGE_SIZE : Integer.parseInt(request.getParameter("pageSize"));
         String name = request.getParameter("name") == null ? "" : request.getParameter("name");
         String status = request.getParameter("status") == null ? "" : request.getParameter("status");
+
+        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
+        if (accountInfo == null) {
+            return getFailureResult(1001, "请先登录");
+        }
 
         PaginationRequest paginationRequest = new PaginationRequest();
         paginationRequest.setCurrentPage(page);
@@ -74,6 +80,9 @@ public class BackendDutyController extends BaseController {
         }
         if (StringUtil.isNotEmpty(status)) {
             searchParams.put("status", status);
+        }
+        if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
+            searchParams.put("merchantId", accountInfo.getMerchantId());
         }
 
         paginationRequest.setSearchParams(searchParams);
@@ -136,13 +145,18 @@ public class BackendDutyController extends BaseController {
         }
 
         TDuty tDuty = new TDuty();
+        tDuty.setMerchantId(accountInfo.getMerchantId());
         tDuty.setDutyName(name);
         tDuty.setDutyType(type);
         tDuty.setStatus(status);
         tDuty.setDescription(description);
 
         // 添加角色信息
-        tDutyService.saveDuty(tDuty, sources);
+        try {
+            tDutyService.saveDuty(tDuty, sources);
+        } catch (Exception e) {
+            return getFailureResult(201, e.getMessage());
+        }
 
         return getSuccessResult(true);
     }
@@ -167,6 +181,7 @@ public class BackendDutyController extends BaseController {
         Map<String, Object> result = new HashMap<>();
 
         RoleDto roleInfo = new RoleDto();
+        roleInfo.setMerchantId(htDuty.getMerchantId());
         roleInfo.setId(htDuty.getDutyId().longValue());
         roleInfo.setName(htDuty.getDutyName());
         roleInfo.setType(htDuty.getDutyType());
@@ -214,6 +229,7 @@ public class BackendDutyController extends BaseController {
         duty.setDutyName(name);
         duty.setStatus(status);
         duty.setDutyType(type);
+        duty.setMerchantId(accountInfo.getMerchantId());
 
         // 获取角色所分配的菜单
         List<TSource> sources = null;
@@ -225,7 +241,11 @@ public class BackendDutyController extends BaseController {
             sources = tSourceService.findDatasByIds(sourceIds);
         }
 
-        tDutyService.updateDuty(duty, sources);
+        try {
+            tDutyService.updateDuty(duty, sources);
+        } catch (Exception e) {
+            return getFailureResult(201, e.getMessage());
+        }
 
         return getSuccessResult(true);
     }

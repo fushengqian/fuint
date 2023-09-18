@@ -29,6 +29,9 @@ public class TSource implements Serializable {
     @TableId(value = "source_id", type = IdType.AUTO)
     private Integer sourceId;
 
+    @ApiModelProperty("商户ID")
+    private Integer merchantId;
+
     @ApiModelProperty("菜单名称")
     private String sourceName;
 

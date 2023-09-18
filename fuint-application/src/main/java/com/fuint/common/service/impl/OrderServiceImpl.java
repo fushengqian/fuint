@@ -298,7 +298,7 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
 
         // 会员相关信息
         MtUser userInfo = memberService.queryMemberById(orderDto.getUserId());
-        MtUserGrade userGrade = userGradeService.queryUserGradeById(userInfo.getGradeId() != null ? Integer.parseInt(userInfo.getGradeId()) : 1, orderDto.getUserId());
+        MtUserGrade userGrade = userGradeService.queryUserGradeById(orderDto.getMerchantId(), userInfo.getGradeId() != null ? Integer.parseInt(userInfo.getGradeId()) : 1, orderDto.getUserId());
         BigDecimal percent = new BigDecimal("0");
         if (userGrade != null && userGrade.getDiscount() != null && userGrade.getDiscount() > 0) {
             // 会员折扣
@@ -801,7 +801,7 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
                 params.put("orderSn", mtOrder.getOrderSn());
                 List<String> mobileList = new ArrayList<>();
                 mobileList.add(mtStore.getPhone());
-                sendSmsService.sendSms("new-order", mobileList, params);
+                sendSmsService.sendSms(mtOrder.getMerchantId(), "new-order", mobileList, params);
             }
         } catch (Exception e) {
             // empty

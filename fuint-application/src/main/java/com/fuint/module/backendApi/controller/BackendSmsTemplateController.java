@@ -61,6 +61,9 @@ public class BackendSmsTemplateController extends BaseController {
         }
 
         Map<String, Object> searchParams = new HashMap<>();
+        if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
+            searchParams.put("merchantId", accountInfo.getMerchantId());
+        }
         if (StringUtil.isNotEmpty(code)) {
             searchParams.put("code", code);
         }
@@ -94,7 +97,7 @@ public class BackendSmsTemplateController extends BaseController {
         if (accountInfo == null) {
             return getFailureResult(1001, "请先登录");
         }
-
+        smsTemplateDto.setMerchantId(accountInfo.getMerchantId());
         smsTemplateService.saveSmsTemplate(smsTemplateDto);
         return getSuccessResult(true);
     }

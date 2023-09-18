@@ -17,6 +17,6 @@ public interface TSourceMapper extends BaseMapper<TSource> {
 
     List<TSource> findByIdIn(@Param("ids") List<String> ids);
 
-    List<TSource> findByStatus(String var1);
+    List<TSource> findByStatus(@Param("merchantId") Integer merchantId, @Param("status") String status);
 
 }

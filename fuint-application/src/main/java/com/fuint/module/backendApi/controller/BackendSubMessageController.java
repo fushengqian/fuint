@@ -189,7 +189,7 @@ public class BackendSubMessageController extends BaseController {
     /**
      * 保存订阅消息模板
      *
-     * @param request  HttpServletRequest对象
+     * @param request HttpServletRequest对象
      * @return
      */
     @ApiOperation(value = "保存订阅消息模板")
@@ -244,10 +244,12 @@ public class BackendSubMessageController extends BaseController {
             // 保存配置
             settingService.removeSetting(accountInfo.getMerchantId(), key);
             MtSetting info = new MtSetting();
+            info.setMerchantId(accountInfo.getMerchantId());
             info.setType(SettingTypeEnum.SUB_MESSAGE.getKey());
             info.setName(key);
             info.setValue(json);
-
+            info.setMerchantId(accountInfo.getMerchantId());
+            info.setStoreId(0);
             String description = WxMessageEnum.getValue(key);
             info.setDescription(description);
             info.setOperator(accountInfo.getAccountName());

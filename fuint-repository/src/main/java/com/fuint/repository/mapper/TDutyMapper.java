@@ -13,7 +13,7 @@ import java.util.List;
  */
 public interface TDutyMapper extends BaseMapper<TDuty> {
 
-    List<TDuty> findByStatus(@Param("status") String status);
+    List<TDuty> findByStatus(@Param("merchantId") Integer merchantId, @Param("status") String status);
 
     List<TDuty> findByIdIn(@Param("ids") List<Integer> ids);
 

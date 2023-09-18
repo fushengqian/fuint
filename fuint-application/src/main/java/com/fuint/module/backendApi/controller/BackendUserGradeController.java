@@ -123,11 +123,16 @@ public class BackendUserGradeController extends BaseController {
     @ApiOperation(value = "更新会员等级状态")
     @RequestMapping(value = "/updateStatus", method = RequestMethod.POST)
     @CrossOrigin
-    public ResponseObject updateStatus(@RequestBody Map<String, Object> param) throws BusinessCheckException {
+    public ResponseObject updateStatus(HttpServletRequest request, @RequestBody Map<String, Object> param) throws BusinessCheckException {
+        String token = request.getHeader("Access-Token");
+        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
+        if (accountInfo == null) {
+            return getFailureResult(1001, "请先登录");
+        }
         Integer userGradeId = param.get("userGradeId") == null ? 0 : Integer.parseInt(param.get("userGradeId").toString());
         String status = param.get("status") == null ? StatusEnum.ENABLED.getKey() : param.get("status").toString();
 
-        MtUserGrade gradeInfo = userGradeService.queryUserGradeById(userGradeId, 0);
+        MtUserGrade gradeInfo = userGradeService.queryUserGradeById(accountInfo.getMerchantId(), userGradeId, 0);
         if (gradeInfo == null) {
             return getFailureResult(201, "会员等级不存在");
         }
@@ -204,7 +209,7 @@ public class BackendUserGradeController extends BaseController {
         if (StringUtil.isEmpty(id)) {
             info = new MtUserGrade();
         } else {
-            info = userGradeService.queryUserGradeById(Integer.parseInt(id), 0);
+            info = userGradeService.queryUserGradeById(accountInfo.getMerchantId(), Integer.parseInt(id), 0);
         }
 
         info.setGrade(Integer.parseInt(grade));
@@ -262,7 +267,7 @@ public class BackendUserGradeController extends BaseController {
             return getFailureResult(1001, "请先登录");
         }
 
-        MtUserGrade userGradeInfo = userGradeService.queryUserGradeById(id, 0);
+        MtUserGrade userGradeInfo = userGradeService.queryUserGradeById(accountInfo.getMerchantId(), id, 0);
 
         Map<String, Object> result = new HashMap<>();
         result.put("userGradeInfo", userGradeInfo);

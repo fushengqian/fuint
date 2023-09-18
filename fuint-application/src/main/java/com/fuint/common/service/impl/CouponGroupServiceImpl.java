@@ -465,6 +465,7 @@ public class CouponGroupServiceImpl extends ServiceImpl<MtCouponGroupMapper, MtC
 
                 // 发放记录
                 ReqSendLogDto dto = new ReqSendLogDto();
+                dto.setMerchantId(cellDto.getMerchantId());
                 dto.setType(2);
                 dto.setMobile(cellDto.getMobile());
                 dto.setUserId(mtUser.getId());
@@ -485,7 +486,7 @@ public class CouponGroupServiceImpl extends ServiceImpl<MtCouponGroupMapper, MtC
                     Map<String, String> params = new HashMap<>();
                     params.put("totalNum", totalNum+"");
                     params.put("totalMoney", totalMoney+"");
-                    sendSmsService.sendSms("received-coupon", mobileList, params);
+                    sendSmsService.sendSms(cellDto.getMerchantId(), "received-coupon", mobileList, params);
                 } catch (Exception e) {
                     //empty
                 }

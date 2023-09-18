@@ -107,6 +107,9 @@ public class BackendStockController extends BaseController {
         if (StringUtil.isNotEmpty(type)) {
             params.put("type", type);
         }
+        if (account.getMerchantId() != null && account.getMerchantId() > 0) {
+            params.put("merchantId", account.getMerchantId());
+        }
         if (StringUtil.isNotEmpty(searchStoreId)) {
             params.put("storeId", searchStoreId);
         }

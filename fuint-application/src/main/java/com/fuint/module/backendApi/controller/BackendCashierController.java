@@ -129,6 +129,9 @@ public class BackendCashierController extends BaseController {
         }
         Map<String, Object> param = new HashMap<>();
         param.put("status", StatusEnum.ENABLED.getKey());
+        if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
+            param.put("merchantId", accountInfo.getMerchantId());
+        }
         if (storeId > 0) {
             param.put("storeId", storeId);
         }

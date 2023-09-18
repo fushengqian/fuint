@@ -83,9 +83,9 @@ public class MerchantMemberController extends BaseController {
 
         // 今日注册、今日活跃
         if (dataType.equals("todayRegister")) {
-            regTime = DateUtil.formatDate(new Date(), "yyyy-MM-dd") + "~" + DateUtil.formatDate(new Date(), "yyyy-MM-dd");
+            regTime = DateUtil.formatDate(new Date(), "yyyy-MM-dd") + " 00:00:00~" + DateUtil.formatDate(new Date(), "yyyy-MM-dd HH:mm:ss");
         } else if (dataType.equals("todayActive")) {
-            activeTime = DateUtil.formatDate(new Date(), "yyyy-MM-dd") + "~" + DateUtil.formatDate(new Date(), "yyyy-MM-dd");
+            activeTime = DateUtil.formatDate(new Date(), "yyyy-MM-dd") + " 00:00:00~" + DateUtil.formatDate(new Date(), "yyyy-MM-dd HH:mm:ss");
         }
 
         UserInfo userInfo = TokenUtil.getUserInfoByToken(token);
@@ -134,21 +134,17 @@ public class MerchantMemberController extends BaseController {
 
         // 注册时间比对
         if (StringUtil.isNotEmpty(regTime)) {
-            params.put("createTime", regTime);
+            params.put("regTime", regTime);
         }
 
         // 活跃时间比对
         if (StringUtil.isNotEmpty(activeTime)) {
-            params.put("updateTime", activeTime);
+            params.put("activeTime", activeTime);
         }
 
         // 会员有效期比对
         if (StringUtil.isNotEmpty(memberTime)) {
-            String[] dateTime = memberTime.split("~");
-            if (dateTime.length == 2) {
-                params.put("startTime", dateTime[0].trim());
-                params.put("endTime", dateTime[1].trim());
-            }
+            params.put("memberTime", memberTime);
         }
 
         // 会员排序方式
@@ -163,7 +159,7 @@ public class MerchantMemberController extends BaseController {
                 paginationRequest.setSortColumn(new String[]{"balance desc"});
             } else if (orderBy.equals("memberTime")) {
                 paginationRequest.setSortColumn(new String[]{"endTime desc", "gradeId desc"});
-                MtUserGrade defaultGrade = userGradeService.getInitUserGrade();
+                MtUserGrade defaultGrade = userGradeService.getInitUserGrade(mtUser.getMerchantId());
                 if (defaultGrade != null) {
                     params.put("gradeId", defaultGrade.getId().toString());
                 }

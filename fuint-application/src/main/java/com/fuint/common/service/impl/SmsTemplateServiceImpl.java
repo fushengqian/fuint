@@ -49,6 +49,10 @@ public class SmsTemplateServiceImpl extends ServiceImpl<MtSmsTemplateMapper, MtS
         LambdaQueryWrapper<MtSmsTemplate> lambdaQueryWrapper = Wrappers.lambdaQuery();
         lambdaQueryWrapper.ne(MtSmsTemplate::getStatus, StatusEnum.DISABLE.getKey());
 
+        String merchantId = paginationRequest.getSearchParams().get("merchantId") == null ? "" : paginationRequest.getSearchParams().get("merchantId").toString();
+        if (StringUtils.isNotBlank(merchantId)) {
+            lambdaQueryWrapper.like(MtSmsTemplate::getMerchantId, merchantId);
+        }
         String name = paginationRequest.getSearchParams().get("name") == null ? "" : paginationRequest.getSearchParams().get("name").toString();
         if (StringUtils.isNotBlank(name)) {
             lambdaQueryWrapper.like(MtSmsTemplate::getName, name);
@@ -89,7 +93,7 @@ public class SmsTemplateServiceImpl extends ServiceImpl<MtSmsTemplateMapper, MtS
     @OperationServiceLog(description = "保存短信模板")
     public MtSmsTemplate saveSmsTemplate(SmsTemplateDto mtSmsTemplateDto) {
         MtSmsTemplate mtSmsTemplate = new MtSmsTemplate();
-
+        mtSmsTemplate.setMerchantId(mtSmsTemplateDto.getMerchantId());
         mtSmsTemplate.setCode(mtSmsTemplateDto.getCode());
         mtSmsTemplate.setName(mtSmsTemplateDto.getName());
         mtSmsTemplate.setUname(mtSmsTemplateDto.getUname());

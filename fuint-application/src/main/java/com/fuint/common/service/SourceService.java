@@ -21,14 +21,14 @@ public interface SourceService extends IService<TSource> {
      *
      * @return
      */
-    List<TSource> getAvailableSources();
+    List<TSource> getAvailableSources(Integer merchantId);
 
     /**
      * 获取菜单的属性结构
      *
      * @return
      */
-    List<TreeNode> getSourceTree();
+    List<TreeNode> getSourceTree(Integer merchantId);
 
     /**
      * 根据菜单ID集合查询菜单列表信息

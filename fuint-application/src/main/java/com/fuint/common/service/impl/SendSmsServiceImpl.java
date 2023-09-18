@@ -59,7 +59,7 @@ public class SendSmsServiceImpl implements SendSmsService {
      private SmsTemplateService smsTemplateService;
 
     @Override
-    public Map<Boolean,List<String>> sendSms(String templateUname, List<String> phones, Map<String, String> contentParams) throws BusinessCheckException {
+    public Map<Boolean,List<String>> sendSms(Integer merchantId, String templateUname, List<String> phones, Map<String, String> contentParams) throws BusinessCheckException {
         logger.info("使用短信平台发送短信.....");
         Integer mode = Integer.parseInt(env.getProperty("aliyun.sms.mode"));
         if (mode.intValue() != 1) {
@@ -72,7 +72,7 @@ public class SendSmsServiceImpl implements SendSmsService {
                 if (mode != null && mode.intValue() == 1) {
                     // 手机号以","分隔拼接
                     String mobilePhones = phones.stream().collect(Collectors.joining(","));
-                    MessageResDto res = sendMessage(mobilePhones, templateUname, contentParams);
+                    MessageResDto res = sendMessage(merchantId, mobilePhones, templateUname, contentParams);
                     result.put(res.getResult(), phones);
                 } else {
                     result.put(Boolean.TRUE,phones);
@@ -96,7 +96,7 @@ public class SendSmsServiceImpl implements SendSmsService {
      * @param templateUname   短信模板英文名称
      * @return
      */
-    public MessageResDto sendMessage(String phoneNo, String templateUname, Map<String, String> contentParams) {
+    public MessageResDto sendMessage(Integer merchantId, String phoneNo, String templateUname, Map<String, String> contentParams) {
         MessageResDto resInfo = new MessageResDto();
         logger.info("sendMessage inParams:phoneNo={}, message={}", phoneNo, templateUname);
         if (StringUtil.isBlank(phoneNo) || phoneNo.split(",").length > 200) {
@@ -113,6 +113,7 @@ public class SendSmsServiceImpl implements SendSmsService {
         try {
             Map<String, Object> params = new HashMap<>();
             params.put("uname", templateUname);
+            params.put("merchant_id", merchantId);
             List<MtSmsTemplate> templateList = smsTemplateService.querySmsTemplateByParams(params);
             if (templateList.size() < 1) {
                 throw new BusinessCheckException("该短信模板不存在！");
@@ -177,7 +178,7 @@ public class SendSmsServiceImpl implements SendSmsService {
                 e.printStackTrace();
             }
             logger.info("sendMessage outParams:{}", res);
-            saveSendLog(phoneNo, smsContent);
+            saveSendLog(merchantId, phoneNo, smsContent);
             flag = true;
         } catch (Exception e) {
             flag = false;
@@ -191,12 +192,14 @@ public class SendSmsServiceImpl implements SendSmsService {
     /**
      * 发送短信日志记录
      *
-     * @param phoneNo   短信发送手机号
-     * @param message   短信内容
+     * @param merchantId 商户号
+     * @param phoneNo    短信发送手机号
+     * @param message    短信内容
      * @return
      */
-    public void saveSendLog(String phoneNo, String message) {
+    public void saveSendLog(Integer merchantId, String phoneNo, String message) {
         MtSmsSendedLog mtSmsSendedLog = new MtSmsSendedLog();
+        mtSmsSendedLog.setMerchantId(merchantId);
         mtSmsSendedLog.setMobilePhone(phoneNo);
         mtSmsSendedLog.setContent(message);
         Date time = new Date();
@@ -216,7 +219,10 @@ public class SendSmsServiceImpl implements SendSmsService {
     public PaginationResponse<MtSmsSendedLog> querySmsListByPagination(PaginationRequest paginationRequest) {
         Page<MtSmsSendedLog> pageHelper = PageHelper.startPage(paginationRequest.getCurrentPage(), paginationRequest.getPageSize());
         LambdaQueryWrapper<MtSmsSendedLog> lambdaQueryWrapper = Wrappers.lambdaQuery();
-
+        String merchantId = paginationRequest.getSearchParams().get("merchantId") == null ? "" : paginationRequest.getSearchParams().get("merchantId").toString();
+        if (StringUtils.isNotBlank(merchantId)) {
+            lambdaQueryWrapper.eq(MtSmsSendedLog::getMerchantId, merchantId);
+        }
         String content = paginationRequest.getSearchParams().get("content") == null ? "" : paginationRequest.getSearchParams().get("content").toString();
         if (StringUtils.isNotBlank(content)) {
             lambdaQueryWrapper.like(MtSmsSendedLog::getContent, content);

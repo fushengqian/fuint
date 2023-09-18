@@ -84,6 +84,9 @@ public class BackendBannerController extends BaseController {
         paginationRequest.setPageSize(pageSize);
 
         Map<String, Object> params = new HashMap<>();
+        if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
+            params.put("merchantId", accountInfo.getMerchantId());
+        }
         if (StringUtil.isNotEmpty(title)) {
             params.put("title", title);
         }

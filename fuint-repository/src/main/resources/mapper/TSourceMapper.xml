@@ -14,6 +14,9 @@
 
     <select id="findByStatus" resultType="com.fuint.repository.model.TSource">
         select * from t_source u
-        where u.status = 'A'
+        where u.status = #{status}
+        <if test="merchantId != null and merchantId > 0">
+            and u.MERCHANT_ID = #{merchantId}
+        </if>
     </select>
 </mapper>

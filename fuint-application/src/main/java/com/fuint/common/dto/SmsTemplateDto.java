@@ -13,6 +13,11 @@ public class SmsTemplateDto implements Serializable {
     private Integer id;
 
     /**
+     * 商户ID
+     */
+    private Integer merchantId;
+
+    /**
      * 模板名称
      */
     private String name;
@@ -50,6 +55,12 @@ public class SmsTemplateDto implements Serializable {
     }
     public void setId(Integer id){
         this.id=id;
+    }
+    public Integer getMerchantId(){
+        return merchantId;
+    }
+    public void setMerchantId(Integer merchantId){
+        this.merchantId=merchantId;
     }
     public String getName(){
         return name;
