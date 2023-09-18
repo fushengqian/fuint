@@ -313,6 +313,7 @@ public class CouponGroupServiceImpl extends ServiceImpl<MtCouponGroupMapper, MtC
 
             List<String> rowContent = content.get(i);
             String mobile = rowContent.get(0);
+            String merchantId = rowContent.get(1);
 
             if (StringUtil.isBlank(mobile) || mobile.length() < 11 || mobile.length() > 11) {
                 errorMsg.append("第" + i + "行错误,手机号有误:"+mobile);
@@ -361,7 +362,7 @@ public class CouponGroupServiceImpl extends ServiceImpl<MtCouponGroupMapper, MtC
             item.setMobile(mobile);
             item.setGroupId(groupIdArr);
             item.setNum(numArr);
-
+            item.setMerchantId(Integer.parseInt(merchantId));
             rows.add(item);
         }
 
@@ -376,9 +377,9 @@ public class CouponGroupServiceImpl extends ServiceImpl<MtCouponGroupMapper, MtC
         // 获取每个分组的总数
         Map<String, Integer> couponIdMap = new HashMap<>();
         for (CouponCellDto dto : rows) {
-            MtUser userInfo = memberService.queryMemberByMobile(dto.getMobile());
+            MtUser userInfo = memberService.queryMemberByMobile(dto.getMerchantId(), dto.getMobile());
             if (userInfo == null) {
-                userInfo = memberService.addMemberByMobile(dto.getMobile());
+                userInfo = memberService.addMemberByMobile(dto.getMerchantId(), dto.getMobile());
             }
 
             if (null == userInfo || !userInfo.getStatus().equals(StatusEnum.ENABLED.getKey())) {
@@ -460,7 +461,7 @@ public class CouponGroupServiceImpl extends ServiceImpl<MtCouponGroupMapper, MtC
                     }
                 }
 
-                MtUser mtUser = memberService.queryMemberByMobile(cellDto.getMobile());
+                MtUser mtUser = memberService.queryMemberByMobile(cellDto.getMerchantId(), cellDto.getMobile());
 
                 // 发放记录
                 ReqSendLogDto dto = new ReqSendLogDto();

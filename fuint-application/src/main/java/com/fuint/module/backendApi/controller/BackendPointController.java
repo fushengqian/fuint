@@ -88,7 +88,7 @@ public class BackendPointController extends BaseController {
 
         Map<String, Object> searchParams = new HashMap<>();
         if (StringUtil.isNotEmpty(mobile)) {
-            MtUser userInfo = memberService.queryMemberByMobile(mobile);
+            MtUser userInfo = memberService.queryMemberByMobile(accountInfo.getMerchantId(), mobile);
             if (userInfo != null) {
                 searchParams.put("userId", userInfo.getId());
             }

@@ -179,10 +179,10 @@ public class SettlementServiceImpl implements SettlementService {
         if ((userInfo == null || StringUtil.isEmpty(token))) {
             String mobile = param.getMobile() == null ? "" : param.getMobile();
             if (StringUtil.isNotEmpty(operator) && StringUtil.isNotEmpty(mobile)) {
-                userInfo = memberService.queryMemberByMobile(mobile);
+                userInfo = memberService.queryMemberByMobile(merchantId, mobile);
                 // 自动注册会员
                 if (userInfo == null) {
-                    userInfo = memberService.addMemberByMobile(mobile);
+                    userInfo = memberService.addMemberByMobile(merchantId, mobile);
                 }
             }
         }

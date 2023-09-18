@@ -15,11 +15,11 @@ import java.util.List;
  */
 public interface MtUserMapper extends BaseMapper<MtUser> {
 
-    List<MtUser> queryMemberByMobile(@Param("mobile") String mobile);
+    List<MtUser> queryMemberByMobile(@Param("merchantId") Integer merchantId, @Param("mobile") String mobile);
 
-    List<MtUser> queryMemberByName(@Param("name") String name);
+    List<MtUser> queryMemberByName(@Param("merchantId") Integer merchantId, @Param("name") String name);
 
-    MtUser queryMemberByOpenId(@Param("openId") String openId);
+    MtUser queryMemberByOpenId(@Param("merchantId") Integer merchantId, @Param("openId") String openId);
 
     List<MtUser> findMembersByUserNo(@Param("userNo") String userNo);
 

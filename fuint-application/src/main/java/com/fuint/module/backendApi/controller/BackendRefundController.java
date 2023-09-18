@@ -96,6 +96,9 @@ public class BackendRefundController extends BaseController {
         paginationRequest.setPageSize(pageSize);
 
         Map<String, Object> params = new HashMap<>();
+        if (account.getMerchantId() != null && account.getMerchantId() > 0) {
+            params.put("merchantId", account.getMerchantId());
+        }
         if (StringUtil.isNotEmpty(status)) {
             params.put("status", status);
         }
@@ -108,7 +111,7 @@ public class BackendRefundController extends BaseController {
             }
         }
         if (StringUtil.isNotEmpty(mobile)) {
-            MtUser userInfo = memberService.queryMemberByMobile(mobile);
+            MtUser userInfo = memberService.queryMemberByMobile(account.getMerchantId(), mobile);
             if (userInfo != null) {
                 userId = userInfo.getId().toString();
             } else {

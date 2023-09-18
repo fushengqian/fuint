@@ -461,7 +461,7 @@ public class BackendCouponController extends BaseController {
         }
 
         MtCoupon couponInfo = couponService.queryCouponById(Integer.parseInt(couponId));
-        MtUser mtUser = memberService.queryMemberByMobile(mobile);
+        MtUser mtUser = memberService.queryMemberByMobile(accountInfo.getMerchantId(), mobile);
         MtCouponGroup mtCouponGroup = couponGroupService.queryCouponGroupById(couponInfo.getGroupId());
 
         // 发放记录

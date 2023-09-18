@@ -63,10 +63,11 @@ public interface MemberService extends IService<MtUser> {
     /**
      * 通过手机号添加会员
      *
+     * @param  merchantId
      * @param  mobile
      * @throws BusinessCheckException
      */
-    MtUser addMemberByMobile(String mobile) throws BusinessCheckException;
+    MtUser addMemberByMobile(Integer merchantId, String mobile) throws BusinessCheckException;
 
     /**
      * 根据会员ID获取会员信息
@@ -79,18 +80,20 @@ public interface MemberService extends IService<MtUser> {
     /**
      * 根据会员名称获取会员信息
      *
+     * @param  merchantId
      * @param  name 会员名称
      * @throws BusinessCheckException
      */
-    MtUser queryMemberByName(String name) throws BusinessCheckException;
+    MtUser queryMemberByName(Integer merchantId, String name) throws BusinessCheckException;
 
     /**
      * 根据会员ID获取会员信息
      *
+     * @param  merchantId
      * @param  openId 微信openId
      * @throws BusinessCheckException
      */
-    MtUser queryMemberByOpenId(String openId, JSONObject userInfo) throws BusinessCheckException;
+    MtUser queryMemberByOpenId(Integer merchantId, String openId, JSONObject userInfo) throws BusinessCheckException;
 
     /**
      * 根据会员组ID获取会员组信息
@@ -103,10 +106,11 @@ public interface MemberService extends IService<MtUser> {
     /**
      * 根据会员手机获取会员信息
      *
+     * @param merchantId
      * @param  mobile 会员手机
      * @throws BusinessCheckException
      */
-    MtUser queryMemberByMobile(String mobile) throws BusinessCheckException;
+    MtUser queryMemberByMobile(Integer merchantId, String mobile) throws BusinessCheckException;
 
     /**
      * 根据会员号获取会员信息

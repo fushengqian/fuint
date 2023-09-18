@@ -265,7 +265,7 @@ public class BackendCashierController extends BaseController {
     @CrossOrigin
     public ResponseObject getMemberInfo(HttpServletRequest request, @RequestBody Map<String, Object> param) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
-        String keyword =  param.get("keyword") == null ? "" : param.get("keyword").toString();
+        String keyword = param.get("keyword") == null ? "" : param.get("keyword").toString();
 
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
         if (accountInfo == null) {
@@ -278,9 +278,9 @@ public class BackendCashierController extends BaseController {
 
         MtUser userInfo;
         if (PhoneFormatCheckUtils.isChinaPhoneLegal(keyword)) {
-            userInfo = memberService.queryMemberByMobile(keyword);
+            userInfo = memberService.queryMemberByMobile(accountInfo.getMerchantId(), keyword);
         } else {
-            userInfo = memberService.queryMemberByName(keyword);
+            userInfo = memberService.queryMemberByName(accountInfo.getMerchantId(), keyword);
             if (userInfo == null) {
                 userInfo = memberService.queryMemberByUserNo(keyword);
             }

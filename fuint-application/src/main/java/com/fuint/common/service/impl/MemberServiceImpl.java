@@ -311,7 +311,7 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
     public MtUser addMember(MtUser mtUser) throws BusinessCheckException {
         // 手机号已存在
         if (StringUtil.isNotEmpty(mtUser.getMobile())) {
-            MtUser userInfo = queryMemberByMobile(mtUser.getMobile());
+            MtUser userInfo = queryMemberByMobile(mtUser.getMerchantId(), mtUser.getMobile());
             if (userInfo != null) {
                 return userInfo;
             }
@@ -319,7 +319,7 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
 
         String userNo = CommonUtil.createUserNo();
         // 会员名称已存在
-        List<MtUser> userList = mtUserMapper.queryMemberByName(mtUser.getName());
+        List<MtUser> userList = mtUserMapper.queryMemberByName(mtUser.getMerchantId(), mtUser.getName());
         if (userList.size() > 0) {
             mtUser.setName(userNo);
         }
@@ -441,7 +441,7 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
     @Override
     @Transactional(rollbackFor = Exception.class)
     @OperationServiceLog(description = "通过手机号新增会员")
-    public MtUser addMemberByMobile(String mobile) throws BusinessCheckException {
+    public MtUser addMemberByMobile(Integer merchantId, String mobile) throws BusinessCheckException {
         MtUser mtUser = new MtUser();
         mtUser.setUserNo(CommonUtil.createUserNo());
         String nickName = mobile.replaceAll("(\\d{3})\\d{4}(\\d{4})","$1****$2");
@@ -459,10 +459,11 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
         mtUser.setDescription("手机号登录自动注册");
         mtUser.setIdcard("");
         mtUser.setStatus(StatusEnum.ENABLED.getKey());
+        mtUser.setMerchantId(merchantId);
         mtUser.setStoreId(0);
         mtUser.setSource(MemberSourceEnum.MOBILE_LOGIN.getKey());
         mtUserMapper.insert(mtUser);
-        mtUser = queryMemberByMobile(mobile);
+        mtUser = queryMemberByMobile(merchantId, mobile);
 
         // 开卡赠礼
         openGiftService.openGift(mtUser.getId(), Integer.parseInt(mtUser.getGradeId()), true);
@@ -472,15 +473,16 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
     /**
      * 根据手机号获取会员信息
      *
+     * @param  merchantId
      * @param  mobile 手机号
      * @throws BusinessCheckException
      */
     @Override
-    public MtUser queryMemberByMobile(String mobile) {
+    public MtUser queryMemberByMobile(Integer merchantId, String mobile) {
         if (mobile == null || StringUtil.isEmpty(mobile)) {
             return null;
         }
-        List<MtUser> mtUser = mtUserMapper.queryMemberByMobile(mobile);
+        List<MtUser> mtUser = mtUserMapper.queryMemberByMobile(merchantId, mobile);
         if (mtUser.size() > 0) {
             return mtUser.get(0);
         } else {
@@ -555,13 +557,14 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
     /**
      * 根据会员名称获取会员信息
      *
+     * @param  merchantId 商户ID
      * @param  name 会员名称
      * @throws BusinessCheckException
      */
     @Override
-    public MtUser queryMemberByName(String name) {
+    public MtUser queryMemberByName(Integer merchantId, String name) {
         if (StringUtil.isNotEmpty(name)) {
-            List<MtUser> userList = mtUserMapper.queryMemberByName(name);
+            List<MtUser> userList = mtUserMapper.queryMemberByName(merchantId, name);
             if (userList.size() == 1) {
                 return userList.get(0);
             }
@@ -572,12 +575,13 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
     /**
      * 根据openId获取会员信息(为空就注册)
      *
+     * @param  merchantId
      * @param  openId
      * @throws BusinessCheckException
      */
     @Override
-    public MtUser queryMemberByOpenId(String openId, JSONObject userInfo) throws BusinessCheckException {
-        MtUser user = mtUserMapper.queryMemberByOpenId(openId);
+    public MtUser queryMemberByOpenId(Integer merchantId, String openId, JSONObject userInfo) throws BusinessCheckException {
+        MtUser user = mtUserMapper.queryMemberByOpenId(merchantId, openId);
 
         String avatar = StringUtil.isNotEmpty(userInfo.getString("avatarUrl")) ? userInfo.getString("avatarUrl") : "";
         String gender = StringUtil.isNotEmpty(userInfo.getString("gender")) ? userInfo.getString("gender") : GenderEnum.MAN.getKey().toString();
@@ -592,7 +596,7 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
         if (user == null) {
             MtUser mtUser = new MtUser();
             if (StringUtil.isNotEmpty(mobile)) {
-                MtUser mtUserMobile = queryMemberByMobile(mobile);
+                MtUser mtUserMobile = queryMemberByMobile(merchantId, mobile);
                 if (mtUserMobile != null) {
                     mtUser = mtUserMobile;
                 }
@@ -642,7 +646,7 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
             } else {
                 updateById(mtUser);
             }
-            user = mtUserMapper.queryMemberByOpenId(openId);
+            user = mtUserMapper.queryMemberByOpenId(merchantId, openId);
 
             // 开卡赠礼
             openGiftService.openGift(user.getId(), Integer.parseInt(user.getGradeId()), true);

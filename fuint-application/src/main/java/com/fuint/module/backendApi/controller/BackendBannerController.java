@@ -187,7 +187,7 @@ public class BackendBannerController extends BaseController {
         info.setStatus(status);
         info.setStoreId(Integer.parseInt(storeId));
         info.setSort(Integer.parseInt(sort));
-
+        info.setMerchantId(accountInfo.getMerchantId());
         if (StringUtil.isNotEmpty(id)) {
             info.setId(Integer.parseInt(id));
             bannerService.updateBanner(info);

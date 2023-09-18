@@ -14,14 +14,14 @@ import java.util.List;
  */
 public interface MtGoodsMapper extends BaseMapper<MtGoods> {
 
-    List<MtGoods> getStoreGoodsList(@Param("storeId") Integer storeId);
+    List<MtGoods> getStoreGoodsList(@Param("merchantId") Integer merchantId, @Param("storeId") Integer storeId);
 
-    List<MtGoods> searchStoreGoodsList(@Param("storeId") Integer storeId, @Param("keyword") String keyword);
+    List<MtGoods> searchStoreGoodsList(@Param("merchantId") Integer merchantId, @Param("storeId") Integer storeId, @Param("keyword") String keyword);
 
-    MtGoods getByGoodsNo(@Param("goodsNo") String goodsNo);
+    MtGoods getByGoodsNo(@Param("merchantId") Integer merchantId, @Param("goodsNo") String goodsNo);
 
-    Boolean updateInitSale(@Param("goodsId") Integer goodsId);
+    Boolean updateInitSale( @Param("goodsId") Integer goodsId);
 
-    List<GoodsBean> selectGoodsList(@Param("storeId") Integer storeId, @Param("cateId") Integer cateId, @Param("keyword") String keyword);
+    List<GoodsBean> selectGoodsList(@Param("merchantId") Integer merchantId, @Param("storeId") Integer storeId, @Param("cateId") Integer cateId, @Param("keyword") String keyword);
 
 }

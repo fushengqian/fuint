@@ -786,7 +786,7 @@ public class BackendGoodsController extends BaseController {
     @ApiOperation(value = "获取选择商品列表")
     @RequestMapping(value = "/selectGoods", method = RequestMethod.POST)
     @CrossOrigin
-    public ResponseObject selectGoods(HttpServletRequest request, @RequestBody Map<String, Object> params) {
+    public ResponseObject selectGoods(HttpServletRequest request, @RequestBody Map<String, Object> params) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
         if (accountInfo == null) {

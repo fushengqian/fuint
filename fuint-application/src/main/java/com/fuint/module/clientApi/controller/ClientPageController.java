@@ -2,6 +2,7 @@ package com.fuint.module.clientApi.controller;
 
 import com.fuint.common.enums.StatusEnum;
 import com.fuint.common.service.BannerService;
+import com.fuint.common.service.MerchantService;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.web.BaseController;
 import com.fuint.framework.web.ResponseObject;
@@ -33,12 +34,19 @@ public class ClientPageController extends BaseController {
     private BannerService bannerService;
 
     /**
+     * 商户服务接口
+     */
+    @Autowired
+    private MerchantService merchantService;
+
+    /**
      * 获取页面数据
      */
     @ApiOperation(value = "获取首页页面数据")
     @RequestMapping(value = "/home", method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject getPageData(HttpServletRequest request, @RequestParam Map<String, Object> param) throws BusinessCheckException {
+        String merchantNo = request.getHeader("merchantNo") == null ? "" : request.getHeader("merchantNo");
         Integer storeId = request.getHeader("storeId") == null ? 0 : Integer.parseInt(request.getHeader("storeId"));
 
         Map<String, Object> params = new HashMap<>();
@@ -46,6 +54,11 @@ public class ClientPageController extends BaseController {
         if (storeId > 0) {
             params.put("storeId", storeId);
         }
+        Integer merchantId = merchantService.getMerchantId(merchantNo);
+        if (merchantId > 0) {
+            params.put("merchantId", merchantId);
+        }
+
         List<MtBanner> bannerData = bannerService.queryBannerListByParams(params);
 
         Map<String, Object> outParams = new HashMap();

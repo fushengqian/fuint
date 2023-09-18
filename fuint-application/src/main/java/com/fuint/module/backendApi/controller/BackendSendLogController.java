@@ -94,7 +94,7 @@ public class BackendSendLogController extends BaseController {
         }
 
         if (StringUtil.isNotEmpty(mobile)) {
-            MtUser userInfo = memberService.queryMemberByMobile(mobile);
+            MtUser userInfo = memberService.queryMemberByMobile(accountInfo.getMerchantId(), mobile);
             if (userInfo != null) {
                 searchParams.put("userId", userInfo.getId().toString());
             } else {

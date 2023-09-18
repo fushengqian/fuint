@@ -63,6 +63,12 @@ public class ClientSignController extends BaseController {
     private CaptchaService captchaService;
 
     /**
+     * 商户服务接口
+     */
+    @Autowired
+    private MerchantService merchantService;
+
+    /**
      * 店铺服务接口
      * */
     @Autowired
@@ -109,7 +115,8 @@ public class ClientSignController extends BaseController {
             }
         }
         userInfo.put("storeId", storeId);
-        MtUser mtUser = memberService.queryMemberByOpenId(loginInfo.get("openid").toString(), userInfo);
+        Integer merchantId = merchantService.getMerchantId(merchantNo);
+        MtUser mtUser = memberService.queryMemberByOpenId(merchantId, loginInfo.get("openid").toString(), userInfo);
         if (mtUser == null) {
             return getFailureResult(0, "用户状态异常");
         }
@@ -178,6 +185,7 @@ public class ClientSignController extends BaseController {
     @RequestMapping(value = "/register", method = RequestMethod.POST)
     @CrossOrigin
     public ResponseObject register(HttpServletRequest request, @RequestBody Map<String, Object> param) throws BusinessCheckException {
+        String merchantNo = request.getHeader("merchantNo") == null ? "" : request.getHeader("merchantNo");
         String account = param.get("account").toString();
         String password = param.get("password").toString();
         String captchaCode = param.get("captchaCode") == null ? "" : param.get("captchaCode").toString();
@@ -198,8 +206,8 @@ public class ClientSignController extends BaseController {
         if (!captchaVerify) {
             return getFailureResult(1002,"图形验证码有误");
         }
-
-        MtUser userData = memberService.queryMemberByName(account);
+        Integer merchantId = merchantService.getMerchantId(merchantNo);
+        MtUser userData = memberService.queryMemberByName(merchantId, account);
         if (userData != null) {
             return getFailureResult(1002,"该用户名已存在");
         }
@@ -242,6 +250,7 @@ public class ClientSignController extends BaseController {
     @CrossOrigin
     public ResponseObject signIn(HttpServletRequest request, @RequestBody Map<String, Object> param) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
+        String merchantNo = request.getHeader("merchantNo") == null ? "" : request.getHeader("merchantNo");
         String userAgent = request.getHeader("user-agent") == null ? "" : request.getHeader("user-agent");
         String mobile = param.get("mobile") == null ? "" : param.get("mobile").toString();
         String verifyCode = param.get("verifyCode") == null ? "" : param.get("verifyCode").toString();
@@ -251,7 +260,7 @@ public class ClientSignController extends BaseController {
         String uuid = param.get("uuid") == null ? "" : param.get("uuid").toString();
         TokenDto dto = new TokenDto();
         MtUser mtUser = null;
-
+        Integer merchantId = merchantService.getMerchantId(merchantNo);
         // 方式1：通过短信验证码登录
         if (StringUtil.isNotEmpty(mobile) && StringUtil.isNotEmpty(verifyCode)) {
             // 如果已经登录，免输入验证码
@@ -263,7 +272,7 @@ public class ClientSignController extends BaseController {
 
             // 1、验证码验证
             MtVerifyCode mtVerifyCode = verifyCodeService.checkVerifyCode(mobile, verifyCode);
-            mtUser = memberService.queryMemberByMobile(mobile);
+            mtUser = memberService.queryMemberByMobile(merchantId, mobile);
 
             if (verifyCode.equals("999999")) {
                 mtVerifyCode = new MtVerifyCode();
@@ -273,8 +282,8 @@ public class ClientSignController extends BaseController {
             // 2、写入token redis session
             if (mtVerifyCode != null) {
                 if (null == mtUser) {
-                    memberService.addMemberByMobile(mobile);
-                    mtUser = memberService.queryMemberByMobile(mobile);
+                    memberService.addMemberByMobile(merchantId, mobile);
+                    mtUser = memberService.queryMemberByMobile(merchantId, mobile);
                 }
 
                 if (!mtUser.getStatus().equals(StatusEnum.ENABLED.getKey())) {
@@ -305,7 +314,7 @@ public class ClientSignController extends BaseController {
                 return getFailureResult(1002,"图形验证码有误");
             }
 
-            MtUser userInfo = memberService.queryMemberByName(account);
+            MtUser userInfo = memberService.queryMemberByName(merchantId, account);
             if (userInfo != null) {
                 String myPassword = userInfo.getPassword();
                 String inputPassword = CommonUtil.getPassword(password, userInfo.getSalt());

@@ -73,10 +73,15 @@ public class ClientGoodsController extends BaseController {
     @RequestMapping(value = "/cateList", method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject cateList(HttpServletRequest request) throws BusinessCheckException {
+        String merchantNo = request.getHeader("merchantNo") == null ? "" : request.getHeader("merchantNo");
         Integer storeId = request.getHeader("storeId") == null ? 0 : Integer.parseInt(request.getHeader("storeId"));
 
         Map<String, Object> param = new HashMap<>();
         param.put("status", StatusEnum.ENABLED.getKey());
+        Integer merchantId = merchantService.getMerchantId(merchantNo);
+        if (merchantId > 0) {
+            param.put("merchantId", merchantId);
+        }
         if (storeId > 0) {
             param.put("storeId", storeId);
         }
@@ -282,17 +287,18 @@ public class ClientGoodsController extends BaseController {
     @ApiOperation(value = "通过sku编码获取商品信息")
     @RequestMapping(value = "/getGoodsInfoBySkuNo", method = RequestMethod.POST)
     @CrossOrigin
-    public ResponseObject getGoodsInfoBySkuNo(@RequestBody GoodsInfoParam goodsInfoParam) throws BusinessCheckException, InvocationTargetException, IllegalAccessException {
+    public ResponseObject getGoodsInfoBySkuNo(HttpServletRequest request, @RequestBody GoodsInfoParam goodsInfoParam) throws BusinessCheckException, InvocationTargetException, IllegalAccessException {
+        String merchantNo = request.getHeader("merchantNo") == null ? "" : request.getHeader("merchantNo");
         String skuNo = goodsInfoParam.getSkuNo() == null ? "" : goodsInfoParam.getSkuNo();
         if (StringUtil.isEmpty(skuNo)) {
             return getFailureResult(201, "商品编码不能为空");
         }
-
+        Integer merchantId = merchantService.getMerchantId(merchantNo);
         Integer goodsId = 0;
         Integer skuId = 0;
         MtGoodsSku mtGoodsSku = goodsService.getSkuInfoBySkuNo(skuNo);
         if (mtGoodsSku == null) {
-            MtGoods mtGoods = goodsService.queryGoodsByGoodsNo(skuNo);
+            MtGoods mtGoods = goodsService.queryGoodsByGoodsNo(merchantId, skuNo);
             if (mtGoods != null) {
                 goodsId = mtGoods.getId();
             }

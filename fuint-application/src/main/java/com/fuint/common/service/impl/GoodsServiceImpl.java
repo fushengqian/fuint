@@ -283,13 +283,13 @@ public class GoodsServiceImpl extends ServiceImpl<MtGoodsMapper, MtGoods> implem
     /**
      * 根据编码获取商品信息
      *
+     * @param  merchantId
      * @param  goodsNo
      * @throws BusinessCheckException
      */
     @Override
-    public MtGoods queryGoodsByGoodsNo(String goodsNo) {
-        MtGoods mtGoods = mtGoodsMapper.getByGoodsNo(goodsNo);
-        return mtGoods;
+    public MtGoods queryGoodsByGoodsNo(Integer merchantId, String goodsNo) {
+        return mtGoodsMapper.getByGoodsNo(merchantId, goodsNo);
     }
 
     /**
@@ -410,7 +410,12 @@ public class GoodsServiceImpl extends ServiceImpl<MtGoodsMapper, MtGoods> implem
      * @return
      * */
     @Override
-    public List<MtGoods> getStoreGoodsList(Integer storeId, String keyword) {
+    public List<MtGoods> getStoreGoodsList(Integer storeId, String keyword) throws BusinessCheckException {
+        MtStore mtStore = storeService.queryStoreById(storeId);
+        if (mtStore == null) {
+            return new ArrayList<>();
+        }
+        Integer merchantId = mtStore.getMerchantId() == null ? 0 : mtStore.getMerchantId();
         List<MtGoods> goodsList = new ArrayList<>();
         List<MtGoodsSku> skuList = new ArrayList<>();
         if (StringUtil.isNotEmpty(keyword)) {
@@ -421,9 +426,9 @@ public class GoodsServiceImpl extends ServiceImpl<MtGoodsMapper, MtGoods> implem
             goodsList.add(goods);
         } else {
             if (keyword != null && StringUtil.isNotEmpty(keyword)) {
-                goodsList = mtGoodsMapper.searchStoreGoodsList(storeId, keyword);
+                goodsList = mtGoodsMapper.searchStoreGoodsList(merchantId, storeId, keyword);
             } else {
-                goodsList = mtGoodsMapper.getStoreGoodsList(storeId);
+                goodsList = mtGoodsMapper.getStoreGoodsList(merchantId, storeId);
             }
         }
         List<MtGoods> dataList = new ArrayList<>();
@@ -515,16 +520,17 @@ public class GoodsServiceImpl extends ServiceImpl<MtGoodsMapper, MtGoods> implem
      * @return
      */
     @Override
-    public PaginationResponse<GoodsDto> selectGoodsList(Map<String, Object> params) {
+    public PaginationResponse<GoodsDto> selectGoodsList(Map<String, Object> params) throws BusinessCheckException {
         Integer page = params.get("page") == null ? Constants.PAGE_NUMBER : Integer.parseInt(params.get("page").toString());
         Integer pageSize = params.get("pageSize") == null ? Constants.PAGE_SIZE : Integer.parseInt(params.get("pageSize").toString());
         Integer storeId = params.get("storeId") == null ? 0 : Integer.parseInt(params.get("storeId").toString());
         Integer cateId = params.get("cateId") == null ? 0 : Integer.parseInt(params.get("cateId").toString());
         String keyword = params.get("keyword") == null ? "" : params.get("keyword").toString();
 
+        MtStore mtStore = storeService.queryStoreById(storeId);
         Page<MtGoods> pageHelper = PageHelper.startPage(page, pageSize);
         List<GoodsDto> dataList = new ArrayList<>();
-        List<GoodsBean> goodsList = mtGoodsMapper.selectGoodsList(storeId, cateId, keyword);
+        List<GoodsBean> goodsList = mtGoodsMapper.selectGoodsList(mtStore.getMerchantId(), storeId, cateId, keyword);
 
         for (GoodsBean goodsBean : goodsList) {
              GoodsDto goodsDto = new GoodsDto();

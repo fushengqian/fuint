@@ -64,6 +64,10 @@ public class BannerServiceImpl extends ServiceImpl<MtBannerMapper, MtBanner> imp
         if (StringUtils.isNotBlank(status)) {
             lambdaQueryWrapper.eq(MtBanner::getStatus, status);
         }
+        String merchantId = paginationRequest.getSearchParams().get("merchantId") == null ? "" : paginationRequest.getSearchParams().get("merchantId").toString();
+        if (StringUtils.isNotBlank(merchantId)) {
+            lambdaQueryWrapper.eq(MtBanner::getMerchantId, merchantId);
+        }
         String storeId = paginationRequest.getSearchParams().get("storeId") == null ? "" : paginationRequest.getSearchParams().get("storeId").toString();
         if (StringUtils.isNotBlank(storeId)) {
             lambdaQueryWrapper.eq(MtBanner::getStoreId, storeId);
@@ -101,7 +105,7 @@ public class BannerServiceImpl extends ServiceImpl<MtBannerMapper, MtBanner> imp
         mtBanner.setUpdateTime(new Date());
         mtBanner.setCreateTime(new Date());
         mtBanner.setSort(bannerDto.getSort());
-
+        mtBanner.setMerchantId(bannerDto.getMerchantId());
         Integer id = mtBannerMapper.insert(mtBanner);
         if (id > 0) {
             return mtBanner;
@@ -188,6 +192,7 @@ public class BannerServiceImpl extends ServiceImpl<MtBannerMapper, MtBanner> imp
     public List<MtBanner> queryBannerListByParams(Map<String, Object> params) {
         String status =  params.get("status") == null ? StatusEnum.ENABLED.getKey(): params.get("status").toString();
         String storeId =  params.get("storeId") == null ? "" : params.get("storeId").toString();
+        String merchantId =  params.get("merchantId") == null ? "" : params.get("merchantId").toString();
         String title = params.get("title") == null ? "" : params.get("title").toString();
 
         LambdaQueryWrapper<MtBanner> lambdaQueryWrapper = Wrappers.lambdaQuery();
@@ -196,6 +201,9 @@ public class BannerServiceImpl extends ServiceImpl<MtBannerMapper, MtBanner> imp
         }
         if (StringUtils.isNotBlank(status)) {
             lambdaQueryWrapper.eq(MtBanner::getStatus, status);
+        }
+        if (StringUtils.isNotBlank(merchantId)) {
+            lambdaQueryWrapper.eq(MtBanner::getMerchantId, merchantId);
         }
         if (StringUtils.isNotBlank(storeId)) {
             lambdaQueryWrapper.and(wq -> wq

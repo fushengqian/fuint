@@ -81,7 +81,6 @@ public class BackendConfirmLogController extends BaseController {
         String userId = request.getParameter("userId") == null ? "" : request.getParameter("userId");
         String mobile = request.getParameter("mobile") == null ? "" : request.getParameter("mobile");
         String couponId = request.getParameter("couponId") == null ? "" : request.getParameter("couponId");
-        String merchantId = request.getParameter("merchantId") == null ? "" : request.getParameter("merchantId");
 
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
         if (accountInfo == null) {
@@ -106,7 +105,7 @@ public class BackendConfirmLogController extends BaseController {
             searchParams.put("couponId", couponId);
         }
         if (StringUtil.isNotEmpty(mobile)) {
-            MtUser userInfo = memberService.queryMemberByMobile(mobile);
+            MtUser userInfo = memberService.queryMemberByMobile(accountInfo.getMerchantId(), mobile);
             if (userInfo != null) {
                 searchParams.put("userId", userInfo.getId().toString());
             } else {

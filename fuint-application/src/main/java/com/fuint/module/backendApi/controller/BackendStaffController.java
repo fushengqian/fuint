@@ -67,16 +67,17 @@ public class BackendStaffController extends BaseController {
         if (accountInfo == null) {
             return getFailureResult(1001, "请先登录");
         }
-
-        if (accountInfo.getStoreId() > 0) {
+        if (accountInfo.getStoreId() != null && accountInfo.getStoreId() > 0) {
             storeId = accountInfo.getStoreId().toString();
         }
-
         PaginationRequest paginationRequest = new PaginationRequest();
         paginationRequest.setCurrentPage(page);
         paginationRequest.setPageSize(pageSize);
 
         Map<String, Object> params = new HashMap<>();
+        if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
+            params.put("merchantId", accountInfo.getMerchantId());
+        }
         if (StringUtil.isNotEmpty(realName)) {
             params.put("name", realName);
         }
@@ -171,7 +172,7 @@ public class BackendStaffController extends BaseController {
         if (mtStaff == null && StringUtil.isNotEmpty(id)) {
             return getFailureResult(201, "员工信息不存在");
         }
-
+        mtStaff.setMerchantId(accountInfo.getMerchantId());
         mtStaff.setStoreId(Integer.parseInt(storeId));
         mtStaff.setRealName(realName);
         mtStaff.setMobile(mobile);

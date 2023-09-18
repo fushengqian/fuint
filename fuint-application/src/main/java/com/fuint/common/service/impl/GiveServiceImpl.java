@@ -163,7 +163,7 @@ public class GiveServiceImpl extends ServiceImpl<MtGiveMapper, MtGive> implement
         }
 
         // 如果赠予对象为空，则注册
-        MtUser user = memberService.queryMemberByMobile(mobile);
+        MtUser user = memberService.queryMemberByMobile(merchantId, mobile);
         if (null == user) {
             MtUser userInfo = new MtUser();
             userInfo.setMerchantId(merchantId);

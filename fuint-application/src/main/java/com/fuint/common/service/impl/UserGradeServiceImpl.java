@@ -68,6 +68,10 @@ public class UserGradeServiceImpl extends ServiceImpl<MtUserGradeMapper, MtUserG
         if (StringUtils.isNotBlank(status)) {
             lambdaQueryWrapper.eq(MtUserGrade::getStatus, status);
         }
+        String merchantId = paginationRequest.getSearchParams().get("merchantId") == null ? "" : paginationRequest.getSearchParams().get("merchantId").toString();
+        if (StringUtils.isNotBlank(merchantId)) {
+            lambdaQueryWrapper.eq(MtUserGrade::getMerchantId, merchantId);
+        }
 
         lambdaQueryWrapper.orderByDesc(MtUserGrade::getId);
         List<MtUserGrade> dataList = mtUserGradeMapper.selectList(lambdaQueryWrapper);
@@ -148,7 +152,7 @@ public class UserGradeServiceImpl extends ServiceImpl<MtUserGradeMapper, MtUserG
     /**
      * 根据ID删除会员等级
      *
-     * @param id       ID
+     * @param id ID
      * @param operator 操作人
      */
     @Override

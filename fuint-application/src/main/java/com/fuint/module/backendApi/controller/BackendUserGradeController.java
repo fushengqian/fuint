@@ -53,11 +53,17 @@ public class BackendUserGradeController extends BaseController {
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject list(HttpServletRequest request) throws BusinessCheckException {
+        String token = request.getHeader("Access-Token");
         String name = request.getParameter("name");
         String status = request.getParameter("status");
         String catchTypeKey = request.getParameter("catchType");
         Integer page = request.getParameter("page") == null ? Constants.PAGE_NUMBER : Integer.parseInt(request.getParameter("page"));
         Integer pageSize = request.getParameter("pageSize") == null ? Constants.PAGE_SIZE : Integer.parseInt(request.getParameter("pageSize"));
+
+        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
+        if (accountInfo == null) {
+            return getFailureResult(1001, "请先登录");
+        }
 
         PaginationRequest paginationRequest = new PaginationRequest();
         paginationRequest.setCurrentPage(page);
@@ -72,6 +78,9 @@ public class BackendUserGradeController extends BaseController {
         }
         if (StringUtil.isNotEmpty(catchTypeKey)) {
             params.put("catchType", catchTypeKey);
+        }
+        if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
+            params.put("merchantId", accountInfo.getMerchantId());
         }
         paginationRequest.setSearchParams(params);
 
@@ -200,7 +209,7 @@ public class BackendUserGradeController extends BaseController {
 
         info.setGrade(Integer.parseInt(grade));
         info.setName(name);
-
+        info.setMerchantId(accountInfo.getMerchantId());
         if (StringUtil.isNotEmpty(catchType)) {
             info.setCatchType(catchType);
         }

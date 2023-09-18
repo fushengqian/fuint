@@ -20,6 +20,11 @@ public class BannerDto implements Serializable {
     private String title;
 
     /**
+     * 所属商户
+     * */
+    private Integer merchantId;
+
+    /**
      * 所属店铺
      * */
     private Integer storeId;
@@ -75,6 +80,12 @@ public class BannerDto implements Serializable {
     }
     public void setTitle(String title){
     this.title=title;
+    }
+    public Integer getMerchantId(){
+        return merchantId;
+    }
+    public void setMerchantId(Integer merchantId){
+        this.merchantId=merchantId;
     }
     public Integer getStoreId(){
         return storeId;

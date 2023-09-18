@@ -76,6 +76,10 @@ public class PointServiceImpl extends ServiceImpl<MtPointMapper, MtPoint> implem
         if (StringUtils.isNotBlank(userId)) {
             lambdaQueryWrapper.eq(MtPoint::getUserId, userId);
         }
+        String merchantId = paginationRequest.getSearchParams().get("merchantId") == null ? "" : paginationRequest.getSearchParams().get("merchantId").toString();
+        if (StringUtils.isNotBlank(merchantId)) {
+            lambdaQueryWrapper.eq(MtPoint::getMerchantId, merchantId);
+        }
         String storeId = paginationRequest.getSearchParams().get("storeId") == null ? "" : paginationRequest.getSearchParams().get("storeId").toString();
         if (StringUtils.isNotBlank(storeId)) {
             lambdaQueryWrapper.eq(MtPoint::getStoreId, storeId);
@@ -127,7 +131,6 @@ public class PointServiceImpl extends ServiceImpl<MtPointMapper, MtPoint> implem
         mtPoint.setStatus(StatusEnum.ENABLED.getKey());
         mtPoint.setCreateTime(new Date());
         mtPoint.setUpdateTime(new Date());
-
         if (mtPoint.getOperator() != null) {
             mtPoint.setOperator(mtPoint.getOperator());
         }
@@ -145,6 +148,7 @@ public class PointServiceImpl extends ServiceImpl<MtPointMapper, MtPoint> implem
         if (mtUser.getStoreId() != null) {
             mtPoint.setStoreId(mtUser.getStoreId());
         }
+        mtPoint.setMerchantId(mtUser.getMerchantId());
         mtUserMapper.updateById(mtUser);
         mtPointMapper.insert(mtPoint);
 
@@ -178,10 +182,10 @@ public class PointServiceImpl extends ServiceImpl<MtPointMapper, MtPoint> implem
         }
 
         MtUser userInfo = memberService.queryMemberById(userId);
-        MtUser fUserInfo = memberService.queryMemberByMobile(mobile);
+        MtUser fUserInfo = memberService.queryMemberByMobile(userInfo.getMerchantId(), mobile);
         // 自动注册会员
         if (fUserInfo == null) {
-            fUserInfo = memberService.addMemberByMobile(mobile);
+            fUserInfo = memberService.addMemberByMobile(userInfo.getMerchantId(), mobile);
         }
 
         if (fUserInfo == null) {
@@ -216,6 +220,7 @@ public class PointServiceImpl extends ServiceImpl<MtPointMapper, MtPoint> implem
         fMtPoint.setOrderSn("");
         fMtPoint.setDescription(remark);
         fMtPoint.setUserId(fUserInfo.getId());
+        fMtPoint.setMerchantId(fUserInfo.getMerchantId());
         mtPointMapper.insert(fMtPoint);
 
         MtPoint mtPoint = new MtPoint();
@@ -227,6 +232,7 @@ public class PointServiceImpl extends ServiceImpl<MtPointMapper, MtPoint> implem
         mtPoint.setOperator(userInfo.getName());
         mtPoint.setOrderSn("");
         mtPoint.setDescription("转赠好友");
+        mtPoint.setMerchantId(userInfo.getMerchantId());
         mtPointMapper.insert(mtPoint);
 
         return true;

@@ -517,13 +517,12 @@ public class CouponServiceImpl extends ServiceImpl<MtCouponMapper, MtCoupon> imp
     @Transactional(rollbackFor = Exception.class)
     @OperationServiceLog(description = "发放卡券")
     public void sendCoupon(Integer couponId, String mobile, Integer num, String uuid, String operator) throws BusinessCheckException {
-        MtUser userInfo = memberService.queryMemberByMobile(mobile);
+        MtCoupon couponInfo = queryCouponById(couponId);
+        MtUser userInfo = memberService.queryMemberByMobile(couponInfo.getMerchantId(), mobile);
 
         if (null == userInfo || !userInfo.getStatus().equals(StatusEnum.ENABLED.getKey())) {
             throw new BusinessCheckException("该会员不存在或已禁用，请先注册会员");
         }
-
-        MtCoupon couponInfo = queryCouponById(couponId);
 
         // 判断券是否有效
         if (!couponInfo.getStatus().equals(StatusEnum.ENABLED.getKey())) {

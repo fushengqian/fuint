@@ -7,6 +7,9 @@
 
     <select id="searchStoreGoodsList" resultType="com.fuint.repository.model.MtGoods">
         select * from mt_goods t where t.STATUS = 'A'
+        <if test="merchantId != null and merchantId > 0">
+            AND t.MERCHANT_ID = #{merchantId}
+        </if>
         <if test="storeId != null and storeId > 0">
             and (t.STORE_ID = #{storeId} or t.STORE_ID = 0)
         </if>
@@ -16,15 +19,24 @@
 
     <select id="getByGoodsNo" resultType="com.fuint.repository.model.MtGoods">
         select * from mt_goods t where t.GOODS_NO = #{goodsNo} and t.STATUS = 'A'
+        <if test="merchantId != null and merchantId > 0">
+            AND t.MERCHANT_ID = #{merchantId}
+        </if>
     </select>
 
     <update id="updateInitSale">
         update mt_goods t set t.INIT_SALE = t.INIT_SALE + 1 where t.ID = #{goodsId}
+        <if test="merchantId != null and merchantId > 0">
+            AND t.MERCHANT_ID = #{merchantId}
+        </if>
     </update>
 
     <select id="selectGoodsList" resultType="com.fuint.repository.bean.GoodsBean">
         SELECT g.LOGO as logo,g.STORE_ID as storeId,g.ID AS goodsId,g.CATE_ID AS cateId,g.GOODS_NO AS goodsNo,g.NAME as name,g.PRICE as price, g.STOCK as stock,s.`SPEC_IDS` as specIds,s.`PRICE` as skuPrice, s.STOCK as skuStock FROM `mt_goods` g LEFT JOIN `mt_goods_sku` s ON g.id = s.`GOODS_ID`
         WHERE g.`status` = 'A'
+        <if test="merchantId != null and merchantId > 0">
+            AND t.MERCHANT_ID = #{merchantId}
+        </if>
         <if test="storeId != null and storeId > 0">
             AND (g.STORE_ID = #{storeId} OR g.STORE_ID = 0)
         </if>
