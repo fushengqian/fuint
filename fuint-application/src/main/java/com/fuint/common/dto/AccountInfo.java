@@ -26,6 +26,7 @@ public class AccountInfo implements Serializable {
     private int ownerId;
     private String realName;
     private Integer merchantId;
+    private String merchantName;
     private Integer storeId;
     private String storeName;
     private Integer staffId;

@@ -41,10 +41,11 @@ public interface SourceService extends IService<TSource> {
     /**
      * 根据会员ID获取菜单
      *
-     * @param  userId 会员ID
+     * @param  merchantId 商户ID
+     * @param  accountId 账号ID
      * @throws BusinessCheckException
      */
-    List<TSource> getMenuListByUserId(Integer userId) throws BusinessCheckException;
+    List<TSource> getMenuListByUserId(Integer merchantId, Integer accountId) throws BusinessCheckException;
 
     /**
      * 构建前端路由所需要的菜单

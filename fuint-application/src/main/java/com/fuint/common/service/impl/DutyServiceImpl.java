@@ -80,10 +80,14 @@ public class DutyServiceImpl extends ServiceImpl<TDutyMapper, TDuty> implements 
     @Override
     @Transactional(rollbackFor = Exception.class)
     @OperationServiceLog(description = "删除后台角色")
-    public void deleteDuty(long dutyId) {
+    public void deleteDuty(Integer merchantId, long dutyId) {
+        TDuty tDuty = getRoleById(dutyId);
+        if (!merchantId.equals(tDuty.getMerchantId()) && merchantId > 0) {
+            throw new BusinessRuntimeException("抱歉，您没有删除的权限");
+        }
         try {
-            tDutySourceMapper.deleteSourcesByDutyId((int) dutyId);
-            tDutyMapper.deleteById(dutyId);
+             tDutySourceMapper.deleteSourcesByDutyId((int) dutyId);
+             tDutyMapper.deleteById(dutyId);
         } catch (Exception e) {
             throw new BusinessRuntimeException("该角色已存在关联用户，无法删除");
         }
@@ -92,14 +96,20 @@ public class DutyServiceImpl extends ServiceImpl<TDutyMapper, TDuty> implements 
     /**
      * 更新角色状态
      *
+     * @param merchantId
      * @param dutyStatusRequest
      * @return
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
     @OperationServiceLog(description = "更新后台角色状态")
-    public void updateStatus(DutyStatusRequest dutyStatusRequest) throws BusinessCheckException {
+    public void updateStatus(Integer merchantId, DutyStatusRequest dutyStatusRequest) throws BusinessCheckException {
         TDuty tDuty = tDutyMapper.selectById(dutyStatusRequest.getRoleId());
+
+        if (!merchantId.equals(tDuty.getMerchantId()) && merchantId > 0) {
+            throw new BusinessRuntimeException("抱歉，您没有操作的权限");
+        }
+
         if (tDuty != null) {
             tDuty.setStatus(dutyStatusRequest.getStatus());
             tDutyMapper.updateById(tDuty);
@@ -213,7 +223,10 @@ public class DutyServiceImpl extends ServiceImpl<TDutyMapper, TDuty> implements 
         }
         String merchantId = paginationRequest.getSearchParams().get("merchantId") == null ? "" : paginationRequest.getSearchParams().get("merchantId").toString();
         if (StringUtils.isNotBlank(merchantId)) {
-            lambdaQueryWrapper.eq(TDuty::getMerchantId, merchantId);
+            lambdaQueryWrapper.and(wq -> wq
+                    .eq(TDuty::getMerchantId, 0)
+                    .or()
+                    .eq(TDuty::getMerchantId, merchantId));
         }
 
         lambdaQueryWrapper.orderByDesc(TDuty::getDutyId);

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fuint.common.Constants;
 import com.fuint.common.dto.AccountInfo;
 import com.fuint.common.dto.UserInfo;
+import com.fuint.utils.StringUtil;
 import nl.bitwalker.useragentutils.UserAgent;
 import org.springframework.stereotype.Component;
 import java.text.SimpleDateFormat;
@@ -47,6 +48,9 @@ public class TokenUtil {
 
     /**
      * 保存token
+     *
+     * @param userInfo
+     * @return
      * */
     public static void saveToken(UserInfo userInfo) {
         if (userInfo == null || userInfo.getToken() == null) {
@@ -62,6 +66,9 @@ public class TokenUtil {
      * @return
      * */
     public static UserInfo getUserInfoByToken(String token) {
+        if (token == null || StringUtil.isEmpty(token)) {
+            return null;
+        }
         Object loginInfo = RedisUtil.get(Constants.SESSION_USER + token);
         ObjectMapper objectMapper = new ObjectMapper();
         UserInfo userInfo = objectMapper.convertValue(loginInfo, UserInfo.class);
@@ -98,6 +105,7 @@ public class TokenUtil {
 
     /**
      * 保存后台登录token
+     *
      * @param accountInfo
      * @return
      * */

@@ -60,21 +60,25 @@ public interface DutyService extends IService<TDuty> {
     /**
      * 删除方法
      *
+     * @param merchantId
      * @param dutyId
      */
-    void deleteDuty(long dutyId);
+    void deleteDuty(Integer merchantId, long dutyId);
 
     /**
      * 更新状态
      *
+     * @param merchantId
      * @param dutyStatusRequest
+     * @return
      */
-    void updateStatus(DutyStatusRequest dutyStatusRequest) throws BusinessCheckException;
+    void updateStatus(Integer merchantId, DutyStatusRequest dutyStatusRequest) throws BusinessCheckException;
 
     /**
      * 修改角色
      *
      * @param tduty
+     * @return
      */
     void updateDuty(TDuty tduty, List<TSource> sources) throws BusinessCheckException;
 

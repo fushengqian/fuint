@@ -135,7 +135,7 @@ public class BackendLoginController extends BaseController {
             }
         }
 
-        List<TSource> sources = sourceService.getMenuListByUserId(accountInfo.getId());
+        List<TSource> sources = sourceService.getMenuListByUserId(accountInfo.getMerchantId(), accountInfo.getId());
         List<String> permissions = new ArrayList<>();
         if (sources.size() > 0) {
             for (TSource source : sources) {
@@ -165,12 +165,12 @@ public class BackendLoginController extends BaseController {
     @CrossOrigin
     public ResponseObject getRouters(HttpServletRequest request) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
-        if (StringUtil.isEmpty(token)) {
-            return getFailureResult(201,"请求参数有误");
+        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
+        if (accountInfo == null) {
+            return getFailureResult(401, "登录信息已失效，请重新登录");
         }
 
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
-        List<TSource> sources = sourceService.getMenuListByUserId(accountInfo.getId());
+        List<TSource> sources = sourceService.getMenuListByUserId(accountInfo.getMerchantId(), accountInfo.getId());
 
         List<TreeNode> trees = new ArrayList<>();
         TreeNode treeNode;

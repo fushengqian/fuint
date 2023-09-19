@@ -93,12 +93,16 @@ public class SourceServiceImpl extends ServiceImpl<TSourceMapper, TSource> imple
     /**
      * 根据账号ID获取菜单列表
      *
+     * @param  merchantId 商户ID
      * @param  accountId 账号ID
      * @throws BusinessCheckException
      */
     @Override
-    public List<TSource> getMenuListByUserId(Integer accountId) {
-        List<TSource> sourceList = tSourceMapper.findSourcesByAccountId(accountId);
+    public List<TSource> getMenuListByUserId(Integer merchantId, Integer accountId) {
+        if (merchantId == null) {
+            merchantId = 0;
+        }
+        List<TSource> sourceList = tSourceMapper.findSourcesByAccountId(merchantId, accountId);
         return delRepeated(sourceList);
     }
 

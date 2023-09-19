@@ -176,6 +176,9 @@ public class BackendSourceController extends BaseController {
         Long id = param.get("id") == null ? 0 : Long.parseLong(param.get("id").toString());
 
         TSource editSource = sSourceService.getById(id);
+        if (!editSource.getMerchantId().equals(accountInfo.getMerchantId()) && accountInfo.getMerchantId() > 0) {
+            return getFailureResult(201, "抱歉，您没有修改的权限");
+        }
         editSource.setSourceName(name);
         editSource.setStatus(status);
         editSource.setNewIcon(icon);
@@ -184,7 +187,6 @@ public class BackendSourceController extends BaseController {
         editSource.setSourceStyle(sort);
         editSource.setIsMenu(isMenu);
         editSource.setSourceCode(editSource.getPath());
-        editSource.setMerchantId(accountInfo.getMerchantId());
 
         String eName = "";
         String[] paths = path.split("/");
@@ -230,9 +232,11 @@ public class BackendSourceController extends BaseController {
         if (accountInfo == null) {
             return getFailureResult(1001, "请先登录");
         }
-
         try {
             TSource tSource = sSourceService.getById(sourceId);
+            if (!tSource.getMerchantId().equals(accountInfo.getMerchantId()) && accountInfo.getMerchantId() > 0) {
+                return getFailureResult(201, "抱歉，您没有删除的权限");
+            }
             tSource.setStatus(StatusEnum.DISABLE.getKey());
             sSourceService.editSource(tSource);
         } catch(Exception e) {

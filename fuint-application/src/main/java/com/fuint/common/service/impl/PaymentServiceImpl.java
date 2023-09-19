@@ -72,18 +72,33 @@ public class PaymentServiceImpl implements PaymentService {
     @Autowired
     private BalanceService balanceService;
 
+    /**
+     * 积分服务接口
+     * */
     @Autowired
     private PointService pointService;
 
+    /**
+     * 会员卡券服务接口
+     * */
     @Autowired
     private UserCouponService userCouponService;
 
+    /**
+     * 系统设置服务接口
+     * */
     @Autowired
     private SettingService settingService;
 
+    /**
+     * 会员等级服务接口
+     * */
     @Autowired
     private UserGradeService userGradeService;
 
+    /**
+     * 开卡赠礼服务接口
+     * */
     @Autowired
     private OpenGiftService openGiftService;
 

@@ -13,7 +13,7 @@ import java.util.List;
  */
 public interface TSourceMapper extends BaseMapper<TSource> {
 
-    List<TSource> findSourcesByAccountId(@Param("accountId") Integer accountId);
+    List<TSource> findSourcesByAccountId(@Param("merchantId") Integer merchantId, @Param("accountId") Integer accountId);
 
     List<TSource> findByIdIn(@Param("ids") List<String> ids);
 

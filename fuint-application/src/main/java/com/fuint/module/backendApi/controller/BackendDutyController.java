@@ -113,7 +113,7 @@ public class BackendDutyController extends BaseController {
     /**
      * 新增角色
      *
-     * @param request  HttpServletRequest对象
+     * @param  request  HttpServletRequest对象
      * @return 角色列表页面
      * @throws BusinessCheckException
      */
@@ -206,7 +206,7 @@ public class BackendDutyController extends BaseController {
     @ApiOperation(value = "修改角色")
     @RequestMapping(value = "/update", method = RequestMethod.POST)
     @CrossOrigin
-    public ResponseObject updateHandler(HttpServletRequest request, @RequestBody Map<String, Object> param) throws BusinessCheckException {
+    public ResponseObject updateHandler(HttpServletRequest request, @RequestBody Map<String, Object> param) {
         String token = request.getHeader("Access-Token");
         List<Integer> menuIds = (List) param.get("menuIds");
         String id = param.get("id").toString();
@@ -225,11 +225,14 @@ public class BackendDutyController extends BaseController {
         }
 
         TDuty duty = tDutyService.getRoleById(Long.parseLong(id));
+        if (!duty.getMerchantId().equals(accountInfo.getMerchantId()) && accountInfo.getMerchantId() > 0) {
+            return getFailureResult(201, "抱歉，您没有修改权限");
+        }
+
         duty.setDescription(description);
         duty.setDutyName(name);
         duty.setStatus(status);
         duty.setDutyType(type);
-        duty.setMerchantId(accountInfo.getMerchantId());
 
         // 获取角色所分配的菜单
         List<TSource> sources = null;
@@ -259,9 +262,14 @@ public class BackendDutyController extends BaseController {
     @ApiOperation(value = "删除角色信息")
     @RequestMapping(value = "/delete/{roleId}", method = RequestMethod.POST)
     @CrossOrigin
-    public ResponseObject deleteAccount(@PathVariable("roleId") Long roleId) {
+    public ResponseObject deleteRole(HttpServletRequest request, @PathVariable("roleId") Long roleId) {
+        String token = request.getHeader("Access-Token");
+        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
+        if (accountInfo == null) {
+            return getFailureResult(1001, "请先登录");
+        }
         try {
-            tDutyService.deleteDuty(roleId);
+            tDutyService.deleteDuty(accountInfo.getMerchantId(), roleId);
         } catch (BusinessRuntimeException e) {
             return getFailureResult(201, e.getMessage() == null ? "角色删除失败" : e.getMessage());
         }
@@ -277,9 +285,15 @@ public class BackendDutyController extends BaseController {
     @ApiOperation(value = "修改角色状态")
     @RequestMapping(value = "/changeStatus", method = RequestMethod.POST)
     @CrossOrigin
-    public ResponseObject changeStatus(@RequestBody DutyStatusRequest dutyStatusRequest) {
+    public ResponseObject changeStatus(HttpServletRequest request, @RequestBody DutyStatusRequest dutyStatusRequest) {
+        String token = request.getHeader("Access-Token");
+        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
+        if (accountInfo == null) {
+            return getFailureResult(1001, "请先登录");
+        }
+
         try {
-            tDutyService.updateStatus(dutyStatusRequest);
+            tDutyService.updateStatus(accountInfo.getMerchantId(), dutyStatusRequest);
         } catch (BusinessCheckException e) {
             return getFailureResult(201, e.getMessage() == null ? "操作失败" : e.getMessage());
         }
