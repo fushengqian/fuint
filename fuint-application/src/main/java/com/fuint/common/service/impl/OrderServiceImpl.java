@@ -1116,11 +1116,11 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
      * 获取订单数量
      * */
     @Override
-    public BigDecimal getOrderCount(Integer storeId) {
+    public BigDecimal getOrderCount(Integer merchantId, Integer storeId) {
         if (storeId > 0) {
             return mtOrderMapper.getStoreOrderCount(storeId);
         } else {
-            return mtOrderMapper.getOrderCount();
+            return mtOrderMapper.getOrderCount(merchantId);
         }
     }
 
@@ -1128,11 +1128,11 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
      * 获取订单数量
      * */
     @Override
-    public BigDecimal getOrderCount(Integer storeId, Date beginTime, Date endTime) {
+    public BigDecimal getOrderCount(Integer merchantId, Integer storeId, Date beginTime, Date endTime) {
         if (storeId > 0) {
             return mtOrderMapper.getStoreOrderCountByTime(storeId, beginTime, endTime);
         } else {
-            return mtOrderMapper.getOrderCountByTime(beginTime, endTime);
+            return mtOrderMapper.getOrderCountByTime(merchantId, beginTime, endTime);
         }
     }
 
@@ -1140,11 +1140,11 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
      * 获取支付金额
      * */
     @Override
-    public BigDecimal getPayMoney(Integer storeId, Date beginTime, Date endTime) {
+    public BigDecimal getPayMoney(Integer merchantId, Integer storeId, Date beginTime, Date endTime) {
         if (storeId > 0) {
             return mtOrderMapper.getStorePayMoneyByTime(storeId, beginTime, endTime);
         } else {
-            return mtOrderMapper.getPayMoneyByTime(beginTime, endTime);
+            return mtOrderMapper.getPayMoneyByTime(merchantId, beginTime, endTime);
         }
     }
 
@@ -1152,11 +1152,11 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
      * 获取支付人数
      * */
     @Override
-    public Integer getPayUserCount(Integer storeId) {
+    public Integer getPayUserCount(Integer merchantId, Integer storeId) {
         if (storeId > 0) {
             return mtOrderMapper.getStorePayUserCount(storeId);
         } else {
-            return mtOrderMapper.getPayUserCount();
+            return mtOrderMapper.getPayUserCount(merchantId);
         }
     }
 
@@ -1164,11 +1164,11 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
      * 获取支付总金额
      * */
     @Override
-    public BigDecimal getPayMoney(Integer storeId) {
+    public BigDecimal getPayMoney(Integer merchantId, Integer storeId) {
         if (storeId > 0) {
             return mtOrderMapper.getStorePayMoney(storeId);
         } else {
-            return mtOrderMapper.getPayMoney();
+            return mtOrderMapper.getPayMoney(merchantId);
         }
     }
 

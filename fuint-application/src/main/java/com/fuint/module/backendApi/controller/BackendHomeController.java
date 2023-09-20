@@ -62,28 +62,29 @@ public class BackendHomeController extends BaseController {
             return getFailureResult(1001, "请先登录");
         }
 
+        Integer merchantId = accountInfo.getMerchantId();
         Integer storeId = accountInfo.getStoreId();
 
         // 总会员数
-        Long totalUser = memberService.getUserCount(storeId);
+        Long totalUser = memberService.getUserCount(merchantId, storeId);
         // 今日新增会员数量
-        Long todayUser = memberService.getUserCount(storeId, beginTime, endTime);
+        Long todayUser = memberService.getUserCount(merchantId, storeId, beginTime, endTime);
 
         // 总订单数
-        BigDecimal totalOrder = orderService.getOrderCount(storeId);
+        BigDecimal totalOrder = orderService.getOrderCount(merchantId, storeId);
         // 今日订单数
-        BigDecimal todayOrder = orderService.getOrderCount(storeId, beginTime, endTime);
+        BigDecimal todayOrder = orderService.getOrderCount(merchantId, storeId, beginTime, endTime);
 
         // 今日交易金额
-        BigDecimal todayPay = orderService.getPayMoney(storeId, beginTime, endTime);
+        BigDecimal todayPay = orderService.getPayMoney(merchantId, storeId, beginTime, endTime);
         // 总交易金额
-        BigDecimal totalPay = orderService.getPayMoney(storeId);
+        BigDecimal totalPay = orderService.getPayMoney(merchantId, storeId);
 
         // 今日活跃会员数
-        Long todayActiveUser = memberService.getActiveUserCount(storeId, beginTime, endTime);
+        Long todayActiveUser = memberService.getActiveUserCount(merchantId, storeId, beginTime, endTime);
 
         // 总支付人数
-        Integer totalPayUser = orderService.getPayUserCount(storeId);
+        Integer totalPayUser = orderService.getPayUserCount(merchantId, storeId);
 
         Map<String, Object> result = new HashMap<>();
 
@@ -118,6 +119,7 @@ public class BackendHomeController extends BaseController {
         }
 
         TAccount account = accountService.getAccountInfoById(accountInfo.getId());
+        Integer merchantId = account.getMerchantId() == null ? 0 : account.getMerchantId();
         Integer storeId = account.getStoreId() == null ? 0 : account.getStoreId();
 
         ArrayList<String> days = TimeUtils.getDays(5);
@@ -130,7 +132,7 @@ public class BackendHomeController extends BaseController {
             for (int i = 0; i < 7; i++) {
                 Date beginTime = DateUtil.getDayBegin((6 - i));
                 Date endTime = DateUtil.getDayEnd((6 - i));
-                BigDecimal payMoney = orderService.getPayMoney(storeId, beginTime, endTime);
+                BigDecimal payMoney = orderService.getPayMoney(merchantId, storeId, beginTime, endTime);
                 orderPayData[i] = payMoney == null ? new BigDecimal("0") : payMoney;
             }
             BigDecimal data[][] = { orderPayData };
@@ -142,8 +144,8 @@ public class BackendHomeController extends BaseController {
             for (int i = 0; i < 7; i++) {
                 Date beginTime = DateUtil.getDayBegin((6 - i));
                 Date endTime = DateUtil.getDayEnd((6 - i));
-                orderCountData[i] = orderService.getOrderCount(storeId, beginTime, endTime);
-                Long userCount = memberService.getActiveUserCount(storeId, beginTime, endTime);
+                orderCountData[i] = orderService.getOrderCount(merchantId, storeId, beginTime, endTime);
+                Long userCount = memberService.getActiveUserCount(merchantId, storeId, beginTime, endTime);
                 userCountData[i] = new BigDecimal(userCount);
             }
             BigDecimal data[][] = { orderCountData, userCountData };

@@ -76,6 +76,12 @@ public class BackendActionLogController extends BaseController {
         if (StringUtil.isNotEmpty(ip)) {
             searchParams.put("ip", ip);
         }
+        if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
+            searchParams.put("merchantId", accountInfo.getMerchantId());
+        }
+        if (accountInfo.getStoreId() != null && accountInfo.getStoreId() > 0) {
+            searchParams.put("storeId", accountInfo.getStoreId());
+        }
 
         paginationRequest.setSearchParams(searchParams);
         paginationRequest.setSortColumn(new String[]{"actionTime desc"});

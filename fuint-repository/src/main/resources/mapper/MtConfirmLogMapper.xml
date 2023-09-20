@@ -6,8 +6,14 @@
     </select>
 
     <select id="getConfirmLogCount" resultType="long">
-        SELECT COUNT(0) FROM mt_confirm_log
-        where CREATE_TIME &gt; #{beginTime} and CREATE_TIME &lt;= #{endTime} and status = 'A'
+        SELECT COUNT(0) FROM mt_confirm_log t
+        WHERE t.CREATE_TIME &gt; #{beginTime} and t.CREATE_TIME &lt;= #{endTime} and t.status = 'A'
+        <if test="merchantId != null and merchantId > 0">
+            AND t.MERCHANT_ID = #{merchantId}
+        </if>
+        <if test="storeId != null and storeId > 0">
+            AND t.STORE_ID = #{storeId}
+        </if>
     </select>
 
     <select id="getOrderConfirmLogList" resultType="com.fuint.repository.model.MtConfirmLog">

@@ -74,23 +74,23 @@ public class MerchantController extends BaseController {
         // 收款额
         Date beginTime = DateUtil.getDayBegin();
         Date endTime = DateUtil.getDayEnd();
-        BigDecimal payMoney = orderService.getPayMoney(staffInfo.getStoreId(), beginTime, endTime);
+        BigDecimal payMoney = orderService.getPayMoney(staffInfo.getMerchantId(), staffInfo.getStoreId(), beginTime, endTime);
         outParams.put("payMoney", payMoney);
 
         // 总会员数
-        Long userCount = memberService.getUserCount(staffInfo.getStoreId());
+        Long userCount = memberService.getUserCount(staffInfo.getMerchantId(), staffInfo.getStoreId());
         outParams.put("userCount", userCount);
 
         // 今日订单数
-        BigDecimal orderCount = orderService.getOrderCount(staffInfo.getStoreId(), beginTime, endTime);
+        BigDecimal orderCount = orderService.getOrderCount(staffInfo.getMerchantId(), staffInfo.getStoreId(), beginTime, endTime);
         outParams.put("orderCount", orderCount);
 
         // 核销券数
-        Long confirmCount = confirmLogService.getConfirmCount(staffInfo.getStoreId(), beginTime, endTime);
+        Long confirmCount = confirmLogService.getConfirmCount(staffInfo.getMerchantId(), staffInfo.getStoreId(), beginTime, endTime);
         outParams.put("couponCount", confirmCount);
 
         // 今日活跃会员数
-        Long todayUser = memberService.getActiveUserCount(staffInfo.getStoreId(), beginTime, endTime);
+        Long todayUser = memberService.getActiveUserCount(staffInfo.getMerchantId(), staffInfo.getStoreId(), beginTime, endTime);
         outParams.put("todayUser", todayUser);
 
         return getSuccessResult(outParams);

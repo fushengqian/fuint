@@ -14,7 +14,6 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
-
 import javax.annotation.Resource;
 import java.util.List;
 
@@ -37,7 +36,14 @@ public class ActionLogServiceImpl extends ServiceImpl<TActionLogMapper, TActionL
     public PaginationResponse<TActionLog> findLogsByPagination(PaginationRequest paginationRequest) {
         Page<TActionLog> pageHelper = PageHelper.startPage(paginationRequest.getCurrentPage(), paginationRequest.getPageSize());
         LambdaQueryWrapper<TActionLog> lambdaQueryWrapper = Wrappers.lambdaQuery();
-
+        String merchantId = paginationRequest.getSearchParams().get("merchantId") == null ? "" : paginationRequest.getSearchParams().get("merchantId").toString();
+        if (StringUtils.isNotBlank(merchantId)) {
+            lambdaQueryWrapper.eq(TActionLog::getMerchantId, merchantId);
+        }
+        String storeId = paginationRequest.getSearchParams().get("storeId") == null ? "" : paginationRequest.getSearchParams().get("storeId").toString();
+        if (StringUtils.isNotBlank(merchantId)) {
+            lambdaQueryWrapper.eq(TActionLog::getStoreId, storeId);
+        }
         String module = paginationRequest.getSearchParams().get("module") == null ? "" : paginationRequest.getSearchParams().get("module").toString();
         if (StringUtils.isNotBlank(module)) {
             lambdaQueryWrapper.like(TActionLog::getModule, module);

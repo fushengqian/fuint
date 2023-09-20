@@ -29,6 +29,12 @@ public class TActionLog implements Serializable {
     @TableId(value = "id", type = IdType.AUTO)
     private Integer id;
 
+    @ApiModelProperty("商户ID")
+    private Integer merchantId;
+
+    @ApiModelProperty("所属店铺ID")
+    private Integer storeId;
+
     @ApiModelProperty("操作时间")
     private Date actionTime;
 

@@ -137,17 +137,17 @@ public interface MemberService extends IService<MtUser> {
     /**
      * 获取会员数量
      * */
-    Long getUserCount(Integer storeId) throws BusinessCheckException;
+    Long getUserCount(Integer merchantId, Integer storeId) throws BusinessCheckException;
 
     /**
      * 获取会员数量
      * */
-    Long getUserCount(Integer storeId, Date beginTime, Date endTime) throws BusinessCheckException;
+    Long getUserCount(Integer merchantId, Integer storeId, Date beginTime, Date endTime) throws BusinessCheckException;
 
     /**
      * 获取活跃会员数量
      * */
-    Long getActiveUserCount(Integer storeId, Date beginTime, Date endTime) throws BusinessCheckException;
+    Long getActiveUserCount(Integer merchantId, Integer storeId, Date beginTime, Date endTime) throws BusinessCheckException;
 
     /**
      * 重置手机号

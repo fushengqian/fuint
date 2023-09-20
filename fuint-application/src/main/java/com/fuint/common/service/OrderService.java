@@ -8,7 +8,6 @@ import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.web.ResponseObject;
 import com.fuint.repository.model.MtCart;
 import com.fuint.repository.model.MtOrder;
-
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
@@ -116,12 +115,12 @@ public interface OrderService extends IService<MtOrder> {
     /**
      * 获取订单总数
      * */
-    BigDecimal getOrderCount(Integer storeId) throws BusinessCheckException;
+    BigDecimal getOrderCount(Integer merchantId, Integer storeId) throws BusinessCheckException;
 
     /**
      * 获取订单数量
      * */
-    BigDecimal getOrderCount(Integer storeId, Date beginTime, Date endTime) throws BusinessCheckException;
+    BigDecimal getOrderCount(Integer merchantId, Integer storeId, Date beginTime, Date endTime) throws BusinessCheckException;
 
     /**
      * 计算购物车
@@ -131,17 +130,17 @@ public interface OrderService extends IService<MtOrder> {
     /**
      * 获取支付金额
      * */
-    BigDecimal getPayMoney(Integer storeId, Date beginTime, Date endTime) throws BusinessCheckException;
+    BigDecimal getPayMoney(Integer merchantId, Integer storeId, Date beginTime, Date endTime) throws BusinessCheckException;
 
     /**
      * 获取支付人数
      * */
-    Integer getPayUserCount(Integer storeId) throws BusinessCheckException;
+    Integer getPayUserCount(Integer merchantId, Integer storeId) throws BusinessCheckException;
 
     /**
      * 获取支付金额
      * */
-    BigDecimal getPayMoney(Integer storeId) throws BusinessCheckException;
+    BigDecimal getPayMoney(Integer merchantId, Integer storeId) throws BusinessCheckException;
 
     /**
      * 获取会员支付金额

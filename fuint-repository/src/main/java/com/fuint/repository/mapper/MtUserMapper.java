@@ -3,7 +3,6 @@ package com.fuint.repository.mapper;
 import com.fuint.repository.model.MtUser;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Param;
-
 import java.util.Date;
 import java.util.List;
 
@@ -27,11 +26,11 @@ public interface MtUserMapper extends BaseMapper<MtUser> {
 
     void resetMobile(@Param("mobile") String mobile, @Param("userId") Integer userId);
 
-    Long getUserCount();
+    Long getUserCount(@Param("merchantId") Integer merchantId);
 
     Long getStoreUserCount(@Param("storeId") Integer storeId);
 
-    Long getUserCountByTime(@Param("beginTime") Date beginTime, @Param("endTime") Date endTime);
+    Long getUserCountByTime(@Param("merchantId") Integer merchantId, @Param("beginTime") Date beginTime, @Param("endTime") Date endTime);
 
     Long getStoreUserCountByTime(@Param("storeId") Integer storeId, @Param("beginTime") Date beginTime, @Param("endTime") Date endTime);
 }

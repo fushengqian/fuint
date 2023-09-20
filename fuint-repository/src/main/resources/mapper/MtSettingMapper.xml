@@ -2,17 +2,10 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.fuint.repository.mapper.MtSettingMapper">
     <select id="querySettingByType" resultType="com.fuint.repository.model.MtSetting">
-        select * from mt_setting t where t.TYPE = #{type}
-        <if test="merchantId != null and merchantId > 0">
-            and (t.MERCHANT_ID = #{merchantId} or t.MERCHANT_ID = 0)
-        </if>
+        select * from mt_setting t where t.TYPE = #{type} and t.MERCHANT_ID = #{merchantId}
     </select>
 
     <select id="querySettingByName" resultType="com.fuint.repository.model.MtSetting">
-        select * from mt_setting t where t.NAME = #{name}
-        <if test="merchantId != null and merchantId > 0">
-            and (t.MERCHANT_ID = #{merchantId} or t.MERCHANT_ID = 0)
-        </if>
-        limit 1
+        select * from mt_setting t where t.NAME = #{name} and t.MERCHANT_ID = #{merchantId} limit 1
     </select>
 </mapper>

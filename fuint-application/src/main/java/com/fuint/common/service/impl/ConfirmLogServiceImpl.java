@@ -151,7 +151,7 @@ public class ConfirmLogServiceImpl extends ServiceImpl<MtConfirmLogMapper, MtCon
      * @return
      * */
     @Override
-    public Long getConfirmCount(Integer storeId, Date beginTime, Date endTime) {
-        return mtConfirmLogMapper.getConfirmLogCount(beginTime, endTime);
+    public Long getConfirmCount(Integer merchantId, Integer storeId, Date beginTime, Date endTime) {
+        return mtConfirmLogMapper.getConfirmLogCount(merchantId, storeId, beginTime, endTime);
     }
 }

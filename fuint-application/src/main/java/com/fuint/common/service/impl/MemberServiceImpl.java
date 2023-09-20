@@ -281,7 +281,8 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
                 }
             }
             if (userDto.getGradeId() != null) {
-                MtUserGrade mtGrade = userGradeService.queryUserGradeById(Integer.parseInt(merchantId), Integer.parseInt(userDto.getGradeId()), user.getId());
+                Integer mchId = StringUtil.isNotEmpty(merchantId) ? Integer.parseInt(merchantId) : 0;
+                MtUserGrade mtGrade = userGradeService.queryUserGradeById(mchId, Integer.parseInt(userDto.getGradeId()), user.getId());
                 if (mtGrade != null) {
                     userDto.setGradeName(mtGrade.getName());
                 }
@@ -725,11 +726,11 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
      * 获取会员数量
      * */
     @Override
-    public Long getUserCount(Integer storeId) {
+    public Long getUserCount(Integer merchantId, Integer storeId) {
         if (storeId > 0) {
             return mtUserMapper.getStoreUserCount(storeId);
         } else {
-            return mtUserMapper.getUserCount();
+            return mtUserMapper.getUserCount(merchantId);
         }
     }
 
@@ -737,11 +738,11 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
      * 获取会员数量
      * */
     @Override
-    public Long getUserCount(Integer storeId, Date beginTime, Date endTime) {
+    public Long getUserCount(Integer merchantId, Integer storeId, Date beginTime, Date endTime) {
         if (storeId > 0) {
             return mtUserMapper.getStoreUserCountByTime(storeId, beginTime, endTime);
         } else {
-            return mtUserMapper.getUserCountByTime(beginTime, endTime);
+            return mtUserMapper.getUserCountByTime(merchantId, beginTime, endTime);
         }
     }
 
@@ -749,11 +750,11 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
      * 获取会员数量
      * */
     @Override
-    public Long getActiveUserCount(Integer storeId, Date beginTime, Date endTime) {
+    public Long getActiveUserCount(Integer merchantId, Integer storeId, Date beginTime, Date endTime) {
         if (storeId > 0) {
             return mtUserActionMapper.getStoreActiveUserCount(storeId, beginTime, endTime);
         } else {
-            return mtUserActionMapper.getActiveUserCount(beginTime, endTime);
+            return mtUserActionMapper.getActiveUserCount(merchantId, beginTime, endTime);
         }
     }
 

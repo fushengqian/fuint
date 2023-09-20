@@ -193,6 +193,11 @@ public class UserGradeServiceImpl extends ServiceImpl<MtUserGradeMapper, MtUserG
         } else {
             initGrade = new MtUserGrade();
             initGrade.setId(0);
+            initGrade.setStatus(StatusEnum.ENABLED.getKey());
+            initGrade.setGrade(0);
+            initGrade.setMerchantId(0);
+            initGrade.setSpeedPoint(1f);
+            initGrade.setDiscount(0f);
         }
         return initGrade;
     }

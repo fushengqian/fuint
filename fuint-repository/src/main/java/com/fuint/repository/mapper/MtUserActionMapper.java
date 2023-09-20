@@ -14,7 +14,7 @@ import java.util.Date;
  */
 public interface MtUserActionMapper extends BaseMapper<MtUserAction> {
 
-    Long getActiveUserCount(@Param("beginTime") Date beginTime, @Param("endTime") Date endTime);
+    Long getActiveUserCount(@Param("merchantId") Integer merchantId, @Param("beginTime") Date beginTime, @Param("endTime") Date endTime);
 
     Long getStoreActiveUserCount(@Param("storeId") Integer storeId, @Param("beginTime") Date beginTime, @Param("endTime") Date endTime);
 

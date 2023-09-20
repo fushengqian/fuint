@@ -16,7 +16,7 @@ public interface MtConfirmLogMapper extends BaseMapper<MtConfirmLog> {
 
     Long getConfirmNum(@Param("userCouponId") Integer userCouponId);
 
-    Long getConfirmLogCount(@Param("beginTime") Date beginTime, @Param("endTime") Date endTime);
+    Long getConfirmLogCount(@Param("userCouponId") Integer merchantId, @Param("userCouponId") Integer storeId, @Param("beginTime") Date beginTime, @Param("endTime") Date endTime);
 
     List<MtConfirmLog> getOrderConfirmLogList(@Param("orderId") Integer orderId);
 

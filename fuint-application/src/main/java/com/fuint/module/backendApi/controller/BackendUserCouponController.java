@@ -257,7 +257,7 @@ public class BackendUserCouponController extends BaseController {
 
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
         if (accountInfo == null) {
-            logger.error("导出会员卡券失败：token = ", token);
+            logger.error("导出会员卡券失败：token = {}", token);
             return;
         }
 

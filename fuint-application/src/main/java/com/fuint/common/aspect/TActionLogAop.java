@@ -38,6 +38,8 @@ public class TActionLogAop {
     private ActionLogService tActionLogService;
 
     private String userName = ""; // 用户名
+    private Integer merchantId = 0; // 商户ID
+    private Integer storeId = 0; // 店铺ID
     private Long startTimeMillis = 0l; // 开始时间
     private Long endTimeMillis = 0l; // 结束时间
     private String clientIp = "";
@@ -84,6 +86,8 @@ public class TActionLogAop {
             if (StringUtils.isNotEmpty(token)) {
                 AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
                 userName = accountInfo.getAccountName();
+                merchantId = accountInfo.getMerchantId() == null ? 0 : accountInfo.getMerchantId();
+                storeId = accountInfo.getStoreId() == null ? 0 : accountInfo.getStoreId();
             }
             this.printOptLog();
         } catch (Exception e) {
@@ -110,6 +114,8 @@ public class TActionLogAop {
         hal.setUrl(url);
         hal.setTimeConsuming(new BigDecimal(endTimeMillis - startTimeMillis));
         hal.setUserAgent(userAgent);
+        hal.setMerchantId(merchantId);
+        hal.setStoreId(storeId);
         if (StringUtils.isNotEmpty(module) && userName != null && StringUtils.isNotEmpty(userName)) {
             this.tActionLogService.saveActionLog(hal);
         }

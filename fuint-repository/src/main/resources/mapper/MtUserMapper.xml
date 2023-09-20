@@ -37,6 +37,9 @@
 
     <select id="getUserCount" resultType="java.lang.Long">
         select count(*) from mt_user t where t.STATUS != 'D'
+        <if test="merchantId != null and merchantId > 0">
+            AND t.MERCHANT_ID = #{merchantId}
+        </if>
     </select>
 
     <select id="getStoreUserCount" resultType="java.lang.Long">
@@ -45,6 +48,9 @@
 
     <select id="getUserCountByTime" resultType="java.lang.Long">
         select count(*) from mt_user t where t.CREATE_TIME &gt;= #{beginTime} and t.CREATE_TIME &lt; #{endTime} and t.STATUS != 'D'
+        <if test="merchantId != null and merchantId > 0">
+            AND t.MERCHANT_ID = #{merchantId}
+        </if>
     </select>
 
     <select id="getStoreUserCountByTime" resultType="java.lang.Long">

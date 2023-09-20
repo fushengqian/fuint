@@ -43,5 +43,5 @@ public interface ConfirmLogService extends IService<MtConfirmLog> {
     /**
      * 获取核销总数
      * */
-    Long getConfirmCount(Integer storeId, Date beginTime, Date endTime) throws BusinessCheckException;
+    Long getConfirmCount(Integer merchantId, Integer storeId, Date beginTime, Date endTime) throws BusinessCheckException;
 }
