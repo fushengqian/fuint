@@ -99,8 +99,12 @@ public class ClientUserController extends BaseController {
     @CrossOrigin
     public ResponseObject info(HttpServletRequest request) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
+        String merchantNo = request.getHeader("merchantNo") == null ? "" : request.getHeader("merchantNo");
         String userNo = request.getParameter("code") == null ? "" : request.getParameter("code");
         UserInfo loginInfo = TokenUtil.getUserInfoByToken(token);
+
+        Integer merchantId = merchantService.getMerchantId(merchantNo);
+
         MtUser userInfo = null;
         if (loginInfo != null) {
             userInfo = memberService.queryMemberById(loginInfo.getId());
@@ -113,7 +117,7 @@ public class ClientUserController extends BaseController {
             gradeInfo = memberService.queryMemberGradeByGradeId(Integer.parseInt(userInfo.getGradeId()));
         }
 
-        List<MtUserGrade> memberGrade = userGradeService.getPayUserGradeList(userInfo);
+        List<MtUserGrade> memberGrade = userGradeService.getPayUserGradeList(merchantId, userInfo);
         Map<String, Object> outParams = new HashMap<>();
         outParams.put("userInfo", userInfo);
         outParams.put("gradeInfo", gradeInfo);

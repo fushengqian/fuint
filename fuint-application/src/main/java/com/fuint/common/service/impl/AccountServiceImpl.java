@@ -162,6 +162,7 @@ public class AccountServiceImpl extends ServiceImpl<TAccountMapper, TAccount> im
     @OperationServiceLog(description = "新增后台账户")
     public TAccount createAccountInfo(TAccount tAccount, List<TDuty> duties) {
         TAccount account = new TAccount();
+        account.setAccountKey(tAccount.getAccountKey());
         account.setAccountName(tAccount.getAccountName().toLowerCase());
         account.setAccountStatus(1);
         account.setRealName(tAccount.getRealName());

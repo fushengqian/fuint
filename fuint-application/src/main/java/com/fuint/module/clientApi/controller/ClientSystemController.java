@@ -77,7 +77,7 @@ public class ClientSystemController extends BaseController {
         String longitude = request.getHeader("longitude") == null ? "" : request.getHeader("longitude");
 
         UserInfo loginInfo = TokenUtil.getUserInfoByToken(token);
-        MtMerchant mtMerchant = merchantService.queryMerchantByNo(merchantNo);
+        Integer merchantId = merchantService.getMerchantId(merchantNo);
 
         // 默认店铺，取会员之前选择的店铺
         MtStore storeInfo = null;
@@ -87,6 +87,10 @@ public class ClientSystemController extends BaseController {
             if (mtUser != null) {
                 // 会员已禁用
                 if (!mtUser.getStatus().equals(StatusEnum.ENABLED.getKey())) {
+                    return getFailureResult(1001);
+                }
+                // 商户号不同
+                if (!mtUser.getMerchantId().equals(merchantId)) {
                     return getFailureResult(1001);
                 }
             }
@@ -100,7 +104,7 @@ public class ClientSystemController extends BaseController {
                 if (!storeInfo.getStatus().equals(StatusEnum.ENABLED.getKey())) {
                     storeInfo = null;
                 }
-                if (storeInfo != null && mtMerchant != null && !mtMerchant.getId().equals(storeInfo.getMerchantId())) {
+                if (storeInfo != null && merchantId.equals(storeInfo.getMerchantId())) {
                     storeInfo = null;
                 }
             }

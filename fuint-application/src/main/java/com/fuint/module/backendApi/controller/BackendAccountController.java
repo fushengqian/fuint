@@ -9,6 +9,7 @@ import com.fuint.common.service.AccountService;
 import com.fuint.common.service.DutyService;
 import com.fuint.common.service.MerchantService;
 import com.fuint.common.service.StoreService;
+import com.fuint.common.util.CommonUtil;
 import com.fuint.common.util.TokenUtil;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.pagination.PaginationRequest;
@@ -239,6 +240,7 @@ public class BackendAccountController extends BaseController {
         }
 
         TAccount tAccount = new TAccount();
+        tAccount.setAccountKey(CommonUtil.createAccountKey());
         tAccount.setRealName(realName);
         tAccount.setAccountName(accountName);
         tAccount.setAccountStatus(Integer.parseInt(accountStatus));

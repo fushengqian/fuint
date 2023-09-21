@@ -26,9 +26,6 @@
 
     <update id="updateInitSale">
         update mt_goods t set t.INIT_SALE = t.INIT_SALE + 1 where t.ID = #{goodsId}
-        <if test="merchantId != null and merchantId > 0">
-            AND t.MERCHANT_ID = #{merchantId}
-        </if>
     </update>
 
     <select id="selectGoodsList" resultType="com.fuint.repository.bean.GoodsBean">

@@ -205,14 +205,15 @@ public class UserGradeServiceImpl extends ServiceImpl<MtUserGradeMapper, MtUserG
     /**
      * 获取付费会员等级列表
      *
+     * @param merchantId
      * @param userInfo
      * */
     @Override
-    public List<MtUserGrade> getPayUserGradeList(MtUser userInfo) {
+    public List<MtUserGrade> getPayUserGradeList(Integer merchantId, MtUser userInfo) {
         Map<String, Object> param = new HashMap<>();
         param.put("status", StatusEnum.ENABLED.getKey());
         param.put("catch_type", UserGradeCatchTypeEnum.PAY.getKey());
-        param.put("merchant_id", userInfo.getMerchantId());
+        param.put("merchant_id", merchantId);
         List<MtUserGrade> userGrades = mtUserGradeMapper.selectByMap(param);
         List<MtUserGrade> dataList = new ArrayList<>();
         if (userGrades.size() > 0 && userInfo != null) {

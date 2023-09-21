@@ -79,6 +79,17 @@ public class CommonUtil {
     }
 
     /**
+     * 生成随机键值号
+     * */
+    public static String createAccountKey() {
+        StringBuilder sb = new StringBuilder("11");
+        sb.append(SeqUtil.getRandomNumber(6));
+        sb.append(SeqUtil.getRandomNumber(5));
+        String t = TimeUtils.formatDate(new Date(), "yyyyMMddHH");
+        return t + sb.toString();
+    }
+
+    /**
      * 生成随机商户号
      * */
     public static String createMerchantNo() {
