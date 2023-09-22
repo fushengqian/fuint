@@ -126,6 +126,9 @@ public class ClientCartController extends BaseController {
         }
 
         Integer merchantId = merchantService.getMerchantId(merchantNo);
+        if (merchantId <= 0) {
+            merchantId = mtUser.getMerchantId();
+        }
 
         MtCart mtCart = new MtCart();
         mtCart.setGoodsId(goodsId);
@@ -204,6 +207,7 @@ public class ClientCartController extends BaseController {
         Integer userId = cartListParam.getUserId() == null ? 0 : cartListParam.getUserId(); // 会员ID
         String point = cartListParam.getPoint() == null ? "" : cartListParam.getPoint();
         String hangNo = cartListParam.getHangNo() == null ? "" : cartListParam.getHangNo();
+        Integer merchantId = merchantService.getMerchantId(merchantNo);
         boolean isUsePoint = false;
         if (point.equals("true")) {
             isUsePoint = true;
@@ -237,6 +241,12 @@ public class ClientCartController extends BaseController {
             param.put("ids", cartIds);
         }
 
+        if (merchantId <= 0) {
+            merchantId = mtUser.getMerchantId();
+        }
+        if (merchantId > 0) {
+            param.put("merchantId", merchantId);
+        }
         param.put("status", StatusEnum.ENABLED.getKey());
         if (StringUtil.isNotEmpty(hangNo)) {
             param = new HashMap<>();
@@ -279,8 +289,9 @@ public class ClientCartController extends BaseController {
             mtCart.setStatus(StatusEnum.ENABLED.getKey());
             cartList.add(mtCart);
         }
-
-        Integer merchantId = merchantService.getMerchantId(merchantNo);
+        if (merchantId <= 0) {
+            merchantId = mtUser.getMerchantId();
+        }
         result = orderService.calculateCartGoods(merchantId, mtUser.getId(), cartList, userCouponId, isUsePoint, platform, OrderModeEnum.EXPRESS.getKey());
 
         return getSuccessResult(result);

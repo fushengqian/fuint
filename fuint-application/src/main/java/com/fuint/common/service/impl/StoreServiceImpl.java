@@ -72,6 +72,10 @@ public class StoreServiceImpl extends ServiceImpl<MtStoreMapper, MtStore> implem
         if (StringUtils.isNotBlank(status)) {
             lambdaQueryWrapper.eq(MtStore::getStatus, status);
         }
+        String merchantId = paginationRequest.getSearchParams().get("merchantId") == null ? "" : paginationRequest.getSearchParams().get("merchantId").toString();
+        if (StringUtils.isNotBlank(merchantId)) {
+            lambdaQueryWrapper.eq(MtStore::getMerchantId, merchantId);
+        }
         String storeId = paginationRequest.getSearchParams().get("storeId") == null ? "" : paginationRequest.getSearchParams().get("storeId").toString();
         if (StringUtils.isNotBlank(storeId)) {
             lambdaQueryWrapper.eq(MtStore::getId, storeId);

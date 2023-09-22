@@ -2,6 +2,7 @@ package com.fuint.module.backendApi.controller;
 
 import com.fuint.common.Constants;
 import com.fuint.common.dto.AccountInfo;
+import com.fuint.common.enums.MerchantTypeEnum;
 import com.fuint.common.enums.StatusEnum;
 import com.fuint.common.service.MerchantService;
 import com.fuint.common.service.SettingService;
@@ -56,12 +57,21 @@ public class BackendMerchantController extends BaseController {
     @RequestMapping(value = "/list")
     @CrossOrigin
     public ResponseObject list(HttpServletRequest request) throws BusinessCheckException {
+        String token = request.getHeader("Access-Token");
         Integer page = request.getParameter("page") == null ? Constants.PAGE_NUMBER : Integer.parseInt(request.getParameter("page"));
         Integer pageSize = request.getParameter("pageSize") == null ? Constants.PAGE_SIZE : Integer.parseInt(request.getParameter("pageSize"));
 
         String merchantId = request.getParameter("id");
         String merchantName = request.getParameter("name");
         String status = request.getParameter("status");
+
+        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
+        if (accountInfo == null) {
+            return getFailureResult(1001, "请先登录");
+        }
+        if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
+            merchantId = accountInfo.getMerchantId().toString();
+        }
 
         PaginationRequest paginationRequest = new PaginationRequest();
         paginationRequest.setCurrentPage(page);
@@ -133,6 +143,9 @@ public class BackendMerchantController extends BaseController {
         if (accountInfo == null) {
             return getFailureResult(1001, "请先登录");
         }
+        if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
+            merchantId = accountInfo.getMerchantId();
+        }
 
         String operator = accountInfo.getAccountName();
         merchantService.updateStatus(merchantId, operator, status);
@@ -175,6 +188,10 @@ public class BackendMerchantController extends BaseController {
         merchantInfo.setAddress(address);
         merchantInfo.setLogo(logo);
         merchantInfo.setStatus(status);
+        merchantInfo.setType(MerchantTypeEnum.RETAIL.getKey());
+        if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
+            merchantInfo.setId(accountInfo.getMerchantId());
+        }
 
         if (StringUtil.isEmpty(name)) {
             return getFailureResult(201, "商户名称不能为空");
@@ -206,7 +223,16 @@ public class BackendMerchantController extends BaseController {
     @ApiOperation(value = "获取商户详情")
     @RequestMapping(value = "/info/{id}", method = RequestMethod.GET)
     @CrossOrigin
-    public ResponseObject getMerchantInfo(@PathVariable("id") Integer id) throws BusinessCheckException {
+    public ResponseObject getMerchantInfo(HttpServletRequest request, @PathVariable("id") Integer id) throws BusinessCheckException {
+        String token = request.getHeader("Access-Token");
+        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
+        if (accountInfo == null) {
+            return getFailureResult(1001, "请先登录");
+        }
+        if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
+            id = accountInfo.getMerchantId();
+        }
+
         MtMerchant merchantInfo = merchantService.queryMerchantById(id);;
 
         Map<String, Object> result = new HashMap<>();

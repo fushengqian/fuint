@@ -130,13 +130,7 @@ public class SettlementServiceImpl implements SettlementService {
         Integer buyNum = param.getBuyNum() == null ? 1 : param.getBuyNum(); // 立即购买商品数量
         String orderMode = param.getOrderMode()== null ? OrderModeEnum.ONESELF.getKey() : param.getOrderMode(); // 订单模式(配送or自取)
         Integer orderId = param.getOrderId() == null ? null : param.getOrderId(); // 订单ID
-
         Integer merchantId = merchantService.getMerchantId(merchantNo);
-        MtSetting config = settingService.querySettingByName(merchantId, OrderSettingEnum.IS_CLOSE.getKey());
-        if (config != null && config.getValue().equals("true")) {
-            throw new BusinessCheckException("系统已关闭交易功能，请稍后再试！");
-        }
-
         UserInfo loginInfo = TokenUtil.getUserInfoByToken(token);
         MtUser userInfo = null;
         if (loginInfo != null) {
@@ -152,6 +146,7 @@ public class SettlementServiceImpl implements SettlementService {
             operator = accountInfo.getAccountName();
             staffId = accountInfo.getStaffId() == null ? 0 : accountInfo.getStaffId();
             storeId = accountInfo.getStoreId();
+            merchantId = accountInfo.getMerchantId();
             if (storeId <= 0) {
                 MtStore mtStore = storeService.getDefaultStore(merchantNo);
                 if (mtStore != null) {
@@ -173,6 +168,11 @@ public class SettlementServiceImpl implements SettlementService {
             if (mtStaff != null) {
                 operator = mtStaff.getRealName();
             }
+        }
+
+        MtSetting config = settingService.querySettingByName(merchantId, OrderSettingEnum.IS_CLOSE.getKey());
+        if (config != null && config.getValue().equals("true")) {
+            throw new BusinessCheckException("系统已关闭交易功能，请稍后再试！");
         }
 
         // 收银台通过手机号自动注册会员信息

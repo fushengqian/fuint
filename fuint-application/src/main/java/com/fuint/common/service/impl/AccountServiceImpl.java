@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fuint.common.dto.AccountDto;
 import com.fuint.common.dto.AccountInfo;
 import com.fuint.common.service.AccountService;
+import com.fuint.common.service.StaffService;
 import com.fuint.framework.annoation.OperationServiceLog;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.exception.BusinessRuntimeException;
@@ -19,6 +20,7 @@ import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -50,6 +52,12 @@ public class AccountServiceImpl extends ServiceImpl<TAccountMapper, TAccount> im
 
     @Resource
     private MtStoreMapper mtStoreMapper;
+
+    /**
+     * 员工接口
+     */
+    @Autowired
+    private StaffService staffService;
 
     /**
      * 分页查询账号列表
@@ -230,6 +238,12 @@ public class AccountServiceImpl extends ServiceImpl<TAccountMapper, TAccount> im
                      tAccountDuty.setAcctId(tAccount.getAcctId());
                      tAccountDutyMapper.insert(tAccountDuty);
                 }
+            }
+        }
+        if (tAccount.getStaffId() != null && tAccount.getStaffId() > 0) {
+            MtStaff mtStaff = staffService.queryStaffById(tAccount.getStaffId());
+            if (mtStaff == null) {
+                tAccount.setStaffId(0);
             }
         }
         tAccountMapper.updateById(tAccount);

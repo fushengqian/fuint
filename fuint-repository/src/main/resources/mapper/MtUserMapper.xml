@@ -4,7 +4,7 @@
     <select id="queryMemberByMobile" resultType="com.fuint.repository.model.MtUser">
         select * from mt_user t where t.MOBILE = #{mobile}
         <if test="merchantId != null and merchantId > 0">
-            WHERE t.MERCHANT_ID = #{merchantId}
+            AND t.MERCHANT_ID = #{merchantId}
         </if>
     </select>
 

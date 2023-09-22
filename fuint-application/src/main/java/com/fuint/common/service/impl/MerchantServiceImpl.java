@@ -100,7 +100,9 @@ public class MerchantServiceImpl extends ServiceImpl<MtMerchantMapper, MtMerchan
         } else {
             mtMerchant.setNo(merchant.getNo());
         }
-
+        if (merchant.getType() != null) {
+            mtMerchant.setType(merchant.getType());
+        }
         mtMerchant.setName(merchant.getName());
         mtMerchant.setLogo(merchant.getLogo());
         mtMerchant.setContact(merchant.getContact());
@@ -165,7 +167,7 @@ public class MerchantServiceImpl extends ServiceImpl<MtMerchantMapper, MtMerchan
     /**
      * 根据商户号获取商户ID
      *
-     * @param  merchantNo 商户号
+     * @param merchantNo 商户号
      * @return
      */
     @Override
@@ -184,9 +186,9 @@ public class MerchantServiceImpl extends ServiceImpl<MtMerchantMapper, MtMerchan
     /**
      * 更新商户状态
      *
-     * @param id       商户ID
-     * @param operator 操作人
-     * @param status   状态
+     * @param  id       商户ID
+     * @param  operator 操作人
+     * @param  status   状态
      * @throws BusinessCheckException
      */
     @Override

@@ -226,7 +226,7 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
     /**
      * 保存订单信息
      *
-     * @param orderDto
+     * @param  orderDto
      * @throws BusinessCheckException
      */
     @Override
@@ -987,8 +987,8 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
             params.put("ORDER_ID", orderInfo.getId());
             List<MtOrderGoods> orderGoodsList = mtOrderGoodsMapper.selectByMap(params);
             for (MtOrderGoods orderGoods : orderGoodsList) {
-                MtGoods goodsInfo = mtGoodsMapper.selectById(orderGoods.getGoodsId());
-                if (goodsInfo != null) {
+                 MtGoods goodsInfo = mtGoodsMapper.selectById(orderGoods.getGoodsId());
+                 if (goodsInfo != null) {
                     OrderGoodsDto orderGoodsDto = new OrderGoodsDto();
                     orderGoodsDto.setId(orderGoods.getId());
                     orderGoodsDto.setName(goodsInfo.getName());
@@ -1006,7 +1006,7 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
                         orderGoodsDto.setSpecList(specList);
                     }
                     goodsList.add(orderGoodsDto);
-                }
+                 }
             }
         }
 

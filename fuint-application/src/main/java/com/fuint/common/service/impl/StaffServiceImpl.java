@@ -134,13 +134,18 @@ public class StaffServiceImpl extends ServiceImpl<MtStaffMapper, MtStaff> implem
             }
         }
 
+        MtUser mtUser = null;
+        if (mtStaff.getUserId() != null) {
+            mtUser = memberService.queryMemberById(mtStaff.getUserId());
+        }
+
         // 关联会员信息
-        if (mtStaff.getUserId() == null) {
+        if (mtStaff.getUserId() == null || mtUser == null) {
             MtUser userInfo = new MtUser();
             userInfo.setName(mtStaff.getRealName());
             userInfo.setDescription("系统自动注册店铺员工账号");
             userInfo.setStoreId(mtStaff.getStoreId());
-            MtUser mtUser = memberService.addMember(userInfo);
+            mtUser = memberService.addMember(userInfo);
             if (mtUser != null) {
                 mtStaff.setUserId(mtUser.getId());
             } else {
