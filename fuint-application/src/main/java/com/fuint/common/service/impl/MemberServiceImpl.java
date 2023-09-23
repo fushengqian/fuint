@@ -123,6 +123,7 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
                         MtUserAction mtUserAction = new MtUserAction();
                         mtUserAction.setUserId(mtUser.getId());
                         mtUserAction.setStoreId(mtUser.getStoreId());
+                        mtUserAction.setMerchantId(mtUser.getMerchantId());
                         mtUserAction.setParam(TimeUtils.formatDate(activeTime, "yyyy-MM-dd HH:mm:ss"));
                         mtUserAction.setAction(UserActionEnum.LOGIN.getKey());
                         mtUserAction.setDescription(UserActionEnum.LOGIN.getValue());

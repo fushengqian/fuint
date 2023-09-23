@@ -145,9 +145,10 @@ public class ConfirmLogServiceImpl extends ServiceImpl<MtConfirmLogMapper, MtCon
 
     /**
      * 获取卡券核销数量
-     * @param storeId   店铺ID
-     * @param beginTime 开始时间
-     * @param endTime   结束时间
+     * @param merchantId 商户ID
+     * @param storeId    店铺ID
+     * @param beginTime  开始时间
+     * @param endTime    结束时间
      * @return
      * */
     @Override

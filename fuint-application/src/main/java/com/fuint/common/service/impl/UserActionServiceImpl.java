@@ -50,6 +50,14 @@ public class UserActionServiceImpl extends ServiceImpl<MtUserActionMapper, MtUse
         if (StringUtils.isNotBlank(description)) {
             lambdaQueryWrapper.like(MtUserAction::getDescription, description);
         }
+        String merchantId = paginationRequest.getSearchParams().get("merchantId") == null ? "" : paginationRequest.getSearchParams().get("merchantId").toString();
+        if (StringUtils.isNotBlank(merchantId)) {
+            lambdaQueryWrapper.eq(MtUserAction::getMerchantId, merchantId);
+        }
+        String storeId = paginationRequest.getSearchParams().get("storeId") == null ? "" : paginationRequest.getSearchParams().get("storeId").toString();
+        if (StringUtils.isNotBlank(storeId)) {
+            lambdaQueryWrapper.eq(MtUserAction::getStoreId, storeId);
+        }
         String status = paginationRequest.getSearchParams().get("status") == null ? "" : paginationRequest.getSearchParams().get("status").toString();
         if (StringUtils.isNotBlank(status)) {
             lambdaQueryWrapper.eq(MtUserAction::getStatus, status);
@@ -93,6 +101,7 @@ public class UserActionServiceImpl extends ServiceImpl<MtUserActionMapper, MtUse
             MtUserAction mtUserAction = new MtUserAction();
             mtUserAction.setAction(reqUserAction.getAction());
             mtUserAction.setUserId(reqUserAction.getUserId());
+            mtUserAction.setMerchantId(reqUserAction.getMerchantId());
             mtUserAction.setStoreId(reqUserAction.getStoreId());
             mtUserAction.setParam(reqUserAction.getParam());
             mtUserAction.setOperator(reqUserAction.getOperator());
