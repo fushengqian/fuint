@@ -5,7 +5,6 @@ import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.web.ResponseObject;
 import com.fuint.repository.model.MtOrder;
 import com.fuint.repository.model.MtUser;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.math.BigDecimal;
@@ -20,7 +19,7 @@ import java.util.Date;
  */
 public interface WeixinService {
 
-    String getAccessToken(boolean useCache);
+    String getAccessToken(Integer merchantId, boolean useCache) throws BusinessCheckException ;
 
     ResponseObject createPrepayOrder(MtUser userInfo, MtOrder orderInfo, Integer payAmount, String authCode, Integer giveAmount, String ip, String platform) throws BusinessCheckException;
 
@@ -28,15 +27,15 @@ public interface WeixinService {
 
     void processRespXml(HttpServletResponse response, boolean flag);
 
-    JSONObject getWxProfile(String code);
+    JSONObject getWxProfile(Integer merchantId, String code) throws BusinessCheckException;
 
-    JSONObject getWxOpenId(String code);
+    JSONObject getWxOpenId(Integer merchantId, String code) throws BusinessCheckException;
 
     String getPhoneNumber(String encryptedData, String session_key, String iv);
 
     Boolean sendSubscribeMessage(Integer merchantId, Integer userId, String toUserOpenId, String key, String page, Map<String,Object> params, Date sendTime) throws BusinessCheckException;
 
-    Boolean doSendSubscribeMessage(String reqDataJsonStr);
+    Boolean doSendSubscribeMessage(Integer merchantId, String reqDataJsonStr);
 
     Map<String, String> queryPaidOrder(Integer storeId, String transactionId, String orderSn);
 

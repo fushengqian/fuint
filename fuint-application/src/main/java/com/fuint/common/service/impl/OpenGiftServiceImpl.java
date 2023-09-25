@@ -281,6 +281,7 @@ public class OpenGiftServiceImpl extends ServiceImpl<MtOpenGiftMapper, MtOpenGif
             }
             // 弹框消息
             MtMessage msg = new MtMessage();
+            msg.setMerchantId(user.getMerchantId());
             msg.setType(MessageEnum.POP_MSG.getKey());
             msg.setUserId(userId);
             msg.setTitle("温馨提示");

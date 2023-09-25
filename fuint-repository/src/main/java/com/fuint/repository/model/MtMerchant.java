@@ -31,6 +31,18 @@ public class MtMerchant implements Serializable {
     @ApiModelProperty("类型")
     private String type;
 
+    @ApiModelProperty("微信小程序appId")
+    private String wxAppId;
+
+    @ApiModelProperty("微信小程序秘钥")
+    private String wxAppSecret;
+
+    @ApiModelProperty("微信公众号appId")
+    private String wxOfficialAppId;
+
+    @ApiModelProperty("微信公众号秘钥")
+    private String wxOfficialAppSecret;
+
     @ApiModelProperty("商户号")
     private String no;
 

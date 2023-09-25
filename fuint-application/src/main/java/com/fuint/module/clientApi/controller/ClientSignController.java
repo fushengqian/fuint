@@ -12,6 +12,7 @@ import com.fuint.common.util.TokenUtil;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.web.BaseController;
 import com.fuint.framework.web.ResponseObject;
+import com.fuint.repository.model.MtMerchant;
 import com.fuint.repository.model.MtStore;
 import com.fuint.repository.model.MtUser;
 import com.fuint.repository.model.MtVerifyCode;
@@ -90,11 +91,10 @@ public class ClientSignController extends BaseController {
         String storeId = request.getHeader("storeId") == null ? "0" : request.getHeader("storeId");
         String merchantNo = request.getHeader("merchantNo") == null ? "" : request.getHeader("merchantNo");
         JSONObject paramsObj = new JSONObject(param);
-
         logger.info("微信授权登录参数：{}", param);
-
+        Integer merchantId = merchantService.getMerchantId(merchantNo);
         JSONObject userInfo = paramsObj.getJSONObject("userInfo");
-        JSONObject loginInfo = weixinService.getWxProfile(param.get("code").toString());
+        JSONObject loginInfo = weixinService.getWxProfile(merchantId, param.get("code").toString());
         if (loginInfo == null) {
             return getFailureResult(0, "微信登录失败");
         }
@@ -115,7 +115,6 @@ public class ClientSignController extends BaseController {
             }
         }
         userInfo.put("storeId", storeId);
-        Integer merchantId = merchantService.getMerchantId(merchantNo);
         MtUser mtUser = memberService.queryMemberByOpenId(merchantId, loginInfo.get("openid").toString(), userInfo);
         if (mtUser == null) {
             return getFailureResult(0, "用户状态异常");
@@ -146,8 +145,11 @@ public class ClientSignController extends BaseController {
     @CrossOrigin
     public ResponseObject mpWxAuth(HttpServletRequest request, @RequestBody Map<String, Object> param) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
+        String merchantNo = request.getHeader("merchantNo") == null ? "" : request.getHeader("merchantNo");
         String storeId = request.getHeader("storeId") == null ? "0" : request.getHeader("storeId");
-        JSONObject mpUserInfo = weixinService.getWxOpenId(param.get("code").toString());
+
+        Integer merchantId = merchantService.getMerchantId(merchantNo);
+        JSONObject mpUserInfo = weixinService.getWxOpenId(merchantId, param.get("code").toString());
         if (mpUserInfo == null) {
             return getFailureResult(201, "微信公众号授权失败");
         }
@@ -232,8 +234,14 @@ public class ClientSignController extends BaseController {
             outParams.put("userName", userInfo.getName());
             outParams.put("token", token);
             outParams.put("openId", "");
+
             String domain = env.getProperty("website.url");
             String appId = env.getProperty("weixin.official.appId");
+            MtMerchant mtMerchant = merchantService.queryMerchantById(merchantId);
+            if (mtMerchant != null && StringUtil.isNotEmpty(mtMerchant.getWxOfficialAppId())) {
+                appId = mtMerchant.getWxOfficialAppId();
+            }
+
             outParams.put("domain", domain);
             outParams.put("appId", appId);
             return getSuccessResult("注册成功", outParams);
@@ -341,6 +349,10 @@ public class ClientSignController extends BaseController {
             outParams.put("openId", mtUser.getOpenId());
             String domain = env.getProperty("website.url");
             String appId = env.getProperty("weixin.official.appId");
+            MtMerchant mtMerchant = merchantService.queryMerchantById(merchantId);
+            if (mtMerchant != null && StringUtil.isNotEmpty(mtMerchant.getWxOfficialAppId())) {
+                appId = mtMerchant.getWxOfficialAppId();
+            }
             outParams.put("domain", domain);
             outParams.put("appId", appId);
             return getSuccessResult("登录成功", outParams);

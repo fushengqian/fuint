@@ -72,6 +72,9 @@ public class WeixinServiceImpl implements WeixinService {
     private PaymentService paymentService;
 
     @Autowired
+    private MerchantService merchantService;
+
+    @Autowired
     private Environment env;
 
     @Autowired
@@ -81,22 +84,35 @@ public class WeixinServiceImpl implements WeixinService {
 
     private static final String REFUND_NOTIFY_URL = "/clientApi/pay/weixinRefundNotify";
 
+    private static final String FUINT_ACCESS_TOKEN_PRE = "FUINT_ACCESS_TOKEN";
+
     /**
      * 获取微信accessToken
-     * @param useCache 是否读取缓存
+     *
+     * @param merchantId 商户ID
+     * @param useCache   是否读取缓存
      * @return
      * */
     @Override
-    public String getAccessToken(boolean useCache) {
+    public String getAccessToken(Integer merchantId, boolean useCache) throws BusinessCheckException {
         String wxAppId = env.getProperty("wxpay.appId");
         String wxAppSecret = env.getProperty("wxpay.appSecret");
-        String wxTokenUrl = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=%s&secret=%s";
+        String tokenKey = FUINT_ACCESS_TOKEN_PRE;
+        if (merchantId != null && merchantId > 0) {
+            MtMerchant mtMerchant = merchantService.queryMerchantById(merchantId);
+            if (mtMerchant != null && StringUtil.isNotEmpty(mtMerchant.getWxAppId()) && StringUtil.isNotEmpty(mtMerchant.getWxAppSecret())) {
+                wxAppId = mtMerchant.getWxAppId();
+                wxAppSecret = mtMerchant.getWxAppSecret();
+                tokenKey = tokenKey + merchantId;
+            }
+        }
 
+        String wxTokenUrl = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=%s&secret=%s";
         String url = String.format(wxTokenUrl, wxAppId, wxAppSecret);
         String token = "";
 
         if (useCache) {
-            token = RedisUtil.get("FUINT_ACCESS_TOKEN");
+            token = RedisUtil.get(tokenKey);
         }
 
         if (token == null || StringUtil.isEmpty(token)) {
@@ -104,7 +120,7 @@ public class WeixinServiceImpl implements WeixinService {
                 String response = HttpRESTDataClient.requestGet(url);
                 JSONObject json = (JSONObject) JSONObject.parse(response);
                 if (!json.containsKey("errcode")) {
-                    RedisUtil.set("FUINT_ACCESS_TOKEN", json.get("access_token"), 7200);
+                    RedisUtil.set(tokenKey, json.get("access_token"), 7200);
                     token = (String) json.get("access_token");
                 } else {
                     logger.error("获取微信accessToken出错：" + json.get("errmsg"));
@@ -240,12 +256,24 @@ public class WeixinServiceImpl implements WeixinService {
 
     /**
      * 获取微信个人信息
+     *
+     * @param merchantId
+     * @param code
      * @return
      * */
     @Override
-    public JSONObject getWxProfile(String code) {
+    public JSONObject getWxProfile(Integer merchantId, String code) throws BusinessCheckException {
         String wxAppId = env.getProperty("wxpay.appId");
         String wxAppSecret = env.getProperty("wxpay.appSecret");
+
+        if (merchantId != null && merchantId > 0) {
+            MtMerchant mtMerchant = merchantService.queryMerchantById(merchantId);
+            if (mtMerchant != null && StringUtil.isNotEmpty(mtMerchant.getWxAppId()) && StringUtil.isNotEmpty(mtMerchant.getWxAppSecret())) {
+                wxAppId = mtMerchant.getWxAppId();
+                wxAppSecret = mtMerchant.getWxAppSecret();
+            }
+        }
+
         String wxAccessUrl = "https://api.weixin.qq.com/sns/jscode2session?appid=%s&secret=%s&js_code=%s&grant_type=authorization_code";
         String url = String.format(wxAccessUrl, wxAppId, wxAppSecret, code);
         try {
@@ -265,12 +293,24 @@ public class WeixinServiceImpl implements WeixinService {
 
     /**
      * 获取公众号openId
+     *
+     * @param merchantId
+     * @param code
      * @return
      * */
     @Override
-    public JSONObject getWxOpenId(String code) {
+    public JSONObject getWxOpenId(Integer merchantId, String code) throws BusinessCheckException {
         String wxAppId = env.getProperty("weixin.official.appId");
         String wxAppSecret = env.getProperty("weixin.official.appSecret");
+
+        if (merchantId != null && merchantId > 0) {
+            MtMerchant mtMerchant = merchantService.queryMerchantById(merchantId);
+            if (mtMerchant != null && StringUtil.isNotEmpty(mtMerchant.getWxOfficialAppId()) && StringUtil.isNotEmpty(mtMerchant.getWxOfficialAppSecret())) {
+                wxAppId = mtMerchant.getWxOfficialAppId();
+                wxAppSecret = mtMerchant.getWxOfficialAppSecret();
+            }
+        }
+
         String wxAccessUrl = "https://api.weixin.qq.com/sns/oauth2/access_token?appid=%s&secret=%s&code=%s&grant_type=authorization_code";
         String url = String.format(wxAccessUrl, wxAppId, wxAppSecret, code);
         try {
@@ -391,6 +431,7 @@ public class WeixinServiceImpl implements WeixinService {
 
         // 存储到消息表里，后续通过定时任务发送
         MtMessage mtMessage = new MtMessage();
+        mtMessage.setMerchantId(merchantId);
         mtMessage.setUserId(userId);
         mtMessage.setType(MessageEnum.SUB_MSG.getKey());
         mtMessage.setTitle(WxMessageEnum.getValue(key));
@@ -406,14 +447,14 @@ public class WeixinServiceImpl implements WeixinService {
     }
 
     @Override
-    public Boolean doSendSubscribeMessage(String reqDataJsonStr) {
+    public Boolean doSendSubscribeMessage(Integer merchantId, String reqDataJsonStr) {
         try {
-            String url = "https://api.weixin.qq.com/cgi-bin/message/subscribe/send?access_token=" + this.getAccessToken(true);
+            String url = "https://api.weixin.qq.com/cgi-bin/message/subscribe/send?access_token=" + getAccessToken(merchantId, true);
             String response = HttpRESTDataClient.requestPost(url, "application/json; charset=utf-8", reqDataJsonStr);
             logger.info("WeixinService sendSubscribeMessage response={}", response);
             JSONObject json = (JSONObject) JSONObject.parse(response);
             if (json.get("errcode").toString().equals("40001")) {
-                this.getAccessToken(false);
+                getAccessToken(merchantId, false);
                 logger.error("发送订阅消息出错error1：" + json.get("errcode").toString());
                 return false;
             } else if (!json.get("errcode").toString().equals("0")) {
@@ -664,6 +705,15 @@ public class WeixinServiceImpl implements WeixinService {
         if (platform.equals(PlatformTypeEnum.H5.getCode())) {
             String wxAppId = env.getProperty("weixin.official.appId");
             String wxAppSecret = env.getProperty("weixin.official.appSecret");
+
+            if (mtStore != null) {
+                MtMerchant mtMerchant = merchantService.queryMerchantById(mtStore.getMerchantId());
+                if (mtMerchant != null && StringUtil.isNotEmpty(mtMerchant.getWxOfficialAppId()) && StringUtil.isNotEmpty(mtMerchant.getWxOfficialAppSecret())) {
+                    wxAppId = mtMerchant.getWxOfficialAppId();
+                    wxAppSecret = mtMerchant.getWxOfficialAppSecret();
+                }
+            }
+
             if (StringUtil.isNotEmpty(wxAppId) && StringUtil.isNotEmpty(wxAppSecret)) {
                 apiConfig.setAppId(wxAppId);
                 apiConfig.setApiKey(wxAppSecret);

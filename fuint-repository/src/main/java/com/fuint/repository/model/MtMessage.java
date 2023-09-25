@@ -28,6 +28,9 @@ public class MtMessage implements Serializable {
     @TableId(value = "ID", type = IdType.AUTO)
     private Integer id;
 
+    @ApiModelProperty("商户ID")
+    private Integer merchantId;
+
     @ApiModelProperty("用户ID")
     private Integer userId;
 
@@ -60,6 +63,5 @@ public class MtMessage implements Serializable {
 
     @ApiModelProperty("状态")
     private String status;
-
 
 }

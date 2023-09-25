@@ -111,7 +111,10 @@ public class MerchantServiceImpl extends ServiceImpl<MtMerchantMapper, MtMerchan
         if (merchant.getId() == null) {
             mtMerchant.setCreateTime(new Date());
         }
-
+        mtMerchant.setWxAppId(merchant.getWxAppId());
+        mtMerchant.setWxAppSecret(merchant.getWxAppSecret());
+        mtMerchant.setWxOfficialAppId(merchant.getWxOfficialAppId());
+        mtMerchant.setWxOfficialAppSecret(merchant.getWxOfficialAppSecret());
         mtMerchant.setDescription(merchant.getDescription());
         mtMerchant.setPhone(merchant.getPhone());
         mtMerchant.setAddress(merchant.getAddress());

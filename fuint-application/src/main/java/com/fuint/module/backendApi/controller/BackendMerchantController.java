@@ -2,6 +2,8 @@ package com.fuint.module.backendApi.controller;
 
 import com.fuint.common.Constants;
 import com.fuint.common.dto.AccountInfo;
+import com.fuint.common.dto.ParamDto;
+import com.fuint.common.enums.CouponTypeEnum;
 import com.fuint.common.enums.MerchantTypeEnum;
 import com.fuint.common.enums.StatusEnum;
 import com.fuint.common.service.MerchantService;
@@ -20,6 +22,7 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -92,9 +95,21 @@ public class BackendMerchantController extends BaseController {
 
         String imagePath = settingService.getUploadBasePath();
 
+        // 商户类型列表
+        MerchantTypeEnum[] typeListEnum = MerchantTypeEnum.values();
+        List<ParamDto> typeList = new ArrayList<>();
+        for (MerchantTypeEnum enumItem : typeListEnum) {
+             ParamDto paramDto = new ParamDto();
+             paramDto.setKey(enumItem.getKey());
+             paramDto.setName(enumItem.getValue());
+             paramDto.setValue(enumItem.getKey());
+             typeList.add(paramDto);
+        }
+
         Map<String, Object> result = new HashMap<>();
         result.put("dataList", paginationResponse);
         result.put("imagePath", imagePath);
+        result.put("typeList", typeList);
 
         return getSuccessResult(result);
     }
@@ -178,8 +193,14 @@ public class BackendMerchantController extends BaseController {
         String address = params.get("address") == null ? "" : CommonUtil.replaceXSS(params.get("address").toString());
         String status = params.get("status") == null ? "" : CommonUtil.replaceXSS(params.get("status").toString());
         String logo = params.get("logo") == null ? "" : CommonUtil.replaceXSS(params.get("logo").toString());
+        String type = params.get("type") == null ? MerchantTypeEnum.RETAIL.getKey() : CommonUtil.replaceXSS(params.get("type").toString());
+        String wxAppId = params.get("wxAppId") == null ? "" : CommonUtil.replaceXSS(params.get("wxAppId").toString());
+        String wxAppSecret = params.get("wxAppSecret") == null ? "" : CommonUtil.replaceXSS(params.get("wxAppSecret").toString());
+        String wxOfficialAppId = params.get("wxOfficialAppId") == null ? "" : CommonUtil.replaceXSS(params.get("wxOfficialAppId").toString());
+        String wxOfficialAppSecret = params.get("wxOfficialAppSecret") == null ? "" : CommonUtil.replaceXSS(params.get("wxOfficialAppSecret").toString());
 
         MtMerchant merchantInfo = new MtMerchant();
+        merchantInfo.setType(type);
         merchantInfo.setName(name);
         merchantInfo.setNo(merchantNo);
         merchantInfo.setContact(contact);
@@ -187,8 +208,11 @@ public class BackendMerchantController extends BaseController {
         merchantInfo.setDescription(description);
         merchantInfo.setAddress(address);
         merchantInfo.setLogo(logo);
+        merchantInfo.setWxAppId(wxAppId);
+        merchantInfo.setWxAppSecret(wxAppSecret);
+        merchantInfo.setWxOfficialAppId(wxOfficialAppId);
+        merchantInfo.setWxOfficialAppSecret(wxOfficialAppSecret);
         merchantInfo.setStatus(status);
-        merchantInfo.setType(MerchantTypeEnum.RETAIL.getKey());
         if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
             merchantInfo.setId(accountInfo.getMerchantId());
         }

@@ -1,5 +1,6 @@
 package com.fuint.module.schedule;
 
+import com.fuint.common.service.MerchantService;
 import com.fuint.common.service.MessageService;
 import com.fuint.common.service.WeixinService;
 import com.fuint.framework.exception.BusinessCheckException;
@@ -13,7 +14,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.Date;
 import java.util.List;
 
@@ -62,7 +62,7 @@ public class MessageJob {
                     Date nowTime = new Date();
                     // 如果到了发送时间，发送并删除该条消息
                     if (dealNum <= MAX_SEND_NUM && mtMessage.getSendTime().before(nowTime) && StringUtil.isNotEmpty(mtMessage.getParams())) {
-                        boolean result = weixinService.doSendSubscribeMessage(mtMessage.getParams());
+                        boolean result = weixinService.doSendSubscribeMessage(mtMessage.getMerchantId(), mtMessage.getParams());
                         messageService.sendMessage(mtMessage.getId(), result);
                         dealNum++;
                     }

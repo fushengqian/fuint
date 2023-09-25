@@ -227,19 +227,21 @@ public class ClientUserController extends BaseController {
     @CrossOrigin
     public ResponseObject saveInfo(HttpServletRequest request, @RequestBody Map<String, Object> param) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
+        String merchantNo = request.getHeader("merchantNo") == null ? "" : request.getHeader("merchantNo");
         String name = param.get("name") == null ? "" : param.get("name").toString();
         String birthday = param.get("birthday") == null ? "" : param.get("birthday").toString();
         String avatar = param.get("avatar") == null ? "" : param.get("avatar").toString();
         Integer sex = param.get("sex") == null ? 1 : Integer.parseInt(param.get("sex").toString());
         String code = param.get("code") == null ? "" : param.get("code").toString();
         String mobile = "";
+        Integer merchantId = merchantService.getMerchantId(merchantNo);
         UserInfo userInfo = TokenUtil.getUserInfoByToken(token);
         if (userInfo == null) {
             return getFailureResult(1001);
         }
 
         if (StringUtil.isNotEmpty(code)) {
-            JSONObject loginInfo = weixinService.getWxProfile(code);
+            JSONObject loginInfo = weixinService.getWxProfile(merchantId, code);
             if (loginInfo != null) {
                 mobile = weixinService.getPhoneNumber(param.get("encryptedData").toString(), loginInfo.get("session_key").toString(), param.get("iv").toString());
             }
