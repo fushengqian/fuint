@@ -227,7 +227,7 @@ public class CateServiceImpl extends ServiceImpl<MtGoodsCateMapper, MtGoodsCate>
         String storeId =  params.get("storeId") == null ? "" : params.get("storeId").toString();
         String merchantId =  params.get("merchantId") == null ? "" : params.get("merchantId").toString();
         if (StringUtils.isNotBlank(merchantId)) {
-            lambdaQueryWrapper.like(MtGoodsCate::getMerchantId, merchantId);
+            lambdaQueryWrapper.eq(MtGoodsCate::getMerchantId, merchantId);
         }
         String name =  params.get("name") == null ? "" : params.get("name").toString();
         if (StringUtils.isNotBlank(name)) {

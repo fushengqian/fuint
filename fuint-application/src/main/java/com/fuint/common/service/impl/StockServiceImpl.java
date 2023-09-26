@@ -94,15 +94,15 @@ public class StockServiceImpl extends ServiceImpl<MtStockMapper, MtStock> implem
     /**
      * 新增库存管理记录
      *
-     * @param stockParam
-     * @param goodsList
+     * @param  stockParam
+     * @param  goodsList
      * @throws BusinessCheckException
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
     public ResponseObject addStock(MtStock stockParam, List<LinkedHashMap> goodsList) throws BusinessCheckException {
         MtStock mtStock = new MtStock();
-
+        mtStock.setMerchantId(stockParam.getMerchantId());
         mtStock.setStoreId(stockParam.getStoreId());
         mtStock.setStatus(StatusEnum.ENABLED.getKey());
         mtStock.setType(stockParam.getType());

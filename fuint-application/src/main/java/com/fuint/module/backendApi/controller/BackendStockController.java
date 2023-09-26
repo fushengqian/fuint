@@ -195,6 +195,7 @@ public class BackendStockController extends BaseController {
         }
 
         MtStock info = new MtStock();
+        info.setMerchantId(accountDto.getMerchantId());
         info.setDescription(description);
         info.setStatus(status);
         info.setStoreId(storeId);

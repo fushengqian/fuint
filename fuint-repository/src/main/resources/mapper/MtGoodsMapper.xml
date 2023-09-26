@@ -32,7 +32,7 @@
         SELECT g.LOGO as logo,g.STORE_ID as storeId,g.ID AS goodsId,g.CATE_ID AS cateId,g.GOODS_NO AS goodsNo,g.NAME as name,g.PRICE as price, g.STOCK as stock,s.`SPEC_IDS` as specIds,s.`PRICE` as skuPrice, s.STOCK as skuStock FROM `mt_goods` g LEFT JOIN `mt_goods_sku` s ON g.id = s.`GOODS_ID`
         WHERE g.`status` = 'A'
         <if test="merchantId != null and merchantId > 0">
-            AND t.MERCHANT_ID = #{merchantId}
+            AND g.MERCHANT_ID = #{merchantId}
         </if>
         <if test="storeId != null and storeId > 0">
             AND (g.STORE_ID = #{storeId} OR g.STORE_ID = 0)

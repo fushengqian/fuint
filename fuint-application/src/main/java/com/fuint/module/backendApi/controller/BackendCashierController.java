@@ -110,19 +110,19 @@ public class BackendCashierController extends BaseController {
         }
 
         TAccount accountInfo = accountService.getAccountInfoById(accountDto.getId());
-        Integer storeId = accountInfo.getStoreId();
-        MtStore storeInfo;
+        Integer storeId = (accountInfo.getStoreId() == null || accountInfo.getStoreId() < 1) ? 0 : accountInfo.getStoreId();
+        MtStore storeInfo = null;
         if (storeId == null || storeId < 1) {
             MtMerchant mtMerchant = merchantService.queryMerchantById(accountInfo.getMerchantId());
             if (mtMerchant != null) {
                 storeInfo = storeService.getDefaultStore(mtMerchant.getNo());
-            } else {
-                storeInfo = storeService.getDefaultStore("");
             }
         } else {
             storeInfo = storeService.queryStoreById(storeId);
         }
-        storeId = storeInfo.getId();
+        if (storeInfo != null) {
+            storeId = storeInfo.getId();
+        }
         MtUser memberInfo = null;
         if (userId != null && userId > 0) {
             memberInfo = memberService.queryMemberById(userId);
@@ -131,9 +131,13 @@ public class BackendCashierController extends BaseController {
         param.put("status", StatusEnum.ENABLED.getKey());
         if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
             param.put("merchantId", accountInfo.getMerchantId());
+        } else {
+            param.put("merchantId", 0);
         }
         if (storeId > 0) {
             param.put("storeId", storeId);
+        } else {
+            param.put("storeId", 0);
         }
         List<MtGoodsCate> cateList = cateService.queryCateListByParams(param);
 
