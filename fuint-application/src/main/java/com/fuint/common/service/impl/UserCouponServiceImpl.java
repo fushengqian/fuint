@@ -7,10 +7,7 @@ import com.fuint.common.Constants;
 import com.fuint.common.config.Message;
 import com.fuint.common.dto.CouponDto;
 import com.fuint.common.dto.MyCouponDto;
-import com.fuint.common.enums.CouponTypeEnum;
-import com.fuint.common.enums.SendWayEnum;
-import com.fuint.common.enums.StatusEnum;
-import com.fuint.common.enums.UserCouponStatusEnum;
+import com.fuint.common.enums.*;
 import com.fuint.common.param.CouponReceiveParam;
 import com.fuint.common.service.*;
 import com.fuint.common.util.DateUtil;
@@ -230,6 +227,14 @@ public class UserCouponServiceImpl extends ServiceImpl<MtUserCouponMapper, MtUse
              userCoupon.setCreateTime(new Date());
              userCoupon.setUpdateTime(new Date());
              userCoupon.setExpireTime(couponInfo.getEndTime());
+            if (couponInfo.getExpireType().equals(CouponExpireTypeEnum.FLEX.getKey())) {
+                Date expireTime = new Date();
+                Calendar c = Calendar.getInstance();
+                c.setTime(expireTime);
+                c.add(Calendar.DATE, couponInfo.getExpireTime());
+                expireTime = c.getTime();
+                userCoupon.setExpireTime(expireTime);
+            }
 
              // 12位随机数
              StringBuffer code = new StringBuffer();
@@ -342,11 +347,17 @@ public class UserCouponServiceImpl extends ServiceImpl<MtUserCouponMapper, MtUse
             for (MtUserCoupon uc : data) {
                  MtCoupon coupon = couponService.queryCouponById(uc.getCouponId());
                  // 已过期
-                 if (coupon.getEndTime().before(new Date())) {
+                 if (coupon.getExpireType().equals(CouponExpireTypeEnum.FIX.getKey()) && coupon.getEndTime() != null && coupon.getEndTime().before(new Date())) {
                      uc.setStatus(UserCouponStatusEnum.EXPIRE.getKey());
                      uc.setUpdateTime(new Date());
                      mtUserCouponMapper.updateById(uc);
                  }
+                // 已过期
+                if (coupon.getExpireType().equals(CouponExpireTypeEnum.FLEX.getKey()) && uc.getExpireTime() != null && uc.getExpireTime().before(new Date())) {
+                    uc.setStatus(UserCouponStatusEnum.EXPIRE.getKey());
+                    uc.setUpdateTime(new Date());
+                    mtUserCouponMapper.updateById(uc);
+                }
                  // 已删除
                  if (coupon.getStatus().equals(StatusEnum.DISABLE.getKey())) {
                      uc.setStatus(UserCouponStatusEnum.DISABLE.getKey());
@@ -416,14 +427,20 @@ public class UserCouponServiceImpl extends ServiceImpl<MtUserCouponMapper, MtUse
                 dto.setUserInfo(userInfo);
                 dto.setStoreInfo(storeInfo);
 
-                boolean canUse = couponService.isCouponEffective(couponInfo);
+                boolean canUse = couponService.isCouponEffective(couponInfo, userCouponDto);
                 if (!userCouponDto.getStatus().equals(UserCouponStatusEnum.UNUSED.getKey())) {
                     canUse = false;
                 }
                 dto.setCanUse(canUse);
 
-                String effectiveDate = DateUtil.formatDate(couponInfo.getBeginTime(), "yyyy.MM.dd") + "-" + DateUtil.formatDate(couponInfo.getEndTime(), "yyyy.MM.dd");
-                dto.setEffectiveDate(effectiveDate);
+                if (couponInfo.getExpireType().equals(CouponExpireTypeEnum.FIX.getKey())) {
+                    String effectiveDate = DateUtil.formatDate(couponInfo.getBeginTime(), "yyyy.MM.dd HH:mm") + "-" + DateUtil.formatDate(couponInfo.getEndTime(), "yyyy.MM.dd HH:mm");
+                    dto.setEffectiveDate(effectiveDate);
+                }
+                if (couponInfo.getExpireType().equals(CouponExpireTypeEnum.FLEX.getKey())) {
+                    String effectiveDate = DateUtil.formatDate(userCouponDto.getCreateTime(), "yyyy.MM.dd HH:mm") + "-" + DateUtil.formatDate(userCouponDto.getExpireTime(), "yyyy.MM.dd HH:mm");
+                    dto.setEffectiveDate(effectiveDate);
+                }
 
                 String tips = "";
 
@@ -490,7 +507,7 @@ public class UserCouponServiceImpl extends ServiceImpl<MtUserCouponMapper, MtUse
                  couponDto.setName(couponInfo.getName());
                  couponDto.setAmount(userCoupon.getAmount());
                  couponDto.setStatus(UserCouponStatusEnum.UNUSED.getKey());
-                 boolean isEffective = couponService.isCouponEffective(couponInfo);
+                 boolean isEffective = couponService.isCouponEffective(couponInfo, userCoupon);
                  // 1.储值卡可用
                  if (isEffective && couponInfo.getType().equals(CouponTypeEnum.PRESTORE.getKey())) {
                      if (userCoupon.getBalance().compareTo(new BigDecimal("0")) > 0) {
@@ -567,6 +584,14 @@ public class UserCouponServiceImpl extends ServiceImpl<MtUserCouponMapper, MtUse
         userCoupon.setCreateTime(new Date());
         userCoupon.setUpdateTime(new Date());
         userCoupon.setExpireTime(couponInfo.getEndTime());
+        if (couponInfo.getExpireType().equals(CouponExpireTypeEnum.FLEX.getKey())) {
+            Date expireTime = new Date();
+            Calendar c = Calendar.getInstance();
+            c.setTime(expireTime);
+            c.add(Calendar.DATE, couponInfo.getExpireTime());
+            expireTime = c.getTime();
+            userCoupon.setExpireTime(expireTime);
+        }
         userCoupon.setOrderId(orderId);
 
         // 如果购买的是储值卡
@@ -625,6 +650,14 @@ public class UserCouponServiceImpl extends ServiceImpl<MtUserCouponMapper, MtUse
         userCoupon.setCreateTime(new Date());
         userCoupon.setUpdateTime(new Date());
         userCoupon.setExpireTime(couponInfo.getEndTime());
+        if (couponInfo.getExpireType().equals(CouponExpireTypeEnum.FLEX.getKey())) {
+            Date expireTime = new Date();
+            Calendar c = Calendar.getInstance();
+            c.setTime(expireTime);
+            c.add(Calendar.DATE, couponInfo.getExpireTime());
+            expireTime = c.getTime();
+            userCoupon.setExpireTime(expireTime);
+        }
 
         userCoupon.setOrderId(orderId);
         userCoupon.setAmount(amount);

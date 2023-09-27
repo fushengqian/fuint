@@ -140,7 +140,8 @@ public class CouponGroupServiceImpl extends ServiceImpl<MtCouponGroupMapper, MtC
     @OperationServiceLog(description = "新增卡券分组")
     public MtCouponGroup addCouponGroup(ReqCouponGroupDto reqCouponGroupDto) {
         MtCouponGroup couponGroup = new MtCouponGroup();
-
+        couponGroup.setMerchantId(reqCouponGroupDto.getMerchantId());
+        couponGroup.setStoreId(reqCouponGroupDto.getStoreId());
         couponGroup.setName(CommonUtil.replaceXSS(reqCouponGroupDto.getName()));
         couponGroup.setMoney(new BigDecimal("0"));
         couponGroup.setTotal(0);

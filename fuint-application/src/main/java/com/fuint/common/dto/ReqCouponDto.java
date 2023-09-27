@@ -67,6 +67,16 @@ public class ReqCouponDto implements Serializable {
     private String useFor;
 
     /**
+     * 过期类型
+     */
+    private String expireType;
+
+    /**
+     * 有效天数
+     */
+    private Integer expireTime;
+
+    /**
      * 计次卡领取码
      */
     private String timerReceiveCode;
@@ -241,6 +251,20 @@ public class ReqCouponDto implements Serializable {
     }
     public void setUseFor(String useFor){
         this.useFor=useFor;
+    }
+
+    public String getExpireType(){
+        return expireType;
+    }
+    public void setExpireType(String expireType){
+        this.expireType=expireType;
+    }
+
+    public Integer getExpireTime(){
+        return expireTime;
+    }
+    public void setExpireType(Integer expireTime){
+        this.expireTime=expireTime;
     }
 
     public String getTimerReceiveCode(){

@@ -2,6 +2,7 @@ package com.fuint.module.clientApi.controller;
 
 import com.fuint.common.dto.CouponDto;
 import com.fuint.common.dto.UserInfo;
+import com.fuint.common.enums.CouponExpireTypeEnum;
 import com.fuint.common.param.CouponInfoParam;
 import com.fuint.common.param.CouponListParam;
 import com.fuint.common.param.CouponReceiveParam;
@@ -163,7 +164,12 @@ public class ClientCouponController extends BaseController {
 
         String baseImage = settingService.getUploadBasePath();
         couponDto.setImage(baseImage + couponInfo.getImage());
-        String effectiveDate = DateUtil.formatDate(couponInfo.getBeginTime(), "yyyy.MM.dd") + " - " + DateUtil.formatDate(couponInfo.getEndTime(), "yyyy.MM.dd");
+        String effectiveDate = "";
+        if (couponInfo.getExpireType().equals(CouponExpireTypeEnum.FIX.getKey())) {
+            effectiveDate = DateUtil.formatDate(couponInfo.getBeginTime(), "yyyy.MM.dd HH:mm") + " - " + DateUtil.formatDate(couponInfo.getEndTime(), "yyyy.MM.dd");
+        } else {
+            effectiveDate = DateUtil.formatDate(couponInfo.getCreateTime(), "yyyy.MM.dd HH:mm") + " - 永久";
+        }
         couponDto.setEffectiveDate(effectiveDate);
         couponDto.setGotNum(0);
         couponDto.setLimitNum(0);

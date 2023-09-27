@@ -59,6 +59,12 @@ public class MtCoupon implements Serializable {
     @ApiModelProperty("使用专项")
     private String useFor;
 
+    @ApiModelProperty("过期类型")
+    private String expireType;
+
+    @ApiModelProperty("有效天数")
+    private Integer expireTime;
+
     @ApiModelProperty("开始有效期")
     private Date beginTime;
 

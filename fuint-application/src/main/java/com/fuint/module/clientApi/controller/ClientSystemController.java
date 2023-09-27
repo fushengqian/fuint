@@ -11,7 +11,6 @@ import com.fuint.common.util.TokenUtil;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.web.BaseController;
 import com.fuint.framework.web.ResponseObject;
-import com.fuint.repository.model.MtMerchant;
 import com.fuint.repository.model.MtStore;
 import com.fuint.repository.model.MtUser;
 import com.fuint.utils.StringUtil;

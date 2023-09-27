@@ -500,7 +500,9 @@ public class BackendGoodsController extends BaseController {
 
         MtGoods info = new MtGoods();
         info.setId(Integer.parseInt(goodsId));
-        info.setMerchantId(accountInfo.getMerchantId());
+        if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
+            info.setMerchantId(accountInfo.getMerchantId());
+        }
         if (StringUtil.isNotEmpty(type)) {
             info.setType(type);
         }
@@ -520,7 +522,7 @@ public class BackendGoodsController extends BaseController {
         if (StringUtil.isNotEmpty(description)) {
             info.setDescription(description);
         }
-        if (storeId != null) {
+        if (storeId != null && storeId > 0) {
             info.setStoreId(storeId);
         }
         if (images.size() > 0) {

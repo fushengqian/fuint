@@ -527,10 +527,15 @@ public class GoodsServiceImpl extends ServiceImpl<MtGoodsMapper, MtGoods> implem
         Integer cateId = params.get("cateId") == null ? 0 : Integer.parseInt(params.get("cateId").toString());
         String keyword = params.get("keyword") == null ? "" : params.get("keyword").toString();
 
+        Integer merchantId = 0;
         MtStore mtStore = storeService.queryStoreById(storeId);
+        if (mtStore != null) {
+            merchantId = mtStore.getMerchantId();
+        }
         Page<MtGoods> pageHelper = PageHelper.startPage(page, pageSize);
         List<GoodsDto> dataList = new ArrayList<>();
-        List<GoodsBean> goodsList = mtGoodsMapper.selectGoodsList(mtStore.getMerchantId(), storeId, cateId, keyword);
+
+        List<GoodsBean> goodsList = mtGoodsMapper.selectGoodsList(merchantId, storeId, cateId, keyword);
 
         for (GoodsBean goodsBean : goodsList) {
              GoodsDto goodsDto = new GoodsDto();

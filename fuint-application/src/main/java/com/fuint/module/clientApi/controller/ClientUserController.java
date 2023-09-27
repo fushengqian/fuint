@@ -166,7 +166,7 @@ public class ClientUserController extends BaseController {
             List<MtUserCoupon> dataList = userCouponService.getUserCouponList(mtUser.getId(), statusList);
             for (int i = 0; i < dataList.size(); i++) {
                 MtCoupon couponInfo = couponService.queryCouponById(dataList.get(i).getCouponId());
-                boolean isEffective = couponService.isCouponEffective(couponInfo);
+                boolean isEffective = couponService.isCouponEffective(couponInfo, dataList.get(i));
                 if (!isEffective) {
                     continue;
                 }

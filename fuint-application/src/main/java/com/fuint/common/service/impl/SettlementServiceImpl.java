@@ -371,7 +371,7 @@ public class SettlementServiceImpl implements SettlementService {
                 if (userCouponInfo != null) {
                     MtCoupon couponInfo = couponService.queryCouponById(userCouponInfo.getCouponId());
                     if (couponInfo != null) {
-                        boolean isEffective = couponService.isCouponEffective(couponInfo);
+                        boolean isEffective = couponService.isCouponEffective(couponInfo, userCouponInfo);
                         if (isEffective && userCouponInfo.getUserId().equals(orderDto.getUserId())) {
                             // 优惠券，直接减去优惠券金额
                             if (couponInfo.getType().equals(CouponTypeEnum.COUPON.getKey())) {

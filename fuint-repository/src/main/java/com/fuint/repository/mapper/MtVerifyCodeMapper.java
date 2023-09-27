@@ -17,8 +17,6 @@ public interface MtVerifyCodeMapper extends BaseMapper<MtVerifyCode> {
 
     MtVerifyCode queryByMobileVerifyCode(@Param("mobile") String mobile, @Param("verifyCode") String verifyCode, @Param("queryTime") Date queryTime);
 
-    List<MtVerifyCode> queryVerifyCodeListByMobile(@Param("mobile") String mobile, @Param("queryTime") Date queryTime);
-
     List<MtVerifyCode> queryVerifyCodeLastRecord(@Param("mobile") String mobile);
 
 }

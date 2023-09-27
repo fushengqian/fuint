@@ -171,15 +171,14 @@ public class BackendCouponGroupController extends BaseController {
         if (accountInfo == null) {
             return getFailureResult(1001, "请先登录");
         }
-
+        reqCouponGroupDto.setMerchantId(accountInfo.getMerchantId());
+        reqCouponGroupDto.setStoreId(accountInfo.getStoreId());
         reqCouponGroupDto.setOperator(accountInfo.getAccountName());
-
         if (reqCouponGroupDto.getId() != null && reqCouponGroupDto.getId() > 0) {
             couponGroupService.updateCouponGroup(reqCouponGroupDto);
         } else {
             couponGroupService.addCouponGroup(reqCouponGroupDto);
         }
-
         return getSuccessResult(true);
     }
 

@@ -3,6 +3,7 @@ package com.fuint.module.backendApi.controller;
 import com.fuint.common.dto.AccountInfo;
 import com.fuint.common.dto.ParamDto;
 import com.fuint.common.dto.UserCouponDto;
+import com.fuint.common.enums.CouponExpireTypeEnum;
 import com.fuint.common.enums.CouponTypeEnum;
 import com.fuint.common.service.AccountService;
 import com.fuint.common.service.ConfirmLogService;
@@ -108,7 +109,13 @@ public class BackendDoConfirmController extends BaseController {
         MtCoupon couponInfo = couponService.queryCouponById(userCoupon.getCouponId());
         MtUser userInfo = memberService.queryMemberById(userCoupon.getUserId());
 
-        String effectiveDate = DateUtil.formatDate(couponInfo.getBeginTime(), "yyyy.MM.dd") + " - " + DateUtil.formatDate(couponInfo.getEndTime(), "yyyy.MM.dd");
+        String effectiveDate = "";
+        if (couponInfo.getExpireType().equals(CouponExpireTypeEnum.FIX.getKey())) {
+            effectiveDate = DateUtil.formatDate(couponInfo.getBeginTime(), "yyyy.MM.dd HH:mm") + " - " + DateUtil.formatDate(couponInfo.getEndTime(), "yyyy.MM.dd HH:mm");
+        }
+        if (couponInfo.getExpireType().equals(CouponExpireTypeEnum.FLEX.getKey())) {
+            effectiveDate = DateUtil.formatDate(userCoupon.getCreateTime(), "yyyy.MM.dd HH:mm") + " - " + DateUtil.formatDate(userCoupon.getExpireTime(), "yyyy.MM.dd HH:mm");
+        }
 
         UserCouponDto userCouponInfo = new UserCouponDto();
         userCouponInfo.setName(couponInfo.getName());

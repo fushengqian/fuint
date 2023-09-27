@@ -1286,7 +1286,7 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
                             }
                         }
                     }
-                    boolean isEffective = couponService.isCouponEffective(couponInfo);
+                    boolean isEffective = couponService.isCouponEffective(couponInfo, userCoupon);
                     // 优惠券
                     if (couponInfo.getType().equals(CouponTypeEnum.COUPON.getKey())) {
                         couponDto.setType(CouponTypeEnum.COUPON.getValue());
@@ -1312,7 +1312,12 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
                             couponDto.setStatus(UserCouponStatusEnum.UNUSED.getKey());
                         }
                     }
-                    couponDto.setEffectiveDate(DateUtil.formatDate(couponInfo.getBeginTime(), "yyyy.MM.dd HH:mm") + "~" + DateUtil.formatDate(couponInfo.getEndTime(), "yyyy.MM.dd HH:mm"));
+                    if (couponInfo.getExpireType().equals(CouponExpireTypeEnum.FIX.getKey())) {
+                        couponDto.setEffectiveDate(DateUtil.formatDate(couponInfo.getBeginTime(), "yyyy.MM.dd HH:mm") + "~" + DateUtil.formatDate(couponInfo.getEndTime(), "yyyy.MM.dd HH:mm"));
+                    }
+                    if (couponInfo.getExpireType().equals(CouponExpireTypeEnum.FLEX.getKey())) {
+                        couponDto.setEffectiveDate(DateUtil.formatDate(userCoupon.getCreateTime(), "yyyy.MM.dd HH:mm") + "~" + DateUtil.formatDate(userCoupon.getExpireTime(), "yyyy.MM.dd HH:mm"));
+                    }
                     couponList.add(couponDto);
                 }
             }
@@ -1325,7 +1330,7 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
             MtUserCoupon userCouponInfo = userCouponService.getUserCouponDetail(couponId);
             if (userCouponInfo != null) {
                 useCouponInfo = couponService.queryCouponById(userCouponInfo.getCouponId());
-                boolean isEffective = couponService.isCouponEffective(useCouponInfo);
+                boolean isEffective = couponService.isCouponEffective(useCouponInfo, userCouponInfo);
                 if (isEffective) {
                    if (useCouponInfo.getType().equals(CouponTypeEnum.COUPON.getKey())) {
                        couponAmount = useCouponInfo.getAmount();

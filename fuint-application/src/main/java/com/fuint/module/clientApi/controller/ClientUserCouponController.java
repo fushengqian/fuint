@@ -2,6 +2,7 @@ package com.fuint.module.clientApi.controller;
 
 import com.fuint.common.dto.UserCouponDto;
 import com.fuint.common.dto.UserInfo;
+import com.fuint.common.enums.CouponExpireTypeEnum;
 import com.fuint.common.enums.CouponTypeEnum;
 import com.fuint.common.enums.UserCouponStatusEnum;
 import com.fuint.common.service.*;
@@ -165,8 +166,13 @@ public class ClientUserCouponController extends BaseController {
             result.setCouponId(couponInfo.getId());
             result.setType(couponInfo.getType());
             result.setUseRule(couponInfo.getOutRule());
-            String effectiveDate = DateUtil.formatDate(couponInfo.getBeginTime(), "yyyy.MM.dd") + " - " + DateUtil.formatDate(couponInfo.getEndTime(), "yyyy.MM.dd");
-            result.setEffectiveDate(effectiveDate);
+            if (couponInfo.getExpireType().equals(CouponExpireTypeEnum.FIX.getKey())) {
+                String effectiveDate = DateUtil.formatDate(couponInfo.getBeginTime(), "yyyy.MM.dd HH:mm") + " - " + DateUtil.formatDate(couponInfo.getEndTime(), "yyyy.MM.dd HH:mm");
+                result.setEffectiveDate(effectiveDate);
+            } else {
+                String effectiveDate = DateUtil.formatDate(userCoupon.getCreateTime(), "yyyy.MM.dd HH:mm") + " - " + DateUtil.formatDate(userCoupon.getExpireTime(), "yyyy.MM.dd HH:mm");
+                result.setEffectiveDate(effectiveDate);
+            }
             result.setCode(userCoupon.getCode());
             result.setAmount(userCoupon.getAmount());
             result.setBalance(userCoupon.getBalance());

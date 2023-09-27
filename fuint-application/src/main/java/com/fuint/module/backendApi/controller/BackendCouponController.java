@@ -347,8 +347,8 @@ public class BackendCouponController extends BaseController {
         if (StringUtil.isNotEmpty(mtCouponInfo.getStoreIds())) {
             String[] ids = mtCouponInfo.getStoreIds().split(",");
             for (String storeId : ids) {
-                MtStore info = storeService.queryStoreById(Integer.parseInt(storeId));
-                storeList.add(info);
+                 MtStore info = storeService.queryStoreById(Integer.parseInt(storeId));
+                 storeList.add(info);
             }
         }
 

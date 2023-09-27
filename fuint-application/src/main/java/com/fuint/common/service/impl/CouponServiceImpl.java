@@ -148,11 +148,13 @@ public class CouponServiceImpl extends ServiceImpl<MtCouponMapper, MtCoupon> imp
         } else {
             mtCoupon = new MtCoupon();
         }
-
-        Date startTime = DateUtil.parseDate(reqCouponDto.getBeginTime());
-        Date endTime = DateUtil.parseDate(reqCouponDto.getEndTime());
-        if (endTime.before(startTime)) {
-            throw new BusinessCheckException("生效期结束时间不能早于开始时间");
+        // 固定有效期验证
+        if (reqCouponDto.getExpireType().equals(CouponExpireTypeEnum.FIX.getKey())) {
+            Date startTime = DateUtil.parseDate(reqCouponDto.getBeginTime());
+            Date endTime = DateUtil.parseDate(reqCouponDto.getEndTime());
+            if (endTime.before(startTime)) {
+                throw new BusinessCheckException("生效期结束时间不能早于开始时间");
+            }
         }
         if (reqCouponDto.getMerchantId() != null) {
             mtCoupon.setMerchantId(reqCouponDto.getMerchantId());
@@ -218,8 +220,17 @@ public class CouponServiceImpl extends ServiceImpl<MtCouponMapper, MtCoupon> imp
         }
         mtCoupon.setTotal(reqCouponDto.getTotal());
 
-        mtCoupon.setBeginTime(DateUtil.parseDate(reqCouponDto.getBeginTime()));
-        mtCoupon.setEndTime(DateUtil.parseDate(reqCouponDto.getEndTime()));
+        if (reqCouponDto.getExpireType().equals(CouponExpireTypeEnum.FIX.getKey())) {
+            mtCoupon.setBeginTime(DateUtil.parseDate(reqCouponDto.getBeginTime()));
+            mtCoupon.setEndTime(DateUtil.parseDate(reqCouponDto.getEndTime()));
+        }
+        if (reqCouponDto.getExpireType().equals(CouponExpireTypeEnum.FLEX.getKey())) {
+           if (reqCouponDto.getExpireTime() == null || reqCouponDto.getExpireTime() < 0) {
+               throw new BusinessCheckException("请输入正确的有效天数");
+           }
+           mtCoupon.setExpireTime(reqCouponDto.getExpireTime());
+        }
+        mtCoupon.setExpireType(reqCouponDto.getExpireType());
         mtCoupon.setExceptTime(CommonUtil.replaceXSS(reqCouponDto.getExceptTime()));
         mtCoupon.setDescription(CommonUtil.replaceXSS(reqCouponDto.getDescription()));
         mtCoupon.setRemarks(CommonUtil.replaceXSS(reqCouponDto.getRemarks()));
@@ -312,6 +323,17 @@ public class CouponServiceImpl extends ServiceImpl<MtCouponMapper, MtCoupon> imp
                     userCoupon.setCreateTime(new Date());
                     userCoupon.setUpdateTime(new Date());
                     userCoupon.setExpireTime(couponInfo.getEndTime());
+                    if (couponInfo.getExpireType().equals(CouponExpireTypeEnum.FIX.getKey())) {
+                        userCoupon.setExpireTime(couponInfo.getEndTime());
+                    }
+                    if (couponInfo.getExpireType().equals(CouponExpireTypeEnum.FLEX.getKey())) {
+                        Date expireTime = new Date();
+                        Calendar c = Calendar.getInstance();
+                        c.setTime(expireTime);
+                        c.add(Calendar.DATE, couponInfo.getExpireTime());
+                        expireTime = c.getTime();
+                        userCoupon.setExpireTime(expireTime);
+                    }
                     userCoupon.setUuid(uuid);
                     userCoupon.setType(CouponTypeEnum.COUPON.getKey());
                     userCoupon.setAmount(couponInfo.getAmount());
@@ -569,8 +591,17 @@ public class CouponServiceImpl extends ServiceImpl<MtCouponMapper, MtCoupon> imp
                 userCoupon.setStatus(UserCouponStatusEnum.UNUSED.getKey());
                 userCoupon.setCreateTime(new Date());
                 userCoupon.setUpdateTime(new Date());
-                userCoupon.setExpireTime(couponInfo.getEndTime());
-
+                if (couponInfo.getExpireType().equals(CouponExpireTypeEnum.FIX.getKey())) {
+                    userCoupon.setExpireTime(couponInfo.getEndTime());
+                }
+                if (couponInfo.getExpireType().equals(CouponExpireTypeEnum.FLEX.getKey())) {
+                    Date expireTime = new Date();
+                    Calendar c = Calendar.getInstance();
+                    c.setTime(expireTime);
+                    c.add(Calendar.DATE, couponInfo.getExpireTime());
+                    expireTime = c.getTime();
+                    userCoupon.setExpireTime(expireTime);
+                }
                 // 12位随机数
                 StringBuffer code = new StringBuffer();
                 code.append(SeqUtil.getRandomNumber(4));
@@ -628,10 +659,15 @@ public class CouponServiceImpl extends ServiceImpl<MtCouponMapper, MtCoupon> imp
             }
         }
 
-        // 是否处于有效期
+        // 判断有效期
         MtCoupon couponInfo = queryCouponById(userCoupon.getCouponId());
         Date begin = couponInfo.getBeginTime();
         Date end = couponInfo.getEndTime();
+        // 领取后有效天数
+        if (couponInfo.getExpireType().equals(CouponExpireTypeEnum.FLEX.getKey())) {
+            begin = userCoupon.getCreateTime();
+            end = userCoupon.getExpireTime();
+        }
         Date now = new Date();
         if (now.before(begin)) {
             throw new BusinessCheckException("该卡券还没到使用日期");
@@ -956,12 +992,20 @@ public class CouponServiceImpl extends ServiceImpl<MtCouponMapper, MtCoupon> imp
     /**
      * 判断卡券是否过期
      * @param coupon
+     * @param userCoupon
+     *
      * @return
      * */
     @Override
-    public boolean isCouponEffective(MtCoupon coupon) {
+    public boolean isCouponEffective(MtCoupon coupon, MtUserCoupon userCoupon) {
         Date begin = coupon.getBeginTime();
         Date end = coupon.getEndTime();
+
+        if (coupon.getExpireType().equals(CouponExpireTypeEnum.FLEX.getKey())) {
+            begin = userCoupon.getCreateTime();
+            end = userCoupon.getExpireTime();
+        }
+
         Date now = new Date();
 
         // 未生效

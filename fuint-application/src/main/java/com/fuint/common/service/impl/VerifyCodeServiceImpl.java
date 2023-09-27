@@ -43,12 +43,12 @@ public class VerifyCodeServiceImpl extends ServiceImpl<MtVerifyCodeMapper, MtVer
         reqVerifyCodeDto.setVerifyCode(verifyCode);
         reqVerifyCodeDto.setValidFlag("0");
 
-        Date addTime = new Date();
-        reqVerifyCodeDto.setAddTime(addTime);
+        Date now = new Date();
+        reqVerifyCodeDto.setAddTime(now);
 
         // 验证码过期时间5分钟
-        addTime.setTime(addTime.getTime()+5*60*1000);
-        Date expireTime = addTime;
+        Date expireTime = new Date();
+        expireTime.setTime(expireTime.getTime()+5*60*1000);
         reqVerifyCodeDto.setExpireTime(expireTime);
 
         // 发送验证码2分钟后才能继续发送,取最后一条
@@ -100,11 +100,11 @@ public class VerifyCodeServiceImpl extends ServiceImpl<MtVerifyCodeMapper, MtVer
      * 根据手机号,验证码，查询时间
      *
      * @param mobile 电话号码
-     * @param verifycode 验证码
+     * @param verifyCode 验证码
      * @throws BusinessCheckException
      */
-    public MtVerifyCode checkVerifyCode(String mobile, String verifycode) {
-        MtVerifyCode  reVerifyCode;
+    public MtVerifyCode checkVerifyCode(String mobile, String verifyCode) {
+        MtVerifyCode reVerifyCode;
         Date queryTime;
         try {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -113,7 +113,7 @@ public class VerifyCodeServiceImpl extends ServiceImpl<MtVerifyCodeMapper, MtVer
         } catch (ParseException e) {
             throw new BusinessRuntimeException("日期转换异常" + e.getMessage());
         }
-        reVerifyCode = mtVerifyCodeMapper.queryByMobileVerifyCode(mobile, verifycode, queryTime);
+        reVerifyCode = mtVerifyCodeMapper.queryByMobileVerifyCode(mobile, verifyCode, queryTime);
         return reVerifyCode;
     }
 }

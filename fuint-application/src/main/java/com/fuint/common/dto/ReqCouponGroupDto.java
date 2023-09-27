@@ -14,6 +14,17 @@ public class ReqCouponGroupDto implements Serializable {
      * ID
      */
     private Integer id;
+
+    /**
+     * 商户ID
+     */
+    private Integer merchantId;
+
+    /**
+     * 店铺ID
+     */
+    private Integer storeId;
+
     /**
      * 组名称
      */
@@ -50,6 +61,22 @@ public class ReqCouponGroupDto implements Serializable {
 
     public void setId(Integer id) {
         this.id = id;
+    }
+
+    public Integer getMerchantId() {
+        return merchantId;
+    }
+
+    public void setMerchantId(Integer merchantId) {
+        this.merchantId = merchantId;
+    }
+
+    public Integer getStoreId() {
+        return storeId;
+    }
+
+    public void setStoreId(Integer storeId) {
+        this.storeId = storeId;
     }
 
     public String getName() {

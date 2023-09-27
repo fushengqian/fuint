@@ -133,8 +133,10 @@ public interface CouponService extends IService<MtCoupon> {
 
     /**
      * 判断卡券是否有效
+     *
      * @param coupon
+     * @param userCoupon
      * @return
      * */
-    boolean isCouponEffective(MtCoupon coupon);
+    boolean isCouponEffective(MtCoupon coupon, MtUserCoupon userCoupon);
 }
