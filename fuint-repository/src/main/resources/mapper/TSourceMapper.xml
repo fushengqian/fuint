@@ -10,6 +10,7 @@
         <foreach collection="ids" item="id" separator="," open="(" close=")">
             #{id}
         </foreach>
+        order by source_style asc
     </select>
 
     <select id="findByStatus" resultType="com.fuint.repository.model.TSource">
@@ -18,5 +19,6 @@
         <if test="merchantId != null and merchantId > 0">
             and (s.merchant_id = 0 OR s.merchant_id = #{merchantId})
         </if>
+        order by source_style asc
     </select>
 </mapper>

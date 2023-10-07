@@ -72,6 +72,9 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
     @Resource
     private MtRegionMapper mtRegionMapper;
 
+    @Resource
+    private MtUserGradeMapper mtUserGradeMapper;
+
     @Autowired
     private SettingService settingService;
 
@@ -113,6 +116,9 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
 
     @Autowired
     private SendSmsService sendSmsService;
+
+    @Autowired
+    private OpenGiftService openGiftService;
 
     /**
      * 获取用户订单列表
@@ -793,20 +799,6 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
         reqDto.setUpdateTime(new Date());
         updateOrder(reqDto);
 
-        // 给商家发送通知短信
-        try {
-            MtStore mtStore = storeService.queryStoreById(mtOrder.getStoreId());
-            if (mtStore != null) {
-                Map<String, String> params = new HashMap<>();
-                params.put("orderSn", mtOrder.getOrderSn());
-                List<String> mobileList = new ArrayList<>();
-                mobileList.add(mtStore.getPhone());
-                sendSmsService.sendSms(mtOrder.getMerchantId(), "new-order", mobileList, params);
-            }
-        } catch (Exception e) {
-            // empty
-        }
-
         // 处理购物订单
         UserOrderDto orderInfo = getOrderByOrderSn(mtOrder.getOrderSn());
         if (orderInfo.getType().equals(OrderTypeEnum.GOOGS.getKey())) {
@@ -833,6 +825,89 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
             } catch (BusinessCheckException e) {
                 logger.error("会员购买的卡券发送给会员失败......" + e.getMessage());
             }
+        }
+
+        // 处理消费返积分，查询返1积分所需消费金额
+        MtSetting setting = settingService.querySettingByName(mtOrder.getMerchantId(), "pointNeedConsume");
+        if (setting != null) {
+            String needPayAmount = setting.getValue();
+            Integer needPayAmountInt = Math.round(Integer.parseInt(needPayAmount));
+            Double pointNum = 0d;
+            if (needPayAmountInt > 0 && orderInfo.getPayAmount().compareTo(new BigDecimal(needPayAmountInt)) > 0) {
+                BigDecimal point = orderInfo.getPayAmount().divide(new BigDecimal(needPayAmountInt), BigDecimal.ROUND_CEILING, 3);
+                pointNum = Math.ceil(point.doubleValue());
+            }
+            logger.info("PaymentService paymentCallback Point orderSn = {} , pointNum ={}", orderInfo.getOrderSn(), pointNum);
+            if (pointNum > 0) {
+                MtUser userInfo = memberService.queryMemberById(orderInfo.getUserId());
+                MtUserGrade userGrade = userGradeService.queryUserGradeById(orderInfo.getMerchantId(), Integer.parseInt(userInfo.getGradeId()), orderInfo.getUserId());
+                // 是否会员积分加倍
+                if (userGrade.getSpeedPoint() > 1) {
+                    pointNum = pointNum * userGrade.getSpeedPoint();
+                }
+                MtPoint reqPointDto = new MtPoint();
+                reqPointDto.setAmount(pointNum.intValue());
+                reqPointDto.setUserId(orderInfo.getUserId());
+                reqPointDto.setOrderSn(orderInfo.getOrderSn());
+                reqPointDto.setDescription("支付￥"+orderInfo.getPayAmount()+"返"+pointNum+"积分");
+                reqPointDto.setOperator("系统");
+                pointService.addPoint(reqPointDto);
+            }
+        }
+
+        // 计算是否要升级（购物订单、付款订单、充值订单）
+        if (orderInfo.getType().equals(OrderTypeEnum.GOOGS.getKey()) || orderInfo.getType().equals(OrderTypeEnum.PAYMENT.getKey()) || orderInfo.getType().equals(OrderTypeEnum.RECHARGE.getKey())) {
+            try {
+                if (orderInfo.getIsVisitor().equals(YesOrNoEnum.NO.getKey())) {
+                    Map<String, Object> param = new HashMap<>();
+                    param.put("status", StatusEnum.ENABLED.getKey());
+                    MtUser mtUser = memberService.queryMemberById(orderInfo.getUserId());
+                    MtUserGrade mtUserGrade = mtUserGradeMapper.selectById(mtUser.getGradeId());
+                    if (mtUserGrade == null) {
+                        mtUserGrade = userGradeService.getInitUserGrade(orderInfo.getMerchantId());
+                    }
+                    List<MtUserGrade> userGradeList = mtUserGradeMapper.selectByMap(param);
+                    if (mtUserGrade != null && userGradeList != null && userGradeList.size() > 0) {
+                        // 会员已支付金额
+                        BigDecimal payMoney = getUserPayMoney(orderInfo.getUserId());
+                        // 会员支付订单笔数
+                        Integer payOrderCount = getUserPayOrderCount(orderInfo.getUserId());
+                        BigDecimal payOrderCountValue = new BigDecimal(payOrderCount);
+                        for (MtUserGrade grade : userGradeList) {
+                            if (grade.getCatchValue() != null && grade.getCatchType() != null) {
+                                // 累计消费金额已达到
+                                if (grade.getCatchType().equals(UserGradeCatchTypeEnum.AMOUNT.getKey())) {
+                                    if (grade.getGrade().compareTo(mtUserGrade.getGrade()) > 0 && payMoney.compareTo(grade.getCatchValue()) >= 0) {
+                                        openGiftService.openGift(mtOrder.getUserId(), grade.getId(), false);
+                                    }
+                                }
+                                // 累计消费次数已达到
+                                if (grade.getCatchType().equals(UserGradeCatchTypeEnum.FREQUENCY.getKey()) && payOrderCountValue.compareTo(grade.getCatchValue()) >= 0) {
+                                    if (grade.getGrade().compareTo(mtUserGrade.getGrade()) > 0) {
+                                        openGiftService.openGift(mtOrder.getUserId(), grade.getId(), false);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            } catch (Exception ex) {
+                logger.error("会员升级出错啦，userId = {}，message = {}", orderInfo.getUserId(), ex.getMessage());
+            }
+        }
+
+        // 给商家发送通知短信
+        try {
+            MtStore mtStore = storeService.queryStoreById(mtOrder.getStoreId());
+            if (mtStore != null && orderInfo.getIsVisitor().equals(YesOrNoEnum.NO.getKey())) {
+                Map<String, String> params = new HashMap<>();
+                params.put("orderSn", mtOrder.getOrderSn());
+                List<String> mobileList = new ArrayList<>();
+                mobileList.add(mtStore.getPhone());
+                sendSmsService.sendSms(mtOrder.getMerchantId(), "new-order", mobileList, params);
+            }
+        } catch (Exception e) {
+            // empty
         }
 
         return true;

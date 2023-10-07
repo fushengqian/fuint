@@ -165,7 +165,7 @@ public class DutyServiceImpl extends ServiceImpl<TDutyMapper, TDuty> implements 
      */
     @Override
     public TDuty findByName(Integer merchantId, String name) {
-        return this.tDutyMapper.findByName(name);
+        return this.tDutyMapper.findByName(merchantId, name);
     }
 
     /**
@@ -188,7 +188,7 @@ public class DutyServiceImpl extends ServiceImpl<TDutyMapper, TDuty> implements 
     @Transactional(rollbackFor = Exception.class)
     @OperationServiceLog(description = "新增后台角色")
     public void saveDuty(TDuty duty, List<TSource> sources) throws BusinessCheckException {
-        TDuty existsDuty = tDutyMapper.findByName(duty.getDutyName());
+        TDuty existsDuty = tDutyMapper.findByName(duty.getMerchantId(), duty.getDutyName());
         if (existsDuty != null) {
             throw new BusinessCheckException("角色名称已经存在.");
         }

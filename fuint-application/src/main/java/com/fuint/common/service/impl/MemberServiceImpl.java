@@ -412,7 +412,7 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
 
         // 检查会员号是否重复
         if (StringUtil.isNotEmpty(mtUser.getUserNo())) {
-            List<MtUser> userList = mtUserMapper.findMembersByUserNo(mtUser.getUserNo());
+            List<MtUser> userList = mtUserMapper.findMembersByUserNo(mtUser.getMerchantId(), mtUser.getUserNo());
             if (userList.size() > 0) {
                 for(MtUser user: userList) {
                     MtUser userInfo = user;
@@ -495,15 +495,16 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
     /**
      * 根据会员号号获取会员信息
      *
-     * @param  userNo 会员号
+     * @param  merchantId 商户ID
+     * @param  userNo     会员号
      * @throws BusinessCheckException
      */
     @Override
-    public MtUser queryMemberByUserNo(String userNo) {
+    public MtUser queryMemberByUserNo(Integer merchantId, String userNo) {
         if (userNo == null || StringUtil.isEmpty(userNo)) {
             return null;
         }
-        List<MtUser> mtUser = mtUserMapper.findMembersByUserNo(userNo);
+        List<MtUser> mtUser = mtUserMapper.findMembersByUserNo(merchantId, userNo);
         if (mtUser.size() > 0) {
             return mtUser.get(0);
         } else {

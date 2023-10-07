@@ -289,7 +289,7 @@ public class BackendCashierController extends BaseController {
         } else {
             userInfo = memberService.queryMemberByName(accountInfo.getMerchantId(), keyword);
             if (userInfo == null) {
-                userInfo = memberService.queryMemberByUserNo(keyword);
+                userInfo = memberService.queryMemberByUserNo(accountInfo.getMerchantId(), keyword);
             }
         }
 

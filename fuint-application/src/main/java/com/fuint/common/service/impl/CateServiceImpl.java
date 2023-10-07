@@ -210,7 +210,7 @@ public class CateServiceImpl extends ServiceImpl<MtGoodsCateMapper, MtGoodsCate>
         if (reqDto.getSort() != null) {
             mtCate.setSort(reqDto.getSort());
         }
-        if (reqDto.getMerchantId() != null) {
+        if (reqDto.getMerchantId() != null && reqDto.getMerchantId() > 0) {
             mtCate.setMerchantId(reqDto.getMerchantId());
         }
         if (reqDto.getStoreId() != null) {

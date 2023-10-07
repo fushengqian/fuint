@@ -110,7 +110,7 @@ public class ClientUserController extends BaseController {
             userInfo = memberService.queryMemberById(loginInfo.getId());
         }
         if (StringUtil.isNotEmpty(userNo)) {
-            userInfo = memberService.queryMemberByUserNo(userNo);
+            userInfo = memberService.queryMemberByUserNo(merchantId, userNo);
         }
         MtUserGrade gradeInfo = null;
         if (userInfo != null) {

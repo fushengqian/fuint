@@ -115,10 +115,11 @@ public interface MemberService extends IService<MtUser> {
     /**
      * 根据会员号获取会员信息
      *
+     * @param  merchantId
      * @param  userNo 会员号
      * @throws BusinessCheckException
      */
-    MtUser queryMemberByUserNo(String userNo) throws BusinessCheckException;
+    MtUser queryMemberByUserNo(Integer merchantId, String userNo) throws BusinessCheckException;
 
     /**
      * 根据会员ID 删除店铺信息

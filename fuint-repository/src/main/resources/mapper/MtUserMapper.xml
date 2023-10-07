@@ -24,7 +24,11 @@
     </select>
 
     <select id="findMembersByUserNo" resultType="com.fuint.repository.model.MtUser">
-        select * from mt_user t where t.USER_NO = #{userNo} and t.STATUS = 'A' limit 1
+        select * from mt_user t where t.USER_NO = #{userNo} and t.STATUS = 'A'
+        <if test="merchantId != null and merchantId > 0">
+            AND t.MERCHANT_ID = #{merchantId}
+        </if>
+        limit 1
     </select>
 
     <update id="updateActiveTime">

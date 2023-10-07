@@ -17,7 +17,7 @@ public interface TDutyMapper extends BaseMapper<TDuty> {
 
     List<TDuty> findByIdIn(@Param("ids") List<Integer> ids);
 
-    TDuty findByName(@Param("name") String name);
+    TDuty findByName(@Param("merchantId") Integer merchantId, @Param("name") String name);
 
     List<Long> getRoleIdsByAccountId(@Param("accountId") Integer accountId);
 }

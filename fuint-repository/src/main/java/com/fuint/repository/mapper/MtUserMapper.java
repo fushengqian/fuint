@@ -20,7 +20,7 @@ public interface MtUserMapper extends BaseMapper<MtUser> {
 
     MtUser queryMemberByOpenId(@Param("merchantId") Integer merchantId, @Param("openId") String openId);
 
-    List<MtUser> findMembersByUserNo(@Param("userNo") String userNo);
+    List<MtUser> findMembersByUserNo(@Param("merchantId") Integer merchantId, @Param("userNo") String userNo);
 
     void updateActiveTime(@Param("userId") Integer userId, @Param("updateTime") Date updateTime);
 
