@@ -829,7 +829,7 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
 
         // 处理消费返积分，查询返1积分所需消费金额
         MtSetting setting = settingService.querySettingByName(mtOrder.getMerchantId(), "pointNeedConsume");
-        if (setting != null) {
+        if (setting != null && !orderInfo.getPayType().equals(PayTypeEnum.BALANCE.getKey()) && orderInfo.getIsVisitor().equals(YesOrNoEnum.NO.getKey())) {
             String needPayAmount = setting.getValue();
             Integer needPayAmountInt = Math.round(Integer.parseInt(needPayAmount));
             Double pointNum = 0d;
@@ -856,7 +856,7 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
         }
 
         // 计算是否要升级（购物订单、付款订单、充值订单）
-        if (orderInfo.getType().equals(OrderTypeEnum.GOOGS.getKey()) || orderInfo.getType().equals(OrderTypeEnum.PAYMENT.getKey()) || orderInfo.getType().equals(OrderTypeEnum.RECHARGE.getKey())) {
+        if (orderInfo.getIsVisitor().equals(YesOrNoEnum.NO.getKey()) && orderInfo.getType().equals(OrderTypeEnum.GOOGS.getKey()) || orderInfo.getType().equals(OrderTypeEnum.PAYMENT.getKey()) || orderInfo.getType().equals(OrderTypeEnum.RECHARGE.getKey())) {
             try {
                 if (orderInfo.getIsVisitor().equals(YesOrNoEnum.NO.getKey())) {
                     Map<String, Object> param = new HashMap<>();

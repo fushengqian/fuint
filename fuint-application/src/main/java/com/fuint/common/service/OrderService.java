@@ -31,7 +31,7 @@ public interface OrderService extends IService<MtOrder> {
     /**
      * 创建订单
      *
-     * @param reqDto
+     * @param  reqDto
      * @throws BusinessCheckException
      */
     MtOrder saveOrder(OrderDto reqDto) throws BusinessCheckException;
@@ -39,7 +39,7 @@ public interface OrderService extends IService<MtOrder> {
     /**
      * 获取订单详情
      *
-     * @param id
+     * @param  id
      * @throws BusinessCheckException
      */
     MtOrder getOrderInfo(Integer id) throws BusinessCheckException;
@@ -47,7 +47,7 @@ public interface OrderService extends IService<MtOrder> {
     /**
      * 根据ID获取订单
      *
-     * @param id
+     * @param  id
      * @throws BusinessCheckException
      */
     UserOrderDto getOrderById(Integer id) throws BusinessCheckException;
@@ -55,14 +55,14 @@ public interface OrderService extends IService<MtOrder> {
     /**
      * 根据ID获取订单
      *
-     * @param id
+     * @param  id
      * @throws BusinessCheckException
      */
     UserOrderDto getMyOrderById(Integer id) throws BusinessCheckException;
 
     /**
      * 取消订单
-     * @param id 订单ID
+     * @param  id 订单ID
      * @return
      * */
     MtOrder cancelOrder(Integer id, String remark) throws BusinessCheckException;
@@ -70,8 +70,8 @@ public interface OrderService extends IService<MtOrder> {
     /**
      * 根据订单ID删除
      *
-     * @param id       ID
-     * @param operator 操作人
+     * @param  id       ID
+     * @param  operator 操作人
      * @throws BusinessCheckException
      */
     void deleteOrder(Integer id, String operator) throws BusinessCheckException;
@@ -79,14 +79,14 @@ public interface OrderService extends IService<MtOrder> {
     /**
      * 根据订单号获取订单
      *
-     * @param orderSn
+     * @param  orderSn
      * @throws BusinessCheckException
      */
     UserOrderDto getOrderByOrderSn(String orderSn) throws BusinessCheckException;
 
     /**
      * 更新订单
-     * @param reqDto
+     * @param  reqDto
      * @throws BusinessCheckException
      * */
     MtOrder updateOrder(OrderDto reqDto) throws BusinessCheckException;
