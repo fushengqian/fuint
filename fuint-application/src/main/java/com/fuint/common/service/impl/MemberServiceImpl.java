@@ -714,6 +714,9 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
 
     /**
      * 根据条件搜索会员分组
+     *
+     * @param params
+     * @return
      * */
     @Override
     public List<MtUserGrade> queryMemberGradeByParams(Map<String, Object> params) {
@@ -726,6 +729,10 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
 
     /**
      * 获取会员数量
+     *
+     * @param merchantId
+     * @param storeId
+     * @return
      * */
     @Override
     public Long getUserCount(Integer merchantId, Integer storeId) {
@@ -738,6 +745,12 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
 
     /**
      * 获取会员数量
+     *
+     * @param merchantId
+     * @param storeId
+     * @param beginTime
+     * @param endTime
+     * @return
      * */
     @Override
     public Long getUserCount(Integer merchantId, Integer storeId, Date beginTime, Date endTime) {
@@ -750,6 +763,12 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
 
     /**
      * 获取会员数量
+     *
+     * @param merchantId
+     * @param storeId
+     * @param beginTime
+     * @param endTime
+     * @return
      * */
     @Override
     public Long getActiveUserCount(Integer merchantId, Integer storeId, Date beginTime, Date endTime) {

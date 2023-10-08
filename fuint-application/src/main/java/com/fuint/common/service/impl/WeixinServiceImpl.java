@@ -135,6 +135,14 @@ public class WeixinServiceImpl implements WeixinService {
 
     /**
      * 创建支付订单
+     *
+     * @param userInfo
+     * @param orderInfo
+     * @param payAmount
+     * @param authCode
+     * @param giveAmount
+     * @param ip
+     * @param platform
      * @return
      * */
     @Override
@@ -330,6 +338,10 @@ public class WeixinServiceImpl implements WeixinService {
 
     /**
      * 获取微信绑定手机号
+     *
+     * @param encryptedData
+     * @param sessionKey
+     * @param iv
      * @return
      * */
     @Override
@@ -371,7 +383,15 @@ public class WeixinServiceImpl implements WeixinService {
     }
 
     /**
-     * 发送订阅消息
+     * 发送小程序订阅消息
+     *
+     * @param merchantId
+     * @param userId
+     * @param toUserOpenId
+     * @param key
+     * @param page
+     * @param params
+     * @param sendTime
      * @return
      * */
     @Override
@@ -446,6 +466,13 @@ public class WeixinServiceImpl implements WeixinService {
         return true;
     }
 
+    /**
+     * 发送订阅消息
+     *
+     * @param merchantId
+     * @param reqDataJsonStr
+     * @return
+     * */
     @Override
     public Boolean doSendSubscribeMessage(Integer merchantId, String reqDataJsonStr) {
         try {
@@ -472,6 +499,11 @@ public class WeixinServiceImpl implements WeixinService {
 
     /**
      * 查询支付订单
+     *
+     * @param storeId
+     * @param transactionId
+     * @param orderSn
+     * @return
      * */
     @Override
     public Map<String, String> queryPaidOrder(Integer storeId, String transactionId, String orderSn) {
@@ -502,6 +534,12 @@ public class WeixinServiceImpl implements WeixinService {
 
     /**
      * 刷卡支付
+     *
+     * @param storeId
+     * @param reqData
+     * @param ip
+     * @param platform
+     * @return
      * */
     private Map<String, String> microPay(Integer storeId, Map<String, String> reqData, String ip, String platform) {
         try {
@@ -582,6 +620,12 @@ public class WeixinServiceImpl implements WeixinService {
 
     /**
      * 小程序、公众号支付
+     *
+     * @param storeId
+     * @param reqData
+     * @param ip
+     * @param platform
+     * @return
      * */
     private Map<String, String> jsapiPay(Integer storeId, Map<String, String> reqData, String ip, String platform) {
         try {
@@ -682,8 +726,10 @@ public class WeixinServiceImpl implements WeixinService {
 
     /**
      * 获取支付配置
+     *
      * @param storeId
      * @param platform
+     * @return
      * */
     private WxPayApiConfig getApiConfig(Integer storeId, String platform) throws BusinessCheckException {
         WxPayApiConfig apiConfig;
@@ -720,6 +766,7 @@ public class WeixinServiceImpl implements WeixinService {
             }
         }
         WxPayApiConfigKit.setThreadLocalWxPayApiConfig(apiConfig);
+        logger.info("微信支付参数：{}", JsonUtil.toJSONString(apiConfig));
         return apiConfig;
     }
 }

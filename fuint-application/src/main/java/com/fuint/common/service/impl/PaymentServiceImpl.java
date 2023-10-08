@@ -101,6 +101,8 @@ public class PaymentServiceImpl implements PaymentService {
 
     /**
      * 支付成功回调
+     *
+     * @param orderInfo
      * @return
      * */
     @Override
@@ -157,6 +159,9 @@ public class PaymentServiceImpl implements PaymentService {
 
     /**
      * 订单支付
+     *
+     * @param request
+     * @return
      * */
     @Override
     @Transactional(rollbackFor = Exception.class)

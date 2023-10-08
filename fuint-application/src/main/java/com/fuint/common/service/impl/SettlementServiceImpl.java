@@ -17,7 +17,6 @@ import com.fuint.utils.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
 import java.util.*;
@@ -165,6 +164,9 @@ public class SettlementServiceImpl implements SettlementService {
             }
         } else {
             MtStaff mtStaff = staffService.queryStaffByUserId(userInfo.getId());
+            if (mtStaff == null) {
+                mtStaff = staffService.queryStaffByMobile(userInfo.getMobile());
+            }
             if (mtStaff != null) {
                 operator = mtStaff.getRealName();
             }

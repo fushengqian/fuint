@@ -365,7 +365,6 @@ public class StoreServiceImpl extends ServiceImpl<MtStoreMapper, MtStore> implem
             }
         }
 
-
         return dataList;
     }
 }

@@ -1201,6 +1201,12 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
 
     /**
      * 获取订单数量
+     *
+     * @param merchantId
+     * @param storeId
+     * @param beginTime
+     * @param endTime
+     * @return
      * */
     @Override
     public BigDecimal getOrderCount(Integer merchantId, Integer storeId, Date beginTime, Date endTime) {
@@ -1213,6 +1219,12 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
 
     /**
      * 获取支付金额
+     *
+     * @param merchantId
+     * @param storeId
+     * @param beginTime
+     * @param endTime
+     * @return
      * */
     @Override
     public BigDecimal getPayMoney(Integer merchantId, Integer storeId, Date beginTime, Date endTime) {
@@ -1225,6 +1237,10 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
 
     /**
      * 获取支付人数
+     *
+     * @param merchantId
+     * @param storeId
+     * @return
      * */
     @Override
     public Integer getPayUserCount(Integer merchantId, Integer storeId) {
@@ -1237,6 +1253,10 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
 
     /**
      * 获取支付总金额
+     *
+     * @param merchantId
+     * @param storeId
+     * @return
      * */
     @Override
     public BigDecimal getPayMoney(Integer merchantId, Integer storeId) {
