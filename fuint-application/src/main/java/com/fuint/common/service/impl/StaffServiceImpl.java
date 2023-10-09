@@ -145,6 +145,7 @@ public class StaffServiceImpl extends ServiceImpl<MtStaffMapper, MtStaff> implem
             userInfo.setName(mtStaff.getRealName());
             userInfo.setDescription("系统自动注册店铺员工账号");
             userInfo.setStoreId(mtStaff.getStoreId());
+            userInfo.setMerchantId(mtStaff.getMerchantId());
             mtUser = memberService.addMember(userInfo);
             if (mtUser != null) {
                 mtStaff.setUserId(mtUser.getId());

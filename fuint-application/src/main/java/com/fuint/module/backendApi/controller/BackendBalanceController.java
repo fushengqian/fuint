@@ -155,7 +155,7 @@ public class BackendBalanceController extends BaseController {
         } else {
             mtBalance.setAmount(new BigDecimal(amount));
         }
-
+        mtBalance.setMerchantId(accountInfo.getMerchantId());
         mtBalance.setDescription(remark);
         mtBalance.setUserId(userId);
         mtBalance.setOperator(operator);

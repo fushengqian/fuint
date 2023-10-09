@@ -399,6 +399,7 @@ public class RefundServiceImpl extends ServiceImpl<MtRefundMapper, MtRefund> imp
                    if (mtBalance.getAmount().compareTo(new BigDecimal("0")) < 0) {
                        MtBalance balanceReq = new MtBalance();
                        balanceReq.setUserId(orderInfo.getUserId());
+                       balanceReq.setMerchantId(orderInfo.getMerchantId());
                        balanceReq.setOrderSn(orderInfo.getOrderSn());
                        balanceReq.setMobile(orderInfo.getUserInfo().getMobile());
                        balanceReq.setAmount(mtBalance.getAmount().negate());

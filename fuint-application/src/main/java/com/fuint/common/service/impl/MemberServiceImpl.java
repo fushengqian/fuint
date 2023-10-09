@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fuint.common.dto.AccountInfo;
+import com.fuint.common.dto.MemberTopDto;
 import com.fuint.common.dto.UserDto;
 import com.fuint.common.enums.GenderEnum;
 import com.fuint.common.enums.MemberSourceEnum;
@@ -16,6 +17,7 @@ import com.fuint.framework.annoation.OperationServiceLog;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.pagination.PaginationRequest;
 import com.fuint.framework.pagination.PaginationResponse;
+import com.fuint.repository.bean.MemberTopBean;
 import com.fuint.repository.mapper.MtUserActionMapper;
 import com.fuint.repository.mapper.MtUserGradeMapper;
 import com.fuint.repository.mapper.MtUserMapper;
@@ -784,7 +786,7 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
      *
      * @param  mobile 手机号码
      * @param  userId 会员ID
-     * @throws BusinessCheckException
+     * @return
      */
     @Override
     public void resetMobile(String mobile, Integer userId) {
@@ -792,5 +794,29 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
             return;
         }
         mtUserMapper.resetMobile(mobile, userId);
+    }
+
+    /**
+     * 获取会员消费排行榜
+     *
+     * @param merchantId
+     * @param storeId
+     * @param startTime
+     * @param endTime
+     * @return
+     * */
+    @Override
+    public List<MemberTopDto> getMemberConsumeTopList(Integer merchantId, Integer storeId, Date startTime, Date endTime) {
+       List<MemberTopBean> memberList = mtUserMapper.getMemberConsumeTopList(merchantId, storeId, startTime, endTime);
+       List<MemberTopDto> dataList = new ArrayList<>();
+       if (memberList != null && memberList.size() > 0) {
+           for (MemberTopBean bean : memberList) {
+                MemberTopDto dto = new MemberTopDto();
+                BeanUtils.copyProperties(bean, dto);
+                dataList.add(dto);
+           }
+       }
+
+       return dataList;
     }
 }

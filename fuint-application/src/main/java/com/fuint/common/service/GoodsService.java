@@ -2,6 +2,7 @@ package com.fuint.common.service;
 
 import com.fuint.common.dto.GoodsDto;
 import com.fuint.common.dto.GoodsSpecValueDto;
+import com.fuint.common.dto.GoodsTopDto;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.pagination.PaginationRequest;
 import com.fuint.framework.pagination.PaginationResponse;
@@ -9,6 +10,7 @@ import com.fuint.repository.model.MtGoods;
 import com.fuint.repository.model.MtGoodsSku;
 import com.fuint.repository.model.MtGoodsSpec;
 import java.lang.reflect.InvocationTargetException;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -118,4 +120,15 @@ public interface GoodsService {
      * @return
      */
     PaginationResponse<GoodsDto> selectGoodsList(Map<String, Object> params) throws BusinessCheckException;
+
+    /**
+     * 获取商品销售排行榜
+     *
+     * @param merchantId
+     * @param storeId
+     * @param startTime
+     * @param endTime
+     * @return
+     * */
+    List<GoodsTopDto> getGoodsSaleTopList(Integer merchantId, Integer storeId, Date startTime, Date endTime);
 }

@@ -148,6 +148,7 @@ public class BalanceServiceImpl extends ServiceImpl<MtBalanceMapper, MtBalance> 
         if (mtUser.getStoreId() != null) {
             mtBalance.setStoreId(mtUser.getStoreId());
         }
+        mtBalance.setMerchantId(mtUser.getMerchantId());
         mtUser.setBalance(newAmount);
         mtUserMapper.updateById(mtUser);
 

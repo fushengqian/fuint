@@ -61,4 +61,21 @@
         select count(*) from mt_user t where t.STORE_ID = #{storeId} and t.CREATE_TIME &lt; #{endTime} and t.CREATE_TIME &gt;= #{beginTime} and t.STATUS != 'D'
     </select>
 
+    <select id="getMemberConsumeTopList" resultType="com.fuint.repository.bean.MemberTopBean">
+        SELECT u.id AS ID,u.name AS NAME,u.`USER_NO`,SUM(o.`AMOUNT`) AS amount FROM `mt_user` u,`mt_order` o WHERE u.`ID` = o.`USER_ID` AND o.PAY_STATUS = 'B'
+        <if test="merchantId != null and merchantId > 0">
+            AND u.MERCHANT_ID = #{merchantId}
+        </if>
+        <if test="storeId != null and storeId > 0">
+            AND u.STORE_ID = #{storeId}
+        </if>
+        <if test="startTime != null">
+            AND o.CREATE_TIME &gt;= #{startTime}
+        </if>
+        <if test="endTime != null">
+            AND o.CREATE_TIME &lt;= #{endTime}
+        </if>
+        GROUP BY u.`ID` ORDER BY SUM(o.`AMOUNT`) DESC LIMIT 10
+    </select>
+
 </mapper>

@@ -45,4 +45,21 @@
         </if>
         ORDER BY g.`SORT` ASC
     </select>
+
+    <select id="getGoodsSaleTopList" resultType="com.fuint.repository.bean.GoodsTopBean">
+        SELECT g.id AS ID,g.name AS NAME,g.GOODS_NO,SUM(o.`NUM`) AS num, SUM(o.price) as amount FROM `mt_goods` g,`mt_order_goods` o WHERE g.`ID` = o.`GOODS_ID`
+        <if test="merchantId != null and merchantId > 0">
+            AND g.MERCHANT_ID = #{merchantId}
+        </if>
+        <if test="storeId != null and storeId > 0">
+            AND g.STORE_ID = #{storeId}
+        </if>
+        <if test="startTime != null">
+            AND o.CREATE_TIME &gt;= #{startTime}
+        </if>
+        <if test="endTime != null">
+            AND o.CREATE_TIME &lt;= #{endTime}
+        </if>
+        GROUP BY g.`ID` ORDER BY SUM(o.`NUM`) DESC LIMIT 10
+    </select>
 </mapper>

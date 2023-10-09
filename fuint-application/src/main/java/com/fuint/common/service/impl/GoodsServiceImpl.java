@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fuint.common.Constants;
 import com.fuint.common.dto.GoodsDto;
 import com.fuint.common.dto.GoodsSpecValueDto;
+import com.fuint.common.dto.GoodsTopDto;
 import com.fuint.common.enums.GoodsTypeEnum;
 import com.fuint.common.enums.StatusEnum;
 import com.fuint.common.enums.YesOrNoEnum;
@@ -18,6 +19,7 @@ import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.pagination.PaginationRequest;
 import com.fuint.framework.pagination.PaginationResponse;
 import com.fuint.repository.bean.GoodsBean;
+import com.fuint.repository.bean.GoodsTopBean;
 import com.fuint.repository.mapper.MtGoodsMapper;
 import com.fuint.repository.mapper.MtGoodsSkuMapper;
 import com.fuint.repository.mapper.MtGoodsSpecMapper;
@@ -584,5 +586,28 @@ public class GoodsServiceImpl extends ServiceImpl<MtGoodsMapper, MtGoods> implem
         paginationResponse.setContent(dataList);
 
         return paginationResponse;
+    }
+
+    /**
+     * 获取商品销售排行榜
+     *
+     * @param merchantId
+     * @param storeId
+     * @param startTime
+     * @param endTime
+     * @return
+     * */
+    @Override
+    public List<GoodsTopDto> getGoodsSaleTopList(Integer merchantId, Integer storeId, Date startTime, Date endTime) {
+        List<GoodsTopBean> dataList = mtGoodsMapper.getGoodsSaleTopList(merchantId, storeId, startTime, endTime);
+        List<GoodsTopDto> goodsList = new ArrayList<>();
+        if (dataList != null && dataList.size() > 0) {
+            for (GoodsTopBean bean : dataList) {
+                 GoodsTopDto dto = new GoodsTopDto();
+                 BeanUtils.copyProperties(bean, dto);
+                 goodsList.add(dto);
+            }
+        }
+        return goodsList;
     }
 }

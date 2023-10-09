@@ -2,6 +2,7 @@ package com.fuint.common.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.alibaba.fastjson.JSONObject;
+import com.fuint.common.dto.MemberTopDto;
 import com.fuint.common.dto.UserDto;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.pagination.PaginationRequest;
@@ -158,4 +159,15 @@ public interface MemberService extends IService<MtUser> {
      * @throws BusinessCheckException
      */
     void resetMobile(String mobile, Integer userId) throws BusinessCheckException;
+
+    /**
+     * 获取会员消费排行榜
+     *
+     * @param merchantId
+     * @param storeId
+     * @param startTime
+     * @param endTime
+     * @return
+     * */
+    List<MemberTopDto> getMemberConsumeTopList(Integer merchantId, Integer storeId, Date startTime, Date endTime);
 }

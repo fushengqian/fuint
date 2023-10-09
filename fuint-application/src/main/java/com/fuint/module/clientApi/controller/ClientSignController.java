@@ -217,6 +217,7 @@ public class ClientSignController extends BaseController {
         MtUser mtUser = new MtUser();
         mtUser.setName(account);
         mtUser.setPassword(password);
+        mtUser.setMerchantId(merchantId);
         mtUser.setStoreId(storeId);
         mtUser.setSex(GenderEnum.MAN.getKey());
         mtUser.setMobile("");

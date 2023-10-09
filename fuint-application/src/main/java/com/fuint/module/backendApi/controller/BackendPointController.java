@@ -264,7 +264,7 @@ public class BackendPointController extends BaseController {
         } else {
             mtPoint.setAmount(Integer.parseInt(amount));
         }
-
+        mtPoint.setMerchantId(accountInfo.getMerchantId());
         mtPoint.setDescription(remark);
         mtPoint.setUserId(userId);
         mtPoint.setOperator(accountInfo.getAccountName());

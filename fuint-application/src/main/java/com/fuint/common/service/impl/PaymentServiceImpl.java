@@ -142,6 +142,7 @@ public class PaymentServiceImpl implements PaymentService {
             }
             mtBalance.setOrderSn(orderInfo.getOrderSn());
             mtBalance.setUserId(orderInfo.getUserId());
+            mtBalance.setMerchantId(orderInfo.getMerchantId());
             String param = orderInfo.getParam();
             if (StringUtil.isNotEmpty(param)) {
                 String params[] = param.split("_");

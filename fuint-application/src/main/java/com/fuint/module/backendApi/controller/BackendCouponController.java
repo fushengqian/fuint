@@ -352,8 +352,6 @@ public class BackendCouponController extends BaseController {
             }
         }
 
-        result.put("storeList", storeList);
-
         // 卡券适用商品
         List<MtCouponGoods> couponGoodsList = mtCouponGoodsMapper.getCouponGoods(id);
         String goodsIds = "";
@@ -369,8 +367,6 @@ public class BackendCouponController extends BaseController {
                 goodsList.add(goodsInfo);
             }
         }
-        result.put("goodsIds", goodsIds);
-        result.put("goodsList", goodsList);
 
         // 不可用日期
         List<DateDto> exceptTimeList = new ArrayList<>();
@@ -411,6 +407,9 @@ public class BackendCouponController extends BaseController {
         result.put("exceptTimeList", exceptTimeList);
         result.put("preStoreList", preStoreList);
         result.put("isEdit", true);
+        result.put("goodsIds", goodsIds);
+        result.put("goodsList", goodsList);
+        result.put("storeList", storeList);
 
         return getSuccessResult(result);
     }

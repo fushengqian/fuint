@@ -1,5 +1,6 @@
 package com.fuint.repository.mapper;
 
+import com.fuint.repository.bean.MemberTopBean;
 import com.fuint.repository.model.MtUser;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Param;
@@ -33,4 +34,6 @@ public interface MtUserMapper extends BaseMapper<MtUser> {
     Long getUserCountByTime(@Param("merchantId") Integer merchantId, @Param("beginTime") Date beginTime, @Param("endTime") Date endTime);
 
     Long getStoreUserCountByTime(@Param("storeId") Integer storeId, @Param("beginTime") Date beginTime, @Param("endTime") Date endTime);
+
+    List<MemberTopBean> getMemberConsumeTopList(@Param("merchantId") Integer merchantId, @Param("storeId") Integer storeId, @Param("startTime") Date startTime, @Param("endTime") Date endTime);
 }

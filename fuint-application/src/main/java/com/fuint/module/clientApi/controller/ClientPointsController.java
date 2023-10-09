@@ -96,7 +96,7 @@ public class ClientPointsController extends BaseController {
 
         String mobile = param.get("mobile") == null ? "" : param.get("mobile").toString();
         String remark = param.get("remark") == null ? "" : param.get("remark").toString();
-        Integer amount = param.get("remark") == null ? 0 : Integer.parseInt(param.get("amount").toString());
+        Integer amount = param.get("amount") == null ? 0 : Integer.parseInt(param.get("amount").toString());
 
         try {
             boolean result = pointService.doGift(mtUser.getId(), mobile, amount, remark);
