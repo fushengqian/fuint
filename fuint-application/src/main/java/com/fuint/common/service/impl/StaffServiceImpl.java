@@ -16,6 +16,7 @@ import com.fuint.repository.mapper.MtStaffMapper;
 import com.fuint.repository.model.MtStaff;
 import com.fuint.repository.model.MtStore;
 import com.fuint.repository.model.MtUser;
+import com.fuint.utils.StringUtil;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import org.apache.commons.lang.StringUtils;
@@ -97,7 +98,15 @@ public class StaffServiceImpl extends ServiceImpl<MtStaffMapper, MtStaff> implem
 
         lambdaQueryWrapper.orderByDesc(MtStaff::getId);
         List<MtStaff> dataList = mtStaffMapper.selectList(lambdaQueryWrapper);
-
+        if (dataList != null && dataList.size() > 0) {
+            for (MtStaff mtStaff : dataList) {
+                // 隐藏手机号中间四位
+                String phone = mtStaff.getMobile();
+                if (phone != null && StringUtil.isNotEmpty(phone) && phone.length() == 11) {
+                    mtStaff.setMobile(phone.substring(0, 3) + "****" + phone.substring(7));
+                }
+            }
+        }
         PageRequest pageRequest = PageRequest.of(paginationRequest.getCurrentPage(), paginationRequest.getPageSize());
         PageImpl pageImpl = new PageImpl(dataList, pageRequest, pageHelper.getTotal());
         PaginationResponse<MtStaff> paginationResponse = new PaginationResponse(pageImpl, MtStaff.class);
@@ -167,7 +176,8 @@ public class StaffServiceImpl extends ServiceImpl<MtStaffMapper, MtStaff> implem
      */
     @Override
     public MtStaff queryStaffById(Integer id) {
-        return mtStaffMapper.selectById(id);
+        MtStaff mtStaff = mtStaffMapper.selectById(id);
+        return mtStaff;
     }
 
     /**

@@ -160,10 +160,6 @@ public class BackendStaffController extends BaseController {
             return getFailureResult(1001, "请先登录");
         }
 
-        if (!PhoneFormatCheckUtils.isChinaPhoneLegal(mobile)) {
-            return getFailureResult(201, "手机号格式有误！");
-        }
-
         MtStaff mtStaff = new MtStaff();
         if (StringUtil.isNotEmpty(id)) {
             mtStaff = staffService.queryStaffById(Integer.parseInt(id));
@@ -175,7 +171,9 @@ public class BackendStaffController extends BaseController {
         mtStaff.setMerchantId(accountInfo.getMerchantId());
         mtStaff.setStoreId(Integer.parseInt(storeId));
         mtStaff.setRealName(realName);
-        mtStaff.setMobile(mobile);
+        if (PhoneFormatCheckUtils.isChinaPhoneLegal(mobile)) {
+            mtStaff.setMobile(mobile);
+        }
         mtStaff.setAuditedStatus(status);
         mtStaff.setDescription(description);
         mtStaff.setCategory(Integer.parseInt(category));
@@ -214,7 +212,13 @@ public class BackendStaffController extends BaseController {
         }
 
         MtStaff staffInfo = staffService.queryStaffById(id);
-
+        if (staffInfo != null) {
+            // 隐藏手机号中间四位
+            String phone = staffInfo.getMobile();
+            if (phone != null && StringUtil.isNotEmpty(phone) && phone.length() == 11) {
+                staffInfo.setMobile(phone.substring(0, 3) + "****" + phone.substring(7));
+            }
+        }
         Map<String, Object> result = new HashMap<>();
         result.put("staffInfo", staffInfo);
 

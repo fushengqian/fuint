@@ -411,6 +411,10 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
                 throw new BusinessCheckException("该会员等级有误");
             }
         }
+        String mobile = mtUser.getMobile();
+        if (PhoneFormatCheckUtils.isChinaPhoneLegal(mobile)) {
+            mtUser.setMobile(mobile);
+        }
 
         // 检查会员号是否重复
         if (StringUtil.isNotEmpty(mtUser.getUserNo())) {
@@ -555,7 +559,6 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
                 }
             }
         }
-
         return mtUser;
     }
 
@@ -662,7 +665,7 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
                return null;
             }
             // 补充手机号
-            if (StringUtil.isNotEmpty(mobile)) {
+            if (StringUtil.isNotEmpty(mobile) && PhoneFormatCheckUtils.isChinaPhoneLegal(mobile)) {
                 user.setMobile(mobile);
                 updateById(user);
             }

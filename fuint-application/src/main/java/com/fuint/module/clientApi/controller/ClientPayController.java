@@ -271,7 +271,7 @@ public class ClientPayController extends BaseController {
             }
             Boolean verifyResult = alipayService.checkCallBack(params);
             if (verifyResult) {
-                logger.info("支付宝验证成功 succcess");
+                logger.info("支付宝验证成功 success");
                 UserOrderDto orderInfo = orderService.getOrderByOrderSn(orderSn);
                 Boolean flag = paymentService.paymentCallback(orderInfo);
                 if (flag) {

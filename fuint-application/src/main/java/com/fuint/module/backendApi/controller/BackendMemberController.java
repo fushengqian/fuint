@@ -246,11 +246,7 @@ public class BackendMemberController extends BaseController {
         String startTime = param.get("startTime") == null ? "" : param.get("startTime").toString();
         String endTime = param.get("endTime") == null ? "" : param.get("endTime").toString();
 
-        if (!PhoneFormatCheckUtils.isChinaPhoneLegal(mobile) && StringUtil.isNotEmpty(mobile)) {
-            return getFailureResult(201, "手机号格式有误！");
-        }
-
-        if (StringUtil.isNotEmpty(mobile)) {
+        if (PhoneFormatCheckUtils.isChinaPhoneLegal(mobile)) {
             // 重置该手机号
             memberService.resetMobile(mobile, StringUtil.isEmpty(id) ? 0 : Integer.parseInt(id));
         }
@@ -261,12 +257,15 @@ public class BackendMemberController extends BaseController {
         } else {
             memberInfo = memberService.queryMemberById(Integer.parseInt(id));
         }
+
         memberInfo.setMerchantId(accountInfo.getMerchantId());
         memberInfo.setName(name);
         memberInfo.setStatus(status);
         memberInfo.setGradeId(gradeId);
         memberInfo.setUserNo(userNo);
-        memberInfo.setMobile(mobile);
+        if (PhoneFormatCheckUtils.isChinaPhoneLegal(mobile)) {
+            memberInfo.setMobile(mobile);
+        }
         memberInfo.setSex(Integer.parseInt(sex));
         memberInfo.setIdcard(idCard);
         memberInfo.setBirthday(birthday);
@@ -307,6 +306,11 @@ public class BackendMemberController extends BaseController {
         }
 
         MtUser mtUserInfo = memberService.queryMemberById(id);
+        // 隐藏手机号中间四位
+        String phone = mtUserInfo.getMobile();
+        if (phone != null && StringUtil.isNotEmpty(phone) && phone.length() == 11) {
+            mtUserInfo.setMobile(phone.substring(0, 3) + "****" + phone.substring(7));
+        }
 
         Map<String, Object> param = new HashMap<>();
         List<MtUserGrade> userGradeList = memberService.queryMemberGradeByParams(param);
