@@ -468,6 +468,14 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
                          }
                          mtGoodsSku.setStock(stock);
                          mtGoodsSkuMapper.updateById(mtGoodsSku);
+
+                         if (goodsInfo.getStock() != null && goodsInfo.getStock() > 0) {
+                             Integer goodsStock = goodsInfo.getStock() - cart.getNum();
+                             if (goodsStock >= 0) {
+                                 goodsInfo.setStock(goodsStock);
+                                 mtGoodsMapper.updateById(goodsInfo);
+                             }
+                         }
                      }
                  }
                  if (cart.getId() > 0) {
