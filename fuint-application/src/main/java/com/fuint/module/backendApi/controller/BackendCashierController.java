@@ -1,5 +1,6 @@
 package com.fuint.module.backendApi.controller;
 
+import com.fuint.common.Constants;
 import com.fuint.common.dto.*;
 import com.fuint.common.enums.OrderModeEnum;
 import com.fuint.common.enums.PlatformTypeEnum;
@@ -103,6 +104,9 @@ public class BackendCashierController extends BaseController {
     @CrossOrigin
     public ResponseObject init(HttpServletRequest request, @PathVariable("userId") Integer userId) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
+        Integer page = request.getParameter("page") == null ? Constants.PAGE_NUMBER : Integer.parseInt(request.getParameter("page"));
+        Integer pageSize = request.getParameter("pageSize") == null ? Constants.PAGE_SIZE : Integer.parseInt(request.getParameter("pageSize"));
+        Integer cateId = request.getParameter("cateId") == null ? 0 : Integer.parseInt(request.getParameter("cateId"));
 
         AccountInfo accountDto = TokenUtil.getAccountInfoByToken(token);
         if (accountDto == null) {
@@ -142,7 +146,7 @@ public class BackendCashierController extends BaseController {
         List<MtGoodsCate> cateList = cateService.queryCateListByParams(param);
 
         param.put("status", StatusEnum.ENABLED.getKey());
-        List<MtGoods> goodsList = goodsService.getStoreGoodsList(storeId, "");
+        Map<String, Object> goodsData = goodsService.getStoreGoodsList(storeId, "", cateId, page, pageSize);
 
         String imagePath = settingService.getUploadBasePath();
 
@@ -151,7 +155,8 @@ public class BackendCashierController extends BaseController {
         result.put("storeInfo", storeInfo);
         result.put("memberInfo", memberInfo);
         result.put("accountInfo", accountDto);
-        result.put("goodsList", goodsList);
+        result.put("goodsList", goodsData.get("goodsList"));
+        result.put("totalGoods", goodsData.get("total"));
         result.put("cateList", cateList);
 
         return getSuccessResult(result);
@@ -179,8 +184,8 @@ public class BackendCashierController extends BaseController {
         TAccount accountInfo = accountService.getAccountInfoById(accountDto.getId());
         Integer storeId = accountInfo.getStoreId();
 
-        List<MtGoods> goodsList = goodsService.getStoreGoodsList(storeId, keyword);
-        return getSuccessResult(goodsList);
+        Map<String, Object> goodsData = goodsService.getStoreGoodsList(storeId, keyword, 0, 1, 100);
+        return getSuccessResult(goodsData.get("goodsList"));
     }
 
     /**

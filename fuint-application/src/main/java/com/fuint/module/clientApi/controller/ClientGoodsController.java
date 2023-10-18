@@ -86,11 +86,12 @@ public class ClientGoodsController extends BaseController {
             param.put("storeId", storeId);
         }
         List<MtGoodsCate> cateList = cateService.queryCateListByParams(param);
-        List<MtGoods> goodsList = goodsService.getStoreGoodsList(storeId, "");
+        Map<String, Object> goodsData = goodsService.getStoreGoodsList(storeId, "", 0, 1, 200);
+        List<MtGoods> goodsList = (ArrayList)goodsData.get("goodsList");
         String baseImage = settingService.getUploadBasePath();
         if (goodsList.size() > 0) {
             for (MtGoods goods : goodsList) {
-                goods.setLogo(baseImage + goods.getLogo());
+                 goods.setLogo(baseImage + goods.getLogo());
             }
         }
 
@@ -121,8 +122,8 @@ public class ClientGoodsController extends BaseController {
     @CrossOrigin
     public ResponseObject list(HttpServletRequest request) throws BusinessCheckException {
         Integer storeId = request.getHeader("storeId") == null ? 0 : Integer.parseInt(request.getHeader("storeId"));
-        List<MtGoods> goodsList = goodsService.getStoreGoodsList(storeId, "");
-        return getSuccessResult(goodsList);
+        Map<String, Object> goodsData = goodsService.getStoreGoodsList(storeId, "", 0,1, 200);
+        return getSuccessResult(goodsData.get("goodsList"));
     }
 
     /**

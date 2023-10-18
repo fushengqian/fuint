@@ -409,15 +409,24 @@ public class GoodsServiceImpl extends ServiceImpl<MtGoodsMapper, MtGoods> implem
      *
      * @param storeId
      * @param keyword
+     * @param cateId
+     * @param page
+     * @param pageSize
      * @return
      * */
     @Override
-    public List<MtGoods> getStoreGoodsList(Integer storeId, String keyword) throws BusinessCheckException {
+    public Map<String, Object> getStoreGoodsList(Integer storeId, String keyword, Integer cateId, Integer page, Integer pageSize) throws BusinessCheckException {
         MtStore mtStore = storeService.queryStoreById(storeId);
         if (mtStore == null) {
-            return new ArrayList<>();
+            Map<String, Object> result = new HashMap<>();
+            result.put("goodsList", new ArrayList<>());
+            result.put("total", 0);
+            return result;
         }
         Integer merchantId = mtStore.getMerchantId() == null ? 0 : mtStore.getMerchantId();
+
+        Page<MtGoods> pageHelper = PageHelper.startPage(page, pageSize);
+
         List<MtGoods> goodsList = new ArrayList<>();
         List<MtGoodsSku> skuList = new ArrayList<>();
         if (StringUtil.isNotEmpty(keyword)) {
@@ -430,7 +439,7 @@ public class GoodsServiceImpl extends ServiceImpl<MtGoodsMapper, MtGoods> implem
             if (keyword != null && StringUtil.isNotEmpty(keyword)) {
                 goodsList = mtGoodsMapper.searchStoreGoodsList(merchantId, storeId, keyword);
             } else {
-                goodsList = mtGoodsMapper.getStoreGoodsList(merchantId, storeId);
+                goodsList = mtGoodsMapper.getStoreGoodsList(merchantId, storeId, cateId);
             }
         }
         List<MtGoods> dataList = new ArrayList<>();
@@ -457,7 +466,12 @@ public class GoodsServiceImpl extends ServiceImpl<MtGoodsMapper, MtGoods> implem
                 dataList.add(mtGoods);
             }
         }
-        return dataList;
+
+        Map<String, Object> data = new HashMap<>();
+        data.put("goodsList", dataList);
+        data.put("total", pageHelper.getTotal());
+
+        return data;
     }
 
     /**

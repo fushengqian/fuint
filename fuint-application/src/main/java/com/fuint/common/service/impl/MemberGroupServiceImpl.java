@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fuint.common.dto.MemberGroupDto;
+import com.fuint.common.dto.UserGroupDto;
 import com.fuint.common.enums.StatusEnum;
 import com.fuint.common.service.*;
 import com.fuint.common.util.CommonUtil;
@@ -18,6 +19,7 @@ import com.github.pagehelper.PageHelper;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -47,11 +49,11 @@ public class MemberGroupServiceImpl extends ServiceImpl<MtUserGroupMapper, MtUse
      * @return
      */
     @Override
-    public PaginationResponse<MtUserGroup> queryMemberGroupListByPagination(PaginationRequest paginationRequest) {
+    public PaginationResponse<UserGroupDto> queryMemberGroupListByPagination(PaginationRequest paginationRequest) {
         Page<MtCouponGroup> pageHelper = PageHelper.startPage(paginationRequest.getCurrentPage(), paginationRequest.getPageSize());
         LambdaQueryWrapper<MtUserGroup> lambdaQueryWrapper = Wrappers.lambdaQuery();
         lambdaQueryWrapper.ne(MtUserGroup::getStatus, StatusEnum.DISABLE.getKey());
-
+        lambdaQueryWrapper.eq(MtUserGroup::getParentId, 0);
         String name = paginationRequest.getSearchParams().get("name") == null ? "" : paginationRequest.getSearchParams().get("name").toString();
         if (StringUtils.isNotBlank(name)) {
             lambdaQueryWrapper.like(MtUserGroup::getName, name);
@@ -75,13 +77,22 @@ public class MemberGroupServiceImpl extends ServiceImpl<MtUserGroupMapper, MtUse
 
         lambdaQueryWrapper.orderByDesc(MtUserGroup::getId);
         List<MtUserGroup> dataList = mtUserGroupMapper.selectList(lambdaQueryWrapper);
+        List<UserGroupDto> userGroupList = new ArrayList<>();
+        if (dataList != null && dataList.size() > 0) {
+            for (MtUserGroup mtUserGroup : dataList) {
+                 UserGroupDto userGroupDto = new UserGroupDto();
+                 BeanUtils.copyProperties(mtUserGroup, userGroupDto);
+                 userGroupDto.setChildren(getChildren(mtUserGroup.getId()));
+                 userGroupList.add(userGroupDto);
+            }
+        }
 
         PageRequest pageRequest = PageRequest.of(paginationRequest.getCurrentPage(), paginationRequest.getPageSize());
         PageImpl pageImpl = new PageImpl(dataList, pageRequest, pageHelper.getTotal());
-        PaginationResponse<MtUserGroup> paginationResponse = new PaginationResponse(pageImpl, MtUserGroup.class);
+        PaginationResponse<UserGroupDto> paginationResponse = new PaginationResponse(pageImpl, UserGroupDto.class);
         paginationResponse.setTotalPages(pageHelper.getPages());
         paginationResponse.setTotalElements(pageHelper.getTotal());
-        paginationResponse.setContent(dataList);
+        paginationResponse.setContent(userGroupList);
 
         return paginationResponse;
     }
@@ -98,6 +109,7 @@ public class MemberGroupServiceImpl extends ServiceImpl<MtUserGroupMapper, MtUse
         MtUserGroup userGroup = new MtUserGroup();
         userGroup.setMerchantId(memberGroupDto.getMerchantId());
         userGroup.setStoreId(memberGroupDto.getStoreId());
+        userGroup.setParentId(memberGroupDto.getParentId());
         userGroup.setName(CommonUtil.replaceXSS(memberGroupDto.getName()));
         userGroup.setDescription(CommonUtil.replaceXSS(memberGroupDto.getDescription()));
         userGroup.setStatus(StatusEnum.ENABLED.getKey());
@@ -170,5 +182,22 @@ public class MemberGroupServiceImpl extends ServiceImpl<MtUserGroupMapper, MtUse
         userGroup.setOperator(memberGroupDto.getOperator());
         this.updateById(userGroup);
         return userGroup;
+    }
+
+    public List<UserGroupDto> getChildren(Integer id) {
+        Map<String, Object> param = new HashMap<>();
+        param.put("STATUS", StatusEnum.ENABLED.getKey());
+        param.put("PARENT_ID", id);
+        List<MtUserGroup> dataList = mtUserGroupMapper.selectByMap(param);
+        List<UserGroupDto> childeren = new ArrayList<>();
+        if (dataList != null && dataList.size() > 0) {
+            for (MtUserGroup userGroup : dataList) {
+                 UserGroupDto userGroupDto = new UserGroupDto();
+                 BeanUtils.copyProperties(userGroup, userGroupDto);
+                 userGroupDto.setChildren(getChildren(userGroup.getId()));
+                 childeren.add(userGroupDto);
+            }
+        }
+        return childeren;
     }
 }

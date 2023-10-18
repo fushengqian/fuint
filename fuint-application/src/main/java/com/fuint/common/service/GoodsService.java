@@ -85,9 +85,12 @@ public interface GoodsService {
      *
      * @param storeId
      * @param keyword
+     * @param cateId
+     * @param page
+     * @param pageSize
      * @return
      * */
-    List<MtGoods> getStoreGoodsList(Integer storeId, String keyword) throws BusinessCheckException;
+    Map<String, Object> getStoreGoodsList(Integer storeId, String keyword, Integer cateId, Integer page, Integer pageSize) throws BusinessCheckException;
 
     /**
      * 根据skuId获取规格列表

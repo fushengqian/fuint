@@ -2,6 +2,7 @@ package com.fuint.common.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.fuint.common.dto.MemberGroupDto;
+import com.fuint.common.dto.UserGroupDto;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.pagination.PaginationRequest;
 import com.fuint.framework.pagination.PaginationResponse;
@@ -21,7 +22,7 @@ public interface MemberGroupService extends IService<MtUserGroup> {
      * @param paginationRequest
      * @return
      */
-    PaginationResponse<MtUserGroup> queryMemberGroupListByPagination(PaginationRequest paginationRequest) throws BusinessCheckException;
+    PaginationResponse<UserGroupDto> queryMemberGroupListByPagination(PaginationRequest paginationRequest) throws BusinessCheckException;
 
     /**
      * 新增会员分组

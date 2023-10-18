@@ -2,7 +2,12 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.fuint.repository.mapper.MtGoodsMapper">
     <select id="getStoreGoodsList" resultType="com.fuint.repository.model.MtGoods">
-        select * from mt_goods t where (t.STORE_ID = #{storeId} or t.STORE_ID = 0) and t.MERCHANT_ID = #{merchantId} and t.STATUS = 'A' order by t.sort asc
+        select * from mt_goods t where (t.STORE_ID = #{storeId} or t.STORE_ID = 0)
+        <if test="cateId != null and cateId > 0">
+            AND t.CATE_ID = #{cateId}
+        </if>
+        and t.MERCHANT_ID = #{merchantId}
+        and t.STATUS = 'A' order by t.sort asc
     </select>
 
     <select id="searchStoreGoodsList" resultType="com.fuint.repository.model.MtGoods">

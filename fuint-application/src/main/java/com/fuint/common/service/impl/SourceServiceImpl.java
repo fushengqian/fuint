@@ -52,7 +52,7 @@ public class SourceServiceImpl extends ServiceImpl<TSourceMapper, TSource> imple
         List<TSource> tSources = getAvailableSources(merchantId);
         List<TreeNode> trees = new ArrayList<>();
         if (tSources != null && tSources.size() > 0) {
-            TreeNode sourceTreeNode = null;
+            TreeNode sourceTreeNode;
             for (TSource tSource : tSources) {
                 sourceTreeNode = new TreeNode();
                 sourceTreeNode.setName(tSource.getSourceName());

@@ -3,6 +3,7 @@ package com.fuint.module.backendApi.controller;
 import com.fuint.common.Constants;
 import com.fuint.common.dto.AccountInfo;
 import com.fuint.common.dto.MemberGroupDto;
+import com.fuint.common.dto.UserGroupDto;
 import com.fuint.common.enums.StatusEnum;
 import com.fuint.common.service.CouponService;
 import com.fuint.common.service.MemberGroupService;
@@ -101,7 +102,7 @@ public class BackendMemberGroupController extends BaseController {
         }
 
         paginationRequest.setSearchParams(searchParams);
-        PaginationResponse<MtUserGroup> paginationResponse = memberGroupService.queryMemberGroupListByPagination(paginationRequest);
+        PaginationResponse<UserGroupDto> paginationResponse = memberGroupService.queryMemberGroupListByPagination(paginationRequest);
 
         Map<String, Object> result = new HashMap<>();
         result.put("paginationResponse", paginationResponse);
@@ -155,7 +156,7 @@ public class BackendMemberGroupController extends BaseController {
         // 该分组已有会员，不允许删除
         Map<String, Object> searchParams = new HashMap<>();
         searchParams.put("GROUP_ID", id.toString());
-        searchParams.put("status", StatusEnum.ENABLED.getKey());
+        searchParams.put("STATUS", StatusEnum.ENABLED.getKey());
         List<MtUser> dataList = mtUserMapper.selectByMap(searchParams);
         if (dataList.size() > 0) {
             return getFailureResult(201, "该分组下有会员，不能删除");
