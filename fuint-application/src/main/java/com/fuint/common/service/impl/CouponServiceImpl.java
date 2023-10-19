@@ -207,7 +207,7 @@ public class CouponServiceImpl extends ServiceImpl<MtCouponMapper, MtCoupon> imp
             reqCouponDto.setSendNum(1);
         }
 
-        if (mtCoupon.getType().equals(CouponTypeEnum.PRESTORE.getKey()) || mtCoupon.getType().equals(CouponTypeEnum.TIMER.getKey())) {
+        if (mtCoupon.getType().equals(CouponTypeEnum.PRESTORE.getKey())) {
             mtCoupon.setSendWay(SendWayEnum.FRONT.getKey());
         } else {
             mtCoupon.setSendWay(reqCouponDto.getSendWay());
@@ -434,13 +434,25 @@ public class CouponServiceImpl extends ServiceImpl<MtCouponMapper, MtCoupon> imp
         List<MtCoupon> dataList = mtCouponMapper.selectList(lambdaQueryWrapper);
 
         // 处理已过期
-        int expireNum = 0;
         for (MtCoupon coupon : dataList) {
-            if (coupon.getEndTime().before(new Date())) {
+            // 固定期限
+            if (coupon.getExpireType().equals(CouponExpireTypeEnum.FIX.getKey()) && (coupon.getEndTime() != null) && coupon.getEndTime().before(new Date())) {
                 coupon.setStatus(StatusEnum.EXPIRED.getKey());
                 coupon.setUpdateTime(new Date());
                 mtCouponMapper.updateById(coupon);
-                expireNum++;
+            }
+            // 领取后生效
+            if (coupon.getExpireType().equals(CouponExpireTypeEnum.FLEX.getKey()) && (coupon.getExpireTime() != null)) {
+                Date expireTime = new Date();
+                Calendar c = Calendar.getInstance();
+                c.setTime(expireTime);
+                c.add(Calendar.DATE, coupon.getExpireTime());
+                expireTime = c.getTime();
+                if (expireTime.before(new Date())) {
+                    coupon.setStatus(StatusEnum.EXPIRED.getKey());
+                    coupon.setUpdateTime(new Date());
+                    mtCouponMapper.updateById(coupon);
+                }
             }
         }
 

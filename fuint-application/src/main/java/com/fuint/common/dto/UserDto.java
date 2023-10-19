@@ -3,6 +3,8 @@ package com.fuint.common.dto;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
@@ -31,6 +33,12 @@ public class UserDto implements Serializable {
     @ApiModelProperty("称呼")
     private String name;
 
+    @ApiModelProperty("分组ID")
+    private Integer groupId;
+
+    @ApiModelProperty("分组信息")
+    private UserGroupDto groupInfo;
+
     @ApiModelProperty("微信open_id")
     private String openId;
 
@@ -46,9 +54,11 @@ public class UserDto implements Serializable {
     @ApiModelProperty("等级名称")
     private String gradeName;
 
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @ApiModelProperty("会员开始时间")
     private Date startTime;
 
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @ApiModelProperty("会员结束时间")
     private Date endTime;
 

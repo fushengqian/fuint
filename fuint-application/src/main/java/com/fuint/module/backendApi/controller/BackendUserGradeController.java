@@ -237,17 +237,12 @@ public class BackendUserGradeController extends BaseController {
             info.setSpeedPoint(Float.parseFloat(speedPoint));
         }
         info.setStatus(status);
-        try {
-            if (StringUtil.isEmpty(id)) {
-                userGradeService.addUserGrade(info);
-            } else {
-                info.setId(Integer.parseInt(id));
-                userGradeService.updateUserGrade(info);
-            }
-        } catch (BusinessCheckException e) {
-            return getFailureResult(201, e.getMessage());
+        if (StringUtil.isEmpty(id)) {
+            userGradeService.addUserGrade(info);
+        } else {
+            info.setId(Integer.parseInt(id));
+            userGradeService.updateUserGrade(info);
         }
-
         return getSuccessResult(true);
     }
 

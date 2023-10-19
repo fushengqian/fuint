@@ -3,6 +3,7 @@ package com.fuint.module.backendApi.controller;
 import com.fuint.common.Constants;
 import com.fuint.common.dto.AccountInfo;
 import com.fuint.common.dto.UserDto;
+import com.fuint.common.dto.UserGroupDto;
 import com.fuint.common.enums.SettingTypeEnum;
 import com.fuint.common.enums.StatusEnum;
 import com.fuint.common.enums.UserSettingEnum;
@@ -19,14 +20,12 @@ import com.fuint.repository.model.*;
 import com.fuint.utils.StringUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import java.text.ParseException;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * 会员管理类controller
@@ -62,6 +61,12 @@ public class BackendMemberController extends BaseController {
      */
     @Autowired
     private StoreService storeService;
+
+    /**
+     * 会员分组服务接口
+     */
+    @Autowired
+    private MemberGroupService memberGroupService;
 
     /**
      * 查询会员列表
@@ -153,10 +158,26 @@ public class BackendMemberController extends BaseController {
         }
         List<MtStore> storeList = storeService.queryStoresByParams(paramsStore);
 
+        // 会员分组
+        List<UserGroupDto> groupList = new ArrayList<>();
+        Map<String, Object> searchParams = new HashMap<>();
+        if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
+            searchParams.put("merchantId", accountInfo.getMerchantId());
+        }
+        PaginationRequest groupRequest = new PaginationRequest();
+        groupRequest.setCurrentPage(1);
+        groupRequest.setPageSize(Constants.MAX_ROWS);
+        groupRequest.setSearchParams(searchParams);
+        PaginationResponse<UserGroupDto> groupResponse = memberGroupService.queryMemberGroupListByPagination(groupRequest);
+        if (groupResponse != null && groupResponse.getContent() != null) {
+            groupList = groupResponse.getContent();
+        }
+
         Map<String, Object> result = new HashMap<>();
         result.put("paginationResponse", paginationResponse);
         result.put("userGradeList", userGradeList);
         result.put("storeList", storeList);
+        result.put("groupList", groupList);
 
         return getSuccessResult(result);
     }
@@ -207,11 +228,7 @@ public class BackendMemberController extends BaseController {
         }
 
         String operator = accountInfo.getAccountName();
-        try {
-            memberService.deleteMember(id, operator);
-        } catch (BusinessCheckException e) {
-            return getFailureResult(201, e.getMessage() == null ? "删除失败" : e.getMessage());
-        }
+        memberService.deleteMember(id, operator);
 
         return getSuccessResult(true);
     }
@@ -235,6 +252,7 @@ public class BackendMemberController extends BaseController {
         String id = param.get("id").toString();
         String name = param.get("name") == null ? "" : param.get("name").toString();
         String gradeId = param.get("gradeId") == null ? "0" :param.get("gradeId").toString();
+        String groupId = param.get("groupId") == null ? "0" :param.get("groupId").toString();
         String userNo = param.get("userNo") == null ? "" : param.get("userNo").toString();
         String mobile = param.get("mobile") == null ? "" : param.get("mobile").toString();
         String sex = param.get("sex") == null ? "0" : param.get("sex").toString();
@@ -261,6 +279,9 @@ public class BackendMemberController extends BaseController {
         memberInfo.setMerchantId(accountInfo.getMerchantId());
         memberInfo.setName(name);
         memberInfo.setStatus(status);
+        if (StringUtil.isNotEmpty(groupId)) {
+            memberInfo.setGroupId(Integer.parseInt(groupId));
+        }
         memberInfo.setGradeId(gradeId);
         memberInfo.setUserNo(userNo);
         if (PhoneFormatCheckUtils.isChinaPhoneLegal(mobile)) {
@@ -276,16 +297,11 @@ public class BackendMemberController extends BaseController {
         TAccount account = accountService.getAccountInfoById(accountInfo.getId());
         Integer storeId = account.getStoreId();
         memberInfo.setStoreId(storeId);
-        try {
-            if (StringUtil.isEmpty(id)) {
-                memberService.addMember(memberInfo);
-            } else {
-                memberService.updateMember(memberInfo);
-            }
-        } catch (BusinessCheckException e) {
-            return getFailureResult(201, e.getMessage());
+        if (StringUtil.isEmpty(id)) {
+            memberService.addMember(memberInfo);
+        } else {
+            memberService.updateMember(memberInfo);
         }
-
         return getSuccessResult(true);
     }
 
@@ -305,11 +321,23 @@ public class BackendMemberController extends BaseController {
             return getFailureResult(1001, "请先登录");
         }
 
-        MtUser mtUserInfo = memberService.queryMemberById(id);
+        MtUser mtUser = memberService.queryMemberById(id);
+        if (mtUser == null) {
+            return getFailureResult(201, "会员信息有误");
+        }
+
+        UserDto memberInfo = new UserDto();
+        BeanUtils.copyProperties(mtUser, memberInfo);
+
+        MtUserGroup mtUserGroup = memberGroupService.queryMemberGroupById(memberInfo.getGroupId());
+        UserGroupDto userGroupDto = new UserGroupDto();
+        BeanUtils.copyProperties(mtUserGroup, userGroupDto);
+        memberInfo.setGroupInfo(userGroupDto);
+
         // 隐藏手机号中间四位
-        String phone = mtUserInfo.getMobile();
+        String phone = memberInfo.getMobile();
         if (phone != null && StringUtil.isNotEmpty(phone) && phone.length() == 11) {
-            mtUserInfo.setMobile(phone.substring(0, 3) + "****" + phone.substring(7));
+            memberInfo.setMobile(phone.substring(0, 3) + "****" + phone.substring(7));
         }
 
         Map<String, Object> param = new HashMap<>();
@@ -317,7 +345,7 @@ public class BackendMemberController extends BaseController {
 
         Map<String, Object> result = new HashMap<>();
         result.put("userGradeList", userGradeList);
-        result.put("memberInfo", mtUserInfo);
+        result.put("memberInfo", memberInfo);
 
         return getSuccessResult(result);
     }

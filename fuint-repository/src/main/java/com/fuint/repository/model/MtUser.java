@@ -36,6 +36,9 @@ public class MtUser implements Serializable {
     @ApiModelProperty("头像")
     private String avatar;
 
+    @ApiModelProperty("分组ID")
+    private Integer groupId;
+
     @ApiModelProperty("称呼")
     private String name;
 

@@ -1,7 +1,6 @@
 package com.fuint.common.dto;
 
 import com.baomidou.mybatisplus.annotation.*;
-
 import java.io.Serializable;
 import java.util.Date;
 import io.swagger.annotations.ApiModelProperty;

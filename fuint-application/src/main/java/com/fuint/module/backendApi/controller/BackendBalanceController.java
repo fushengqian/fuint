@@ -114,7 +114,7 @@ public class BackendBalanceController extends BaseController {
     }
 
     /**
-     * 提交充值
+     * 提交充值（单个会员）
      *
      * @param request HttpServletRequest对象
      * @return

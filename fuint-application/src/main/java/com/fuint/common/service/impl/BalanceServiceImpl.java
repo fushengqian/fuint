@@ -134,7 +134,7 @@ public class BalanceServiceImpl extends ServiceImpl<MtBalanceMapper, MtBalance> 
     @OperationServiceLog(description = "会员余额变动")
     public Boolean addBalance(MtBalance mtBalance) throws BusinessCheckException {
         if (mtBalance.getUserId() < 0) {
-           return false;
+            return false;
         }
         mtBalance.setStatus(StatusEnum.ENABLED.getKey());
         mtBalance.setCreateTime(new Date());
@@ -143,7 +143,7 @@ public class BalanceServiceImpl extends ServiceImpl<MtBalanceMapper, MtBalance> 
         MtUser mtUser = mtUserMapper.selectById(mtBalance.getUserId());
         BigDecimal newAmount = mtUser.getBalance().add(mtBalance.getAmount());
         if (newAmount.compareTo(new BigDecimal("0")) < 0) {
-           return false;
+            return false;
         }
         if (mtUser.getStoreId() != null) {
             mtBalance.setStoreId(mtUser.getStoreId());

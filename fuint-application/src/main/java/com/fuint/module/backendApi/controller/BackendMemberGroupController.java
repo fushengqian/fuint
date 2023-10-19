@@ -5,7 +5,6 @@ import com.fuint.common.dto.AccountInfo;
 import com.fuint.common.dto.MemberGroupDto;
 import com.fuint.common.dto.UserGroupDto;
 import com.fuint.common.enums.StatusEnum;
-import com.fuint.common.service.CouponService;
 import com.fuint.common.service.MemberGroupService;
 import com.fuint.common.util.TokenUtil;
 import com.fuint.framework.exception.BusinessCheckException;
@@ -21,8 +20,6 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
@@ -40,8 +37,6 @@ import java.util.Map;
 @RequestMapping(value = "/backendApi/memberGroup")
 public class BackendMemberGroupController extends BaseController {
 
-    private static final Logger logger = LoggerFactory.getLogger(BackendMemberGroupController.class);
-
     @Resource
     private MtUserMapper mtUserMapper;
 
@@ -52,15 +47,9 @@ public class BackendMemberGroupController extends BaseController {
     private MemberGroupService memberGroupService;
 
     /**
-     * 卡券服务接口
-     * */
-    @Autowired
-    CouponService couponService;
-
-    /**
      * 查询会员分组列表
      *
-     * @param request
+     * @param  request
      * @return
      * @throws BusinessCheckException
      */
