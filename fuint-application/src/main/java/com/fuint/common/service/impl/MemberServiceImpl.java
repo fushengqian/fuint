@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fuint.common.dto.AccountInfo;
+import com.fuint.common.dto.GroupMemberDto;
 import com.fuint.common.dto.MemberTopDto;
 import com.fuint.common.dto.UserDto;
 import com.fuint.common.enums.GenderEnum;
@@ -223,6 +224,13 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
             List<String> idList = Arrays.asList(storeIds.split(","));
             if (idList.size() > 0) {
                 lambdaQueryWrapper.in(MtUser::getStoreId, idList);
+            }
+        }
+        String groupIds = paginationRequest.getSearchParams().get("groupIds") == null ? "" : paginationRequest.getSearchParams().get("groupIds").toString();
+        if (StringUtils.isNotBlank(groupIds)) {
+            List<String> idList = Arrays.asList(groupIds.split(","));
+            if (idList.size() > 0) {
+                lambdaQueryWrapper.in(MtUser::getGroupId, idList);
             }
         }
         String status = paginationRequest.getSearchParams().get("status") == null ? "" : paginationRequest.getSearchParams().get("status").toString();
@@ -819,7 +827,49 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
                 dataList.add(dto);
            }
        }
-
        return dataList;
+    }
+
+    /**
+     * 获取分组会员列表
+     *
+     * @param merchantId
+     * @param groupIds
+     * @param page
+     * @param pageSize
+     * @return
+     * */
+    @Override
+    public List<GroupMemberDto> getGroupMembers(Integer merchantId, String groupIds, Integer page, Integer pageSize) {
+        PageHelper.startPage(page, pageSize);
+        LambdaQueryWrapper<MtUser> lambdaQueryWrapper = Wrappers.lambdaQuery();
+        lambdaQueryWrapper.ne(MtUser::getStatus, StatusEnum.DISABLE.getKey());
+        if (merchantId != null && merchantId > 0) {
+            lambdaQueryWrapper.eq(MtUser::getMerchantId, merchantId);
+        }
+        if (StringUtils.isNotBlank(groupIds)) {
+            List<String> idList = Arrays.asList(groupIds.split(","));
+            if (idList.size() > 0) {
+                lambdaQueryWrapper.in(MtUser::getGroupId, idList);
+            }
+        }
+        lambdaQueryWrapper.orderByDesc(MtUser::getUpdateTime);
+        List<MtUser> userList = mtUserMapper.selectList(lambdaQueryWrapper);
+        List<GroupMemberDto> dataList = new ArrayList<>();
+        if (userList != null && userList.size() > 0) {
+            for (MtUser mtUser : userList) {
+                 GroupMemberDto memberDto = new GroupMemberDto();
+                 memberDto.setId(mtUser.getId());
+                 memberDto.setName(mtUser.getName());
+                 memberDto.setUserNo(mtUser.getUserNo());
+                 // 隐藏手机号中间四位
+                 String phone = mtUser.getMobile();
+                 if (phone != null && StringUtil.isNotEmpty(phone) && phone.length() == 11) {
+                     memberDto.setMobile(phone.substring(0, 3) + "****" + phone.substring(7));
+                 }
+                 dataList.add(memberDto);
+            }
+        }
+        return dataList;
     }
 }

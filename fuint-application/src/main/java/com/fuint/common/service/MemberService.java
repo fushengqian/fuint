@@ -2,6 +2,7 @@ package com.fuint.common.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.alibaba.fastjson.JSONObject;
+import com.fuint.common.dto.GroupMemberDto;
 import com.fuint.common.dto.MemberTopDto;
 import com.fuint.common.dto.UserDto;
 import com.fuint.framework.exception.BusinessCheckException;
@@ -170,4 +171,15 @@ public interface MemberService extends IService<MtUser> {
      * @return
      * */
     List<MemberTopDto> getMemberConsumeTopList(Integer merchantId, Integer storeId, Date startTime, Date endTime);
+
+    /**
+     * 获取分组会员列表
+     *
+     * @param merchantId
+     * @param groupIds
+     * @param page
+     * @param pageSize
+     * @return
+     * */
+    List<GroupMemberDto> getGroupMembers(Integer merchantId, String groupIds, Integer page, Integer pageSize);
 }

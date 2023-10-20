@@ -1,6 +1,5 @@
 package com.fuint.common.dto;
 
-import com.baomidou.mybatisplus.annotation.*;
 import java.io.Serializable;
 import java.util.Date;
 import io.swagger.annotations.ApiModelProperty;
@@ -20,7 +19,6 @@ public class MemberGroupDto implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @ApiModelProperty("分组ID")
-    @TableId(value = "ID", type = IdType.AUTO)
     private Integer id;
 
     @ApiModelProperty("分组名称")

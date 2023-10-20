@@ -2,6 +2,7 @@ package com.fuint.module.backendApi.controller;
 
 import com.fuint.common.Constants;
 import com.fuint.common.dto.AccountInfo;
+import com.fuint.common.dto.GroupMemberDto;
 import com.fuint.common.dto.UserDto;
 import com.fuint.common.dto.UserGroupDto;
 import com.fuint.common.enums.SettingTypeEnum;
@@ -436,5 +437,59 @@ public class BackendMemberController extends BaseController {
         }
 
         return getSuccessResult(true);
+    }
+
+    /**
+     * 获取会员分组
+     *
+     * @param request
+     * @return
+     */
+    @ApiOperation(value = "获取会员分组")
+    @RequestMapping(value = "/groupList", method = RequestMethod.GET)
+    @CrossOrigin
+    public ResponseObject groupList(HttpServletRequest request) throws BusinessCheckException {
+        String token = request.getHeader("Access-Token");
+        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
+        if (accountInfo == null) {
+            return getFailureResult(1001, "请先登录");
+        }
+
+        // 会员分组
+        List<UserGroupDto> groupList = new ArrayList<>();
+        Map<String, Object> searchParams = new HashMap<>();
+        if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
+            searchParams.put("merchantId", accountInfo.getMerchantId());
+        }
+        PaginationRequest groupRequest = new PaginationRequest();
+        groupRequest.setCurrentPage(1);
+        groupRequest.setPageSize(Constants.MAX_ROWS);
+        groupRequest.setSearchParams(searchParams);
+        PaginationResponse<UserGroupDto> groupResponse = memberGroupService.queryMemberGroupListByPagination(groupRequest);
+        if (groupResponse != null && groupResponse.getContent() != null) {
+            groupList = groupResponse.getContent();
+        }
+
+        return getSuccessResult(groupList);
+    }
+
+    /**
+     * 获取分组下的会员
+     *
+     * @param request
+     * @return
+     */
+    @ApiOperation(value = "获取分组下的会员")
+    @RequestMapping(value = "/groupMembers", method = RequestMethod.GET)
+    @CrossOrigin
+    public ResponseObject groupMembers(HttpServletRequest request) {
+        String token = request.getHeader("Access-Token");
+        String groupIds = request.getParameter("groupIds") != null ? request.getParameter("groupIds") : "";
+        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
+        if (accountInfo == null) {
+            return getFailureResult(1001, "请先登录");
+        }
+        List<GroupMemberDto> memberList = memberService.getGroupMembers(accountInfo.getMerchantId(), groupIds,1, Constants.MAX_ROWS);
+        return getSuccessResult(memberList);
     }
 }
