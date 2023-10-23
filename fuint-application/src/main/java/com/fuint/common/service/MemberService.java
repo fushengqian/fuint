@@ -173,13 +173,14 @@ public interface MemberService extends IService<MtUser> {
     List<MemberTopDto> getMemberConsumeTopList(Integer merchantId, Integer storeId, Date startTime, Date endTime);
 
     /**
-     * 获取分组会员列表
+     * 查找会员列表
      *
      * @param merchantId
+     * @param keyword
      * @param groupIds
      * @param page
      * @param pageSize
      * @return
      * */
-    List<GroupMemberDto> getGroupMembers(Integer merchantId, String groupIds, Integer page, Integer pageSize);
+    List<GroupMemberDto> searchMembers(Integer merchantId, String keyword, String groupIds, Integer page, Integer pageSize);
 }

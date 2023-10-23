@@ -33,6 +33,18 @@ public interface BalanceService extends IService<MtBalance> {
     Boolean addBalance(MtBalance reqDto) throws BusinessCheckException;
 
     /**
+     * 发放余额
+     *
+     * @param merchantId
+     * @param object
+     * @param userIds
+     * @param amount
+     * @param remark
+     * @return
+     */
+    void distribute(Integer merchantId, String object, String userIds, String amount, String remark) throws BusinessCheckException;
+
+    /**
      * 获取订单余额记录
      *
      * @param orderSn

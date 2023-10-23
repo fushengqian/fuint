@@ -35,6 +35,19 @@
         update mt_user t set t.UPDATE_TIME = #{updateTime} where t.ID = #{userId}
     </update>
 
+    <update id="updateUserBalance">
+        update mt_user t set t.BALANCE = (t.BALANCE + #{amount}) where t.STATUS = 'A'
+        <if test="userIds != null and userIds.size > 0">
+            AND t.ID IN
+            <foreach collection="userIds" item="userId" index="index" open="(" separator="," close=")">
+                #{userId}
+            </foreach>
+        </if>
+        <if test="merchantId != null and merchantId > 0">
+            AND t.MERCHANT_ID = #{merchantId}
+        </if>
+    </update>
+
     <update id="resetMobile">
         update mt_user t set t.MOBILE = '' where t.MOBILE = #{mobile} and t.ID != #{userId}
     </update>

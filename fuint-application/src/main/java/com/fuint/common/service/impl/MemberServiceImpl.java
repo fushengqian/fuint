@@ -277,10 +277,10 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
         lambdaQueryWrapper.orderByDesc(MtUser::getUpdateTime);
         List<MtUser> userList = mtUserMapper.selectList(lambdaQueryWrapper);
         List<UserDto> dataList = new ArrayList<>();
-        for (MtUser user : userList) {
-            String phone = user.getMobile();
+        for (MtUser mtUser : userList) {
+            String phone = mtUser.getMobile();
             UserDto userDto = new UserDto();
-            BeanUtils.copyProperties(user, userDto);
+            BeanUtils.copyProperties(mtUser, userDto);
             // 隐藏手机号中间四位
             if (phone != null && StringUtil.isNotEmpty(phone) && phone.length() == 11) {
                 userDto.setMobile(phone.substring(0, 3) + "****" + phone.substring(7));
@@ -293,12 +293,16 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
             }
             if (userDto.getGradeId() != null) {
                 Integer mchId = StringUtil.isNotEmpty(merchantId) ? Integer.parseInt(merchantId) : 0;
-                MtUserGrade mtGrade = userGradeService.queryUserGradeById(mchId, Integer.parseInt(userDto.getGradeId()), user.getId());
+                MtUserGrade mtGrade = userGradeService.queryUserGradeById(mchId, Integer.parseInt(userDto.getGradeId()), mtUser.getId());
                 if (mtGrade != null) {
                     userDto.setGradeName(mtGrade.getName());
                 }
             }
-            userDto.setLastLoginTime(TimeUtil.showTime(new Date(), user.getUpdateTime()));
+            if (mtUser.getUserNo() == null || StringUtil.isEmpty(mtUser.getUserNo())) {
+                mtUser.setUserNo(CommonUtil.createUserNo());
+                updateById(mtUser);
+            }
+            userDto.setLastLoginTime(TimeUtil.showTime(new Date(), mtUser.getUpdateTime()));
             dataList.add(userDto);
         }
 
@@ -831,16 +835,17 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
     }
 
     /**
-     * 获取分组会员列表
+     * 查找会员列表
      *
      * @param merchantId
+     * @param keyword
      * @param groupIds
      * @param page
      * @param pageSize
      * @return
      * */
     @Override
-    public List<GroupMemberDto> getGroupMembers(Integer merchantId, String groupIds, Integer page, Integer pageSize) {
+    public List<GroupMemberDto> searchMembers(Integer merchantId, String keyword, String groupIds, Integer page, Integer pageSize) {
         PageHelper.startPage(page, pageSize);
         LambdaQueryWrapper<MtUser> lambdaQueryWrapper = Wrappers.lambdaQuery();
         lambdaQueryWrapper.ne(MtUser::getStatus, StatusEnum.DISABLE.getKey());
@@ -852,6 +857,13 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
             if (idList.size() > 0) {
                 lambdaQueryWrapper.in(MtUser::getGroupId, idList);
             }
+        }
+        if (StringUtil.isNotEmpty(keyword)) {
+            List<String> itemList = Arrays.asList(keyword.split(","));
+            lambdaQueryWrapper.and(wq -> wq
+                    .in(MtUser::getUserNo, itemList)
+                    .or()
+                    .in(MtUser::getMobile, itemList));
         }
         lambdaQueryWrapper.orderByDesc(MtUser::getUpdateTime);
         List<MtUser> userList = mtUserMapper.selectList(lambdaQueryWrapper);

@@ -166,6 +166,31 @@ public class BackendBalanceController extends BaseController {
     }
 
     /**
+     * 发放余额
+     *
+     * @param request HttpServletRequest对象
+     * @return
+     */
+    @ApiOperation(value = "发放余额")
+    @RequestMapping(value = "/distribute", method = RequestMethod.POST)
+    @CrossOrigin
+    public ResponseObject distribute(HttpServletRequest request, @RequestBody Map<String, Object> param) throws BusinessCheckException {
+        String token = request.getHeader("Access-Token");
+        String amount = param.get("amount") == null ? "0" : param.get("amount").toString();
+        String remark = param.get("remark") == null ? "后台充值" : param.get("remark").toString();
+        String userIds = param.get("userIds") == null ? "" : param.get("userIds").toString();
+        String object = param.get("object") == null ? "" : param.get("object").toString();
+
+        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
+        if (accountInfo == null) {
+            return getFailureResult(1001, "请先登录");
+        }
+
+        balanceService.distribute(accountInfo.getMerchantId(), object, userIds, amount, remark);
+        return getSuccessResult(true);
+    }
+
+    /**
      * 充值设置详情
      *
      * @param request

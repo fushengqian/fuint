@@ -474,22 +474,23 @@ public class BackendMemberController extends BaseController {
     }
 
     /**
-     * 获取分组下的会员
+     * 查找会员列表
      *
      * @param request
      * @return
      */
-    @ApiOperation(value = "获取分组下的会员")
-    @RequestMapping(value = "/groupMembers", method = RequestMethod.GET)
+    @ApiOperation(value = "查找会员列表")
+    @RequestMapping(value = "/searchMembers", method = RequestMethod.GET)
     @CrossOrigin
-    public ResponseObject groupMembers(HttpServletRequest request) {
+    public ResponseObject searchMembers(HttpServletRequest request) {
         String token = request.getHeader("Access-Token");
         String groupIds = request.getParameter("groupIds") != null ? request.getParameter("groupIds") : "";
+        String keyword = request.getParameter("keyword") != null ? request.getParameter("keyword") : "";
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
         if (accountInfo == null) {
             return getFailureResult(1001, "请先登录");
         }
-        List<GroupMemberDto> memberList = memberService.getGroupMembers(accountInfo.getMerchantId(), groupIds,1, Constants.MAX_ROWS);
+        List<GroupMemberDto> memberList = memberService.searchMembers(accountInfo.getMerchantId(), keyword, groupIds,1, Constants.MAX_ROWS);
         return getSuccessResult(memberList);
     }
 }

@@ -4,6 +4,8 @@ import com.fuint.repository.bean.MemberTopBean;
 import com.fuint.repository.model.MtUser;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Param;
+
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
@@ -24,6 +26,8 @@ public interface MtUserMapper extends BaseMapper<MtUser> {
     List<MtUser> findMembersByUserNo(@Param("merchantId") Integer merchantId, @Param("userNo") String userNo);
 
     void updateActiveTime(@Param("userId") Integer userId, @Param("updateTime") Date updateTime);
+
+    void updateUserBalance(@Param("merchantId") Integer merchantId, @Param("userIds") List<Integer> userIds, @Param("amount") BigDecimal amount);
 
     void resetMobile(@Param("mobile") String mobile, @Param("userId") Integer userId);
 

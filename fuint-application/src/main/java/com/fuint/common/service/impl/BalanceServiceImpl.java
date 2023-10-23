@@ -9,6 +9,7 @@ import com.fuint.common.enums.WxMessageEnum;
 import com.fuint.common.service.BalanceService;
 import com.fuint.common.service.MemberService;
 import com.fuint.common.service.WeixinService;
+import com.fuint.common.util.CommonUtil;
 import com.fuint.common.util.DateUtil;
 import com.fuint.common.util.PhoneFormatCheckUtils;
 import com.fuint.framework.annoation.OperationServiceLog;
@@ -20,6 +21,7 @@ import com.fuint.repository.mapper.MtUserMapper;
 import com.fuint.repository.model.MtBalance;
 import com.fuint.repository.model.MtBanner;
 import com.fuint.repository.model.MtUser;
+import com.fuint.utils.StringUtil;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import org.apache.commons.lang.StringUtils;
@@ -168,6 +170,40 @@ public class BalanceServiceImpl extends ServiceImpl<MtBalanceMapper, MtBalance> 
         weixinService.sendSubscribeMessage(mtBalance.getMerchantId(), mtBalance.getUserId(), mtUser.getOpenId(), WxMessageEnum.BALANCE_CHANGE.getKey(), "pages/user/index", params, sendTime);
 
         return true;
+    }
+
+    /**
+     * 发放余额
+     *
+     * @param merchantId
+     * @param userIds
+     * @param amount
+     * @param remark
+     * @return
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    @OperationServiceLog(description = "发放余额")
+    public void distribute(Integer merchantId,String object, String userIds, String amount, String remark) throws BusinessCheckException {
+        if (!CommonUtil.isNumeric(amount)) {
+            throw new BusinessCheckException("充值金额必须是数字");
+        }
+        if (StringUtil.isEmpty(userIds)) {
+            throw new BusinessCheckException("请先选择会员");
+        }
+        BigDecimal balanceAmount = new BigDecimal(amount);
+
+        List<Integer> userIdArr = new ArrayList<>();
+        List<String> userIdList = Arrays.asList(userIds.split(","));
+        if (userIdList != null && userIdList.size() > 0) {
+            for (String userId : userIdList) {
+                if (!userIdArr.contains(Integer.parseInt(userId))) {
+                    userIdArr.add(Integer.parseInt(userId));
+                }
+            }
+        }
+
+        mtUserMapper.updateUserBalance(merchantId, userIdArr, balanceAmount);
     }
 
     /**
