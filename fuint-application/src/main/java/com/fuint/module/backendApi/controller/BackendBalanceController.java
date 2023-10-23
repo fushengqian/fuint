@@ -186,7 +186,7 @@ public class BackendBalanceController extends BaseController {
             return getFailureResult(1001, "请先登录");
         }
 
-        balanceService.distribute(accountInfo.getMerchantId(), object, userIds, amount, remark);
+        balanceService.distribute(accountInfo, object, userIds, amount, remark);
         return getSuccessResult(true);
     }
 

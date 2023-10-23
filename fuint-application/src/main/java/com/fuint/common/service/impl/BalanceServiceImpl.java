@@ -3,6 +3,7 @@ package com.fuint.common.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.fuint.common.dto.AccountInfo;
 import com.fuint.common.dto.BalanceDto;
 import com.fuint.common.enums.StatusEnum;
 import com.fuint.common.enums.WxMessageEnum;
@@ -175,7 +176,7 @@ public class BalanceServiceImpl extends ServiceImpl<MtBalanceMapper, MtBalance> 
     /**
      * 发放余额
      *
-     * @param merchantId
+     * @param accountInfo
      * @param userIds
      * @param amount
      * @param remark
@@ -184,12 +185,15 @@ public class BalanceServiceImpl extends ServiceImpl<MtBalanceMapper, MtBalance> 
     @Override
     @Transactional(rollbackFor = Exception.class)
     @OperationServiceLog(description = "发放余额")
-    public void distribute(Integer merchantId,String object, String userIds, String amount, String remark) throws BusinessCheckException {
+    public void distribute(AccountInfo accountInfo, String object, String userIds, String amount, String remark) throws BusinessCheckException {
         if (!CommonUtil.isNumeric(amount)) {
             throw new BusinessCheckException("充值金额必须是数字");
         }
-        if (StringUtil.isEmpty(userIds)) {
+        if (!object.equals("all") && StringUtil.isEmpty(userIds)) {
             throw new BusinessCheckException("请先选择会员");
+        }
+        if (accountInfo.getMerchantId() == null || accountInfo.getMerchantId() < 1) {
+            throw new BusinessCheckException("平台账号不能执行该操作");
         }
         BigDecimal balanceAmount = new BigDecimal(amount);
 
@@ -197,13 +201,25 @@ public class BalanceServiceImpl extends ServiceImpl<MtBalanceMapper, MtBalance> 
         List<String> userIdList = Arrays.asList(userIds.split(","));
         if (userIdList != null && userIdList.size() > 0) {
             for (String userId : userIdList) {
-                if (!userIdArr.contains(Integer.parseInt(userId))) {
+                if (StringUtil.isNotEmpty(userId) && !userIdArr.contains(Integer.parseInt(userId))) {
                     userIdArr.add(Integer.parseInt(userId));
                 }
             }
         }
 
-        mtUserMapper.updateUserBalance(merchantId, userIdArr, balanceAmount);
+        mtUserMapper.updateUserBalance(accountInfo.getMerchantId(), userIdArr, balanceAmount);
+
+        if (userIdArr.size() > 0) {
+            for(Integer userId : userIdArr) {
+                MtBalance mtBalance = new MtBalance();
+                mtBalance.setAmount(new BigDecimal(amount));
+                mtBalance.setUserId(userId);
+                mtBalance.setMerchantId(accountInfo.getMerchantId());
+                mtBalance.setDescription(remark);
+                mtBalance.setOperator(accountInfo.getAccountName());
+                addBalance(mtBalance);
+            }
+        }
     }
 
     /**

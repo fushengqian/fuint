@@ -1,6 +1,7 @@
 package com.fuint.common.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.fuint.common.dto.AccountInfo;
 import com.fuint.common.dto.BalanceDto;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.pagination.PaginationRequest;
@@ -35,14 +36,14 @@ public interface BalanceService extends IService<MtBalance> {
     /**
      * 发放余额
      *
-     * @param merchantId
+     * @param accountInfo
      * @param object
      * @param userIds
      * @param amount
      * @param remark
      * @return
      */
-    void distribute(Integer merchantId, String object, String userIds, String amount, String remark) throws BusinessCheckException;
+    void distribute(AccountInfo accountInfo, String object, String userIds, String amount, String remark) throws BusinessCheckException;
 
     /**
      * 获取订单余额记录
