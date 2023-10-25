@@ -7,6 +7,7 @@ import com.fuint.common.param.CouponInfoParam;
 import com.fuint.common.param.CouponListParam;
 import com.fuint.common.param.CouponReceiveParam;
 import com.fuint.common.service.CouponService;
+import com.fuint.common.service.MerchantService;
 import com.fuint.common.service.SettingService;
 import com.fuint.common.service.UserCouponService;
 import com.fuint.common.util.DateUtil;
@@ -63,25 +64,32 @@ public class ClientCouponController extends BaseController {
     private SettingService settingService;
 
     /**
+     * 商户服务接口
+     */
+    @Autowired
+    private MerchantService merchantService;
+
+    /**
      * 获取卡券列表数据
      */
     @ApiOperation(value = "获取卡券列表数据")
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @CrossOrigin
-    public ResponseObject list(HttpServletRequest request, @RequestBody CouponListParam couponListParam) throws BusinessCheckException {
+    public ResponseObject list(HttpServletRequest request, @RequestBody CouponListParam params) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
+        String merchantNo = request.getHeader("merchantNo") == null ? "" : request.getHeader("merchantNo");
         UserInfo mtUser = TokenUtil.getUserInfoByToken(token);
         if (null != mtUser) {
-            couponListParam.setUserId(mtUser.getId());
+            params.setUserId(mtUser.getId());
         }
 
         Map<String, Object> outParams = new HashMap();
-
-        ResponseObject couponData = couponService.findCouponList(couponListParam);
+        Integer merchantId = merchantService.getMerchantId(merchantNo);
+        params.setMerchantId(merchantId);
+        ResponseObject couponData = couponService.findCouponList(params);
         outParams.put("coupon", couponData.getData());
 
         ResponseObject responseObject = getSuccessResult(outParams);
-
         return getSuccessResult(responseObject.getData());
     }
 

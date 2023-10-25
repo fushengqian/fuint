@@ -15,6 +15,9 @@ public class CouponListParam extends PageParam implements Serializable {
     @ApiModelProperty(value="卡券类型", name="type")
     private String type;
 
+    @ApiModelProperty(value="商户ID", name="merchantId")
+    private Integer merchantId;
+
     @ApiModelProperty(value="领取所需积分", name="needPoint")
     private Integer needPoint;
 

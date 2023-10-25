@@ -331,9 +331,11 @@ public class BackendMemberController extends BaseController {
         BeanUtils.copyProperties(mtUser, memberInfo);
 
         MtUserGroup mtUserGroup = memberGroupService.queryMemberGroupById(memberInfo.getGroupId());
-        UserGroupDto userGroupDto = new UserGroupDto();
-        BeanUtils.copyProperties(mtUserGroup, userGroupDto);
-        memberInfo.setGroupInfo(userGroupDto);
+        if (mtUserGroup != null) {
+            UserGroupDto userGroupDto = new UserGroupDto();
+            BeanUtils.copyProperties(mtUserGroup, userGroupDto);
+            memberInfo.setGroupInfo(userGroupDto);
+        }
 
         // 隐藏手机号中间四位
         String phone = memberInfo.getMobile();
