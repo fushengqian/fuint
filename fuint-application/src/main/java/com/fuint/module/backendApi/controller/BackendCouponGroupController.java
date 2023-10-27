@@ -230,16 +230,12 @@ public class BackendCouponGroupController extends BaseController {
             return getFailureResult(1001, "请先登录");
         }
 
-        try {
-            String operator = accountInfo.getAccountName();
-            ReqCouponGroupDto groupDto = new ReqCouponGroupDto();
-            groupDto.setOperator(operator);
-            groupDto.setId(id);
-            groupDto.setStatus(status);
-            couponGroupService.updateCouponGroup(groupDto);
-        } catch (BusinessCheckException e) {
-            return getFailureResult(201, e.getMessage());
-        }
+        String operator = accountInfo.getAccountName();
+        ReqCouponGroupDto groupDto = new ReqCouponGroupDto();
+        groupDto.setOperator(operator);
+        groupDto.setId(id);
+        groupDto.setStatus(status);
+        couponGroupService.updateCouponGroup(groupDto);
 
         return getSuccessResult(true);
     }
@@ -308,22 +304,16 @@ public class BackendCouponGroupController extends BaseController {
     @ApiOperation(value = "上传文件")
     @RequestMapping(value = "/upload/", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @CrossOrigin
-    public ResponseObject uploadFile(HttpServletRequest request, @RequestParam("fileInput") MultipartFile file) {
+    public ResponseObject uploadFile(HttpServletRequest request, @RequestParam("fileInput") MultipartFile file) throws Exception {
         String token = request.getHeader("Access-Token");
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
         if (accountInfo == null) {
             return getFailureResult(1001, "请先登录");
         }
 
-        try {
-            String filePath = couponGroupService.saveExcelFile(file, request);
-            String uuid = couponGroupService.importSendCoupon(file, accountInfo.getAccountName(), filePath);
-            return getSuccessResult(uuid);
-        } catch (BusinessCheckException e) {
-            return getFailureResult(201, e.getMessage());
-        } catch (Exception e) {
-            return getFailureResult(201, e.getMessage());
-        }
+        String filePath = couponGroupService.saveExcelFile(file, request);
+        String uuid = couponGroupService.importSendCoupon(file, accountInfo.getAccountName(), filePath);
+        return getSuccessResult(uuid);
     }
 
     /**

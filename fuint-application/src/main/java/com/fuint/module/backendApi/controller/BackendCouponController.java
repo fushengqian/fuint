@@ -275,7 +275,7 @@ public class BackendCouponController extends BaseController {
     @ApiOperation(value = "保存卡券")
     @RequestMapping(value = "/save", method = RequestMethod.POST)
     @CrossOrigin
-    public ResponseObject saveCouponHandler(HttpServletRequest request, @RequestBody ReqCouponDto reqCouponDto) throws BusinessCheckException {
+    public ResponseObject saveCouponHandler(HttpServletRequest request, @RequestBody ReqCouponDto reqCouponDto) throws BusinessCheckException,ParseException {
         String token = request.getHeader("Access-Token");
 
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
@@ -305,13 +305,7 @@ public class BackendCouponController extends BaseController {
         if (account.getMerchantId() != null && account.getMerchantId() > 0) {
             reqCouponDto.setMerchantId(account.getMerchantId());
         }
-
-        try {
-            couponService.saveCoupon(reqCouponDto);
-        } catch (BusinessCheckException | ParseException e) {
-            return getFailureResult(201, e.getMessage());
-        }
-
+        couponService.saveCoupon(reqCouponDto);
         return getSuccessResult(true);
     }
 
@@ -453,11 +447,7 @@ public class BackendCouponController extends BaseController {
 
         // 导入批次
         String uuid = UUID.randomUUID().toString().replaceAll("-", "");
-        try {
-            couponService.sendCoupon(Integer.parseInt(couponId), mobile, Integer.parseInt(num), uuid, accountInfo.getAccountName());
-        } catch (BusinessCheckException e) {
-            return getFailureResult(201, e.getMessage());
-        }
+        couponService.sendCoupon(Integer.parseInt(couponId), mobile, Integer.parseInt(num), uuid, accountInfo.getAccountName());
 
         MtCoupon couponInfo = couponService.queryCouponById(Integer.parseInt(couponId));
         MtUser mtUser = memberService.queryMemberByMobile(accountInfo.getMerchantId(), mobile);

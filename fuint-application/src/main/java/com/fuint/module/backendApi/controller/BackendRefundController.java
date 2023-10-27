@@ -208,24 +208,20 @@ public class BackendRefundController extends BaseController {
             return getFailureResult(1001, "请先登录");
         }
         String operator = accountInfo.getAccountName();
-        try {
-            if (status.equals(RefundStatusEnum.REJECT.getKey())) {
-                RefundDto dto = new RefundDto();
-                dto.setId(refundId);
-                dto.setOperator(operator);
-                dto.setStatus(RefundStatusEnum.REJECT.getKey());
-                dto.setRemark(remark);
-                refundService.updateRefund(dto);
-            } else {
-                RefundDto dto = new RefundDto();
-                dto.setId(refundId);
-                dto.setOperator(operator);
-                dto.setStatus(RefundStatusEnum.APPROVED.getKey());
-                dto.setRemark(remark);
-                refundService.agreeRefund(dto);
-            }
-        } catch (Exception e) {
-            return getFailureResult(201, e.getMessage());
+        if (status.equals(RefundStatusEnum.REJECT.getKey())) {
+            RefundDto dto = new RefundDto();
+            dto.setId(refundId);
+            dto.setOperator(operator);
+            dto.setStatus(RefundStatusEnum.REJECT.getKey());
+            dto.setRemark(remark);
+            refundService.updateRefund(dto);
+        } else {
+            RefundDto dto = new RefundDto();
+            dto.setId(refundId);
+            dto.setOperator(operator);
+            dto.setStatus(RefundStatusEnum.APPROVED.getKey());
+            dto.setRemark(remark);
+            refundService.agreeRefund(dto);
         }
         return getSuccessResult(true);
     }

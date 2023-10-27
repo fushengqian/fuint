@@ -151,13 +151,8 @@ public class BackendDutyController extends BaseController {
         tDuty.setStatus(status);
         tDuty.setDescription(description);
 
-        // 添加角色信息
-        try {
-            tDutyService.saveDuty(tDuty, sources);
-        } catch (Exception e) {
-            return getFailureResult(201, e.getMessage());
-        }
-
+        // 保存角色
+        tDutyService.saveDuty(tDuty, sources);
         return getSuccessResult(true);
     }
 
@@ -206,7 +201,7 @@ public class BackendDutyController extends BaseController {
     @ApiOperation(value = "修改角色")
     @RequestMapping(value = "/update", method = RequestMethod.POST)
     @CrossOrigin
-    public ResponseObject updateHandler(HttpServletRequest request, @RequestBody Map<String, Object> param) {
+    public ResponseObject updateHandler(HttpServletRequest request, @RequestBody Map<String, Object> param) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
         List<Integer> menuIds = (List) param.get("menuIds");
         String id = param.get("id").toString();
@@ -239,17 +234,12 @@ public class BackendDutyController extends BaseController {
         if (menuIds.size() > 0) {
             String[] sourceIds = new String[menuIds.size()];
             for (int i = 0; i < sourceIds.length; i++) {
-                sourceIds[i] = menuIds.get(i).toString();
+                 sourceIds[i] = menuIds.get(i).toString();
             }
             sources = tSourceService.findDatasByIds(sourceIds);
         }
 
-        try {
-            tDutyService.updateDuty(duty, sources);
-        } catch (Exception e) {
-            return getFailureResult(201, e.getMessage());
-        }
-
+        tDutyService.updateDuty(duty, sources);
         return getSuccessResult(true);
     }
 

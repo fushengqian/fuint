@@ -324,12 +324,7 @@ public class BackendOrderController extends BaseController {
             orderDto.setOrderMode(orderMode);
         }
 
-        try {
-            orderService.updateOrder(orderDto);
-        } catch (BusinessCheckException e) {
-            return getFailureResult(201, e.getMessage());
-        }
-
+        orderService.updateOrder(orderDto);
         return getSuccessResult(true);
     }
 
@@ -341,7 +336,7 @@ public class BackendOrderController extends BaseController {
     @ApiOperation(value = "验证并核销订单")
     @RequestMapping(value = "/verify", method = RequestMethod.POST)
     @CrossOrigin
-    public ResponseObject verify(HttpServletRequest request, @RequestBody Map<String, Object> param) {
+    public ResponseObject verify(HttpServletRequest request, @RequestBody Map<String, Object> param) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
         Integer orderId = param.get("orderId") == null ? 0 : Integer.parseInt(param.get("orderId").toString());
         String remark = param.get("remark") == null ? "" : param.get("remark").toString();
@@ -366,12 +361,7 @@ public class BackendOrderController extends BaseController {
             orderDto.setVerifyCode(verifyCode);
         }
 
-        try {
-            orderService.updateOrder(orderDto);
-        } catch (BusinessCheckException e) {
-            return getFailureResult(201, e.getMessage());
-        }
-
+        orderService.updateOrder(orderDto);
         return getSuccessResult(true);
     }
 

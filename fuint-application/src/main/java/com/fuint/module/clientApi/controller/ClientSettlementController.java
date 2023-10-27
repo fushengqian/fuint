@@ -10,7 +10,7 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
-import java.util.*;
+import java.util.Map;
 
 /**
  * 结算中心接口
@@ -35,12 +35,8 @@ public class ClientSettlementController extends BaseController {
     @ApiOperation(value = "提交订单结算")
     @RequestMapping(value = "/submit", method = RequestMethod.POST)
     @CrossOrigin
-    public ResponseObject submit(HttpServletRequest request, @RequestBody SettlementParam param) {
-        try {
-            Map<String, Object> result = settlementService.doSubmit(request, param);
-            return getSuccessResult(result);
-        } catch (BusinessCheckException e) {
-            return getFailureResult(201, e.getMessage());
-        }
+    public ResponseObject submit(HttpServletRequest request, @RequestBody SettlementParam param) throws BusinessCheckException {
+        Map<String, Object> result = settlementService.doSubmit(request, param);
+        return getSuccessResult(result);
     }
 }

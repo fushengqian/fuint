@@ -151,7 +151,7 @@ public class BackendConfirmLogController extends BaseController {
     @ApiOperation(value = "撤销已使用的卡券")
     @RequestMapping(value = "/rollbackUserCoupon/{id}", method = RequestMethod.GET)
     @CrossOrigin
-    public ResponseObject rollbackUserCoupon(HttpServletRequest request, @PathVariable("id") Integer id) {
+    public ResponseObject rollbackUserCoupon(HttpServletRequest request, @PathVariable("id") Integer id) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
         String userCouponId = (request.getParameter("userCouponId") == null || StringUtil.isEmpty(request.getParameter("userCouponId"))) ? "0" : request.getParameter("userCouponId");
 
@@ -160,12 +160,7 @@ public class BackendConfirmLogController extends BaseController {
             return getFailureResult(1001, "请先登录");
         }
 
-        try {
-            couponService.rollbackUserCoupon(id, Integer.parseInt(userCouponId), accountInfo.getAccountName());
-        } catch (BusinessCheckException e) {
-            return getFailureResult(201, e.getMessage());
-        }
-
+        couponService.rollbackUserCoupon(id, Integer.parseInt(userCouponId), accountInfo.getAccountName());
         return getSuccessResult(true);
     }
 }

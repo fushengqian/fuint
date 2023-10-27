@@ -143,11 +143,7 @@ public class BackendSourceController extends BaseController {
         } else {
             addSource.setSourceLevel(1);
         }
-        try {
-            sSourceService.addSource(addSource);
-        } catch (Exception e) {
-            return getFailureResult(201, e.getMessage());
-        }
+        sSourceService.addSource(addSource);
         return getSuccessResult(true);
     }
 
@@ -210,11 +206,7 @@ public class BackendSourceController extends BaseController {
         } else {
             editSource.setSourceLevel(1);
         }
-        try {
-            sSourceService.editSource(editSource);
-        } catch (Exception e) {
-            return getFailureResult(201, e.getMessage());
-        }
+        sSourceService.editSource(editSource);
         return getSuccessResult(true);
     }
 

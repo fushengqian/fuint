@@ -162,12 +162,8 @@ public class BackendMerchantController extends BaseController {
             merchantId = accountInfo.getMerchantId();
         }
 
-        try {
-            String operator = accountInfo.getAccountName();
-            merchantService.updateStatus(merchantId, operator, status);
-        } catch (BusinessCheckException e) {
-            return getFailureResult(201, e.getMessage());
-        }
+        String operator = accountInfo.getAccountName();
+        merchantService.updateStatus(merchantId, operator, status);
 
         return getSuccessResult(true);
     }

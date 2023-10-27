@@ -141,14 +141,11 @@ public class ClientCartController extends BaseController {
         mtCart.setIsVisitor(YesOrNoEnum.NO.getKey());
         mtCart.setMerchantId(merchantId);
 
-        try {
-            Integer id = cartService.saveCart(mtCart, action);
-            Map<String, Object> data = new HashMap();
-            data.put("cartId", id);
-            return getSuccessResult(data);
-        } catch (BusinessCheckException e) {
-            return getFailureResult(201, e.getMessage());
-        }
+        Integer id = cartService.saveCart(mtCart, action);
+        Map<String, Object> data = new HashMap();
+        data.put("cartId", id);
+
+        return getSuccessResult(data);
     }
 
     /**

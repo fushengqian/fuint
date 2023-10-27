@@ -212,12 +212,7 @@ public class BackendOpenGiftController extends BaseController {
         reqDto.setId(id);
         reqDto.setStatus(status);
 
-        try {
-            openGiftService.updateOpenGift(reqDto);
-        } catch (BusinessCheckException e) {
-            return getFailureResult(201, e.getMessage());
-        }
-
+        openGiftService.updateOpenGift(reqDto);
         return getSuccessResult(true);
     }
 

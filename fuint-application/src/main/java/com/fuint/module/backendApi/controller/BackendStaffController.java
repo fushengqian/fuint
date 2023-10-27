@@ -186,12 +186,8 @@ public class BackendStaffController extends BaseController {
                 return getFailureResult(201, "该手机号码已经存在");
             }
         }
-        try {
-            staffService.saveStaff(mtStaff);
-            return getSuccessResult(true);
-        } catch (BusinessCheckException e) {
-            return getFailureResult(201, e.getMessage());
-        }
+        staffService.saveStaff(mtStaff);
+        return getSuccessResult(true);
     }
 
     /**

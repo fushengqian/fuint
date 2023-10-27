@@ -35,7 +35,7 @@ import java.math.BigDecimal;
 import java.util.*;
 
 /**
- * 会员卡券统计管理类controller
+ * 会员卡券统计管理controller
  *
  * Created by FSQ
  * CopyRight https://www.fuint.cn
@@ -77,6 +77,9 @@ public class BackendUserCouponController extends BaseController {
     @Autowired
     private AccountService accountService;
 
+    /**
+     * 卡券发放记录接口
+     * */
     @Autowired
     private SendLogService sendLogService;
 
@@ -183,12 +186,7 @@ public class BackendUserCouponController extends BaseController {
             confirmAmount = mtUserCoupon.getBalance();
         }
 
-        try {
-            couponService.useCoupon(Integer.parseInt(userCouponId), accountInfo.getId(), storeId, 0, confirmAmount, "后台核销");
-        } catch (BusinessCheckException e) {
-            return getFailureResult(201, e.getMessage());
-        }
-
+        couponService.useCoupon(Integer.parseInt(userCouponId), accountInfo.getId(), storeId, 0, confirmAmount, "后台核销");
         return getSuccessResult(true);
     }
 
@@ -209,11 +207,8 @@ public class BackendUserCouponController extends BaseController {
             return getFailureResult(1001, "请先登录");
         }
 
-        try {
-            couponService.deleteUserCoupon(id, accountInfo.getAccountName());
-        } catch (BusinessCheckException e) {
-            return getFailureResult(201, e.getMessage());
-        }
+        // 删除会员的卡券
+        couponService.deleteUserCoupon(id, accountInfo.getAccountName());
 
         // 发券记录，部分作废
         MtUserCoupon userCoupon = mtUserCouponMapper.selectById(id);

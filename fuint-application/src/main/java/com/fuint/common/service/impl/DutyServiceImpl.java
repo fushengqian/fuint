@@ -85,12 +85,8 @@ public class DutyServiceImpl extends ServiceImpl<TDutyMapper, TDuty> implements 
         if (!merchantId.equals(tDuty.getMerchantId()) && merchantId > 0) {
             throw new BusinessRuntimeException("抱歉，您没有删除的权限");
         }
-        try {
-             tDutySourceMapper.deleteSourcesByDutyId((int) dutyId);
-             tDutyMapper.deleteById(dutyId);
-        } catch (Exception e) {
-            throw new BusinessRuntimeException("该角色已存在关联用户，无法删除");
-        }
+        tDutySourceMapper.deleteSourcesByDutyId((int) dutyId);
+        tDutyMapper.deleteById(dutyId);
     }
 
     /**

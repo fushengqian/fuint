@@ -138,12 +138,7 @@ public class BackendSendLogController extends BaseController {
             return getFailureResult(201, "系统参数有误");
         }
 
-        try {
-            couponService.removeUserCoupon(id, sendLog.getUuid(), accountInfo.getAccountName());
-        } catch (BusinessCheckException e) {
-            return getFailureResult(201, e.getMessage());
-        }
-
+        couponService.removeUserCoupon(id, sendLog.getUuid(), accountInfo.getAccountName());
         return getSuccessResult(true);
     }
 }

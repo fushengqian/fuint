@@ -114,13 +114,9 @@ public class ClientSmsController extends BaseController {
         Integer merchantId = merchantService.getMerchantId(merchantNo);
 
         // 短信模板
-        try {
-            Map<String, String> params = new HashMap<>();
-            params.put("code", verifyCode);
-            result = sendSmsService.sendSms(merchantId,"login-code", mobileList, params);
-            return getSuccessResult(result);
-        } catch (Exception e) {
-            return getFailureResult(201, e.getMessage());
-        }
+        Map<String, String> params = new HashMap<>();
+        params.put("code", verifyCode);
+        result = sendSmsService.sendSms(merchantId,"login-code", mobileList, params);
+        return getSuccessResult(result);
     }
 }

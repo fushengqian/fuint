@@ -202,12 +202,7 @@ public class BackendStockController extends BaseController {
         info.setType(type);
         String operator = accountDto.getAccountName();
         info.setOperator(operator);
-        try {
-            stockService.addStock(info, goodsList);
-        } catch (BusinessCheckException e) {
-            return getFailureResult(201, e.getMessage());
-        }
-
+        stockService.addStock(info, goodsList);
         return getSuccessResult(true);
     }
 
