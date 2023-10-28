@@ -1,5 +1,5 @@
 /*
-SQLyog Professional v13.1.1 (64 bit)
+SQLyog Ultimate v13.1.1 (64 bit)
 MySQL - 8.0.21 : Database - fuint-db
 *********************************************************************
 */
@@ -32,6 +32,8 @@ CREATE TABLE `mt_banner` (
   `STATUS` char(1) DEFAULT 'A' COMMENT 'A：正常；D：删除',
   PRIMARY KEY (`ID`)
 ) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8;
+
+/*Data for the table `mt_banner` */
 
 /*Table structure for table `mt_cart` */
 
@@ -95,6 +97,8 @@ CREATE TABLE `mt_confirmer` (
   UNIQUE KEY `uix_mobile` (`MOBILE`)
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='核销人员表';
 
+/*Data for the table `mt_confirmer` */
+
 /*Table structure for table `mt_coupon` */
 
 DROP TABLE IF EXISTS `mt_coupon`;
@@ -128,6 +132,8 @@ CREATE TABLE `mt_coupon` (
   PRIMARY KEY (`ID`)
 ) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='卡券信息表';
 
+/*Data for the table `mt_coupon` */
+
 /*Table structure for table `mt_coupon_group` */
 
 DROP TABLE IF EXISTS `mt_coupon_group`;
@@ -145,6 +151,8 @@ CREATE TABLE `mt_coupon_group` (
   `STATUS` char(1) NOT NULL DEFAULT 'A' COMMENT 'A：正常；D：删除',
   PRIMARY KEY (`ID`)
 ) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='卡券券组';
+
+/*Data for the table `mt_coupon_group` */
 
 /*Table structure for table `mt_give` */
 
@@ -221,6 +229,8 @@ CREATE TABLE `mt_goods` (
   PRIMARY KEY (`ID`)
 ) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8;
 
+/*Data for the table `mt_goods` */
+
 /*Table structure for table `mt_goods_cate` */
 
 DROP TABLE IF EXISTS `mt_goods_cate`;
@@ -237,6 +247,8 @@ CREATE TABLE `mt_goods_cate` (
   `STATUS` char(1) DEFAULT 'A' COMMENT 'A：正常；D：删除',
   PRIMARY KEY (`ID`)
 ) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
+
+/*Data for the table `mt_goods_cate` */
 
 /*Table structure for table `mt_message` */
 
@@ -275,6 +287,8 @@ CREATE TABLE `mt_open_gift` (
   PRIMARY KEY (`ID`)
 ) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8 COMMENT='会员开卡赠礼';
 
+/*Data for the table `mt_open_gift` */
+
 /*Table structure for table `mt_open_gift_item` */
 
 DROP TABLE IF EXISTS `mt_open_gift_item`;
@@ -300,6 +314,7 @@ CREATE TABLE `mt_order` (
   `TYPE_NAME` varchar(30) DEFAULT '' COMMENT '类型名称',
   `ORDER_SN` varchar(32) NOT NULL DEFAULT '' COMMENT '订单号',
   `COUPON_ID` int DEFAULT '0' COMMENT '卡券ID',
+  `PAY_TYPE` varchar(30) DEFAULT NULL COMMENT '支付类型',
   `USER_ID` int NOT NULL DEFAULT '0' COMMENT '用户ID',
   `AMOUNT` decimal(10,2) DEFAULT '0.00' COMMENT '订单金额',
   `PAY_AMOUNT` decimal(10,2) DEFAULT '0.00' COMMENT '支付金额',
@@ -404,6 +419,8 @@ DROP TABLE IF EXISTS `mt_setting`;
 
 CREATE TABLE `mt_setting` (
   `ID` int NOT NULL AUTO_INCREMENT COMMENT '自增ID',
+  `MERCHANT_ID` int DEFAULT '0' COMMENT '商户ID',
+  `STORE_ID` int DEFAULT '0' COMMENT '店铺ID',
   `TYPE` varchar(10) NOT NULL DEFAULT '' COMMENT '类型',
   `NAME` varchar(50) NOT NULL DEFAULT '' COMMENT '配置项',
   `VALUE` varchar(1000) NOT NULL DEFAULT '' COMMENT '配置值',
@@ -414,6 +431,8 @@ CREATE TABLE `mt_setting` (
   `STATUS` char(1) DEFAULT 'A' COMMENT '状态 A启用；D禁用',
   PRIMARY KEY (`ID`)
 ) ENGINE=InnoDB AUTO_INCREMENT=39 DEFAULT CHARSET=utf8 COMMENT='全局设置表';
+
+/*Data for the table `mt_setting` */
 
 /*Table structure for table `mt_sms_sended_log` */
 
@@ -429,6 +448,8 @@ CREATE TABLE `mt_sms_sended_log` (
   PRIMARY KEY (`LOG_ID`),
   KEY `FK_REFERENCE_1` (`MOBILE_PHONE`) USING BTREE
 ) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='短信发送记录表';
+
+/*Data for the table `mt_sms_sended_log` */
 
 /*Table structure for table `mt_sms_template` */
 
@@ -447,6 +468,8 @@ CREATE TABLE `mt_sms_template` (
   PRIMARY KEY (`ID`)
 ) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8 COMMENT='短信模板';
 
+/*Data for the table `mt_sms_template` */
+
 /*Table structure for table `mt_store` */
 
 DROP TABLE IF EXISTS `mt_store`;
@@ -463,6 +486,8 @@ CREATE TABLE `mt_store` (
   `OPERATOR` varchar(30) DEFAULT '' COMMENT '最后操作人',
   PRIMARY KEY (`ID`)
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='酒店表';
+
+/*Data for the table `mt_store` */
 
 /*Table structure for table `mt_user` */
 
@@ -494,6 +519,8 @@ CREATE TABLE `mt_user` (
   PRIMARY KEY (`ID`),
   KEY `index_phone` (`MOBILE`)
 ) ENGINE=InnoDB AUTO_INCREMENT=208 DEFAULT CHARSET=utf8 COMMENT='会员个人信息';
+
+/*Data for the table `mt_user` */
 
 /*Table structure for table `mt_user_coupon` */
 
@@ -546,6 +573,8 @@ CREATE TABLE `mt_user_grade` (
   PRIMARY KEY (`ID`)
 ) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8;
 
+/*Data for the table `mt_user_grade` */
+
 /*Table structure for table `mt_verify_code` */
 
 DROP TABLE IF EXISTS `mt_verify_code`;
@@ -589,6 +618,8 @@ CREATE TABLE `t_account` (
   CONSTRAINT `FKmlsqc08c6khxhoed7abkl2s9l` FOREIGN KEY (`owner_id`) REFERENCES `t_platform` (`owner_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
 
+/*Data for the table `t_account` */
+
 /*Table structure for table `t_account_duty` */
 
 DROP TABLE IF EXISTS `t_account_duty`;
@@ -603,6 +634,8 @@ CREATE TABLE `t_account_duty` (
   CONSTRAINT `FKcym10gcigo2c175iqqjj7xu5h` FOREIGN KEY (`acct_id`) REFERENCES `t_account` (`acct_id`),
   CONSTRAINT `FKpfts0wq2y4xhq9vv2g7uo1kr0` FOREIGN KEY (`duty_id`) REFERENCES `t_duty` (`duty_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=249 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
+
+/*Data for the table `t_account_duty` */
 
 /*Table structure for table `t_action_log` */
 
@@ -621,6 +654,8 @@ CREATE TABLE `t_action_log` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
 
+/*Data for the table `t_action_log` */
+
 /*Table structure for table `t_duty` */
 
 DROP TABLE IF EXISTS `t_duty`;
@@ -633,6 +668,8 @@ CREATE TABLE `t_duty` (
   `duty_type` varchar(50) NOT NULL COMMENT '角色类型',
   PRIMARY KEY (`duty_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='角色表';
+
+/*Data for the table `t_duty` */
 
 /*Table structure for table `t_duty_source` */
 
@@ -649,6 +686,7 @@ CREATE TABLE `t_duty_source` (
   CONSTRAINT `FKp1c59mwxgjue4qdl86sd6dogf` FOREIGN KEY (`source_id`) REFERENCES `t_source` (`source_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=5983 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
 
+/*Data for the table `t_duty_source` */
 
 /*Table structure for table `t_platform` */
 
@@ -662,6 +700,8 @@ CREATE TABLE `t_platform` (
   `platform_type` int NOT NULL COMMENT '平台类型',
   PRIMARY KEY (`owner_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
+
+/*Data for the table `t_platform` */
 
 /*Table structure for table `t_source` */
 
@@ -683,6 +723,8 @@ CREATE TABLE `t_source` (
   UNIQUE KEY `SOURCE_NAME` (`source_name`,`parent_id`),
   KEY `FKfcvh926f0p0tey75b7spk8sd3` (`parent_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=115 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='菜单表';
+
+/*Data for the table `t_source` */
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
 /*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
