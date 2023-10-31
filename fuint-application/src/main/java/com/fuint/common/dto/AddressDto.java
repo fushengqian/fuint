@@ -1,109 +1,55 @@
 package com.fuint.common.dto;
 
+import io.swagger.annotations.ApiModelProperty;
+import lombok.Getter;
+import lombok.Setter;
+
+/**
+ * 会员地址信息
+ *
+ * Created by FSQ
+ * CopyRight https://www.fuint.cn
+ */
+@Getter
+@Setter
 public class AddressDto {
 
+    @ApiModelProperty("账户主键ID")
     private Integer id;
 
+    @ApiModelProperty("会员ID")
     private Integer userId;
 
+    @ApiModelProperty("会员名称")
     private String name;
 
+    @ApiModelProperty("会员手机号")
     private String mobile;
 
+    @ApiModelProperty("省份ID")
     private Integer provinceId;
 
+    @ApiModelProperty("省份名称")
     private String provinceName;
 
+    @ApiModelProperty("城市ID")
     private Integer cityId;
 
+    @ApiModelProperty("城市名称")
     private String cityName;
 
+    @ApiModelProperty("区ID")
     private Integer regionId;
 
+    @ApiModelProperty("区名称")
     private String regionName;
 
+    @ApiModelProperty("详细地址")
     private String detail;
 
+    @ApiModelProperty("是否默认地址")
     private String isDefault;
 
+    @ApiModelProperty("状态")
     private String status;
-
-    public Integer getId(){
-        return id;
-    }
-    public void setId(Integer id){
-        this.id=id;
-    }
-    public Integer getUserId(){
-        return userId;
-    }
-    public void setUserId(Integer userId){
-        this.userId=userId;
-    }
-    public String getName(){
-        return name;
-    }
-    public void setName(String name){
-        this.name=name;
-    }
-    public String getMobile(){
-        return mobile;
-    }
-    public void setMobile(String mobile){
-        this.mobile=mobile;
-    }
-    public Integer getProvinceId(){
-        return provinceId;
-    }
-    public void setProvinceId(Integer provinceId){
-        this.provinceId=provinceId;
-    }
-    public String getProvinceName(){
-        return provinceName;
-    }
-    public void setProvinceName(String provinceName){
-        this.provinceName=provinceName;
-    }
-    public Integer getCityId(){
-        return cityId;
-    }
-    public void setCityId(Integer cityId){
-        this.cityId=cityId;
-    }
-    public String getCityName(){
-        return cityName;
-    }
-    public void setCityName(String cityName){
-        this.cityName=cityName;
-    }
-    public Integer getRegionId(){
-        return regionId;
-    }
-    public void setRegionId(Integer regionId){
-        this.regionId=regionId;
-    }
-    public String getRegionName(){
-        return regionName;
-    }
-    public void setRegionName(String regionName){
-        this.regionName=regionName;
-    }
-    public String getDetail(){
-        return detail;
-    }
-    public void setDetail(String detail){
-        this.detail=detail;
-    }
-    public String getIsDefault(){
-        return isDefault;
-    }
-    public void setIsDefault(String isDefault){
-        this.isDefault=isDefault;
-    }
-    public String getStatus(){
-        return status;
-    }
-    public void setStatus(String status){
-        this.status=status;
-    }
 }
