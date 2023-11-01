@@ -217,7 +217,7 @@ public class AccountServiceImpl extends ServiceImpl<TAccountMapper, TAccount> im
     /**
      * 修改账户
      *
-     * @param tAccount 账户实体
+     * @param  tAccount 账户实体
      * @throws BusinessCheckException
      */
     @Override
@@ -275,7 +275,8 @@ public class AccountServiceImpl extends ServiceImpl<TAccountMapper, TAccount> im
     /**
      * 删除账号
      *
-     * @param
+     * @param userId
+     * @return
      * */
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -288,7 +289,10 @@ public class AccountServiceImpl extends ServiceImpl<TAccountMapper, TAccount> im
     }
 
     /**
-     * 设定安全的密码，生成随机的salt并经过1024次 sha-1 hash
+     * 设定安全的密码
+     *
+     * @param user
+     * @return
      */
     @Override
     public void entryptPassword(TAccount user) {
@@ -300,6 +304,10 @@ public class AccountServiceImpl extends ServiceImpl<TAccountMapper, TAccount> im
 
     /**
      * 获取加密密码
+     *
+     * @param password
+     * @param salt
+     * @return
      * */
     @Override
     public String getEntryptPassword(String password, String salt) {

@@ -7,6 +7,7 @@ import com.fuint.common.dto.SmsTemplateDto;
 import com.fuint.common.enums.StatusEnum;
 import com.fuint.common.service.SmsTemplateService;
 import com.fuint.framework.annoation.OperationServiceLog;
+import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.pagination.PaginationRequest;
 import com.fuint.framework.pagination.PaginationResponse;
 import com.fuint.repository.mapper.MtSmsTemplateMapper;
@@ -91,7 +92,7 @@ public class SmsTemplateServiceImpl extends ServiceImpl<MtSmsTemplateMapper, MtS
     @Override
     @Transactional(rollbackFor = Exception.class)
     @OperationServiceLog(description = "保存短信模板")
-    public MtSmsTemplate saveSmsTemplate(SmsTemplateDto mtSmsTemplateDto) {
+    public MtSmsTemplate saveSmsTemplate(SmsTemplateDto mtSmsTemplateDto) throws BusinessCheckException {
         MtSmsTemplate mtSmsTemplate = new MtSmsTemplate();
         mtSmsTemplate.setMerchantId(mtSmsTemplateDto.getMerchantId());
         mtSmsTemplate.setCode(mtSmsTemplateDto.getCode());
@@ -106,6 +107,11 @@ public class SmsTemplateServiceImpl extends ServiceImpl<MtSmsTemplateMapper, MtS
             mtSmsTemplate.setUpdateTime(new Date());
             mtSmsTemplateMapper.insert(mtSmsTemplate);
         } else {
+            MtSmsTemplate oldSmsTemplate = getById(mtSmsTemplateDto.getId());
+            if (oldSmsTemplate == null) {
+                throw new BusinessCheckException("该短信模板不存在");
+            }
+            mtSmsTemplate.setMerchantId(oldSmsTemplate.getMerchantId());
             mtSmsTemplate.setId(mtSmsTemplateDto.getId());
             mtSmsTemplate.setUpdateTime(new Date());
             this.updateById(mtSmsTemplate);

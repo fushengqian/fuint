@@ -170,40 +170,40 @@ public class OpenGiftServiceImpl extends ServiceImpl<MtOpenGiftMapper, MtOpenGif
     @Transactional(rollbackFor = Exception.class)
     @OperationServiceLog(description = "更新开卡赠礼")
     public MtOpenGift updateOpenGift(MtOpenGift reqDto) throws BusinessCheckException {
-        MtOpenGift MtOpenGift = mtOpenGiftMapper.selectById(reqDto.getId());
-        if (MtOpenGift == null) {
+        MtOpenGift mtOpenGift = mtOpenGiftMapper.selectById(reqDto.getId());
+        if (mtOpenGift == null) {
             throw new BusinessCheckException("该数据状态异常");
         }
 
-        MtOpenGift.setId(reqDto.getId());
-        MtOpenGift.setUpdateTime(new Date());
+        mtOpenGift.setId(reqDto.getId());
+        mtOpenGift.setUpdateTime(new Date());
 
         if (null != reqDto.getOperator()) {
-            MtOpenGift.setOperator(reqDto.getOperator());
+            mtOpenGift.setOperator(reqDto.getOperator());
         }
 
         if (null != reqDto.getStatus()) {
-            MtOpenGift.setStatus(reqDto.getStatus());
+            mtOpenGift.setStatus(reqDto.getStatus());
         }
 
         if (null != reqDto.getCouponId()) {
-            MtOpenGift.setCouponId(reqDto.getCouponId());
+            mtOpenGift.setCouponId(reqDto.getCouponId());
         }
 
         if (null != reqDto.getGradeId()) {
-            MtOpenGift.setGradeId(reqDto.getGradeId());
+            mtOpenGift.setGradeId(reqDto.getGradeId());
         }
 
         if (null != reqDto.getPoint()) {
-            MtOpenGift.setPoint(reqDto.getPoint());
+            mtOpenGift.setPoint(reqDto.getPoint());
         }
 
         if (null != reqDto.getCouponNum()) {
-            MtOpenGift.setCouponNum(reqDto.getCouponNum());
+            mtOpenGift.setCouponNum(reqDto.getCouponNum());
         }
 
-        mtOpenGiftMapper.updateById(MtOpenGift);
-        return MtOpenGift;
+        mtOpenGiftMapper.updateById(mtOpenGift);
+        return mtOpenGift;
     }
 
     /**

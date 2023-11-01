@@ -149,6 +149,7 @@ public class UserGradeServiceImpl extends ServiceImpl<MtUserGradeMapper, MtUserG
         }
         MtUserGrade userGrade = mtUserGradeMapper.selectById(mtUserGrade.getId());
         if (null != userGrade) {
+            mtUserGrade.setMerchantId(userGrade.getMerchantId());
             mtUserGradeMapper.updateById(mtUserGrade);
         }
         return mtUserGrade;

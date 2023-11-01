@@ -76,14 +76,35 @@ public interface AccountService extends IService<TAccount> {
     List<Long> getDutyIdsByAccountId(long accountId);
 
     /**
-     * 更新账户
+     * 更新账户信息
+     *
      * @param tAccount
+     * @return
      */
     void updateAccount(TAccount tAccount);
 
+    /**
+     * 删除后台账号
+     *
+     * @param userId
+     * @return
+     * */
     void deleteAccount(Long userId);
 
+    /**
+     * 密码加密
+     *
+     * @param user
+     * @return
+     * */
     void entryptPassword(TAccount user);
 
+    /**
+     * 获取加密密码
+     *
+     * @param password
+     * @param salt
+     * @return
+     * */
     String getEntryptPassword(String password, String salt);
 }

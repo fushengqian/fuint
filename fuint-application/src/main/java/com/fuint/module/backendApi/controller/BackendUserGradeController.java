@@ -205,43 +205,43 @@ public class BackendUserGradeController extends BaseController {
         if (!CommonUtil.isNumeric(speedPoint) || Integer.parseInt(speedPoint) < 0) {
             return getFailureResult(201, "积分加速必须为正整数");
         }
-        MtUserGrade info;
+        MtUserGrade mtUserGrade;
         if (StringUtil.isEmpty(id)) {
-            info = new MtUserGrade();
+            mtUserGrade = new MtUserGrade();
         } else {
-            info = userGradeService.queryUserGradeById(accountInfo.getMerchantId(), Integer.parseInt(id), 0);
+            mtUserGrade = userGradeService.queryUserGradeById(accountInfo.getMerchantId(), Integer.parseInt(id), 0);
         }
 
-        info.setGrade(Integer.parseInt(grade));
-        info.setName(name);
-        info.setMerchantId(accountInfo.getMerchantId());
+        mtUserGrade.setGrade(Integer.parseInt(grade));
+        mtUserGrade.setName(name);
+        mtUserGrade.setMerchantId(accountInfo.getMerchantId());
         if (StringUtil.isNotEmpty(catchType)) {
-            info.setCatchType(catchType);
+            mtUserGrade.setCatchType(catchType);
         }
         if (StringUtil.isNotEmpty(condition)) {
-            info.setCatchCondition(condition);
+            mtUserGrade.setCatchCondition(condition);
         }
         if (StringUtil.isNotEmpty(privilege)) {
-            info.setUserPrivilege(privilege);
+            mtUserGrade.setUserPrivilege(privilege);
         }
         if (StringUtil.isNotEmpty(catchValue)) {
-            info.setCatchValue(new BigDecimal(catchValue));
+            mtUserGrade.setCatchValue(new BigDecimal(catchValue));
         }
         if (StringUtil.isNotEmpty(validDay)) {
-            info.setValidDay(Integer.parseInt(validDay));
+            mtUserGrade.setValidDay(Integer.parseInt(validDay));
         }
         if (StringUtil.isNotEmpty(discount)) {
-            info.setDiscount(Float.parseFloat(discount));
+            mtUserGrade.setDiscount(Float.parseFloat(discount));
         }
         if (StringUtil.isNotEmpty(speedPoint)) {
-            info.setSpeedPoint(Float.parseFloat(speedPoint));
+            mtUserGrade.setSpeedPoint(Float.parseFloat(speedPoint));
         }
-        info.setStatus(status);
+        mtUserGrade.setStatus(status);
         if (StringUtil.isEmpty(id)) {
-            userGradeService.addUserGrade(info);
+            userGradeService.addUserGrade(mtUserGrade);
         } else {
-            info.setId(Integer.parseInt(id));
-            userGradeService.updateUserGrade(info);
+            mtUserGrade.setId(Integer.parseInt(id));
+            userGradeService.updateUserGrade(mtUserGrade);
         }
         return getSuccessResult(true);
     }

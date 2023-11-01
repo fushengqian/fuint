@@ -121,6 +121,7 @@ public class StaffServiceImpl extends ServiceImpl<MtStaffMapper, MtStaff> implem
      * 保存员工信息
      *
      * @param  mtStaff
+     * @return
      * @throws BusinessCheckException
      */
     @Override
@@ -137,10 +138,11 @@ public class StaffServiceImpl extends ServiceImpl<MtStaffMapper, MtStaff> implem
             this.save(mtStaff);
         } else {
             Integer id = mtStaff.getId();
-            MtStaff mtStaffTemp = mtStaffMapper.selectById(id);
-            if (mtStaffTemp.getAuditedStatus().equals(StatusEnum.ENABLED.getKey())) {
+            MtStaff mtStaffOld = mtStaffMapper.selectById(id);
+            if (mtStaffOld.getAuditedStatus().equals(StatusEnum.ENABLED.getKey())) {
                 mtStaff.setAuditedTime(new Date());
             }
+            mtStaff.setMerchantId(mtStaffOld.getMerchantId());
         }
 
         MtUser mtUser = null;
@@ -245,7 +247,7 @@ public class StaffServiceImpl extends ServiceImpl<MtStaffMapper, MtStaff> implem
     /**
      * 根据会员ID获取员工信息
      *
-     * @param userId 会员ID
+     * @param  userId 会员ID
      * @throws BusinessCheckException
      */
     @Override

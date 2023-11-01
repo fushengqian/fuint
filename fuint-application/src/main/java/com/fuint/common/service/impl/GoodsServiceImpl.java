@@ -164,6 +164,7 @@ public class GoodsServiceImpl extends ServiceImpl<MtGoodsMapper, MtGoods> implem
         MtGoods mtGoods = new MtGoods();
         if (reqDto.getId() > 0) {
             mtGoods = queryGoodsById(reqDto.getId());
+            reqDto.setMerchantId(mtGoods.getMerchantId());
         }
         if (reqDto.getMerchantId() != null) {
             mtGoods.setMerchantId(reqDto.getMerchantId() >= 0 ? reqDto.getMerchantId() : 0);
@@ -392,15 +393,13 @@ public class GoodsServiceImpl extends ServiceImpl<MtGoodsMapper, MtGoods> implem
      */
     @Override
     @OperationServiceLog(description = "删除商品信息")
-    public void deleteGoods(Integer id, String operator) {
+    public void deleteGoods(Integer id, String operator) throws BusinessCheckException {
         MtGoods cateInfo = queryGoodsById(id);
         if (null == cateInfo) {
-            return;
+            throw new BusinessCheckException("该商品不存在");
         }
-
         cateInfo.setStatus(StatusEnum.DISABLE.getKey());
         cateInfo.setUpdateTime(new Date());
-
         mtGoodsMapper.updateById(cateInfo);
     }
 

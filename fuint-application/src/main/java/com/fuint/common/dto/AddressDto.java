@@ -3,6 +3,7 @@ package com.fuint.common.dto;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
+import java.io.Serializable;
 
 /**
  * 会员地址信息
@@ -12,7 +13,7 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-public class AddressDto {
+public class AddressDto implements Serializable {
 
     @ApiModelProperty("账户主键ID")
     private Integer id;

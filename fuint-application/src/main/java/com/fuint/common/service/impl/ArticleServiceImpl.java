@@ -190,9 +190,6 @@ public class ArticleServiceImpl extends ServiceImpl<MtArticleMapper, MtArticle> 
         if (articleDto.getMerchantId() != null) {
             mtArticle.setMerchantId(articleDto.getMerchantId());
         }
-        if (articleDto.getMerchantId() != null) {
-            mtArticle.setMerchantId(articleDto.getMerchantId());
-        }
         if (articleDto.getStoreId() != null) {
             mtArticle.setStoreId(articleDto.getStoreId());
         }
@@ -216,6 +213,12 @@ public class ArticleServiceImpl extends ServiceImpl<MtArticleMapper, MtArticle> 
         return mtArticle;
     }
 
+    /**
+     * 根据条件搜索文章
+     *
+     * @param params
+     * @return
+     * */
     @Override
     public List<MtArticle> queryArticleListByParams(Map<String, Object> params) {
         String status =  params.get("status") == null ? StatusEnum.ENABLED.getKey(): params.get("status").toString();

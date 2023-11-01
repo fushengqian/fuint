@@ -182,13 +182,8 @@ public class BackendGoodsController extends BaseController {
         if (accountInfo == null) {
             return getFailureResult(1001, "请先登录");
         }
-        try {
-            String operator = accountInfo.getAccountName();
-            goodsService.deleteGoods(id, operator);
-        } catch (BusinessCheckException e) {
-            return getFailureResult(201, e.getMessage() == null ? "删除失败" : e.getMessage());
-        }
-
+        String operator = accountInfo.getAccountName();
+        goodsService.deleteGoods(id, operator);
         return getSuccessResult(true);
     }
 

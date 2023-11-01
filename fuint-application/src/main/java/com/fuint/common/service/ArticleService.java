@@ -58,6 +58,9 @@ public interface ArticleService extends IService<MtArticle> {
 
     /**
      * 根据条件搜索文章
+     *
+     * @param params
+     * @return
      * */
     List<MtArticle> queryArticleListByParams(Map<String, Object> params) throws BusinessCheckException;
 

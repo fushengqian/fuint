@@ -201,7 +201,6 @@ public class CouponGroupServiceImpl extends ServiceImpl<MtCouponGroupMapper, MtC
     public MtCouponGroup updateCouponGroup(ReqCouponGroupDto reqcouponGroupDto) throws BusinessCheckException {
         MtCouponGroup couponGroup = queryCouponGroupById(reqcouponGroupDto.getId());
         if (null == couponGroup || StatusEnum.DISABLE.getKey().equalsIgnoreCase(couponGroup.getStatus())) {
-            log.error("该分组不存在或已被删除");
             throw new BusinessCheckException("该分组不存在或已被删除");
         }
         if (reqcouponGroupDto.getName() != null) {
@@ -216,12 +215,9 @@ public class CouponGroupServiceImpl extends ServiceImpl<MtCouponGroupMapper, MtC
         if (reqcouponGroupDto.getStatus() != null) {
             couponGroup.setStatus(reqcouponGroupDto.getStatus());
         }
-
         couponGroup.setUpdateTime(new Date());
         couponGroup.setOperator(reqcouponGroupDto.getOperator());
-
         this.updateById(couponGroup);
-
         return couponGroup;
     }
 
@@ -241,7 +237,7 @@ public class CouponGroupServiceImpl extends ServiceImpl<MtCouponGroupMapper, MtC
     /**
      * 获取卡券总价值
      *
-     * @param groupId
+     * @param  groupId
      * @throws BusinessCheckException
      */
     @Override
@@ -328,8 +324,8 @@ public class CouponGroupServiceImpl extends ServiceImpl<MtCouponGroupMapper, MtC
                     continue;
                 }
 
-                if (j%2 != 0) {
-                    Pattern pattern = Pattern.compile("^[1-9]\\d*$");
+                Pattern pattern = Pattern.compile("^[1-9]\\d*$");
+                if ((j%2) != 0) {
                     if (item == null || (!pattern.matcher(cellContent).matches())) {
                         throw new BusinessCheckException("第" + (i+1) + "行第"+ j +"列错误, 卡券ID异常");
                     }
@@ -341,7 +337,6 @@ public class CouponGroupServiceImpl extends ServiceImpl<MtCouponGroupMapper, MtC
                     }
                     groupIdArr.add(item);
                 } else {
-                    Pattern pattern = Pattern.compile("^[1-9]\\d*$");
                     if (item == null || (!pattern.matcher(rowContent.get(j)).matches())) {
                         throw new BusinessCheckException("第" + (i+1) + "行第"+ j +"列错误, 数量异常");
                     }
