@@ -7,7 +7,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * 会员分组
+ * 会员分组实体
  *
  * Created by FSQ
  * CopyRight https://www.fuint.cn

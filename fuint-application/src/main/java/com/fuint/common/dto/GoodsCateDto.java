@@ -2,20 +2,21 @@ package com.fuint.common.dto;
 
 import java.io.Serializable;
 import java.util.Date;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
 
 /**
  * 商品分类DTO
+ *
  * Created by FSQ
  * CopyRight https://www.fuint.cn
  */
 @Getter
 @Setter
 public class GoodsCateDto implements Serializable {
-
-    private static final long serialVersionUID = 1L;
 
     @ApiModelProperty("自增ID")
     private Integer id;
@@ -41,9 +42,11 @@ public class GoodsCateDto implements Serializable {
     @ApiModelProperty("分类描述")
     private String description;
 
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @ApiModelProperty("创建时间")
     private Date createTime;
 
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @ApiModelProperty("更新时间")
     private Date updateTime;
 

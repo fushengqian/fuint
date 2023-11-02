@@ -1,82 +1,38 @@
 package com.fuint.common.dto;
 
 import com.fuint.repository.model.MtUser;
+import io.swagger.annotations.ApiModelProperty;
+import lombok.Getter;
+import lombok.Setter;
+
 import java.math.BigDecimal;
 
 /**
  * 收银挂单实体类
+ *
+ * Created by FSQ
+ * CopyRight https://www.fuint.cn
  */
+@Getter
+@Setter
 public class HangUpDto {
 
-    /**
-     * 挂单号
-     */
+    @ApiModelProperty("挂单号")
     private String hangNo;
 
-    /**
-     * 是否空白
-     * */
-    private boolean isEmpty;
+    @ApiModelProperty("是否空白")
+    private Boolean isEmpty;
 
-    /**
-     * 会员信息
-     */
+    @ApiModelProperty("会员信息")
     private MtUser memberInfo;
 
-    /**
-     * 件数
-     */
+    @ApiModelProperty("件数")
     private Integer num;
 
-    /**
-     * 金额
-     */
+    @ApiModelProperty("金额")
     private BigDecimal amount;
 
-    /**
-     * 时间
-     */
+    @ApiModelProperty("时间")
     private String dateTime;
 
-    public String getHangNo() {
-        return hangNo;
-    }
-    public void setHangNo(String hangNo) {
-        this.hangNo = hangNo;
-    }
-
-    public boolean getIsEmpty() {
-        return isEmpty;
-    }
-    public void setIsEmpty(boolean isEmpty) {
-        this.isEmpty = isEmpty;
-    }
-
-    public MtUser getMemberInfo() {
-        return memberInfo;
-    }
-    public void setMemberInfo(MtUser memberInfo) {
-        this.memberInfo = memberInfo;
-    }
-
-    public BigDecimal getAmount(){
-        return amount;
-    }
-    public void setAmount(BigDecimal amount){
-        this.amount=amount;
-    }
-
-    public Integer getNum(){
-        return num;
-    }
-    public void setNum(Integer num){
-        this.num=num;
-    }
-
-    public String getDateTime() {
-        return dateTime;
-    }
-    public void setDateTime(String dateTime) {
-        this.dateTime = dateTime;
-    }
 }

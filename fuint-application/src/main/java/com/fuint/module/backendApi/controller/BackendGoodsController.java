@@ -592,23 +592,23 @@ public class BackendGoodsController extends BaseController {
         List<MtGoodsSpec> dataList = mtGoodsSpecMapper.selectByMap(paramSearch);
 
         Integer targetId;
+        MtGoodsSpec mtGoodsSpec;
         if (dataList.size() < 1) {
-            MtGoodsSpec mtGoodsSpec = new MtGoodsSpec();
+            mtGoodsSpec = new MtGoodsSpec();
             mtGoodsSpec.setGoodsId(Integer.parseInt(goodsId));
             mtGoodsSpec.setName(name);
             mtGoodsSpec.setValue("");
             mtGoodsSpec.setStatus(StatusEnum.ENABLED.getKey());
             mtGoodsSpecMapper.insert(mtGoodsSpec);
-            targetId = mtGoodsSpec.getId();
         } else {
-            MtGoodsSpec mtGoodsSpec = dataList.get(0);
+            mtGoodsSpec = dataList.get(0);
             if (!mtGoodsSpec.getStatus().equals(StatusEnum.ENABLED.getKey())) {
                 mtGoodsSpec.setStatus(StatusEnum.ENABLED.getKey());
                 mtGoodsSpec.setValue("");
                 mtGoodsSpecMapper.updateById(mtGoodsSpec);
             }
-            targetId = mtGoodsSpec.getId();
         }
+        targetId = mtGoodsSpec.getId();
 
         Map<String, Object> outParams = new HashMap();
         outParams.put("id", targetId);

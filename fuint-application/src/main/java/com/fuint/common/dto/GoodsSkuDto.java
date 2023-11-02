@@ -1,120 +1,52 @@
 package com.fuint.common.dto;
 
 import com.fuint.repository.model.MtGoodsSpec;
+import io.swagger.annotations.ApiModelProperty;
+import lombok.Getter;
+import lombok.Setter;
+
+import java.io.Serializable;
 import java.util.List;
 import java.math.BigDecimal;
 
-public class GoodsSkuDto {
+/**
+ * 商品sku实体
+ *
+ * Created by FSQ
+ * CopyRight https://www.fuint.cn
+ */
+@Getter
+@Setter
+public class GoodsSkuDto implements Serializable {
 
-    /**
-     * 自增ID
-     */
+    @ApiModelProperty("自增ID")
     private Integer id;
 
-    /**
-     * sku编码
-     */
+    @ApiModelProperty("sku编码")
     private String skuNo;
 
-    /**
-     * 图片
-     */
+    @ApiModelProperty("图片")
     private String logo;
-    
-    
-    /**
-     * 商品ID
-     */
+
+    @ApiModelProperty("商品ID")
     private Integer goodsId;
 
-    /**
-     * 规格ID
-     */
+    @ApiModelProperty("规格ID")
     private String specIds;
 
-    /**
-     * 规格列表
-     */
+    @ApiModelProperty("规格列表")
     private List<MtGoodsSpec> specList;
 
-    /**
-     * 库存
-     */
+    @ApiModelProperty("库存")
     private Integer stock;
 
-    /**
-     * 价格
-     */
+    @ApiModelProperty("价格")
     private BigDecimal price;
 
-    /**
-     * 划线价格
-     */
+    @ApiModelProperty("划线价格")
     private BigDecimal linePrice;
 
-    /**
-     * 重量
-     */
+    @ApiModelProperty("重量")
     private BigDecimal weight;
 
-    public Integer getId(){
-        return id;
-    }
-    public void setId(Integer id){
-        this.id=id;
-    }
-    public String getSkuNo(){
-        return skuNo;
-    }
-    public void setSkuNo(String skuNo){
-        this.skuNo=skuNo;
-    }
-    public String getLogo(){
-        return logo;
-    }
-    public void setLogo(String logo){
-        this.logo=logo;
-    }
-    public Integer getGoodsId(){
-        return goodsId;
-    }
-    public void setGoodsId(Integer goodsId){
-        this.goodsId=goodsId;
-    }
-    public String getSpecIds(){
-        return specIds;
-    }
-    public void setSpecIds(String specIds){
-        this.specIds=specIds;
-    }
-    public List<MtGoodsSpec> getSpecList(){
-        return specList;
-    }
-    public void setSpecList(List<MtGoodsSpec> specList){
-        this.specList=specList;
-    }
-    public Integer getStock(){
-        return stock;
-    }
-    public void setStock(Integer stock){
-        this.stock=stock;
-    }
-    public BigDecimal getPrice(){
-        return price;
-    }
-    public void setPrice(BigDecimal price){
-        this.price=price;
-    }
-    public BigDecimal getLinePrice(){
-        return linePrice;
-    }
-    public void setLinePrice(BigDecimal linePrice){
-        this.linePrice=linePrice;
-    }
-    public BigDecimal getWeight(){
-        return weight;
-    }
-    public void setWeight(BigDecimal weight){
-        this.weight=weight;
-    }
 }

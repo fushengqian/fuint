@@ -1,5 +1,8 @@
 package com.fuint.common.dto;
 
+import io.swagger.annotations.ApiModelProperty;
+import lombok.Getter;
+import lombok.Setter;
 import java.io.Serializable;
 import java.util.Map;
 
@@ -9,28 +12,15 @@ import java.util.Map;
  * Created by FSQ
  * CopyRight https://www.fuint.cn
  */
-public class Body implements Serializable{
+@Getter
+@Setter
+public class Body implements Serializable {
 
-    private static final long serialVersionUID = 5748371865401175733L;
+    @ApiModelProperty("入参信息")
+    private Map<String,Object> inParams;
 
-    private Map<String,Object> inParams;//入参信息
-    private Map<String,Object> outParams;//出参信息
-
-    public Map<String, Object> getInParams() {
-        return inParams;
-    }
-
-    public void setInParams(Map<String, Object> inParams) {
-        this.inParams = inParams;
-    }
-
-    public Map<String, Object> getOutParams() {
-        return outParams;
-    }
-
-    public void setOutParams(Map<String, Object> outParams) {
-        this.outParams = outParams;
-    }
+    @ApiModelProperty("出参信息")
+    private Map<String,Object> outParams;
 
     @Override
     public String toString() {

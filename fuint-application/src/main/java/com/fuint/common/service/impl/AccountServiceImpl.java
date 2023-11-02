@@ -108,6 +108,8 @@ public class AccountServiceImpl extends ServiceImpl<TAccountMapper, TAccount> im
              if (mtStore != null) {
                  accountDto.setStoreName(mtStore.getName());
              }
+             accountDto.setSalt(null);
+             accountDto.setPassword(null);
              dataList.add(accountDto);
         }
 

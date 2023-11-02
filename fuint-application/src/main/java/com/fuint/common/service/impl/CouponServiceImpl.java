@@ -372,8 +372,8 @@ public class CouponServiceImpl extends ServiceImpl<MtCouponMapper, MtCoupon> imp
     /**
      * 删除卡券
      *
-     * @param id       券ID
-     * @param operator 操作人
+     * @param  id       券ID
+     * @param  operator 操作人
      * @throws BusinessCheckException
      */
     @Override
@@ -384,18 +384,12 @@ public class CouponServiceImpl extends ServiceImpl<MtCouponMapper, MtCoupon> imp
         if (null == couponInfo) {
             return;
         }
-
         couponInfo.setStatus(StatusEnum.DISABLE.getKey());
-
         // 修改时间
         couponInfo.setUpdateTime(new Date());
-
         // 操作人
         couponInfo.setOperator(operator);
-
         mtCouponMapper.updateById(couponInfo);
-
-        return;
     }
 
     /**
@@ -412,7 +406,6 @@ public class CouponServiceImpl extends ServiceImpl<MtCouponMapper, MtCoupon> imp
         Integer userId = couponListParam.getUserId() == null ? 0 : couponListParam.getUserId();
         Integer needPoint = couponListParam.getNeedPoint() == null ? 0 : couponListParam.getNeedPoint();
         String sendWay = couponListParam.getSendWay() == null ? "front" : couponListParam.getSendWay();
-        String sortType = couponListParam.getSortType() == null ? "createTime" : couponListParam.getSortType();
 
         Page<MtCoupon> pageHelper = PageHelper.startPage(pageNumber, pageSize);
         LambdaQueryWrapper<MtCoupon> lambdaQueryWrapper = Wrappers.lambdaQuery();

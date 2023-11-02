@@ -1,38 +1,26 @@
 package com.fuint.common.dto;
 
+import io.swagger.annotations.ApiModelProperty;
+import lombok.Getter;
+import lombok.Setter;
+
 /**
- * 短信发送返回
+ * 短信发送返回实体
  *
  * Created by FSQ
  * CopyRight https://www.fuint.cn
  */
+@Getter
+@Setter
 public class MessageResDto {
 
+    @ApiModelProperty("发送ID")
     private String[] sendIds;
+
+    @ApiModelProperty("发送结果")
     private Boolean result;
+
+    @ApiModelProperty("短信ID")
     private String[] smsId;
 
-    public Boolean getResult() {
-        return result;
-    }
-
-    public void setResult(Boolean result) {
-        this.result = result;
-    }
-
-    public String[] getSendIds() {
-        return sendIds;
-    }
-
-    public void setSendIds(String[] sendIds) {
-        this.sendIds = sendIds;
-    }
-
-    public String[] getSmsId() {
-        return smsId;
-    }
-
-    public void setSmsId(String[] smsId) {
-        this.smsId = smsId;
-    }
 }
