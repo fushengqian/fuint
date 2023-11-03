@@ -1,110 +1,51 @@
 package com.fuint.common.dto;
 
+import io.swagger.annotations.ApiModelProperty;
+import lombok.Getter;
+import lombok.Setter;
+
 import java.io.Serializable;
 import java.util.List;
 
 /**
- * 订单实体类
- * */
+ * 订单商品实体类
+ *
+ * Created by FSQ
+ * CopyRight https://www.fuint.cn
+ */
+@Getter
+@Setter
 public class OrderGoodsDto implements Serializable {
+
+    @ApiModelProperty("自增ID")
     private Integer id;
 
+    @ApiModelProperty("商品ID")
     private Integer goodsId;
 
+    @ApiModelProperty("订单类型")
     private String type;
 
+    @ApiModelProperty("商品名称")
     private String name;
 
+    @ApiModelProperty("价格")
     private String price;
 
+    @ApiModelProperty("折扣")
     private String discount;
 
+    @ApiModelProperty("购买数量")
     private Integer num;
 
+    @ApiModelProperty("图片")
     private String image;
 
+    @ApiModelProperty("skuId")
     private Integer skuId;
 
+    @ApiModelProperty("规格列表")
     private List<GoodsSpecValueDto> specList;
 
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public Integer getGoodsId() {
-        return goodsId;
-    }
-
-    public void setGoodsId(Integer goodsId) {
-        this.goodsId = goodsId;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getPrice() {
-        return price;
-    }
-
-    public void setPrice(String price) {
-        this.price = price;
-    }
-
-    public String getDiscount() {
-        return discount;
-    }
-
-    public void setDiscount(String discount) {
-        this.discount = discount;
-    }
-
-    public Integer getNum() {
-        return num;
-    }
-
-    public void setNum(Integer num) {
-        this.num = num;
-    }
-
-    public String getImage() {
-        return image;
-    }
-
-    public void setImage(String image) {
-        this.image = image;
-    }
-
-    public Integer getSkuId() {
-        return skuId;
-    }
-
-    public void setSkuId(Integer skuId) {
-        this.skuId = skuId;
-    }
-
-    public List<GoodsSpecValueDto> getSpecList() {
-        return specList;
-    }
-
-    public void setSpecList(List<GoodsSpecValueDto> specList) {
-        this.specList = specList;
-    }
 }
 

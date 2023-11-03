@@ -255,7 +255,7 @@ public class DutyServiceImpl extends ServiceImpl<TDutyMapper, TDuty> implements 
                  sourceTreeNode.setName(tDuty.getDutyName());
                  sourceTreeNode.setId(tDuty.getDutyId());
                  sourceTreeNode.setLevel(1);
-                 sourceTreeNode.setpId(0);
+                 sourceTreeNode.setPId(0);
                  trees.add(sourceTreeNode);
             }
         }

@@ -1,66 +1,41 @@
 package com.fuint.common.dto;
 
+import io.swagger.annotations.ApiModelProperty;
+import lombok.Getter;
+import lombok.Setter;
+
+import java.io.Serializable;
 import java.util.List;
 
 /**
  * 地区实体类
- * */
-public class RegionDto {
+ *
+ * Created by FSQ
+ * CopyRight https://www.fuint.cn
+ */
+@Getter
+@Setter
+public class RegionDto implements Serializable {
 
+    @ApiModelProperty("自增ID")
     private Integer id;
 
+    @ApiModelProperty("名称")
     private String name;
 
+    @ApiModelProperty("父ID")
     private Integer pid;
 
+    @ApiModelProperty("编码")
     private String code;
 
+    @ApiModelProperty("层级")
     private String level;
 
+    @ApiModelProperty("城市")
     private List<RegionDto> city;
 
+    @ApiModelProperty("区域")
     private List<RegionDto> region;
 
-    public Integer getId(){
-        return id;
-    }
-    public void setId(Integer id){
-        this.id=id;
-    }
-    public String getName(){
-        return name;
-    }
-    public void setName(String name){
-        this.name=name;
-    }
-    public Integer getPid(){
-        return pid;
-    }
-    public void setPid(Integer pid){
-        this.pid=pid;
-    }
-    public String getCode(){
-        return code;
-    }
-    public void setCode(String code){
-        this.code=code;
-    }
-    public String getLevel(){
-        return level;
-    }
-    public void setLevel(String level){
-        this.level=level;
-    }
-    public List<RegionDto> getCity() {
-       return city;
-    }
-    public void setCity(List<RegionDto> city) {
-        this.city = city;
-    }
-    public List<RegionDto> getRegion() {
-        return region;
-    }
-    public void setRegion(List<RegionDto> region) {
-        this.region = region;
-    }
 }

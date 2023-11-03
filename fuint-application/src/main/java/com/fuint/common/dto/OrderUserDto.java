@@ -1,5 +1,8 @@
 package com.fuint.common.dto;
 
+import io.swagger.annotations.ApiModelProperty;
+import lombok.Getter;
+import lombok.Setter;
 import java.io.Serializable;
 
 /**
@@ -8,77 +11,26 @@ import java.io.Serializable;
  * Created by FSQ
  * CopyRight https://www.fuint.cn
  */
+@Getter
+@Setter
 public class OrderUserDto implements Serializable {
 
-    /**
-     * 会员ID
-     * */
+    @ApiModelProperty("会员ID")
     private Integer id;
 
-    /**
-     * 姓名
-     */
+    @ApiModelProperty("会员姓名")
     private String name;
 
-    /**
-     * 手机
-     * */
+    @ApiModelProperty("会员手机")
     private String mobile;
 
-    /**
-     * 证件类型
-     * */
+    @ApiModelProperty("证件类型")
     private String cardType;
 
-    /**
-     * 证件号
-     * */
+    @ApiModelProperty("证件号")
     private String cardNo;
 
-    /**
-     * 地址
-     * */
+    @ApiModelProperty("地址")
     private String address;
 
-    public Integer getId() {
-        return id;
-    }
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getMobile() {
-        return mobile;
-    }
-    public void setMobile(String mobile) {
-        this.mobile = mobile;
-    }
-
-    public String getCardType() {
-        return cardType;
-    }
-    public void setCardType(String cardType) {
-        this.cardType = cardType;
-    }
-
-    public String getCardNo() {
-        return cardNo;
-    }
-    public void setCardNo(String cardNo) {
-        this.cardNo = cardNo;
-    }
-
-    public String getAddress() {
-        return address;
-    }
-    public void setAddress(String address) {
-        this.address = address;
-    }
 }

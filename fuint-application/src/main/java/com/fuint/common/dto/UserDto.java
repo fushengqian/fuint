@@ -19,8 +19,6 @@ import lombok.Setter;
 @Setter
 public class UserDto implements Serializable {
 
-    private static final long serialVersionUID = 1L;
-
     @ApiModelProperty("会员ID")
     private Integer id;
 
@@ -106,4 +104,5 @@ public class UserDto implements Serializable {
 
     @ApiModelProperty("最后操作人")
     private String operator;
+
 }

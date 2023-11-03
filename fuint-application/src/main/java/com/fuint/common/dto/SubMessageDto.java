@@ -1,5 +1,10 @@
 package com.fuint.common.dto;
 
+import io.swagger.annotations.ApiModelProperty;
+import lombok.Getter;
+import lombok.Setter;
+
+import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -8,61 +13,28 @@ import java.util.List;
  * Created by FSQ
  * CopyRight https://www.fuint.cn
  */
-public class SubMessageDto {
+@Getter
+@Setter
+public class SubMessageDto implements Serializable {
+
+    @ApiModelProperty("键值")
     private String key;
+
+    @ApiModelProperty("模板ID")
     private String templateId;
+
+    @ApiModelProperty("TID")
     private String tid;
+
+    @ApiModelProperty("标题")
     private String title;
+
+    @ApiModelProperty("内容")
     private String content;
+
+    @ApiModelProperty("状态")
     private String status;
+
+    @ApiModelProperty("模板参数")
     private List<ParamDto> params;
-
-    public String getKey(){
-        return key;
-    }
-    public void setKey(String key){
-        this.key = key;
-    }
-
-    public String getTemplateId(){
-        return templateId;
-    }
-    public void setTemplateId(String templateId){
-        this.templateId = templateId;
-    }
-
-    public String getTid(){
-        return tid;
-    }
-    public void setTid(String tid){
-        this.tid = tid;
-    }
-
-    public String getTitle(){
-        return title;
-    }
-    public void setTitle(String title){
-        this.title = title;
-    }
-
-    public String getContent(){
-        return content;
-    }
-    public void setContent(String content){
-        this.content = content;
-    }
-
-    public String getStatus(){
-        return status;
-    }
-    public void setStatus(String status){
-        this.status = status;
-    }
-
-    public List<ParamDto> getParams(){
-        return params;
-    }
-    public void setParams(List<ParamDto> params){
-        this.params = params;
-    }
 }

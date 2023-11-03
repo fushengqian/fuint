@@ -1,5 +1,6 @@
 package com.fuint.common.dto;
 
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import java.io.Serializable;
 
@@ -11,6 +12,11 @@ import java.io.Serializable;
  */
 @Data
 public class UserInfo implements Serializable {
+
+    @ApiModelProperty("会员ID")
     private Integer id;
+
+    @ApiModelProperty("登录Token")
     private String token;
+
 }

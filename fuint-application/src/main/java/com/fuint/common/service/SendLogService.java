@@ -26,7 +26,7 @@ public interface SendLogService extends IService<MtSendLog> {
     /**
      * 添加记录
      *
-     * @param reqSendLogDto
+     * @param  reqSendLogDto
      * @throws BusinessCheckException
      */
     MtSendLog addSendLog(ReqSendLogDto reqSendLogDto) throws BusinessCheckException;
@@ -34,7 +34,7 @@ public interface SendLogService extends IService<MtSendLog> {
     /**
      * 根据组ID获取发券记录
      *
-     * @param id ID
+     * @param  id ID
      * @throws BusinessCheckException
      */
     MtSendLog querySendLogById(Long id) throws BusinessCheckException;
@@ -42,8 +42,8 @@ public interface SendLogService extends IService<MtSendLog> {
     /**
      * 删除发券记录
      *
-     * @param id       ID
-     * @param operator 操作人
+     * @param  id       ID
+     * @param  operator 操作人
      * @throws BusinessCheckException
      */
     void deleteSendLog(Long id, String operator) throws BusinessCheckException;

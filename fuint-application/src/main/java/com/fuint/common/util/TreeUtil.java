@@ -28,7 +28,7 @@ public class TreeUtil {
         for (TreeNode node1 : sourceTreeNodeList) {
             boolean mark = false;
             for (TreeNode node2 : sourceTreeNodeList) {
-                if (StringUtil.isNotEmpty(node1.getName()) && node1.getpId() == node2.getId()) {
+                if (StringUtil.isNotEmpty(node1.getName()) && node1.getPId() == node2.getId()) {
                     mark = true;
                     if (node2.getChildrens() == null) {
                         node2.setChildrens(new ArrayList<>());

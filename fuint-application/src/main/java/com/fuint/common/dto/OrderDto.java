@@ -107,10 +107,10 @@ public class OrderDto implements Serializable {
 
     @ApiModelProperty("订单状态")
     private String status;
-
+    
     @ApiModelProperty("支付状态")
     private String payStatus;
-    
+
     @ApiModelProperty("最后操作人")
     private String operator;
 

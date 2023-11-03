@@ -1,231 +1,69 @@
 package com.fuint.common.dto;
 
+import io.swagger.annotations.ApiModelProperty;
+import lombok.Getter;
+import lombok.Setter;
+import java.io.Serializable;
+
 /**
  * 菜单信息实体
  *
  * Created by FSQ
  * CopyRight https://www.fuint.cn
  */
-public class SourceDto {
+@Getter
+@Setter
+public class SourceDto implements Serializable {
 
-    /**
-     * 菜单ID
-     */
+    @ApiModelProperty("自增ID")
     private long id;
 
-    /**
-     * 商户ID
-     */
+    @ApiModelProperty("商户ID")
     private Integer merchantId;
 
-    /**
-     * 菜单名称
-     */
+    @ApiModelProperty("菜单名称")
     private String name;
 
-    /**
-     * 菜单名称(字母)
-     */
+    @ApiModelProperty("菜单名称(字母)")
     private String ename;
 
-    /**
-     * tree 节点是否打开
-     */
-    private boolean open;
+    @ApiModelProperty("节点是否打开")
+    private Boolean open;
 
-    /**
-     * 是否菜单
-     * */
+    @ApiModelProperty("是否菜单")
     private int isMenu;
 
-    /**
-     * tree 节点是否选中
-     */
-    private boolean checked;
+    @ApiModelProperty("节点是否选中")
+    private Boolean checked;
 
-    /**
-     * url
-     */
+    @ApiModelProperty("url")
     private String url;
 
-    /**
-     * path
-     */
+    @ApiModelProperty("路径")
     private String path;
 
-    /**
-     * 权限标识
-     */
+    @ApiModelProperty("权限标识")
     private String perms;
 
-    /**
-     * 菜单级别
-     */
+    @ApiModelProperty("菜单级别")
     private int level;
 
-    /**
-     * 上级菜单
-     */
+    @ApiModelProperty("上级菜单")
     private long parentId;
 
-    /**
-     * 图标
-     */
+    @ApiModelProperty("图标")
     private String icon;
 
-    /**
-     * 新图标
-     */
+    @ApiModelProperty("新图标")
     private String newIcon;
 
-    /**
-     * 描述信息
-     * */
+    @ApiModelProperty("描述信息")
     private String description;
 
-    /**
-     * 排序
-     * */
+    @ApiModelProperty("排序")
     private String sort;
 
-    /**
-     * 状态
-     * */
+    @ApiModelProperty("状态")
     private String status;
 
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
-    }
-
-    public Integer getMerchantId() {
-        return merchantId;
-    }
-
-    public void setMerchantId(Integer merchantId) {
-        this.merchantId = merchantId;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getEname() {
-        return ename;
-    }
-
-    public void setEname(String ename) {
-        this.ename = ename;
-    }
-
-    public boolean isOpen() {
-        return open;
-    }
-
-    public int getIsMenu() {
-        return isMenu;
-    }
-
-    public void setIsMenu(int isMenu) {
-        this.isMenu = isMenu;
-    }
-
-    public void setOpen(boolean open) {
-        this.open = open;
-    }
-
-    public boolean isChecked() {
-        return checked;
-    }
-
-    public void setChecked(boolean checked) {
-        this.checked = checked;
-    }
-
-    public int getLevel() {
-        return level;
-    }
-
-    public void setLevel(int level) {
-        this.level = level;
-    }
-
-    public long getParentId() {
-        return parentId;
-    }
-
-    public void setParentId(long parentId) {
-        this.parentId = parentId;
-    }
-
-    public String getUrl() {
-        return url;
-    }
-
-    public void setUrl(String url) {
-        this.url = url;
-    }
-
-    public String getPath() {
-        return path;
-    }
-
-    public void setPath(String path) {
-        this.path = path;
-    }
-
-    public String getPerms() {
-        return perms;
-    }
-
-    public void setPerms(String perms) {
-        this.perms = perms;
-    }
-
-    public String getIcon() {
-        return icon;
-    }
-
-    public void setIcon(String icon) {
-        this.icon = icon;
-    }
-
-    public String getNewIcon() {
-        return newIcon;
-    }
-
-    public void setNewIcon(String newIcon) {
-        this.newIcon = newIcon;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public String getSort() {
-        return sort;
-    }
-
-    public void setSort(String sort) {
-        this.sort = sort;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
 }

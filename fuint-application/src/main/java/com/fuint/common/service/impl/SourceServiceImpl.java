@@ -65,9 +65,9 @@ public class SourceServiceImpl extends ServiceImpl<TSourceMapper, TSource> imple
                 sourceTreeNode.setStatus(tSource.getStatus());
                 sourceTreeNode.setPerms(tSource.getPath().replaceAll("/", ":"));
                 if (tSource.getParentId() != null) {
-                    sourceTreeNode.setpId(tSource.getParentId());
+                    sourceTreeNode.setPId(tSource.getParentId());
                 } else {
-                    sourceTreeNode.setpId(0);
+                    sourceTreeNode.setPId(0);
                 }
                 trees.add(sourceTreeNode);
             }
@@ -172,7 +172,7 @@ public class SourceServiceImpl extends ServiceImpl<TSourceMapper, TSource> imple
         for (Iterator<TreeNode> iterator = menus.iterator(); iterator.hasNext();) {
             TreeNode menu = (TreeNode) iterator.next();
             // 如果是顶级节点, 遍历该父节点的所有子节点
-            if (!tempList.contains(menu.getpId())) {
+            if (!tempList.contains(menu.getPId())) {
                 recursionFn(menus, menu);
                 returnList.add(menu);
             }
@@ -252,7 +252,7 @@ public class SourceServiceImpl extends ServiceImpl<TSourceMapper, TSource> imple
         Iterator<TreeNode> it = list.iterator();
         while (it.hasNext()) {
             TreeNode n = it.next();
-            if (n.getpId() == t.getId()) {
+            if (n.getPId() == t.getId()) {
                 tList.add(n);
             }
         }

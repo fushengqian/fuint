@@ -8,18 +8,17 @@ import java.io.Serializable;
  * Created by FSQ
  * CopyRight https://www.fuint.cn
  */
-public class Page implements Serializable{
-    private static final long serialVersionUID = -7956811510222855939L;
+public class Page implements Serializable {
 
     private static final Long DEFAULT_PAGE_NO = 1L;
     private static final Long DEFAULT_PAGE_SIZE = 100L;
 
-    private Long pageNo;//页号
-    private Long pageSize;//每页行数
-    private Long totalRows;//总行数
-    private Long totalPages;//总页数
-    private Boolean firstPage;//是否首页
-    private Boolean lastPage;//是否尾页
+    private Long pageNo;// 页号
+    private Long pageSize;// 每页行数
+    private Long totalRows;// 总行数
+    private Long totalPages;// 总页数
+    private Boolean firstPage;// 是否首页
+    private Boolean lastPage;// 是否尾页
 
     public Page() {
     }

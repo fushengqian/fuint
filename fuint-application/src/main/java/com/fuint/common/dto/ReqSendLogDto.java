@@ -1,5 +1,9 @@
 package com.fuint.common.dto;
 
+import io.swagger.annotations.ApiModelProperty;
+import lombok.Getter;
+import lombok.Setter;
+
 import java.io.Serializable;
 import java.util.Date;
 
@@ -9,209 +13,56 @@ import java.util.Date;
  * Created by FSQ
  * CopyRight https://www.fuint.cn
  */
+@Getter
+@Setter
 public class ReqSendLogDto implements Serializable {
 
-    /**
-     * ID
-     * */
+    @ApiModelProperty("自增ID")
     private Integer id;
 
-    /**
-     * 商户ID
-     */
+    @ApiModelProperty("商户ID")
     private Integer merchantId;
 
-    /**
-     * 店铺ID
-     */
+    @ApiModelProperty("店铺ID")
     private Integer storeId;
 
-    /**
-     * 1：单用户发券；2：批量发券
-     * */
+    @ApiModelProperty("类型，1：单用户发券；2：批量发券")
     private Integer type;
 
-    /**
-     * 会员ID
-     * */
-    private Integer user_id;
+    @ApiModelProperty("会员ID")
+    private Integer userId;
 
-    /**
-     * 导入文件名
-     */
-    private String file_name;
+    @ApiModelProperty("导入文件名")
+    private String fileName;
 
-    /**
-     * 导入文件路径
-     */
-    private String file_path;
+    @ApiModelProperty("导入文件路径")
+    private String filePath;
 
-    /**
-     * 手机号
-     */
+    @ApiModelProperty("手机号")
     private String mobile;
 
-    /**
-     * 分组ID
-     */
-    private Integer group_id;
+    @ApiModelProperty("分组ID")
+    private Integer groupId;
 
-    /**
-     * 卡券ID
-     */
-    private Integer coupon_id;
+    @ApiModelProperty("卡券ID")
+    private Integer couponId;
 
-    /**
-     * 分组名称
-     */
-    private String group_name;
+    @ApiModelProperty("分组名称")
+    private String groupName;
 
-    /**
-     * 发放数量
-     */
-    private Integer send_num;
+    @ApiModelProperty("发放数量")
+    private Integer sendNum;
 
-    /**
-     * 发放时间
-     * */
-    private Date create_time;
+    @ApiModelProperty("发放时间")
+    private Date createTime;
 
-    /**
-     * 操作人
-     */
+    @ApiModelProperty("操作人")
     private String operator;
 
-    /**
-     * 作态
-     */
+    @ApiModelProperty("状态")
     private String status;
 
-    /**
-     * uuid
-     */
+    @ApiModelProperty("uuid")
     private String uuid;
 
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public Integer getMerchantId() {
-        return merchantId;
-    }
-
-    public void setMerchantId(Integer merchantId) {
-        this.merchantId = merchantId;
-    }
-
-    public Integer getStoreId() {
-        return storeId;
-    }
-
-    public void setStoreId(Integer storeId) {
-        this.storeId = storeId;
-    }
-
-    public Integer getType() {
-        return type;
-    }
-
-    public void setType(Integer type) {
-        this.type = type;
-    }
-
-    public Integer getUserId() {
-        return user_id;
-    }
-
-    public void setUserId(Integer user_id) {
-        this.user_id = user_id;
-    }
-
-    public String getFileName() {
-        return file_name;
-    }
-
-    public void setFileName(String file_name) {
-        this.file_name = file_name;
-    }
-
-    public String getFilePath() {
-        return file_path;
-    }
-
-    public void setFilePath(String file_path) {
-        this.file_path = file_path;
-    }
-
-    public String getMobile() {
-        return mobile;
-    }
-
-    public void setMobile(String mobile) {
-        this.mobile = mobile;
-    }
-
-    public Integer getGroupId() {
-        return group_id;
-    }
-
-    public void setGroupId(Integer group_id) {
-        this.group_id = group_id;
-    }
-
-    public Integer getCouponId() {
-        return coupon_id;
-    }
-
-    public void setCouponId(Integer coupon_id) {
-        this.coupon_id = coupon_id;
-    }
-
-    public String getGroupName() {
-        return group_name;
-    }
-
-    public void setGroupName(String group_name) {
-        this.group_name = group_name;
-    }
-
-    public Integer getSendNum() {
-        return send_num;
-    }
-
-    public void setSendNum(Integer send_num) {
-        this.send_num = send_num;
-    }
-
-    public Date getCreateTime() {
-        return create_time;
-    }
-
-    public void setCreateTime(Date create_time) {
-        this.create_time = create_time;
-    }
-
-    public String getOperator() {
-        return operator;
-    }
-
-    public void setOperator(String operator) {
-        this.operator = operator;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) { this.status = status;}
-
-    public String getUuid() {
-        return uuid;
-    }
-
-    public void setUuid(String uuid) { this.uuid = uuid;}
 }

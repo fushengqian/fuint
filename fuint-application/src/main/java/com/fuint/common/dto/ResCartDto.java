@@ -1,6 +1,10 @@
 package com.fuint.common.dto;
 
 import com.fuint.repository.model.MtGoods;
+import io.swagger.annotations.ApiModelProperty;
+import lombok.Getter;
+import lombok.Setter;
+
 import java.io.Serializable;
 import java.util.List;
 
@@ -10,108 +14,32 @@ import java.util.List;
  * Created by FSQ
  * CopyRight https://www.fuint.cn
  */
+@Getter
+@Setter
 public class ResCartDto implements Serializable {
 
-    /**
-     * ID
-     * */
+    @ApiModelProperty("自增ID")
     private Integer id;
 
-    /**
-     * 分类名称
-     */
+    @ApiModelProperty("会员ID")
     private Integer userId;
 
-    /**
-     * 商品ID
-     */
+    @ApiModelProperty("商品ID")
     private Integer goodsId;
 
-    /**
-     * skuID
-     */
+    @ApiModelProperty("skuId")
     private Integer skuId;
 
-    /**
-     * 数量
-     */
+    @ApiModelProperty("数量")
     private Integer num;
 
-    /**
-     * 是否有效
-     * */
+    @ApiModelProperty("是否有效")
     private Boolean isEffect;
 
-    /**
-     * 商品规格
-     * */
+    @ApiModelProperty("商品规格")
     private List<GoodsSpecValueDto> specList;
 
-    /**
-     * 商品数据
-     * */
+    @ApiModelProperty("商品数据")
     private MtGoods goodsInfo;
 
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public Integer getUserId() {
-        return userId;
-    }
-
-    public void setUserId(Integer name) {
-        this.userId = name;
-    }
-
-    public Integer getGoodsId() {
-        return goodsId;
-    }
-
-    public void setGoodsId(Integer goodsId) {
-        this.goodsId = goodsId;
-    }
-
-    public Integer getSkuId(){
-        return skuId;
-    }
-    public void setSkuId(Integer skuId){
-        this.skuId=skuId;
-    }
-
-    public Integer getNum() {
-        return num;
-    }
-
-    public void setNum(Integer num) {
-        this.num = num;
-    }
-
-    public Boolean getIsEffect() {
-        return isEffect;
-    }
-
-    public void setIsEffect(Boolean isEffect) {
-        this.isEffect = isEffect;
-    }
-
-    public MtGoods getGoodsInfo() {
-        return goodsInfo;
-    }
-
-    public void setGoodsInfo(MtGoods goodsInfo) {
-        this.goodsInfo = goodsInfo;
-    }
-
-    public List<GoodsSpecValueDto> getSpecList() {
-        return specList;
-    }
-
-    public void setSpecList(List<GoodsSpecValueDto> specList) {
-        this.specList = specList;
-    }
 }

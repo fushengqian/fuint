@@ -1,27 +1,25 @@
 package com.fuint.common.dto;
 
+import io.swagger.annotations.ApiModelProperty;
+import lombok.Getter;
+import lombok.Setter;
+
+import java.io.Serializable;
+
 /**
  * 充值规则实体类
  *
  * Created by FSQ
  * CopyRight https://www.fuint.cn
  */
-public class RechargeRuleDto {
+@Getter
+@Setter
+public class RechargeRuleDto implements Serializable {
 
+    @ApiModelProperty("充值金额")
     private String rechargeAmount;
+
+    @ApiModelProperty("赠送金额")
     private String giveAmount;
 
-    public String getRechargeAmount() {
-        return rechargeAmount;
-    }
-    public void setRechargeAmount(String rechargeAmount) {
-        this.rechargeAmount = rechargeAmount;
-    }
-
-    public String getGiveAmount() {
-        return giveAmount;
-    }
-    public void setGiveAmount(String giveAmount) {
-        this.giveAmount = giveAmount;
-    }
 }
