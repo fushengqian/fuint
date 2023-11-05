@@ -41,4 +41,6 @@ public interface WeixinService {
 
     Boolean doRefund(Integer storeId, String orderSn, BigDecimal totalAmount, BigDecimal refundAmount, String platform) throws BusinessCheckException;
 
+    String createStoreQrCode(Integer merchantId, Integer storeId, Integer width);
+
 }

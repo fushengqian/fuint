@@ -86,7 +86,7 @@ public class ClientGoodsController extends BaseController {
             param.put("storeId", storeId);
         }
         List<MtGoodsCate> cateList = cateService.queryCateListByParams(param);
-        Map<String, Object> goodsData = goodsService.getStoreGoodsList(storeId, "", 0, 1, 200);
+        Map<String, Object> goodsData = goodsService.getStoreGoodsList(storeId, "", 0, 1, 500);
         List<MtGoods> goodsList = (ArrayList)goodsData.get("goodsList");
         String baseImage = settingService.getUploadBasePath();
         if (goodsList.size() > 0) {

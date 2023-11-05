@@ -36,6 +36,24 @@ public class CommonUtil {
     }
 
     /**
+     * 判断是否UTF-8编码
+     *
+     * @param str
+     * @return
+     * */
+    public static boolean isUtf8(String str) {
+        try {
+            byte[] bytes = str.getBytes("UTF-8");
+            String newStr = new String(bytes, "UTF-8");
+            return str.equals(newStr);
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+
+    /**
      * 判断是否数字
      * */
     public static boolean isNumeric(String str) {

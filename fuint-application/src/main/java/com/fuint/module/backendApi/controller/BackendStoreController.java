@@ -8,6 +8,7 @@ import com.fuint.common.enums.YesOrNoEnum;
 import com.fuint.common.service.MerchantService;
 import com.fuint.common.service.SettingService;
 import com.fuint.common.service.StoreService;
+import com.fuint.common.service.WeixinService;
 import com.fuint.common.util.CommonUtil;
 import com.fuint.common.util.TokenUtil;
 import com.fuint.framework.exception.BusinessCheckException;

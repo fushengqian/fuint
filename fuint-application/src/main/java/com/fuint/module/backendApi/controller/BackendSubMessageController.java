@@ -9,6 +9,7 @@ import com.fuint.common.enums.SettingTypeEnum;
 import com.fuint.common.enums.StatusEnum;
 import com.fuint.common.enums.WxMessageEnum;
 import com.fuint.common.service.SettingService;
+import com.fuint.common.util.CommonUtil;
 import com.fuint.common.util.TokenUtil;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.web.BaseController;
@@ -155,7 +156,10 @@ public class BackendSubMessageController extends BaseController {
                         ParamDto dto = new ParamDto();
                         dto.setKey(obj.get("key").toString());
                         // 解决中文乱码
-                        String pName = new String(obj.get("name").toString().getBytes("ISO8859-1"), "UTF-8");
+                        String pName = obj.get("name").toString();
+                        if (!CommonUtil.isUtf8(pName)) {
+                            pName = new String(obj.get("name").toString().getBytes("ISO8859-1"), "UTF-8");
+                        }
                         dto.setName(pName);
                         if (paramArray != null) {
                             dto.setValue("");
@@ -231,7 +235,9 @@ public class BackendSubMessageController extends BaseController {
 
                 ParamDto para = new ParamDto();
                 String name = obj.get("name").toString();
-                name = new String(name.getBytes("ISO8859-1"), "UTF-8");
+                if (!CommonUtil.isUtf8(name)) {
+                    name = new String(name.getBytes("ISO8859-1"), "UTF-8");
+                }
                 para.setName(name);
                 para.setKey(obj.get("key").toString());
                 para.setValue(value);

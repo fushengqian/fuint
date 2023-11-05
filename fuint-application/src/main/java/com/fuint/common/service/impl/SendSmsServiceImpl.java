@@ -6,6 +6,7 @@ import com.fuint.common.dto.MessageResDto;
 import com.fuint.common.enums.StatusEnum;
 import com.fuint.common.service.SendSmsService;
 import com.fuint.common.service.SmsTemplateService;
+import com.fuint.common.util.CommonUtil;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.pagination.PaginationRequest;
 import com.fuint.framework.pagination.PaginationResponse;
@@ -129,7 +130,9 @@ public class SendSmsServiceImpl implements SendSmsService {
         boolean flag = false;
         try {
             // idea下中文乱码
-            signName = new String(signName.getBytes("ISO8859-1"), "UTF-8");
+            if (!CommonUtil.isUtf8(signName)) {
+                signName = new String(signName.getBytes("ISO8859-1"), "UTF-8");
+            }
 
             // 阿里云短信
             DefaultProfile profile = DefaultProfile.getProfile("cn-hangzhou", accessKeyId, secret);

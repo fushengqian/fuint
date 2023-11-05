@@ -22,11 +22,17 @@ public class StoreDto implements Serializable {
     @ApiModelProperty("商户ID")
     private Integer merchantId;
 
+    @ApiModelProperty("商户号")
+    private String merchantNo;
+
     @ApiModelProperty("商户名称")
     private String merchantName;
 
     @ApiModelProperty("店铺名称")
     private String name;
+
+    @ApiModelProperty("店铺二维码")
+    private String qrCode;
 
     @ApiModelProperty("店铺LOGO")
     private String logo;

@@ -3,16 +3,19 @@ package com.fuint.common.service.impl;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.JSONArray;
+import com.aliyun.oss.OSS;
 import com.fuint.common.bean.WxPayBean;
 import com.fuint.common.dto.OrderDto;
 import com.fuint.common.dto.UserOrderDto;
 import com.fuint.common.enums.*;
 import com.fuint.common.http.HttpRESTDataClient;
 import com.fuint.common.service.*;
+import com.fuint.common.util.AliyunOssUtil;
 import com.fuint.common.util.RedisUtil;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.web.ResponseObject;
 import com.fuint.repository.model.*;
+import com.fuint.utils.QRCodeUtil;
 import com.fuint.utils.StringUtil;
 import com.ijpay.core.enums.SignType;
 import com.ijpay.core.kit.HttpKit;
@@ -24,6 +27,13 @@ import com.ijpay.wxpay.model.MicroPayModel;
 import com.ijpay.wxpay.model.OrderQueryModel;
 import com.ijpay.wxpay.model.RefundModel;
 import com.ijpay.wxpay.model.UnifiedOrderModel;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicHeader;
+import org.apache.http.protocol.HTTP;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,6 +41,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.core.env.Environment;
+import org.springframework.util.ResourceUtils;
 import weixin.popular.util.JsonUtil;
 
 import javax.crypto.Cipher;
@@ -38,8 +49,7 @@ import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.io.OutputStream;
+import java.io.*;
 import java.math.BigDecimal;
 import java.security.AlgorithmParameters;
 import java.security.Security;
@@ -722,6 +732,55 @@ public class WeixinServiceImpl implements WeixinService {
         } catch (Exception e) {
             throw new BusinessCheckException("WeixinService.doRefund 微信退款失败：" + e.getMessage());
         }
+    }
+
+    /***
+     * 生成店铺二维码
+     *
+     * @param merchantId
+     * @param storeId
+     * @param width
+     * @return
+     * */
+    public String createStoreQrCode(Integer merchantId, Integer storeId, Integer width) {
+        try {
+            String accessToken = getAccessToken(merchantId, true);
+            String url = "https://api.weixin.qq.com/cgi-bin/wxaapp/createwxaqrcode?access_token=" + accessToken;
+            String reqDataJsonStr = "";
+
+            Map<String, Object> reqData = new HashMap<>();
+            reqData.put("access_token", accessToken);
+            reqData.put("path", "pages/index/index?storeId=" + storeId);
+            reqData.put("width", width);
+            reqDataJsonStr = JsonUtil.toJSONString(reqData);
+
+            byte[] bytes = HttpRESTDataClient.requestPost(url, reqDataJsonStr);
+            logger.info("WechatService createStoreQrCode response success");
+
+            String pathRoot = env.getProperty("images.root");
+            String baseImage = env.getProperty("images.path");
+            String filePath = "/storeQr" + storeId + ".png";
+            String path = pathRoot + baseImage + filePath;
+            QRCodeUtil.saveQrCodeToLocal(bytes, path);
+
+            // 上传阿里云oss
+            String mode = env.getProperty("aliyun.oss.mode");
+            if (mode.equals("1")) { // 检查是否开启上传
+                String endpoint = env.getProperty("aliyun.oss.endpoint");
+                String accessKeyId = env.getProperty("aliyun.oss.accessKeyId");
+                String accessKeySecret = env.getProperty("aliyun.oss.accessKeySecret");
+                String bucketName = env.getProperty("aliyun.oss.bucketName");
+                String folder = env.getProperty("aliyun.oss.folder");
+                OSS ossClient = AliyunOssUtil.getOSSClient(accessKeyId, accessKeySecret, endpoint);
+                File ossFile = new File(path);
+                return AliyunOssUtil.upload(ossClient, ossFile, bucketName, folder);
+            } else {
+                return baseImage + filePath;
+            }
+        } catch (Exception e) {
+            logger.error("生成店铺二维码出错：" + e.getMessage());
+        }
+        return "";
     }
 
     /**

@@ -8,6 +8,7 @@ import com.fuint.common.enums.StatusEnum;
 import com.fuint.common.enums.YesOrNoEnum;
 import com.fuint.common.service.MerchantService;
 import com.fuint.common.service.StoreService;
+import com.fuint.common.service.WeixinService;
 import com.fuint.framework.annoation.OperationServiceLog;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.pagination.PaginationRequest;
@@ -51,6 +52,12 @@ public class StoreServiceImpl extends ServiceImpl<MtStoreMapper, MtStore> implem
      */
     @Autowired
     private MerchantService merchantService;
+
+    /**
+     * 微信服务接口
+     * */
+    @Autowired
+    private WeixinService weixinService;
 
     /**
      * 分页查询店铺列表
@@ -169,6 +176,9 @@ public class StoreServiceImpl extends ServiceImpl<MtStoreMapper, MtStore> implem
             mtStore.setMerchantId(storeDto.getMerchantId());
         }
 
+        String qr = weixinService.createStoreQrCode(mtStore.getMerchantId(), mtStore.getId(), 320);
+        mtStore.setQrCode(qr);
+
         if (mtStore.getStatus() == null) {
             mtStore.setStatus(StatusEnum.ENABLED.getKey());
         }
@@ -183,7 +193,7 @@ public class StoreServiceImpl extends ServiceImpl<MtStoreMapper, MtStore> implem
     /**
      * 根据店铺ID获取店铺信息
      *
-     * @param id 店铺ID
+     * @param  id 店铺ID
      * @throws BusinessCheckException
      */
     @Override
@@ -201,7 +211,7 @@ public class StoreServiceImpl extends ServiceImpl<MtStoreMapper, MtStore> implem
      * @throws BusinessCheckException
      */
     @Override
-    public MtStore getDefaultStore(String merchantNo) throws BusinessCheckException {
+    public MtStore getDefaultStore(String merchantNo) {
         Map<String, Object> params = new HashMap<>();
         params.put("status", StatusEnum.ENABLED.getKey());
         params.put("is_default", YesOrNoEnum.YES.getKey());
@@ -272,6 +282,11 @@ public class StoreServiceImpl extends ServiceImpl<MtStoreMapper, MtStore> implem
 
         StoreDto mtStoreDto = new StoreDto();
         BeanUtils.copyProperties(mtStore, mtStoreDto);
+
+        if (StringUtil.isEmpty(mtStore.getQrCode())) {
+            String qr = weixinService.createStoreQrCode(mtStore.getMerchantId(), mtStore.getId(), 320);
+            mtStoreDto.setQrCode(qr);
+        }
 
         return mtStoreDto;
     }

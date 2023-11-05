@@ -308,6 +308,9 @@ public class BackendGoodsController extends BaseController {
 
         Map<String, Object> param = new HashMap<>();
         param.put("status", StatusEnum.ENABLED.getKey());
+        if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
+            param.put("merchantId", accountInfo.getMerchantId());
+        }
         List<MtGoodsCate> cateList = cateService.queryCateListByParams(param);
         result.put("cateList", cateList);
 

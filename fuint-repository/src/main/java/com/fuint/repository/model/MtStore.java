@@ -38,6 +38,9 @@ public class MtStore implements Serializable {
     @ApiModelProperty("商户logo")
     private String logo;
 
+    @ApiModelProperty("店铺二维码")
+    private String qrCode;
+
     @ApiModelProperty("是否默认")
     private String isDefault;
 

@@ -28,7 +28,7 @@ public interface StoreService extends IService<MtStore> {
     /**
      * 保存店铺信息
      *
-     * @param reqStoreDto
+     * @param  reqStoreDto
      * @throws BusinessCheckException
      */
     MtStore saveStore(StoreDto reqStoreDto) throws BusinessCheckException;
@@ -51,7 +51,7 @@ public interface StoreService extends IService<MtStore> {
     /**
      * 根据店铺id列表获取店铺信息
      *
-     * @param ids 店铺ID列表
+     * @param  ids 店铺ID列表
      * @throws BusinessCheckException
      */
     List<MtStore> queryStoresByIds(List<Integer> ids) throws BusinessCheckException;
@@ -59,7 +59,7 @@ public interface StoreService extends IService<MtStore> {
     /**
      * 根据店铺名称获取店铺信息
      *
-     * @param storeName 店铺名称
+     * @param  storeName 店铺名称
      * @throws BusinessCheckException
      */
     StoreDto queryStoreByName(String storeName) throws BusinessCheckException;
@@ -67,7 +67,7 @@ public interface StoreService extends IService<MtStore> {
     /**
      * 根据店铺ID查询店铺信息
      *
-     * @param id 店铺ID
+     * @param  id 店铺ID
      * @return
      * @throws BusinessCheckException
      */
@@ -76,9 +76,9 @@ public interface StoreService extends IService<MtStore> {
     /**
      * 更新店铺状态
      *
-     * @param id       店铺ID
-     * @param operator 操作人
-     * @param status   状态
+     * @param  id       店铺ID
+     * @param  operator 操作人
+     * @param  status   状态
      * @throws BusinessCheckException
      */
     void updateStatus(Integer id, String operator, String status) throws BusinessCheckException;

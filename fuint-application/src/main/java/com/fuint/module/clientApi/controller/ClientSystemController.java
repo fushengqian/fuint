@@ -1,6 +1,7 @@
 package com.fuint.module.clientApi.controller;
 
 import com.fuint.common.dto.ParamDto;
+import com.fuint.common.dto.StoreDto;
 import com.fuint.common.dto.UserInfo;
 import com.fuint.common.enums.StatusEnum;
 import com.fuint.common.service.MemberService;
@@ -11,11 +12,13 @@ import com.fuint.common.util.TokenUtil;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.web.BaseController;
 import com.fuint.framework.web.ResponseObject;
+import com.fuint.repository.model.MtMerchant;
 import com.fuint.repository.model.MtStore;
 import com.fuint.repository.model.MtUser;
 import com.fuint.utils.StringUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
@@ -88,7 +91,7 @@ public class ClientSystemController extends BaseController {
                 if (!mtUser.getStatus().equals(StatusEnum.ENABLED.getKey())) {
                     return getFailureResult(1001);
                 }
-                // 商户号不同
+                // 商户不同
                 if (!mtUser.getMerchantId().equals(merchantId)) {
                     return getFailureResult(1001);
                 }
@@ -101,9 +104,6 @@ public class ClientSystemController extends BaseController {
             // 店铺是否已关闭
             if (storeInfo != null) {
                 if (!storeInfo.getStatus().equals(StatusEnum.ENABLED.getKey())) {
-                    storeInfo = null;
-                }
-                if (storeInfo != null && !merchantId.equals(storeInfo.getMerchantId())) {
                     storeInfo = null;
                 }
             }
@@ -122,18 +122,29 @@ public class ClientSystemController extends BaseController {
             storeInfo = storeService.getDefaultStore(merchantNo);
         }
 
-        // 完善店铺信息
+        // 完善会员的店铺信息
         if (mtUser != null && (mtUser.getStoreId() == null || mtUser.getStoreId() < 1)) {
             mtUser.setStoreId(storeInfo.getId());
             mtUser.setUpdateTime(new Date());
             memberService.updateMember(mtUser);
         }
 
+        StoreDto storeDto = new StoreDto();
+        if (storeInfo != null) {
+            BeanUtils.copyProperties(storeInfo, storeDto);
+            MtMerchant mtMerchant = merchantService.queryMerchantById(storeInfo.getMerchantId());
+            if (mtMerchant != null) {
+                storeDto.setMerchantNo(mtMerchant.getNo());
+            }
+        } else {
+            storeDto = null;
+        }
+
         // 支付方式列表
         List<ParamDto> payTypeList = settingService.getPayTypeList(platform);
 
         Map<String, Object> result = new HashMap<>();
-        result.put("storeInfo", storeInfo);
+        result.put("storeInfo", storeDto);
         result.put("payTypeList", payTypeList);
 
         return getSuccessResult(result);
