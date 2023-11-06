@@ -28,13 +28,13 @@ public class TreeNode implements Serializable {
     private String ename;
 
     @ApiModelProperty("节点是否打开")
-    private boolean open;
+    private Boolean open;
 
     @ApiModelProperty("是否菜单")
     private int isMenu;
 
     @ApiModelProperty("节点是否选中")
-    private boolean checked;
+    private Boolean checked;
 
     @ApiModelProperty("url")
     private String url;
@@ -46,7 +46,7 @@ public class TreeNode implements Serializable {
     private String perms;
 
     @ApiModelProperty("子菜单")
-    private List<TreeNode> childrens = new ArrayList<TreeNode>();
+    private List<TreeNode> childrens = new ArrayList<>();
 
     @ApiModelProperty("菜单级别")
     private int level;

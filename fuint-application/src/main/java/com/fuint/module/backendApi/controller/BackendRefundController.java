@@ -21,6 +21,7 @@ import com.fuint.utils.StringUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
@@ -72,6 +73,7 @@ public class BackendRefundController extends BaseController {
     @ApiOperation(value = "退款列表查询")
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     @CrossOrigin
+    @PreAuthorize("@pms.hasPermission('refund:index')")
     public ResponseObject list(HttpServletRequest request) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
         String orderSn = request.getParameter("orderSn");
@@ -171,6 +173,7 @@ public class BackendRefundController extends BaseController {
     @ApiOperation(value = "查询退款详情")
     @RequestMapping(value = "/info/{refundId}", method = RequestMethod.GET)
     @CrossOrigin
+    @PreAuthorize("@pms.hasPermission('refund:index')")
     public ResponseObject info(HttpServletRequest request, @PathVariable("refundId") Integer refundId) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
@@ -198,6 +201,7 @@ public class BackendRefundController extends BaseController {
     @ApiOperation(value = "保存售后订单")
     @RequestMapping(value = "save", method = RequestMethod.POST)
     @CrossOrigin
+    @PreAuthorize("@pms.hasPermission('refund:edit')")
     public ResponseObject save(HttpServletRequest request, @RequestBody Map<String, Object> param) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
         Integer refundId = param.get("refundId") == null ? 0 : Integer.parseInt(param.get("refundId").toString());
@@ -233,6 +237,7 @@ public class BackendRefundController extends BaseController {
     @ApiOperation(value = "发起退款")
     @RequestMapping(value = "doRefund", method = RequestMethod.POST)
     @CrossOrigin
+    @PreAuthorize("@pms.hasPermission('refund:edit')")
     public ResponseObject doRefund(HttpServletRequest request, @RequestBody Map<String, Object> param) {
         String token = request.getHeader("Access-Token");
         Integer orderId = param.get("orderId") == null ? 0 : Integer.parseInt(param.get("orderId").toString());

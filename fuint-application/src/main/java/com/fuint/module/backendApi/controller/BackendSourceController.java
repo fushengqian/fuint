@@ -16,6 +16,7 @@ import com.fuint.utils.StringUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -49,6 +50,7 @@ public class BackendSourceController extends BaseController {
      */
     @ApiOperation(value = "获取菜单列表")
     @RequestMapping(value = "/list", method = RequestMethod.GET)
+    @PreAuthorize("@pms.hasPermission('system:menu:index')")
     public ResponseObject list(HttpServletRequest request) {
         String token = request.getHeader("Access-Token");
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
@@ -63,7 +65,7 @@ public class BackendSourceController extends BaseController {
     /**
      * 获取菜单详情
      *
-     * @param sourceId 菜单ID
+     * @param  sourceId 菜单ID
      * @return 菜单信息
      */
     @ApiOperation(value = "获取菜单详情")
@@ -99,6 +101,7 @@ public class BackendSourceController extends BaseController {
      */
     @ApiOperation(value = "新增菜单")
     @RequestMapping(value = "/add", method = RequestMethod.POST)
+    @PreAuthorize("@pms.hasPermission('system:menu:add')")
     public ResponseObject addSource(HttpServletRequest request, @RequestBody Map<String, Object> param) {
         String token = request.getHeader("Access-Token");
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
@@ -155,6 +158,7 @@ public class BackendSourceController extends BaseController {
      */
     @ApiOperation(value = "修改菜单")
     @RequestMapping(value = "/update", method = RequestMethod.POST)
+    @PreAuthorize("@pms.hasPermission('system:menu:edit')")
     public ResponseObject update(HttpServletRequest request, @RequestBody Map<String, Object> param) {
         String token = request.getHeader("Access-Token");
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
@@ -218,6 +222,7 @@ public class BackendSourceController extends BaseController {
      */
     @ApiOperation(value = "删除菜单")
     @RequestMapping(value = "/delete/{sourceId}", method = RequestMethod.GET)
+    @PreAuthorize("@pms.hasPermission('system:menu:delete')")
     public ResponseObject delete(HttpServletRequest request, @PathVariable("sourceId") Long sourceId) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);

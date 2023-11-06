@@ -23,6 +23,7 @@ import com.fuint.utils.StringUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -69,6 +70,7 @@ public class BackendPointController extends BaseController {
     @ApiOperation(value = "积分明细列表查询")
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     @CrossOrigin
+    @PreAuthorize("@pms.hasPermission('point:list')")
     public ResponseObject list(HttpServletRequest request) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
         Integer page = request.getParameter("page") == null ? Constants.PAGE_NUMBER : Integer.parseInt(request.getParameter("page"));
@@ -130,6 +132,7 @@ public class BackendPointController extends BaseController {
     @ApiOperation(value = "积分设置详情")
     @RequestMapping(value = "/setting", method = RequestMethod.GET)
     @CrossOrigin
+    @PreAuthorize("@pms.hasPermission('point:setting')")
     public ResponseObject setting(HttpServletRequest request) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
@@ -176,6 +179,7 @@ public class BackendPointController extends BaseController {
     @ApiOperation(value = "提交积分设置")
     @RequestMapping(value = "/saveSetting", method = RequestMethod.POST)
     @CrossOrigin
+    @PreAuthorize("@pms.hasPermission('point:setting')")
     public ResponseObject saveSettingHandler(HttpServletRequest request, @RequestBody Map<String, Object> param) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
         String pointNeedConsume = param.get("pointNeedConsume") != null ? param.get("pointNeedConsume").toString() : "1";
@@ -233,6 +237,7 @@ public class BackendPointController extends BaseController {
     @ApiOperation(value = "提交积分充值")
     @RequestMapping(value = "/doRecharge", method = RequestMethod.POST)
     @CrossOrigin
+    @PreAuthorize("@pms.hasPermission('point:modify')")
     public ResponseObject doRecharge(HttpServletRequest request, @RequestBody Map<String, Object> param) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
         String amount = param.get("amount") == null ? "0" : param.get("amount").toString();

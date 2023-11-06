@@ -23,6 +23,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -88,6 +89,7 @@ public class BackendGoodsController extends BaseController {
     @ApiOperation(value = "分页查询商品列表")
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     @CrossOrigin
+    @PreAuthorize("@pms.hasPermission('goods:goods:index')")
     public ResponseObject list(HttpServletRequest request) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
         Integer page = request.getParameter("page") == null ? Constants.PAGE_NUMBER : Integer.parseInt(request.getParameter("page"));
@@ -175,6 +177,7 @@ public class BackendGoodsController extends BaseController {
     @ApiOperation(value = "删除商品")
     @RequestMapping(value = "/delete/{id}", method = RequestMethod.GET)
     @CrossOrigin
+    @PreAuthorize("@pms.hasPermission('goods:goods:edit')")
     public ResponseObject delete(HttpServletRequest request, @PathVariable("id") Integer id) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
 
@@ -195,6 +198,7 @@ public class BackendGoodsController extends BaseController {
     @ApiOperation(value = "更新商品状态")
     @RequestMapping(value = "/updateStatus", method = RequestMethod.POST)
     @CrossOrigin
+    @PreAuthorize("@pms.hasPermission('goods:goods:edit')")
     public ResponseObject updateStatus(HttpServletRequest request, @RequestBody Map<String, Object> params) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
         String status = params.get("status") != null ? params.get("status").toString() : StatusEnum.ENABLED.getKey();
@@ -231,6 +235,7 @@ public class BackendGoodsController extends BaseController {
     @ApiOperation(value = "获取商品详情")
     @RequestMapping(value = "/info/{id}", method = RequestMethod.GET)
     @CrossOrigin
+    @PreAuthorize("@pms.hasPermission('goods:goods:index')")
     public ResponseObject info(HttpServletRequest request, @PathVariable("id") Integer goodsId) throws BusinessCheckException, InvocationTargetException, IllegalAccessException {
         String token = request.getHeader("Access-Token");
 
@@ -354,6 +359,7 @@ public class BackendGoodsController extends BaseController {
     @ApiOperation(value = "保存商品信息")
     @RequestMapping(value = "/save", method = RequestMethod.POST)
     @CrossOrigin
+    @PreAuthorize("@pms.hasPermission('goods:goods:add')")
     public ResponseObject saveHandler(HttpServletRequest request, @RequestBody Map<String, Object> param) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
@@ -575,6 +581,7 @@ public class BackendGoodsController extends BaseController {
     @ApiOperation(value = "保存商品规格")
     @RequestMapping(value = "/saveSpecName", method = RequestMethod.POST)
     @CrossOrigin
+    @PreAuthorize("@pms.hasPermission('goods:goods:add')")
     public ResponseObject saveSpecName(HttpServletRequest request, @RequestBody Map<String, Object> param) {
         String token = request.getHeader("Access-Token");
         String goodsId = param.get("goodsId") == null ? "0" : param.get("goodsId").toString();
@@ -628,6 +635,7 @@ public class BackendGoodsController extends BaseController {
     @ApiOperation(value = "保存商品规格值")
     @RequestMapping(value = "/saveSpecValue", method = RequestMethod.POST)
     @CrossOrigin
+    @PreAuthorize("@pms.hasPermission('goods:goods:add')")
     public ResponseObject saveSpecValue(HttpServletRequest request, @RequestBody Map<String, Object> param) {
         String token = request.getHeader("Access-Token");
         String specName = param.get("specName") == null ? "" : param.get("specName").toString();
@@ -715,6 +723,7 @@ public class BackendGoodsController extends BaseController {
     @ApiOperation(value = "删除商品规格")
     @RequestMapping(value = "/deleteSpec", method = RequestMethod.GET)
     @CrossOrigin
+    @PreAuthorize("@pms.hasPermission('goods:goods:add')")
     public ResponseObject deleteSpec(HttpServletRequest request) {
         String specName = request.getParameter("specName") == null ? "" : request.getParameter("specName");
         String goodsId = request.getParameter("goodsId") == null ? "0" : request.getParameter("goodsId");
@@ -745,6 +754,7 @@ public class BackendGoodsController extends BaseController {
     @ApiOperation(value = "删除商品规格值")
     @RequestMapping(value = "/deleteSpecValue", method = RequestMethod.GET)
     @CrossOrigin
+    @PreAuthorize("@pms.hasPermission('goods:goods:add')")
     public ResponseObject deleteSpecValue(HttpServletRequest request) {
         Integer specId = request.getParameter("id") == null ? 0 : Integer.parseInt(request.getParameter("id"));
 

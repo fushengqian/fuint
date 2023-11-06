@@ -24,6 +24,7 @@ import com.fuint.utils.StringUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
@@ -67,6 +68,7 @@ public class BackendBalanceController extends BaseController {
     @ApiOperation(value = "余额明细列表查询")
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     @CrossOrigin
+    @PreAuthorize("@pms.hasPermission('balance:list')")
     public ResponseObject list(HttpServletRequest request) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
         Integer page = request.getParameter("page") == null ? Constants.PAGE_NUMBER : Integer.parseInt(request.getParameter("page"));
@@ -122,6 +124,7 @@ public class BackendBalanceController extends BaseController {
     @ApiOperation(value = "提交充值")
     @RequestMapping(value = "/doRecharge", method = RequestMethod.POST)
     @CrossOrigin
+    @PreAuthorize("@pms.hasPermission('balance:modify')")
     public ResponseObject doRecharge(HttpServletRequest request, @RequestBody Map<String, Object> param) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
         String amount = param.get("amount") == null ? "0" : param.get("amount").toString();
@@ -174,6 +177,7 @@ public class BackendBalanceController extends BaseController {
     @ApiOperation(value = "发放余额")
     @RequestMapping(value = "/distribute", method = RequestMethod.POST)
     @CrossOrigin
+    @PreAuthorize("@pms.hasPermission('balance:distribute')")
     public ResponseObject distribute(HttpServletRequest request, @RequestBody Map<String, Object> param) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
         String amount = param.get("amount") == null ? "0" : param.get("amount").toString();
@@ -199,6 +203,7 @@ public class BackendBalanceController extends BaseController {
     @ApiOperation(value = "充值设置详情")
     @RequestMapping(value = "/setting", method = RequestMethod.GET)
     @CrossOrigin
+    @PreAuthorize("@pms.hasPermission('balance:setting')")
     public ResponseObject setting(HttpServletRequest request) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
@@ -250,6 +255,7 @@ public class BackendBalanceController extends BaseController {
     @ApiOperation(value = "保存充值设置")
     @RequestMapping(value = "/saveSetting", method = RequestMethod.POST)
     @CrossOrigin
+    @PreAuthorize("@pms.hasPermission('balance:setting')")
     public ResponseObject saveSettingHandler(HttpServletRequest request, @RequestBody Map<String, Object> param) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
         String status = param.get("status") == null ? StatusEnum.ENABLED.getKey() : param.get("status").toString();

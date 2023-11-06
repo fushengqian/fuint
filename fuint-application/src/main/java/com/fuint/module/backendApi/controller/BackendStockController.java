@@ -19,6 +19,7 @@ import com.fuint.utils.StringUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -76,6 +77,7 @@ public class BackendStockController extends BaseController {
     @ApiOperation(value = "获取库存管理记录列表")
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     @CrossOrigin
+    @PreAuthorize("@pms.hasPermission('stock:index')")
     public ResponseObject list(HttpServletRequest request) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
         Integer page = request.getParameter("page") == null ? Constants.PAGE_NUMBER : Integer.parseInt(request.getParameter("page"));
@@ -148,6 +150,7 @@ public class BackendStockController extends BaseController {
     @ApiOperation(value = "删除库存管理记录状态")
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
     @CrossOrigin
+    @PreAuthorize("@pms.hasPermission('stock:index')")
     public ResponseObject delete(HttpServletRequest request, @RequestBody Map<String, Object> params) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
         Integer id = params.get("id") == null ? 0 : Integer.parseInt(params.get("id").toString());
@@ -176,6 +179,8 @@ public class BackendStockController extends BaseController {
      */
     @ApiOperation(value = "保存库存管理记录")
     @RequestMapping(value = "/save", method = RequestMethod.POST)
+    @CrossOrigin
+    @PreAuthorize("@pms.hasPermission('stock:index')")
     public ResponseObject save(HttpServletRequest request, @RequestBody Map<String, Object> params) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
         String type = params.get("type") == null ? "" : CommonUtil.replaceXSS(params.get("type").toString());
@@ -215,6 +220,7 @@ public class BackendStockController extends BaseController {
     @ApiOperation(value = "获取库存管理记录详情")
     @RequestMapping(value = "/info/{id}", method = RequestMethod.GET)
     @CrossOrigin
+    @PreAuthorize("@pms.hasPermission('stock:index')")
     public ResponseObject info(HttpServletRequest request, @PathVariable("id") Integer id) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
         AccountInfo accountDto = TokenUtil.getAccountInfoByToken(token);

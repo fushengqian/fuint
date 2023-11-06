@@ -121,12 +121,15 @@ public class StoreServiceImpl extends ServiceImpl<MtStoreMapper, MtStore> implem
     @Override
     @Transactional(rollbackFor = Exception.class)
     @OperationServiceLog(description = "保存店铺信息")
-    public MtStore saveStore(StoreDto storeDto) {
+    public MtStore saveStore(StoreDto storeDto) throws BusinessCheckException {
         MtStore mtStore = new MtStore();
 
         // 编辑店铺
         if (storeDto.getId() != null) {
             mtStore = queryStoreById(storeDto.getId());
+            if (mtStore == null) {
+                throw new BusinessCheckException("该店铺不存在");
+            }
         }
 
         mtStore.setName(storeDto.getName());

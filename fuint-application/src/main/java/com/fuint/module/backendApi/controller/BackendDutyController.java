@@ -24,6 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -58,6 +59,7 @@ public class BackendDutyController extends BaseController {
     @ApiOperation(value = "获取角色列表")
     @RequestMapping(value = "/list")
     @CrossOrigin
+    @PreAuthorize("@pms.hasPermission('system:role:index')")
     public ResponseObject list(HttpServletRequest request) {
         String token = request.getHeader("Access-Token");
         Integer page = request.getParameter("page") == null ? Constants.PAGE_NUMBER : Integer.parseInt(request.getParameter("page"));
@@ -120,6 +122,7 @@ public class BackendDutyController extends BaseController {
     @ApiOperation(value = "新增角色")
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     @CrossOrigin
+    @PreAuthorize("@pms.hasPermission('system:role:add')")
     public ResponseObject addHandler(HttpServletRequest request, @RequestBody Map<String, Object> param) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
         List<Integer> menuIds = (List) param.get("menuIds");
@@ -165,6 +168,7 @@ public class BackendDutyController extends BaseController {
     @ApiOperation(value = "获取角色详情")
     @RequestMapping(value = "/info/{roleId}", method = RequestMethod.GET)
     @CrossOrigin
+    @PreAuthorize("@pms.hasPermission('system:role:index')")
     public ResponseObject info(HttpServletRequest request, @PathVariable("roleId") Long roleId) {
         String token = request.getHeader("Access-Token");
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
@@ -201,6 +205,7 @@ public class BackendDutyController extends BaseController {
     @ApiOperation(value = "修改角色")
     @RequestMapping(value = "/update", method = RequestMethod.POST)
     @CrossOrigin
+    @PreAuthorize("@pms.hasPermission('system:role:edit')")
     public ResponseObject updateHandler(HttpServletRequest request, @RequestBody Map<String, Object> param) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
         List<Integer> menuIds = (List) param.get("menuIds");
@@ -252,6 +257,7 @@ public class BackendDutyController extends BaseController {
     @ApiOperation(value = "删除角色信息")
     @RequestMapping(value = "/delete/{roleId}", method = RequestMethod.POST)
     @CrossOrigin
+    @PreAuthorize("@pms.hasPermission('system:role:delete')")
     public ResponseObject deleteRole(HttpServletRequest request, @PathVariable("roleId") Long roleId) {
         String token = request.getHeader("Access-Token");
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
@@ -275,6 +281,7 @@ public class BackendDutyController extends BaseController {
     @ApiOperation(value = "修改角色状态")
     @RequestMapping(value = "/changeStatus", method = RequestMethod.POST)
     @CrossOrigin
+    @PreAuthorize("@pms.hasPermission('system:role:edit')")
     public ResponseObject changeStatus(HttpServletRequest request, @RequestBody DutyStatusRequest dutyStatusRequest) {
         String token = request.getHeader("Access-Token");
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);

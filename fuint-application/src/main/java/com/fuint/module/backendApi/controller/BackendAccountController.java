@@ -24,6 +24,7 @@ import com.fuint.utils.StringUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
@@ -75,6 +76,7 @@ public class BackendAccountController extends BaseController {
     @ApiOperation(value = "账户信息列表")
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     @CrossOrigin
+    @PreAuthorize("@pms.hasPermission('system:account:index')")
     public ResponseObject list(HttpServletRequest request) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
         Integer page = request.getParameter("page") == null ? Constants.PAGE_NUMBER : Integer.parseInt(request.getParameter("page"));
@@ -205,6 +207,7 @@ public class BackendAccountController extends BaseController {
     @ApiOperation(value = "新增账户")
     @RequestMapping(value = "/doCreate", method = RequestMethod.POST)
     @CrossOrigin
+    @PreAuthorize("@pms.hasPermission('system:account:add')")
     public ResponseObject doCreate(HttpServletRequest request, @RequestBody Map<String, Object> param) {
         String token = request.getHeader("Access-Token");
         AccountInfo loginAccount = TokenUtil.getAccountInfoByToken(token);
@@ -264,6 +267,7 @@ public class BackendAccountController extends BaseController {
     @ApiOperation(value = "修改账户信息")
     @RequestMapping(value = "/update", method = RequestMethod.POST)
     @CrossOrigin
+    @PreAuthorize("@pms.hasPermission('system:account:edit')")
     public ResponseObject update(HttpServletRequest request, @RequestBody Map<String, Object> param) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
 
@@ -334,6 +338,7 @@ public class BackendAccountController extends BaseController {
     @ApiOperation(value = "删除账户信息")
     @RequestMapping(value = "/delete/{userIds}", method = RequestMethod.GET)
     @CrossOrigin
+    @PreAuthorize("@pms.hasPermission('system:account:delete')")
     public ResponseObject deleteAccount(HttpServletRequest request, @PathVariable("userIds") String userIds) {
         String token = request.getHeader("Access-Token");
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
@@ -372,6 +377,7 @@ public class BackendAccountController extends BaseController {
     @ApiOperation(value = "更新账户状态")
     @RequestMapping(value = "/updateStatus", method = RequestMethod.POST)
     @CrossOrigin
+    @PreAuthorize("@pms.hasPermission('system:account:edit')")
     public ResponseObject updateStatus(HttpServletRequest request, @RequestBody Map<String, Object> param) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
         Integer userId = param.get("userId") == null ? 0 : Integer.parseInt(param.get("userId").toString());
@@ -401,6 +407,7 @@ public class BackendAccountController extends BaseController {
     @ApiOperation(value = "修改账户密码")
     @RequestMapping(value = "/resetPwd", method = RequestMethod.POST)
     @CrossOrigin
+    @PreAuthorize("@pms.hasPermission('system:account:edit')")
     public ResponseObject resetPwd(HttpServletRequest request, @RequestBody Map<String, Object> param) {
         String token = request.getHeader("Access-Token");
         Integer userId = param.get("userId") == null ? 0 : Integer.parseInt(param.get("userId").toString());

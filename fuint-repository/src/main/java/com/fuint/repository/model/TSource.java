@@ -10,9 +10,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * <p>
  * 菜单表
- * </p>
  *
  * Created by FSQ
  * CopyRight https://www.fuint.cn
@@ -69,6 +67,5 @@ public class TSource implements Serializable {
 
     @ApiModelProperty("菜单图标")
     private String icon;
-
 
 }

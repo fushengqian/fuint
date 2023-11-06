@@ -22,6 +22,7 @@ import com.fuint.utils.StringUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -74,6 +75,7 @@ public class BackendCateController extends BaseController {
     @ApiOperation(value = "获取商品分类列表")
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     @CrossOrigin
+    @PreAuthorize("@pms.hasPermission('goods:cate:index')")
     public ResponseObject list(HttpServletRequest request) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
         Integer page = request.getParameter("page") == null ? Constants.PAGE_NUMBER : Integer.parseInt(request.getParameter("page"));
@@ -142,6 +144,7 @@ public class BackendCateController extends BaseController {
     @ApiOperation(value = "更新商品分类状态")
     @RequestMapping(value = "/updateStatus", method = RequestMethod.POST)
     @CrossOrigin
+    @PreAuthorize("@pms.hasPermission('goods:cate:index')")
     public ResponseObject updateStatus(HttpServletRequest request, @RequestBody Map<String, Object> params) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
         String status = params.get("status") != null ? params.get("status").toString() : StatusEnum.ENABLED.getKey();
@@ -181,6 +184,7 @@ public class BackendCateController extends BaseController {
      */
     @ApiOperation(value = "保存商品分类")
     @RequestMapping(value = "/save", method = RequestMethod.POST)
+    @PreAuthorize("@pms.hasPermission('goods:cate:index')")
     public ResponseObject save(HttpServletRequest request, @RequestBody Map<String, Object> params) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
         String id = params.get("id") == null ? "" : params.get("id").toString();
@@ -231,6 +235,7 @@ public class BackendCateController extends BaseController {
     @ApiOperation(value = "商品分类详情")
     @RequestMapping(value = "/info/{id}", method = RequestMethod.GET)
     @CrossOrigin
+    @PreAuthorize("@pms.hasPermission('goods:cate:index')")
     public ResponseObject info(HttpServletRequest request, @PathVariable("id") Integer id) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
         AccountInfo accountDto = TokenUtil.getAccountInfoByToken(token);

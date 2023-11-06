@@ -3,7 +3,6 @@ package com.fuint.module.backendApi.controller;
 import com.fuint.common.Constants;
 import com.fuint.common.dto.AccountInfo;
 import com.fuint.common.dto.ParamDto;
-import com.fuint.common.enums.CouponTypeEnum;
 import com.fuint.common.enums.MerchantTypeEnum;
 import com.fuint.common.enums.StatusEnum;
 import com.fuint.common.service.MerchantService;
@@ -20,6 +19,7 @@ import com.fuint.utils.StringUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
@@ -59,6 +59,7 @@ public class BackendMerchantController extends BaseController {
     @ApiOperation(value = "分页查询商户列表")
     @RequestMapping(value = "/list")
     @CrossOrigin
+    @PreAuthorize("@pms.hasPermission('merchant:index')")
     public ResponseObject list(HttpServletRequest request) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
         Integer page = request.getParameter("page") == null ? Constants.PAGE_NUMBER : Integer.parseInt(request.getParameter("page"));
@@ -149,6 +150,7 @@ public class BackendMerchantController extends BaseController {
     @ApiOperation(value = "更新商户状态")
     @RequestMapping(value = "/updateStatus")
     @CrossOrigin
+    @PreAuthorize("@pms.hasPermission('merchant:index')")
     public ResponseObject updateStatus(HttpServletRequest request, @RequestBody Map<String, Object> params) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
         String status = params.get("status") != null ? params.get("status").toString() : StatusEnum.ENABLED.getKey();
@@ -177,6 +179,7 @@ public class BackendMerchantController extends BaseController {
     @ApiOperation(value = "保存商户信息")
     @RequestMapping(value = "/save", method = RequestMethod.POST)
     @CrossOrigin
+    @PreAuthorize("@pms.hasPermission('merchant:index')")
     public ResponseObject saveHandler(HttpServletRequest request, @RequestBody Map<String, Object> params) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
@@ -247,6 +250,7 @@ public class BackendMerchantController extends BaseController {
     @ApiOperation(value = "获取商户详情")
     @RequestMapping(value = "/info/{id}", method = RequestMethod.GET)
     @CrossOrigin
+    @PreAuthorize("@pms.hasPermission('merchant:index')")
     public ResponseObject getMerchantInfo(HttpServletRequest request, @PathVariable("id") Integer id) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);

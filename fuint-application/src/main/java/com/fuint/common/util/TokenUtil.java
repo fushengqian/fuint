@@ -100,6 +100,7 @@ public class TokenUtil {
      * */
     public static boolean removeToken(String token) {
         RedisUtil.remove(token);
+        AuthUserUtil.clean();
         return true;
     }
 

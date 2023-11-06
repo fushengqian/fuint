@@ -2,6 +2,7 @@ package com.fuint.common.web;
 
 import com.fuint.common.Constants;
 import com.fuint.common.dto.AccountInfo;
+import com.fuint.common.util.AuthUserUtil;
 import com.fuint.common.util.TokenUtil;
 import com.fuint.utils.PropertiesUtil;
 import org.apache.commons.lang.StringUtils;
@@ -31,7 +32,8 @@ public class AdminUserInterceptor implements AsyncHandlerInterceptor {
 
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(accessToken);
         // 验证session中的Token
-        if (accountInfo != null && accountInfo.getToken().equals(accessToken)){
+        if (accountInfo != null && accountInfo.getToken().equals(accessToken)) {
+            AuthUserUtil.set(accountInfo);
             return true;
         }
 

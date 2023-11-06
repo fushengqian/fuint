@@ -23,6 +23,7 @@ import com.fuint.utils.StringUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -80,6 +81,7 @@ public class BackendDoConfirmController extends BaseController {
     @ApiOperation(value = "核销详情")
     @RequestMapping(value = "/info", method = RequestMethod.POST)
     @CrossOrigin
+    @PreAuthorize("@pms.hasPermission('coupon:confirm:index')")
     public ResponseObject info(HttpServletRequest request, @RequestBody Map<String, Object> param) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
         String userCouponId = param.get("id") == null ? "" : param.get("id").toString();
@@ -159,6 +161,7 @@ public class BackendDoConfirmController extends BaseController {
     @ApiOperation(value = "确认核销")
     @RequestMapping(value = "/doConfirm", method = RequestMethod.POST)
     @CrossOrigin
+    @PreAuthorize("@pms.hasPermission('coupon:confirm:index')")
     public ResponseObject doConfirm(HttpServletRequest request, @RequestBody Map<String, Object> param) {
         String token = request.getHeader("Access-Token");
         String userCouponId = param.get("userCouponId") == null ? "" : param.get("userCouponId").toString();
