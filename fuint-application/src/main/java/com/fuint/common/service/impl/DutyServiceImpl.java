@@ -46,8 +46,23 @@ public class DutyServiceImpl extends ServiceImpl<TDutyMapper, TDuty> implements 
     private TDutySourceMapper tDutySourceMapper;
 
     @Override
-    public List<TDuty> getAvailableRoles(Integer merchantId) {
+    public List<TDuty> getAvailableRoles(Integer merchantId, Integer accountId) {
         List<TDuty> result = tDutyMapper.findByStatus(merchantId, StatusEnum.ENABLED.getKey());
+        List<Long> ids = new ArrayList<>();
+        if (result != null && result.size() > 0) {
+            for (TDuty tDuty : result) {
+                 ids.add(tDuty.getDutyId().longValue());
+            }
+        }
+        List<Long> roleIds = findDutiesByAccountId(accountId);
+        if (roleIds.size() > 0) {
+            for (Long roleId : roleIds) {
+                 if (!ids.contains(roleId)) {
+                     TDuty duty = getRoleById(roleId);
+                     result.add(duty);
+                 }
+            }
+        }
         return result;
     }
 
@@ -246,7 +261,7 @@ public class DutyServiceImpl extends ServiceImpl<TDutyMapper, TDuty> implements 
      */
     @Override
     public List<TreeNode> getDutyTree(Integer merchantId) {
-        List<TDuty> tDuties = getAvailableRoles(merchantId);
+        List<TDuty> tDuties = getAvailableRoles(merchantId, 0);
         List<TreeNode> trees = new ArrayList<TreeNode>();
         if (tDuties != null && tDuties.size() > 0) {
             TreeNode sourceTreeNode;

@@ -162,7 +162,7 @@ public class StoreServiceImpl extends ServiceImpl<MtStoreMapper, MtStore> implem
 
         if (storeDto.getIsDefault() != null) {
             if (storeDto.getIsDefault().equals(YesOrNoEnum.YES.getKey())) {
-                mtStoreMapper.resetDefaultStore();
+                mtStoreMapper.resetDefaultStore(storeDto.getMerchantId());
             }
         }
 
@@ -250,7 +250,7 @@ public class StoreServiceImpl extends ServiceImpl<MtStoreMapper, MtStore> implem
     /**
      * 根据店铺名称获取店铺信息
      *
-     * @param storeName 店铺名称
+     * @param  storeName 店铺名称
      * @throws BusinessCheckException
      */
     @Override

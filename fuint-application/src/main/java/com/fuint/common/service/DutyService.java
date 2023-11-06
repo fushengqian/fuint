@@ -29,9 +29,10 @@ public interface DutyService extends IService<TDuty> {
      * 获取有效的角色集合
      *
      * @param merchantId 商户ID
+     * @param accountId  账号ID
      * @return
      */
-    List<TDuty> getAvailableRoles(Integer merchantId);
+    List<TDuty> getAvailableRoles(Integer merchantId, Integer accountId);
 
     /**
      * 根据ID获取角色实体

@@ -8,7 +8,7 @@ import org.apache.ibatis.annotations.Param;
 import java.util.List;
 
 /**
- * 门店表 Mapper 接口
+ * 店铺表 Mapper 接口
  *
  * Created by FSQ
  * CopyRight https://www.fuint.cn
@@ -17,7 +17,7 @@ public interface MtStoreMapper extends BaseMapper<MtStore> {
 
     MtStore queryStoreByName(@Param("name") String name);
 
-    void resetDefaultStore();
+    void resetDefaultStore(@Param("merchantId") Integer merchantId);
 
     List<MtStore> findStoresByIds(@Param("ids") List<Integer> ids);
 

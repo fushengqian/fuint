@@ -6,7 +6,10 @@
     </select>
 
     <update id="resetDefaultStore">
-        update mt_store p set p.IS_DEFAULT = 'N'
+        update mt_store p set p.IS_DEFAULT = 'N' where p.STATUS != 'D'
+        <if test="merchantId != null and merchantId != ''">
+            AND p.MERCHANT_ID = #{merchantId}
+        </if>
     </update>
 
     <select id="findStoresByIds" resultType="com.fuint.repository.model.MtStore">
