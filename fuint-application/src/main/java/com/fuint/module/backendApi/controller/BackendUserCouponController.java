@@ -26,6 +26,7 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -93,6 +94,7 @@ public class BackendUserCouponController extends BaseController {
     @ApiOperation(value = "查询会员卡券列表")
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     @CrossOrigin
+    @PreAuthorize("@pms.hasPermission('coupon:userCoupon:index')")
     public ResponseObject list(HttpServletRequest request) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
         Integer page = request.getParameter("page") == null ? Constants.PAGE_NUMBER : Integer.parseInt(request.getParameter("page"));
@@ -164,6 +166,7 @@ public class BackendUserCouponController extends BaseController {
     @ApiOperation(value = "核销用户卡券")
     @RequestMapping(value = "/doConfirm", method = RequestMethod.GET)
     @CrossOrigin
+    @PreAuthorize("@pms.hasPermission('coupon:userCoupon:index')")
     public ResponseObject doConfirm(HttpServletRequest request) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
         String userCouponId = request.getParameter("userCouponId");
@@ -199,6 +202,7 @@ public class BackendUserCouponController extends BaseController {
     @ApiOperation(value = "删除会员卡券")
     @RequestMapping(value = "/delete/{id}", method = RequestMethod.GET)
     @CrossOrigin
+    @PreAuthorize("@pms.hasPermission('coupon:userCoupon:delete')")
     public ResponseObject delete(HttpServletRequest request, @PathVariable("id") Integer id) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
 
@@ -243,6 +247,7 @@ public class BackendUserCouponController extends BaseController {
     @ApiOperation(value = "导出会员卡券")
     @RequestMapping(value = "/exportList", method = RequestMethod.GET)
     @CrossOrigin
+    @PreAuthorize("@pms.hasPermission('coupon:userCoupon:index')")
     public void exportList(HttpServletRequest request, HttpServletResponse response) throws Exception {
         String token = request.getParameter("token");
         String mobile = request.getParameter("mobile") == null ? "" : request.getParameter("mobile");

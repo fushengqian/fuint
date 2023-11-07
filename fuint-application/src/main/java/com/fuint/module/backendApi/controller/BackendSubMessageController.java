@@ -19,6 +19,7 @@ import com.fuint.utils.StringUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.core.env.Environment;
 import javax.servlet.http.HttpServletRequest;
@@ -53,6 +54,7 @@ public class BackendSubMessageController extends BaseController {
     @ApiOperation(value = "订阅消息模板列表")
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     @CrossOrigin
+    @PreAuthorize("@pms.hasPermission('subMessage:index')")
     public ResponseObject list(HttpServletRequest request) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
         String status = request.getParameter("status") == null ? "" : request.getParameter("status");
@@ -120,6 +122,7 @@ public class BackendSubMessageController extends BaseController {
     @ApiOperation(value = "订阅消息模板详情")
     @RequestMapping(value = "/info/{key}", method = RequestMethod.GET)
     @CrossOrigin
+    @PreAuthorize("@pms.hasPermission('subMessage:index')")
     public ResponseObject info(HttpServletRequest request, @PathVariable("key") String key) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
@@ -199,6 +202,7 @@ public class BackendSubMessageController extends BaseController {
     @ApiOperation(value = "保存订阅消息模板")
     @RequestMapping(value = "/save", method = RequestMethod.POST)
     @CrossOrigin
+    @PreAuthorize("@pms.hasPermission('subMessage:edit')")
     public ResponseObject saveHandler(HttpServletRequest request, @RequestBody Map<String, Object> param) {
         String token = request.getHeader("Access-Token");
         String key = param.get("key").toString();

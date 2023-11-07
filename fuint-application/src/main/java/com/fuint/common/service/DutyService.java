@@ -64,7 +64,7 @@ public interface DutyService extends IService<TDuty> {
      * @param merchantId
      * @param dutyId
      */
-    void deleteDuty(Integer merchantId, long dutyId);
+    void deleteDuty(Integer merchantId, long dutyId) throws BusinessCheckException;
 
     /**
      * 更新状态

@@ -58,7 +58,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 // 允许匿名访问
                 .antMatchers(
                         "/clientApi/**",
-                        "/backendApi/**"
+                        "/backendApi/**",
+                        "/merchantApi/**"
                         ).anonymous()
                 .antMatchers(
                         HttpMethod.GET,
