@@ -83,6 +83,7 @@ public class MemberGroupServiceImpl extends ServiceImpl<MtUserGroupMapper, MtUse
                  UserGroupDto userGroupDto = new UserGroupDto();
                  BeanUtils.copyProperties(mtUserGroup, userGroupDto);
                  userGroupDto.setChildren(getChildren(mtUserGroup.getId()));
+                 userGroupDto.setMemberNum(getMemberNum(mtUserGroup.getId()));
                  userGroupList.add(userGroupDto);
             }
         }
@@ -184,20 +185,64 @@ public class MemberGroupServiceImpl extends ServiceImpl<MtUserGroupMapper, MtUse
         return userGroup;
     }
 
-    public List<UserGroupDto> getChildren(Integer id) {
+    /**
+     * 获取会员分组子类
+     *
+     * @param groupId
+     * @return
+     * */
+    public List<UserGroupDto> getChildren(Integer groupId) {
         Map<String, Object> param = new HashMap<>();
         param.put("STATUS", StatusEnum.ENABLED.getKey());
-        param.put("PARENT_ID", id);
+        param.put("PARENT_ID", groupId);
         List<MtUserGroup> dataList = mtUserGroupMapper.selectByMap(param);
-        List<UserGroupDto> childeren = new ArrayList<>();
+        List<UserGroupDto> children = new ArrayList<>();
         if (dataList != null && dataList.size() > 0) {
             for (MtUserGroup userGroup : dataList) {
                  UserGroupDto userGroupDto = new UserGroupDto();
                  BeanUtils.copyProperties(userGroup, userGroupDto);
                  userGroupDto.setChildren(getChildren(userGroup.getId()));
-                 childeren.add(userGroupDto);
+                 userGroupDto.setMemberNum(getMemberNum(userGroup.getId()));
+                 children.add(userGroupDto);
             }
         }
-        return childeren;
+        return children;
+    }
+
+    /**
+     * 获取分组会员数量
+     *
+     * @param groupId
+     * @return
+     * */
+    public Long getMemberNum(Integer groupId) {
+        List<Integer> groupIds = getGroupIds(groupId);
+        Long totalMember = mtUserGroupMapper.getMemberNum(groupIds);
+        return totalMember;
+    }
+
+    /**
+     * 获取会员分组子类ID
+     *
+     * @param groupId
+     * @return
+     * */
+    public List<Integer> getGroupIds(Integer groupId) {
+        Map<String, Object> param = new HashMap<>();
+        param.put("STATUS", StatusEnum.ENABLED.getKey());
+        param.put("PARENT_ID", groupId);
+        List<MtUserGroup> dataList = mtUserGroupMapper.selectByMap(param);
+        List<Integer> groupIds = new ArrayList<>();
+        groupIds.add(groupId);
+        if (dataList != null && dataList.size() > 0) {
+            for (MtUserGroup userGroup : dataList) {
+                 groupIds.add(userGroup.getId());
+                 List<Integer> childrenIds = getGroupIds(userGroup.getId());
+                 if (childrenIds.size() > 0) {
+                     groupIds.addAll(childrenIds);
+                 }
+            }
+        }
+        return groupIds;
     }
 }

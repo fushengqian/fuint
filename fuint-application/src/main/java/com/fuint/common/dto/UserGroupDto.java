@@ -35,6 +35,9 @@ public class UserGroupDto implements Serializable {
     @ApiModelProperty("子分组")
     private List<UserGroupDto> children;
 
+    @ApiModelProperty("会员数量")
+    private Long memberNum;
+
     @ApiModelProperty("创建时间")
     private Date createTime;
 

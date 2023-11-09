@@ -19,6 +19,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import java.lang.reflect.InvocationTargetException;
@@ -102,6 +103,7 @@ public class BackendCashierController extends BaseController {
     @ApiOperation(value = "收银台初始化")
     @RequestMapping(value = "/init/{userId}", method = RequestMethod.GET)
     @CrossOrigin
+    @PreAuthorize("@pms.hasPermission('cashier:index')")
     public ResponseObject init(HttpServletRequest request, @PathVariable("userId") Integer userId) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
         Integer page = request.getParameter("page") == null ? Constants.PAGE_NUMBER : Integer.parseInt(request.getParameter("page"));
@@ -172,6 +174,7 @@ public class BackendCashierController extends BaseController {
     @ApiOperation(value = "查询商品列表")
     @RequestMapping(value = "/searchGoods", method = RequestMethod.POST)
     @CrossOrigin
+    @PreAuthorize("@pms.hasPermission('cashier:index')")
     public ResponseObject searchGoods(HttpServletRequest request, @RequestBody Map<String, Object> param) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
         String keyword =  param.get("keyword") == null ? "" : param.get("keyword").toString();
@@ -198,6 +201,7 @@ public class BackendCashierController extends BaseController {
     @ApiOperation(value = "获取商品详情")
     @RequestMapping(value = "/getGoodsInfo/{id}", method = RequestMethod.GET)
     @CrossOrigin
+    @PreAuthorize("@pms.hasPermission('cashier:index')")
     public ResponseObject getGoodsInfo(HttpServletRequest request, @PathVariable("id") Integer goodsId) throws InvocationTargetException, IllegalAccessException {
         String token = request.getHeader("Access-Token");
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
@@ -275,6 +279,7 @@ public class BackendCashierController extends BaseController {
     @ApiOperation(value = "搜索会员信息")
     @RequestMapping(value = "/getMemberInfo", method = RequestMethod.POST)
     @CrossOrigin
+    @PreAuthorize("@pms.hasPermission('cashier:index')")
     public ResponseObject getMemberInfo(HttpServletRequest request, @RequestBody Map<String, Object> param) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
         String keyword = param.get("keyword") == null ? "" : param.get("keyword").toString();
@@ -309,6 +314,7 @@ public class BackendCashierController extends BaseController {
     @ApiOperation(value = "获取会员信息")
     @RequestMapping(value = "/getMemberInfoById/{userId}", method = RequestMethod.GET)
     @CrossOrigin
+    @PreAuthorize("@pms.hasPermission('cashier:index')")
     public ResponseObject getMemberInfoById(HttpServletRequest request, @PathVariable("userId") String userId) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
@@ -333,6 +339,7 @@ public class BackendCashierController extends BaseController {
     @ApiOperation(value = "执行挂单")
     @RequestMapping(value = "/doHangUp", method = RequestMethod.POST)
     @CrossOrigin
+    @PreAuthorize("@pms.hasPermission('cashier:index')")
     public ResponseObject doHangUp(HttpServletRequest request, @RequestBody Map<String, Object> param) {
         String token = request.getHeader("Access-Token");
         String cartIds = param.get("cartIds") == null ? "" : param.get("cartIds").toString();
@@ -371,6 +378,7 @@ public class BackendCashierController extends BaseController {
     @ApiOperation(value = "获取挂单列表")
     @RequestMapping(value = "/getHangUpList", method = RequestMethod.GET)
     @CrossOrigin
+    @PreAuthorize("@pms.hasPermission('cashier:index')")
     public ResponseObject getHangUpList(HttpServletRequest request) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
 

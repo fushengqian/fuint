@@ -92,6 +92,7 @@ public class BackendMemberController extends BaseController {
         String endTime = request.getParameter("endTime") == null ? "" : request.getParameter("endTime");
         String status = request.getParameter("status");
         String storeIds = request.getParameter("storeIds");
+        String groupIds = request.getParameter("groupIds");
         Integer page = request.getParameter("page") == null ? Constants.PAGE_NUMBER : Integer.parseInt(request.getParameter("page"));
         Integer pageSize = request.getParameter("pageSize") == null ? Constants.PAGE_SIZE : Integer.parseInt(request.getParameter("pageSize"));
 
@@ -123,6 +124,9 @@ public class BackendMemberController extends BaseController {
         }
         if (StringUtil.isNotEmpty(storeIds)) {
             params.put("storeIds", storeIds);
+        }
+        if (StringUtil.isNotEmpty(groupIds)) {
+            params.put("groupIds", groupIds);
         }
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
         if (accountInfo == null) {
