@@ -65,6 +65,9 @@ public class MtOrder implements Serializable {
     @ApiModelProperty("支付金额")
     private BigDecimal payAmount;
 
+    @ApiModelProperty(value="结算状态")
+    private String settleStatus;
+
     @ApiModelProperty("使用积分数量")
     private Integer usePoint;
 

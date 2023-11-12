@@ -8,6 +8,7 @@ import com.fuint.common.param.OrderListParam;
 import com.fuint.common.service.OrderService;
 import com.fuint.common.util.TokenUtil;
 import com.fuint.framework.exception.BusinessCheckException;
+import com.fuint.framework.pagination.PaginationResponse;
 import com.fuint.framework.web.BaseController;
 import com.fuint.framework.web.ResponseObject;
 import com.fuint.repository.model.MtOrder;
@@ -53,9 +54,9 @@ public class ClientOrderController extends BaseController {
         }
 
         orderListParam.setUserId(userInfo.getId().toString());
-        ResponseObject orderData = orderService.getUserOrderList(orderListParam);
+        PaginationResponse orderData = orderService.getUserOrderList(orderListParam);
 
-        return getSuccessResult(orderData.getData());
+        return getSuccessResult(orderData);
     }
 
     /**

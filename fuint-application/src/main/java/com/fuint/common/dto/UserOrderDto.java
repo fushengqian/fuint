@@ -98,6 +98,9 @@ public class UserOrderDto implements Serializable {
     @ApiModelProperty("支付状态")
     private String payStatus;
 
+    @ApiModelProperty(value="结算状态")
+    private String settleStatus;
+
     @ApiModelProperty("状态说明")
     private String statusText;
 

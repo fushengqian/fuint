@@ -1,9 +1,9 @@
 package com.fuint.common.service;
 
-import com.fuint.common.param.SettlementParam;
 import com.fuint.framework.exception.BusinessCheckException;
-import javax.servlet.http.HttpServletRequest;
-import java.util.Map;
+import com.fuint.framework.pagination.PaginationRequest;
+import com.fuint.framework.pagination.PaginationResponse;
+import com.fuint.repository.model.MtSettlement;
 
 /**
  * 订单结算相关业务接口
@@ -14,8 +14,26 @@ import java.util.Map;
 public interface SettlementService {
 
     /**
-     * 订单提交结算
-     * */
-    Map<String, Object> doSubmit(HttpServletRequest request, SettlementParam settlementParam) throws BusinessCheckException;
+     * 分页查询结算列表
+     *
+     * @param paginationRequest
+     * @return
+     */
+    PaginationResponse<MtSettlement> querySettlementListByPagination(PaginationRequest paginationRequest) throws BusinessCheckException;
 
+    /**
+     * 提交结算
+     *
+     * @param  mtSettlement
+     * @throws BusinessCheckException
+     */
+    Boolean submitSettlement(MtSettlement mtSettlement) throws BusinessCheckException;
+
+    /**
+     * 获取结算详情
+     *
+     * @param settlementId
+     * @return
+     * */
+    MtSettlement getSettlementInfo(Integer settlementId) throws BusinessCheckException;
 }

@@ -4,7 +4,6 @@ import com.fuint.common.domain.TreeNode;
 import com.fuint.common.domain.TreeSelect;
 import com.fuint.common.dto.AccountInfo;
 import com.fuint.common.dto.SourceDto;
-import com.fuint.common.enums.StatusEnum;
 import com.fuint.common.service.SourceService;
 import com.fuint.common.util.CommonUtil;
 import com.fuint.common.util.TokenUtil;
@@ -229,17 +228,11 @@ public class BackendSourceController extends BaseController {
         if (accountInfo == null) {
             return getFailureResult(1001, "请先登录");
         }
-        try {
-            TSource tSource = sSourceService.getById(sourceId);
-            if (!tSource.getMerchantId().equals(accountInfo.getMerchantId()) && accountInfo.getMerchantId() > 0) {
-                return getFailureResult(201, "抱歉，您没有删除的权限");
-            }
-            tSource.setStatus(StatusEnum.DISABLE.getKey());
-            sSourceService.editSource(tSource);
-        } catch(Exception e) {
-            return getFailureResult(201,"存在子菜单或已关联角色,不能删除.");
+        TSource tSource = sSourceService.getById(sourceId);
+        if (!tSource.getMerchantId().equals(accountInfo.getMerchantId()) && accountInfo.getMerchantId() > 0) {
+            return getFailureResult(201, "抱歉，您没有删除的权限");
         }
-
+        sSourceService.deleteSource(tSource);
         return getSuccessResult(true);
     }
 

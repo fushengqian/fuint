@@ -4,10 +4,13 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.fuint.common.dto.UserOrderDto;
 import com.fuint.common.dto.OrderDto;
 import com.fuint.common.param.OrderListParam;
+import com.fuint.common.param.SettlementParam;
 import com.fuint.framework.exception.BusinessCheckException;
-import com.fuint.framework.web.ResponseObject;
+import com.fuint.framework.pagination.PaginationResponse;
 import com.fuint.repository.model.MtCart;
 import com.fuint.repository.model.MtOrder;
+
+import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
@@ -26,7 +29,7 @@ public interface OrderService extends IService<MtOrder> {
      * @param  orderListParam
      * @throws BusinessCheckException
      * */
-    ResponseObject getUserOrderList(OrderListParam orderListParam) throws BusinessCheckException;
+    PaginationResponse getUserOrderList(OrderListParam orderListParam) throws BusinessCheckException;
 
     /**
      * 创建订单
@@ -35,6 +38,11 @@ public interface OrderService extends IService<MtOrder> {
      * @throws BusinessCheckException
      */
     MtOrder saveOrder(OrderDto reqDto) throws BusinessCheckException;
+
+    /**
+     * 订单提交结算
+     * */
+    Map<String, Object> doSettle(HttpServletRequest request, SettlementParam settlementParam) throws BusinessCheckException;
 
     /**
      * 获取订单详情

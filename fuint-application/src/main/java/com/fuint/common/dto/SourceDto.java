@@ -4,6 +4,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * 菜单信息实体
@@ -50,6 +51,9 @@ public class SourceDto implements Serializable {
 
     @ApiModelProperty("上级菜单")
     private long parentId;
+
+    @ApiModelProperty("子菜单")
+    private List<SourceDto> children;
 
     @ApiModelProperty("图标")
     private String icon;

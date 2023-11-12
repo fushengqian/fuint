@@ -1,7 +1,7 @@
 package com.fuint.module.clientApi.controller;
 
 import com.fuint.common.param.SettlementParam;
-import com.fuint.common.service.SettlementService;
+import com.fuint.common.service.OrderService;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.web.BaseController;
 import com.fuint.framework.web.ResponseObject;
@@ -24,10 +24,10 @@ import java.util.Map;
 public class ClientSettlementController extends BaseController {
 
     /**
-     * 会员等级接口
+     * 订单接口
      * */
     @Autowired
-    private SettlementService settlementService;
+    private OrderService orderService;
 
     /**
      * 订单结算
@@ -36,7 +36,7 @@ public class ClientSettlementController extends BaseController {
     @RequestMapping(value = "/submit", method = RequestMethod.POST)
     @CrossOrigin
     public ResponseObject submit(HttpServletRequest request, @RequestBody SettlementParam param) throws BusinessCheckException {
-        Map<String, Object> result = settlementService.doSubmit(request, param);
+        Map<String, Object> result = orderService.doSettle(request, param);
         return getSuccessResult(result);
     }
 }

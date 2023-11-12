@@ -6,6 +6,7 @@ import com.fuint.common.param.OrderListParam;
 import com.fuint.common.service.*;
 import com.fuint.common.util.TokenUtil;
 import com.fuint.framework.exception.BusinessCheckException;
+import com.fuint.framework.pagination.PaginationResponse;
 import com.fuint.framework.web.BaseController;
 import com.fuint.framework.web.ResponseObject;
 import com.fuint.repository.model.MtSetting;
@@ -97,9 +98,9 @@ public class BackendOrderController extends BaseController {
         }
         Integer storeId = account.getStoreId() == null ? 0 : account.getStoreId();
         if (storeId > 0) {
-            orderListParam.setStoreId(storeId.toString());
+            orderListParam.setStoreId(storeId);
         }
-        ResponseObject response = orderService.getUserOrderList(orderListParam);
+        PaginationResponse response = orderService.getUserOrderList(orderListParam);
         // 订单类型列表
         OrderTypeEnum[] typeListEnum = OrderTypeEnum.values();
         List<ParamDto> typeList = new ArrayList<>();
@@ -173,7 +174,7 @@ public class BackendOrderController extends BaseController {
         result.put("orderModeList", orderModeList);
         result.put("storeList", storeList);
         result.put("payTypeList", payTypeList);
-        result.put("paginationResponse", response.getData());
+        result.put("paginationResponse", response);
 
         return getSuccessResult(result);
     }
@@ -396,14 +397,14 @@ public class BackendOrderController extends BaseController {
         Integer storeId = account.getStoreId() == null ? 0 : account.getStoreId();
         Integer staffId = account.getStaffId();
         if (storeId > 0) {
-            orderListParam.setStoreId(storeId.toString());
+            orderListParam.setStoreId(storeId);
         }
         if (staffId > 0) {
             orderListParam.setStaffId(staffId.toString());
         }
 
-        ResponseObject response = orderService.getUserOrderList(orderListParam);
-        return getSuccessResult(response.getData());
+        PaginationResponse response = orderService.getUserOrderList(orderListParam);
+        return getSuccessResult(response);
     }
 
     /**

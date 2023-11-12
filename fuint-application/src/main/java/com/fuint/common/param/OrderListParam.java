@@ -22,7 +22,7 @@ public class OrderListParam extends PageParam implements Serializable {
     private Integer merchantId;
 
     @ApiModelProperty(value="店铺ID", name="storeId")
-    private String storeId;
+    private Integer storeId;
 
     @ApiModelProperty(value="店铺ID，逗号分隔", name="storeIds")
     private String storeIds;
@@ -32,6 +32,9 @@ public class OrderListParam extends PageParam implements Serializable {
 
     @ApiModelProperty(value="支付状态", name="payStatus")
     private String payStatus;
+
+    @ApiModelProperty(value="结算状态", name="settleStatus")
+    private String settleStatus;
 
     @ApiModelProperty(value="数据类型，1）toPay：待支付；2）paid：已支付；3）cancel：已取消", name="dataType")
     private String dataType;

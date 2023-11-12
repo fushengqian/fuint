@@ -84,4 +84,11 @@ public interface SourceService extends IService<TSource> {
      * @param source
      * */
     void editSource(TSource source);
+
+    /**
+     * 删除菜单
+     *
+     * @param source
+     * */
+    void deleteSource(TSource source);
 }

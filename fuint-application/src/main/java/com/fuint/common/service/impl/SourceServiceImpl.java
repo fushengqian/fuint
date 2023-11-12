@@ -15,7 +15,6 @@ import com.fuint.utils.ArrayUtil;
 import com.fuint.utils.StringUtil;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import javax.annotation.Resource;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -205,6 +204,30 @@ public class SourceServiceImpl extends ServiceImpl<TSourceMapper, TSource> imple
     @OperationServiceLog(description = "修改后台菜单")
     public void editSource(TSource source) {
         tSourceMapper.updateById(source);
+    }
+
+    /**
+     * 删除菜单
+     *
+     * @param source
+     * @return
+     * */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    @OperationServiceLog(description = "删除后台菜单")
+    public void deleteSource(TSource source) {
+        source.setStatus(StatusEnum.DISABLE.getKey());
+        editSource(source);
+
+        Map<String, Object> param = new HashMap<>();
+        param.put("STATUS", StatusEnum.ENABLED.getKey());
+        param.put("PARENT_ID", source.getSourceId());
+        List<TSource> dataList = tSourceMapper.selectByMap(param);
+        if (dataList != null && dataList.size() > 0) {
+            for (TSource tSource : dataList) {
+                 deleteSource(tSource);
+            }
+        }
     }
 
     /**

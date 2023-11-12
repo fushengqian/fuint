@@ -160,7 +160,7 @@ public class BackendSubMessageController extends BaseController {
                         dto.setKey(obj.get("key").toString());
                         // 解决中文乱码
                         String pName = obj.get("name").toString();
-                        if (!CommonUtil.isUtf8(pName)) {
+                        if (!CommonUtil.isUtf8(pName) || CommonUtil.isErrCode(pName)) {
                             pName = new String(obj.get("name").toString().getBytes("ISO8859-1"), "UTF-8");
                         }
                         dto.setName(pName);

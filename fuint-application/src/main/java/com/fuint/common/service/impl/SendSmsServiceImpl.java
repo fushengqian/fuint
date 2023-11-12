@@ -129,8 +129,8 @@ public class SendSmsServiceImpl implements SendSmsService {
 
         boolean flag = false;
         try {
-            // idea下中文乱码
-            if (!CommonUtil.isUtf8(signName)) {
+            // 解决中文乱码
+            if (!CommonUtil.isUtf8(signName) || CommonUtil.isErrCode(signName)) {
                 signName = new String(signName.getBytes("ISO8859-1"), "UTF-8");
             }
 

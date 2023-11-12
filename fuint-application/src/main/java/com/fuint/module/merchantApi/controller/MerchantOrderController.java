@@ -9,6 +9,7 @@ import com.fuint.common.service.OrderService;
 import com.fuint.common.service.StaffService;
 import com.fuint.common.util.TokenUtil;
 import com.fuint.framework.exception.BusinessCheckException;
+import com.fuint.framework.pagination.PaginationResponse;
 import com.fuint.framework.web.BaseController;
 import com.fuint.framework.web.ResponseObject;
 import com.fuint.repository.model.MtOrder;
@@ -72,11 +73,11 @@ public class MerchantOrderController extends BaseController {
         if (staffInfo == null) {
             return getFailureResult(1002, "该账号不是商户");
         } else if(staffInfo.getStoreId() != null && staffInfo.getStoreId() > 0){
-            orderListParam.setStoreId(staffInfo.getStoreId().toString());
+            orderListParam.setStoreId(staffInfo.getStoreId());
         }
 
-        ResponseObject orderData = orderService.getUserOrderList(orderListParam);
-        return getSuccessResult(orderData.getData());
+        PaginationResponse orderData = orderService.getUserOrderList(orderListParam);
+        return getSuccessResult(orderData);
     }
 
     /**

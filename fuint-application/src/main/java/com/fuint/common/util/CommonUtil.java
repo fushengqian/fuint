@@ -52,6 +52,15 @@ public class CommonUtil {
         return false;
     }
 
+    /**
+     * 判断是否乱码
+     *
+     * @param str
+     * @return
+     * */
+    public static boolean isErrCode(String str) {
+        return !(java.nio.charset.Charset.forName("GBK").newEncoder().canEncode(str));
+    }
 
     /**
      * 判断是否数字
@@ -112,6 +121,17 @@ public class CommonUtil {
      * */
     public static String createMerchantNo() {
         StringBuilder sb = new StringBuilder("8");
+        sb.append(SeqUtil.getRandomNumber(4));
+        sb.append(SeqUtil.getRandomNumber(4));
+        return sb.toString();
+    }
+
+    /**
+     * 生成随机结算单号(13位数)
+     * */
+    public static String createSettlementNo() {
+        StringBuilder sb = new StringBuilder("8");
+        sb.append(SeqUtil.getRandomNumber(4));
         sb.append(SeqUtil.getRandomNumber(4));
         sb.append(SeqUtil.getRandomNumber(4));
         return sb.toString();
