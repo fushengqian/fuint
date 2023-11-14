@@ -3,6 +3,7 @@ package com.fuint.common.dto;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
+import com.fuint.framework.pagination.PaginationResponse;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
@@ -34,6 +35,9 @@ public class SettlementDto implements Serializable {
 
     @ApiModelProperty("结算金额")
     private BigDecimal amount;
+
+    @ApiModelProperty("结算订单")
+    private PaginationResponse<SettlementOrderDto> orderList;
 
     @ApiModelProperty("创建时间")
     private Date createTime;

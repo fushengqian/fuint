@@ -1205,6 +1205,7 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
     @Override
     @Transactional(rollbackFor = Exception.class)
     public MtOrder updateOrder(MtOrder mtOrder) {
+        mtOrder.setUpdateTime(new Date());
         Integer id = mtOrderMapper.updateById(mtOrder);
         if (id > 0) {
             mtOrder = mtOrderMapper.selectById(mtOrder.getId());

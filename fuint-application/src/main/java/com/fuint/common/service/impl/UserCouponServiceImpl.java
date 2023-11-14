@@ -300,7 +300,7 @@ public class UserCouponServiceImpl extends ServiceImpl<MtUserCouponMapper, MtUse
                     Integer numInt = Integer.parseInt(buyItemArr[2]);
                     for (int j = 1; j <= numInt; j++) {
                         if (StringUtil.isNotEmpty(buyItemArr[1])) {
-                            this.preStoreItem(couponInfo, userInfo, orderId, new BigDecimal(buyItemArr[1]));
+                            preStoreItem(couponInfo, userInfo, orderId, new BigDecimal(buyItemArr[1]));
                         }
                     }
                 }
@@ -645,6 +645,7 @@ public class UserCouponServiceImpl extends ServiceImpl<MtUserCouponMapper, MtUse
         userCoupon.setType(couponInfo.getType());
         userCoupon.setGroupId(couponInfo.getGroupId());
         userCoupon.setMobile(userInfo.getMobile());
+        userCoupon.setMerchantId(couponInfo.getMerchantId());
         userCoupon.setUserId(userInfo.getId());
         userCoupon.setStatus(UserCouponStatusEnum.UNUSED.getKey());
         userCoupon.setCreateTime(new Date());

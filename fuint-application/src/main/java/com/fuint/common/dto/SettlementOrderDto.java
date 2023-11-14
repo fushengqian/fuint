@@ -25,6 +25,9 @@ public class SettlementOrderDto implements Serializable {
     @ApiModelProperty("订单ID")
     private Integer orderId;
 
+    @ApiModelProperty("订单信息")
+    private UserOrderDto orderInfo;
+
     @ApiModelProperty("创建时间")
     private Date createTime;
 

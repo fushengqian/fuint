@@ -2,6 +2,10 @@ package com.fuint.module.backendApi.controller;
 
 import com.fuint.common.Constants;
 import com.fuint.common.dto.AccountInfo;
+import com.fuint.common.dto.ParamDto;
+import com.fuint.common.dto.SettlementDto;
+import com.fuint.common.enums.OrderStatusEnum;
+import com.fuint.common.enums.SettleStatusEnum;
 import com.fuint.common.enums.StatusEnum;
 import com.fuint.common.service.MerchantService;
 import com.fuint.common.service.SettlementService;
@@ -12,6 +16,7 @@ import com.fuint.framework.pagination.PaginationRequest;
 import com.fuint.framework.pagination.PaginationResponse;
 import com.fuint.framework.web.BaseController;
 import com.fuint.framework.web.ResponseObject;
+import com.fuint.module.backendApi.request.SettlementRequest;
 import com.fuint.repository.model.MtMerchant;
 import com.fuint.repository.model.MtSettlement;
 import com.fuint.repository.model.MtStore;
@@ -111,10 +116,60 @@ public class BackendSettlementController extends BaseController {
 
         PaginationResponse<MtSettlement> paginationResponse = settlementService.querySettlementListByPagination(paginationRequest);
 
+        // 结算状态
+        SettleStatusEnum[] statusListEnum = SettleStatusEnum.values();
+        List<ParamDto> statusList = new ArrayList<>();
+        for (SettleStatusEnum enumItem : statusListEnum) {
+            ParamDto paramDto = new ParamDto();
+            paramDto.setKey(enumItem.getKey());
+            paramDto.setName(enumItem.getValue());
+            paramDto.setValue(enumItem.getKey());
+            statusList.add(paramDto);
+        }
+
         Map<String, Object> result = new HashMap<>();
         result.put("merchantList", merchantList);
         result.put("storeList", storeList);
+        result.put("statusList", statusList);
         result.put("paginationResponse", paginationResponse);
+
+        return getSuccessResult(result);
+    }
+
+    /**
+     * 获取结算单详情
+     * @param request HttpServletRequest对象
+     * @return
+     * */
+    @ApiOperation(value = "获取结算单详情")
+    @RequestMapping(value = "/info", method = RequestMethod.GET)
+    @CrossOrigin
+    @PreAuthorize("@pms.hasPermission('settlement:index')")
+    public ResponseObject info(HttpServletRequest request) throws BusinessCheckException {
+        String token = request.getHeader("Access-Token");
+        Integer page = request.getParameter("page") == null ? Constants.PAGE_NUMBER : Integer.parseInt(request.getParameter("page"));
+        Integer pageSize = request.getParameter("pageSize") == null ? Constants.PAGE_SIZE : Integer.parseInt(request.getParameter("pageSize"));
+        Integer settlementId = request.getParameter("settlementId") == null ? 0 : Integer.parseInt(request.getParameter("settlementId"));
+        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
+        if (accountInfo == null) {
+            return getFailureResult(1001, "请先登录");
+        }
+
+        SettlementDto settlementInfo = settlementService.getSettlementInfo(settlementId, page, pageSize);
+
+        OrderStatusEnum[] statusListEnum = OrderStatusEnum.values();
+        List<ParamDto> statusList = new ArrayList<>();
+        for (OrderStatusEnum enumItem : statusListEnum) {
+            ParamDto paramDto = new ParamDto();
+            paramDto.setKey(enumItem.getKey());
+            paramDto.setName(enumItem.getValue());
+            paramDto.setValue(enumItem.getKey());
+            statusList.add(paramDto);
+        }
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("settlementInfo", settlementInfo);
+        result.put("statusList", statusList);
 
         return getSuccessResult(result);
     }
@@ -129,33 +184,43 @@ public class BackendSettlementController extends BaseController {
     @RequestMapping(value = "/doSubmit", method = RequestMethod.POST)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('settlement:doSubmit')")
-    public ResponseObject doSubmit(HttpServletRequest request, @RequestBody Map<String, Object> param) throws BusinessCheckException {
+    public ResponseObject doSubmit(HttpServletRequest request, @RequestBody SettlementRequest requestParam) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
-        String merchantId = StringUtil.isEmpty(param.get("merchantId").toString())? "0" : param.get("merchantId").toString();
-        String storeId = StringUtil.isEmpty(param.get("storeId").toString()) ? "0" : param.get("storeId").toString();
-        String remark = param.get("remark") == null ? "后台发起结算" : param.get("remark").toString();
-
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
         if (accountInfo == null) {
             return getFailureResult(1001, "请先登录");
         }
-
         String operator = accountInfo.getAccountName();
-        MtSettlement mtSettlement = new MtSettlement();
         if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
-            mtSettlement.setMerchantId(accountInfo.getMerchantId());
-        } else {
-            mtSettlement.setMerchantId(Integer.parseInt(merchantId));
+            requestParam.setMerchantId(accountInfo.getMerchantId());
         }
-        if (accountInfo.getStoreId() != null && accountInfo.getStoreId() > 0) {
-            mtSettlement.setStoreId(accountInfo.getStoreId());
-        } else {
-            mtSettlement.setStoreId(Integer.parseInt(storeId));
-        }
-        mtSettlement.setDescription(remark);
-        mtSettlement.setOperator(operator);
+        requestParam.setOperator(operator);
+        settlementService.submitSettlement(requestParam);
+        return getSuccessResult(true);
+    }
 
-        settlementService.submitSettlement(mtSettlement);
+    /**
+     * 确认结算
+     *
+     * @param request HttpServletRequest对象
+     * @return
+     */
+    @ApiOperation(value = "确认结算")
+    @RequestMapping(value = "/doConfirm", method = RequestMethod.POST)
+    @CrossOrigin
+    @PreAuthorize("@pms.hasPermission('settlement:doConfirm')")
+    public ResponseObject doConfirm(HttpServletRequest request, @RequestBody Map<String, Object> param) throws BusinessCheckException {
+        String token = request.getHeader("Access-Token");
+        String settlementId = StringUtil.isEmpty(param.get("settlementId").toString())? "" : param.get("settlementId").toString();
+        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
+        if (accountInfo == null) {
+            return getFailureResult(1001, "请先登录");
+        }
+        if (StringUtil.isEmpty(settlementId)) {
+            return getFailureResult(201, "参数有误");
+        }
+        String operator = accountInfo.getAccountName();
+        settlementService.doConfirm(Integer.parseInt(settlementId), operator);
         return getSuccessResult(true);
     }
 }

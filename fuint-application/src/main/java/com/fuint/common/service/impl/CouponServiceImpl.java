@@ -586,6 +586,7 @@ public class CouponServiceImpl extends ServiceImpl<MtCouponMapper, MtCoupon> imp
                 userCoupon.setCouponId(couponInfo.getId());
                 userCoupon.setType(couponInfo.getType());
                 userCoupon.setImage(couponInfo.getImage());
+                userCoupon.setMerchantId(couponInfo.getMerchantId());
                 userCoupon.setStoreId(userInfo.getStoreId());
                 userCoupon.setAmount(couponInfo.getAmount());
                 userCoupon.setBalance(couponInfo.getAmount());

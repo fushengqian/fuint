@@ -133,10 +133,6 @@ public class BackendMemberController extends BaseController {
             return getFailureResult(1001, "请先登录");
         }
         TAccount account = accountService.getAccountInfoById(accountInfo.getId());
-        Integer storeId = account.getStoreId() == null ? 0 : account.getStoreId();
-        if (storeId > 0) {
-            params.put("storeId", storeId.toString());
-        }
         if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
             params.put("merchantId", accountInfo.getMerchantId());
         }
@@ -157,9 +153,6 @@ public class BackendMemberController extends BaseController {
         // 店铺列表
         Map<String, Object> paramsStore = new HashMap<>();
         paramsStore.put("status", StatusEnum.ENABLED.getKey());
-        if (storeId != null && storeId > 0) {
-            paramsStore.put("storeId", storeId.toString());
-        }
         if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
             paramsStore.put("merchantId", accountInfo.getMerchantId());
         }
@@ -245,7 +238,7 @@ public class BackendMemberController extends BaseController {
     /**
      * 保存会员信息
      *
-     * @param request  HttpServletRequest对象
+     * @param request HttpServletRequest对象
      * @return
      */
     @ApiOperation(value = "保存会员信息")
@@ -304,10 +297,10 @@ public class BackendMemberController extends BaseController {
         memberInfo.setDescription(description);
         memberInfo.setStartTime(DateUtil.parseDate(startTime));
         memberInfo.setEndTime(DateUtil.parseDate(endTime));
-        TAccount account = accountService.getAccountInfoById(accountInfo.getId());
-        Integer storeId = account.getStoreId();
-        memberInfo.setStoreId(storeId);
         if (StringUtil.isEmpty(id)) {
+            TAccount account = accountService.getAccountInfoById(accountInfo.getId());
+            Integer storeId = account.getStoreId();
+            memberInfo.setStoreId(storeId);
             memberService.addMember(memberInfo);
         } else {
             memberService.updateMember(memberInfo);

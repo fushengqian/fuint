@@ -64,6 +64,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(
                         HttpMethod.GET,
                         "/",
+                        "/static/**",
                         "/*.html",
                         "/**/*.html",
                         "/**/*.css",

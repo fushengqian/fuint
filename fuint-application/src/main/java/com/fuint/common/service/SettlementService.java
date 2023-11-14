@@ -1,8 +1,10 @@
 package com.fuint.common.service;
 
+import com.fuint.common.dto.SettlementDto;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.pagination.PaginationRequest;
 import com.fuint.framework.pagination.PaginationResponse;
+import com.fuint.module.backendApi.request.SettlementRequest;
 import com.fuint.repository.model.MtSettlement;
 
 /**
@@ -24,16 +26,28 @@ public interface SettlementService {
     /**
      * 提交结算
      *
-     * @param  mtSettlement
+     * @param  requestParam
      * @throws BusinessCheckException
      */
-    Boolean submitSettlement(MtSettlement mtSettlement) throws BusinessCheckException;
+    Boolean submitSettlement(SettlementRequest requestParam) throws BusinessCheckException;
+
+    /**
+     * 结算确认
+     *
+     * @param  settlementId
+     * @param  operator
+     * @throws BusinessCheckException
+     */
+    Boolean doConfirm(Integer settlementId, String operator) throws BusinessCheckException;
 
     /**
      * 获取结算详情
      *
      * @param settlementId
+     * @param page
+     * @param pageSize
+     *
      * @return
      * */
-    MtSettlement getSettlementInfo(Integer settlementId) throws BusinessCheckException;
+    SettlementDto getSettlementInfo(Integer settlementId, Integer page, Integer pageSize) throws BusinessCheckException;
 }

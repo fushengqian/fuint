@@ -7,8 +7,8 @@ package com.fuint.common.enums;
  * CopyRight https://www.fuint.cn
  */
 public enum SettleStatusEnum {
-    WAIT("A", "待结算"),
-    COMPLETE("B", "已结算");
+    WAIT("A", "待确认"),
+    COMPLETE("B", "已完成");
 
     private String key;
 
