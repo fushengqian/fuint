@@ -105,18 +105,10 @@ public class BackendFileController extends BaseController {
             logger.error("图片允许的大小设置不正确", e);
         }
         if (file.getSize() > (maxSize * 1024 * 1024)) {
-            return getFailureResult(201, "上传的图片不能大于" + maxSize + "MB");
+            return getFailureResult(201, "上传的文件不能大于" + maxSize + "MB");
         }
 
         String fileType = file.getContentType();
-        if (fileType.indexOf("image") == -1) {
-            return getFailureResult(201, "上传的图片格式有误");
-        }
-
-        String original = file.getOriginalFilename().toLowerCase();
-        if (original.indexOf("jpg") == -1 && original.indexOf("jpeg") == -1 && original.indexOf("png") == -1 && original.indexOf("gif") == -1 && original.indexOf("bmp") == -1) {
-            return getFailureResult(201, "上传的图片格式有误");
-        }
 
         // 保存文件
         try {
@@ -127,7 +119,7 @@ public class BackendFileController extends BaseController {
 
             // 上传阿里云oss
             String mode = env.getProperty("aliyun.oss.mode");
-            if (mode.equals("1")) { // 检查是否开启上传
+            if (mode.equals("1") && fileType.indexOf("image") >= 0) { // 检查是否开启上传
                 String endpoint = env.getProperty("aliyun.oss.endpoint");
                 String accessKeyId = env.getProperty("aliyun.oss.accessKeyId");
                 String accessKeySecret = env.getProperty("aliyun.oss.accessKeySecret");

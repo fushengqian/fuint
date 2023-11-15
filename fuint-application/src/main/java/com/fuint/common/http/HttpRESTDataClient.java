@@ -35,7 +35,7 @@ public class HttpRESTDataClient {
 
     public static byte[] requestPost(String url, String postData) throws IOException {
         String postBody = postData;
-        MediaType MEDIA_TYPE_MARKDOWN = MediaType.parse("text/x-markdown;charset=utf-8");
+        MediaType MEDIA_TYPE_MARKDOWN = MediaType.parse("application/json");
         Request request = new Request.Builder()
                 .url(url)
                 .post(RequestBody.create(MEDIA_TYPE_MARKDOWN, postBody))

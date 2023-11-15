@@ -215,6 +215,7 @@ public class BackendStoreController extends BaseController {
         String longitude = params.get("longitude") == null ? "" : CommonUtil.replaceXSS(params.get("longitude").toString());
         String wxMchId = params.get("wxMchId") == null ? null : CommonUtil.replaceXSS(params.get("wxMchId").toString());
         String wxApiV2 = params.get("wxApiV2") == null ? null : CommonUtil.replaceXSS(params.get("wxApiV2").toString());
+        String wxCertPath = params.get("wxCertPath") == null ? null : CommonUtil.replaceXSS(params.get("wxCertPath").toString());
         String alipayAppId = params.get("alipayAppId") == null ? null : CommonUtil.replaceXSS(params.get("alipayAppId").toString());
         String alipayPrivateKey = params.get("alipayPrivateKey") == null ? null : CommonUtil.replaceXSS(params.get("alipayPrivateKey").toString());
         String alipayPublicKey = params.get("alipayPublicKey") == null ? null : CommonUtil.replaceXSS(params.get("alipayPublicKey").toString());
@@ -250,6 +251,7 @@ public class BackendStoreController extends BaseController {
         storeInfo.setStatus(status);
         storeInfo.setWxMchId(wxMchId);
         storeInfo.setWxApiV2(wxApiV2);
+        storeInfo.setWxCertPath(wxCertPath);
         storeInfo.setLicense(license);
         storeInfo.setCreditCode(creditCode);
         storeInfo.setBankName(bankName);

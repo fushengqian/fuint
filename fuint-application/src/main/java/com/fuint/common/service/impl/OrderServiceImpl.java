@@ -1278,7 +1278,7 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
                 MtUser userInfo = memberService.queryMemberById(orderInfo.getUserId());
                 MtUserGrade userGrade = userGradeService.queryUserGradeById(orderInfo.getMerchantId(), Integer.parseInt(userInfo.getGradeId()), orderInfo.getUserId());
                 // 是否会员积分加倍
-                if (userGrade.getSpeedPoint() > 1) {
+                if (userGrade != null && userGrade.getSpeedPoint() > 1) {
                     pointNum = pointNum * userGrade.getSpeedPoint();
                 }
                 MtPoint reqPointDto = new MtPoint();

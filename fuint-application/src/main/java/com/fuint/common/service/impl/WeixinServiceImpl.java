@@ -759,7 +759,7 @@ public class WeixinServiceImpl implements WeixinService {
 
             String pathRoot = env.getProperty("images.root");
             String baseImage = env.getProperty("images.path");
-            String filePath = "/storeQr" + storeId + ".png";
+            String filePath = "storeQr" + storeId + ".png";
             String path = pathRoot + baseImage + filePath;
             QRCodeUtil.saveQrCodeToLocal(bytes, path);
 
@@ -795,15 +795,17 @@ public class WeixinServiceImpl implements WeixinService {
         MtStore mtStore = storeService.queryStoreById(storeId);
         String mchId = wxPayBean.getMchId();
         String apiV2 = wxPayBean.getApiV2();
+        String certPath = wxPayBean.getCertPath();
         if (mtStore != null && StringUtil.isNotEmpty(mtStore.getWxApiV2()) && StringUtil.isNotEmpty(mtStore.getWxMchId())) {
             mchId = mtStore.getWxMchId();
             apiV2 = mtStore.getWxApiV2();
+            certPath = mtStore.getWxCertPath();
         }
         apiConfig = WxPayApiConfig.builder()
                    .appId(wxPayBean.getAppId())
                    .mchId(mchId)
                    .partnerKey(apiV2)
-                   .certPath(wxPayBean.getCertPath())
+                   .certPath(certPath)
                    .domain(wxPayBean.getDomain())
                    .build();
         // 微信内h5公众号支付

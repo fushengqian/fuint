@@ -67,6 +67,9 @@ public class StoreDto implements Serializable {
     @ApiModelProperty("微信支付秘钥")
     private String wxApiV2;
 
+    @ApiModelProperty("微信支付证书")
+    private String wxCertPath;
+
     @ApiModelProperty("支付宝appId")
     private String alipayAppId;
 
