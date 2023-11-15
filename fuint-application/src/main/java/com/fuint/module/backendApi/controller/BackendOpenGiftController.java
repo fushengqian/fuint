@@ -15,7 +15,7 @@ import com.fuint.repository.model.MtUserGrade;
 import com.fuint.utils.StringUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -32,19 +32,18 @@ import java.util.Map;
  */
 @Api(tags="管理端-开卡赠礼相关接口")
 @RestController
+@AllArgsConstructor
 @RequestMapping(value = "/backendApi/openGift")
 public class BackendOpenGiftController extends BaseController {
 
     /**
      * 会员服务接口
      */
-    @Autowired
     private MemberService memberService;
 
     /**
      * 开卡赠礼服务接口
      */
-    @Autowired
     private OpenGiftService openGiftService;
 
     /**

@@ -16,7 +16,7 @@ import com.fuint.repository.model.MtStore;
 import com.fuint.utils.StringUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
@@ -31,19 +31,18 @@ import java.util.Map;
  */
 @Api(tags="管理端-分销提成规则相关接口")
 @RestController
+@AllArgsConstructor
 @RequestMapping(value = "/backendApi/commissionRule")
 public class BackendCommissionRuleController extends BaseController {
 
     /**
      * 分销提成规则服务接口
      */
-    @Autowired
     private CommissionRuleService commissionRuleService;
 
     /**
      * 店铺服务接口
      */
-    @Autowired
     private StoreService storeService;
 
     /**

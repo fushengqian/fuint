@@ -17,11 +17,10 @@ import com.fuint.repository.model.MtRegion;
 import com.fuint.utils.StringUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import java.lang.reflect.InvocationTargetException;
 import org.springframework.web.bind.annotation.*;
-import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -36,16 +35,15 @@ import java.util.Map;
  */
 @Api(tags="会员端-收货地址相关接口")
 @RestController
+@AllArgsConstructor
 @RequestMapping(value = "/clientApi/address")
 public class ClientAddressController extends BaseController {
 
-    @Resource
     private MtRegionMapper mtRegionMapper;
 
     /**
      * 收货地址服务接口
      * */
-    @Autowired
     private AddressService addressService;
 
     /**

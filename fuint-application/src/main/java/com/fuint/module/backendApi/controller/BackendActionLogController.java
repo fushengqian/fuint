@@ -12,11 +12,10 @@ import com.fuint.repository.model.TActionLog;
 import com.fuint.utils.StringUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.Map;
@@ -29,10 +28,10 @@ import java.util.Map;
  */
 @Api(tags="管理端-日志相关接口")
 @RestController
+@AllArgsConstructor
 @RequestMapping(value = "/backendApi/actlog")
 public class BackendActionLogController extends BaseController {
 
-    @Autowired
     private ActionLogService tActionLogService;
 
     /**

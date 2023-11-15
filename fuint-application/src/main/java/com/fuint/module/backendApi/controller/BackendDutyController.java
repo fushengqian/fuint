@@ -19,7 +19,7 @@ import com.fuint.repository.model.TSource;
 import com.fuint.utils.StringUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -40,13 +40,18 @@ import java.util.Map;
  */
 @Api(tags="管理端-后台角色相关接口")
 @RestController
+@AllArgsConstructor
 @RequestMapping(value = "/backendApi/duty")
 public class BackendDutyController extends BaseController {
 
-    @Autowired
+    /**
+     * 角色服务接口
+     * */
     private DutyService tDutyService;
 
-    @Autowired
+    /**
+     * 菜单服务接口
+     * */
     private SourceService tSourceService;
 
     /**

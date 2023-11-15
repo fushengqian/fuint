@@ -8,10 +8,9 @@ import com.fuint.common.service.MessageService;
 import com.fuint.repository.mapper.MtMessageMapper;
 import com.fuint.repository.model.MtMessage;
 import com.fuint.utils.StringUtil;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import javax.annotation.Resource;
 import java.util.Date;
 import java.util.List;
 
@@ -22,9 +21,9 @@ import java.util.List;
  * CopyRight https://www.fuint.cn
  */
 @Service
+@AllArgsConstructor
 public class MessageServiceImpl extends ServiceImpl<MtMessageMapper, MtMessage> implements MessageService {
 
-    @Resource
     private MtMessageMapper messageRepository;
 
     /**

@@ -17,8 +17,8 @@ import com.fuint.repository.model.*;
 import com.fuint.utils.StringUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
@@ -37,61 +37,53 @@ import java.util.Map;
  */
 @Api(tags="管理端-收银台相关接口")
 @RestController
+@AllArgsConstructor
 @RequestMapping(value = "/backendApi/cashier")
 public class BackendCashierController extends BaseController {
 
     /**
      * 后台账户服务接口
      */
-    @Autowired
     private AccountService accountService;
 
     /**
      * 商品类别服务接口
      */
-    @Autowired
     private CateService cateService;
 
     /**
      * 购物车服务接口
      * */
-    @Autowired
     private CartService cartService;
 
     /**
      * 订单服务接口
      * */
-    @Autowired
     private OrderService orderService;
 
     /**
      * 商品服务接口
      */
-    @Autowired
     private GoodsService goodsService;
 
     /**
      * 店铺服务接口
      */
-    @Autowired
     private StoreService storeService;
 
     /**
      * 系统设置服务接口
      */
-    @Autowired
     private SettingService settingService;
 
     /**
      * 会员服务接口
      */
-    @Autowired
     private MemberService memberService;
 
     /**
      * 商户接口
      */
-    @Autowired
     private MerchantService merchantService;
 
     /**

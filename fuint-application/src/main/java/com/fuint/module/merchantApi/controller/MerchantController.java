@@ -14,7 +14,7 @@ import com.fuint.repository.model.MtStaff;
 import com.fuint.repository.model.MtUser;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
@@ -30,19 +30,28 @@ import java.util.Map;
  */
 @Api(tags="商户端-商户信息相关接口")
 @RestController
+@AllArgsConstructor
 @RequestMapping(value = "/merchantApi/merchant")
 public class MerchantController extends BaseController {
 
-    @Autowired
+    /**
+     * 会员服务接口
+     * */
     private MemberService memberService;
 
-    @Autowired
+    /**
+     * 店铺员工服务接口
+     * */
     private StaffService staffService;
 
-    @Autowired
+    /**
+     * 卡券核销记录服务接口
+     * */
     private ConfirmLogService confirmLogService;
 
-    @Autowired
+    /**
+     * 订单服务接口
+     * */
     private OrderService orderService;
 
     /**

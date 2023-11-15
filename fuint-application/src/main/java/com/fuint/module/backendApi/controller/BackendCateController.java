@@ -21,7 +21,7 @@ import com.fuint.repository.model.TAccount;
 import com.fuint.utils.StringUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -38,31 +38,28 @@ import java.util.Map;
  */
 @Api(tags="管理端-商品分类相关接口")
 @RestController
+@AllArgsConstructor
 @RequestMapping(value = "/backendApi/goods/cate")
 public class BackendCateController extends BaseController {
 
     /**
      * 商品分类服务接口
      */
-    @Autowired
     private CateService cateService;
 
     /**
      * 配置服务接口
      * */
-    @Autowired
     private SettingService settingService;
 
     /**
      * 后台账户服务接口
      */
-    @Autowired
     private AccountService accountService;
 
     /**
      * 店铺服务接口
      */
-    @Autowired
     private StoreService storeService;
 
     /**

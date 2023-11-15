@@ -21,12 +21,10 @@ import com.fuint.repository.model.*;
 import com.fuint.utils.StringUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-
-import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
@@ -40,43 +38,37 @@ import java.util.*;
  */
 @Api(tags="管理端-商品相关接口")
 @RestController
+@AllArgsConstructor
 @RequestMapping(value = "/backendApi/goods/goods")
 public class BackendGoodsController extends BaseController {
 
-    @Resource
     private MtGoodsSpecMapper mtGoodsSpecMapper;
 
-    @Resource
     private MtGoodsSkuMapper mtGoodsSkuMapper;
 
     /**
      * 商品服务接口
      */
-    @Autowired
     private GoodsService goodsService;
 
     /**
      * 商品分类服务接口
      */
-    @Autowired
     private CateService cateService;
 
     /**
      * 店铺服务接口
      */
-    @Autowired
     private StoreService storeService;
 
     /**
      * 后台账户服务接口
      */
-    @Autowired
     private AccountService accountService;
 
     /**
      * 系统设置服务接口
      * */
-    @Autowired
     private SettingService settingService;
 
     /**

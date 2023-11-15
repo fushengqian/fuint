@@ -6,8 +6,8 @@ import com.fuint.framework.web.ResponseObject;
 import com.fuint.common.util.Base64Util;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-import javax.annotation.Resource;
 import javax.imageio.ImageIO;
 import java.io.ByteArrayOutputStream;
 import javax.servlet.http.HttpServletRequest;
@@ -26,13 +26,13 @@ import java.util.UUID;
  */
 @Api(tags="会员端-图形验证码相关接口")
 @RestController
+@AllArgsConstructor
 @RequestMapping("/clientApi/captcha")
 public class ClientCaptchaController extends BaseController {
 
     /**
      * 图形验证码服务接口
      * */
-    @Resource
     private CaptchaService captchaService;
 
     @ApiOperation(value = "获取图形验证码")

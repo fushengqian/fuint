@@ -18,7 +18,7 @@ import com.fuint.repository.model.MtSetting;
 import com.fuint.utils.StringUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.core.env.Environment;
@@ -33,16 +33,18 @@ import java.util.*;
  */
 @Api(tags="管理端-小程序订阅消息相关接口")
 @RestController
+@AllArgsConstructor
 @RequestMapping(value = "/backendApi/subMessage")
 public class BackendSubMessageController extends BaseController {
 
     /**
      * 配置服务接口
      * */
-    @Autowired
     private SettingService settingService;
 
-    @Autowired
+    /**
+     * 系统环境变量
+     * */
     private Environment env;
 
     /**

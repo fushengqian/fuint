@@ -21,12 +21,12 @@ import com.fuint.utils.ArrayUtil;
 import com.fuint.utils.StringUtil;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
+import lombok.AllArgsConstructor;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,12 +37,11 @@ import java.util.List;
  * CopyRight https://www.fuint.cn
  */
 @Service
+@AllArgsConstructor
 public class DutyServiceImpl extends ServiceImpl<TDutyMapper, TDuty> implements DutyService {
 
-    @Resource
     private TDutyMapper tDutyMapper;
 
-    @Resource
     private TDutySourceMapper tDutySourceMapper;
 
     @Override

@@ -15,11 +15,9 @@ import com.fuint.repository.mapper.MtArticleMapper;
 import com.fuint.utils.StringUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import java.lang.reflect.InvocationTargetException;
 import org.springframework.web.bind.annotation.*;
-
-import javax.annotation.Resource;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -31,17 +29,16 @@ import java.util.Map;
  */
 @Api(tags="会员端-文章相关接口")
 @RestController
+@AllArgsConstructor
 @RequestMapping(value = "/clientApi/article")
 public class ClientArticleController extends BaseController {
+
+    private MtArticleMapper articleMapper;
 
     /**
      * 文章服务接口
      * */
-    @Autowired
     private ArticleService articleService;
-
-    @Resource
-    private MtArticleMapper articleMapper;
 
     /**
      * 获取文章列表

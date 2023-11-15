@@ -20,9 +20,9 @@ import com.fuint.utils.StringUtil;
 import com.ijpay.alipay.AliPayApi;
 import com.ijpay.alipay.AliPayApiConfig;
 import com.ijpay.alipay.AliPayApiConfigKit;
+import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
@@ -35,18 +35,22 @@ import java.util.*;
  * CopyRight https://www.fuint.cn
  */
 @Service
+@AllArgsConstructor
 public class AlipayServiceImpl implements AlipayService {
 
     private static final Logger logger = LoggerFactory.getLogger(WeixinServiceImpl.class);
 
-    @Autowired
+    private AliPayBean aliPayBean;
+
+    /**
+     * 订单服务接口
+     * */
     private OrderService orderService;
 
-    @Autowired
+    /**
+     * 店铺服务接口
+     * */
     private StoreService storeService;
-
-    @Autowired
-    AliPayBean aliPayBean;
 
     /**
      * 创建支付订单

@@ -12,7 +12,7 @@ import com.fuint.framework.web.ResponseObject;
 import com.fuint.utils.StringUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.util.ResourceUtils;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -38,15 +38,20 @@ import java.util.UUID;
  */
 @Api(tags="管理端-文件上传相关接口")
 @RestController
+@AllArgsConstructor
 @RequestMapping(value = "/backendApi/file")
 public class BackendFileController extends BaseController {
 
     private static final Logger logger = LoggerFactory.getLogger(BackendFileController.class);
 
-    @Autowired
+    /**
+     * 环境变量
+     * */
     private Environment env;
 
-    @Autowired
+    /**
+     * 系统设置服务接口
+     * */
     private SettingService settingService;
 
     /**

@@ -18,7 +18,7 @@ import com.fuint.repository.model.MtUser;
 import com.fuint.utils.StringUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 
@@ -30,25 +30,23 @@ import javax.servlet.http.HttpServletRequest;
  */
 @Api(tags="商户端-订单管理相关接口")
 @RestController
+@AllArgsConstructor
 @RequestMapping(value = "/merchantApi/order")
 public class MerchantOrderController extends BaseController {
 
     /**
      * 订单服务接口
      * */
-    @Autowired
     private OrderService orderService;
 
     /**
      * 会员服务接口
      */
-    @Autowired
     private MemberService memberService;
 
     /**
      * 店铺员工服务接口
      * */
-    @Autowired
     private StaffService staffService;
 
     /**

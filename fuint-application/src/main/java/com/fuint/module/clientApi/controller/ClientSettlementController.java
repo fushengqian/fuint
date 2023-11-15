@@ -7,7 +7,7 @@ import com.fuint.framework.web.BaseController;
 import com.fuint.framework.web.ResponseObject;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Map;
@@ -20,13 +20,13 @@ import java.util.Map;
  */
 @Api(tags="会员端-订单结算相关接口")
 @RestController
+@AllArgsConstructor
 @RequestMapping(value = "/clientApi/settlement")
 public class ClientSettlementController extends BaseController {
 
     /**
      * 订单接口
      * */
-    @Autowired
     private OrderService orderService;
 
     /**

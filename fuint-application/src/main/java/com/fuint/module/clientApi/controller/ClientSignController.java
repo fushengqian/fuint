@@ -19,9 +19,9 @@ import com.fuint.repository.model.MtVerifyCode;
 import com.fuint.utils.StringUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
@@ -36,49 +36,46 @@ import java.util.Map;
  */
 @Api(tags="会员端-登录相关接口")
 @RestController
+@AllArgsConstructor
 @RequestMapping(value = "/clientApi/sign")
 public class ClientSignController extends BaseController {
 
     /**
+     * 系统环境变量
+     * */
+    private Environment env;
+
+    private static final Logger logger = LoggerFactory.getLogger(ClientSignController.class);
+
+    /**
      * 会员服务接口
      */
-    @Autowired
     private MemberService memberService;
 
     /**
      * 验证码接口
      */
-    @Autowired
     private VerifyCodeService verifyCodeService;
 
     /**
      * 微信相关接口
      * */
-    @Autowired
     private WeixinService weixinService;
 
     /**
      * 图形验证码
      * */
-    @Autowired
     private CaptchaService captchaService;
 
     /**
      * 商户服务接口
      */
-    @Autowired
     private MerchantService merchantService;
 
     /**
      * 店铺服务接口
      * */
-    @Autowired
     private StoreService storeService;
-
-    @Autowired
-    private Environment env;
-
-    private Logger logger = LoggerFactory.getLogger(ClientSignController.class);
 
     /**
      * 微信授权登录（小程序）

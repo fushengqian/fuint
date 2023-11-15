@@ -24,10 +24,10 @@ import com.fuint.repository.model.*;
 import com.fuint.utils.StringUtil;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
+import lombok.AllArgsConstructor;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -36,8 +36,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.util.ResourceUtils;
 import org.springframework.web.multipart.MultipartFile;
-
-import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.IOException;
@@ -53,35 +51,45 @@ import java.util.regex.Pattern;
  * CopyRight https://www.fuint.cn
  */
 @Service
+@AllArgsConstructor
 public class CouponGroupServiceImpl extends ServiceImpl<MtCouponGroupMapper, MtCouponGroup> implements CouponGroupService {
 
     private static final Logger log = LoggerFactory.getLogger(CouponGroupServiceImpl.class);
 
-    @Resource
     private MtCouponGroupMapper mtCouponGroupMapper;
 
-    @Resource
     private MtCouponMapper mtCouponMapper;
 
-    @Resource
     private MtUserCouponMapper mtUserCouponMapper;
 
-    @Resource
+    /**
+     * 卡券服务接口
+     * */
     private CouponService couponService;
 
-    @Resource
+    /**
+     * 会员卡券服务接口
+     * */
     private UserCouponService userCouponService;
 
-    @Resource
+    /**
+     * 会员服务接口
+     * */
     private MemberService memberService;
 
-    @Resource
+    /**
+     * 卡券发放记录服务接口
+     * */
     private SendLogService sendLogService;
 
-    @Resource
+    /**
+     * 短信发送服务接口
+     * */
     private SendSmsService sendSmsService;
 
-    @Autowired
+    /**
+     * 系统环境变量
+     * */
     private Environment env;
 
     /**

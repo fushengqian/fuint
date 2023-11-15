@@ -18,8 +18,8 @@ import com.fuint.repository.model.MtUser;
 import com.fuint.utils.StringUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
@@ -35,31 +35,28 @@ import java.util.Map;
  */
 @Api(tags="会员端-系统配置相关接口")
 @RestController
+@AllArgsConstructor
 @RequestMapping(value = "/clientApi/system")
 public class ClientSystemController extends BaseController {
 
     /**
      * 店铺服务接口
      * */
-    @Autowired
     private StoreService storeService;
 
     /**
      * 会员服务接口
      */
-    @Autowired
     private MemberService memberService;
 
     /**
      * 配置服务接口
      * */
-    @Autowired
     private SettingService settingService;
 
     /**
      * 商户接口
      */
-    @Autowired
     private MerchantService merchantService;
 
     /**

@@ -20,15 +20,13 @@ import com.fuint.repository.model.MtPoint;
 import com.fuint.repository.model.MtUser;
 import com.fuint.utils.StringUtil;
 import com.github.pagehelper.PageHelper;
+import lombok.AllArgsConstructor;
 import org.apache.commons.lang.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import com.github.pagehelper.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import javax.annotation.Resource;
 import java.util.*;
 
 /**
@@ -38,18 +36,21 @@ import java.util.*;
  * CopyRight https://www.fuint.cn
  */
 @Service
+@AllArgsConstructor
 public class PointServiceImpl extends ServiceImpl<MtPointMapper, MtPoint> implements PointService {
 
-    @Resource
     private MtPointMapper mtPointMapper;
 
-    @Resource
     private MtUserMapper mtUserMapper;
 
-    @Autowired
+    /**
+     * 会员服务接口
+     * */
     private MemberService memberService;
 
-    @Autowired
+    /**
+     * 微信相关服务接口
+     * */
     private WeixinService weixinService;
 
     /**

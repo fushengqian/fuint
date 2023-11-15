@@ -14,13 +14,12 @@ import com.fuint.repository.mapper.MtSmsTemplateMapper;
 import com.fuint.repository.model.MtSmsTemplate;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
+import lombok.AllArgsConstructor;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import javax.annotation.Resource;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -33,9 +32,9 @@ import java.util.Map;
  * CopyRight https://www.fuint.cn
  */
 @Service
+@AllArgsConstructor
 public class SmsTemplateServiceImpl extends ServiceImpl<MtSmsTemplateMapper, MtSmsTemplate> implements SmsTemplateService {
 
-    @Resource
     private MtSmsTemplateMapper mtSmsTemplateMapper;
 
     /**
@@ -88,6 +87,7 @@ public class SmsTemplateServiceImpl extends ServiceImpl<MtSmsTemplateMapper, MtS
      * 保存模板信息
      *
      * @param mtSmsTemplateDto
+     * @return
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -123,7 +123,7 @@ public class SmsTemplateServiceImpl extends ServiceImpl<MtSmsTemplateMapper, MtS
     /**
      * 根据ID删除数据
      *
-     * @param id       模板ID
+     * @param id 模板ID
      * @param operator 操作人
      */
     @Override

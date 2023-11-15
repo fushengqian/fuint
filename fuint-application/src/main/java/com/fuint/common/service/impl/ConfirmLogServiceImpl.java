@@ -16,13 +16,11 @@ import com.fuint.repository.mapper.MtConfirmLogMapper;
 import com.fuint.repository.model.*;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
+import lombok.AllArgsConstructor;
 import org.apache.commons.lang.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
-
-import javax.annotation.Resource;
 import java.util.*;
 
 /**
@@ -32,18 +30,24 @@ import java.util.*;
  * CopyRight https://www.fuint.cn
  */
 @Service
+@AllArgsConstructor
 public class ConfirmLogServiceImpl extends ServiceImpl<MtConfirmLogMapper, MtConfirmLog> implements ConfirmLogService {
 
-    @Resource
     private MtConfirmLogMapper mtConfirmLogMapper;
 
-    @Autowired
+    /**
+     * 卡券服务接口
+     * */
     private CouponService couponService;
 
-    @Autowired
+    /**
+     * 会员服务接口
+     * */
     private MemberService memberService;
 
-    @Autowired
+    /**
+     * 店铺服务接口
+     * */
     private StoreService storeService;
 
     /**

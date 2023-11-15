@@ -11,12 +11,10 @@ import com.fuint.common.enums.StatusEnum;
 import com.fuint.common.service.SettingService;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.utils.StringUtil;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -28,12 +26,14 @@ import java.util.List;
  * CopyRight https://www.fuint.cn
  */
 @Service
+@AllArgsConstructor
 public class SettingServiceImpl extends ServiceImpl<MtSettingMapper, MtSetting> implements SettingService {
 
-    @Autowired
+    /**
+     * 系统环境变量
+     * */
     private Environment env;
 
-    @Resource
     private MtSettingMapper mtSettingMapper;
 
     /**

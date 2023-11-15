@@ -19,17 +19,15 @@ import com.fuint.repository.model.MtStore;
 import com.fuint.utils.StringUtil;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
+import lombok.AllArgsConstructor;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import javax.annotation.Resource;
 import java.util.*;
 
 /**
@@ -39,17 +37,18 @@ import java.util.*;
  * CopyRight https://www.fuint.cn
  */
 @Service
+@AllArgsConstructor
 public class CateServiceImpl extends ServiceImpl<MtGoodsCateMapper, MtGoodsCate> implements CateService {
 
     private static final Logger log = LoggerFactory.getLogger(CateServiceImpl.class);
 
-    @Resource
     private MtGoodsMapper mtGoodsMapper;
 
-    @Resource
     private MtGoodsCateMapper cateMapper;
 
-    @Autowired
+    /**
+     * 店铺服务接口
+     * */
     private StoreService storeService;
 
     /**

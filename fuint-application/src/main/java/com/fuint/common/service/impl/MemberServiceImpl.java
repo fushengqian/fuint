@@ -26,13 +26,14 @@ import com.fuint.repository.model.*;
 import com.fuint.utils.StringUtil;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
+import lombok.AllArgsConstructor;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
 import java.util.*;
@@ -44,57 +45,48 @@ import java.util.*;
  * CopyRight https://www.fuint.cn
  */
 @Service
+@AllArgsConstructor(onConstructor_= {@Lazy})
 public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> implements MemberService {
 
-    @Resource
     private MtUserMapper mtUserMapper;
 
-    @Resource
     private MtUserGradeMapper mtUserGradeMapper;
 
-    @Resource
     private MtUserActionMapper mtUserActionMapper;
 
     /**
      * 短信发送接口
      */
-    @Resource
     private SendSmsService sendSmsService;
 
     /**
      * 会员等级接口
      * */
-    @Resource
     private UserGradeService userGradeService;
 
     /**
      * 会员等级接口
      * */
-    @Resource
     private OpenGiftService openGiftService;
 
     /**
      * 后台账户服务接口
      */
-    @Resource
     private AccountService accountService;
 
     /**
      * 员工接口
      */
-    @Resource
     private StaffService staffService;
 
     /**
      * 店铺接口
      */
-    @Resource
     private StoreService storeService;
 
     /**
      * 会员行为接口
      */
-    @Resource
     private UserActionService userActionService;
 
     /**

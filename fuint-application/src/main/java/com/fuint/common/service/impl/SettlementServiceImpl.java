@@ -25,14 +25,13 @@ import com.fuint.repository.model.MtSettlement;
 import com.fuint.repository.model.MtSettlementOrder;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
+import lombok.AllArgsConstructor;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.util.*;
 
@@ -43,18 +42,16 @@ import java.util.*;
  * CopyRight https://www.fuint.cn
  */
 @Service
+@AllArgsConstructor
 public class SettlementServiceImpl implements SettlementService {
 
-    @Resource
     private MtSettlementMapper mtSettlementMapper;
 
-    @Resource
     private MtSettlementOrderMapper mtSettlementOrderMapper;
 
     /**
      * 订单服务接口
      * */
-    @Autowired
     private OrderService orderService;
 
     /**
@@ -111,14 +108,19 @@ public class SettlementServiceImpl implements SettlementService {
         OrderListParam orderParam = new OrderListParam();
         orderParam.setMerchantId(requestParam.getMerchantId());
         orderParam.setStoreId(requestParam.getStoreId());
-        orderParam.setPayStatus(PayStatusEnum.SUCCESS.getKey());
+        orderParam.setDataType("paid");
         orderParam.setStartTime(requestParam.getStartTime());
         orderParam.setEndTime(requestParam.getEndTime());
+        orderParam.setSettleStatus(SettleStatusEnum.WAIT.getKey());
         orderParam.setPage(1);
         orderParam.setPageSize(100000);
 
         PaginationResponse response = orderService.getUserOrderList(orderParam);
         List<UserOrderDto> orderList = response.getContent();
+        if (orderList == null || orderList.size() < 1) {
+            throw new BusinessCheckException("暂无符合结算条件的订单");
+        }
+
         BigDecimal amount = new BigDecimal("0");
         BigDecimal totalOrderAmount = new BigDecimal("0");
         if (orderList != null && orderList.size() > 0) {

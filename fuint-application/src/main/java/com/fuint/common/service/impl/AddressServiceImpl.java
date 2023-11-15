@@ -8,9 +8,9 @@ import com.fuint.common.enums.YesOrNoEnum;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.common.enums.StatusEnum;
 import com.fuint.utils.StringUtil;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import javax.annotation.Resource;
 import java.util.List;
 import java.util.Date;
 import java.util.Map;
@@ -23,9 +23,9 @@ import java.util.HashMap;
  * CopyRight https://www.fuint.cn
  */
 @Service
+@AllArgsConstructor
 public class AddressServiceImpl extends ServiceImpl<MtAddressMapper, MtAddress> implements AddressService {
 
-    @Resource
     private MtAddressMapper mtAddressMapper;
 
     /**

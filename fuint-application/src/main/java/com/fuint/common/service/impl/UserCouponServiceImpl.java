@@ -21,14 +21,14 @@ import com.fuint.repository.model.*;
 import com.fuint.utils.StringUtil;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
+import lombok.AllArgsConstructor;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.util.*;
 
@@ -39,33 +39,49 @@ import java.util.*;
  * CopyRight https://www.fuint.cn
  */
 @Service
+@AllArgsConstructor(onConstructor_= {@Lazy})
 public class UserCouponServiceImpl extends ServiceImpl<MtUserCouponMapper, MtUserCoupon> implements UserCouponService {
 
-    @Resource
     private MtUserCouponMapper mtUserCouponMapper;
 
-    @Autowired
+    /**
+     * 卡券服务接口
+     * */
     private CouponService couponService;
 
-    @Autowired
+    /**
+     * 卡券分组服务接口
+     * */
     private CouponGroupService couponGroupService;
 
-    @Autowired
+    /**
+     * 会员服务接口
+     * */
     private MemberService memberService;
 
-    @Autowired
+    /**
+     * 积分服务接口
+     * */
     private PointService pointService;
 
-    @Autowired
+    /**
+     * 卡券核销记录服务接口
+     * */
     private ConfirmLogService confirmLogService;
 
-    @Autowired
+    /**
+     * 店铺服务接口
+     * */
     private StoreService storeService;
 
-    @Autowired
+    /**
+     * 系统设置服务接口
+     * */
     private SettingService settingService;
 
-    @Autowired
+    /**
+     * 订单服务接口
+     * */
     private OrderService orderService;
 
     /**

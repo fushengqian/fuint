@@ -18,7 +18,7 @@ import com.fuint.repository.model.MtSetting;
 import com.fuint.repository.model.MtUser;
 import com.fuint.utils.StringUtil;
 import io.swagger.annotations.Api;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
@@ -35,43 +35,38 @@ import java.util.Map;
  */
 @Api(tags="会员端-余额相关接口")
 @RestController
+@AllArgsConstructor
 @RequestMapping(value = "/clientApi/balance")
 public class ClientBalanceController extends BaseController {
 
     /**
      * 配置服务接口
      * */
-    @Autowired
     private SettingService settingService;
 
     /**
      * 余额服务接口
      * */
-    @Autowired
     private BalanceService balanceService;
 
     /**
      * 支付服务接口
      * */
-    @Autowired
     private PaymentService paymentService;
 
     /**
      * 订单服务接口
      * */
-    @Autowired
     private OrderService orderService;
 
     /**
      * 会员服务接口
      */
-    @Autowired
     private MemberService memberService;
 
     /**
      * 商户服务接口
      */
-    @Autowired
     private MerchantService merchantService;
 
     /**

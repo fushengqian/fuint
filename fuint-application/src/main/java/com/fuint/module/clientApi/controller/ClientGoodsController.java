@@ -22,7 +22,7 @@ import com.fuint.repository.model.MtGoodsSpec;
 import com.fuint.utils.StringUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import java.lang.reflect.InvocationTargetException;
@@ -39,31 +39,28 @@ import java.util.Map;
  */
 @Api(tags="会员端-商品相关接口")
 @RestController
+@AllArgsConstructor
 @RequestMapping(value = "/clientApi/goodsApi")
 public class ClientGoodsController extends BaseController {
 
     /**
      * 商品服务接口
      * */
-    @Autowired
     private GoodsService goodsService;
 
     /**
      * 商品类别服务接口
      * */
-    @Autowired
     private CateService cateService;
 
     /**
      * 系统设置服务接口
      * */
-    @Autowired
     private SettingService settingService;
 
     /**
      * 商户服务接口
      */
-    @Autowired
     private MerchantService merchantService;
 
     /**

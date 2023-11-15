@@ -14,10 +14,9 @@ import com.fuint.framework.web.ResponseObject;
 import com.fuint.utils.StringUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
-import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.util.*;
@@ -30,16 +29,23 @@ import java.util.*;
  */
 @Api(tags="管理端-数据统计相关接口")
 @RestController
+@AllArgsConstructor
 @RequestMapping(value = "/backendApi/statistic")
 public class BackendStatisticController extends BaseController {
 
-    @Resource
+    /**
+     * 会员服务接口
+     * */
     private MemberService memberService;
 
-    @Resource
+    /**
+     * 订单服务接口
+     * */
     private OrderService orderService;
 
-    @Resource
+    /**
+     * 商品服务接口
+     * */
     private GoodsService goodsService;
 
     /**

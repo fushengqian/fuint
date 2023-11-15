@@ -25,13 +25,12 @@ import com.fuint.repository.model.MtUser;
 import com.fuint.utils.StringUtil;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
+import lombok.AllArgsConstructor;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.util.*;
 
@@ -42,18 +41,21 @@ import java.util.*;
  * CopyRight https://www.fuint.cn
  */
 @Service
+@AllArgsConstructor
 public class BalanceServiceImpl extends ServiceImpl<MtBalanceMapper, MtBalance> implements BalanceService {
 
-    @Resource
     private MtBalanceMapper mtBalanceMapper;
 
-    @Resource
     private MtUserMapper mtUserMapper;
 
-    @Resource
+    /**
+     * 微信相关服务接口
+     * */
     private WeixinService weixinService;
 
-    @Resource
+    /**
+     * 会员服务接口
+     * */
     private MemberService memberService;
 
     /**

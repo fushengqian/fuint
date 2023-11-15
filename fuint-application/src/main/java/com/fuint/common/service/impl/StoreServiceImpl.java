@@ -21,14 +21,13 @@ import com.fuint.repository.model.MtStore;
 import com.fuint.utils.StringUtil;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
+import lombok.AllArgsConstructor;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.util.*;
 
@@ -39,24 +38,21 @@ import java.util.*;
  * CopyRight https://www.fuint.cn
  */
 @Service
+@AllArgsConstructor
 public class StoreServiceImpl extends ServiceImpl<MtStoreMapper, MtStore> implements StoreService {
 
-    @Resource
     private MtStoreMapper mtStoreMapper;
 
-    @Resource
     private MtMerchantMapper mtMerchantMapper;
 
     /**
      * 商户接口
      */
-    @Autowired
     private MerchantService merchantService;
 
     /**
      * 微信服务接口
      * */
-    @Autowired
     private WeixinService weixinService;
 
     /**

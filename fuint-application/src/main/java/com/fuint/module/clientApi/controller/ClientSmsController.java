@@ -12,7 +12,7 @@ import com.fuint.repository.model.MtVerifyCode;
 import com.fuint.utils.StringUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.core.env.Environment;
 import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
@@ -27,35 +27,34 @@ import java.util.*;
  */
 @Api(tags="会员端-手机短信相关接口")
 @RestController
+@AllArgsConstructor
 @RequestMapping(value = "/clientApi/sms")
 public class ClientSmsController extends BaseController {
 
     /**
+     * 系统环境变量
+     * */
+    private Environment env;
+
+    /**
      * 验证码服务接口
      */
-    @Autowired
     private VerifyCodeService verifyCodeService;
 
     /**
      * 短信发送接口
      */
-    @Autowired
     private SendSmsService sendSmsService;
 
     /**
      * 图形验证码
      * */
-    @Autowired
     private CaptchaService captchaService;
 
     /**
      * 商户服务接口
      */
-    @Autowired
     private MerchantService merchantService;
-
-    @Autowired
-    private Environment env;
 
     /**
      * 发送验证码短信

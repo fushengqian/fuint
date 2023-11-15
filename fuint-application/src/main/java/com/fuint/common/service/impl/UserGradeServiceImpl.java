@@ -5,7 +5,6 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fuint.common.enums.StatusEnum;
 import com.fuint.common.enums.UserGradeCatchTypeEnum;
-import com.fuint.common.service.MemberService;
 import com.fuint.common.service.UserGradeService;
 import com.fuint.framework.annoation.OperationServiceLog;
 import com.fuint.framework.exception.BusinessCheckException;
@@ -19,12 +18,12 @@ import com.fuint.repository.model.MtUser;
 import com.fuint.repository.model.MtUserGrade;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
+import lombok.AllArgsConstructor;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -37,16 +36,12 @@ import java.util.Map;
  * CopyRight https://www.fuint.cn
  */
 @Service
+@AllArgsConstructor
 public class UserGradeServiceImpl extends ServiceImpl<MtUserGradeMapper, MtUserGrade> implements UserGradeService {
 
-    @Resource
     private MtUserGradeMapper mtUserGradeMapper;
 
-    @Resource
     private MtStaffMapper mtStaffMapper;
-
-    @Resource
-    private MemberService memberService;
 
     /**
      * 分页查询会员等级列表

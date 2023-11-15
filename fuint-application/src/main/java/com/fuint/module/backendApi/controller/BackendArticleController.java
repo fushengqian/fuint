@@ -18,7 +18,7 @@ import com.fuint.repository.model.MtStore;
 import com.fuint.utils.StringUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
@@ -34,25 +34,23 @@ import java.util.Map;
  */
 @Api(tags="管理端-文章相关接口")
 @RestController
+@AllArgsConstructor
 @RequestMapping(value = "/backendApi/article")
 public class BackendArticleController extends BaseController {
 
     /**
      * 文章服务接口
      */
-    @Autowired
     private ArticleService articleService;
 
     /**
      * 系统设置服务接口
      * */
-    @Autowired
     private SettingService settingService;
 
     /**
      * 店铺服务接口
      */
-    @Autowired
     private StoreService storeService;
 
     /**

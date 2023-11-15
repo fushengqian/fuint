@@ -10,9 +10,9 @@ import com.fuint.utils.StringUtil;
 import com.aliyun.oss.OSS;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.util.ResourceUtils;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -37,18 +37,20 @@ import java.util.UUID;
  */
 @Api(tags="会员端-文件上传相关接口")
 @RestController
+@AllArgsConstructor
 @RequestMapping(value = "/clientApi/file")
 public class ClientFileController extends BaseController {
 
     private static final Logger logger = LoggerFactory.getLogger(ClientFileController.class);
 
-    @Autowired
+    /**
+     * 系统环境变量
+     * */
     private Environment env;
 
     /**
      * 系统设置服务接口
      * */
-    @Autowired
     private SettingService settingService;
 
     /**

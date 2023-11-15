@@ -13,12 +13,11 @@ import com.fuint.repository.mapper.MtSendLogMapper;
 import com.fuint.repository.model.MtSendLog;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
+import lombok.AllArgsConstructor;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
-
-import javax.annotation.Resource;
 import java.util.Date;
 import java.util.List;
 
@@ -29,9 +28,9 @@ import java.util.List;
  * CopyRight https://www.fuint.cn
  */
 @Service
+@AllArgsConstructor
 public class SendLogServiceImpl extends ServiceImpl<MtSendLogMapper, MtSendLog> implements SendLogService {
 
-    @Resource
     private MtSendLogMapper mtSendLogMapper;
 
     /**

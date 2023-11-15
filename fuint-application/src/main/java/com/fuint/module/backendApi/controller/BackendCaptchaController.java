@@ -2,12 +2,12 @@ package com.fuint.module.backendApi.controller;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import javax.annotation.Resource;
 import javax.imageio.ImageIO;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
@@ -27,17 +27,17 @@ import com.fuint.common.service.CaptchaService;
  */
 @Api(tags="管理端-图形验证码相关接口")
 @Controller
+@AllArgsConstructor
 @RequestMapping("/backendApi/captcha")
 public class BackendCaptchaController {
 
     private static final Logger logger = LoggerFactory.getLogger(BackendCaptchaController.class);
 
-    @Resource
     private CaptchaService captchaService;
 
     @ApiOperation(value = "获取图形验证码")
     @RequestMapping(value="/getCode", method = RequestMethod.GET)
-    public void getCode(HttpServletResponse response) {
+    public void getCode(HttpServletResponse response) throws Exception {
         // 生成验证码
         String uuid = UUID.randomUUID().toString().replaceAll("-", "");
         BufferedImage codeImage = captchaService.getCodeByUuid(uuid);

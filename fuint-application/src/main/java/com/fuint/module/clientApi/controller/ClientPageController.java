@@ -9,7 +9,7 @@ import com.fuint.framework.web.ResponseObject;
 import com.fuint.repository.model.MtBanner;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
@@ -24,19 +24,18 @@ import java.util.Map;
  */
 @Api(tags="会员端-页面相关接口")
 @RestController
+@AllArgsConstructor
 @RequestMapping(value = "/clientApi/page")
 public class ClientPageController extends BaseController {
 
     /**
-     * Banner服务接口
+     * 焦点图服务接口
      * */
-    @Autowired
     private BannerService bannerService;
 
     /**
      * 商户服务接口
      */
-    @Autowired
     private MerchantService merchantService;
 
     /**

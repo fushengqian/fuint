@@ -9,9 +9,8 @@ import com.fuint.repository.mapper.MtRegionMapper;
 import com.fuint.repository.model.MtRegion;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-
-import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -26,10 +25,10 @@ import java.util.Map;
  */
 @Api(tags="会员端-省/市/区相关接口")
 @RestController
+@AllArgsConstructor
 @RequestMapping(value = "/clientApi/region")
 public class ClientRegionController extends BaseController {
 
-    @Resource
     private MtRegionMapper mtRegionMapper;
 
     /**

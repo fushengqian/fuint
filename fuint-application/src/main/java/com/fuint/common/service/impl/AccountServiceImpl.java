@@ -18,15 +18,13 @@ import com.fuint.utils.Digests;
 import com.fuint.utils.Encodes;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
+import lombok.AllArgsConstructor;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import javax.annotation.Resource;
 import java.util.*;
 
 /**
@@ -36,27 +34,22 @@ import java.util.*;
  * CopyRight https://www.fuint.cn
  */
 @Service
+@AllArgsConstructor
 public class AccountServiceImpl extends ServiceImpl<TAccountMapper, TAccount> implements AccountService {
 
-    @Resource
     private TAccountMapper tAccountMapper;
 
-    @Resource
     private TDutyMapper tDutyMapper;
 
-    @Resource
     private TAccountDutyMapper tAccountDutyMapper;
 
-    @Resource
     private MtMerchantMapper mtMerchantMapper;
 
-    @Resource
     private MtStoreMapper mtStoreMapper;
 
     /**
      * 员工接口
      */
-    @Autowired
     private StaffService staffService;
 
     /**

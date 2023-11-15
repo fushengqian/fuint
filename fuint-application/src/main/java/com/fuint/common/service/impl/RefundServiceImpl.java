@@ -18,16 +18,15 @@ import com.fuint.repository.model.*;
 import com.fuint.utils.StringUtil;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
+import lombok.AllArgsConstructor;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.util.*;
 
@@ -38,65 +37,53 @@ import java.util.*;
  * CopyRight https://www.fuint.cn
  */
 @Service
+@AllArgsConstructor
 public class RefundServiceImpl extends ServiceImpl<MtRefundMapper, MtRefund> implements RefundService {
 
     private static final Logger logger = LoggerFactory.getLogger(RefundServiceImpl.class);
 
-    @Resource
     private MtPointMapper mtPointMapper;
 
-    @Resource
     private MtRefundMapper mtRefundMapper;
 
-    @Resource
     private MtConfirmLogMapper mtConfirmLogMapper;
 
-    @Resource
     private MtUserCouponMapper mtUserCouponMapper;
 
-    @Resource
     private MtGoodsSkuMapper mtGoodsSkuMapper;
 
-    @Resource
     private MtGoodsMapper mtGoodsMapper;
 
-    @Resource
     private MtOrderGoodsMapper mtOrderGoodsMapper;
 
     /**
      * 卡券接口
      * */
-    @Autowired
     private CouponService couponService;
 
     /**
      * 积分相关接口
      * */
-    @Autowired
     private PointService pointService;
 
     /**
      * 订单服务接口
      * */
-    @Autowired
     private OrderService orderService;
 
     /**
      * 余额服务接口
      * */
-    @Autowired
     private BalanceService balanceService;
 
     /**
      * 微信服务接口
      * */
-    @Autowired
     private WeixinService weixinService;
 
     /**
      * 支付宝服务接口
      * */
-    @Autowired
     private AlipayService alipayService;
 
     /**

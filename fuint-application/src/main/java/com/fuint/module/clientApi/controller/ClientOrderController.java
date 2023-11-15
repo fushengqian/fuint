@@ -15,7 +15,7 @@ import com.fuint.repository.model.MtOrder;
 import com.fuint.utils.StringUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
@@ -30,13 +30,13 @@ import java.util.Map;
  */
 @Api(tags="会员端-订单相关接口")
 @RestController
+@AllArgsConstructor
 @RequestMapping(value = "/clientApi/order")
 public class ClientOrderController extends BaseController {
 
     /**
      * 订单服务接口
      * */
-    @Autowired
     private OrderService orderService;
 
     /**

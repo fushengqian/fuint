@@ -18,11 +18,9 @@ import com.fuint.repository.model.*;
 import com.fuint.utils.StringUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-
-import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
 
@@ -34,37 +32,32 @@ import java.util.*;
  */
 @Api(tags="管理端-商品库存管理相关接口")
 @RestController
+@AllArgsConstructor
 @RequestMapping(value = "/backendApi/stock")
 public class BackendStockController extends BaseController {
 
-    @Resource
     private MtGoodsMapper mtGoodsMapper;
 
-    @Resource
     private MtGoodsSkuMapper mtGoodsSkuMapper;
 
     /**
      * 商品分类服务接口
      */
-    @Autowired
     private StockService stockService;
 
     /**
      * 配置服务接口
      * */
-    @Autowired
     private SettingService settingService;
 
     /**
      * 后台账户服务接口
      */
-    @Autowired
     private AccountService accountService;
 
     /**
      * 店铺服务接口
      */
-    @Autowired
     private StoreService storeService;
 
     /**

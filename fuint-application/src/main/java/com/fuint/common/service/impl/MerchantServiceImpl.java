@@ -17,12 +17,12 @@ import com.fuint.repository.model.MtStore;
 import com.fuint.utils.StringUtil;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
+import lombok.AllArgsConstructor;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import javax.annotation.Resource;
 import java.util.*;
 
 /**
@@ -32,12 +32,11 @@ import java.util.*;
  * CopyRight https://www.fuint.cn
  */
 @Service
+@AllArgsConstructor
 public class MerchantServiceImpl extends ServiceImpl<MtMerchantMapper, MtMerchant> implements MerchantService {
 
-    @Resource
     private MtMerchantMapper mtMerchantMapper;
 
-    @Resource
     private MtStoreMapper mtStoreMapper;
 
     /**

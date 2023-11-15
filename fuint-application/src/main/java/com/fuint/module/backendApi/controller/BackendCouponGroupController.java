@@ -20,14 +20,12 @@ import com.fuint.repository.model.MtCouponGroup;
 import com.fuint.utils.StringUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
@@ -46,30 +44,27 @@ import java.util.Map;
  */
 @Api(tags="管理端-卡券分组相关接口")
 @RestController
+@AllArgsConstructor
 @RequestMapping(value = "/backendApi/couponGroup")
 public class BackendCouponGroupController extends BaseController {
 
     private static final Logger logger = LoggerFactory.getLogger(BackendCouponGroupController.class);
 
-    @Resource
     private MtCouponMapper mtCouponMapper;
 
     /**
      * 卡券分组服务接口
      */
-    @Autowired
     private CouponGroupService couponGroupService;
 
     /**
      * 卡券服务接口
      * */
-    @Autowired
-    CouponService couponService;
+    private CouponService couponService;
 
     /**
      * 导出服务接口
      * */
-    @Autowired
     private ExportService exportService;
 
     /**

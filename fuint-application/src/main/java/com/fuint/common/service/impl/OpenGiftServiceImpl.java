@@ -21,14 +21,12 @@ import com.fuint.repository.model.*;
 import com.fuint.utils.StringUtil;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
+import lombok.AllArgsConstructor;
 import org.apache.commons.lang.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.util.*;
 
@@ -39,32 +37,41 @@ import java.util.*;
  * CopyRight https://www.fuint.cn
  */
 @Service
+@AllArgsConstructor
 public class OpenGiftServiceImpl extends ServiceImpl<MtOpenGiftMapper, MtOpenGift> implements OpenGiftService {
 
-    @Resource
     private MtOpenGiftMapper mtOpenGiftMapper;
 
-    @Resource
     private MtUserMapper mtUserMapper;
 
-    @Autowired
+    /**
+     * 卡券服务接口
+     * */
     private CouponService couponService;
 
-    @Autowired
+    /**
+     * 会员卡券服务接口
+     * */
     private UserCouponService userCouponService;
 
-    @Autowired
+    /**
+     * 会员等级服务接口
+     * */
     private UserGradeService userGradeService;
 
-    @Autowired
+    /**
+     * 会员积分服务接口
+     * */
     private PointService pointService;
 
-    @Autowired
+    /**
+     * 系统消息服务接口
+     * */
     private MessageService messageService;
 
     /**
      * 获取开卡赠礼列表
-     * @param paramMap
+     * @param  paramMap
      * @throws BusinessCheckException
      * */
     @Override

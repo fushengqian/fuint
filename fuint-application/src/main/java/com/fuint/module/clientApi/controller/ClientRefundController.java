@@ -14,7 +14,7 @@ import com.fuint.repository.model.MtRefund;
 import com.fuint.utils.StringUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
@@ -28,19 +28,18 @@ import java.util.Map;
  */
 @Api(tags="会员端-售后相关接口")
 @RestController
+@AllArgsConstructor
 @RequestMapping(value = "/clientApi/refund")
 public class ClientRefundController extends BaseController {
 
     /**
      * 售后服务接口
      * */
-    @Autowired
     private RefundService refundService;
 
     /**
      * 订单服务接口
      * */
-    @Autowired
     private OrderService orderService;
 
     /**

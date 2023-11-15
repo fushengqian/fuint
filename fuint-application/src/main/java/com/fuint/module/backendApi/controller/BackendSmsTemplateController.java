@@ -14,7 +14,7 @@ import com.fuint.repository.model.MtSmsTemplate;
 import com.fuint.utils.StringUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -30,13 +30,13 @@ import java.util.Map;
  */
 @Api(tags="管理端-短信模板相关接口")
 @RestController
+@AllArgsConstructor
 @RequestMapping(value = "/backendApi/smsTemplate")
 public class BackendSmsTemplateController extends BaseController {
 
     /**
      * 短信模板服务接口
      */
-    @Autowired
     private SmsTemplateService smsTemplateService;
 
     /**

@@ -19,9 +19,9 @@ import com.fuint.repository.model.TSource;
 import com.fuint.utils.StringUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import com.fuint.common.domain.TreeNode;
-import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
 
@@ -33,31 +33,28 @@ import java.util.*;
  */
 @Api(tags="管理端-后台登录相关接口")
 @RestController
+@AllArgsConstructor
 @RequestMapping("/backendApi/login")
 public class BackendLoginController extends BaseController {
 
     /**
-     * 后台账号接口
+     * 后台账号服务接口
      * */
-    @Resource
-    AccountService accountService;
+    private AccountService accountService;
 
     /**
-     * 后台菜单接口
+     * 后台菜单服务接口
      * */
-    @Resource
-    SourceService sourceService;
+    private SourceService sourceService;
 
     /**
-     * 后台角色接口
+     * 后台角色服务接口
      * */
-    @Resource
-    DutyService dutyService;
+    private DutyService dutyService;
 
     /**
-     * 验证码接口
+     * 验证码服务接口
      * */
-    @Resource
     private CaptchaService captchaService;
 
     /**

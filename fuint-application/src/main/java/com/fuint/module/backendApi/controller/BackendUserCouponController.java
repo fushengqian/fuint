@@ -22,14 +22,12 @@ import com.fuint.repository.model.*;
 import com.fuint.utils.StringUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import lombok.AllArgsConstructor;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-
-import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.math.BigDecimal;
@@ -43,45 +41,39 @@ import java.util.*;
  */
 @Api(tags="管理端-会员卡券统计相关接口")
 @RestController
+@AllArgsConstructor
 @RequestMapping(value = "/backendApi/userCoupon")
 public class BackendUserCouponController extends BaseController {
 
     private static final Logger logger = LoggerFactory.getLogger(BackendUserCouponController.class);
 
-    @Resource
     private MtUserCouponMapper mtUserCouponMapper;
 
-    @Resource
     private MtSendLogMapper mtSendLogMapper;
 
     /**
      * 卡券分组服务接口
      */
-    @Autowired
     private UserCouponService userCouponService;
 
     /**
      * 卡券服务接口
      */
-    @Autowired
     private CouponService couponService;
 
     /**
      * 店铺接口
      */
-    @Autowired
     private StoreService storeService;
 
     /**
      * 后台用户接口
      * */
-    @Autowired
     private AccountService accountService;
 
     /**
      * 卡券发放记录接口
      * */
-    @Autowired
     private SendLogService sendLogService;
 
     /**

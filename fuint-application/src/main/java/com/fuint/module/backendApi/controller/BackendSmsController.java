@@ -13,7 +13,7 @@ import com.fuint.repository.model.MtSmsSendedLog;
 import com.fuint.utils.StringUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -30,13 +30,13 @@ import java.util.Map;
  */
 @Api(tags="管理端-短信相关接口")
 @RestController
+@AllArgsConstructor
 @RequestMapping(value = "/backendApi/smsManager")
 public class BackendSmsController extends BaseController {
 
     /**
      * 短信发送接口
      */
-    @Autowired
     private SendSmsService sendSmsService;
 
     /**

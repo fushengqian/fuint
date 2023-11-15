@@ -19,9 +19,9 @@ import com.fuint.repository.model.*;
 import com.fuint.utils.StringUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import java.io.ByteArrayOutputStream;
@@ -38,6 +38,7 @@ import java.util.Map;
  */
 @Api(tags="会员端-会员相关接口")
 @RestController
+@AllArgsConstructor
 @RequestMapping(value = "/clientApi/user")
 public class ClientUserController extends BaseController {
 
@@ -46,49 +47,41 @@ public class ClientUserController extends BaseController {
     /**
      * 会员服务接口
      * */
-    @Autowired
     private MemberService memberService;
 
     /**
      * 会员卡券服务接口
      * */
-    @Autowired
     private UserCouponService userCouponService;
 
     /**
      * 员工服务接口
      * */
-    @Autowired
     private StaffService staffService;
 
     /**
      * 卡券服务接口
      * */
-    @Autowired
     private CouponService couponService;
 
     /**
      * 会员等级服务接口
      **/
-    @Autowired
     private UserGradeService userGradeService;
 
     /**
      * 系统配置服务接口
      * */
-    @Autowired
     private SettingService settingService;
 
     /**
      * 微信服务接口
      * */
-    @Autowired
     private WeixinService weixinService;
 
     /**
      * 商户服务接口
      */
-    @Autowired
     private MerchantService merchantService;
 
     /**

@@ -23,14 +23,15 @@ import com.fuint.repository.model.*;
 import com.fuint.utils.StringUtil;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
+import lombok.AllArgsConstructor;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -43,42 +44,49 @@ import java.util.*;
  * CopyRight https://www.fuint.cn
  */
 @Service
+@AllArgsConstructor(onConstructor_= {@Lazy})
 public class CouponServiceImpl extends ServiceImpl<MtCouponMapper, MtCoupon> implements CouponService {
 
-    @Resource
     private MtCouponMapper mtCouponMapper;
 
-    @Resource
     private MtUserCouponMapper mtUserCouponMapper;
 
-    @Resource
     private MtConfirmLogMapper mtConfirmLogMapper;
 
-    @Resource
     private MtSendLogMapper mtSendLogMapper;
 
-    @Resource
     private MtStoreMapper mtStoreMapper;
 
-    @Resource
     private MtCouponGoodsMapper mtCouponGoodsMapper;
 
-    @Autowired
+    /**
+     * 会员卡券服务接口
+     * */
     private UserCouponService userCouponService;
 
-    @Autowired
+    /**
+     * 会员服务接口
+     * */
     private MemberService memberService;
 
-    @Autowired
+    /**
+     * 短信发送服务接口
+     * */
     private SendSmsService sendSmsService;
 
-    @Autowired
+    /**
+     * 核销记录服务接口
+     * */
     private ConfirmLogService confirmLogService;
 
-    @Autowired
+    /**
+     * 系统配置服务接口
+     * */
     private SettingService settingService;
 
-    @Autowired
+    /**
+     * 微信相关服务接口
+     * */
     private WeixinService weixinService;
 
     /**

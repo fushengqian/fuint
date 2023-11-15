@@ -13,9 +13,8 @@ import com.fuint.repository.model.MtCart;
 import com.fuint.repository.model.MtGoods;
 import com.fuint.repository.model.MtGoodsSku;
 import com.fuint.utils.StringUtil;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
-
-import javax.annotation.Resource;
 import java.util.*;
 
 /**
@@ -25,21 +24,19 @@ import java.util.*;
  * CopyRight https://www.fuint.cn
  */
 @Service
+@AllArgsConstructor
 public class CartServiceImpl extends ServiceImpl<MtCartMapper, MtCart> implements CartService {
 
-    @Resource
     private MtCartMapper mtCartMapper;
 
-    @Resource
     private MtGoodsMapper mtGoodsMapper;
 
-    @Resource
     private MtGoodsSkuMapper mtGoodsSkuMapper;
 
     /**
      * 保存购物车
      *
-     * @param reqDto
+     * @param  reqDto
      * @throws BusinessCheckException
      */
     @Override

@@ -16,6 +16,7 @@ import com.fuint.common.enums.StatusEnum;
 import com.fuint.repository.mapper.MtBannerMapper;
 
 import com.github.pagehelper.PageHelper;
+import lombok.AllArgsConstructor;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,24 +25,25 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import javax.annotation.Resource;
 import java.util.*;
 
 /**
- * banner服务接口
+ * 焦点图服务接口
  *
  * Created by FSQ
  * CopyRight https://www.fuint.cn
  */
 @Service
+@AllArgsConstructor
 public class BannerServiceImpl extends ServiceImpl<MtBannerMapper, MtBanner> implements BannerService {
 
     private static final Logger logger = LoggerFactory.getLogger(BannerServiceImpl.class);
 
-    @Resource
     private MtBannerMapper mtBannerMapper;
 
-    @Resource
+    /**
+     * 系统设置服务接口
+     * */
     private SettingService settingService;
 
     /**

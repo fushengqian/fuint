@@ -10,11 +10,11 @@ import com.fuint.repository.mapper.TActionLogMapper;
 import com.fuint.repository.model.TActionLog;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
+import lombok.AllArgsConstructor;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
-import javax.annotation.Resource;
 import java.util.List;
 
 /**
@@ -24,9 +24,9 @@ import java.util.List;
  * CopyRight https://www.fuint.cn
  */
 @Service
+@AllArgsConstructor
 public class ActionLogServiceImpl extends ServiceImpl<TActionLogMapper, TActionLog> implements ActionLogService {
 
-    @Resource
     private TActionLogMapper tActionLogMapper;
 
     public void saveActionLog(TActionLog actionLog) {

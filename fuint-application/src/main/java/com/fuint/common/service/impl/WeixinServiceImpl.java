@@ -27,21 +27,14 @@ import com.ijpay.wxpay.model.MicroPayModel;
 import com.ijpay.wxpay.model.OrderQueryModel;
 import com.ijpay.wxpay.model.RefundModel;
 import com.ijpay.wxpay.model.UnifiedOrderModel;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.message.BasicHeader;
-import org.apache.http.protocol.HTTP;
+import lombok.AllArgsConstructor;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.core.env.Environment;
-import org.springframework.util.ResourceUtils;
 import weixin.popular.util.JsonUtil;
 
 import javax.crypto.Cipher;
@@ -62,32 +55,43 @@ import java.util.*;
  * CopyRight https://www.fuint.cn
  */
 @Service
+@AllArgsConstructor(onConstructor_= {@Lazy})
 public class WeixinServiceImpl implements WeixinService {
 
     private static final Logger logger = LoggerFactory.getLogger(WeixinServiceImpl.class);
 
-    @Autowired
+    /**
+     * 订单服务接口
+     * */
     private OrderService orderService;
 
-    @Autowired
+    /**
+     * 系统设置服务接口
+     * */
     private SettingService settingService;
 
-    @Autowired
+    /**
+     * 系统消息服务接口
+     * */
     private MessageService messageService;
 
-    @Autowired
+    /**
+     * 店铺服务接口
+     * */
     private StoreService storeService;
 
-    @Autowired
+    /**
+     * 支付服务接口
+     * */
     private PaymentService paymentService;
 
-    @Autowired
+    /**
+     * 商户服务接口
+     * */
     private MerchantService merchantService;
 
-    @Autowired
     private Environment env;
 
-    @Autowired
     WxPayBean wxPayBean;
 
     private static final String CALL_BACK_URL = "/clientApi/pay/weixinCallback";
@@ -100,7 +104,7 @@ public class WeixinServiceImpl implements WeixinService {
      * 获取微信accessToken
      *
      * @param merchantId 商户ID
-     * @param useCache   是否读取缓存
+     * @param useCache 是否读取缓存
      * @return
      * */
     @Override

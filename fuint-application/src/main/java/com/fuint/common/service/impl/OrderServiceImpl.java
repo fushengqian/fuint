@@ -24,16 +24,16 @@ import com.fuint.utils.PropertiesUtil;
 import com.fuint.utils.StringUtil;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
+import lombok.AllArgsConstructor;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
 import java.util.*;
@@ -45,95 +45,124 @@ import java.util.*;
  * CopyRight https://www.fuint.cn
  */
 @Service
+@AllArgsConstructor(onConstructor_= {@Lazy})
 public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implements OrderService {
 
     private static final Logger logger = LoggerFactory.getLogger(OrderServiceImpl.class);
 
-    @Resource
     private MtOrderMapper mtOrderMapper;
 
-    @Resource
     private MtGoodsMapper mtGoodsMapper;
 
-    @Resource
     private MtOrderGoodsMapper mtOrderGoodsMapper;
 
-    @Resource
     private MtCartMapper mtCartMapper;
 
-    @Resource
     private MtOrderAddressMapper mtOrderAddressMapper;
 
-    @Resource
     private MtConfirmLogMapper mtConfirmLogMapper;
 
-    @Resource
     private MtUserCouponMapper mtUserCouponMapper;
 
-    @Resource
     private MtGoodsSkuMapper mtGoodsSkuMapper;
 
-    @Resource
     private MtRegionMapper mtRegionMapper;
 
-    @Resource
     private MtUserGradeMapper mtUserGradeMapper;
 
-    @Autowired
+    /**
+     * 系统设置服务接口
+     * */
     private SettingService settingService;
 
-    @Autowired
+    /**
+     * 卡券服务接口
+     * */
     private CouponService couponService;
 
-    @Autowired
+    /**
+     * 会员卡券服务接口
+     * */
     private UserCouponService userCouponService;
 
-    @Autowired
+    /**
+     * 收货地址服务接口
+     * */
     private AddressService addressService;
 
-    @Autowired
+    /**
+     * 会员服务接口
+     * */
     private MemberService memberService;
 
-    @Autowired
+    /**
+     * 积分服务接口
+     * */
     private PointService pointService;
 
-    @Autowired
+    /**
+     * 购物车服务接口
+     * */
     private CartService cartService;
 
-    @Autowired
+    /**
+     * 商品服务接口
+     * */
     private GoodsService goodsService;
 
-    @Autowired
+    /**
+     * 店铺服务接口
+     * */
     private StoreService storeService;
 
-    @Autowired
+    /**
+     * 会员等级服务接口
+     * */
     UserGradeService userGradeService;
 
-    @Autowired
+    /**
+     * 售后服务接口
+     * */
     private RefundService refundService;
 
-    @Autowired
+    /**
+     * 余额服务接口
+     * */
     private BalanceService balanceService;
 
-    @Autowired
+    /**
+     * 微信相关服务接口
+     * */
     private WeixinService weixinService;
 
-    @Autowired
+    /**
+     * 支付宝服务接口
+     * */
     private AlipayService alipayService;
 
-    @Autowired
+    /**
+     * 短信发送服务接口
+     * */
     private SendSmsService sendSmsService;
 
-    @Autowired
+    /**
+     * 开卡赠礼服务接口
+     * */
     private OpenGiftService openGiftService;
 
-    @Autowired
+    /**
+     * 商户服务接口
+     * */
     private MerchantService merchantService;
 
-    @Autowired
+    /**
+     * 店铺员工服务接口
+     * */
     private StaffService staffService;
 
-    @Autowired
+    /**
+     * 支付服务接口
+     * */
     private PaymentService paymentService;
 
     /**

@@ -20,7 +20,7 @@ import com.fuint.repository.model.TAccount;
 import com.fuint.utils.StringUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -38,37 +38,34 @@ import java.util.Map;
  */
 @Api(tags="管理端-券核销流水相关接口")
 @RestController
+@AllArgsConstructor
 @RequestMapping(value = "/backendApi/confirmLog")
 public class BackendConfirmLogController extends BaseController {
 
     /**
      * 卡券核销流水接口
      */
-    @Autowired
     private ConfirmLogService confirmLogService;
 
     /**
      * 卡券服务接口
      */
-    @Autowired
     private CouponService couponService;
 
     /**
      * 会员接口服务
      * */
-    @Autowired
     private MemberService memberService;
 
     /**
      * 后台账户服务接口
      */
-    @Autowired
     private AccountService tAccountService;
 
     /**
      * 获取会员卡券核销记录列表
      *
-     * @param request  HttpServletRequest对象
+     * @param request HttpServletRequest对象
      * @return
      */
     @ApiOperation(value = "获取会员卡券核销记录列表")

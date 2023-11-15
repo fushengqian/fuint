@@ -15,6 +15,7 @@ import com.fuint.repository.model.MtArticle;
 import com.fuint.common.service.SettingService;
 import com.fuint.common.enums.StatusEnum;
 import com.github.pagehelper.PageHelper;
+import lombok.AllArgsConstructor;
 import org.apache.commons.lang.StringUtils;
 import com.github.pagehelper.Page;
 import org.springframework.beans.BeanUtils;
@@ -22,7 +23,6 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import javax.annotation.Resource;
 import java.util.*;
 
 /**
@@ -32,15 +32,19 @@ import java.util.*;
  * CopyRight https://www.fuint.cn
  */
 @Service
+@AllArgsConstructor
 public class ArticleServiceImpl extends ServiceImpl<MtArticleMapper, MtArticle> implements ArticleService {
 
-    @Resource
     private MtArticleMapper mtArticleMapper;
 
-    @Resource
+    /**
+     * 系统设置服务接口
+     * */
     private SettingService settingService;
 
-    @Resource
+    /**
+     * 商户服务接口
+     * */
     private MerchantService merchantService;
 
     /**

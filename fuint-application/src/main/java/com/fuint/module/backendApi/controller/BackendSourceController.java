@@ -14,7 +14,7 @@ import com.fuint.repository.model.TSource;
 import com.fuint.utils.StringUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -30,16 +30,13 @@ import java.util.Map;
  */
 @Api(tags="管理端-后台菜单相关接口")
 @RestController
+@AllArgsConstructor
 @RequestMapping(value = "/backendApi/source")
 public class BackendSourceController extends BaseController {
-
-    @Autowired
-    private SourceService sSourceService;
 
     /**
      * 菜单服务接口
      * */
-    @Autowired
     private SourceService sourceService;
 
     /**
@@ -57,7 +54,7 @@ public class BackendSourceController extends BaseController {
             return getFailureResult(1001, "请先登录");
         }
 
-        List<TreeNode> sources = sSourceService.getSourceTree(accountInfo.getMerchantId());
+        List<TreeNode> sources = sourceService.getSourceTree(accountInfo.getMerchantId());
         return getSuccessResult(sources);
     }
 
@@ -70,7 +67,7 @@ public class BackendSourceController extends BaseController {
     @ApiOperation(value = "获取菜单详情")
     @RequestMapping(value = "/info/{sourceId}", method = RequestMethod.GET)
     public ResponseObject info( @PathVariable("sourceId") Long sourceId) {
-        TSource tSource = sSourceService.getById(sourceId);
+        TSource tSource = sourceService.getById(sourceId);
 
         SourceDto sourceDto = new SourceDto();
         sourceDto.setId(tSource.getSourceId());
@@ -136,7 +133,7 @@ public class BackendSourceController extends BaseController {
 
         if (StringUtil.isNotBlank(parentId)) {
             if (Integer.parseInt(parentId) > 0) {
-                TSource parentSource = sSourceService.getById(parentId);
+                TSource parentSource = sourceService.getById(parentId);
                 addSource.setParentId(parentSource.getSourceId());
                 addSource.setSourceLevel(parentSource.getSourceLevel() + 1);
             } else {
@@ -145,7 +142,7 @@ public class BackendSourceController extends BaseController {
         } else {
             addSource.setSourceLevel(1);
         }
-        sSourceService.addSource(addSource);
+        sourceService.addSource(addSource);
         return getSuccessResult(true);
     }
 
@@ -174,7 +171,7 @@ public class BackendSourceController extends BaseController {
         Integer isMenu = param.get("isMenu") == null ? 1 : Integer.parseInt(param.get("isMenu").toString());
         Long id = param.get("id") == null ? 0 : Long.parseLong(param.get("id").toString());
 
-        TSource editSource = sSourceService.getById(id);
+        TSource editSource = sourceService.getById(id);
         if (!editSource.getMerchantId().equals(accountInfo.getMerchantId()) && accountInfo.getMerchantId() > 0) {
             return getFailureResult(201, "抱歉，您没有修改的权限");
         }
@@ -197,7 +194,7 @@ public class BackendSourceController extends BaseController {
         if (StringUtil.isNotBlank(parentId)) {
             try {
                 if (Integer.parseInt(parentId) > 0) {
-                    TSource parentSource = sSourceService.getById(Long.parseLong(parentId));
+                    TSource parentSource = sourceService.getById(Long.parseLong(parentId));
                     editSource.setParentId(parentSource.getSourceId());
                     editSource.setSourceLevel(parentSource.getSourceLevel() + 1);
                 } else {
@@ -209,7 +206,7 @@ public class BackendSourceController extends BaseController {
         } else {
             editSource.setSourceLevel(1);
         }
-        sSourceService.editSource(editSource);
+        sourceService.editSource(editSource);
         return getSuccessResult(true);
     }
 
@@ -228,11 +225,11 @@ public class BackendSourceController extends BaseController {
         if (accountInfo == null) {
             return getFailureResult(1001, "请先登录");
         }
-        TSource tSource = sSourceService.getById(sourceId);
+        TSource tSource = sourceService.getById(sourceId);
         if (!tSource.getMerchantId().equals(accountInfo.getMerchantId()) && accountInfo.getMerchantId() > 0) {
             return getFailureResult(201, "抱歉，您没有删除的权限");
         }
-        sSourceService.deleteSource(tSource);
+        sourceService.deleteSource(tSource);
         return getSuccessResult(true);
     }
 
@@ -248,7 +245,7 @@ public class BackendSourceController extends BaseController {
             return getFailureResult(1001, "请先登录");
         }
 
-        List<TreeNode> sources = sSourceService.getSourceTree(accountInfo.getMerchantId());
+        List<TreeNode> sources = sourceService.getSourceTree(accountInfo.getMerchantId());
         List<TreeSelect> data = sourceService.buildMenuTreeSelect(sources);
 
         return getSuccessResult(data);

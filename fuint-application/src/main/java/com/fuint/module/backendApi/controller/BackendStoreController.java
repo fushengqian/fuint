@@ -20,7 +20,7 @@ import com.fuint.repository.model.MtStore;
 import com.fuint.utils.StringUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
@@ -36,25 +36,23 @@ import java.util.Map;
  */
 @Api(tags="管理端-店铺相关接口")
 @RestController
+@AllArgsConstructor
 @RequestMapping(value = "/backendApi/store")
 public class BackendStoreController extends BaseController {
 
     /**
      * 店铺服务接口
      */
-    @Autowired
     private StoreService storeService;
 
     /**
      * 商户接口
      */
-    @Autowired
     private MerchantService merchantService;
 
     /**
      * 系统设置服务接口
      * */
-    @Autowired
     private SettingService settingService;
 
     /**

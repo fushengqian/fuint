@@ -19,12 +19,10 @@ import com.fuint.repository.model.*;
 import com.fuint.utils.StringUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
-import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -42,42 +40,37 @@ import java.util.Map;
  */
 @Api(tags="会员端-会员卡券相关接口")
 @RestController
+@AllArgsConstructor
 @RequestMapping(value = "/clientApi/userCouponApi")
 public class ClientUserCouponController extends BaseController {
 
     private static final Logger logger = LoggerFactory.getLogger(ClientUserCouponController.class);
 
-    @Resource
     private MtUserCouponMapper mtUserCouponMapper;
 
     /**
      * 卡券服务接口
      * */
-    @Autowired
     private CouponService couponService;
 
     /**
      * 核销记录服务接口
      * */
-    @Autowired
     private ConfirmLogService confirmLogService;
 
     /**
      * 员工服务接口
      * */
-    @Autowired
     private StaffService staffService;
 
     /**
      * 系统设置服务接口
      * */
-    @Autowired
     private SettingService settingService;
 
     /**
      * 会员服务接口
      */
-    @Autowired
     private MemberService memberService;
 
     /**

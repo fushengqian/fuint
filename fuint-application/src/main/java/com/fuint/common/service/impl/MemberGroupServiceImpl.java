@@ -16,6 +16,7 @@ import com.fuint.repository.mapper.MtUserGroupMapper;
 import com.fuint.repository.model.*;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
+import lombok.AllArgsConstructor;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,7 +25,6 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import javax.annotation.Resource;
 import java.lang.String;
 import java.util.*;
 
@@ -35,11 +35,11 @@ import java.util.*;
  * CopyRight https://www.fuint.cn
  */
 @Service
+@AllArgsConstructor
 public class MemberGroupServiceImpl extends ServiceImpl<MtUserGroupMapper, MtUserGroup> implements MemberGroupService {
 
-    private static final Logger log = LoggerFactory.getLogger(CouponGroupServiceImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(CouponGroupServiceImpl.class);
 
-    @Resource
     private MtUserGroupMapper mtUserGroupMapper;
 
     /**
@@ -166,7 +166,7 @@ public class MemberGroupServiceImpl extends ServiceImpl<MtUserGroupMapper, MtUse
     public MtUserGroup updateMemberGroup(MemberGroupDto memberGroupDto) throws BusinessCheckException {
         MtUserGroup userGroup = queryMemberGroupById(memberGroupDto.getId());
         if (null == userGroup || StatusEnum.DISABLE.getKey().equalsIgnoreCase(userGroup.getStatus())) {
-            log.error("该分组不存在或已被删除");
+            logger.error("该分组不存在或已被删除");
             throw new BusinessCheckException("该分组不存在或已被删除");
         }
         if (memberGroupDto.getName() != null) {

@@ -19,10 +19,9 @@ import com.fuint.repository.model.*;
 import com.fuint.utils.StringUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
 import java.text.ParseException;
@@ -37,52 +36,57 @@ import java.util.regex.Pattern;
  */
 @Api(tags="管理端-卡券管理相关接口")
 @RestController
+@AllArgsConstructor
 @RequestMapping(value = "/backendApi/coupon")
 public class BackendCouponController extends BaseController {
 
-    @Resource
     private MtCouponGroupMapper mtCouponGroupMapper;
 
-    @Resource
     private MtCouponGoodsMapper mtCouponGoodsMapper;
 
     /**
      * 卡券服务接口
      */
-    @Autowired
     private CouponService couponService;
 
     /**
      * 卡券分组服务接口
      * */
-    @Autowired
     private CouponGroupService couponGroupService;
 
     /**
      * 店铺服务接口
      */
-    @Autowired
     private StoreService storeService;
 
     /**
      * 商品服务接口
      * */
-    @Autowired
     private GoodsService goodsService;
 
-    @Autowired
+    /**
+     * 卡券发放记录服务接口
+     * */
     private SendLogService sendLogService;
 
-    @Autowired
+    /**
+     * 会员服务接口
+     * */
     private MemberService memberService;
 
-    @Autowired
+    /**
+     * 短信服务接口
+     * */
     private SendSmsService sendSmsService;
 
-    @Autowired
+    /**
+     * 后台账户服务接口
+     * */
     private AccountService accountService;
 
-    @Autowired
+    /**
+     * 系统配置服务接口
+     * */
     private SettingService settingService;
 
     /**

@@ -16,10 +16,10 @@ import com.fuint.repository.model.MtSmsTemplate;
 import com.fuint.utils.StringUtil;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
+import lombok.AllArgsConstructor;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -34,8 +34,6 @@ import com.aliyuncs.http.MethodType;
 import com.aliyuncs.profile.DefaultProfile;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.util.CollectionUtils;
-
-import javax.annotation.Resource;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -46,17 +44,21 @@ import java.util.stream.Collectors;
  * CopyRight https://www.fuint.cn
  */
 @Service
+@AllArgsConstructor
 public class SendSmsServiceImpl implements SendSmsService {
 
      private static final Logger logger = LoggerFactory.getLogger(SendSmsServiceImpl.class);
 
-     @Autowired
+     /**
+      * 系统环境变量
+      * */
      private Environment env;
 
-     @Resource
      private MtSmsSendedLogMapper mtSmsSendedLogMapper;
 
-     @Autowired
+     /**
+      * 短信模板服务接口
+      * */
      private SmsTemplateService smsTemplateService;
 
     @Override

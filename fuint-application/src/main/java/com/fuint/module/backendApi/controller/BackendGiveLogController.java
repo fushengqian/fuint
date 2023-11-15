@@ -24,10 +24,9 @@ import static com.fuint.common.util.XlsUtil.objectConvertToString;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import lombok.AllArgsConstructor;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.OutputStream;
@@ -44,28 +43,24 @@ import java.util.Map;
  */
 @Api(tags="管理端-转赠相关接口")
 @RestController
+@AllArgsConstructor
 @RequestMapping(value = "/backendApi/give")
 public class BackendGiveLogController extends BaseController {
 
-    @Resource
     private MtUserCouponMapper mtUserCouponMapper;
 
-    @Resource
     private MtCouponGroupMapper mtCouponGroupMapper;
 
-    @Resource
     private MtCouponMapper mtCouponMapper;
 
     /**
      * 转赠服务接口
      */
-    @Autowired
     private GiveService giveService;
 
     /**
      * 后台账户服务接口
      */
-    @Autowired
     private AccountService accountService;
 
     /**

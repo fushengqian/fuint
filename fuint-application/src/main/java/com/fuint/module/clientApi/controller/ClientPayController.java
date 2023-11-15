@@ -18,7 +18,7 @@ import com.ijpay.core.kit.WxPayKit;
 import com.ijpay.wxpay.WxPayApiConfigKit;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
@@ -38,66 +38,57 @@ import java.util.Map;
  */
 @Api(tags="会员端-支付相关接口")
 @RestController
+@AllArgsConstructor
 @RequestMapping(value = "/clientApi/pay")
 public class ClientPayController extends BaseController {
 
     private static final Logger logger = LoggerFactory.getLogger(ClientPayController.class);
 
-    @Autowired
     WxPayBean wxPayBean;
 
     /**
      * 微信服务接口
      * */
-    @Autowired
     private WeixinService weixinService;
 
     /**
      * 支付宝服务接口
      * */
-    @Autowired
     private AlipayService alipayService;
 
     /**
      * 支付服务接口
      * */
-    @Autowired
     private PaymentService paymentService;
 
     /**
      * 订单服务接口
      * */
-    @Autowired
     private OrderService orderService;
 
     /**
      * 会员服务接口
      * */
-    @Autowired
     private MemberService memberService;
 
     /**
      * 系统设置接口
      * */
-    @Autowired
     private SettingService settingService;
 
     /**
      * 会员卡券接口
      * */
-    @Autowired
     private UserCouponService userCouponService;
 
     /**
      * 会员等级接口
      * */
-    @Autowired
-    UserGradeService userGradeService;
+    private UserGradeService userGradeService;
 
     /**
      * 商户服务接口
      */
-    @Autowired
     private MerchantService merchantService;
 
     /**

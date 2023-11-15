@@ -10,12 +10,12 @@ import com.fuint.framework.web.ResponseObject;
 import com.fuint.repository.mapper.MtOrderMapper;
 import com.fuint.repository.model.*;
 import com.fuint.utils.StringUtil;
+import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
 import java.util.Date;
@@ -29,53 +29,46 @@ import java.util.Map;
  * CopyRight https://www.fuint.cn
  */
 @Service
+@AllArgsConstructor(onConstructor_= {@Lazy})
 public class PaymentServiceImpl implements PaymentService {
 
     private static final Logger logger = LoggerFactory.getLogger(PaymentServiceImpl.class);
 
-    @Resource
     private MtOrderMapper mtOrderMapper;
 
     /**
      * 微信服务接口
      * */
-    @Autowired
     private WeixinService weixinService;
 
     /**
      * 支付宝服务接口
      * */
-    @Autowired
     private AlipayService alipayService;
 
     /**
      * 会员服务接口
      * */
-    @Autowired
     private MemberService memberService;
 
     /**
      * 订单服务接口
      * */
-    @Autowired
     private OrderService orderService;
 
     /**
      * 余额服务接口
      * */
-    @Autowired
     private BalanceService balanceService;
 
     /**
      * 会员卡券服务接口
      * */
-    @Autowired
     private UserCouponService userCouponService;
 
     /**
      * 开卡赠礼服务接口
      * */
-    @Autowired
     private OpenGiftService openGiftService;
 
     /**

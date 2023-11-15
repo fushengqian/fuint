@@ -20,10 +20,8 @@ import com.fuint.repository.model.MtUser;
 import com.fuint.utils.StringUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-
-import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -38,40 +36,35 @@ import java.util.Map;
  */
 @Api(tags="会员端-购物车相关接口")
 @RestController
+@AllArgsConstructor
 @RequestMapping(value = "/clientApi/cart")
 public class ClientCartController extends BaseController {
 
-    @Resource
     private MtGoodsSkuMapper mtGoodsSkuMapper;
 
     /**
      * 购物车服务接口
      * */
-    @Autowired
     private CartService cartService;
 
     /**
      * 订单服务接口
      * */
-    @Autowired
     private OrderService orderService;
 
     /**
      * 商品服务接口
      * */
-    @Autowired
     private GoodsService goodsService;
 
     /**
      * 会员接口
      * */
-    @Autowired
     private MemberService memberService;
 
     /**
      * 商户服务接口
      */
-    @Autowired
     private MerchantService merchantService;
 
     /**

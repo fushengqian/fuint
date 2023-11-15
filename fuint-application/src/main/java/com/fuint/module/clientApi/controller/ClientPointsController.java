@@ -14,7 +14,7 @@ import com.fuint.framework.web.ResponseObject;
 import com.fuint.utils.StringUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
@@ -28,13 +28,13 @@ import java.util.Map;
  */
 @Api(tags="会员端-积分相关接口")
 @RestController
+@AllArgsConstructor
 @RequestMapping(value = "/clientApi/points")
 public class ClientPointsController extends BaseController {
 
     /**
      * 积分服务接口
      */
-    @Autowired
     private PointService pointService;
 
     /**
