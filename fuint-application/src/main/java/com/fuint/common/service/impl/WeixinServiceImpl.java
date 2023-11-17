@@ -210,7 +210,7 @@ public class WeixinServiceImpl implements WeixinService {
         }
 
         // 2.更新预支付订单号
-        if (respData.get("return_code").equals("SUCCESS")) {
+        if (respData.get("result_code").equals("SUCCESS")) {
             if (respData.get("trade_type").equals(PayTypeEnum.JSAPI.getKey())) {
                 String prepayId = respData.get("prepay_id");
                 getApiConfig(orderInfo.getStoreId(), platform);
@@ -221,7 +221,7 @@ public class WeixinServiceImpl implements WeixinService {
             }
         } else {
             logger.error("微信支付接口返回状态失败......" + respData.toString() + "...reason");
-            return new ResponseObject(3000, "微信支付接口返回状态失败", null);
+            return new ResponseObject(3000, "微信支付失败:" + (respData.get("err_code_des") != null ? respData.get("err_code_des") : "未知错误"), null);
         }
 
         ResponseObject responseObject = new ResponseObject(200, "微信支付接口返回成功", respData);

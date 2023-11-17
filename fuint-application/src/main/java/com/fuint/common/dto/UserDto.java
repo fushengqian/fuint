@@ -31,6 +31,9 @@ public class UserDto implements Serializable {
     @ApiModelProperty("称呼")
     private String name;
 
+    @ApiModelProperty("是否设置密码")
+    private String hasPassword;
+
     @ApiModelProperty("分组ID")
     private Integer groupId;
 
@@ -52,11 +55,11 @@ public class UserDto implements Serializable {
     @ApiModelProperty("等级名称")
     private String gradeName;
 
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     @ApiModelProperty("会员开始时间")
     private Date startTime;
 
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     @ApiModelProperty("会员结束时间")
     private Date endTime;
 

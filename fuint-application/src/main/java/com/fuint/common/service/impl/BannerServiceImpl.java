@@ -21,6 +21,7 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.github.pagehelper.Page;
+import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -89,29 +90,24 @@ public class BannerServiceImpl extends ServiceImpl<MtBannerMapper, MtBanner> imp
     }
 
     /**
-     * 添加Banner信息
+     * 添加焦点图
      *
      * @param bannerDto
      */
     @Override
-    @OperationServiceLog(description = "新增Banner图")
+    @OperationServiceLog(description = "新增焦点图")
     public MtBanner addBanner(BannerDto bannerDto) {
         MtBanner mtBanner = new MtBanner();
-        mtBanner.setTitle(bannerDto.getTitle());
+        BeanUtils.copyProperties(bannerDto, mtBanner);
         mtBanner.setStoreId(bannerDto.getStoreId() == null ? 0 : bannerDto.getStoreId());
-        mtBanner.setUrl(bannerDto.getUrl());
         mtBanner.setStatus(StatusEnum.ENABLED.getKey());
-        mtBanner.setImage(bannerDto.getImage());
-        mtBanner.setDescription(bannerDto.getDescription());
-        mtBanner.setOperator(bannerDto.getOperator());
         mtBanner.setUpdateTime(new Date());
         mtBanner.setCreateTime(new Date());
-        mtBanner.setSort(bannerDto.getSort());
-        mtBanner.setMerchantId(bannerDto.getMerchantId());
         Integer id = mtBannerMapper.insert(mtBanner);
         if (id > 0) {
             return mtBanner;
         } else {
+            logger.error("新增焦点图失败.");
             return null;
         }
     }

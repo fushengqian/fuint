@@ -81,20 +81,6 @@ public class CommonUtil {
     }
 
     /**
-     * 生成密码
-     * */
-    public static String createPassword(String password, String salt) {
-        return MD5Util.getMD5(password + salt);
-    }
-
-    /**
-     * 验证密码
-     * */
-    public static String getPassword(String password, String salt) {
-        return MD5Util.getMD5(password + salt);
-    }
-
-    /**
      * 生成随机会员号(13位数)
      * */
     public static String createUserNo() {

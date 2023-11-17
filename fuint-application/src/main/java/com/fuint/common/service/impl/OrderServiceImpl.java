@@ -942,7 +942,7 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
                     paymentInfo = paymentService.createPrepayOrder(userInfo, orderInfo, (wxPayAmount.intValue()), authCode, 0, ip, platform);
                 }
                 if (paymentInfo.getData() == null) {
-                    errorMessage = PropertiesUtil.getResponseErrorMessageByCode(3000);
+                    errorMessage = StringUtil.isNotEmpty(paymentInfo.getMessage()) ? paymentInfo.getMessage() : PropertiesUtil.getResponseErrorMessageByCode(3000);
                 }
             }
         } else {
@@ -1091,6 +1091,10 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
             if (orderGoodsList != null && orderGoodsList.size() > 0) {
                 for (MtOrderGoods mtOrderGoods : orderGoodsList) {
                      MtGoods mtGoods = mtGoodsMapper.selectById(mtOrderGoods.getGoodsId());
+                     // 商品已不存在
+                     if (mtGoods == null) {
+                         continue;
+                     }
                      mtGoods.setStock(mtOrderGoods.getNum() + mtGoods.getStock());
                      mtGoodsMapper.updateById(mtGoods);
                      if (mtOrderGoods.getSkuId() != null && mtOrderGoods.getSkuId() > 0) {

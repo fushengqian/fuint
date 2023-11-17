@@ -176,75 +176,75 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
     @Override
     public PaginationResponse<UserDto> queryMemberListByPagination(PaginationRequest paginationRequest) throws BusinessCheckException {
         Page<MtUser> pageHelper = PageHelper.startPage(paginationRequest.getCurrentPage(), paginationRequest.getPageSize());
-        LambdaQueryWrapper<MtUser> lambdaQueryWrapper = Wrappers.lambdaQuery();
-        lambdaQueryWrapper.ne(MtUser::getStatus, StatusEnum.DISABLE.getKey());
+        LambdaQueryWrapper<MtUser> wrapper = Wrappers.lambdaQuery();
+        wrapper.ne(MtUser::getStatus, StatusEnum.DISABLE.getKey());
 
         String name = paginationRequest.getSearchParams().get("name") == null ? "" : paginationRequest.getSearchParams().get("name").toString();
         if (StringUtils.isNotBlank(name)) {
-            lambdaQueryWrapper.like(MtUser::getName, name);
+            wrapper.like(MtUser::getName, name);
         }
         String id = paginationRequest.getSearchParams().get("id") == null ? "" : paginationRequest.getSearchParams().get("id").toString();
         if (StringUtils.isNotBlank(id)) {
-            lambdaQueryWrapper.eq(MtUser::getId, id);
+            wrapper.eq(MtUser::getId, id);
         }
         String mobile = paginationRequest.getSearchParams().get("mobile") == null ? "" : paginationRequest.getSearchParams().get("mobile").toString();
         if (StringUtils.isNotBlank(mobile)) {
-            lambdaQueryWrapper.like(MtUser::getMobile, mobile);
+            wrapper.like(MtUser::getMobile, mobile);
         }
         String birthday = paginationRequest.getSearchParams().get("birthday") == null ? "" : paginationRequest.getSearchParams().get("birthday").toString();
         if (StringUtils.isNotBlank(birthday)) {
-            lambdaQueryWrapper.like(MtUser::getBirthday, birthday);
+            wrapper.like(MtUser::getBirthday, birthday);
         }
         String userNo = paginationRequest.getSearchParams().get("userNo") == null ? "" : paginationRequest.getSearchParams().get("userNo").toString();
         if (StringUtils.isNotBlank(userNo)) {
-            lambdaQueryWrapper.eq(MtUser::getUserNo, userNo);
+            wrapper.eq(MtUser::getUserNo, userNo);
         }
         String gradeId = paginationRequest.getSearchParams().get("gradeId") == null ? "" : paginationRequest.getSearchParams().get("gradeId").toString();
         if (StringUtils.isNotBlank(gradeId)) {
-            lambdaQueryWrapper.eq(MtUser::getGradeId, gradeId);
+            wrapper.eq(MtUser::getGradeId, gradeId);
         }
         String merchantId = paginationRequest.getSearchParams().get("merchantId") == null ? "" : paginationRequest.getSearchParams().get("merchantId").toString();
         if (StringUtils.isNotBlank(merchantId)) {
-            lambdaQueryWrapper.eq(MtUser::getMerchantId, merchantId);
+            wrapper.eq(MtUser::getMerchantId, merchantId);
         }
         String storeId = paginationRequest.getSearchParams().get("storeId") == null ? "" : paginationRequest.getSearchParams().get("storeId").toString();
         if (StringUtils.isNotBlank(storeId)) {
-            lambdaQueryWrapper.eq(MtUser::getStoreId, storeId);
+            wrapper.eq(MtUser::getStoreId, storeId);
         }
         String storeIds = paginationRequest.getSearchParams().get("storeIds") == null ? "" : paginationRequest.getSearchParams().get("storeIds").toString();
         if (StringUtils.isNotBlank(storeIds)) {
             List<String> idList = Arrays.asList(storeIds.split(","));
             if (idList.size() > 0) {
-                lambdaQueryWrapper.in(MtUser::getStoreId, idList);
+                wrapper.in(MtUser::getStoreId, idList);
             }
         }
         String groupIds = paginationRequest.getSearchParams().get("groupIds") == null ? "" : paginationRequest.getSearchParams().get("groupIds").toString();
         if (StringUtils.isNotBlank(groupIds)) {
             List<String> idList = Arrays.asList(groupIds.split(","));
             if (idList.size() > 0) {
-                lambdaQueryWrapper.in(MtUser::getGroupId, idList);
+                wrapper.in(MtUser::getGroupId, idList);
             }
         }
         String status = paginationRequest.getSearchParams().get("status") == null ? "" : paginationRequest.getSearchParams().get("status").toString();
         if (StringUtils.isNotBlank(status)) {
-            lambdaQueryWrapper.eq(MtUser::getStatus, status);
+            wrapper.eq(MtUser::getStatus, status);
         }
         // 注册开始、结束时间
         String startTime = paginationRequest.getSearchParams().get("startTime") == null ? "" : paginationRequest.getSearchParams().get("startTime").toString();
         String endTime = paginationRequest.getSearchParams().get("endTime") == null ? "" : paginationRequest.getSearchParams().get("endTime").toString();
         if (StringUtil.isNotEmpty(startTime)) {
-            lambdaQueryWrapper.ge(MtUser::getCreateTime, startTime);
+            wrapper.ge(MtUser::getCreateTime, startTime);
         }
         if (StringUtil.isNotEmpty(endTime)) {
-            lambdaQueryWrapper.le(MtUser::getCreateTime, endTime);
+            wrapper.le(MtUser::getCreateTime, endTime);
         }
         // 注册时间
         String regTime = paginationRequest.getSearchParams().get("regTime") == null ? "" : paginationRequest.getSearchParams().get("regTime").toString();
         if (StringUtil.isNotEmpty(regTime)) {
             String[] dateTime = regTime.split("~");
             if (dateTime.length == 2) {
-                lambdaQueryWrapper.ge(MtUser::getCreateTime, dateTime[0]);
-                lambdaQueryWrapper.le(MtUser::getCreateTime, dateTime[1]);
+                wrapper.ge(MtUser::getCreateTime, dateTime[0]);
+                wrapper.le(MtUser::getCreateTime, dateTime[1]);
             }
         }
         // 活跃时间
@@ -252,8 +252,8 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
         if (StringUtil.isNotEmpty(activeTime)) {
             String[] dateTime = activeTime.split("~");
             if (dateTime.length == 2) {
-                lambdaQueryWrapper.ge(MtUser::getUpdateTime, dateTime[0]);
-                lambdaQueryWrapper.le(MtUser::getUpdateTime, dateTime[1]);
+                wrapper.ge(MtUser::getUpdateTime, dateTime[0]);
+                wrapper.le(MtUser::getUpdateTime, dateTime[1]);
             }
         }
         // 会员有效期
@@ -261,13 +261,12 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
         if (StringUtil.isNotEmpty(memberTime)) {
             String[] dateTime = memberTime.split("~");
             if (dateTime.length == 2) {
-                lambdaQueryWrapper.ge(MtUser::getStartTime, dateTime[0]);
-                lambdaQueryWrapper.le(MtUser::getEndTime, dateTime[1]);
+                wrapper.ge(MtUser::getStartTime, dateTime[0]);
+                wrapper.le(MtUser::getEndTime, dateTime[1]);
             }
         }
-
-        lambdaQueryWrapper.orderByDesc(MtUser::getUpdateTime);
-        List<MtUser> userList = mtUserMapper.selectList(lambdaQueryWrapper);
+        wrapper.orderByDesc(MtUser::getUpdateTime);
+        List<MtUser> userList = mtUserMapper.selectList(wrapper);
         List<UserDto> dataList = new ArrayList<>();
         for (MtUser mtUser : userList) {
             String phone = mtUser.getMobile();
@@ -361,9 +360,9 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
         // 密码加密
         if (mtUser.getPassword() != null && StringUtil.isNotEmpty(mtUser.getPassword())) {
             String salt = SeqUtil.getRandomLetter(4);
-            String password = CommonUtil.createPassword(mtUser.getPassword(), salt);
-            mtUser.setPassword(password);
             mtUser.setSalt(salt);
+            String password = enCodePassword(mtUser.getPassword(), salt);
+            mtUser.setPassword(password);
             mtUser.setSource(MemberSourceEnum.REGISTER_BY_ACCOUNT.getKey());
         }
         if (mtUser.getSource() == null || StringUtil.isEmpty(mtUser.getSource())) {
@@ -431,6 +430,11 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
                     }
                 }
             }
+        }
+        if (mtUser.getPassword() != null) {
+            String salt = SeqUtil.getRandomLetter(4);
+            mtUser.setSalt(salt);
+            mtUser.setPassword(enCodePassword(mtUser.getPassword(), salt));
         }
         String gradeId = mtUser.getGradeId();
         mtUser.setGradeId(oldUserInfo.getGradeId());
@@ -877,5 +881,29 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
             }
         }
         return dataList;
+    }
+
+    /**
+     * 设定安全的密码
+     *
+     * @param password
+     * @param salt
+     * @return
+     */
+    @Override
+    public String enCodePassword(String password, String salt) {
+        return MD5Util.getMD5(password + salt);
+    }
+
+    /**
+     * 获取加密密码
+     *
+     * @param password
+     * @param salt
+     * @return
+     * */
+    @Override
+    public String deCodePassword(String password, String salt) {
+        return MD5Util.getMD5(password + salt);
     }
 }

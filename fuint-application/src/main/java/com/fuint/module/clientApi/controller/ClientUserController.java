@@ -2,11 +2,9 @@ package com.fuint.module.clientApi.controller;
 
 import com.alibaba.fastjson.JSONObject;
 import com.fuint.common.dto.AssetDto;
+import com.fuint.common.dto.UserDto;
 import com.fuint.common.dto.UserInfo;
-import com.fuint.common.enums.CouponTypeEnum;
-import com.fuint.common.enums.SettingTypeEnum;
-import com.fuint.common.enums.StatusEnum;
-import com.fuint.common.enums.UserCouponStatusEnum;
+import com.fuint.common.enums.*;
 import com.fuint.common.service.*;
 import com.fuint.common.util.Base64Util;
 import com.fuint.common.util.DateUtil;
@@ -22,6 +20,7 @@ import io.swagger.annotations.ApiOperation;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import java.io.ByteArrayOutputStream;
@@ -98,38 +97,50 @@ public class ClientUserController extends BaseController {
 
         Integer merchantId = merchantService.getMerchantId(merchantNo);
 
-        MtUser userInfo = null;
+        MtUser mtUser = null;
         if (loginInfo != null) {
-            userInfo = memberService.queryMemberById(loginInfo.getId());
+            mtUser = memberService.queryMemberById(loginInfo.getId());
         }
         if (StringUtil.isNotEmpty(userNo)) {
-            userInfo = memberService.queryMemberByUserNo(merchantId, userNo);
+            mtUser = memberService.queryMemberByUserNo(merchantId, userNo);
         }
         MtUserGrade gradeInfo = null;
-        if (userInfo != null) {
-            gradeInfo = memberService.queryMemberGradeByGradeId(Integer.parseInt(userInfo.getGradeId()));
+        if (mtUser != null) {
+            gradeInfo = memberService.queryMemberGradeByGradeId(Integer.parseInt(mtUser.getGradeId()));
         }
 
-        List<MtUserGrade> memberGrade = userGradeService.getPayUserGradeList(merchantId, userInfo);
+        List<MtUserGrade> memberGrade = userGradeService.getPayUserGradeList(merchantId, mtUser);
         Map<String, Object> outParams = new HashMap<>();
+
+        UserDto userInfo = null;
+        if (mtUser != null) {
+            userInfo = new UserDto();
+            BeanUtils.copyProperties(mtUser, userInfo);
+            if (StringUtil.isNotEmpty(mtUser.getPassword())) {
+                userInfo.setHasPassword(YesOrNoEnum.YES.getKey());
+            } else {
+                userInfo.setHasPassword(YesOrNoEnum.NO.getKey());
+            }
+        }
+
         outParams.put("userInfo", userInfo);
         outParams.put("gradeInfo", gradeInfo);
         outParams.put("memberGrade", memberGrade);
 
         // 会员到期时间
         String gradeEndTime = "";
-        if (userInfo != null) {
-            if (userInfo.getEndTime() != null) {
-                gradeEndTime = DateUtil.formatDate(userInfo.getEndTime(), "yyyy.MM.dd HH:mm");
+        if (mtUser != null) {
+            if (mtUser.getEndTime() != null) {
+                gradeEndTime = DateUtil.formatDate(mtUser.getEndTime(), "yyyy.MM.dd HH:mm");
             }
         }
         outParams.put("gradeEndTime", gradeEndTime);
 
         // 是否店铺员工
         boolean isMerchant = false;
-        if (userInfo != null) {
-            if (userInfo.getMobile() != null && StringUtil.isNotEmpty(userInfo.getMobile())) {
-                MtStaff staffInfo = staffService.queryStaffByMobile(userInfo.getMobile());
+        if (mtUser != null) {
+            if (mtUser.getMobile() != null && StringUtil.isNotEmpty(mtUser.getMobile())) {
+                MtStaff staffInfo = staffService.queryStaffByMobile(mtUser.getMobile());
                 if (staffInfo != null && staffInfo.getAuditedStatus().equals(StatusEnum.ENABLED.getKey())) {
                     isMerchant = true;
                 }
@@ -226,6 +237,8 @@ public class ClientUserController extends BaseController {
         String avatar = param.get("avatar") == null ? "" : param.get("avatar").toString();
         Integer sex = param.get("sex") == null ? 1 : Integer.parseInt(param.get("sex").toString());
         String code = param.get("code") == null ? "" : param.get("code").toString();
+        String password = param.get("password") == null ? "" : param.get("password").toString();
+        String passwordOld = param.get("passwordOld") == null ? "" : param.get("passwordOld").toString();
         String mobile = "";
         Integer merchantId = merchantService.getMerchantId(merchantNo);
         UserInfo userInfo = TokenUtil.getUserInfoByToken(token);
@@ -243,6 +256,15 @@ public class ClientUserController extends BaseController {
         MtUser mtUser = memberService.queryMemberById(userInfo.getId());
         if (StringUtil.isNotEmpty(name)) {
             mtUser.setName(name);
+        }
+        if (StringUtil.isNotEmpty(password)) {
+            if (StringUtil.isNotEmpty(passwordOld) && StringUtil.isNotEmpty(mtUser.getSalt())) {
+                String pass = memberService.deCodePassword(passwordOld, mtUser.getSalt());
+                if (!pass.equals(mtUser.getPassword())) {
+                    return getFailureResult(201, "旧密码输入有误");
+                }
+            }
+            mtUser.setPassword(password);
         }
         if (sex.equals(1) || sex.equals(0) || sex.equals(2)) {
             mtUser.setSex(sex);

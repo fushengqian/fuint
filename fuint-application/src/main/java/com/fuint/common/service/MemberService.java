@@ -183,4 +183,22 @@ public interface MemberService extends IService<MtUser> {
      * @return
      * */
     List<GroupMemberDto> searchMembers(Integer merchantId, String keyword, String groupIds, Integer page, Integer pageSize);
+
+    /**
+     * 设定安全的密码
+     *
+     * @param password
+     * @param salt
+     * @return
+     */
+    String enCodePassword(String password, String salt);
+
+    /**
+     * 获取加密密码
+     *
+     * @param password
+     * @param salt
+     * @return
+     * */
+    String deCodePassword(String password, String salt);
 }
