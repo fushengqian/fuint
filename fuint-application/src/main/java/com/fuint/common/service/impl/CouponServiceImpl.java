@@ -26,7 +26,6 @@ import com.github.pagehelper.PageHelper;
 import lombok.AllArgsConstructor;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -960,7 +959,7 @@ public class CouponServiceImpl extends ServiceImpl<MtCouponMapper, MtCoupon> imp
         for (int i = 0; i < coupondIdList.size(); i++) {
             Integer couponId = coupondIdList.get(i);
             MtCoupon couponInfo = queryCouponById(couponId);
-            if (couponInfo.getStatus().equals("A") && couponInfo.getEndTime().after(nowDate)) {
+            if (couponInfo.getStatus().equals(StatusEnum.ENABLED.getKey()) && couponInfo.getEndTime().after(nowDate)) {
                 couponIds.add(couponId);
             }
         }
@@ -971,8 +970,6 @@ public class CouponServiceImpl extends ServiceImpl<MtCouponMapper, MtCoupon> imp
         } else {
             mtSendLogMapper.updateForRemove(uuid, UserCouponStatusEnum.USED.getKey(), row, (total.intValue()-row));
         }
-
-        return;
     }
 
     /**

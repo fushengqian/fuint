@@ -118,7 +118,7 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
     /**
      * 会员等级服务接口
      * */
-    UserGradeService userGradeService;
+    private UserGradeService userGradeService;
 
     /**
      * 售后服务接口

@@ -7,7 +7,6 @@ import com.fuint.common.enums.GenderEnum;
 import com.fuint.common.enums.MemberSourceEnum;
 import com.fuint.common.enums.StatusEnum;
 import com.fuint.common.service.*;
-import com.fuint.common.util.CommonUtil;
 import com.fuint.common.util.TokenUtil;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.web.BaseController;

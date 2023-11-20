@@ -241,7 +241,7 @@ public class BackendSubMessageController extends BaseController {
 
                 ParamDto para = new ParamDto();
                 String name = obj.get("name").toString();
-                if (!CommonUtil.isUtf8(name)) {
+                if (!CommonUtil.isUtf8(name) || CommonUtil.isErrCode(name)) {
                     name = new String(name.getBytes("ISO8859-1"), "UTF-8");
                 }
                 para.setName(name);

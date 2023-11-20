@@ -144,6 +144,9 @@ public class BackendMemberController extends BaseController {
         // 会员等级列表
         Map<String, Object> param = new HashMap<>();
         param.put("status", StatusEnum.ENABLED.getKey());
+        if (account.getMerchantId() != null && account.getMerchantId() > 0) {
+            param.put("MERCHANT_ID", account.getMerchantId());
+        }
         List<MtUserGrade> userGradeList = memberService.queryMemberGradeByParams(param);
 
         // 店铺列表
