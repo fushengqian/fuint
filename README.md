@@ -55,10 +55,12 @@ fuint侧重于线下实体店的私域流量的运营，同时提供会员端小
 
 
 #### 安装步骤
-推荐软件环境版本：jdk 1.8、mysql 5.8
-1. 导入db目录下的数据库文件。
-2. 修改config目录下的配置文件。
-3. 将工程打包，把jar包上传并执行。
+软件环境版本：jdk 1.8、mysql 5.7或5.8、Redis任意版本
+1. 导入db目录下的fuint-db.sql数据库文件。
+2. 修改configure目录下的配置文件。
+3. 将工程导入Idea，并安装插件：Lombok Plugin。
+3. 使用maven执行install，打jar包（在fuint-application/target目录），把jar包上传并执行启动：
+   nohup java -Dfile.encoding=UTF-8 -Xmx2048m -Xms2048m -Xss256k -Xmn1024m -jar fuint-application-1.0.0.jar
 <p>提示：无后端和linux基础的朋友，可以使用<b>宝塔</b>部署，非常方便简单。</p>
 
 
@@ -99,8 +101,7 @@ fuint侧重于线下实体店的私域流量的运营，同时提供会员端小
 1. 完善的报表统计；
 2. 分享助力、分享领券、分享获得积分；
 3. 员工提成、分销功能；
-4. 店铺结算功能；
-5. 更多营销工具，比如签到等。
+4. 更多营销工具，比如签到等。
 
 
 #### 允许使用范围：
