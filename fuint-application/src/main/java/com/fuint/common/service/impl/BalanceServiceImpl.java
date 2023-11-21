@@ -132,12 +132,13 @@ public class BalanceServiceImpl extends ServiceImpl<MtBalanceMapper, MtBalance> 
      * 添加余额记录
      *
      * @param  mtBalance
+     * @param  updateBalance
      * @throws BusinessCheckException
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
     @OperationServiceLog(description = "会员余额变动")
-    public Boolean addBalance(MtBalance mtBalance) throws BusinessCheckException {
+    public Boolean addBalance(MtBalance mtBalance, Boolean updateBalance) throws BusinessCheckException {
         if (mtBalance.getUserId() < 0) {
             return false;
         }
@@ -154,8 +155,10 @@ public class BalanceServiceImpl extends ServiceImpl<MtBalanceMapper, MtBalance> 
             mtBalance.setStoreId(mtUser.getStoreId());
         }
         mtBalance.setMerchantId(mtUser.getMerchantId());
-        mtUser.setBalance(newAmount);
-        mtUserMapper.updateById(mtUser);
+        if (updateBalance) {
+            mtUser.setBalance(newAmount);
+            mtUserMapper.updateById(mtUser);
+        }
 
         if (PhoneFormatCheckUtils.isChinaPhoneLegal(mtUser.getMobile())) {
             mtBalance.setMobile(mtUser.getMobile());
@@ -219,7 +222,7 @@ public class BalanceServiceImpl extends ServiceImpl<MtBalanceMapper, MtBalance> 
                 mtBalance.setMerchantId(accountInfo.getMerchantId());
                 mtBalance.setDescription(remark);
                 mtBalance.setOperator(accountInfo.getAccountName());
-                addBalance(mtBalance);
+                addBalance(mtBalance, false);
             }
         }
     }

@@ -29,9 +29,10 @@ public interface BalanceService extends IService<MtBalance> {
      * 添加余额记录
      *
      * @param reqDto
+     * @param updateBalance
      * @throws BusinessCheckException
      */
-    Boolean addBalance(MtBalance reqDto) throws BusinessCheckException;
+    Boolean addBalance(MtBalance reqDto, Boolean updateBalance) throws BusinessCheckException;
 
     /**
      * 发放余额

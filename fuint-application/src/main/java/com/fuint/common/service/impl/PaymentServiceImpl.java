@@ -142,7 +142,7 @@ public class PaymentServiceImpl implements PaymentService {
                 if (params.length == 2) {
                     BigDecimal amount = new BigDecimal(params[0]).add(new BigDecimal(params[1]));
                     mtBalance.setAmount(amount);
-                    balanceService.addBalance(mtBalance);
+                    balanceService.addBalance(mtBalance, true);
                 }
             }
         }
@@ -222,7 +222,7 @@ public class PaymentServiceImpl implements PaymentService {
             balance.setUserId(mtUser.getId());
             BigDecimal balanceAmount = realPayAmount.subtract(realPayAmount).subtract(realPayAmount);
             balance.setAmount(balanceAmount);
-            boolean isPay = balanceService.addBalance(balance);
+            boolean isPay = balanceService.addBalance(balance, true);
             if (isPay) {
                 orderService.setOrderPayed(orderInfo.getId(), balanceAmount);
                 OrderDto reqOrder = new OrderDto();

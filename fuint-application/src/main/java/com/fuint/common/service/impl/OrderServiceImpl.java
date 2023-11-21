@@ -927,7 +927,7 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
                 balance.setMerchantId(userInfo.getMerchantId());
                 BigDecimal balanceAmount = realPayAmount.subtract(realPayAmount).subtract(realPayAmount);
                 balance.setAmount(balanceAmount);
-                boolean isPay = balanceService.addBalance(balance);
+                boolean isPay = balanceService.addBalance(balance, true);
                 if (isPay) {
                     setOrderPayed(orderInfo.getId(), realPayAmount);
                 } else {

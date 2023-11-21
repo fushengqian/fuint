@@ -162,7 +162,7 @@ public class BackendBalanceController extends BaseController {
         mtBalance.setOperator(operator);
         mtBalance.setOrderSn("");
 
-        balanceService.addBalance(mtBalance);
+        balanceService.addBalance(mtBalance, true);
         return getSuccessResult(true);
     }
 
