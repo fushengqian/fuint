@@ -40,4 +40,7 @@ public interface MtUserMapper extends BaseMapper<MtUser> {
     Long getStoreUserCountByTime(@Param("storeId") Integer storeId, @Param("beginTime") Date beginTime, @Param("endTime") Date endTime);
 
     List<MemberTopBean> getMemberConsumeTopList(@Param("merchantId") Integer merchantId, @Param("storeId") Integer storeId, @Param("startTime") Date startTime, @Param("endTime") Date endTime);
+
+    List<Integer> getUserIdList(@Param("merchantId") Integer merchantId, @Param("storeId") Integer storeId);
+
 }

@@ -23,7 +23,6 @@ import lombok.AllArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
-import java.math.BigDecimal;
 import java.text.ParseException;
 import java.util.*;
 import java.util.regex.Pattern;
@@ -65,19 +64,9 @@ public class BackendCouponController extends BaseController {
     private GoodsService goodsService;
 
     /**
-     * 卡券发放记录服务接口
-     * */
-    private SendLogService sendLogService;
-
-    /**
      * 会员服务接口
      * */
     private MemberService memberService;
-
-    /**
-     * 短信服务接口
-     * */
-    private SendSmsService sendSmsService;
 
     /**
      * 后台账户服务接口
@@ -149,7 +138,6 @@ public class BackendCouponController extends BaseController {
         }
 
         paginationRequest.setSearchParams(params);
-        paginationRequest.setSortColumn(new String[]{"status asc", "createTime desc"});
         PaginationResponse<MtCoupon> paginationResponse = couponService.queryCouponListByPagination(paginationRequest);
         List<MtCoupon> dataList = paginationResponse.getContent();
         List<MtCouponGroup> groupList = new ArrayList<>();
@@ -432,7 +420,8 @@ public class BackendCouponController extends BaseController {
         String mobile = request.getParameter("mobile");
         String num = request.getParameter("num");
         String couponId = request.getParameter("couponId");
-
+        String userIds = request.getParameter("userIds");
+        String object = request.getParameter("object");
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
         if (accountInfo == null) {
             return getFailureResult(1001, "请先登录");
@@ -441,68 +430,40 @@ public class BackendCouponController extends BaseController {
         if (couponId == null) {
             return getFailureResult(201, "系统参数有误");
         }
-
         if (!PhoneFormatCheckUtils.isChinaPhoneLegal(mobile) && StringUtil.isNotEmpty(mobile)) {
             return getFailureResult(201, "手机号格式有误");
         }
-
         Pattern pattern = Pattern.compile("[0-9]*");
         if (num == null || (!pattern.matcher(num).matches())) {
             return getFailureResult(201, "发放数量必须为正整数");
         }
-
         if (Integer.parseInt(num) > 100) {
             return getFailureResult(201, "发放数量最多为100");
         }
-
         // 导入批次
         String uuid = UUID.randomUUID().toString().replaceAll("-", "");
-        couponService.sendCoupon(Integer.parseInt(couponId), mobile, Integer.parseInt(num), uuid, accountInfo.getAccountName());
-
-        MtCoupon couponInfo = couponService.queryCouponById(Integer.parseInt(couponId));
-        MtUser mtUser = memberService.queryMemberByMobile(accountInfo.getMerchantId(), mobile);
-        MtCouponGroup mtCouponGroup = couponGroupService.queryCouponGroupById(couponInfo.getGroupId());
-
-        // 发放记录
-        ReqSendLogDto dto = new ReqSendLogDto();
-        dto.setMerchantId(couponInfo.getMerchantId());
-        dto.setType(1);
-        dto.setMobile(mobile);
-        dto.setUserId(mtUser.getId());
-        dto.setFileName("");
-        dto.setGroupId(couponInfo.getGroupId());
-        dto.setGroupName(mtCouponGroup.getName());
-        dto.setCouponId(couponInfo.getId());
-        dto.setSendNum(Integer.parseInt(num));
-        String operator = accountInfo.getAccountName();
-        dto.setOperator(operator);
-        dto.setUuid(uuid);
-        dto.setMerchantId(accountInfo.getMerchantId());
-        dto.setStoreId(accountInfo.getStoreId());
-        sendLogService.addSendLog(dto);
-
-        // 发送短信
-        try {
-            List<String> mobileList = new ArrayList<>();
-            mobileList.add(mobile);
-
-            Integer totalNum = 0;
-            BigDecimal totalMoney = new BigDecimal("0.0");
-
-            List<MtCoupon> couponList = couponService.queryCouponListByGroupId(couponInfo.getGroupId());
-            for (MtCoupon coupon : couponList) {
-                totalNum = totalNum + (coupon.getSendNum()*Integer.parseInt(num));
-                totalMoney = totalMoney.add((coupon.getAmount().multiply(new BigDecimal(num).multiply(new BigDecimal(coupon.getSendNum())))));
+        List<Integer> userIdList = new ArrayList<>();
+        if (StringUtil.isNotEmpty(mobile)) {
+            MtUser mtUser = memberService.queryMemberByMobile(accountInfo.getMerchantId(), mobile);
+            if (mtUser != null) {
+                userIdList.add(mtUser.getId());
             }
-
-            Map<String, String> params = new HashMap<>();
-            params.put("totalNum", totalNum+"");
-            params.put("totalMoney", totalMoney+"");
-            sendSmsService.sendSms(couponInfo.getMerchantId(), "received-coupon", mobileList, params);
-        } catch (Exception e) {
-            //empty
+        } else if (object.equals("part") && StringUtil.isNotEmpty(userIds)) {
+            List<String> ids = Arrays.asList(userIds.split(","));
+            if (ids != null && ids.size() > 0) {
+                for (String userId : ids) {
+                     if (StringUtil.isNotEmpty(userId)) {
+                         userIdList.add(Integer.parseInt(userId));
+                     }
+                }
+            }
+        } else if (object.equals("all")) {
+            userIdList = memberService.getUserIdList(accountInfo.getMerchantId(), accountInfo.getStoreId());
+        } else {
+            return getFailureResult(201, "系统参数有误");
         }
 
+        couponService.batchSendCoupon(Integer.parseInt(couponId), userIdList, Integer.parseInt(num), uuid, accountInfo.getAccountName());
         return getSuccessResult(true);
     }
 }

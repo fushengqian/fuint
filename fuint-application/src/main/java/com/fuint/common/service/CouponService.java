@@ -65,11 +65,26 @@ public interface CouponService extends IService<MtCoupon> {
      * 发放卡券
      *
      * @param couponId 券ID
-     * @param mobile  操作人
-     * @param num     发放套数
+     * @param userId  会员ID
+     * @param num    发放套数
+     * @param sendMessage 是否发送消息
+     * @param uuid    批次号
+     * @param operator 操作人
      * @throws BusinessCheckException
      */
-    void sendCoupon(Integer couponId, String mobile, Integer num, String uuid, String operator) throws BusinessCheckException;
+    void sendCoupon(Integer couponId, Integer userId, Integer num, Boolean sendMessage, String uuid, String operator) throws BusinessCheckException;
+
+    /**
+     * 发放卡券
+     *
+     * @param couponId 券ID
+     * @param userIds  会员ID
+     * @param num      发放套数
+     * @param uuid     批次号
+     * @param operator 操作人
+     * @throws BusinessCheckException
+     */
+    Boolean batchSendCoupon(Integer couponId, List<Integer> userIds, Integer num, String uuid, String operator) throws BusinessCheckException;
 
     /**
      * 根据分组获取卡券列表

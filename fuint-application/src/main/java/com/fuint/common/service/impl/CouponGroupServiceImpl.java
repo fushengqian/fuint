@@ -422,7 +422,7 @@ public class CouponGroupServiceImpl extends ServiceImpl<MtCouponGroupMapper, MtC
 
              Integer totalNum = couponInfo.getTotal() == null ? 0 : couponInfo.getTotal();
              Integer sendNum = couponIdMap.get(couponId);
-             Integer hasSendNum = this.getSendNum(Integer.parseInt(couponId));
+             Integer hasSendNum = getSendNum(Integer.parseInt(couponId));
              if (totalNum > 0 && ((totalNum - hasSendNum) < sendNum)) {
                  Integer needNum = sendNum - (totalNum - hasSendNum);
                  if (StringUtil.isNotBlank(errorMsgNoNum.toString())) {
@@ -456,7 +456,9 @@ public class CouponGroupServiceImpl extends ServiceImpl<MtCouponGroupMapper, MtC
                 // 发送总价值
                 BigDecimal totalMoney = new BigDecimal("0.0");
                 for (int gid = 0; gid < cellDto.getGroupId().size(); gid++) {
-                    couponService.sendCoupon(cellDto.getGroupId().get(gid).intValue(), cellDto.getMobile(), cellDto.getNum().get(gid), uuid, operator);
+                    MtCouponGroup mtCouponGroup = getById(cellDto.getGroupId().get(gid).intValue());
+                    MtUser mtUser = memberService.queryMemberByMobile(mtCouponGroup.getMerchantId(), cellDto.getMobile());
+                    couponService.sendCoupon(cellDto.getGroupId().get(gid).intValue(), mtUser.getId(), cellDto.getNum().get(gid), false, uuid, operator);
                     List<MtCoupon> couponList = couponService.queryCouponListByGroupId(cellDto.getGroupId().get(gid).intValue());
                     // 累加总张数、总价值
                     for (MtCoupon coupon : couponList) {

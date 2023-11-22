@@ -201,4 +201,13 @@ public interface MemberService extends IService<MtUser> {
      * @return
      * */
     String deCodePassword(String password, String salt);
+
+    /**
+     * 获取会员ID列表
+     *
+     * @param merchantId
+     * @param storeId
+     * @return
+     * */
+    List<Integer> getUserIdList(Integer merchantId, Integer storeId);
 }

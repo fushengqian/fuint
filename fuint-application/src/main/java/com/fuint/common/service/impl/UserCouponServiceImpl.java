@@ -23,7 +23,6 @@ import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import lombok.AllArgsConstructor;
 import org.apache.commons.lang.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -490,6 +489,10 @@ public class UserCouponServiceImpl extends ServiceImpl<MtUserCouponMapper, MtUse
         PaginationResponse<MyCouponDto> paginationResponse = new PaginationResponse(pageImpl, MyCouponDto.class);
         paginationResponse.setTotalPages(pageHelper.getPages());
         paginationResponse.setTotalElements(pageHelper.getTotal());
+        if (dataList.size() == 0) {
+            paginationResponse.setTotalPages(0);
+            paginationResponse.setTotalElements(0);
+        }
         paginationResponse.setContent(dataList);
 
         return new ResponseObject(200, "查询成功", paginationResponse);

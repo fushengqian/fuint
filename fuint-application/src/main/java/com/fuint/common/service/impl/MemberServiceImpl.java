@@ -906,4 +906,16 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
     public String deCodePassword(String password, String salt) {
         return MD5Util.getMD5(password + salt);
     }
+
+    /**
+     * 获取会员ID列表
+     *
+     * @param merchantId
+     * @param storeId
+     * @return
+     * */
+    @Override
+    public List<Integer> getUserIdList(Integer merchantId, Integer storeId) {
+        return mtUserMapper.getUserIdList(merchantId, storeId);
+    }
 }

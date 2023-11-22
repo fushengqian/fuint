@@ -141,4 +141,29 @@ public class BackendStatisticController extends BaseController {
 
         return getSuccessResult(result);
     }
+
+    /**
+     * 获取会员数量
+     *
+     * @return
+     */
+    @ApiOperation(value = "获取会员数量")
+    @RequestMapping(value = "/totalMember", method = RequestMethod.GET)
+    @CrossOrigin
+    public ResponseObject totalMember(HttpServletRequest request) throws BusinessCheckException {
+        String token = request.getHeader("Access-Token");
+        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
+        if (accountInfo == null) {
+            return getFailureResult(1001, "请先登录");
+        }
+
+        Integer merchantId = accountInfo.getMerchantId();
+        Integer storeId = accountInfo.getStoreId();
+
+        Long totalMember = memberService.getUserCount(merchantId, storeId);
+        Map<String, Object> result = new HashMap<>();
+        result.put("totalMember", totalMember);
+
+        return getSuccessResult(result);
+    }
 }

@@ -91,4 +91,15 @@
         GROUP BY u.`ID` ORDER BY SUM(o.`AMOUNT`) DESC LIMIT 10
     </select>
 
+    <select id="getUserIdList" resultType="java.lang.Integer">
+        select t.ID from mt_user t where t.STATUS = 'A'
+        <if test="merchantId != null and merchantId > 0">
+            AND t.MERCHANT_ID = #{merchantId}
+        </if>
+        <if test="storeId != null and storeId > 0">
+            AND t.STORE_ID = #{storeId}
+        </if>
+        limit 50000;
+    </select>
+
 </mapper>

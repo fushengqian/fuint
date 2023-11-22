@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fuint.common.Constants;
 import com.fuint.common.dto.CouponDto;
 import com.fuint.common.dto.ReqCouponDto;
+import com.fuint.common.dto.ReqSendLogDto;
 import com.fuint.common.enums.*;
 import com.fuint.common.param.CouponListParam;
 import com.fuint.common.service.*;
@@ -77,6 +78,16 @@ public class CouponServiceImpl extends ServiceImpl<MtCouponMapper, MtCoupon> imp
      * 核销记录服务接口
      * */
     private ConfirmLogService confirmLogService;
+
+    /**
+     * 卡券发放记录服务接口
+     * */
+    private SendLogService sendLogService;
+
+    /**
+     * 卡券分组服务接口
+     * */
+    private CouponGroupService couponGroupService;
 
     /**
      * 系统配置服务接口
@@ -542,21 +553,26 @@ public class CouponServiceImpl extends ServiceImpl<MtCouponMapper, MtCoupon> imp
     /**
      * 发放卡券
      *
-     * @param couponId 卡券ID
-     * @param mobile   手机号
-     * @param num      发放套数
+     * @param  couponId 卡券ID
+     * @param  userId 会员ID
+     * @param  num 发放套数
+     * @param  sendMessage 是否发送消息
+     * @param  uuid 批次号
+     * @param  operator 操作人
      * @throws BusinessCheckException
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
     @OperationServiceLog(description = "发放卡券")
-    public void sendCoupon(Integer couponId, String mobile, Integer num, String uuid, String operator) throws BusinessCheckException {
+    public void sendCoupon(Integer couponId, Integer userId, Integer num, Boolean sendMessage, String uuid, String operator) throws BusinessCheckException {
         MtCoupon couponInfo = queryCouponById(couponId);
-        MtUser userInfo = memberService.queryMemberByMobile(couponInfo.getMerchantId(), mobile);
+        MtUser userInfo = memberService.queryMemberById(userId);
 
         if (null == userInfo || !userInfo.getStatus().equals(StatusEnum.ENABLED.getKey())) {
             throw new BusinessCheckException("该会员不存在或已禁用，请先注册会员");
         }
+
+        String mobile = StringUtil.isNotEmpty(userInfo.getMobile()) ? userInfo.getMobile() : "";
 
         // 判断券是否有效
         if (!couponInfo.getStatus().equals(StatusEnum.ENABLED.getKey())) {
@@ -580,7 +596,6 @@ public class CouponServiceImpl extends ServiceImpl<MtCouponMapper, MtCoupon> imp
                 param.put("userId", userInfo.getId());
                 param.put("param", storeParams);
                 param.put("orderId", 0);
-
                 userCouponService.preStore(param);
             }
             return;
@@ -627,16 +642,80 @@ public class CouponServiceImpl extends ServiceImpl<MtCouponMapper, MtCoupon> imp
             }
         }
 
-        // 发送小程序订阅消息
-        if (userInfo != null && couponInfo != null && couponInfo.getAmount().compareTo(new BigDecimal("0")) > 0) {
-            Date nowTime = new Date();
-            Date sendTime = new Date(nowTime.getTime());
-            Map<String, Object> params = new HashMap<>();
-            params.put("name", couponInfo.getName());
-            params.put("amount", couponInfo.getAmount());
-            params.put("tips", "您的卡券已到账，请查收~");
-            weixinService.sendSubscribeMessage(userInfo.getMerchantId(), userInfo.getId(), userInfo.getOpenId(), WxMessageEnum.COUPON_ARRIVAL.getKey(), "pages/user/index", params, sendTime);
+        // 发放记录
+        MtCouponGroup mtCouponGroup = couponGroupService.queryCouponGroupById(couponInfo.getGroupId());
+        ReqSendLogDto sendLogDto = new ReqSendLogDto();
+        sendLogDto.setMerchantId(couponInfo.getMerchantId());
+        sendLogDto.setType(1);
+        sendLogDto.setMobile(mobile);
+        sendLogDto.setUserId(userInfo.getId());
+        sendLogDto.setFileName("");
+        sendLogDto.setGroupId(couponInfo.getGroupId());
+        sendLogDto.setGroupName(mtCouponGroup.getName());
+        sendLogDto.setCouponId(couponInfo.getId());
+        sendLogDto.setSendNum(num);
+        sendLogDto.setOperator(operator);
+        sendLogDto.setUuid(uuid);
+        sendLogDto.setMerchantId(couponInfo.getMerchantId());
+        sendLogDto.setStoreId(couponInfo.getStoreId());
+        sendLogService.addSendLog(sendLogDto);
+
+        if (sendMessage) {
+            // 发送手机短信
+            if (StringUtil.isNotEmpty(mobile)) {
+                List<String> mobileList = new ArrayList<>();
+                mobileList.add(mobile);
+                Integer totalNum = 0;
+                BigDecimal totalMoney = new BigDecimal("0.0");
+                List<MtCoupon> couponList = queryCouponListByGroupId(couponInfo.getGroupId());
+                for (MtCoupon coupon : couponList) {
+                    totalNum = totalNum + (coupon.getSendNum() * num);
+                    totalMoney = totalMoney.add((coupon.getAmount().multiply(new BigDecimal(num).multiply(new BigDecimal(coupon.getSendNum())))));
+                }
+                Map<String, String> params = new HashMap<>();
+                params.put("totalNum", totalNum + "");
+                params.put("totalMoney", totalMoney + "");
+                sendSmsService.sendSms(couponInfo.getMerchantId(), "received-coupon", mobileList, params);
+            }
+
+            // 发送小程序订阅消息
+            if (userInfo != null && couponInfo != null && couponInfo.getAmount().compareTo(new BigDecimal("0")) > 0) {
+                Date nowTime = new Date();
+                Date sendTime = new Date(nowTime.getTime());
+                Map<String, Object> params = new HashMap<>();
+                params.put("name", couponInfo.getName());
+                params.put("amount", couponInfo.getAmount());
+                params.put("tips", "您的卡券已到账，请查收~");
+                weixinService.sendSubscribeMessage(userInfo.getMerchantId(), userInfo.getId(), userInfo.getOpenId(), WxMessageEnum.COUPON_ARRIVAL.getKey(), "pages/user/index", params, sendTime);
+            }
         }
+    }
+
+    /**
+     * 发放卡券
+     *
+     * @param couponId 券ID
+     * @param userIds  会员ID
+     * @param num      发放套数
+     * @param uuid     批次号
+     * @param operator 操作人
+     * @throws BusinessCheckException
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    @OperationServiceLog(description = "发放卡券")
+    public Boolean batchSendCoupon(Integer couponId, List<Integer> userIds, Integer num, String uuid, String operator) throws BusinessCheckException {
+       if (userIds == null || userIds.size() < 1) {
+           throw new BusinessCheckException("发放对象异常，卡券发放失败");
+       }
+       // 发放人数大于10就不发送消息了
+       Boolean sendMsg = userIds.size() >= 10 ? false : true;
+       if (userIds != null && userIds.size() > 0) {
+           for (Integer userId : userIds) {
+                sendCoupon(couponId, userId, num, sendMsg, uuid, operator);
+           }
+       }
+       return true;
     }
 
     /**
