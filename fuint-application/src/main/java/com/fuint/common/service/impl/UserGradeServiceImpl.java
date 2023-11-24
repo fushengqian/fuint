@@ -16,6 +16,7 @@ import com.fuint.repository.model.MtBanner;
 import com.fuint.repository.model.MtStaff;
 import com.fuint.repository.model.MtUser;
 import com.fuint.repository.model.MtUserGrade;
+import com.fuint.utils.StringUtil;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import lombok.AllArgsConstructor;
@@ -212,10 +213,14 @@ public class UserGradeServiceImpl extends ServiceImpl<MtUserGradeMapper, MtUserG
         param.put("merchant_id", merchantId);
         List<MtUserGrade> userGrades = mtUserGradeMapper.selectByMap(param);
         List<MtUserGrade> dataList = new ArrayList<>();
-        if (userGrades.size() > 0 && userInfo != null) {
-            for (MtUserGrade grade : userGrades) {
-                if (!userInfo.getGradeId().equals(grade.getId().toString()) && (grade.getGrade() > Integer.parseInt(userInfo.getGradeId()))) {
-                    dataList.add(grade);
+        if (userGrades.size() > 0 && userInfo != null && StringUtil.isNotEmpty(userInfo.getGradeId())) {
+            MtUserGrade myGradeInfo = mtUserGradeMapper.selectById(userInfo.getGradeId());
+            if (myGradeInfo != null) {
+                Integer myGrade = myGradeInfo.getGrade();
+                for (MtUserGrade grade : userGrades) {
+                    if (!myGrade.equals(grade.getGrade().toString()) && (grade.getGrade() > myGrade)) {
+                        dataList.add(grade);
+                    }
                 }
             }
         }
