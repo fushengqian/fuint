@@ -7,7 +7,7 @@ package com.fuint.common.enums;
  * CopyRight https://www.fuint.cn
  */
 public enum CommissionTypeEnum {
-    DISTRIBUTION("distribution", "会员分销"),
+    MEMBER("member", "会员分销"),
     STAFF("staff", "员工提成");
 
     private String key;

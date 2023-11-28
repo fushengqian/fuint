@@ -8,7 +8,6 @@ package com.fuint.common.enums;
  */
 public enum CommissionTargetEnum {
     GOODS("goods", "商品销售"),
-    SERVICE("service", "服务项目"),
     COUPON("coupon", "卡券销售"),
     RECHARGE("recharge", "会员充值");
 
