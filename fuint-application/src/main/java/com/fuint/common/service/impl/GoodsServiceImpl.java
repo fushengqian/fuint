@@ -92,6 +92,10 @@ public class GoodsServiceImpl extends ServiceImpl<MtGoodsMapper, MtGoods> implem
         if (StringUtils.isNotBlank(goodsNo)) {
             lambdaQueryWrapper.eq(MtGoods::getGoodsNo, goodsNo);
         }
+        String isSingleSpec = paginationRequest.getSearchParams().get("isSingleSpec") == null ? "" : paginationRequest.getSearchParams().get("isSingleSpec").toString();
+        if (StringUtils.isNotBlank(isSingleSpec)) {
+            lambdaQueryWrapper.eq(MtGoods::getIsSingleSpec, isSingleSpec);
+        }
         String merchantId = paginationRequest.getSearchParams().get("merchantId") == null ? "" : paginationRequest.getSearchParams().get("merchantId").toString();
         if (StringUtils.isNotBlank(merchantId)) {
             lambdaQueryWrapper.eq(MtGoods::getMerchantId, merchantId);
@@ -132,6 +136,7 @@ public class GoodsServiceImpl extends ServiceImpl<MtGoodsMapper, MtGoods> implem
             item.setGoodsNo(mtGoods.getGoodsNo());
             item.setCateId(mtGoods.getCateId());
             item.setCateInfo(cateInfo);
+            item.setType(mtGoods.getType());
             item.setPrice(mtGoods.getPrice());
             item.setLinePrice(mtGoods.getLinePrice());
             item.setSalePoint(mtGoods.getSalePoint());

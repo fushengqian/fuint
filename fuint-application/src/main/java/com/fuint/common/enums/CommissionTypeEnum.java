@@ -7,8 +7,9 @@ package com.fuint.common.enums;
  * CopyRight https://www.fuint.cn
  */
 public enum CommissionTypeEnum {
-    MEMBER("member", "会员分销"),
-    STAFF("staff", "员工提成");
+    GOODS("goods", "商品销售"),
+    COUPON("coupon", "卡券销售"),
+    RECHARGE("recharge", "会员充值");
 
     private String key;
 

@@ -19,6 +19,7 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.github.pagehelper.Page;
+import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -59,6 +60,10 @@ public class CommissionRuleServiceImpl extends ServiceImpl<MtCommissionRuleMappe
         if (StringUtils.isNotBlank(status)) {
             lambdaQueryWrapper.eq(MtCommissionRule::getStatus, status);
         }
+        String merchantId = paginationRequest.getSearchParams().get("merchantId") == null ? "" : paginationRequest.getSearchParams().get("merchantId").toString();
+        if (StringUtils.isNotBlank(merchantId)) {
+            lambdaQueryWrapper.eq(MtCommissionRule::getMerchantId, merchantId);
+        }
         String storeId = paginationRequest.getSearchParams().get("storeId") == null ? "" : paginationRequest.getSearchParams().get("storeId").toString();
         if (StringUtils.isNotBlank(storeId)) {
             lambdaQueryWrapper.eq(MtCommissionRule::getStoreId, storeId);
@@ -84,14 +89,20 @@ public class CommissionRuleServiceImpl extends ServiceImpl<MtCommissionRuleMappe
      */
     @Override
     @OperationServiceLog(description = "新增分销提成规则")
-    public MtCommissionRule addCommissionRule(MtCommissionRule commissionRule) {
+    public MtCommissionRule addCommissionRule(MtCommissionRule commissionRule) throws BusinessCheckException {
         MtCommissionRule mtCommissionRule = new MtCommissionRule();
-        Integer id = mtCommissionRuleMapper.insert(mtCommissionRule);
-        if (id > 0) {
+        BeanUtils.copyProperties(commissionRule, mtCommissionRule);
+        mtCommissionRule.setStatus(StatusEnum.ENABLED.getKey());
+        Date date = new Date();
+        mtCommissionRule.setCreateTime(date);
+        mtCommissionRule.setUpdateTime(date);
+        mtCommissionRule.setMerchantId(mtCommissionRule.getMerchantId()== null ? 0 : mtCommissionRule.getMerchantId());
+        boolean result = save(mtCommissionRule);
+        if (result) {
             return mtCommissionRule;
         } else {
             logger.error("新增分销提成规则失败...");
-            return null;
+            throw new BusinessCheckException("新增分销方案规则失败");
         }
     }
 

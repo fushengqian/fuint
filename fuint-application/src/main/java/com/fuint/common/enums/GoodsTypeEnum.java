@@ -7,7 +7,7 @@ package com.fuint.common.enums;
  * CopyRight https://www.fuint.cn
  */
 public enum GoodsTypeEnum {
-    PRODUCT("product", "实物商品"),
+    GOODS("goods", "实物商品"),
     SERVICE("service", "服务项目"),
     COUPON("coupon", "虚拟卡券");
 

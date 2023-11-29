@@ -48,7 +48,7 @@ public class BackendCommissionRuleController extends BaseController {
     /**
      * 规则列表查询
      *
-     * @param  request  HttpServletRequest对象
+     * @param request HttpServletRequest对象
      * @return 规则列表
      */
     @ApiOperation(value = "规则列表查询")
@@ -81,6 +81,9 @@ public class BackendCommissionRuleController extends BaseController {
         if (StringUtil.isNotEmpty(status)) {
             params.put("status", status);
         }
+        if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
+            params.put("merchantId", accountInfo.getMerchantId());
+        }
         if (StringUtil.isNotEmpty(searchStoreId)) {
             params.put("storeId", searchStoreId);
         }
@@ -101,7 +104,7 @@ public class BackendCommissionRuleController extends BaseController {
         List<MtStore> storeList = storeService.queryStoresByParams(paramsStore);
 
         Map<String, Object> result = new HashMap<>();
-        result.put("dataList", paginationResponse);
+        result.put("paginationResponse", paginationResponse);
         result.put("storeList", storeList);
 
         return getSuccessResult(result);
@@ -168,6 +171,9 @@ public class BackendCommissionRuleController extends BaseController {
         info.setDescription(description);
         info.setOperator(accountInfo.getAccountName());
         info.setStatus(status);
+        if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
+            info.setMerchantId(accountInfo.getMerchantId());
+        }
         info.setStoreId(Integer.parseInt(storeId));
         if (StringUtil.isNotEmpty(id)) {
             info.setId(Integer.parseInt(id));
