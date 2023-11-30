@@ -99,6 +99,10 @@ public class UserCouponServiceImpl extends ServiceImpl<MtUserCouponMapper, MtUse
         if (StringUtils.isNotBlank(status)) {
             lambdaQueryWrapper.eq(MtUserCoupon::getStatus, status);
         }
+        String userCouponId = paginationRequest.getSearchParams().get("userCouponId") == null ? "" : paginationRequest.getSearchParams().get("userCouponId").toString();
+        if (StringUtils.isNotBlank(userCouponId)) {
+            lambdaQueryWrapper.eq(MtUserCoupon::getId, userCouponId);
+        }
         String userId = paginationRequest.getSearchParams().get("userId") == null ? "" : paginationRequest.getSearchParams().get("userId").toString();
         if (StringUtils.isNotBlank(userId)) {
             lambdaQueryWrapper.eq(MtUserCoupon::getUserId, userId);

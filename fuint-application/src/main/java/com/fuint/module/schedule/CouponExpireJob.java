@@ -105,6 +105,7 @@ public class CouponExpireJob {
                             params.put("tips", "您的卡券即将到期，请留意~");
                             weixinService.sendSubscribeMessage(userInfo.getMerchantId(), userInfo.getId(), userInfo.getOpenId(), WxMessageEnum.COUPON_EXPIRE.getKey(), "pages/user/index", params, sendTime);
                             mtUserCoupon.setExpireTime(null);
+                            mtUserCoupon.setUsedTime(new Date());
                             mtUserCouponMapper.updateById(mtUserCoupon);
                         }
 

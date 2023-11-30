@@ -89,7 +89,7 @@ public class MtCoupon implements Serializable {
     @ApiModelProperty("不可用日期，逗号隔开。周末：weekend；其他：2019-01-02_2019-02-09")
     private String exceptTime;
 
-    @ApiModelProperty("所属店铺ID,逗号隔开")
+    @ApiModelProperty("适用店铺ID,逗号隔开")
     private String storeIds;
 
     @ApiModelProperty("适用会员等级,逗号隔开")

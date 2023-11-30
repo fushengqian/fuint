@@ -246,6 +246,7 @@ public class BackendUserCouponController extends BaseController {
         String userId = request.getParameter("userId") == null ? "" : request.getParameter("userId");
         String couponId = request.getParameter("couponId") == null ? "" : request.getParameter("couponId");
         String status = request.getParameter("status") == null ? "" : request.getParameter("status");
+        String userCouponId = request.getParameter("id") == null ? "" : request.getParameter("id");
 
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
         if (accountInfo == null) {
@@ -258,6 +259,9 @@ public class BackendUserCouponController extends BaseController {
         paginationRequest.setPageSize(50000);
 
         Map<String, Object> searchParams = new HashMap<>();
+        if (StringUtil.isNotEmpty(userCouponId)) {
+            searchParams.put("userCouponId", userCouponId);
+        }
         if (StringUtil.isNotEmpty(mobile)) {
             searchParams.put("mobile", mobile);
         }

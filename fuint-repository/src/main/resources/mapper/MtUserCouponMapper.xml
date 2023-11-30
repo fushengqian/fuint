@@ -15,6 +15,7 @@
             #{status}
         </foreach>
         ORDER BY t.BALANCE DESC
+        LIMIT 1000
     </select>
 
     <select id="getUserCouponListByCouponId" resultType="com.fuint.repository.model.MtUserCoupon">
@@ -23,6 +24,7 @@
             #{status}
         </foreach>
         ORDER BY t.ID DESC
+        LIMIT 1000
     </select>
 
     <select id="findByCode" resultType="com.fuint.repository.model.MtUserCoupon">
@@ -54,9 +56,9 @@
     <select id="getUserCouponListByExpireTime" resultType="com.fuint.repository.model.MtUserCoupon">
         SELECT * FROM mt_user_coupon t WHERE t.STATUS = #{status}
         <if test="userId != null and userId > 0">
-            and USER_ID = #{userId}
+            AND USER_ID = #{userId}
         </if>
-        AND t.EXPIRE_TIME &lt; #{endTime} AND t.EXPIRE_TIME &gt; #{startTime}
+        AND t.EXPIRE_TIME &lt; #{endTime} AND t.EXPIRE_TIME &gt; #{startTime} AND t.USED_TIME IS NULL
         ORDER BY t.ID ASC
     </select>
 
