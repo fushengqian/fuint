@@ -97,7 +97,7 @@ public class MerchantMemberController extends BaseController {
             staffInfo = staffService.queryStaffByMobile(mtUser.getMobile());
         }
         if (staffInfo == null) {
-            return getFailureResult(1002, "该账号不是商户");
+            return getFailureResult(201, "该账号不是商户");
         }
 
         PaginationRequest paginationRequest = new PaginationRequest();

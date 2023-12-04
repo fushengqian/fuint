@@ -67,7 +67,7 @@ public class ClientSmsController extends BaseController {
         String captchaCode = param.get("captchaCode") == null ? "" : param.get("captchaCode").toString();
         String uuid = param.get("uuid") == null ? "" : param.get("uuid").toString();
         if (StringUtil.isEmpty(captchaCode)) {
-            return getFailureResult(1002,"图形验证码不能为空");
+            return getFailureResult(201,"图形验证码不能为空");
         }
 
         HttpSession session = request.getSession();
@@ -78,7 +78,7 @@ public class ClientSmsController extends BaseController {
             captchaVerify = captchaService.checkCode(captchaCode, session);
         }
         if (!captchaVerify) {
-            return getFailureResult(1002,"图形验证码有误");
+            return getFailureResult(201,"图形验证码有误");
         }
 
         // 验证码时间间隔
@@ -88,10 +88,10 @@ public class ClientSmsController extends BaseController {
         }
 
         if (StringUtil.isEmpty(mobile)) {
-            return getFailureResult(1002,"手机号码不能为空");
+            return getFailureResult(201,"手机号码不能为空");
         } else {
             if (!PhoneFormatCheckUtils.isChinaPhoneLegal(mobile)) {
-                return getFailureResult(1002,"手机号码格式不正确");
+                return getFailureResult(201,"手机号码格式不正确");
             }
         }
 
@@ -99,9 +99,9 @@ public class ClientSmsController extends BaseController {
         String verifyCode= BizCodeGenerator.getVerifyCode();
         MtVerifyCode mtVerifyCode = verifyCodeService.addVerifyCode(mobile, verifyCode,60);
         if (null == mtVerifyCode) {
-            return getFailureResult(1002,"验证码发送失败");
+            return getFailureResult(201,"验证码发送失败");
         } else if(mtVerifyCode.getVerifyCode().equals("1") && mtVerifyCode.getId() == null){
-            return getFailureResult(1002,"验证码发送间隔太短,请稍后再试！");
+            return getFailureResult(201,"验证码发送间隔太短,请稍后再试！");
         }
 
         // 发送短信

@@ -8,10 +8,7 @@ import com.fuint.common.dto.AccountInfo;
 import com.fuint.common.dto.GroupMemberDto;
 import com.fuint.common.dto.MemberTopDto;
 import com.fuint.common.dto.UserDto;
-import com.fuint.common.enums.GenderEnum;
-import com.fuint.common.enums.MemberSourceEnum;
-import com.fuint.common.enums.StatusEnum;
-import com.fuint.common.enums.UserActionEnum;
+import com.fuint.common.enums.*;
 import com.fuint.common.service.*;
 import com.fuint.common.util.*;
 import com.fuint.framework.annoation.OperationServiceLog;
@@ -88,6 +85,11 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
      * 会员行为接口
      */
     private UserActionService userActionService;
+
+    /**
+     * 系统配置服务接口
+     * */
+    private SettingService settingService;
 
     /**
      * 更新活跃时间
@@ -610,6 +612,25 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
         String nickName = StringUtil.isNotEmpty(userInfo.getString("nickName")) ? userInfo.getString("nickName") : "";
         String mobile = StringUtil.isNotEmpty(userInfo.getString("phone")) ? userInfo.getString("phone") : "";
         String source = StringUtil.isNotEmpty(userInfo.getString("source")) ? userInfo.getString("source") : MemberSourceEnum.WECHAT_LOGIN.getKey();
+
+        // 需要手机号登录
+        if (StringUtil.isEmpty(mobile) && user == null) {
+            MtSetting mtSetting = settingService.querySettingByName(merchantId, UserSettingEnum.LOGIN_NEED_PHONE.getKey());
+            if (mtSetting != null) {
+                if (mtSetting.getValue().equals("true")) {
+                    MtUser tempUser = new MtUser();
+                    tempUser.setOpenId(openId);
+                    tempUser.setId(0);
+                    return tempUser;
+                }
+            }
+        }
+
+        // 手机号已经存在
+        if (StringUtil.isNotEmpty(mobile) && user == null) {
+            user = queryMemberByMobile(merchantId, mobile);
+            user.setOpenId(openId);
+        }
 
         if (user == null) {
             MtUser mtUser = new MtUser();

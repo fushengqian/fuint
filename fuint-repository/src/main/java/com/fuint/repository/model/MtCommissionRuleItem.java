@@ -29,23 +29,29 @@ public class MtCommissionRuleItem implements Serializable {
     @TableId(value = "ID", type = IdType.AUTO)
     private Integer id;
 
-    @ApiModelProperty("分佣类型,distribution:会员分销；staff：员工提成")
+    @ApiModelProperty("方案类型,goods:商品销售；coupon：卡券销售；recharge：会员充值")
     private String type;
+
+    @ApiModelProperty("分佣对象,member:会员分销；staff：员工提成")
+    private String target;
 
     @ApiModelProperty("规则ID")
     private Integer ruleId;
 
-    @ApiModelProperty("适用店铺ID")
-    private Integer storeId;
+    @ApiModelProperty("商户ID")
+    private Integer merchantId;
 
-    @ApiModelProperty("分佣对象")
-    private String target;
+    @ApiModelProperty("店铺ID")
+    private Integer storeId;
 
     @ApiModelProperty("分佣对象ID")
     private Integer targetId;
 
     @ApiModelProperty("提成方式（按比例/固定金额）")
     private String method;
+
+    @ApiModelProperty("适用店铺ID,逗号隔开")
+    private String storeIds;
 
     @ApiModelProperty("散客佣金")
     private BigDecimal guest;

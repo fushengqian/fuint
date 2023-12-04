@@ -120,7 +120,7 @@ public class ClientUserCouponController extends BaseController {
 
         MtCoupon couponInfo = couponService.queryCouponById(userCoupon.getCouponId());
         if (null == couponInfo) {
-            return getFailureResult(1002);
+            return getFailureResult(201);
         }
 
         ByteArrayOutputStream out = null;

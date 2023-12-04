@@ -1,6 +1,7 @@
 package com.fuint.module.backendApi.controller;
 
 import com.fuint.common.dto.AccountInfo;
+import com.fuint.common.param.CommissionRuleParam;
 import com.fuint.common.service.CommissionRuleService;
 import com.fuint.common.service.StoreService;
 import com.fuint.common.util.TokenUtil;
@@ -132,7 +133,7 @@ public class BackendCommissionLogController extends BaseController {
 
         String operator = accountInfo.getAccountName();
 
-        MtCommissionRule commissionRule = new MtCommissionRule();
+        CommissionRuleParam commissionRule = new CommissionRuleParam();
         commissionRule.setOperator(operator);
         commissionRule.setId(id);
         commissionRule.setStatus(status);
@@ -150,13 +151,12 @@ public class BackendCommissionLogController extends BaseController {
     @ApiOperation(value = "保存分销提成规则")
     @RequestMapping(value = "/save", method = RequestMethod.POST)
     @CrossOrigin
-    public ResponseObject saveHandler(HttpServletRequest request, @RequestBody Map<String, Object> params) throws BusinessCheckException {
+    public ResponseObject saveHandler(HttpServletRequest request, @RequestBody CommissionRuleParam params) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
-        String id = params.get("id") == null ? "" : params.get("id").toString();
-        String name = params.get("name") == null ? "" : params.get("name").toString();
-        String description = params.get("description") == null ? "" : params.get("description").toString();
-        String status = params.get("status") == null ? "" : params.get("status").toString();
-        String storeId = params.get("storeId") == null ? "0" : params.get("storeId").toString();
+        String id = params.getId() == null ? "" : params.getId().toString();
+        String name = params.getName() == null ? "" : params.getName();
+        String description = params.getDescription() == null ? "" : params.getDescription();
+        String status = params.getStatus() == null ? "" : params.getStatus();
 
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
         if (accountInfo == null) {
@@ -168,12 +168,11 @@ public class BackendCommissionLogController extends BaseController {
         info.setDescription(description);
         info.setOperator(accountInfo.getAccountName());
         info.setStatus(status);
-        info.setStoreId(Integer.parseInt(storeId));
         if (StringUtil.isNotEmpty(id)) {
             info.setId(Integer.parseInt(id));
-            commissionRuleService.updateCommissionRule(info);
+            commissionRuleService.updateCommissionRule(params);
         } else {
-            commissionRuleService.addCommissionRule(info);
+            commissionRuleService.addCommissionRule(params);
         }
         return getSuccessResult(true);
     }

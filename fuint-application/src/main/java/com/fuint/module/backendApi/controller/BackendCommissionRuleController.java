@@ -1,6 +1,7 @@
 package com.fuint.module.backendApi.controller;
 
 import com.fuint.common.dto.AccountInfo;
+import com.fuint.common.param.CommissionRuleParam;
 import com.fuint.common.service.CommissionRuleService;
 import com.fuint.common.service.StoreService;
 import com.fuint.common.util.TokenUtil;
@@ -58,9 +59,10 @@ public class BackendCommissionRuleController extends BaseController {
         String token = request.getHeader("Access-Token");
         Integer page = request.getParameter("page") == null ? Constants.PAGE_NUMBER : Integer.parseInt(request.getParameter("page"));
         Integer pageSize = request.getParameter("pageSize") == null ? Constants.PAGE_SIZE : Integer.parseInt(request.getParameter("pageSize"));
-        String title = request.getParameter("title");
+        String name = request.getParameter("name");
         String status = request.getParameter("status");
-        String searchStoreId = request.getParameter("storeId");
+        String target = request.getParameter("target");
+        String type = request.getParameter("type");
 
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
         Integer storeId;
@@ -75,17 +77,20 @@ public class BackendCommissionRuleController extends BaseController {
         paginationRequest.setPageSize(pageSize);
 
         Map<String, Object> params = new HashMap<>();
-        if (StringUtil.isNotEmpty(title)) {
-            params.put("title", title);
+        if (StringUtil.isNotEmpty(name)) {
+            params.put("name", name);
+        }
+        if (StringUtil.isNotEmpty(target)) {
+            params.put("target", target);
+        }
+        if (StringUtil.isNotEmpty(type)) {
+            params.put("type", type);
         }
         if (StringUtil.isNotEmpty(status)) {
             params.put("status", status);
         }
         if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
             params.put("merchantId", accountInfo.getMerchantId());
-        }
-        if (StringUtil.isNotEmpty(searchStoreId)) {
-            params.put("storeId", searchStoreId);
         }
         if (storeId != null && storeId > 0) {
             params.put("storeId", storeId);
@@ -135,7 +140,7 @@ public class BackendCommissionRuleController extends BaseController {
 
         String operator = accountInfo.getAccountName();
 
-        MtCommissionRule commissionRule = new MtCommissionRule();
+        CommissionRuleParam commissionRule = new CommissionRuleParam();
         commissionRule.setOperator(operator);
         commissionRule.setId(id);
         commissionRule.setStatus(status);
@@ -153,33 +158,24 @@ public class BackendCommissionRuleController extends BaseController {
     @ApiOperation(value = "保存分销提成规则")
     @RequestMapping(value = "/save", method = RequestMethod.POST)
     @CrossOrigin
-    public ResponseObject saveHandler(HttpServletRequest request, @RequestBody Map<String, Object> params) throws BusinessCheckException {
+    public ResponseObject saveHandler(HttpServletRequest request, @RequestBody CommissionRuleParam params) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
-        String id = params.get("id") == null ? "" : params.get("id").toString();
-        String name = params.get("name") == null ? "" : params.get("name").toString();
-        String description = params.get("description") == null ? "" : params.get("description").toString();
-        String status = params.get("status") == null ? "" : params.get("status").toString();
-        String storeId = params.get("storeId") == null ? "0" : params.get("storeId").toString();
+        String id = params.getId() == null ? "" : params.getId().toString();
 
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
         if (accountInfo == null) {
             return getFailureResult(1001, "请先登录");
         }
-
-        MtCommissionRule info = new MtCommissionRule();
-        info.setName(name);
-        info.setDescription(description);
-        info.setOperator(accountInfo.getAccountName());
-        info.setStatus(status);
         if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
-            info.setMerchantId(accountInfo.getMerchantId());
+            params.setMerchantId(accountInfo.getMerchantId());
         }
-        info.setStoreId(Integer.parseInt(storeId));
+        if (accountInfo.getStoreId() != null && accountInfo.getStoreId() > 0) {
+            params.setStoreId(accountInfo.getStoreId());
+        }
         if (StringUtil.isNotEmpty(id)) {
-            info.setId(Integer.parseInt(id));
-            commissionRuleService.updateCommissionRule(info);
+            commissionRuleService.updateCommissionRule(params);
         } else {
-            commissionRuleService.addCommissionRule(info);
+            commissionRuleService.addCommissionRule(params);
         }
         return getSuccessResult(true);
     }

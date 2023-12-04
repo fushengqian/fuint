@@ -192,22 +192,22 @@ public class ClientSignController extends BaseController {
         String userAgent = request.getHeader("user-agent") == null ? "" : request.getHeader("user-agent");
 
         if (StringUtil.isEmpty(account)) {
-            return getFailureResult(1002,"用户名不能为空");
+            return getFailureResult(201,"用户名不能为空");
         }
         if (StringUtil.isEmpty(password)) {
-            return getFailureResult(1002,"密码不能为空");
+            return getFailureResult(201,"密码不能为空");
         }
         if (StringUtil.isEmpty(captchaCode)) {
-            return getFailureResult(1002,"图形验证码不能为空");
+            return getFailureResult(201,"图形验证码不能为空");
         }
         boolean captchaVerify = captchaService.checkCodeByUuid(captchaCode, uuid);
         if (!captchaVerify) {
-            return getFailureResult(1002,"图形验证码有误");
+            return getFailureResult(201,"图形验证码有误");
         }
         Integer merchantId = merchantService.getMerchantId(merchantNo);
         MtUser userData = memberService.queryMemberByName(merchantId, account);
         if (userData != null) {
-            return getFailureResult(1002,"该用户名已存在");
+            return getFailureResult(201,"该用户名已存在");
         }
 
         MtUser mtUser = new MtUser();
@@ -292,7 +292,7 @@ public class ClientSignController extends BaseController {
                 }
 
                 if (!mtUser.getStatus().equals(StatusEnum.ENABLED.getKey())) {
-                    return getFailureResult(1002, "账号异常，登录失败");
+                    return getFailureResult(201, "账号异常，登录失败");
                 }
 
                 // 更新验证码
@@ -308,7 +308,7 @@ public class ClientSignController extends BaseController {
                 dto.setTokenCreatedTime(System.currentTimeMillis());
             } else {
                 dto.setIsLogin("false");
-                return getFailureResult(1002, "验证码错误或已过期，登录失败");
+                return getFailureResult(201, "验证码错误或已过期，登录失败");
             }
         }
 
@@ -316,7 +316,7 @@ public class ClientSignController extends BaseController {
         if (StringUtil.isNotEmpty(account) && StringUtil.isNotEmpty(password) && StringUtil.isNotEmpty(captchaCode)) {
             Boolean captchaVerify = captchaService.checkCodeByUuid(captchaCode, uuid);
             if (!captchaVerify) {
-                return getFailureResult(1002,"图形验证码有误");
+                return getFailureResult(201,"图形验证码有误");
             }
 
             MtUser userInfo = memberService.queryMemberByName(merchantId, account);

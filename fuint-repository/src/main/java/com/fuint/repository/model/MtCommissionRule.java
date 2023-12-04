@@ -31,16 +31,16 @@ public class MtCommissionRule implements Serializable {
     @ApiModelProperty("规则名称")
     private String name;
 
-    @ApiModelProperty("分佣类型,distribution:会员分销；staff：员工提成")
+    @ApiModelProperty("方案类型,goods:商品销售；coupon：卡券销售；recharge：会员充值")
     private String type;
 
-    @ApiModelProperty("分佣对象")
+    @ApiModelProperty("分佣对象,member:会员分销；staff：员工提成")
     private String target;
 
     @ApiModelProperty("商户ID")
     private Integer merchantId;
 
-    @ApiModelProperty("适用店铺ID")
+    @ApiModelProperty("店铺ID")
     private Integer storeId;
 
     @ApiModelProperty("创建时间")

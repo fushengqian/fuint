@@ -211,12 +211,12 @@ public class ClientUserController extends BaseController {
         List<MtSetting> settingList = settingService.getSettingList(merchantId, SettingTypeEnum.USER.getKey());
 
         for (MtSetting setting : settingList) {
-            if (setting.getName().equals("getCouponNeedPhone")) {
-                outParams.put("getCouponNeedPhone", setting.getValue());
-            } else if (setting.getName().equals("submitOrderNeedPhone")) {
-                outParams.put("submitOrderNeedPhone", setting.getValue());
-            } else if (setting.getName().equals("loginNeedPhone")) {
-                outParams.put("loginNeedPhone", setting.getValue());
+            if (setting.getName().equals(UserSettingEnum.GET_COUPON_NEED_PHONE.getKey())) {
+                outParams.put(UserSettingEnum.GET_COUPON_NEED_PHONE.getKey(), setting.getValue());
+            } else if (setting.getName().equals(UserSettingEnum.SUBMIT_ORDER_NEED_PHONE.getKey())) {
+                outParams.put(UserSettingEnum.SUBMIT_ORDER_NEED_PHONE.getKey(), setting.getValue());
+            } else if (setting.getName().equals(UserSettingEnum.LOGIN_NEED_PHONE.getKey())) {
+                outParams.put(UserSettingEnum.LOGIN_NEED_PHONE.getKey(), setting.getValue());
             }
         }
 
