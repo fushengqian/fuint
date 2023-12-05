@@ -102,8 +102,15 @@ public class BackendUserCouponController extends BaseController {
         param.put("pageSize", pageSize);
         param.put("status", request.getParameter("status"));
         param.put("userId", request.getParameter("userId"));
+        param.put("userNo", request.getParameter("userNo"));
         param.put("mobile", request.getParameter("mobile"));
         param.put("storeId", request.getParameter("storeId"));
+        if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
+            param.put("merchantId", accountInfo.getMerchantId());
+        }
+        if (accountInfo.getStoreId() != null && accountInfo.getStoreId() > 0) {
+            param.put("storeId", accountInfo.getStoreId());
+        }
         param.put("couponId", request.getParameter("couponId"));
         param.put("id", request.getParameter("id"));
         param.put("type", request.getParameter("type"));

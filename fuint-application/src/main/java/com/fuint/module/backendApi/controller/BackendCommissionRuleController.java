@@ -1,6 +1,7 @@
 package com.fuint.module.backendApi.controller;
 
 import com.fuint.common.dto.AccountInfo;
+import com.fuint.common.dto.CommissionRuleDto;
 import com.fuint.common.param.CommissionRuleParam;
 import com.fuint.common.service.CommissionRuleService;
 import com.fuint.common.service.StoreService;
@@ -133,8 +134,8 @@ public class BackendCommissionRuleController extends BaseController {
             return getFailureResult(1001, "请先登录");
         }
 
-        MtCommissionRule mtCommissionRule = commissionRuleService.queryCommissionRuleById(id);
-        if (mtCommissionRule == null) {
+        CommissionRuleDto commissionRuleDto = commissionRuleService.queryCommissionRuleById(id);
+        if (commissionRuleDto == null) {
             return getFailureResult(201);
         }
 
@@ -196,7 +197,7 @@ public class BackendCommissionRuleController extends BaseController {
             return getFailureResult(1001, "请先登录");
         }
 
-        MtCommissionRule commissionRule = commissionRuleService.queryCommissionRuleById(id);
+        CommissionRuleDto commissionRule = commissionRuleService.queryCommissionRuleById(id);
         Map<String, Object> result = new HashMap<>();
         result.put("commissionRule", commissionRule);
 

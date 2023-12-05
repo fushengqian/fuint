@@ -61,7 +61,6 @@ public class PointServiceImpl extends ServiceImpl<MtPointMapper, MtPoint> implem
      */
     @Override
     public PaginationResponse<PointDto> queryPointListByPagination(PaginationRequest paginationRequest) throws BusinessCheckException {
-        Page<MtPoint> pageHelper = PageHelper.startPage(paginationRequest.getCurrentPage(), paginationRequest.getPageSize());
         LambdaQueryWrapper<MtPoint> lambdaQueryWrapper = Wrappers.lambdaQuery();
         lambdaQueryWrapper.ne(MtPoint::getStatus, StatusEnum.DISABLE.getKey());
 
@@ -81,12 +80,23 @@ public class PointServiceImpl extends ServiceImpl<MtPointMapper, MtPoint> implem
         if (StringUtils.isNotBlank(merchantId)) {
             lambdaQueryWrapper.eq(MtPoint::getMerchantId, merchantId);
         }
+        String userNo = paginationRequest.getSearchParams().get("userNo") == null ? "" : paginationRequest.getSearchParams().get("userNo").toString();
+        if (StringUtil.isNotEmpty(userNo)) {
+            if (StringUtil.isEmpty(merchantId)) {
+                merchantId = "0";
+            }
+            MtUser userInfo = memberService.queryMemberByUserNo(Integer.parseInt(merchantId), userNo);
+            if (userInfo != null) {
+                lambdaQueryWrapper.eq(MtPoint::getUserId, userInfo.getId());
+            }
+        }
         String storeId = paginationRequest.getSearchParams().get("storeId") == null ? "" : paginationRequest.getSearchParams().get("storeId").toString();
         if (StringUtils.isNotBlank(storeId)) {
             lambdaQueryWrapper.eq(MtPoint::getStoreId, storeId);
         }
 
         lambdaQueryWrapper.orderByDesc(MtPoint::getId);
+        Page<MtPoint> pageHelper = PageHelper.startPage(paginationRequest.getCurrentPage(), paginationRequest.getPageSize());
         List<MtPoint> pointList = mtPointMapper.selectList(lambdaQueryWrapper);
 
         List<PointDto> dataList = new ArrayList<>();
@@ -105,7 +115,6 @@ public class PointServiceImpl extends ServiceImpl<MtPointMapper, MtPoint> implem
             item.setStatus(point.getStatus());
             dataList.add(item);
         }
-
         PageRequest pageRequest = PageRequest.of(paginationRequest.getCurrentPage(), paginationRequest.getPageSize());
         PageImpl pageImpl = new PageImpl(dataList, pageRequest, pageHelper.getTotal());
         PaginationResponse<PointDto> paginationResponse = new PaginationResponse(pageImpl, PointDto.class);

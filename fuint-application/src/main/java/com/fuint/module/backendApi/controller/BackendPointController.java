@@ -75,6 +75,7 @@ public class BackendPointController extends BaseController {
         Integer pageSize = request.getParameter("pageSize") == null ? Constants.PAGE_SIZE : Integer.parseInt(request.getParameter("pageSize"));
         String mobile = request.getParameter("mobile") == null ? "" : request.getParameter("mobile");
         String userId = request.getParameter("userId") == null ? "" : request.getParameter("userId");
+        String userNo = request.getParameter("userNo") == null ? "" : request.getParameter("userNo");
         String status = request.getParameter("status") == null ? StatusEnum.ENABLED.getKey() : request.getParameter("status");
 
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
@@ -93,25 +94,23 @@ public class BackendPointController extends BaseController {
                 searchParams.put("userId", userInfo.getId());
             }
         }
-
         if (StringUtil.isNotEmpty(userId)) {
             searchParams.put("userId", userId);
         }
-
+        if (StringUtil.isNotEmpty(userNo)) {
+            searchParams.put("userNo", userNo);
+        }
         if (StringUtil.isNotEmpty(status)) {
             searchParams.put("status", status);
         }
-
         Integer merchantId = accountInfo.getMerchantId();
         if (merchantId != null && merchantId > 0) {
             searchParams.put("merchantId", merchantId);
         }
-
         Integer storeId = accountInfo.getStoreId();
         if (storeId != null && storeId > 0) {
             searchParams.put("storeId", storeId);
         }
-
         paginationRequest.setSearchParams(searchParams);
         PaginationResponse<PointDto> paginationResponse = pointService.queryPointListByPagination(paginationRequest);
 

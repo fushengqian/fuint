@@ -351,9 +351,11 @@ public class UserCouponServiceImpl extends ServiceImpl<MtUserCouponMapper, MtUse
         Integer pageNumber = paramMap.get("pageNumber") == null ? Constants.PAGE_NUMBER : Integer.parseInt(paramMap.get("pageNumber").toString());
         Integer pageSize = paramMap.get("pageSize") == null ? Constants.PAGE_SIZE : Integer.parseInt(paramMap.get("pageSize").toString());
         String userId = paramMap.get("userId") == null ? "" : paramMap.get("userId").toString();
+        String userNo = paramMap.get("userNo") == null ? "" : paramMap.get("userNo").toString();
         String status =  paramMap.get("status") == null ? "" : paramMap.get("status").toString();
         String type =  paramMap.get("type") == null ? "": paramMap.get("type").toString();
         String mobile = paramMap.get("mobile") == null ? "" : paramMap.get("mobile").toString();
+        String merchantId = paramMap.get("merchantId") == null ? "" : paramMap.get("merchantId").toString();
         String storeId = paramMap.get("storeId") == null ? "" : paramMap.get("storeId").toString();
         String couponId = paramMap.get("couponId") == null ? "" : paramMap.get("couponId").toString();
         String code = paramMap.get("code") == null ? "" : paramMap.get("code").toString();
@@ -394,11 +396,23 @@ public class UserCouponServiceImpl extends ServiceImpl<MtUserCouponMapper, MtUse
         if (StringUtil.isNotEmpty(userId)) {
             lambdaQueryWrapper.eq(MtUserCoupon::getUserId, userId);
         }
+        if (StringUtil.isNotEmpty(userNo)) {
+            if (StringUtil.isEmpty(merchantId)) {
+                merchantId = "0";
+            }
+            MtUser userInfo = memberService.queryMemberByUserNo(Integer.parseInt(merchantId), userNo);
+            if (userInfo != null) {
+                lambdaQueryWrapper.eq(MtUserCoupon::getUserId, userInfo.getId());
+            }
+        }
         if (StringUtil.isNotEmpty(mobile)) {
             lambdaQueryWrapper.eq(MtUserCoupon::getMobile, mobile);
         }
         if (StringUtil.isNotEmpty(type)) {
             lambdaQueryWrapper.eq(MtUserCoupon::getType, type);
+        }
+        if (StringUtil.isNotEmpty(merchantId)) {
+            lambdaQueryWrapper.eq(MtUserCoupon::getMerchantId, merchantId);
         }
         if (StringUtil.isNotEmpty(storeId)) {
             lambdaQueryWrapper.eq(MtUserCoupon::getStoreId, storeId);

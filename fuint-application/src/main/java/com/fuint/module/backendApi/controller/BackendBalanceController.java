@@ -73,6 +73,7 @@ public class BackendBalanceController extends BaseController {
         Integer pageSize = request.getParameter("pageSize") == null ? Constants.PAGE_SIZE : Integer.parseInt(request.getParameter("pageSize"));
         String mobile = request.getParameter("mobile") == null ? "" : request.getParameter("mobile");
         String userId = request.getParameter("userId") == null ? "" : request.getParameter("userId");
+        String userNo = request.getParameter("userNo") == null ? "" : request.getParameter("userNo");
         String orderSn = request.getParameter("orderSn") == null ? "" : request.getParameter("orderSn");
         String status = request.getParameter("status") == null ? StatusEnum.ENABLED.getKey() : request.getParameter("status");
 
@@ -86,6 +87,9 @@ public class BackendBalanceController extends BaseController {
         }
         if (StringUtil.isNotEmpty(userId)) {
             searchParams.put("userId", userId);
+        }
+        if (StringUtil.isNotEmpty(userNo)) {
+            searchParams.put("userNo", userNo);
         }
         if (StringUtil.isNotEmpty(orderSn)) {
             searchParams.put("orderSn", orderSn);

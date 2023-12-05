@@ -43,6 +43,9 @@ public class MtCommissionRule implements Serializable {
     @ApiModelProperty("店铺ID")
     private Integer storeId;
 
+    @ApiModelProperty("适用店铺ID,逗号隔开")
+    private String storeIds;
+
     @ApiModelProperty("创建时间")
     private Date createTime;
 
