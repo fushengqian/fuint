@@ -179,6 +179,16 @@ public class BackendCashierController extends BaseController {
         TAccount accountInfo = accountService.getAccountInfoById(accountDto.getId());
         Integer storeId = accountInfo.getStoreId();
 
+        if (storeId == null || storeId < 1) {
+            MtMerchant mtMerchant = merchantService.queryMerchantById(accountInfo.getMerchantId());
+            if (mtMerchant != null) {
+                MtStore storeInfo = storeService.getDefaultStore(mtMerchant.getNo());
+                if (storeInfo != null) {
+                    storeId = storeInfo.getId();
+                }
+            }
+        }
+
         Map<String, Object> goodsData = goodsService.getStoreGoodsList(storeId, keyword, 0, 1, 100);
         return getSuccessResult(goodsData.get("goodsList"));
     }

@@ -111,7 +111,14 @@ public class GoodsServiceImpl extends ServiceImpl<MtGoodsMapper, MtGoods> implem
         if (StringUtils.isNotBlank(type)) {
             lambdaQueryWrapper.eq(MtGoods::getType, type);
         }
-
+        String hasStock = paginationRequest.getSearchParams().get("stock") == null ? "" : paginationRequest.getSearchParams().get("stock").toString();
+        if (StringUtils.isNotBlank(hasStock)) {
+            if (hasStock.equals(YesOrNoEnum.YES.getKey())) {
+                lambdaQueryWrapper.gt(MtGoods::getStock, 0);
+            } else {
+                lambdaQueryWrapper.lt(MtGoods::getStock, 1);
+            }
+        }
         lambdaQueryWrapper.orderByAsc(MtGoods::getSort);
         List<MtGoods> goodsList = mtGoodsMapper.selectList(lambdaQueryWrapper);
         List<GoodsDto> dataList = new ArrayList<>();
@@ -135,6 +142,7 @@ public class GoodsServiceImpl extends ServiceImpl<MtGoodsMapper, MtGoods> implem
             item.setName(mtGoods.getName());
             item.setGoodsNo(mtGoods.getGoodsNo());
             item.setCateId(mtGoods.getCateId());
+            item.setStock(mtGoods.getStock());
             item.setCateInfo(cateInfo);
             item.setType(mtGoods.getType());
             item.setPrice(mtGoods.getPrice());
@@ -430,9 +438,7 @@ public class GoodsServiceImpl extends ServiceImpl<MtGoodsMapper, MtGoods> implem
             return result;
         }
         Integer merchantId = mtStore.getMerchantId() == null ? 0 : mtStore.getMerchantId();
-
         Page<MtGoods> pageHelper = PageHelper.startPage(page, pageSize);
-
         List<MtGoods> goodsList = new ArrayList<>();
         List<MtGoodsSku> skuList = new ArrayList<>();
         if (StringUtil.isNotEmpty(keyword)) {
@@ -442,6 +448,7 @@ public class GoodsServiceImpl extends ServiceImpl<MtGoodsMapper, MtGoods> implem
             MtGoods goods = mtGoodsMapper.selectById(skuList.get(0).getGoodsId());
             goodsList.add(goods);
         } else {
+            pageHelper = PageHelper.startPage(page, pageSize);
             if (keyword != null && StringUtil.isNotEmpty(keyword)) {
                 goodsList = mtGoodsMapper.searchStoreGoodsList(merchantId, storeId, keyword);
             } else {

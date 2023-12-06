@@ -217,6 +217,10 @@ public class ClientCartController extends BaseController {
         // 没有会员信息，则查询是否是后台收银员下单
         if (userInfo == null) {
             mtUser = memberService.getCurrentUserInfo(request, userId, token);
+            // 把收银员的购物信息切换给会员
+            if (mtUser != null && StringUtil.isNotEmpty(cartIds)) {
+                cartService.switchCartIds(userId, cartIds);
+            }
         } else {
             mtUser = memberService.queryMemberById(userInfo.getId());
         }

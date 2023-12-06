@@ -15,7 +15,12 @@ import com.fuint.repository.model.MtGoodsSku;
 import com.fuint.utils.StringUtil;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
-import java.util.*;
+import org.springframework.transaction.annotation.Transactional;
+import java.util.Date;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 购物车业务实现类
@@ -32,6 +37,34 @@ public class CartServiceImpl extends ServiceImpl<MtCartMapper, MtCart> implement
     private MtGoodsMapper mtGoodsMapper;
 
     private MtGoodsSkuMapper mtGoodsSkuMapper;
+
+    /**
+     * 切换购物车给会员
+     *
+     * @param userId
+     * @param cartIds
+     * @return
+     * */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public Boolean switchCartIds(Integer userId, String cartIds) {
+       if (userId == null || userId < 1 || StringUtil.isEmpty(cartIds)) {
+           return false;
+       }
+       List<String> cartIdList = Arrays.asList(cartIds.split(","));
+       if (cartIdList != null && cartIdList.size() > 0) {
+           for (String cartId : cartIdList) {
+               if (StringUtil.isNotEmpty(cartId)) {
+                   MtCart mtCart = mtCartMapper.selectById(Integer.parseInt(cartId));
+                   if (mtCart != null) {
+                       mtCart.setUserId(userId);
+                       this.updateById(mtCart);
+                   }
+               }
+           }
+       }
+       return true;
+    }
 
     /**
      * 保存购物车
@@ -155,7 +188,7 @@ public class CartServiceImpl extends ServiceImpl<MtCartMapper, MtCart> implement
     /**
      * 删除购物车
      *
-     * @param cartIds
+     * @param  cartIds
      * @throws BusinessCheckException
      */
     @Override

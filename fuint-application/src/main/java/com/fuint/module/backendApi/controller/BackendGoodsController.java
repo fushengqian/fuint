@@ -88,9 +88,11 @@ public class BackendGoodsController extends BaseController {
         Integer pageSize = request.getParameter("pageSize") == null ? Constants.PAGE_SIZE : Integer.parseInt(request.getParameter("pageSize"));
         String name = request.getParameter("name");
         String goodsNo = request.getParameter("goodsNo");
+        String isSingleSpec = request.getParameter("isSingleSpec");
         String type = request.getParameter("type");
         String status = request.getParameter("status");
         String searchStoreId = request.getParameter("storeId");
+        String stock = request.getParameter("stock");
 
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
         if (accountInfo == null) {
@@ -124,11 +126,16 @@ public class BackendGoodsController extends BaseController {
         if (StringUtil.isNotEmpty(goodsNo)) {
             params.put("goodsNo", goodsNo);
         }
+        if (StringUtil.isNotEmpty(isSingleSpec)) {
+            params.put("isSingleSpec", isSingleSpec);
+        }
         if (StringUtil.isNotEmpty(status)) {
             params.put("status", status);
         }
+        if (StringUtil.isNotEmpty(stock)) {
+            params.put("stock", stock);
+        }
         paginationRequest.setSearchParams(params);
-        paginationRequest.setSortColumn(new String[]{"status asc", "sort asc", "updateTime desc"});
         PaginationResponse<GoodsDto> paginationResponse = goodsService.queryGoodsListByPagination(paginationRequest);
 
         // 商品类型列表
@@ -270,11 +277,11 @@ public class BackendGoodsController extends BaseController {
                 String name = specNameArr.get(i);
                 for (MtGoodsSpec mtGoodsSpec : goods.getSpecList()) {
                     if (mtGoodsSpec.getName().equals(name)) {
-                        GoodsSpecChildDto e = new GoodsSpecChildDto();
-                        e.setId(mtGoodsSpec.getId());
-                        e.setName(mtGoodsSpec.getValue());
-                        e.setChecked(true);
-                        child.add(e);
+                        GoodsSpecChildDto goodsSpecChildDto = new GoodsSpecChildDto();
+                        goodsSpecChildDto.setId(mtGoodsSpec.getId());
+                        goodsSpecChildDto.setName(mtGoodsSpec.getValue());
+                        goodsSpecChildDto.setChecked(true);
+                        child.add(goodsSpecChildDto);
                     }
                 }
                 item.setId(specId);
@@ -568,7 +575,7 @@ public class BackendGoodsController extends BaseController {
     /**
      * 保存商品规格
      *
-     * @param request  HttpServletRequest对象
+     * @param request HttpServletRequest对象
      */
     @ApiOperation(value = "保存商品规格")
     @RequestMapping(value = "/saveSpecName", method = RequestMethod.POST)
@@ -621,7 +628,7 @@ public class BackendGoodsController extends BaseController {
     /**
      * 保存商品规格值
      *
-     * @param request  HttpServletRequest对象
+     * @param request HttpServletRequest对象
      * @return
      */
     @ApiOperation(value = "保存商品规格值")

@@ -15,6 +15,15 @@ import java.util.Map;
 public interface CartService extends IService<MtCart> {
 
     /**
+     * 切换购物车给会员
+     *
+     * @param userId
+     * @param cartIds
+     * @return
+     * */
+    Boolean switchCartIds(Integer userId, String cartIds) throws BusinessCheckException;
+
+    /**
      * 保存购物车
      *
      * @param reqDto

@@ -221,11 +221,14 @@ public class BalanceServiceImpl extends ServiceImpl<MtBalanceMapper, MtBalance> 
                 }
             }
         }
-
+        // 最多不能超过5000人
+        if (userIdArr.size() > 5000) {
+            throw new BusinessCheckException("最多不能超过5000人");
+        }
         mtUserMapper.updateUserBalance(accountInfo.getMerchantId(), userIdArr, balanceAmount);
 
         if (userIdArr.size() > 0) {
-            for(Integer userId : userIdArr) {
+            for (Integer userId : userIdArr) {
                 MtBalance mtBalance = new MtBalance();
                 mtBalance.setAmount(new BigDecimal(amount));
                 mtBalance.setUserId(userId);
@@ -234,6 +237,17 @@ public class BalanceServiceImpl extends ServiceImpl<MtBalanceMapper, MtBalance> 
                 mtBalance.setOperator(accountInfo.getAccountName());
                 addBalance(mtBalance, false);
             }
+        } else {
+            MtBalance mtBalance = new MtBalance();
+            mtBalance.setAmount(new BigDecimal(amount));
+            mtBalance.setUserId(0); // userId为0表示全体会员
+            mtBalance.setMerchantId(accountInfo.getMerchantId());
+            mtBalance.setDescription(remark);
+            mtBalance.setOperator(accountInfo.getAccountName());
+            mtBalance.setStatus(StatusEnum.ENABLED.getKey());
+            mtBalance.setCreateTime(new Date());
+            mtBalance.setUpdateTime(new Date());
+            mtBalanceMapper.insert(mtBalance);
         }
     }
 
