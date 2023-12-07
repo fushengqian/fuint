@@ -91,7 +91,6 @@ public class UserCouponServiceImpl extends ServiceImpl<MtUserCouponMapper, MtUse
      */
     @Override
     public PaginationResponse<MtUserCoupon> queryUserCouponListByPagination(PaginationRequest paginationRequest) {
-        com.github.pagehelper.Page<MtUserCoupon> pageHelper = PageHelper.startPage(paginationRequest.getCurrentPage(), paginationRequest.getPageSize());
         LambdaQueryWrapper<MtUserCoupon> lambdaQueryWrapper = Wrappers.lambdaQuery();
         lambdaQueryWrapper.ne(MtUserCoupon::getStatus, StatusEnum.DISABLE.getKey());
 
@@ -121,6 +120,7 @@ public class UserCouponServiceImpl extends ServiceImpl<MtUserCouponMapper, MtUse
         }
 
         lambdaQueryWrapper.orderByDesc(MtUserCoupon::getId);
+        Page<MtUserCoupon> pageHelper = PageHelper.startPage(paginationRequest.getCurrentPage(), paginationRequest.getPageSize());
         List<MtUserCoupon> dataList = mtUserCouponMapper.selectList(lambdaQueryWrapper);
 
         PageRequest pageRequest = PageRequest.of(paginationRequest.getCurrentPage(), paginationRequest.getPageSize());
@@ -437,7 +437,7 @@ public class UserCouponServiceImpl extends ServiceImpl<MtUserCouponMapper, MtUse
                 MtCoupon couponInfo = couponService.queryCouponById(userCouponDto.getCouponId());
                 MtUser userInfo = memberService.queryMemberById(userCouponDto.getUserId());
                 MtStore storeInfo = storeService.queryStoreById(userCouponDto.getStoreId());
-                if (couponInfo == null || userInfo == null) {
+                if (couponInfo == null) {
                     continue;
                 }
 
