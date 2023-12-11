@@ -70,16 +70,12 @@ public class BackendStoreController extends BaseController {
         Integer page = request.getParameter("page") == null ? Constants.PAGE_NUMBER : Integer.parseInt(request.getParameter("page"));
         Integer pageSize = request.getParameter("pageSize") == null ? Constants.PAGE_SIZE : Integer.parseInt(request.getParameter("pageSize"));
 
-        String storeId = request.getParameter("id");
         String storeName = request.getParameter("name");
         String storeStatus = request.getParameter("status");
 
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
         if (accountInfo == null) {
             return getFailureResult(1001, "请先登录");
-        }
-        if (accountInfo.getStoreId() != null && accountInfo.getStoreId() > 0) {
-            storeId = accountInfo.getStoreId().toString();
         }
 
         PaginationRequest paginationRequest = new PaginationRequest();
@@ -90,8 +86,8 @@ public class BackendStoreController extends BaseController {
         if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
             params.put("merchantId", accountInfo.getMerchantId());
         }
-        if (StringUtil.isNotEmpty(storeId)) {
-            params.put("storeId", storeId);
+        if (accountInfo.getStoreId() != null && accountInfo.getStoreId() > 0) {
+            params.put("storeId", accountInfo.getStoreId());
         }
         if (StringUtil.isNotEmpty(storeName)) {
             params.put("name", storeName);
@@ -107,8 +103,8 @@ public class BackendStoreController extends BaseController {
         if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
             param.put("merchantId", accountInfo.getMerchantId());
         }
-        if (StringUtil.isNotEmpty(storeId)) {
-            param.put("storeId", storeId);
+        if (accountInfo.getStoreId() != null && accountInfo.getStoreId() > 0) {
+            param.put("storeId", accountInfo.getStoreId());
         }
         List<MtMerchant> merchantList = merchantService.queryMerchantByParams(param);
         String imagePath = settingService.getUploadBasePath();

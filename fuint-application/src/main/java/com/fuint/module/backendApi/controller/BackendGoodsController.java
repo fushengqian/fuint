@@ -501,70 +501,70 @@ public class BackendGoodsController extends BaseController {
             storeId = myStoreId;
         }
 
-        MtGoods info = new MtGoods();
-        info.setId(Integer.parseInt(goodsId));
+        MtGoods mtGoods = new MtGoods();
+        mtGoods.setId(Integer.parseInt(goodsId));
         if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
-            info.setMerchantId(accountInfo.getMerchantId());
+            mtGoods.setMerchantId(accountInfo.getMerchantId());
         }
         if (StringUtil.isNotEmpty(type)) {
-            info.setType(type);
+            mtGoods.setType(type);
         }
-        info.setCateId(cateId);
-        info.setName(name);
-        info.setGoodsNo(goodsNo);
+        mtGoods.setCateId(cateId);
+        mtGoods.setName(name);
+        mtGoods.setGoodsNo(goodsNo);
         if (StringUtil.isNotEmpty(serviceTime)) {
-            info.setServiceTime(Integer.parseInt(serviceTime));
+            mtGoods.setServiceTime(Integer.parseInt(serviceTime));
         }
         if (StringUtil.isNotEmpty(couponIds)) {
-            info.setCouponIds(couponIds);
+            mtGoods.setCouponIds(couponIds);
         }
-        info.setIsSingleSpec(isSingleSpec);
+        mtGoods.setIsSingleSpec(isSingleSpec);
         if (StringUtil.isNotEmpty(stock)) {
-            info.setStock(Integer.parseInt(stock));
+            mtGoods.setStock(Integer.parseInt(stock));
         }
         if (StringUtil.isNotEmpty(description)) {
-            info.setDescription(description);
+            mtGoods.setDescription(description);
         }
         if (storeId != null && storeId > 0) {
-            info.setStoreId(storeId);
+            mtGoods.setStoreId(storeId);
         }
         if (images.size() > 0) {
-            info.setLogo(images.get(0));
+            mtGoods.setLogo(images.get(0));
         }
         if (StringUtil.isNotEmpty(sort)) {
-            info.setSort(Integer.parseInt(sort));
+            mtGoods.setSort(Integer.parseInt(sort));
         }
         if (StringUtil.isNotEmpty(status)) {
-            info.setStatus(status);
+            mtGoods.setStatus(status);
         }
         if (StringUtil.isNotEmpty(price)) {
-            info.setPrice(new BigDecimal(price));
+            mtGoods.setPrice(new BigDecimal(price));
         }
         if (StringUtil.isNotEmpty(linePrice)) {
-            info.setLinePrice(new BigDecimal(linePrice));
+            mtGoods.setLinePrice(new BigDecimal(linePrice));
         }
         if (StringUtil.isNotEmpty(weight)) {
-            info.setWeight(new BigDecimal(weight));
+            mtGoods.setWeight(new BigDecimal(weight));
         }
         if (initSale > 0) {
-            info.setInitSale(initSale);
+            mtGoods.setInitSale(initSale);
         }
         if (StringUtil.isNotEmpty(salePoint)) {
-            info.setSalePoint(salePoint);
+            mtGoods.setSalePoint(salePoint);
         }
         if (StringUtil.isNotEmpty(canUsePoint)) {
-            info.setCanUsePoint(canUsePoint);
+            mtGoods.setCanUsePoint(canUsePoint);
         }
         if (StringUtil.isNotEmpty(isMemberDiscount)) {
-            info.setIsMemberDiscount(isMemberDiscount);
+            mtGoods.setIsMemberDiscount(isMemberDiscount);
         }
         if (images.size() > 0) {
             String imagesJson = JSONObject.toJSONString(images);
-            info.setImages(imagesJson);
+            mtGoods.setImages(imagesJson);
         }
-        info.setOperator(accountInfo.getAccountName());
+        mtGoods.setOperator(accountInfo.getAccountName());
 
-        MtGoods goodsInfo = goodsService.saveGoods(info);
+        MtGoods goodsInfo = goodsService.saveGoods(mtGoods);
 
         Map<String, Object> result = new HashMap();
         result.put("goodsInfo", goodsInfo);
