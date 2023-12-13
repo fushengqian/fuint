@@ -117,10 +117,10 @@ public class SourceServiceImpl extends ServiceImpl<TSourceMapper, TSource> imple
 
         for (TreeNode menu : treeNodes) {
             RouterVo router = new RouterVo();
-            if (menu.getIsMenu() == 1) {
-                router.setHidden(false);
-            } else {
+            if (menu.getIsMenu() == 0) {
                 router.setHidden(true);
+            } else {
+                router.setHidden(false);
             }
             router.setName(menu.getEname());
             if (menu.getLevel() == 1) {
@@ -129,6 +129,11 @@ public class SourceServiceImpl extends ServiceImpl<TSourceMapper, TSource> imple
                 router.setRedirect("noRedirect");
                 router.setAlwaysShow(true);
             } else {
+                if (menu.getIsMenu() == 2) {
+                    router.setAlwaysShow(true);
+                } else {
+                    router.setAlwaysShow(false);
+                }
                 router.setComponent(menu.getPath());
                 router.setPath('/' + menu.getPath());
             }
