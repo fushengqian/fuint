@@ -327,6 +327,9 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
         }
 
         String userNo = CommonUtil.createUserNo();
+        if (StringUtil.isNotEmpty(mtUser.getUserNo())) {
+            userNo = mtUser.getUserNo();
+        }
         // 会员名称已存在
         List<MtUser> userList = mtUserMapper.queryMemberByName(mtUser.getMerchantId(), mtUser.getName());
         if (userList.size() > 0) {
