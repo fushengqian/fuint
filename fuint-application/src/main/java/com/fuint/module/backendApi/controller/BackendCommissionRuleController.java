@@ -57,7 +57,7 @@ public class BackendCommissionRuleController extends BaseController {
     @ApiOperation(value = "规则列表查询")
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     @CrossOrigin
-    @PreAuthorize("@pms.hasPermission('commissionRule:index')")
+    @PreAuthorize("@pms.hasPermission('commission:rule:index')")
     public ResponseObject list(HttpServletRequest request) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
         Integer page = request.getParameter("page") == null ? Constants.PAGE_NUMBER : Integer.parseInt(request.getParameter("page"));
@@ -126,7 +126,7 @@ public class BackendCommissionRuleController extends BaseController {
     @ApiOperation(value = "更新分销提成规则状态")
     @RequestMapping(value = "/updateStatus", method = RequestMethod.POST)
     @CrossOrigin
-    @PreAuthorize("@pms.hasPermission('commissionRule:index')")
+    @PreAuthorize("@pms.hasPermission('commission:rule:index')")
     public ResponseObject updateStatus(HttpServletRequest request, @RequestBody Map<String, Object> params) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
         String status = params.get("status") != null ? params.get("status").toString() : StatusEnum.ENABLED.getKey();
@@ -162,7 +162,7 @@ public class BackendCommissionRuleController extends BaseController {
     @ApiOperation(value = "保存分销提成规则")
     @RequestMapping(value = "/save", method = RequestMethod.POST)
     @CrossOrigin
-    @PreAuthorize("@pms.hasPermission('commissionRule:index')")
+    @PreAuthorize("@pms.hasPermission('commission:rule:index')")
     public ResponseObject saveHandler(HttpServletRequest request, @RequestBody CommissionRuleParam params) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
         String id = params.getId() == null ? "" : params.getId().toString();
@@ -194,7 +194,7 @@ public class BackendCommissionRuleController extends BaseController {
     @ApiOperation(value = "获取分销提成规则详情")
     @RequestMapping(value = "/info/{id}", method = RequestMethod.GET)
     @CrossOrigin
-    @PreAuthorize("@pms.hasPermission('commissionRule:index')")
+    @PreAuthorize("@pms.hasPermission('commission:rule:index')")
     public ResponseObject info(HttpServletRequest request, @PathVariable("id") Integer id) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);

@@ -4,9 +4,9 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 
+import com.fuint.common.dto.CommissionLogDto;
 import com.fuint.common.service.CommissionLogService;
 import com.fuint.framework.annoation.OperationServiceLog;
-import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.pagination.PaginationRequest;
 import com.fuint.framework.pagination.PaginationResponse;
 import com.fuint.repository.mapper.MtCommissionLogMapper;
@@ -19,6 +19,7 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.github.pagehelper.Page;
+import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -46,7 +47,7 @@ public class CommissionLogServiceImpl extends ServiceImpl<MtCommissionLogMapper,
      * @return
      */
     @Override
-    public PaginationResponse<MtCommissionLog> queryDataByPagination(PaginationRequest paginationRequest) {
+    public PaginationResponse<MtCommissionLog> queryCommissionLogByPagination(PaginationRequest paginationRequest) {
         Page<MtCommissionLog> pageHelper = PageHelper.startPage(paginationRequest.getCurrentPage(), paginationRequest.getPageSize());
         LambdaQueryWrapper<MtCommissionLog> lambdaQueryWrapper = Wrappers.lambdaQuery();
         lambdaQueryWrapper.ne(MtCommissionLog::getStatus, StatusEnum.DISABLE.getKey());
@@ -54,6 +55,10 @@ public class CommissionLogServiceImpl extends ServiceImpl<MtCommissionLogMapper,
         String status = paginationRequest.getSearchParams().get("status") == null ? "" : paginationRequest.getSearchParams().get("status").toString();
         if (StringUtils.isNotBlank(status)) {
             lambdaQueryWrapper.eq(MtCommissionLog::getStatus, status);
+        }
+        String merchantId = paginationRequest.getSearchParams().get("merchantId") == null ? "" : paginationRequest.getSearchParams().get("merchantId").toString();
+        if (StringUtils.isNotBlank(merchantId)) {
+            lambdaQueryWrapper.eq(MtCommissionLog::getMerchantId, merchantId);
         }
         String storeId = paginationRequest.getSearchParams().get("storeId") == null ? "" : paginationRequest.getSearchParams().get("storeId").toString();
         if (StringUtils.isNotBlank(storeId)) {
@@ -79,6 +84,7 @@ public class CommissionLogServiceImpl extends ServiceImpl<MtCommissionLogMapper,
      * @param commissionLog
      */
     @Override
+    @Transactional
     @OperationServiceLog(description = "新增分销提成记录")
     public MtCommissionLog addCommissionLog(MtCommissionLog commissionLog) {
         MtCommissionLog mtCommissionLog = new MtCommissionLog();
@@ -97,8 +103,13 @@ public class CommissionLogServiceImpl extends ServiceImpl<MtCommissionLogMapper,
      * @param id
      */
     @Override
-    public MtCommissionLog queryCommissionLogById(Integer id) {
-        return mtCommissionLogMapper.selectById(id);
+    public CommissionLogDto queryCommissionLogById(Integer id) {
+        MtCommissionLog mtCommissionLog = mtCommissionLogMapper.selectById(id);
+        CommissionLogDto commissionLogDto = null;
+        if (mtCommissionLog != null) {
+            BeanUtils.copyProperties(mtCommissionLog, commissionLogDto);
+        }
+        return commissionLogDto;
     }
 
     /**
@@ -108,9 +119,10 @@ public class CommissionLogServiceImpl extends ServiceImpl<MtCommissionLogMapper,
      * @param operator 操作人
      */
     @Override
+    @Transactional
     @OperationServiceLog(description = "删除分销提成记录")
     public void deleteCommissionLog(Integer id, String operator) {
-        MtCommissionLog mtCommissionLog = queryCommissionLogById(id);
+        MtCommissionLog mtCommissionLog =  mtCommissionLogMapper.selectById(id);
         if (mtCommissionLog == null) {
             logger.error("删除分销提成记录失败...");
             return;
@@ -118,60 +130,5 @@ public class CommissionLogServiceImpl extends ServiceImpl<MtCommissionLogMapper,
         mtCommissionLog.setStatus(StatusEnum.DISABLE.getKey());
         mtCommissionLog.setUpdateTime(new Date());
         mtCommissionLogMapper.updateById(mtCommissionLog);
-    }
-
-    /**
-     * 更新分销提成记录
-     *
-     * @param  commissionLog
-     * @throws BusinessCheckException
-     */
-    @Override
-    @Transactional(rollbackFor = Exception.class)
-    @OperationServiceLog(description = "更新分销提成记录")
-    public MtCommissionLog updateCommissionLog(MtCommissionLog commissionLog) throws BusinessCheckException {
-        MtCommissionLog mtCommissionLog = queryCommissionLogById(commissionLog.getId());
-        if (mtCommissionLog == null) {
-            logger.error("更新分销提成记录失败...");
-            throw new BusinessCheckException("该数据状态异常");
-        }
-        mtCommissionLog.setId(commissionLog.getId());
-        if (commissionLog.getStoreId() != null) {
-            mtCommissionLog.setStoreId(commissionLog.getStoreId());
-        }
-        if (commissionLog.getDescription() != null) {
-            mtCommissionLog.setDescription(commissionLog.getDescription());
-        }
-        if (commissionLog.getOperator() != null) {
-            mtCommissionLog.setOperator(commissionLog.getOperator());
-        }
-        if (commissionLog.getStatus() != null) {
-            mtCommissionLog.setStatus(commissionLog.getStatus());
-        }
-        mtCommissionLog.setUpdateTime(new Date());
-        mtCommissionLogMapper.updateById(mtCommissionLog);
-        return mtCommissionLog;
-    }
-
-    @Override
-    public List<MtCommissionLog> queryDataByParams(Map<String, Object> params) {
-        String status =  params.get("status") == null ? StatusEnum.ENABLED.getKey(): params.get("status").toString();
-        String storeId =  params.get("storeId") == null ? "" : params.get("storeId").toString();
-
-        LambdaQueryWrapper<MtCommissionLog> lambdaQueryWrapper = Wrappers.lambdaQuery();
-        if (StringUtils.isNotBlank(status)) {
-            lambdaQueryWrapper.eq(MtCommissionLog::getStatus, status);
-        }
-        if (StringUtils.isNotBlank(storeId)) {
-            lambdaQueryWrapper.and(wq -> wq
-                              .eq(MtCommissionLog::getStoreId, 0)
-                              .or()
-                              .eq(MtCommissionLog::getStoreId, storeId));
-        }
-
-        lambdaQueryWrapper.orderByAsc(MtCommissionLog::getId);
-        List<MtCommissionLog> dataList = mtCommissionLogMapper.selectList(lambdaQueryWrapper);
-
-        return dataList;
     }
 }
