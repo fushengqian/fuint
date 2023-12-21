@@ -1988,4 +1988,15 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
     public Integer getUserPayOrderCount(Integer userId) {
         return mtOrderMapper.getUserPayOrderCount(userId);
     }
+
+    /**
+     * 获取待分佣订单列表
+     *
+     * @param dateTime
+     * @return
+     * */
+    @Override
+    public List<MtOrder> getTobeCommissionOrderList(String dateTime) {
+        return mtOrderMapper.getTobeCommissionOrderList(dateTime);
+    }
 }

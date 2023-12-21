@@ -169,6 +169,9 @@ public class MerchantMemberController extends BaseController {
         // 会员等级列表
         Map<String, Object> param = new HashMap<>();
         param.put("status", StatusEnum.ENABLED.getKey());
+        if (staffInfo.getMerchantId() != null && staffInfo.getMerchantId() > 0) {
+            param.put("MERCHANT_ID", staffInfo.getMerchantId());
+        }
         List<MtUserGrade> userGradeList = memberService.queryMemberGradeByParams(param);
 
         Map<String, Object> result = new HashMap<>();
@@ -198,6 +201,9 @@ public class MerchantMemberController extends BaseController {
         MtUser mtUserInfo = memberService.queryMemberById(id);
 
         Map<String, Object> param = new HashMap<>();
+        if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
+            param.put("MERCHANT_ID", accountInfo.getMerchantId());
+        }
         List<MtUserGrade> userGradeList = memberService.queryMemberGradeByParams(param);
 
         Map<String, Object> result = new HashMap<>();

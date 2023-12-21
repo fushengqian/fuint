@@ -217,6 +217,9 @@ public class BackendCouponController extends BaseController {
         // 会员等级列表
         Map<String, Object> param = new HashMap<>();
         param.put("status", StatusEnum.ENABLED.getKey());
+        if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
+            param.put("MERCHANT_ID", accountInfo.getMerchantId());
+        }
         List<MtUserGrade> gradeList = memberService.queryMemberGradeByParams(param);
 
         String imagePath = settingService.getUploadBasePath();

@@ -554,13 +554,13 @@ public class GoodsServiceImpl extends ServiceImpl<MtGoodsMapper, MtGoods> implem
     public PaginationResponse<GoodsDto> selectGoodsList(Map<String, Object> params) throws BusinessCheckException {
         Integer page = params.get("page") == null ? Constants.PAGE_NUMBER : Integer.parseInt(params.get("page").toString());
         Integer pageSize = params.get("pageSize") == null ? Constants.PAGE_SIZE : Integer.parseInt(params.get("pageSize").toString());
-        Integer storeId = (params.get("storeId") == null || StringUtil.isEmpty(params.get("storeId").toString()))? 0 : Integer.parseInt(params.get("storeId").toString());
+        Integer merchantId = (params.get("merchantId") == null || StringUtil.isEmpty(params.get("merchantId").toString())) ? 0 : Integer.parseInt(params.get("merchantId").toString());
+        Integer storeId = (params.get("storeId") == null || StringUtil.isEmpty(params.get("storeId").toString())) ? 0 : Integer.parseInt(params.get("storeId").toString());
         Integer cateId = (params.get("cateId") == null || StringUtil.isEmpty(params.get("cateId").toString())) ? 0 : Integer.parseInt(params.get("cateId").toString());
         String keyword = params.get("keyword") == null ? "" : params.get("keyword").toString();
 
-        Integer merchantId = 0;
         MtStore mtStore = storeService.queryStoreById(storeId);
-        if (mtStore != null) {
+        if (mtStore != null && mtStore.getMerchantId() != null) {
             merchantId = mtStore.getMerchantId();
         }
         Page<MtGoods> pageHelper = PageHelper.startPage(page, pageSize);

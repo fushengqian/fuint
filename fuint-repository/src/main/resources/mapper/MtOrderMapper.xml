@@ -64,4 +64,8 @@
     <select id="getUserPayOrderCount" resultType="java.lang.Integer">
         SELECT COUNT(DISTINCT t.ID) as num FROM mt_order t where t.USER_ID = #{userId} and t.PAY_STATUS='B' and t.STATUS != 'G'
     </select>
+
+    <select id="getTobeCommissionOrderList" resultType="com.fuint.repository.model.MtOrder">
+        SELECT t.* FROM `mt_order` t WHERE t.PAY_TIME > #{dateTime} AND t.ID NOT IN(SELECT ID FROM `mt_commission_log` c WHERE c.STATUS != 'D')
+    </select>
 </mapper>

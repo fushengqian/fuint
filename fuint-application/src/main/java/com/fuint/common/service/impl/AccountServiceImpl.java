@@ -65,23 +65,23 @@ public class AccountServiceImpl extends ServiceImpl<TAccountMapper, TAccount> im
         lambdaQueryWrapper.ne(TAccount::getAccountStatus, -1); // 1:启用；0:禁用；-1:删除
 
         String name = paginationRequest.getSearchParams().get("name") == null ? "" : paginationRequest.getSearchParams().get("name").toString();
-        if (StringUtils.isNotBlank(name)) {
+        if (StringUtils.isNotEmpty(name)) {
             lambdaQueryWrapper.like(TAccount::getAccountName, name);
         }
         String realName = paginationRequest.getSearchParams().get("realName") == null ? "" : paginationRequest.getSearchParams().get("realName").toString();
-        if (StringUtils.isNotBlank(realName)) {
+        if (StringUtils.isNotEmpty(realName)) {
             lambdaQueryWrapper.like(TAccount::getRealName, realName);
         }
         String status = paginationRequest.getSearchParams().get("status") == null ? "" : paginationRequest.getSearchParams().get("status").toString();
-        if (StringUtils.isNotBlank(status)) {
+        if (StringUtils.isNotEmpty(status)) {
             lambdaQueryWrapper.eq(TAccount::getAccountStatus, status);
         }
         String merchantId = paginationRequest.getSearchParams().get("merchantId") == null ? "" : paginationRequest.getSearchParams().get("merchantId").toString();
-        if (StringUtils.isNotBlank(merchantId)) {
+        if (StringUtils.isNotEmpty(merchantId)) {
             lambdaQueryWrapper.eq(TAccount::getMerchantId, merchantId);
         }
         String storeId = paginationRequest.getSearchParams().get("storeId") == null ? "" : paginationRequest.getSearchParams().get("storeId").toString();
-        if (StringUtils.isNotBlank(storeId)) {
+        if (StringUtils.isNotEmpty(storeId)) {
             lambdaQueryWrapper.eq(TAccount::getStoreId, storeId);
         }
 

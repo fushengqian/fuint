@@ -88,6 +88,9 @@ public class BackendOpenGiftController extends BaseController {
         ResponseObject response = openGiftService.getOpenGiftList(param);
 
         Map<String, Object> params = new HashMap<>();
+        if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
+            params.put("MERCHANT_ID", accountInfo.getMerchantId());
+        }
         List<MtUserGrade> userGradeList = memberService.queryMemberGradeByParams(params);
 
         Map<String, Object> result = new HashMap<>();
@@ -114,6 +117,10 @@ public class BackendOpenGiftController extends BaseController {
         }
 
         Map<String, Object> param = new HashMap<>();
+
+        if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
+            param.put("MERCHANT_ID", accountInfo.getMerchantId());
+        }
         List<MtUserGrade> userGradeMap = memberService.queryMemberGradeByParams(param);
 
         OpenGiftDto openGiftInfo = openGiftService.getOpenGiftDetail(id);

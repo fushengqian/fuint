@@ -801,7 +801,9 @@ public class BackendGoodsController extends BaseController {
         if (accountInfo == null) {
             return getFailureResult(1001, "请先登录");
         }
-
+        if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
+            params.put("merchantId", accountInfo.getMerchantId());
+        }
         PaginationResponse<GoodsDto> paginationResponse = goodsService.selectGoodsList(params);
         String imagePath = settingService.getUploadBasePath();
 

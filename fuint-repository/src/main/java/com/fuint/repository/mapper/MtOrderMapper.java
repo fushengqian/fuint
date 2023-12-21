@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Param;
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 
 /**
  * 订单表 Mapper 接口
@@ -39,5 +40,7 @@ public interface MtOrderMapper extends BaseMapper<MtOrder> {
     BigDecimal getUserPayMoney(@Param("userId") Integer userId);
 
     Integer getUserPayOrderCount(@Param("userId") Integer userId);
+
+    List<MtOrder> getTobeCommissionOrderList(@Param("dateTime") String dateTime);
 
 }

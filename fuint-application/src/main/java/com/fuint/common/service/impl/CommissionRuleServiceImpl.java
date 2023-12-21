@@ -231,6 +231,15 @@ public class CommissionRuleServiceImpl extends ServiceImpl<MtCommissionRuleMappe
             throw new BusinessCheckException("该数据状态异常");
         }
         mtCommissionRule.setId(commissionRule.getId());
+        if (commissionRule.getName() != null) {
+            mtCommissionRule.setName(commissionRule.getName());
+        }
+        if (commissionRule.getTarget() != null) {
+            mtCommissionRule.setTarget(commissionRule.getTarget());
+        }
+        if (commissionRule.getType() != null) {
+            mtCommissionRule.setType(commissionRule.getType());
+        }
         if (commissionRule.getStoreId() != null) {
             mtCommissionRule.setStoreId(commissionRule.getStoreId());
         }

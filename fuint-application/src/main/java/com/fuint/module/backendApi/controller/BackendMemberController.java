@@ -346,6 +346,9 @@ public class BackendMemberController extends BaseController {
         }
 
         Map<String, Object> param = new HashMap<>();
+        if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
+            param.put("MERCHANT_ID", accountInfo.getMerchantId());
+        }
         List<MtUserGrade> userGradeList = memberService.queryMemberGradeByParams(param);
 
         Map<String, Object> result = new HashMap<>();
