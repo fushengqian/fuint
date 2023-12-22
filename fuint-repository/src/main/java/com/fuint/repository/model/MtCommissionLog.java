@@ -29,7 +29,7 @@ public class MtCommissionLog implements Serializable {
     @TableId(value = "ID", type = IdType.AUTO)
     private Integer id;
 
-    @ApiModelProperty("分佣类型,member:会员分销；staff：员工提成")
+    @ApiModelProperty("分佣类型")
     private String type;
 
     @ApiModelProperty("分佣等级")

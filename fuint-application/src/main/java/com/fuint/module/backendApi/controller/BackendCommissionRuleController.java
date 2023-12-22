@@ -2,6 +2,8 @@ package com.fuint.module.backendApi.controller;
 
 import com.fuint.common.dto.AccountInfo;
 import com.fuint.common.dto.CommissionRuleDto;
+import com.fuint.common.dto.ParamDto;
+import com.fuint.common.enums.OrderTypeEnum;
 import com.fuint.common.param.CommissionRuleParam;
 import com.fuint.common.service.CommissionRuleService;
 import com.fuint.common.service.StoreService;
@@ -14,7 +16,6 @@ import com.fuint.framework.pagination.PaginationRequest;
 import com.fuint.framework.pagination.PaginationResponse;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.repository.model.MtCommissionRule;
-import com.fuint.repository.model.MtStore;
 import com.fuint.utils.StringUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -22,6 +23,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -101,19 +103,20 @@ public class BackendCommissionRuleController extends BaseController {
         paginationRequest.setSearchParams(params);
         PaginationResponse<MtCommissionRule> paginationResponse = commissionRuleService.queryDataByPagination(paginationRequest);
 
-        Map<String, Object> paramsStore = new HashMap<>();
-        paramsStore.put("status", StatusEnum.ENABLED.getKey());
-        if (accountInfo.getStoreId() != null && accountInfo.getStoreId() > 0) {
-            paramsStore.put("storeId", accountInfo.getStoreId().toString());
+        // 订单类型列表
+        OrderTypeEnum[] typeListEnum = OrderTypeEnum.values();
+        List<ParamDto> typeList = new ArrayList<>();
+        for (OrderTypeEnum enumItem : typeListEnum) {
+            ParamDto paramDto = new ParamDto();
+            paramDto.setKey(enumItem.getKey());
+            paramDto.setName(enumItem.getValue());
+            paramDto.setValue(enumItem.getKey());
+            typeList.add(paramDto);
         }
-        if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
-            paramsStore.put("merchantId", accountInfo.getMerchantId());
-        }
-        List<MtStore> storeList = storeService.queryStoresByParams(paramsStore);
 
         Map<String, Object> result = new HashMap<>();
         result.put("paginationResponse", paginationResponse);
-        result.put("storeList", storeList);
+        result.put("typeList", typeList);
 
         return getSuccessResult(result);
     }

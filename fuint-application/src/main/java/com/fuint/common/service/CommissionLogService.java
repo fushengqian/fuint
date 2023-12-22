@@ -21,15 +21,15 @@ public interface CommissionLogService extends IService<MtCommissionLog> {
      * @param paginationRequest
      * @return
      */
-    PaginationResponse<MtCommissionLog> queryCommissionLogByPagination(PaginationRequest paginationRequest) throws BusinessCheckException;
+    PaginationResponse<CommissionLogDto> queryCommissionLogByPagination(PaginationRequest paginationRequest) throws BusinessCheckException;
 
     /**
      * 添加分销提成记录
      *
-     * @param  commissionLog
+     * @param  orderId
      * @throws BusinessCheckException
      */
-    MtCommissionLog addCommissionLog(MtCommissionLog commissionLog) throws BusinessCheckException;
+    void addCommissionLog(Integer orderId) throws BusinessCheckException;
 
     /**
      * 根据ID获取记录信息

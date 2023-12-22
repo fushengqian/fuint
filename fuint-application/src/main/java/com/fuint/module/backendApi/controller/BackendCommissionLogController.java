@@ -91,7 +91,7 @@ public class BackendCommissionLogController extends BaseController {
             params.put("storeId", storeId);
         }
         paginationRequest.setSearchParams(params);
-        PaginationResponse<MtCommissionLog> paginationResponse = commissionLogService.queryCommissionLogByPagination(paginationRequest);
+        PaginationResponse<CommissionLogDto> paginationResponse = commissionLogService.queryCommissionLogByPagination(paginationRequest);
 
         Map<String, Object> paramsStore = new HashMap<>();
         paramsStore.put("status", StatusEnum.ENABLED.getKey());

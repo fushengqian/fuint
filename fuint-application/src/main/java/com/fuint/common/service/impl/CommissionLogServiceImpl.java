@@ -5,14 +5,15 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 
 import com.fuint.common.dto.CommissionLogDto;
-import com.fuint.common.service.CommissionLogService;
+import com.fuint.common.enums.OrderTypeEnum;
+import com.fuint.common.service.*;
 import com.fuint.framework.annoation.OperationServiceLog;
 import com.fuint.framework.pagination.PaginationRequest;
 import com.fuint.framework.pagination.PaginationResponse;
 import com.fuint.repository.mapper.MtCommissionLogMapper;
 import com.fuint.common.enums.StatusEnum;
 
-import com.fuint.repository.model.MtCommissionLog;
+import com.fuint.repository.model.*;
 import com.github.pagehelper.PageHelper;
 import lombok.AllArgsConstructor;
 import org.apache.commons.lang.StringUtils;
@@ -24,6 +25,8 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.math.BigDecimal;
 import java.util.*;
 
 /**
@@ -41,13 +44,33 @@ public class CommissionLogServiceImpl extends ServiceImpl<MtCommissionLogMapper,
     private MtCommissionLogMapper mtCommissionLogMapper;
 
     /**
+     * 订单服务接口
+     * */
+    private OrderService orderService;
+
+    /**
+     * 店铺服务接口
+     * */
+    private StoreService storeService;
+
+    /**
+     * 员工服务接口
+     * */
+    private StaffService staffService;
+
+    /**
+     * 提成方案规则服务接口
+     * */
+    private CommissionRuleService commissionRuleService;
+
+    /**
      * 分页查询记录列表
      *
      * @param paginationRequest
      * @return
      */
     @Override
-    public PaginationResponse<MtCommissionLog> queryCommissionLogByPagination(PaginationRequest paginationRequest) {
+    public PaginationResponse<CommissionLogDto> queryCommissionLogByPagination(PaginationRequest paginationRequest) {
         Page<MtCommissionLog> pageHelper = PageHelper.startPage(paginationRequest.getCurrentPage(), paginationRequest.getPageSize());
         LambdaQueryWrapper<MtCommissionLog> lambdaQueryWrapper = Wrappers.lambdaQuery();
         lambdaQueryWrapper.ne(MtCommissionLog::getStatus, StatusEnum.DISABLE.getKey());
@@ -66,11 +89,27 @@ public class CommissionLogServiceImpl extends ServiceImpl<MtCommissionLogMapper,
         }
 
         lambdaQueryWrapper.orderByDesc(MtCommissionLog::getId);
-        List<MtCommissionLog> dataList = mtCommissionLogMapper.selectList(lambdaQueryWrapper);
-
+        List<MtCommissionLog> commissionLogList = mtCommissionLogMapper.selectList(lambdaQueryWrapper);
+        List<CommissionLogDto> dataList = new ArrayList<>();
+        if (commissionLogList != null && commissionLogList.size() > 0) {
+            for (MtCommissionLog mtCommissionLog : commissionLogList) {
+                 CommissionLogDto commissionLogDto = new CommissionLogDto();
+                 BeanUtils.copyProperties(mtCommissionLog, commissionLogDto);
+                 commissionLogDto.setTypeName(OrderTypeEnum.getName(mtCommissionLog.getType()));
+                 MtOrder mtOrder = orderService.getById(mtCommissionLog.getOrderId());
+                 commissionLogDto.setOrderInfo(mtOrder);
+                 MtStore mtStore = storeService.getById(mtCommissionLog.getStoreId());
+                 commissionLogDto.setStoreInfo(mtStore);
+                 MtStaff mtStaff = staffService.getById(mtCommissionLog.getStaffId());
+                 commissionLogDto.setStaffInfo(mtStaff);
+                 MtCommissionRule mtCommissionRule = commissionRuleService.getById(mtCommissionLog.getRuleId());
+                 commissionLogDto.setRuleInfo(mtCommissionRule);
+                 dataList.add(commissionLogDto);
+            }
+        }
         PageRequest pageRequest = PageRequest.of(paginationRequest.getCurrentPage(), paginationRequest.getPageSize());
         PageImpl pageImpl = new PageImpl(dataList, pageRequest, pageHelper.getTotal());
-        PaginationResponse<MtCommissionLog> paginationResponse = new PaginationResponse(pageImpl, MtCommissionLog.class);
+        PaginationResponse<CommissionLogDto> paginationResponse = new PaginationResponse(pageImpl, CommissionLogDto.class);
         paginationResponse.setTotalPages(pageHelper.getPages());
         paginationResponse.setTotalElements(pageHelper.getTotal());
         paginationResponse.setContent(dataList);
@@ -81,19 +120,34 @@ public class CommissionLogServiceImpl extends ServiceImpl<MtCommissionLogMapper,
     /**
      * 添加分销提成记录
      *
-     * @param commissionLog
+     * @param orderId
+     * @return
      */
     @Override
     @Transactional
     @OperationServiceLog(description = "新增分销提成记录")
-    public MtCommissionLog addCommissionLog(MtCommissionLog commissionLog) {
-        MtCommissionLog mtCommissionLog = new MtCommissionLog();
-        Integer id = mtCommissionLogMapper.insert(mtCommissionLog);
-        if (id > 0) {
-            return mtCommissionLog;
-        } else {
-            logger.error("新增分销提成记录失败...");
-            return null;
+    public void addCommissionLog(Integer orderId) {
+        if (orderId != null && orderId > 0) {
+            MtOrder mtOrder = orderService.getById(orderId);
+            if (mtOrder != null) {
+                MtCommissionLog mtCommissionLog = new MtCommissionLog();
+                mtCommissionLog.setType(mtOrder.getType());
+                mtCommissionLog.setLevel(0);
+                mtCommissionLog.setUserId(0);
+                mtCommissionLog.setOrderId(orderId);
+                mtCommissionLog.setMerchantId(mtOrder.getMerchantId());
+                mtCommissionLog.setStoreId(mtOrder.getStoreId());
+                mtCommissionLog.setStaffId(mtOrder.getStaffId());
+                mtCommissionLog.setAmount(new BigDecimal("0"));
+                mtCommissionLog.setRuleId(0);
+                mtCommissionLog.setCashId(0);
+                mtCommissionLog.setCashTime(null);
+                mtCommissionLog.setCreateTime(new Date());
+                mtCommissionLog.setUpdateTime(new Date());
+                mtCommissionLog.setStatus(StatusEnum.ENABLED.getKey());
+                mtCommissionLog.setOperator(null);
+                mtCommissionLogMapper.insert(mtCommissionLog);
+            }
         }
     }
 

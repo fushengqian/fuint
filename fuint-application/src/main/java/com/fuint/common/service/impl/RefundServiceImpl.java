@@ -247,6 +247,7 @@ public class RefundServiceImpl extends ServiceImpl<MtRefundMapper, MtRefund> imp
         refund.setUserId(refundDto.getUserId());
         refund.setRemark(refundDto.getRemark());
         refund.setType(refundDto.getType());
+        refund.setMerchantId(refundDto.getMerchantId());
         refund.setStoreId(refundDto.getStoreId());
         refund.setAmount(refundDto.getAmount());
         if (refundDto.getImages() != null && StringUtil.isNotEmpty(refundDto.getImages()) && refundDto.getImages().length() > 5) {
@@ -519,6 +520,10 @@ public class RefundServiceImpl extends ServiceImpl<MtRefundMapper, MtRefund> imp
         RefundDto refundDto = new RefundDto();
         refundDto.setUserId(orderInfo.getUserId());
         refundDto.setOrderId(orderInfo.getId());
+        refundDto.setMerchantId(orderInfo.getMerchantId());
+        if (orderInfo.getStoreInfo() != null) {
+            refundDto.setStoreId(orderInfo.getStoreInfo().getId());
+        }
         refundDto.setRemark(remark);
         refundDto.setType(RefundTypeEnum.RETURN.getKey());
         if (orderInfo.getStoreInfo() != null) {
