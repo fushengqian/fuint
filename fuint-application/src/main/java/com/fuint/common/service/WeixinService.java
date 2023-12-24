@@ -19,20 +19,79 @@ import java.util.Date;
  */
 public interface WeixinService {
 
+    /**
+     * 获取微信登录token
+     *
+     * @param merchantId 商户ID
+     * @param useCache 是否从缓存中读取
+     * @return
+     * */
     String getAccessToken(Integer merchantId, boolean useCache) throws BusinessCheckException ;
 
+    /**
+     * 提交预支付订单
+     *
+     * @param userInfo 会员信息
+     * @param orderInfo 订单信息
+     * @param payAmount 支付金额
+     * @param authCode 支付二维码
+     * @param giveAmount 赠送金额
+     * @param ip 支付发起IP
+     * @param platform 支付平台
+     * @return
+     * */
     ResponseObject createPrepayOrder(MtUser userInfo, MtOrder orderInfo, Integer payAmount, String authCode, Integer giveAmount, String ip, String platform) throws BusinessCheckException;
 
+    /**
+     * 处理返回的xml数据
+     *
+     * @param request 请求体
+     * @return
+     * */
     Map<String,String> processResXml(HttpServletRequest request);
 
+    /**
+     * 处理返回的xml数据
+     *
+     * @param response 返回相应
+     * @param flag 标签
+     * @return
+     * */
     void processRespXml(HttpServletResponse response, boolean flag);
 
+    /**
+     * 获取微信个人信息
+     *
+     * @param merchantId 商户ID
+     * @param code 登录编码
+     * @return
+     * */
     JSONObject getWxProfile(Integer merchantId, String code) throws BusinessCheckException;
 
+    /**
+     * 获取微信openId
+     *
+     * @param merchantId 商户ID
+     * @param code 登录编码
+     * @return
+     * */
     JSONObject getWxOpenId(Integer merchantId, String code) throws BusinessCheckException;
 
-    String getPhoneNumber(String encryptedData, String session_key, String iv);
+    /**
+     * 获取会员微信绑定的手机号
+     *
+     * @param encryptedData 加密的编码（前端返回）
+     * @param sessionKey
+     * @param iv
+     * @return
+     * */
+    String getPhoneNumber(String encryptedData, String sessionKey, String iv);
 
+    /**
+     * 发送订阅消息
+     *
+     * @param merchantId 
+     * */
     Boolean sendSubscribeMessage(Integer merchantId, Integer userId, String toUserOpenId, String key, String page, Map<String,Object> params, Date sendTime) throws BusinessCheckException;
 
     Boolean doSendSubscribeMessage(Integer merchantId, String reqDataJsonStr);

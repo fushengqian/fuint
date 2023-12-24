@@ -45,6 +45,7 @@ public interface SendLogService extends IService<MtSendLog> {
      * @param  id       ID
      * @param  operator 操作人
      * @throws BusinessCheckException
+     * @return
      */
     void deleteSendLog(Long id, String operator) throws BusinessCheckException;
 }

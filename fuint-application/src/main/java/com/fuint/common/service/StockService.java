@@ -51,6 +51,7 @@ public interface StockService extends IService<MtStock> {
      *
      * @param  id ID
      * @throws BusinessCheckException
+     * @return
      */
     MtStock queryStockById(Long id) throws BusinessCheckException;
 
@@ -59,6 +60,7 @@ public interface StockService extends IService<MtStock> {
      *
      * @param  params
      * @throws BusinessCheckException
+     * @return
      * */
     List<MtStockItem> queryItemByParams(Map<String, Object> params) throws BusinessCheckException;
 }

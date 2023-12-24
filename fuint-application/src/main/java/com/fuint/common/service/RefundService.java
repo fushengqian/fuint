@@ -75,6 +75,7 @@ public interface RefundService extends IService<MtRefund> {
 
     /**
      * 发起退款
+     *
      * @param orderId
      * @param refundAmount
      * @param remark
@@ -85,6 +86,10 @@ public interface RefundService extends IService<MtRefund> {
 
     /**
      * 获取售后订单总数
+     *
+     * @param beginTime
+     * @param endTime
+     * @return
      * */
     Long getRefundCount(Date beginTime, Date endTime) throws BusinessCheckException;
 }

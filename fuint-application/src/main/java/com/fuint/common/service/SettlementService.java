@@ -28,6 +28,7 @@ public interface SettlementService {
      *
      * @param  requestParam
      * @throws BusinessCheckException
+     * @return
      */
     Boolean submitSettlement(SettlementRequest requestParam) throws BusinessCheckException;
 
@@ -37,6 +38,7 @@ public interface SettlementService {
      * @param  settlementId
      * @param  operator
      * @throws BusinessCheckException
+     * @return
      */
     Boolean doConfirm(Integer settlementId, String operator) throws BusinessCheckException;
 
@@ -46,7 +48,6 @@ public interface SettlementService {
      * @param settlementId
      * @param page
      * @param pageSize
-     *
      * @return
      * */
     SettlementDto getSettlementInfo(Integer settlementId, Integer page, Integer pageSize) throws BusinessCheckException;

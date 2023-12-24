@@ -60,6 +60,7 @@ public interface StaffService extends IService<MtStaff> {
      *
      * @param  mobile 手机
      * @throws BusinessCheckException
+     * @return
      */
     MtStaff queryStaffByMobile(String mobile) throws BusinessCheckException;
 
@@ -68,6 +69,7 @@ public interface StaffService extends IService<MtStaff> {
      *
      * @param userId 会员ID
      * @throws BusinessCheckException
+     * @return
      */
     MtStaff queryStaffByUserId(Integer userId) throws BusinessCheckException;
 }

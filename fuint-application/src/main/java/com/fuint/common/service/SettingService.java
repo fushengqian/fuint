@@ -50,12 +50,14 @@ public interface SettingService extends IService<MtSetting> {
 
     /**
      * 获取系统上传文件的根路径
+     *
      * @return 本地配置或阿里云的oss域名
      * */
     String getUploadBasePath();
 
     /**
      * 获取支付方式列表
+     *
      * @param platform 平台
      * @return
      * */
