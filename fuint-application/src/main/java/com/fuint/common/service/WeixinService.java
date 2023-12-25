@@ -90,16 +90,56 @@ public interface WeixinService {
     /**
      * 发送订阅消息
      *
-     * @param merchantId 
+     * @param merchantId 商户ID
+     * @param userId 会员ID
+     * @param toUserOpenId 会员openID
+     * @param key 消息编码
+     * @param page 跳转页面
+     * @param params 发送参数
+     * @param sendTime 发送时间
+     * @return
      * */
     Boolean sendSubscribeMessage(Integer merchantId, Integer userId, String toUserOpenId, String key, String page, Map<String,Object> params, Date sendTime) throws BusinessCheckException;
 
+    /**
+     * 发送订阅消息
+     *
+     * @param merchantId 商户ID
+     * @param reqDataJsonStr 发送参数
+     * @return
+     * */
     Boolean doSendSubscribeMessage(Integer merchantId, String reqDataJsonStr);
 
+    /**
+     * 查询支付订单
+     *
+     * @param storeId 店铺ID
+     * @param transactionId 交易单号
+     * @param orderSn 订单号
+     * @return
+     * */
     Map<String, String> queryPaidOrder(Integer storeId, String transactionId, String orderSn);
 
+    /**
+     * 发起售后
+     *
+     * @param storeId 店铺ID
+     * @param orderSn 订单号
+     * @param totalAmount 订单总金额
+     * @param refundAmount 售后金额
+     * @param platform 平台
+     * @return
+     * */
     Boolean doRefund(Integer storeId, String orderSn, BigDecimal totalAmount, BigDecimal refundAmount, String platform) throws BusinessCheckException;
 
+    /**
+     * 生成店铺二维码
+     *
+     * @param merchantId 商户ID
+     * @param storeId 店铺ID
+     * @param width 宽度
+     * @return
+     * */
     String createStoreQrCode(Integer merchantId, Integer storeId, Integer width);
 
 }
