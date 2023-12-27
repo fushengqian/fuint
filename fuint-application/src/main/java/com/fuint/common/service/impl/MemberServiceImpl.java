@@ -836,10 +836,10 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
     /**
      * 获取会员消费排行榜
      *
-     * @param merchantId
-     * @param storeId
-     * @param startTime
-     * @param endTime
+     * @param merchantId 商户ID
+     * @param storeId 店铺ID
+     * @param startTime 开始时间
+     * @param endTime 结束时间
      * @return
      * */
     @Override
@@ -859,11 +859,11 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
     /**
      * 查找会员列表
      *
-     * @param merchantId
-     * @param keyword
-     * @param groupIds
-     * @param page
-     * @param pageSize
+     * @param merchantId 商户ID
+     * @param keyword 关键字
+     * @param groupIds 分组ID
+     * @param page 当前页码
+     * @param pageSize 每页数量
      * @return
      * */
     @Override
@@ -908,10 +908,22 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
     }
 
     /**
+     * 查找会员列表
+     *
+     * @param merchantId 商户ID
+     * @param keyword 关键字
+     * @return
+     * */
+    @Override
+    public List<MtUser> searchMembers(Integer merchantId, String keyword) {
+       return mtUserMapper.searchMembers(merchantId, keyword);
+    }
+
+    /**
      * 设定安全的密码
      *
-     * @param password
-     * @param salt
+     * @param password 密码明文
+     * @param salt 加密因子
      * @return
      */
     @Override
@@ -922,8 +934,8 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
     /**
      * 获取加密密码
      *
-     * @param password
-     * @param salt
+     * @param password 密码密文
+     * @param salt 加密因子
      * @return
      * */
     @Override
@@ -934,8 +946,8 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
     /**
      * 获取会员ID列表
      *
-     * @param merchantId
-     * @param storeId
+     * @param merchantId 商户号
+     * @param storeId 店铺ID
      * @return
      * */
     @Override

@@ -102,4 +102,12 @@
         limit 50000;
     </select>
 
+    <select id="searchMembers" resultType="com.fuint.repository.model.MtUser">
+        select * from mt_user t where (t.MOBILE like concat('%',#{keyword},'%') or t.NAME like concat('%',#{keyword},'%')) and t.STATUS = 'A'
+        <if test="merchantId != null and merchantId > 0">
+            AND t.MERCHANT_ID = #{merchantId}
+        </if>
+        limit 10
+    </select>
+
 </mapper>

@@ -295,13 +295,20 @@ public class BackendCashierController extends BaseController {
             return getFailureResult(201);
         }
 
-        MtUser userInfo;
+        MtUser userInfo = null;
+        // 优先通过手机号、会员号、用户名查询，查不到再进行模糊匹配查找
         if (PhoneFormatCheckUtils.isChinaPhoneLegal(keyword)) {
             userInfo = memberService.queryMemberByMobile(accountInfo.getMerchantId(), keyword);
         } else {
-            userInfo = memberService.queryMemberByName(accountInfo.getMerchantId(), keyword);
+            userInfo = memberService.queryMemberByUserNo(accountInfo.getMerchantId(), keyword);
             if (userInfo == null) {
-                userInfo = memberService.queryMemberByUserNo(accountInfo.getMerchantId(), keyword);
+                userInfo = memberService.queryMemberByName(accountInfo.getMerchantId(), keyword);
+            }
+        }
+        if (userInfo == null) {
+            List<MtUser> userList = memberService.searchMembers(accountInfo.getMerchantId(), keyword);
+            if (userList != null && userList.size() > 0) {
+                userInfo = userList.get(0);
             }
         }
 

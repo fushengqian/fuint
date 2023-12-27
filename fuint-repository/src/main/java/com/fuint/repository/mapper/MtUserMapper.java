@@ -43,4 +43,6 @@ public interface MtUserMapper extends BaseMapper<MtUser> {
 
     List<Integer> getUserIdList(@Param("merchantId") Integer merchantId, @Param("storeId") Integer storeId);
 
+    List<MtUser> searchMembers(@Param("merchantId") Integer merchantId, @Param("keyword") String keyword);
+
 }
