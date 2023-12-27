@@ -239,21 +239,11 @@ public class StoreServiceImpl extends ServiceImpl<MtStoreMapper, MtStore> implem
     }
 
     /**
-     * 根据店铺id列表获取店铺信息
-     *
-     * @param  ids 店铺ID列表
-     * @throws BusinessCheckException
-     */
-    @Override
-    public List<MtStore> queryStoresByIds(List<Integer> ids) {
-        return mtStoreMapper.findStoresByIds(ids);
-    }
-
-    /**
      * 根据店铺名称获取店铺信息
      *
      * @param  storeName 店铺名称
      * @throws BusinessCheckException
+     * @return
      */
     @Override
     public StoreDto queryStoreByName(String storeName) {
@@ -271,9 +261,9 @@ public class StoreServiceImpl extends ServiceImpl<MtStoreMapper, MtStore> implem
     /**
      * 根据店铺ID获取店铺信息
      *
-     * @param id 店铺ID
-     * @return
+     * @param  id 店铺ID
      * @throws BusinessCheckException
+     * @return
      */
     @Override
     public StoreDto queryStoreDtoById(Integer id) throws BusinessCheckException {
@@ -300,6 +290,7 @@ public class StoreServiceImpl extends ServiceImpl<MtStoreMapper, MtStore> implem
      * @param  operator 操作人
      * @param  status   状态
      * @throws BusinessCheckException
+     * @return
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -317,6 +308,12 @@ public class StoreServiceImpl extends ServiceImpl<MtStoreMapper, MtStore> implem
         mtStoreMapper.updateById(mtStore);
     }
 
+    /**
+     * 根据条件查询店铺列表
+     *
+     * @param params 查询参数
+     * @return
+     * */
     @Override
     public List<MtStore> queryStoresByParams(Map<String, Object> params) {
         LambdaQueryWrapper<MtStore> lambdaQueryWrapper = Wrappers.lambdaQuery();
@@ -349,10 +346,10 @@ public class StoreServiceImpl extends ServiceImpl<MtStoreMapper, MtStore> implem
     /**
      * 根据距离远近获取店铺列表
      *
-     * @param merchantNo
-     * @param keyword
-     * @param latitude
-     * @param longitude
+     * @param merchantNo 商户号
+     * @param keyword 关键字
+     * @param latitude 维度
+     * @param longitude 经度
      * @return
      * */
     @Override

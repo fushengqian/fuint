@@ -19,6 +19,7 @@ public interface SourceService extends IService<TSource> {
     /**
      * 获取有效的菜单集合
      *
+     * @param merchantId 商户ID
      * @return
      */
     List<TSource> getAvailableSources(Integer merchantId);
@@ -26,6 +27,7 @@ public interface SourceService extends IService<TSource> {
     /**
      * 获取菜单的属性结构
      *
+     * @param merchantId 商户ID
      * @return
      */
     List<TreeNode> getSourceTree(Integer merchantId);
@@ -44,6 +46,7 @@ public interface SourceService extends IService<TSource> {
      * @param  merchantId 商户ID
      * @param  accountId 账号ID
      * @throws BusinessCheckException
+     * @return
      */
     List<TSource> getMenuListByUserId(Integer merchantId, Integer accountId) throws BusinessCheckException;
 

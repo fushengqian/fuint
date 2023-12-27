@@ -31,9 +31,9 @@ public interface UserActionService extends IService<MtUserAction> {
     boolean addUserAction(MtUserAction mtUserAction) throws BusinessCheckException;
 
     /**
-     * 根据ID获取Banner信息
+     * 根据ID获取会员行为详情
      *
-     * @param id Banner ID
+     * @param  id ID
      * @throws BusinessCheckException
      */
     MtUserAction getUserActionDetail(Integer id) throws BusinessCheckException;
@@ -41,7 +41,7 @@ public interface UserActionService extends IService<MtUserAction> {
     /**
      * 根据ID删除会员行为
      *
-     * @param id       ID
+     * @param id ID
      * @param operator 操作人
      * @throws BusinessCheckException
      */

@@ -5,8 +5,6 @@ import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.pagination.PaginationRequest;
 import com.fuint.framework.pagination.PaginationResponse;
 import com.fuint.repository.model.MtStaff;
-import com.fuint.repository.model.MtStore;
-
 import java.util.List;
 import java.util.Map;
 
@@ -47,11 +45,15 @@ public interface StaffService extends IService<MtStaff> {
      *
      * @param  id
      * @throws BusinessCheckException
+     * @return
      */
     Integer updateAuditedStatus(Integer id, String statusEnum) throws BusinessCheckException;
 
     /**
      * 根据条件搜索员工
+     *
+     * @param params 请求参数
+     * @return
      * */
     List<MtStaff> queryStaffByParams(Map<String, Object> params) throws BusinessCheckException;
 

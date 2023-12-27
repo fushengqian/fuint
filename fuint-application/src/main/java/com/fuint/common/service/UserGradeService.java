@@ -29,6 +29,7 @@ public interface UserGradeService extends IService<MtUserGrade> {
      *
      * @param  reqDto
      * @throws BusinessCheckException
+     * @return
      */
     MtUserGrade addUserGrade(MtUserGrade reqDto) throws BusinessCheckException;
 
@@ -37,6 +38,7 @@ public interface UserGradeService extends IService<MtUserGrade> {
      *
      * @param  reqDto
      * @throws BusinessCheckException
+     * @return
      */
     MtUserGrade updateUserGrade(MtUserGrade reqDto) throws BusinessCheckException;
 
@@ -47,6 +49,7 @@ public interface UserGradeService extends IService<MtUserGrade> {
      * @param gradeId ID
      * @param userId
      * @throws BusinessCheckException
+     * @return
      */
     MtUserGrade queryUserGradeById(Integer merchantId, Integer gradeId, Integer userId) throws BusinessCheckException;
 
@@ -56,6 +59,7 @@ public interface UserGradeService extends IService<MtUserGrade> {
      * @param  id      ID
      * @param  operator 操作人
      * @throws BusinessCheckException
+     * @return
      */
     Integer deleteUserGrade(Integer id, String operator) throws BusinessCheckException;
 
@@ -64,6 +68,7 @@ public interface UserGradeService extends IService<MtUserGrade> {
      *
      * @param merchantId
      * @throws BusinessCheckException
+     * @return
      */
     MtUserGrade getInitUserGrade(Integer merchantId) throws BusinessCheckException;
 
@@ -73,6 +78,7 @@ public interface UserGradeService extends IService<MtUserGrade> {
      * @param  merchantId
      * @param  userInfo
      * @throws BusinessCheckException
+     * @return
      * */
     List<MtUserGrade> getPayUserGradeList(Integer merchantId, MtUser userInfo) throws BusinessCheckException;
 }

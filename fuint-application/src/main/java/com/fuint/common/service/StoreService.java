@@ -37,6 +37,7 @@ public interface StoreService extends IService<MtStore> {
      * 获取系统默认店铺
      *
      * @throws BusinessCheckException
+     * @return
      */
     MtStore getDefaultStore(String merchantNo) throws BusinessCheckException;
 
@@ -45,16 +46,9 @@ public interface StoreService extends IService<MtStore> {
      *
      * @param  id 店铺ID
      * @throws BusinessCheckException
+     * @return
      */
     MtStore queryStoreById(Integer id) throws BusinessCheckException;
-
-    /**
-     * 根据店铺id列表获取店铺信息
-     *
-     * @param  ids 店铺ID列表
-     * @throws BusinessCheckException
-     */
-    List<MtStore> queryStoresByIds(List<Integer> ids) throws BusinessCheckException;
 
     /**
      * 根据店铺名称获取店铺信息
@@ -84,7 +78,10 @@ public interface StoreService extends IService<MtStore> {
     void updateStatus(Integer id, String operator, String status) throws BusinessCheckException;
 
     /**
-     * 根据条件查询店铺
+     * 根据条件查询店铺列表
+     *
+     * @param params 查询参数
+     * @return
      * */
     List<MtStore> queryStoresByParams(Map<String, Object> params) throws BusinessCheckException;
 
@@ -98,4 +95,5 @@ public interface StoreService extends IService<MtStore> {
      * @return
      * */
     List<MtStore> queryByDistance(String merchantNo, String keyword, String latitude, String longitude) throws BusinessCheckException;
+
 }
