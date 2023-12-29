@@ -1,7 +1,6 @@
 package com.fuint.module.clientApi.controller;
 
 import com.alipay.api.AlipayApiException;
-import com.fuint.common.bean.WxPayBean;
 import com.fuint.common.dto.*;
 import com.fuint.common.enums.OrderStatusEnum;
 import com.fuint.common.enums.SettingTypeEnum;
@@ -43,8 +42,6 @@ import java.util.Map;
 public class ClientPayController extends BaseController {
 
     private static final Logger logger = LoggerFactory.getLogger(ClientPayController.class);
-
-    WxPayBean wxPayBean;
 
     /**
      * 微信服务接口

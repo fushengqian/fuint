@@ -42,9 +42,9 @@ public interface BannerService extends IService<MtBanner> {
     MtBanner queryBannerById(Integer id) throws BusinessCheckException;
 
     /**
-     * 根据Banner ID 删除
+     * 根据ID删除
      *
-     * @param id       ID
+     * @param id ID
      * @param operator 操作人
      * @throws BusinessCheckException
      */
@@ -59,6 +59,9 @@ public interface BannerService extends IService<MtBanner> {
 
     /**
      * 根据条件搜索Banner
+     *
+     * @param params 查询参数
+     * @return
      * */
     List<MtBanner> queryBannerListByParams(Map<String, Object> params) throws BusinessCheckException;
 

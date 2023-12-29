@@ -5,7 +5,6 @@ import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.web.ResponseObject;
 import com.fuint.repository.model.MtOrder;
 import com.fuint.repository.model.MtUser;
-
 import javax.servlet.http.HttpServletRequest;
 import java.util.Map;
 
@@ -18,17 +17,32 @@ import java.util.Map;
 public interface PaymentService {
 
     /**
-     * 创建支付单
+     * 创建预支付订单
+     *
+     * @param userInfo 会员信息
+     * @param orderInfo 订单信息
+     * @param payAmount 支付金额
+     * @param authCode 付款码
+     * @param giveAmount 赠送金额
+     * @param ip 支付IP地址
+     * @param platform 支付平台
+     * @return
      * */
     ResponseObject createPrepayOrder(MtUser userInfo, MtOrder orderInfo, Integer payAmount, String authCode, Integer giveAmount, String ip, String platform) throws BusinessCheckException;
 
     /**
      * 支付回调
+     *
+     * @param orderInfo 订单信息
+     * @return
      * */
     Boolean paymentCallback(UserOrderDto orderInfo) throws BusinessCheckException;
 
     /**
      * 订单支付
+     *
+     * @param request 请求参数
+     * @return
      * */
     Map<String, Object> doPay(HttpServletRequest request) throws BusinessCheckException;
 

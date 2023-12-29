@@ -19,19 +19,24 @@ public interface AddressService extends IService<MtAddress> {
      *
      * @param  mtAddress
      * @throws BusinessCheckException
+     * @return
      */
     MtAddress saveAddress(MtAddress mtAddress) throws BusinessCheckException;
 
     /**
      * 根据ID获取Banner信息
      *
-     * @param id Banner ID
+     * @param id 地址ID
      * @throws BusinessCheckException
+     * @return
      */
     MtAddress detail(Integer id) throws BusinessCheckException;
 
     /**
-     * 根据条件搜索
+     * 根据条件查询地址列表
+     *
+     * @param params 查询参数
+     * @return
      * */
     List<MtAddress> queryListByParams(Map<String, Object> params) throws BusinessCheckException;
 }

@@ -96,10 +96,10 @@ public interface UserCouponService extends IService<MtUserCoupon> {
     /**
      * 给会员发送卡券（会员购买）
      *
-     * @param orderId
-     * @param couponId
-     * @param userId
-     * @param mobile
+     * @param orderId 订单ID
+     * @param couponId 卡券ID
+     * @param userId 会员ID
+     * @param mobile 会员手机号
      * @return
      * */
     boolean buyCouponItem(Integer orderId, Integer couponId, Integer userId, String mobile) throws BusinessCheckException;

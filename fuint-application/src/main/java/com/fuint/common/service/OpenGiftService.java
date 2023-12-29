@@ -16,8 +16,10 @@ public interface OpenGiftService {
 
     /**
      * 获取用户的开卡赠礼
+     *
      * @param paramMap 查询参数
      * @throws BusinessCheckException
+     * @return
      * */
     ResponseObject getOpenGiftList(Map<String, Object> paramMap) throws BusinessCheckException;
 
@@ -26,6 +28,7 @@ public interface OpenGiftService {
      *
      * @param reqDto
      * @throws BusinessCheckException
+     * @return
      */
     MtOpenGift addOpenGift(MtOpenGift reqDto) throws BusinessCheckException;
 
@@ -34,6 +37,7 @@ public interface OpenGiftService {
      *
      * @param id ID
      * @throws BusinessCheckException
+     * @return
      */
     OpenGiftDto getOpenGiftDetail(Integer id) throws BusinessCheckException;
 
@@ -43,22 +47,27 @@ public interface OpenGiftService {
      * @param id       ID
      * @param operator 操作人
      * @throws BusinessCheckException
+     * @return
      */
     void deleteOpenGift(Integer id, String operator) throws BusinessCheckException;
 
     /**
-     * 更新订单
+     * 更新开卡赠礼
+     *
      * @param reqDto
      * @throws BusinessCheckException
+     * @return
      * */
     MtOpenGift updateOpenGift(MtOpenGift reqDto) throws BusinessCheckException;
 
     /**
      * 开卡赠礼
-     * @param userId
-     * @param gradeId
-     * @param isNewMember
+     *
+     * @param userId 会员ID
+     * @param gradeId 会员等级
+     * @param isNewMember 是否新会员
      * @throws BusinessCheckException
+     * @return
      * */
     boolean openGift(Integer userId, Integer gradeId, boolean isNewMember) throws BusinessCheckException;
 }

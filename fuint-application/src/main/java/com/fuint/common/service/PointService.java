@@ -28,6 +28,7 @@ public interface PointService extends IService<MtPoint> {
      *
      * @param  reqPointDto
      * @throws BusinessCheckException
+     * @return
      */
     void addPoint(MtPoint reqPointDto) throws BusinessCheckException;
 
@@ -39,6 +40,7 @@ public interface PointService extends IService<MtPoint> {
      * @param amount
      * @param remark
      * @throws BusinessCheckException
+     * @return
      */
     boolean doGift(Integer userId, String mobile, Integer amount, String remark) throws BusinessCheckException;
 }

@@ -72,7 +72,15 @@ public class PaymentServiceImpl implements PaymentService {
     private OpenGiftService openGiftService;
 
     /**
-     * 创建支付订单
+     * 创建预支付订单
+     *
+     * @param userInfo 会员信息
+     * @param orderInfo 订单信息
+     * @param payAmount 支付金额
+     * @param authCode 付款码
+     * @param giveAmount 赠送金额
+     * @param ip 支付IP地址
+     * @param platform 支付平台
      * @return
      * */
     @Override
@@ -95,7 +103,7 @@ public class PaymentServiceImpl implements PaymentService {
     /**
      * 支付成功回调
      *
-     * @param orderInfo
+     * @param orderInfo 订单信息
      * @return
      * */
     @Override

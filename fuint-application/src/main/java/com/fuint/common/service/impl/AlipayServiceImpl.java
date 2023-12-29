@@ -53,7 +53,15 @@ public class AlipayServiceImpl implements AlipayService {
     private StoreService storeService;
 
     /**
-     * 创建支付订单
+     * 创建预支付订单
+     *
+     * @param userInfo 会员信息
+     * @param orderInfo 订单信息
+     * @param payAmount 支付金额
+     * @param authCode 付款码
+     * @param giveAmount 赠送金额
+     * @param ip 支付IP地址
+     * @param platform 支付平台
      * @return
      * */
     @Override
@@ -120,6 +128,12 @@ public class AlipayServiceImpl implements AlipayService {
         return responseObject;
     }
 
+    /**
+     * 支付回调
+     *
+     * @param params 请求参数
+     * @return
+     * */
     @Override
     public Boolean checkCallBack(Map<String, String> params) throws Exception {
         String orderSn = params.get("out_trade_no") != null ? params.get("out_trade_no") : "";
@@ -134,6 +148,9 @@ public class AlipayServiceImpl implements AlipayService {
 
     /**
      * 获取支付配置
+     *
+     * @param storeId 店铺ID
+     * @return
      * */
     public AliPayApiConfig getApiConfig(Integer storeId) throws BusinessCheckException {
         AliPayApiConfig aliPayApiConfig;
@@ -166,6 +183,11 @@ public class AlipayServiceImpl implements AlipayService {
 
     /**
      * 查询支付订单
+     *
+     * @param storeId 店铺ID
+     * @param tradeNo 交易单号
+     * @param orderSn 订单号
+     * @return
      * */
     @Override
     public Map<String, String> queryPaidOrder(Integer storeId, String tradeNo, String orderSn) throws BusinessCheckException {
@@ -197,13 +219,13 @@ public class AlipayServiceImpl implements AlipayService {
     }
 
     /**
-     * 支付宝发起退款
+     * 发起售后退款
      *
-     * @param storeId
-     * @param orderSn
-     * @param totalAmount
-     * @param refundAmount
-     * @param platform
+     * @param storeId 店铺ID
+     * @param orderSn 订单号
+     * @param totalAmount 订单总金额
+     * @param refundAmount 售后金额
+     * @param platform 订单平台
      * @return
      * */
     public Boolean doRefund(Integer storeId, String orderSn, BigDecimal totalAmount, BigDecimal refundAmount, String platform) throws BusinessCheckException {

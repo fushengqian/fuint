@@ -13,6 +13,7 @@ import com.fuint.framework.pagination.PaginationResponse;
 import com.fuint.repository.mapper.MtCommissionLogMapper;
 import com.fuint.common.enums.StatusEnum;
 
+import com.fuint.repository.mapper.MtOrderGoodsMapper;
 import com.fuint.repository.model.*;
 import com.github.pagehelper.PageHelper;
 import lombok.AllArgsConstructor;
@@ -42,6 +43,8 @@ public class CommissionLogServiceImpl extends ServiceImpl<MtCommissionLogMapper,
     private static final Logger logger = LoggerFactory.getLogger(CommissionLogServiceImpl.class);
 
     private MtCommissionLogMapper mtCommissionLogMapper;
+
+    private MtOrderGoodsMapper mtOrderGoodsMapper;
 
     /**
      * 订单服务接口
@@ -118,7 +121,7 @@ public class CommissionLogServiceImpl extends ServiceImpl<MtCommissionLogMapper,
     }
 
     /**
-     * 添加分销提成记录
+     * 新增分销提成记录
      *
      * @param orderId
      * @return
@@ -129,6 +132,18 @@ public class CommissionLogServiceImpl extends ServiceImpl<MtCommissionLogMapper,
     public void addCommissionLog(Integer orderId) {
         if (orderId != null && orderId > 0) {
             MtOrder mtOrder = orderService.getById(orderId);
+            // 商品订单佣金计算
+            if (mtOrder.getType().equals(OrderTypeEnum.GOOGS.getKey())) {
+                Map<String, Object> params = new HashMap<>();
+                params.put("ORDER_ID", mtOrder.getId());
+                params.put("STATUS", StatusEnum.ENABLED.getKey());
+                List<MtOrderGoods> goodsList = mtOrderGoodsMapper.selectByMap(params);
+                if (goodsList != null && goodsList.size() > 0) {
+                    for (MtOrderGoods orderGoods : goodsList) {
+                         orderGoods.getGoodsId();
+                    }
+                }
+            }
             if (mtOrder != null) {
                 MtCommissionLog mtCommissionLog = new MtCommissionLog();
                 mtCommissionLog.setType(mtOrder.getType());

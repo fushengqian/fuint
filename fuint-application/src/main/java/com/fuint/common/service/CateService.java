@@ -47,6 +47,7 @@ public interface CateService extends IService<MtGoodsCate> {
      * @param  id       ID
      * @param  operator 操作人
      * @throws BusinessCheckException
+     * @return
      */
     void deleteCate(Integer id, String operator) throws BusinessCheckException;
 
@@ -54,11 +55,15 @@ public interface CateService extends IService<MtGoodsCate> {
      * 更新分类
      * @param  reqDto
      * @throws BusinessCheckException
+     * @return
      * */
     MtGoodsCate updateCate(MtGoodsCate reqDto) throws BusinessCheckException;
 
     /**
      * 根据条件搜索分类
+     *
+     * @param params 查询参数
+     * @return
      * */
     List<MtGoodsCate> queryCateListByParams(Map<String, Object> params) throws BusinessCheckException;
 }

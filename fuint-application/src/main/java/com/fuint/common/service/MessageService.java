@@ -17,6 +17,7 @@ public interface MessageService {
      *
      * @param reqMsgDto
      * @throws BusinessCheckException
+     * @return
      */
     void addMessage(MtMessage reqMsgDto) throws BusinessCheckException;
 
@@ -25,6 +26,7 @@ public interface MessageService {
      *
      * @param msgId
      * @throws BusinessCheckException
+     * @return
      */
     void readMessage(Integer msgId) throws BusinessCheckException;
 
@@ -33,19 +35,24 @@ public interface MessageService {
      *
      * @param  msgId
      * @throws BusinessCheckException
+     * @return
      */
     void sendMessage(Integer msgId, boolean isRead) throws BusinessCheckException;
 
     /**
      * 获取最新一条未读消息
      *
+     * @param userId 会员ID
      * @throws BusinessCheckException
+     * @return
      */
     MtMessage getOne(Integer userId) throws BusinessCheckException;
 
     /**
      * 获取需要发送的消息
+     *
      * @throws BusinessCheckException
+     * @return
      * */
     List<MtMessage> getNeedSendList() throws BusinessCheckException;
 }

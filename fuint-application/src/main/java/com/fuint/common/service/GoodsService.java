@@ -35,6 +35,7 @@ public interface GoodsService {
      *
      * @param  reqDto
      * @throws BusinessCheckException
+     * @return
      */
     MtGoods saveGoods(MtGoods reqDto) throws BusinessCheckException;
 
@@ -43,6 +44,7 @@ public interface GoodsService {
      *
      * @param  id 商品ID
      * @throws BusinessCheckException
+     * @return
      */
     MtGoods queryGoodsById(Integer id) throws BusinessCheckException;
 
@@ -52,6 +54,7 @@ public interface GoodsService {
      * @param  merchantId
      * @param  goodsNo
      * @throws BusinessCheckException
+     * @return
      */
     MtGoods queryGoodsByGoodsNo(Integer merchantId, String goodsNo) throws BusinessCheckException;
 
@@ -60,6 +63,7 @@ public interface GoodsService {
      *
      * @param  skuNo skuNo
      * @throws BusinessCheckException
+     * @return
      * */
     MtGoodsSku getSkuInfoBySkuNo(String skuNo) throws BusinessCheckException;
 
@@ -68,6 +72,7 @@ public interface GoodsService {
      *
      * @param  id
      * @throws BusinessCheckException
+     * @return
      */
     GoodsDto getGoodsDetail(Integer id, boolean getDeleteSpec) throws InvocationTargetException, IllegalAccessException;
 
@@ -77,6 +82,7 @@ public interface GoodsService {
      * @param  id       ID
      * @param  operator 操作人
      * @throws BusinessCheckException
+     * @return
      */
     void deleteGoods(Integer id, String operator) throws BusinessCheckException;
 
@@ -111,7 +117,7 @@ public interface GoodsService {
     /**
      * 更新已售数量
      *
-     * @param goodsId
+     * @param goodsId 商品ID
      * @return
      * */
     Boolean updateInitSale(Integer goodsId);
@@ -119,7 +125,7 @@ public interface GoodsService {
     /**
      * 获取选择商品列表
      *
-     * @param params
+     * @param params 查询参数
      * @return
      */
     PaginationResponse<GoodsDto> selectGoodsList(Map<String, Object> params) throws BusinessCheckException;
@@ -127,10 +133,10 @@ public interface GoodsService {
     /**
      * 获取商品销售排行榜
      *
-     * @param merchantId
-     * @param storeId
-     * @param startTime
-     * @param endTime
+     * @param merchantId 商户ID
+     * @param storeId 店铺ID
+     * @param startTime 开始时间
+     * @param endTime 结束时间
      * @return
      * */
     List<GoodsTopDto> getGoodsSaleTopList(Integer merchantId, Integer storeId, Date startTime, Date endTime);

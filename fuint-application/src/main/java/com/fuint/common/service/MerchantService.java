@@ -29,6 +29,7 @@ public interface MerchantService extends IService<MtMerchant> {
      *
      * @param  mtMerchant
      * @throws BusinessCheckException
+     * @return
      */
     MtMerchant saveMerchant(MtMerchant mtMerchant) throws BusinessCheckException;
 
@@ -37,6 +38,7 @@ public interface MerchantService extends IService<MtMerchant> {
      *
      * @param  id 商户ID
      * @throws BusinessCheckException
+     * @return
      */
     MtMerchant queryMerchantById(Integer id) throws BusinessCheckException;
 
@@ -45,6 +47,7 @@ public interface MerchantService extends IService<MtMerchant> {
      *
      * @param  name 商户名称
      * @throws BusinessCheckException
+     * @return
      */
     MtMerchant queryMerchantByName(String name) throws BusinessCheckException;
 
@@ -71,11 +74,15 @@ public interface MerchantService extends IService<MtMerchant> {
      * @param operator 操作人
      * @param status   状态
      * @throws BusinessCheckException
+     * @return
      */
     void updateStatus(Integer id, String operator, String status) throws BusinessCheckException;
 
     /**
      * 根据条件查询商户
+     *
+     * @param params 查询参数
+     * @return
      * */
     List<MtMerchant> queryMerchantByParams(Map<String, Object> params) throws BusinessCheckException;
 

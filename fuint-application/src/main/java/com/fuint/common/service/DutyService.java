@@ -22,6 +22,7 @@ public interface DutyService extends IService<TDuty> {
      * 角色保存方法
      *
      * @param duty
+     * @return
      */
     void saveDuty(TDuty duty, List<TSource> sources) throws BusinessCheckException;
 
@@ -63,6 +64,7 @@ public interface DutyService extends IService<TDuty> {
      *
      * @param merchantId
      * @param dutyId
+     * @return
      */
     void deleteDuty(Integer merchantId, long dutyId) throws BusinessCheckException;
 

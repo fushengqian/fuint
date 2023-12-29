@@ -26,8 +26,10 @@ public interface OrderService extends IService<MtOrder> {
 
     /**
      * 获取用户的订单
+     *
      * @param  orderListParam
      * @throws BusinessCheckException
+     * @return
      * */
     PaginationResponse getUserOrderList(OrderListParam orderListParam) throws BusinessCheckException;
 
@@ -36,11 +38,16 @@ public interface OrderService extends IService<MtOrder> {
      *
      * @param  reqDto
      * @throws BusinessCheckException
+     * @return
      */
     MtOrder saveOrder(OrderDto reqDto) throws BusinessCheckException;
 
     /**
      * 订单提交结算
+     *
+     * @param request 请求参数
+     * @param settlementParam 结算参数
+     * @return
      * */
     Map<String, Object> doSettle(HttpServletRequest request, SettlementParam settlementParam) throws BusinessCheckException;
 
@@ -49,6 +56,7 @@ public interface OrderService extends IService<MtOrder> {
      *
      * @param  id
      * @throws BusinessCheckException
+     * @return
      */
     MtOrder getOrderInfo(Integer id) throws BusinessCheckException;
 
@@ -57,6 +65,7 @@ public interface OrderService extends IService<MtOrder> {
      *
      * @param  id
      * @throws BusinessCheckException
+     * @return
      */
     UserOrderDto getOrderById(Integer id) throws BusinessCheckException;
 
@@ -65,11 +74,13 @@ public interface OrderService extends IService<MtOrder> {
      *
      * @param  id
      * @throws BusinessCheckException
+     * @return
      */
     UserOrderDto getMyOrderById(Integer id) throws BusinessCheckException;
 
     /**
      * 取消订单
+     *
      * @param  id 订单ID
      * @return
      * */
@@ -81,6 +92,7 @@ public interface OrderService extends IService<MtOrder> {
      * @param  id       ID
      * @param  operator 操作人
      * @throws BusinessCheckException
+     * @return
      */
     void deleteOrder(Integer id, String operator) throws BusinessCheckException;
 
@@ -89,6 +101,7 @@ public interface OrderService extends IService<MtOrder> {
      *
      * @param  orderSn
      * @throws BusinessCheckException
+     * @return
      */
     UserOrderDto getOrderByOrderSn(String orderSn) throws BusinessCheckException;
 
@@ -97,6 +110,7 @@ public interface OrderService extends IService<MtOrder> {
      *
      * @param  reqDto
      * @throws BusinessCheckException
+     * @return
      * */
     MtOrder updateOrder(OrderDto reqDto) throws BusinessCheckException;
 
@@ -106,6 +120,7 @@ public interface OrderService extends IService<MtOrder> {
      * @param mtOrder
      * @return
      * @throws BusinessCheckException
+     * @return
      * */
     MtOrder updateOrder(MtOrder mtOrder) throws BusinessCheckException;
 
@@ -122,7 +137,7 @@ public interface OrderService extends IService<MtOrder> {
      * 根据条件搜索订单
      *
      * @param params
-     * @retyurn
+     * @return
      * */
     List<MtOrder> getOrderListByParams(Map<String, Object> params) throws BusinessCheckException;
 
@@ -148,6 +163,7 @@ public interface OrderService extends IService<MtOrder> {
 
     /**
      * 计算购物车
+     *
      * @param merchantId 商户ID
      * @param userId 会员ID
      * @param cartList 购物车列表

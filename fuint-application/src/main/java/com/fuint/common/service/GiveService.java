@@ -34,6 +34,7 @@ public interface GiveService extends IService<MtGive> {
      *
      * @param giveParam
      * @throws BusinessCheckException
+     * @return
      */
     ResponseObject addGive(GiveParam giveParam) throws BusinessCheckException;
 
@@ -42,6 +43,7 @@ public interface GiveService extends IService<MtGive> {
      *
      * @param id ID
      * @throws BusinessCheckException
+     * @return
      */
     MtGive queryGiveById(Long id) throws BusinessCheckException;
 
@@ -50,6 +52,7 @@ public interface GiveService extends IService<MtGive> {
      *
      * @param params
      * @throws BusinessCheckException
+     * @return
      * */
     List<MtGiveItem> queryItemByParams(Map<String, Object> params) throws BusinessCheckException;
 }

@@ -4,7 +4,6 @@ import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.pagination.PaginationRequest;
 import com.fuint.framework.pagination.PaginationResponse;
 import com.fuint.repository.model.MtSmsSendedLog;
-
 import java.util.List;
 import java.util.Map;
 

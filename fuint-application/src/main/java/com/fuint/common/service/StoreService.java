@@ -88,10 +88,10 @@ public interface StoreService extends IService<MtStore> {
     /**
      * 根据距离远近查找店铺
      *
-     * @param merchantNo
-     * @param keyword
-     * @param latitude
-     * @param longitude
+     * @param merchantNo 商户号
+     * @param keyword 关键字
+     * @param latitude 维度
+     * @param longitude 经度
      * @return
      * */
     List<MtStore> queryByDistance(String merchantNo, String keyword, String latitude, String longitude) throws BusinessCheckException;

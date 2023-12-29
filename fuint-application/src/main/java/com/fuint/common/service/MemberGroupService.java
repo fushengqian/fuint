@@ -51,7 +51,7 @@ public interface MemberGroupService extends IService<MtUserGroup> {
     /**
      * 根据分组ID删除分组信息
      *
-     * @param  id       分组ID
+     * @param  id 分组ID
      * @param  operator 操作人
      * @throws BusinessCheckException
      */

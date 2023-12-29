@@ -33,6 +33,7 @@ public class AddressServiceImpl extends ServiceImpl<MtAddressMapper, MtAddress> 
      *
      * @param mtAddress
      * @throws BusinessCheckException
+     * @return
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -83,14 +84,21 @@ public class AddressServiceImpl extends ServiceImpl<MtAddressMapper, MtAddress> 
     /**
      * 根据ID获取收货地址
      *
-     * @param id
+     * @param  id 地址ID
      * @throws BusinessCheckException
+     * @return
      */
     @Override
     public MtAddress detail(Integer id) {
         return mtAddressMapper.selectById(id);
     }
 
+    /**
+     * 根据条件查询地址列表
+     *
+     * @param params 查询参数
+     * @return
+     * */
     @Override
     public List<MtAddress> queryListByParams(Map<String, Object> params) {
         Map<String, Object> param = new HashMap<>();

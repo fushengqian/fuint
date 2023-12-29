@@ -14,9 +14,10 @@ import com.fuint.repository.model.TActionLog;
 public interface ActionLogService extends IService<TActionLog> {
 
     /**
-     * 保存实体
+     * 保存日志
      *
      * @param actionLog
+     * @return
      */
     void saveActionLog(TActionLog actionLog);
 
