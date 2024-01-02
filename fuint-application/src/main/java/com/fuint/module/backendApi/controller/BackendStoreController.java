@@ -125,6 +125,7 @@ public class BackendStoreController extends BaseController {
     @CrossOrigin
     public ResponseObject search(HttpServletRequest request) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
+        String merchantId = request.getParameter("merchantId") == null ? "" : request.getParameter("merchantId");
         String storeId = request.getParameter("id") == null ? "" : request.getParameter("id");
         String storeName = request.getParameter("name") == null ? "" : request.getParameter("name");
 
@@ -138,6 +139,12 @@ public class BackendStoreController extends BaseController {
         }
 
         Map<String, Object> paramsStore = new HashMap<>();
+        if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
+            merchantId = accountInfo.getMerchantId().toString();
+        }
+        if (StringUtil.isNotEmpty(merchantId)) {
+            paramsStore.put("merchantId", merchantId);
+        }
         if (StringUtil.isNotEmpty(storeId)) {
             paramsStore.put("storeId", storeId);
         }

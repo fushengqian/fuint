@@ -96,7 +96,6 @@ public class BackendStaffController extends BaseController {
             params.put("category", category);
         }
         paginationRequest.setSearchParams(params);
-        paginationRequest.setSortColumn(new String[]{"auditedStatus asc", "id desc"});
         PaginationResponse<MtStaff> paginationResponse = staffService.queryStaffListByPagination(paginationRequest);
 
         // 员工类别列表
@@ -244,6 +243,12 @@ public class BackendStaffController extends BaseController {
         }
 
         Map<String, Object> params = new HashMap<>();
+        if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
+            params.put("MERCHANT_ID", accountInfo.getMerchantId());
+        }
+        if (accountInfo.getStoreId() != null && accountInfo.getStoreId() > 0) {
+            storeId = accountInfo.getStoreId();
+        }
         params.put("AUDITED_STATUS", StatusEnum.ENABLED.getKey());
         params.put("STORE_ID", storeId);
         List<MtStaff> staffList = staffService.queryStaffByParams(params);
