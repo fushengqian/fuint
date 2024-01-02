@@ -26,7 +26,7 @@ public interface AddressService extends IService<MtAddress> {
     /**
      * 根据ID获取Banner信息
      *
-     * @param id 地址ID
+     * @param  id 地址ID
      * @throws BusinessCheckException
      * @return
      */

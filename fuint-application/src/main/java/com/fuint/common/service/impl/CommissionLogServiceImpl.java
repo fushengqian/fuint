@@ -3,7 +3,6 @@ package com.fuint.common.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-
 import com.fuint.common.dto.CommissionLogDto;
 import com.fuint.common.enums.OrderTypeEnum;
 import com.fuint.common.service.*;
@@ -12,7 +11,6 @@ import com.fuint.framework.pagination.PaginationRequest;
 import com.fuint.framework.pagination.PaginationResponse;
 import com.fuint.repository.mapper.MtCommissionLogMapper;
 import com.fuint.common.enums.StatusEnum;
-
 import com.fuint.repository.mapper.MtOrderGoodsMapper;
 import com.fuint.repository.model.*;
 import com.github.pagehelper.PageHelper;
@@ -26,7 +24,6 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.math.BigDecimal;
 import java.util.*;
 
@@ -133,7 +130,7 @@ public class CommissionLogServiceImpl extends ServiceImpl<MtCommissionLogMapper,
         if (orderId != null && orderId > 0) {
             MtOrder mtOrder = orderService.getById(orderId);
             // 商品订单佣金计算
-            if (mtOrder.getType().equals(OrderTypeEnum.GOOGS.getKey())) {
+            if (mtOrder != null && mtOrder.getType().equals(OrderTypeEnum.GOOGS.getKey())) {
                 Map<String, Object> params = new HashMap<>();
                 params.put("ORDER_ID", mtOrder.getId());
                 params.put("STATUS", StatusEnum.ENABLED.getKey());
@@ -163,6 +160,8 @@ public class CommissionLogServiceImpl extends ServiceImpl<MtCommissionLogMapper,
                 mtCommissionLog.setOperator(null);
                 mtCommissionLogMapper.insert(mtCommissionLog);
             }
+        } else {
+            logger.error("分销提成记录订单不能ID为空...");
         }
     }
 
