@@ -113,18 +113,25 @@ public class MerchantOrderController extends BaseController {
         UserInfo mtUser = TokenUtil.getUserInfoByToken(token);
 
         if (mtUser == null) {
-            return getFailureResult(1001, "用户未登录");
+            return getFailureResult(1001, "请先登录");
         }
 
         String orderId = orderDetailParam.getOrderId();
         if (orderId == null || StringUtil.isEmpty(orderId)) {
-            return getFailureResult(2000, "订单不能为空");
+            return getFailureResult(201, "订单不能为空");
         }
 
-        UserOrderDto order = orderService.getOrderById(Integer.parseInt(orderId));
+        UserOrderDto orderDto = orderService.getOrderById(Integer.parseInt(orderId));
+        if (orderDto == null) {
+            return getFailureResult(201, "订单已不存在");
+        }
 
-        MtOrder orderInfo = orderService.cancelOrder(order.getId(), "店员取消");
+        MtStaff staffInfo = staffService.queryStaffByUserId(mtUser.getId());
+        if (staffInfo == null || orderDto.getStoreInfo() == null || !staffInfo.getStoreId().equals(orderDto.getStoreInfo().getId())) {
+            return getFailureResult(201, "没有操作权限");
+        }
 
+        MtOrder orderInfo = orderService.cancelOrder(orderDto.getId(), "店员取消");
         return getSuccessResult(orderInfo);
     }
 }

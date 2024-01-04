@@ -1024,14 +1024,15 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
 
     /**
      * 取消订单
-     * @param  id 订单ID
+     * @param orderId 订单ID
+     * @param remark 取消备注
      * @return
      * */
     @Override
     @Transactional(rollbackFor = Exception.class)
     @OperationServiceLog(description = "取消订单")
-    public MtOrder cancelOrder(Integer id, String remark) throws BusinessCheckException {
-        MtOrder mtOrder = mtOrderMapper.selectById(id);
+    public MtOrder cancelOrder(Integer orderId, String remark) throws BusinessCheckException {
+        MtOrder mtOrder = mtOrderMapper.selectById(orderId);
 
         if (mtOrder != null && mtOrder.getStatus().equals(OrderStatusEnum.CREATED.getKey()) && mtOrder.getPayStatus().equals(PayStatusEnum.WAIT.getKey())) {
             if (StringUtil.isNotEmpty(remark)) {
