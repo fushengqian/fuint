@@ -90,12 +90,12 @@ public interface OrderService extends IService<MtOrder> {
     /**
      * 根据订单ID删除
      *
-     * @param  id       ID
+     * @param  orderId 订单ID
      * @param  operator 操作人
      * @throws BusinessCheckException
      * @return
      */
-    void deleteOrder(Integer id, String operator) throws BusinessCheckException;
+    void deleteOrder(Integer orderId, String operator) throws BusinessCheckException;
 
     /**
      * 根据订单号获取订单

@@ -25,6 +25,7 @@ public interface MemberService extends IService<MtUser> {
 
     /**
      * 更新活跃时间
+     *
      * @param userId 会员ID
      * @return
      * */
@@ -32,6 +33,7 @@ public interface MemberService extends IService<MtUser> {
 
     /**
      * 获取当前操作会员信息
+     *
      * @param userId
      * @param accessToken
      * @return
