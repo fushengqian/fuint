@@ -400,6 +400,46 @@ public class BackendMemberController extends BaseController {
     }
 
     /**
+     * 重置会员密码
+     *
+     * @return
+     */
+    @ApiOperation(value = "重置会员密码")
+    @RequestMapping(value = "/resetPwd", method = RequestMethod.POST)
+    @CrossOrigin
+    @PreAuthorize("@pms.hasPermission('member:add')")
+    public ResponseObject resetPwd(HttpServletRequest request, @RequestBody Map<String, Object> param) throws BusinessCheckException {
+        String token = request.getHeader("Access-Token");
+        Integer userId = param.get("userId") == null ? 0 : Integer.parseInt(param.get("userId").toString());
+        String password = param.get("password") == null ? "" : param.get("password").toString();
+
+        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
+        if (accountInfo == null) {
+            return getFailureResult(1001, "请先登录");
+        }
+
+        if (StringUtil.isEmpty(password)) {
+            return getFailureResult(1001, "密码格式有误");
+        }
+
+        MtUser userInfo = memberService.queryMemberById(userId);
+        if (userInfo == null) {
+            return getFailureResult(201, "会员不存在");
+        }
+        if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0 && !accountInfo.getMerchantId().equals(userInfo.getMerchantId())) {
+            return getFailureResult(201, "您没有操作权限");
+        }
+        if (accountInfo.getStoreId() != null && accountInfo.getStoreId() > 0 && !accountInfo.getStoreId().equals(userInfo.getStoreId())) {
+            return getFailureResult(201, "您没有操作权限");
+        }
+
+        userInfo.setPassword(password);
+        memberService.updateMember(userInfo);
+
+        return getSuccessResult(true);
+    }
+
+    /**
      * 保存设置
      *
      * @param request HttpServletRequest对象
