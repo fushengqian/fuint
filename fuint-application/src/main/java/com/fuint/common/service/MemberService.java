@@ -53,6 +53,7 @@ public interface MemberService extends IService<MtUser> {
      *
      * @param  reqUserDto
      * @throws BusinessCheckException
+     * @return
      */
     MtUser addMember(MtUser reqUserDto) throws BusinessCheckException;
 
@@ -61,6 +62,7 @@ public interface MemberService extends IService<MtUser> {
      *
      * @param  reqUserDto
      * @throws BusinessCheckException
+     * @return
      */
     MtUser updateMember(MtUser reqUserDto) throws BusinessCheckException;
 
@@ -70,6 +72,7 @@ public interface MemberService extends IService<MtUser> {
      * @param  merchantId
      * @param  mobile
      * @throws BusinessCheckException
+     * @return
      */
     MtUser addMemberByMobile(Integer merchantId, String mobile) throws BusinessCheckException;
 
@@ -78,6 +81,7 @@ public interface MemberService extends IService<MtUser> {
      *
      * @param  id 会员ID
      * @throws BusinessCheckException
+     * @return
      */
     MtUser queryMemberById(Integer id) throws BusinessCheckException;
 
@@ -87,6 +91,7 @@ public interface MemberService extends IService<MtUser> {
      * @param  merchantId
      * @param  name 会员名称
      * @throws BusinessCheckException
+     * @return
      */
     MtUser queryMemberByName(Integer merchantId, String name) throws BusinessCheckException;
 
@@ -96,6 +101,7 @@ public interface MemberService extends IService<MtUser> {
      * @param  merchantId
      * @param  openId 微信openId
      * @throws BusinessCheckException
+     * @return
      */
     MtUser queryMemberByOpenId(Integer merchantId, String openId, JSONObject userInfo) throws BusinessCheckException;
 
@@ -104,6 +110,7 @@ public interface MemberService extends IService<MtUser> {
      *
      * @param  id 会员组ID
      * @throws BusinessCheckException
+     * @return
      */
     MtUserGrade queryMemberGradeByGradeId(Integer id) throws BusinessCheckException;
 
@@ -113,6 +120,7 @@ public interface MemberService extends IService<MtUser> {
      * @param merchantId
      * @param  mobile 会员手机
      * @throws BusinessCheckException
+     * @return
      */
     MtUser queryMemberByMobile(Integer merchantId, String mobile) throws BusinessCheckException;
 
@@ -122,6 +130,7 @@ public interface MemberService extends IService<MtUser> {
      * @param  merchantId
      * @param  userNo 会员号
      * @throws BusinessCheckException
+     * @return
      */
     MtUser queryMemberByUserNo(Integer merchantId, String userNo) throws BusinessCheckException;
 
@@ -131,26 +140,49 @@ public interface MemberService extends IService<MtUser> {
      * @param  id      会员ID
      * @param  operator 操作人
      * @throws BusinessCheckException
+     * @return
      */
     Integer deleteMember(Integer id, String operator) throws BusinessCheckException;
 
     /**
      * 根据条件搜索会员分组
+     *
+     * @param params 查询参数
+     * @throws BusinessCheckException
+     * @return
      * */
     List<MtUserGrade> queryMemberGradeByParams(Map<String, Object> params) throws BusinessCheckException;
 
     /**
      * 获取会员数量
+     *
+     * @param merchantId 商户ID
+     * @param storeId 店铺ID
+     * @throws BusinessCheckException
+     * @return
      * */
     Long getUserCount(Integer merchantId, Integer storeId) throws BusinessCheckException;
 
     /**
      * 获取会员数量
+     *
+     * @param merchantId 商户ID
+     * @param storeId 店铺ID
+     * @param beginTime 开始时间
+     * @param endTime 结束时间
+     * @throws BusinessCheckException
+     * @return
      * */
     Long getUserCount(Integer merchantId, Integer storeId, Date beginTime, Date endTime) throws BusinessCheckException;
 
     /**
      * 获取活跃会员数量
+     * @param merchantId 商户ID
+     * @param storeId 店铺ID
+     * @param beginTime 开始时间
+     * @param endTime 结束时间
+     * @throws BusinessCheckException
+     * @return
      * */
     Long getActiveUserCount(Integer merchantId, Integer storeId, Date beginTime, Date endTime) throws BusinessCheckException;
 
@@ -160,16 +192,17 @@ public interface MemberService extends IService<MtUser> {
      * @param  mobile 手机号码
      * @param  userId 会员ID
      * @throws BusinessCheckException
+     * @return
      */
     void resetMobile(String mobile, Integer userId) throws BusinessCheckException;
 
     /**
      * 获取会员消费排行榜
      *
-     * @param merchantId
-     * @param storeId
-     * @param startTime
-     * @param endTime
+     * @param merchantId 商户ID
+     * @param storeId 店铺ID
+     * @param startTime 开始时间
+     * @param endTime 结束时间
      * @return
      * */
     List<MemberTopDto> getMemberConsumeTopList(Integer merchantId, Integer storeId, Date startTime, Date endTime);
@@ -177,11 +210,11 @@ public interface MemberService extends IService<MtUser> {
     /**
      * 查找会员列表
      *
-     * @param merchantId
-     * @param keyword
-     * @param groupIds
-     * @param page
-     * @param pageSize
+     * @param merchantId 商户ID
+     * @param keyword 关键字
+     * @param groupIds 分组ID
+     * @param page 当前页码
+     * @param pageSize 每页数量
      * @return
      * */
     List<GroupMemberDto> searchMembers(Integer merchantId, String keyword, String groupIds, Integer page, Integer pageSize);
@@ -189,8 +222,8 @@ public interface MemberService extends IService<MtUser> {
     /**
      * 查找会员列表
      *
-     * @param merchantId
-     * @param keyword
+     * @param merchantId 商户ID
+     * @param keyword 关键字
      * @return
      * */
     List<MtUser> searchMembers(Integer merchantId, String keyword);
@@ -198,8 +231,8 @@ public interface MemberService extends IService<MtUser> {
     /**
      * 设定安全的密码
      *
-     * @param password
-     * @param salt
+     * @param password 密码（明文）
+     * @param salt 随机因子
      * @return
      */
     String enCodePassword(String password, String salt);
@@ -207,8 +240,8 @@ public interface MemberService extends IService<MtUser> {
     /**
      * 获取加密密码
      *
-     * @param password
-     * @param salt
+     * @param password 密码（密文）
+     * @param salt 随机因子
      * @return
      * */
     String deCodePassword(String password, String salt);
@@ -216,8 +249,8 @@ public interface MemberService extends IService<MtUser> {
     /**
      * 获取会员ID列表
      *
-     * @param merchantId
-     * @param storeId
+     * @param merchantId 商户ID
+     * @param storeId 店铺ID
      * @return
      * */
     List<Integer> getUserIdList(Integer merchantId, Integer storeId);

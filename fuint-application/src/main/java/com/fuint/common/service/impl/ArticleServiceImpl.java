@@ -109,6 +109,7 @@ public class ArticleServiceImpl extends ServiceImpl<MtArticleMapper, MtArticle> 
      * 添加文章
      *
      * @param articleDto
+     * @return
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -140,23 +141,23 @@ public class ArticleServiceImpl extends ServiceImpl<MtArticleMapper, MtArticle> 
     /**
      * 根据ID获取文章
      *
-     * @param id 文章ID
+     * @param articleId 文章ID
      * @return
      */
     @Override
-    public MtArticle queryArticleById(Integer id) {
-        return mtArticleMapper.selectById(id);
+    public MtArticle queryArticleById(Integer articleId) {
+        return mtArticleMapper.selectById(articleId);
     }
 
     /**
      * 根据ID获取文章详情
      *
-     * @param id 文章ID
+     * @param articleId 文章ID
      * @return
      */
     @Override
-    public ArticleDto getArticleDetail(Integer id) {
-        MtArticle mtArticle = mtArticleMapper.selectById(id);
+    public ArticleDto getArticleDetail(Integer articleId) {
+        MtArticle mtArticle = mtArticleMapper.selectById(articleId);
         ArticleDto articleDto = new ArticleDto();
         BeanUtils.copyProperties(mtArticle, articleDto);
         String baseImage = settingService.getUploadBasePath();

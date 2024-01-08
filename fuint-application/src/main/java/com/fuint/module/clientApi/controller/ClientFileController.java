@@ -113,14 +113,14 @@ public class ClientFileController extends BaseController {
             // 上传阿里云oss
             String mode = env.getProperty("aliyun.oss.mode");
             if (mode.equals("1")) { // 检查是否开启上传
-                String endpoint = env.getProperty("aliyun.oss.endpoint");
+                String endPoint = env.getProperty("aliyun.oss.endpoint");
                 String accessKeyId = env.getProperty("aliyun.oss.accessKeyId");
                 String accessKeySecret = env.getProperty("aliyun.oss.accessKeySecret");
                 String bucketName = env.getProperty("aliyun.oss.bucketName");
                 String folder = env.getProperty("aliyun.oss.folder");
                 String domain = env.getProperty("aliyun.oss.domain");
 
-                OSS ossClient = AliyunOssUtil.getOSSClient(accessKeyId, accessKeySecret, endpoint);
+                OSS ossClient = AliyunOssUtil.getOSSClient(accessKeyId, accessKeySecret, endPoint);
 
                 String pathRoot = env.getProperty("images.root");
                 if (pathRoot == null || StringUtil.isEmpty(pathRoot)) {
