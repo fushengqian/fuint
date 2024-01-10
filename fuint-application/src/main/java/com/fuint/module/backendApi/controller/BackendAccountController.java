@@ -247,9 +247,15 @@ public class BackendAccountController extends BaseController {
         tAccount.setPassword(password);
         tAccount.setIsActive(1);
         tAccount.setLocked(0);
-        tAccount.setStoreId(Integer.parseInt(storeId));
-        tAccount.setMerchantId(Integer.parseInt(merchantId));
-        tAccount.setStaffId(Integer.parseInt(staffId));
+        if (StringUtil.isNotEmpty(storeId)) {
+            tAccount.setStoreId(Integer.parseInt(storeId));
+        }
+        if (StringUtil.isNotEmpty(merchantId)) {
+            tAccount.setMerchantId(Integer.parseInt(merchantId));
+        }
+        if (StringUtil.isNotEmpty(staffId)) {
+            tAccount.setStaffId(Integer.parseInt(staffId));
+        }
 
         tAccountService.createAccountInfo(tAccount, duties);
         return getSuccessResult(true);

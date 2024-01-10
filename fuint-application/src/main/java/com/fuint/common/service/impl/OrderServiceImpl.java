@@ -281,8 +281,9 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
     /**
      * 保存订单信息
      *
-     * @param  orderDto
+     * @param  orderDto 订单参数
      * @throws BusinessCheckException
+     * @return
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -576,6 +577,9 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
 
     /**
      * 订单结算
+     * @param request
+     * @param param 结算参数
+     * @throws BusinessCheckException
      * @return
      * */
     @Override
@@ -983,39 +987,42 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
     /**
      * 获取订单详情
      *
-     * @param  id
+     * @param  orderId 订单ID
      * @throws BusinessCheckException
+     * @return
      */
     @Override
-    public MtOrder getOrderInfo(Integer id) {
-        return mtOrderMapper.selectById(id);
+    public MtOrder getOrderInfo(Integer orderId) {
+        return mtOrderMapper.selectById(orderId);
     }
 
     /**
      * 根据ID获取订单详情
      *
-     * @param id 订单ID
+     * @param orderId 订单ID
      * @throws BusinessCheckException
+     * @return
      */
     @Override
-    public UserOrderDto getOrderById(Integer id) throws BusinessCheckException {
-        MtOrder mtOrder = mtOrderMapper.selectById(id);
+    public UserOrderDto getOrderById(Integer orderId) throws BusinessCheckException {
+        MtOrder mtOrder = mtOrderMapper.selectById(orderId);
         return getOrderDetail(mtOrder, true, true);
     }
 
     /**
      * 根据ID获取我的订单详情
      *
-     * @param  id 订单ID
+     * @param  orderId 订单ID
      * @throws BusinessCheckException
+     * @return
      */
     @Override
-    public UserOrderDto getMyOrderById(Integer id) throws BusinessCheckException {
-        MtOrder mtOrder = mtOrderMapper.selectById(id);
+    public UserOrderDto getMyOrderById(Integer orderId) throws BusinessCheckException {
+        MtOrder mtOrder = mtOrderMapper.selectById(orderId);
         UserOrderDto orderInfo = getOrderDetail(mtOrder, true, true);
 
         // 售后订单
-        MtRefund refund = refundService.getRefundByOrderId(id);
+        MtRefund refund = refundService.getRefundByOrderId(orderId);
         orderInfo.setRefundInfo(refund);
 
         orderInfo.setVerifyCode(mtOrder.getVerifyCode());
@@ -1024,8 +1031,10 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
 
     /**
      * 取消订单
+     *
      * @param orderId 订单ID
      * @param remark 取消备注
+     * @throws BusinessCheckException
      * @return
      * */
     @Override
@@ -1115,14 +1124,14 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
     /**
      * 根据订单ID删除
      *
-     * @param  id       ID
-     * @param  operator 操作人
-     * @throws BusinessCheckException
+     * @param orderId 订单ID
+     * @param operator 操作人
+     * @return
      */
     @Override
     @OperationServiceLog(description = "删除订单信息")
-    public void deleteOrder(Integer id, String operator) {
-        MtOrder mtOrder = mtOrderMapper.selectById(id);
+    public void deleteOrder(Integer orderId, String operator) {
+        MtOrder mtOrder = mtOrderMapper.selectById(orderId);
         if (mtOrder == null) {
             return;
         }
@@ -1139,6 +1148,7 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
      *
      * @param  orderSn 订单号
      * @throws BusinessCheckException
+     * @return
      */
     @Override
     public UserOrderDto getOrderByOrderSn(String orderSn) throws BusinessCheckException {
@@ -1152,8 +1162,9 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
     /**
      * 更新订单
      *
-     * @param  orderDto
+     * @param  orderDto 订单参数
      * @throws BusinessCheckException
+     * @return
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -1233,6 +1244,7 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
 
     /**
      * 更新订单
+     *
      * @param mtOrder
      * @return
      * */
@@ -1247,6 +1259,14 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
         return mtOrder;
     }
 
+    /**
+     * 把订单置为已支付
+     *
+     * @param orderId 订单ID
+     * @param payAmount 支付金额
+     * @throws BusinessCheckException
+     * @return
+     * */
     @Override
     @Transactional(rollbackFor = Exception.class)
     @OperationServiceLog(description = "修改订单为已支付")
@@ -1383,6 +1403,12 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
         return true;
     }
 
+    /**
+     * 根据条件搜索订单
+     *
+     * @param params 查询参数
+     * @return
+     * */
     @Override
     public List<MtOrder> getOrderListByParams(Map<String, Object> params) {
         List<MtOrder> result = mtOrderMapper.selectByMap(params);
@@ -1391,6 +1417,7 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
 
     /**
      * 处理订单详情
+     *
      * @param  orderInfo
      * @param  needAddress  是否获取订单地址
      * @param  getPayStatus 是否获取支付状态
@@ -1658,7 +1685,11 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
     }
 
     /**
-     * 获取订单数量
+     * 获取订单总数
+     *
+     * @param merchantId 商户ID
+     * @param storeId 店铺ID
+     * @return
      * */
     @Override
     public BigDecimal getOrderCount(Integer merchantId, Integer storeId) {
@@ -1672,10 +1703,10 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
     /**
      * 获取订单数量
      *
-     * @param merchantId
-     * @param storeId
-     * @param beginTime
-     * @param endTime
+     * @param merchantId 商户ID
+     * @param storeId 店铺ID
+     * @param beginTime 开始时间
+     * @param endTime 结束时间
      * @return
      * */
     @Override
@@ -1690,10 +1721,10 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
     /**
      * 获取支付金额
      *
-     * @param merchantId
-     * @param storeId
-     * @param beginTime
-     * @param endTime
+     * @param merchantId 商户ID
+     * @param storeId 店铺ID
+     * @param beginTime 开始时间
+     * @param endTime 结束时间
      * @return
      * */
     @Override
@@ -1708,8 +1739,8 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
     /**
      * 获取支付人数
      *
-     * @param merchantId
-     * @param storeId
+     * @param merchantId 商户ID
+     * @param storeId 店铺ID
      * @return
      * */
     @Override
@@ -1724,8 +1755,8 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
     /**
      * 获取支付总金额
      *
-     * @param merchantId
-     * @param storeId
+     * @param merchantId 商户ID
+     * @param storeId 店铺ID
      * @return
      * */
     @Override
@@ -1740,12 +1771,13 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
     /**
      * 计算商品总价
      *
-     * @param merchantId
-     * @param userId
-     * @param cartList
-     * @param couponId
-     * @param isUsePoint
-     * @param orderMode
+     * @param merchantId 商户ID
+     * @param userId 会员ID
+     * @param cartList 购物车列表
+     * @param couponId 卡券ID
+     * @param isUsePoint 使用积分数量
+     * @param orderMode 订单模式
+     * @throws BusinessCheckException
      * @return
      * */
     @Override
@@ -1971,7 +2003,7 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
     /**
      * 获取会员支付金额
      *
-     * @param  userId
+     * @param  userId 会员ID
      * @return
      * */
     @Override
@@ -1982,7 +2014,7 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
     /**
      * 获取会员订单数
      *
-     * @param  userId
+     * @param  userId 会员ID
      * @return
      * */
     @Override
@@ -1993,7 +2025,7 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
     /**
      * 获取待分佣订单列表
      *
-     * @param dateTime
+     * @param dateTime 时间
      * @return
      * */
     @Override

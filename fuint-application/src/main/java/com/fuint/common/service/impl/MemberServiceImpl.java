@@ -754,7 +754,7 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
     /**
      * 根据条件搜索会员分组
      *
-     * @param params
+     * @param params 查询参数
      * @return
      * */
     @Override
@@ -769,8 +769,8 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
     /**
      * 获取会员数量
      *
-     * @param merchantId
-     * @param storeId
+     * @param merchantId 商户ID
+     * @param storeId 店铺ID
      * @return
      * */
     @Override
@@ -785,10 +785,10 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
     /**
      * 获取会员数量
      *
-     * @param merchantId
-     * @param storeId
-     * @param beginTime
-     * @param endTime
+     * @param merchantId 商户ID
+     * @param storeId 店铺ID
+     * @param beginTime 开始时间
+     * @param endTime 结束时间
      * @return
      * */
     @Override
@@ -803,10 +803,10 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
     /**
      * 获取会员数量
      *
-     * @param merchantId
-     * @param storeId
-     * @param beginTime
-     * @param endTime
+     * @param merchantId 商户ID
+     * @param storeId 店铺ID
+     * @param beginTime 开始时间
+     * @param endTime 结束时间
      * @return
      * */
     @Override
@@ -821,8 +821,8 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
     /**
      * 重置手机号
      *
-     * @param  mobile 手机号码
-     * @param  userId 会员ID
+     * @param mobile 手机号码
+     * @param userId 会员ID
      * @return
      */
     @Override

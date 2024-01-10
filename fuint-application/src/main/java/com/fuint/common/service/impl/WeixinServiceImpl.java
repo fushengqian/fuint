@@ -803,7 +803,8 @@ public class WeixinServiceImpl implements WeixinService {
         if (mtStore != null && StringUtil.isNotEmpty(mtStore.getWxApiV2()) && StringUtil.isNotEmpty(mtStore.getWxMchId())) {
             mchId = mtStore.getWxMchId();
             apiV2 = mtStore.getWxApiV2();
-            certPath = mtStore.getWxCertPath();
+            String basePath = settingService.getUploadBasePath();
+            certPath = basePath + mtStore.getWxCertPath();
         }
         apiConfig = WxPayApiConfig.builder()
                    .appId(wxPayBean.getAppId())
