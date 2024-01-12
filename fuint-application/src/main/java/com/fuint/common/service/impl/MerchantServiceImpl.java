@@ -80,8 +80,9 @@ public class MerchantServiceImpl extends ServiceImpl<MtMerchantMapper, MtMerchan
     /**
      * 保存商户信息
      *
-     * @param  merchant
+     * @param  merchant 商户信息
      * @throws BusinessCheckException
+     * @return
      */
     @Override
     @Transactional
@@ -135,6 +136,7 @@ public class MerchantServiceImpl extends ServiceImpl<MtMerchantMapper, MtMerchan
      *
      * @param  id 商户ID
      * @throws BusinessCheckException
+     * @return
      */
     @Override
     public MtMerchant queryMerchantById(Integer id) {
@@ -149,6 +151,7 @@ public class MerchantServiceImpl extends ServiceImpl<MtMerchantMapper, MtMerchan
      *
      * @param  name 商户名称
      * @throws BusinessCheckException
+     * @return
      */
     @Override
     public MtMerchant queryMerchantByName(String name) {
@@ -193,6 +196,7 @@ public class MerchantServiceImpl extends ServiceImpl<MtMerchantMapper, MtMerchan
      * @param  operator 操作人
      * @param  status   状态
      * @throws BusinessCheckException
+     * @return
      */
     @Override
     @Transactional
@@ -210,6 +214,12 @@ public class MerchantServiceImpl extends ServiceImpl<MtMerchantMapper, MtMerchan
         mtMerchantMapper.updateById(mtMerchant);
     }
 
+    /**
+     * 根据条件查询商户列表
+     *
+     * @param params 查询参数
+     * @return
+     * */
     @Override
     public List<MtMerchant> queryMerchantByParams(Map<String, Object> params) {
         LambdaQueryWrapper<MtMerchant> lambdaQueryWrapper = Wrappers.lambdaQuery();

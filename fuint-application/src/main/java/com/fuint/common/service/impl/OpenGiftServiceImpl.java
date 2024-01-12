@@ -73,6 +73,7 @@ public class OpenGiftServiceImpl extends ServiceImpl<MtOpenGiftMapper, MtOpenGif
      * 获取开卡赠礼列表
      * @param  paramMap
      * @throws BusinessCheckException
+     * @return
      * */
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -123,6 +124,7 @@ public class OpenGiftServiceImpl extends ServiceImpl<MtOpenGiftMapper, MtOpenGif
      *
      * @param  mtOpenGift
      * @throws BusinessCheckException
+     * @return
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -139,6 +141,7 @@ public class OpenGiftServiceImpl extends ServiceImpl<MtOpenGiftMapper, MtOpenGif
      *
      * @param  id 开卡赠礼ID
      * @throws BusinessCheckException
+     * @return
      */
     @Override
     public OpenGiftDto getOpenGiftDetail(Integer id) throws BusinessCheckException {
@@ -152,6 +155,7 @@ public class OpenGiftServiceImpl extends ServiceImpl<MtOpenGiftMapper, MtOpenGif
      * @param  id       开卡赠礼ID
      * @param  operator 操作人
      * @throws BusinessCheckException
+     * @return
      */
     @Override
     @OperationServiceLog(description = "删除开卡赠礼")
@@ -170,8 +174,9 @@ public class OpenGiftServiceImpl extends ServiceImpl<MtOpenGiftMapper, MtOpenGif
     /**
      * 更新开卡赠礼
      *
-     * @param  reqDto
+     * @param  reqDto 实体参数
      * @throws BusinessCheckException
+     * @return
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -215,8 +220,9 @@ public class OpenGiftServiceImpl extends ServiceImpl<MtOpenGiftMapper, MtOpenGif
 
     /**
      * 开卡赠礼
-     * @param userId
-     * @param gradeId
+     *
+     * @param userId 会员ID
+     * @param gradeId 等级ID
      * @return
      * */
     @Override
@@ -310,7 +316,8 @@ public class OpenGiftServiceImpl extends ServiceImpl<MtOpenGiftMapper, MtOpenGif
     }
 
     /**
-     * 处理详情
+     * 赠礼详情
+     *
      * @param  openGiftInfo
      * @return OpenGiftDto
      * */

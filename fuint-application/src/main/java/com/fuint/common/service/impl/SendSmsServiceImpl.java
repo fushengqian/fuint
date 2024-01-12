@@ -47,20 +47,29 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class SendSmsServiceImpl implements SendSmsService {
 
-     private static final Logger logger = LoggerFactory.getLogger(SendSmsServiceImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(SendSmsServiceImpl.class);
 
-     /**
-      * 系统环境变量
-      * */
-     private Environment env;
+    /**
+     * 系统环境变量
+     * */
+    private Environment env;
 
-     private MtSmsSendedLogMapper mtSmsSendedLogMapper;
+    private MtSmsSendedLogMapper mtSmsSendedLogMapper;
 
-     /**
-      * 短信模板服务接口
-      * */
-     private SmsTemplateService smsTemplateService;
+    /**
+     * 短信模板服务接口
+     * */
+    private SmsTemplateService smsTemplateService;
 
+    /**
+     * 发送短信
+     *
+     * @param merchantId 商户ID
+     * @param templateUname 模板名
+     * @param phones 发送手机号
+     * @param contentParams 发送参数
+     * @return
+     * */
     @Override
     public Map<Boolean,List<String>> sendSms(Integer merchantId, String templateUname, List<String> phones, Map<String, String> contentParams) throws BusinessCheckException {
         logger.info("使用短信平台发送短信.....");
@@ -197,7 +206,7 @@ public class SendSmsServiceImpl implements SendSmsService {
     /**
      * 发送短信日志记录
      *
-     * @param merchantId 商户号
+     * @param merchantId 商户ID
      * @param phoneNo    短信发送手机号
      * @param message    短信内容
      * @return

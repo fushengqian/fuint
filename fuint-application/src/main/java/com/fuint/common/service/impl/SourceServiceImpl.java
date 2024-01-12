@@ -34,6 +34,7 @@ public class SourceServiceImpl extends ServiceImpl<TSourceMapper, TSource> imple
     /**
      * 获取有效的角色集合
      *
+     * @param merchantId 商户ID
      * @return
      */
     @Override
@@ -44,6 +45,7 @@ public class SourceServiceImpl extends ServiceImpl<TSourceMapper, TSource> imple
     /**
      * 获取菜单的属性结构
      *
+     * @param merchantId 商户IF
      * @return
      */
     @Override
@@ -77,7 +79,7 @@ public class SourceServiceImpl extends ServiceImpl<TSourceMapper, TSource> imple
     /**
      * 根据菜单ID集合查询菜单列表信息
      *
-     * @param ids
+     * @param ids 菜单ID
      * @return
      */
     @Override
@@ -274,6 +276,10 @@ public class SourceServiceImpl extends ServiceImpl<TSourceMapper, TSource> imple
 
     /**
      * 得到子节点列表
+     *
+     * @param list 菜单列表
+     * @param t 当前节点
+     * @return
      */
     private List<TreeNode> getChildList(List<TreeNode> list, TreeNode t) {
         List<TreeNode> tList = new ArrayList<TreeNode>();
@@ -289,6 +295,10 @@ public class SourceServiceImpl extends ServiceImpl<TSourceMapper, TSource> imple
 
     /**
      * 判断是否有子节点
+     *
+     * @param list 菜单列表
+     * @param t 当前节点
+     * @return
      */
     private boolean hasChild(List<TreeNode> list, TreeNode t) {
         return getChildList(list, t).size() > 0;

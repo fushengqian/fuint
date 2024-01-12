@@ -100,6 +100,7 @@ public class SettlementServiceImpl implements SettlementService {
      *
      * @param  requestParam
      * @throws BusinessCheckException
+     * @return
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -162,9 +163,10 @@ public class SettlementServiceImpl implements SettlementService {
     /**
      * 结算确认
      *
-     * @param  settlementId
-     * @param  operator
+     * @param  settlementId 结算ID
+     * @param  operator 操作人
      * @throws BusinessCheckException
+     * @return
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -185,9 +187,9 @@ public class SettlementServiceImpl implements SettlementService {
     /**
      * 获取结算详情
      *
-     * @param settlementId
-     * @param page
-     * @param pageSize
+     * @param settlementId 结算ID
+     * @param page 当前页码
+     * @param pageSize 每页数量
      * @return
      * */
     @Override

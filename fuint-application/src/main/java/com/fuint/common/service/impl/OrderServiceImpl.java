@@ -1418,8 +1418,8 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
     /**
      * 处理订单详情
      *
-     * @param  orderInfo
-     * @param  needAddress  是否获取订单地址
+     * @param  orderInfo 订单信息
+     * @param  needAddress 是否获取订单地址
      * @param  getPayStatus 是否获取支付状态
      * @return UserOrderDto
      * */

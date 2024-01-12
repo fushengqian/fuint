@@ -145,8 +145,9 @@ public class RefundServiceImpl extends ServiceImpl<MtRefundMapper, MtRefund> imp
     /**
      * 获取用户售后订单列表
      *
-     * @param  paramMap
+     * @param  paramMap 查询参数
      * @throws BusinessCheckException
+     * @return
      * */
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -213,8 +214,9 @@ public class RefundServiceImpl extends ServiceImpl<MtRefundMapper, MtRefund> imp
     /**
      * 创建售后订单
      *
-     * @param refundDto
+     * @param refundDto 订单参数
      * @throws BusinessCheckException
+     * @return
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -266,6 +268,7 @@ public class RefundServiceImpl extends ServiceImpl<MtRefundMapper, MtRefund> imp
      *
      * @param  id 售后订单ID
      * @throws BusinessCheckException
+     * @return
      */
     @Override
     public RefundDto getRefundById(Integer id) throws BusinessCheckException {
@@ -289,8 +292,9 @@ public class RefundServiceImpl extends ServiceImpl<MtRefundMapper, MtRefund> imp
     /**
      * 根据订单ID获取售后订单信息
      *
-     * @param  orderId
+     * @param  orderId 订单ID
      * @throws BusinessCheckException
+     * @return
      */
     @Override
     public MtRefund getRefundByOrderId(Integer orderId) {
@@ -308,6 +312,7 @@ public class RefundServiceImpl extends ServiceImpl<MtRefundMapper, MtRefund> imp
      *
      * @param  refundDto
      * @throws BusinessCheckException
+     * @return
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -334,8 +339,10 @@ public class RefundServiceImpl extends ServiceImpl<MtRefundMapper, MtRefund> imp
 
     /**
      * 同意售后订单
+     *
      * @param refundDto
      * @throws BusinessCheckException
+     * @return
      * */
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -491,11 +498,12 @@ public class RefundServiceImpl extends ServiceImpl<MtRefundMapper, MtRefund> imp
 
     /**
      * 发起退款
-     * @param orderId
-     * @param refundAmount
-     * @param remark
-     * @param accountInfo
-     * throws BusinessCheckException;
+     * @param orderId 订单ID
+     * @param refundAmount 售后金额
+     * @param remark 备注
+     * @param accountInfo 后台管理信息
+     * throws BusinessCheckException
+     * @return
      * */
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -553,6 +561,10 @@ public class RefundServiceImpl extends ServiceImpl<MtRefundMapper, MtRefund> imp
 
     /**
      * 获取售后订单数量
+     *
+     * @param beginTime 开始时间
+     * @param endTime 结束时间
+     * @return
      * */
     @Override
     public Long getRefundCount(Date beginTime, Date endTime) {

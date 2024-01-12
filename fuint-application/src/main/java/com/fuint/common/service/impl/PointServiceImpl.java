@@ -128,8 +128,9 @@ public class PointServiceImpl extends ServiceImpl<MtPointMapper, MtPoint> implem
     /**
      * 添加积分记录
      *
-     * @param  mtPoint
+     * @param  mtPoint 积分参数
      * @throws BusinessCheckException
+     * @return
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -178,10 +179,11 @@ public class PointServiceImpl extends ServiceImpl<MtPointMapper, MtPoint> implem
     /**
      * 转赠积分
      *
-     * @param userId
-     * @param mobile
-     * @param amount
-     * @param remark
+     * @param userId 会员ID
+     * @param mobile 会员手机
+     * @param amount 积分数
+     * @param remark 备注
+     * @throws BusinessCheckException
      * @return boolean
      */
     @Override

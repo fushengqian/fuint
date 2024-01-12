@@ -145,12 +145,19 @@ public class SmsTemplateServiceImpl extends ServiceImpl<MtSmsTemplateMapper, MtS
      * 根据D获取信息
      *
      * @param  id 模板ID
+     * @return
      */
     @Override
     public MtSmsTemplate querySmsTemplateById(Integer id) {
         return mtSmsTemplateMapper.selectById(id);
     }
 
+    /**
+     * 根据参数查询短信模板
+     *
+     * @param params 查询参数
+     * @return
+     * */
     @Override
     public List<MtSmsTemplate> querySmsTemplateByParams(Map<String, Object> params) {
         if (params == null) {

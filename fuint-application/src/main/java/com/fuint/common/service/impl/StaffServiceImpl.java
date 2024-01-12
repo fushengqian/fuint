@@ -114,9 +114,9 @@ public class StaffServiceImpl extends ServiceImpl<MtStaffMapper, MtStaff> implem
     /**
      * 保存员工信息
      *
-     * @param  mtStaff
-     * @return
+     * @param  mtStaff 员工参数
      * @throws BusinessCheckException
+     * @return
      */
     @Override
     @OperationServiceLog(description = "保存店铺员工")
@@ -167,8 +167,9 @@ public class StaffServiceImpl extends ServiceImpl<MtStaffMapper, MtStaff> implem
     /**
      * 根据ID获取员工信息
      *
-     * @param  id 员工id
+     * @param  id 员工ID
      * @throws BusinessCheckException
+     * @return
      */
     @Override
     public MtStaff queryStaffById(Integer id) {
@@ -177,10 +178,11 @@ public class StaffServiceImpl extends ServiceImpl<MtStaffMapper, MtStaff> implem
     }
 
     /**
-     * 更改员工状态
+     * 修改店铺员工状态
      *
-     * @param  staffId
+     * @param  staffId 员工ID
      * @throws BusinessCheckException
+     * @return
      */
     @Override
     @OperationServiceLog(description = "修改店铺员工状态")
@@ -218,6 +220,9 @@ public class StaffServiceImpl extends ServiceImpl<MtStaffMapper, MtStaff> implem
 
     /**
      * 根据条件搜索员工
+     *
+     * @param params 查询参数
+     * @return
      * */
     @Override
     public List<MtStaff> queryStaffByParams(Map<String, Object> params) {
@@ -232,6 +237,7 @@ public class StaffServiceImpl extends ServiceImpl<MtStaffMapper, MtStaff> implem
      *
      * @param mobile 手机号
      * @throws BusinessCheckException
+     * @return
      */
     @Override
     public MtStaff queryStaffByMobile(String mobile) {
@@ -243,6 +249,7 @@ public class StaffServiceImpl extends ServiceImpl<MtStaffMapper, MtStaff> implem
      *
      * @param  userId 会员ID
      * @throws BusinessCheckException
+     * @return
      */
     @Override
     public MtStaff queryStaffByUserId(Integer userId) {

@@ -91,9 +91,10 @@ public class StockServiceImpl extends ServiceImpl<MtStockMapper, MtStock> implem
     /**
      * 新增库存管理记录
      *
-     * @param  stockParam
-     * @param  goodsList
+     * @param  stockParam 库存参数
+     * @param  goodsList 商品列表
      * @throws BusinessCheckException
+     * @return
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -171,6 +172,7 @@ public class StockServiceImpl extends ServiceImpl<MtStockMapper, MtStock> implem
      * @param  id       ID
      * @param  operator 操作人
      * @throws BusinessCheckException
+     * @return
      */
     @Override
     @OperationServiceLog(description = "删除商品分类")
@@ -190,12 +192,19 @@ public class StockServiceImpl extends ServiceImpl<MtStockMapper, MtStock> implem
      *
      * @param  id ID
      * @throws BusinessCheckException
+     * @return
      */
     @Override
     public MtStock queryStockById(Long id) {
         return mtStockMapper.selectById(id.intValue());
     }
 
+    /**
+     * 根据条件查询库存项
+     *
+     * @param params 查询条件
+     * @return
+     * */
     @Override
     public List<MtStockItem> queryItemByParams(Map<String, Object> params) {
         if (params == null) {

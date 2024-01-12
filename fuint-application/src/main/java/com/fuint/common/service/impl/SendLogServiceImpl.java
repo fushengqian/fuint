@@ -88,6 +88,7 @@ public class SendLogServiceImpl extends ServiceImpl<MtSendLogMapper, MtSendLog> 
      *
      * @param reqSendLogDto
      * @throws BusinessCheckException
+     * @return
      */
     @Override
     public MtSendLog addSendLog(ReqSendLogDto reqSendLogDto) {
@@ -116,8 +117,9 @@ public class SendLogServiceImpl extends ServiceImpl<MtSendLogMapper, MtSendLog> 
     /**
      * 根据ID查询发券记录
      *
-     * @param id ID
+     * @param id 发券记录ID
      * @throws BusinessCheckException
+     * @return
      */
     @Override
     public MtSendLog querySendLogById(Long id) {
@@ -125,11 +127,12 @@ public class SendLogServiceImpl extends ServiceImpl<MtSendLogMapper, MtSendLog> 
     }
 
     /**
-     * 根据ID 删除发券记录
+     * 根据ID删除发券记录
      *
      * @param  id       发券记录ID
      * @param  operator 操作人
      * @throws BusinessCheckException
+     * @return
      */
     @Override
     public void deleteSendLog(Long id, String operator) {

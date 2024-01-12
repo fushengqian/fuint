@@ -29,7 +29,8 @@ public class MessageServiceImpl extends ServiceImpl<MtMessageMapper, MtMessage> 
     /**
      * 添加消息
      *
-     * @param  mtMsg
+     * @param mtMsg 消息参数
+     * @return
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -47,9 +48,10 @@ public class MessageServiceImpl extends ServiceImpl<MtMessageMapper, MtMessage> 
     }
 
     /**
-     * 置为已读
+     * 将消息置为已读
      *
-     * @param  msgId
+     * @param  msgId 消息ID
+     * @param
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -70,9 +72,9 @@ public class MessageServiceImpl extends ServiceImpl<MtMessageMapper, MtMessage> 
     }
 
     /**
-     * 置为发送
+     * 消息置为发送
      *
-     * @param  msgId
+     * @param msgId 消息ID
      * @return
      */
     @Override
@@ -103,6 +105,9 @@ public class MessageServiceImpl extends ServiceImpl<MtMessageMapper, MtMessage> 
 
     /**
      * 获取最新一条未读弹框消息
+     *
+     * @param userId 会员ID
+     * @return
      */
     @Override
     public MtMessage getOne(Integer userId) {
@@ -118,6 +123,8 @@ public class MessageServiceImpl extends ServiceImpl<MtMessageMapper, MtMessage> 
 
     /**
      * 获取需要发送的消息
+     *
+     * @return
      */
     @Override
     public List<MtMessage> getNeedSendList() {

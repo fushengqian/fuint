@@ -39,9 +39,10 @@ public class SettingServiceImpl extends ServiceImpl<MtSettingMapper, MtSetting> 
     /**
      * 删除配置
      *
-     * @param  merchantId
-     * @param  name
+     * @param  merchantId 商户ID
+     * @param  name 配置名称
      * @throws BusinessCheckException
+     * @return
      */
     @Override
     @OperationServiceLog(description = "删除配置信息")
@@ -58,6 +59,7 @@ public class SettingServiceImpl extends ServiceImpl<MtSettingMapper, MtSetting> 
      *
      * @param  mtSetting
      * @throws BusinessCheckException
+     * @return
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -97,9 +99,10 @@ public class SettingServiceImpl extends ServiceImpl<MtSettingMapper, MtSetting> 
     /**
      * 获取配置列表
      *
-     * @param  merchantId
-     * @param  type
+     * @param  merchantId 商户ID
+     * @param  type 配置类型
      * @throws BusinessCheckException
+     * @return
      */
     @Override
     public List<MtSetting> getSettingList(Integer merchantId, String type) {
@@ -110,9 +113,10 @@ public class SettingServiceImpl extends ServiceImpl<MtSettingMapper, MtSetting> 
     /**
      * 根据ID获取配置信息
      *
-     * @param  merchantId
-     * @param  name
+     * @param  merchantId 商户ID
+     * @param  name 配置名称
      * @throws BusinessCheckException
+     * @return
      */
     @Override
     public MtSetting querySettingByName(Integer merchantId, String name) {
@@ -121,6 +125,7 @@ public class SettingServiceImpl extends ServiceImpl<MtSettingMapper, MtSetting> 
 
     /**
      * 获取系统上传的根路径
+     *
      * @return
      * */
     @Override
@@ -144,7 +149,8 @@ public class SettingServiceImpl extends ServiceImpl<MtSettingMapper, MtSetting> 
 
     /**
      * 获取支付方式列表
-     * @param platform
+     *
+     * @param platform 平台
      * @return
      * */
     @Override
