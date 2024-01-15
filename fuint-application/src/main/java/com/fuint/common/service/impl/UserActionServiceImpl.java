@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fuint.common.enums.StatusEnum;
 import com.fuint.common.service.UserActionService;
+import com.fuint.framework.annoation.OperationServiceLog;
 import com.fuint.framework.pagination.PaginationRequest;
 import com.fuint.framework.pagination.PaginationResponse;
 import com.fuint.repository.mapper.MtUserActionMapper;
@@ -134,6 +135,7 @@ public class UserActionServiceImpl extends ServiceImpl<MtUserActionMapper, MtUse
      * @return
      */
     @Override
+    @OperationServiceLog(description = "删除会员行为")
     public void deleteUserAction(Integer id, String operator) {
         MtUserAction mtUserAction = this.getUserActionDetail(id);
         if (mtUserAction == null) {
