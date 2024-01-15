@@ -92,7 +92,7 @@ public class WeixinServiceImpl implements WeixinService {
 
     private Environment env;
 
-    WxPayBean wxPayBean;
+    private WxPayBean wxPayBean;
 
     private static final String CALL_BACK_URL = "/clientApi/pay/weixinCallback";
 
@@ -105,6 +105,7 @@ public class WeixinServiceImpl implements WeixinService {
      *
      * @param merchantId 商户ID
      * @param useCache 是否读取缓存
+     * @throws BusinessCheckException
      * @return
      * */
     @Override
@@ -150,13 +151,14 @@ public class WeixinServiceImpl implements WeixinService {
     /**
      * 创建支付订单
      *
-     * @param userInfo
-     * @param orderInfo
-     * @param payAmount
-     * @param authCode
-     * @param giveAmount
-     * @param ip
-     * @param platform
+     * @param userInfo 会员信息
+     * @param orderInfo 订单信息
+     * @param payAmount 支付金额
+     * @param authCode 付款码
+     * @param giveAmount 赠送金额
+     * @param ip 支付IP
+     * @param platform 支付平台
+     * @throws BusinessCheckException
      * @return
      * */
     @Override
@@ -230,6 +232,12 @@ public class WeixinServiceImpl implements WeixinService {
         return responseObject;
     }
 
+    /**
+     * 处理支付回调
+     *
+     * @param request 请求参数
+     * @return
+     * */
     public Map<String, String> processResXml(HttpServletRequest request) {
         try {
             String xmlMsg = HttpKit.readData(request);
@@ -248,6 +256,13 @@ public class WeixinServiceImpl implements WeixinService {
         return null;
     }
 
+    /**
+     * 处理回调xml
+     *
+     * @param response 响应参数
+     * @param flag 标记
+     * @return
+     * */
     public void processRespXml(HttpServletResponse response, boolean flag){
         Map<String,String> respData = new HashMap<>();
         if (flag) {
@@ -279,8 +294,9 @@ public class WeixinServiceImpl implements WeixinService {
     /**
      * 获取微信个人信息
      *
-     * @param merchantId
-     * @param code
+     * @param merchantId 商户ID
+     * @param code 微信返回编码
+     * @throws BusinessCheckException
      * @return
      * */
     @Override
@@ -316,8 +332,9 @@ public class WeixinServiceImpl implements WeixinService {
     /**
      * 获取公众号openId
      *
-     * @param merchantId
-     * @param code
+     * @param merchantId 商户ID
+     * @param code 微信返回编码
+     * @throws BusinessCheckException
      * @return
      * */
     @Override
@@ -353,9 +370,9 @@ public class WeixinServiceImpl implements WeixinService {
     /**
      * 获取微信绑定手机号
      *
-     * @param encryptedData
-     * @param sessionKey
-     * @param iv
+     * @param encryptedData 微信返回加密字符串
+     * @param sessionKey session键值
+     * @param iv 微信IV
      * @return
      * */
     @Override
@@ -399,13 +416,14 @@ public class WeixinServiceImpl implements WeixinService {
     /**
      * 发送小程序订阅消息
      *
-     * @param merchantId
-     * @param userId
-     * @param toUserOpenId
-     * @param key
-     * @param page
-     * @param params
-     * @param sendTime
+     * @param merchantId 商户ID
+     * @param userId 会员ID
+     * @param toUserOpenId 接受者openId
+     * @param key 消息key
+     * @param page 跳转页面
+     * @param params 发送参数
+     * @param sendTime 发送时间
+     * @throws BusinessCheckException
      * @return
      * */
     @Override
@@ -483,8 +501,8 @@ public class WeixinServiceImpl implements WeixinService {
     /**
      * 发送订阅消息
      *
-     * @param merchantId
-     * @param reqDataJsonStr
+     * @param merchantId 商户ID
+     * @param reqDataJsonStr 请求参数
      * @return
      * */
     @Override
@@ -514,9 +532,9 @@ public class WeixinServiceImpl implements WeixinService {
     /**
      * 查询支付订单
      *
-     * @param storeId
-     * @param transactionId
-     * @param orderSn
+     * @param storeId 店铺ID
+     * @param transactionId 支付流水ID
+     * @param orderSn 订单号
      * @return
      * */
     @Override
@@ -549,10 +567,10 @@ public class WeixinServiceImpl implements WeixinService {
     /**
      * 刷卡支付
      *
-     * @param storeId
-     * @param reqData
-     * @param ip
-     * @param platform
+     * @param storeId 店铺ID
+     * @param reqData 请求参数
+     * @param ip 支付IP
+     * @param platform 支付平台
      * @return
      * */
     private Map<String, String> microPay(Integer storeId, Map<String, String> reqData, String ip, String platform) {
@@ -635,10 +653,10 @@ public class WeixinServiceImpl implements WeixinService {
     /**
      * 小程序、公众号支付
      *
-     * @param storeId
-     * @param reqData
-     * @param ip
-     * @param platform
+     * @param storeId 店铺ID
+     * @param reqData 请求参数
+     * @param ip 支付IP
+     * @param platform 支付平台
      * @return
      * */
     private Map<String, String> jsapiPay(Integer storeId, Map<String, String> reqData, String ip, String platform) {
@@ -687,12 +705,14 @@ public class WeixinServiceImpl implements WeixinService {
     }
 
     /**
-     * 发起退款
-     * @param storeId
-     * @param orderSn
-     * @param totalAmount
-     * @param refundAmount
-     * @param platform
+     * 发起售后
+     *
+     * @param storeId 店铺ID
+     * @param orderSn 订单号
+     * @param totalAmount 支付总金额
+     * @param refundAmount 退款金额
+     * @param platform 支付平台
+     * @throws BusinessCheckException
      * @return
      * */
     public Boolean doRefund(Integer storeId, String orderSn, BigDecimal totalAmount, BigDecimal refundAmount, String platform) throws BusinessCheckException {
@@ -741,9 +761,9 @@ public class WeixinServiceImpl implements WeixinService {
     /***
      * 生成店铺二维码
      *
-     * @param merchantId
-     * @param storeId
-     * @param width
+     * @param merchantId 商户ID
+     * @param storeId 店铺ID
+     * @param width 宽度
      * @return
      * */
     public String createStoreQrCode(Integer merchantId, Integer storeId, Integer width) {
@@ -790,8 +810,9 @@ public class WeixinServiceImpl implements WeixinService {
     /**
      * 获取支付配置
      *
-     * @param storeId
-     * @param platform
+     * @param storeId 店铺ID
+     * @param platform 支付平台
+     * @throws BusinessCheckException
      * @return
      * */
     private WxPayApiConfig getApiConfig(Integer storeId, String platform) throws BusinessCheckException {
@@ -803,7 +824,7 @@ public class WeixinServiceImpl implements WeixinService {
         if (mtStore != null && StringUtil.isNotEmpty(mtStore.getWxApiV2()) && StringUtil.isNotEmpty(mtStore.getWxMchId())) {
             mchId = mtStore.getWxMchId();
             apiV2 = mtStore.getWxApiV2();
-            String basePath = settingService.getUploadBasePath();
+            String basePath = env.getProperty("images.root");
             certPath = basePath + mtStore.getWxCertPath();
         }
         apiConfig = WxPayApiConfig.builder()

@@ -15,8 +15,8 @@ public interface VerifyCodeService extends IService<MtVerifyCode> {
     /**
      * 新增验证码
      *
-     * @param mobile
-     * @param verifyCode
+     * @param mobile 手机号
+     * @param verifyCode 验证码
      * @param expireSecond 间隔秒数
      * @throws BusinessCheckException
      * @return
@@ -36,8 +36,8 @@ public interface VerifyCodeService extends IService<MtVerifyCode> {
     /**
      * 更改验证码状态
      *
-     * @param id
-     * @param validFlag
+     * @param id 验证码ID
+     * @param validFlag 是否验证
      * @throws BusinessCheckException
      * @return
      */

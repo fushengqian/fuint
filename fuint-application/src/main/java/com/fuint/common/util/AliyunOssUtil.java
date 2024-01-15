@@ -25,6 +25,9 @@ public class AliyunOssUtil {
     /**
      * 获取阿里云OSS客户端对象
      *
+     * @param accessKeyId 访问键值
+     * @param accessKeySecret 访问秘钥
+     * @param endpoint 存储endPoint
      * @return ossClient
      */
     public static OSS getOSSClient(String accessKeyId, String accessKeySecret, String endpoint) {
@@ -56,6 +59,8 @@ public class AliyunOssUtil {
      * 创建模拟文件夹
      *
      * @param ossClient oss连接
+     * @param bucketName 存储bucket
+     * @param folder 文件夹
      * @return 文件夹名
      */
     public static String createFolder(OSS ossClient, String bucketName, String folder) {

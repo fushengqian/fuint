@@ -169,7 +169,7 @@ public class StockServiceImpl extends ServiceImpl<MtStockMapper, MtStock> implem
     /**
      * 删除库存管理记录
      *
-     * @param  id       ID
+     * @param  id ID
      * @param  operator 操作人
      * @throws BusinessCheckException
      * @return
