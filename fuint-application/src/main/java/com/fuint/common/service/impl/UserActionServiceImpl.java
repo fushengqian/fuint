@@ -78,7 +78,8 @@ public class UserActionServiceImpl extends ServiceImpl<MtUserActionMapper, MtUse
     /**
      * 新增会员行为
      *
-     * @param  reqUserAction
+     * @param  reqUserAction 会员行为
+     * @return
      */
     @Override
     public boolean addUserAction(MtUserAction reqUserAction) {
@@ -118,6 +119,7 @@ public class UserActionServiceImpl extends ServiceImpl<MtUserActionMapper, MtUse
      * 根据ID获取信息
      *
      * @param id
+     * @return
      */
     @Override
     public MtUserAction getUserActionDetail(Integer id) {
@@ -129,6 +131,7 @@ public class UserActionServiceImpl extends ServiceImpl<MtUserActionMapper, MtUse
      *
      * @param id
      * @param operator 操作人
+     * @return
      */
     @Override
     public void deleteUserAction(Integer id, String operator) {

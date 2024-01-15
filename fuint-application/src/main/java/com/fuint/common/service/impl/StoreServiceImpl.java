@@ -111,8 +111,9 @@ public class StoreServiceImpl extends ServiceImpl<MtStoreMapper, MtStore> implem
     /**
      * 保存店铺信息
      *
-     * @param  storeDto
+     * @param  storeDto 店铺信息
      * @throws BusinessCheckException
+     * @return
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -197,6 +198,7 @@ public class StoreServiceImpl extends ServiceImpl<MtStoreMapper, MtStore> implem
      *
      * @param  id 店铺ID
      * @throws BusinessCheckException
+     * @return
      */
     @Override
     public MtStore queryStoreById(Integer id) {
@@ -209,8 +211,8 @@ public class StoreServiceImpl extends ServiceImpl<MtStoreMapper, MtStore> implem
     /**
      * 获取系统默认店铺
      *
-     * @param  merchantNo
-     * @throws BusinessCheckException
+     * @param  merchantNo 商户号
+     * @return
      */
     @Override
     public MtStore getDefaultStore(String merchantNo) {
@@ -242,7 +244,6 @@ public class StoreServiceImpl extends ServiceImpl<MtStoreMapper, MtStore> implem
      * 根据店铺名称获取店铺信息
      *
      * @param  storeName 店铺名称
-     * @throws BusinessCheckException
      * @return
      */
     @Override

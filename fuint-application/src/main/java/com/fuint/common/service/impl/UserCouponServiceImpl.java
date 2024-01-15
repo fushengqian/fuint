@@ -135,7 +135,8 @@ public class UserCouponServiceImpl extends ServiceImpl<MtUserCouponMapper, MtUse
 
     /**
      * 领取卡券(优惠券、计次卡)
-     * @param receiveParam
+     *
+     * @param receiveParam 领取参数
      * @return
      * */
     @Override
@@ -285,7 +286,8 @@ public class UserCouponServiceImpl extends ServiceImpl<MtUserCouponMapper, MtUse
 
     /**
      * 储值卡券
-     * @param paramMap
+     *
+     * @param paramMap 储值参数
      * @return
      * */
     public boolean preStore(Map<String, Object> paramMap) throws BusinessCheckException {
@@ -331,8 +333,9 @@ public class UserCouponServiceImpl extends ServiceImpl<MtUserCouponMapper, MtUse
 
     /**
      * 获取会员卡券列表
-     * @param userId
-     * @param status
+     *
+     * @param userId 会员ID
+     * @param status 状态
      * @return
      * */
     @Override
@@ -342,8 +345,10 @@ public class UserCouponServiceImpl extends ServiceImpl<MtUserCouponMapper, MtUse
 
     /**
      * 获取会员卡券列表
+     *
      * @param paramMap
      * @throws BusinessCheckException
+     * @return
      * */
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -518,7 +523,9 @@ public class UserCouponServiceImpl extends ServiceImpl<MtUserCouponMapper, MtUse
 
     /**
      * 获取会员可支付使用的卡券
-     * @param userId
+     *
+     * @param userId 会员ID
+     * @param useFor 用途
      * @return
      * */
     @Override
@@ -567,8 +574,9 @@ public class UserCouponServiceImpl extends ServiceImpl<MtUserCouponMapper, MtUse
 
     /**
      * 获取会员卡券详情
-     * @param userId
-     * @param couponId
+     *
+     * @param userId 会员ID
+     * @param couponId 卡券ID
      * @return
      * */
     @Override
@@ -578,7 +586,8 @@ public class UserCouponServiceImpl extends ServiceImpl<MtUserCouponMapper, MtUse
 
     /**
      * 获取会员卡券详情
-     * @param userCouponId
+     *
+     * @param userCouponId 会员卡券ID
      * @return
      * */
     @Override
@@ -589,10 +598,11 @@ public class UserCouponServiceImpl extends ServiceImpl<MtUserCouponMapper, MtUse
 
     /**
      * 根据过期时间查询会员卡券
-     * @param userId
-     * @param status
-     * @param startTime
-     * @param endTime
+     *
+     * @param userId 会员ID
+     * @param status 状态
+     * @param startTime 开始时间
+     * @param endTime 结束时间
      * @return
      * */
     @Override
@@ -603,10 +613,11 @@ public class UserCouponServiceImpl extends ServiceImpl<MtUserCouponMapper, MtUse
 
     /**
      * 会员发送卡券
-     * @param orderId
-     * @param couponId
-     * @param userId
-     * @param mobile
+     *
+     * @param orderId 订单ID
+     * @param couponId 卡券ID
+     * @param userId 会员ID
+     * @param mobile 手机号
      * @return
      * */
     public boolean buyCouponItem(Integer orderId, Integer couponId, Integer userId, String mobile) throws BusinessCheckException {
@@ -672,8 +683,9 @@ public class UserCouponServiceImpl extends ServiceImpl<MtUserCouponMapper, MtUse
 
     /**
      * 预存单张
-     * @param couponInfo
-     * @param userInfo
+     *
+     * @param couponInfo 卡券信息
+     * @param userInfo 会员信息
      * @return
      * */
     private boolean preStoreItem(MtCoupon couponInfo, MtUser userInfo, Integer orderId, BigDecimal amount) {

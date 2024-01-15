@@ -318,7 +318,8 @@ public class OpenGiftServiceImpl extends ServiceImpl<MtOpenGiftMapper, MtOpenGif
     /**
      * 赠礼详情
      *
-     * @param  openGiftInfo
+     * @param  openGiftInfo 赠礼详情
+     * @throws BusinessCheckException
      * @return OpenGiftDto
      * */
     private OpenGiftDto dealDetail(MtOpenGift openGiftInfo) throws BusinessCheckException {

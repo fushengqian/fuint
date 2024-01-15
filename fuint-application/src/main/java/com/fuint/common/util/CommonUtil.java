@@ -64,6 +64,9 @@ public class CommonUtil {
 
     /**
      * 判断是否数字
+     *
+     * @param str 字符串
+     * @return
      * */
     public static boolean isNumeric(String str) {
         if (StringUtil.isEmpty(str)) {
@@ -82,6 +85,8 @@ public class CommonUtil {
 
     /**
      * 生成随机会员号(13位数)
+     *
+     * @return
      * */
     public static String createUserNo() {
         StringBuilder sb = new StringBuilder("8");
@@ -93,6 +98,8 @@ public class CommonUtil {
 
     /**
      * 生成随机键值号
+     *
+     * @return
      * */
     public static String createAccountKey() {
         StringBuilder sb = new StringBuilder("11");
@@ -104,6 +111,8 @@ public class CommonUtil {
 
     /**
      * 生成随机商户号
+     *
+     * @return
      * */
     public static String createMerchantNo() {
         StringBuilder sb = new StringBuilder("8");
@@ -114,6 +123,8 @@ public class CommonUtil {
 
     /**
      * 生成随机结算单号(13位数)
+     *
+     * @return
      * */
     public static String createSettlementNo() {
         StringBuilder sb = new StringBuilder("8");
@@ -125,7 +136,9 @@ public class CommonUtil {
 
     /**
      * 生成随机订单号
+     *
      * @param userId
+     * @return
      * */
     public static String createOrderSN(String userId) {
         // 时间是17位
@@ -213,6 +226,13 @@ public class CommonUtil {
         return false;
     }
 
+    /**
+     * 保存上传文件
+     *
+     * @param file 上传的文件
+     * @param filePath 文件路径
+     * @return
+     * */
     public static void saveMultipartFile(MultipartFile file, String filePath) {
         if (file != null && !file.isEmpty()) {
             try {
@@ -386,6 +406,12 @@ public class CommonUtil {
         return filter(value);
     }
 
+    /**
+     * 判断是否emo表情
+     *
+     * @param first 字符串
+     * @return
+     * */
     public static boolean isEmojiCharacter(char first) {
         return !
                 ((first == 0x0) ||
