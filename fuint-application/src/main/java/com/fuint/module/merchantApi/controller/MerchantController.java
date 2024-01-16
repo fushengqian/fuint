@@ -80,7 +80,7 @@ public class MerchantController extends BaseController {
 
         outParams.put("confirmInfo", staffInfo);
 
-        // 收款额
+        // 总收款额
         Date beginTime = DateUtil.getDayBegin();
         Date endTime = DateUtil.getDayEnd();
         BigDecimal payMoney = orderService.getPayMoney(staffInfo.getMerchantId(), staffInfo.getStoreId(), beginTime, endTime);

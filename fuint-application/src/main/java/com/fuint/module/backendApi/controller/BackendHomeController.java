@@ -51,11 +51,11 @@ public class BackendHomeController extends BaseController {
     private AccountService accountService;
 
     /**
-     * 首页数据
+     * 首页统计数据
      *
      * @return
      */
-    @ApiOperation(value = "首页数据")
+    @ApiOperation(value = "首页统计数据")
     @RequestMapping(value = "/index", method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject index(HttpServletRequest request) throws BusinessCheckException {

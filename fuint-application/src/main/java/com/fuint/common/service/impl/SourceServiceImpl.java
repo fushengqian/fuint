@@ -192,8 +192,7 @@ public class SourceServiceImpl extends ServiceImpl<TSourceMapper, TSource> imple
     /**
      * 添加菜单
      *
-     * @param tSource 菜单参数
-     * @return
+     * @param tSource
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -205,8 +204,7 @@ public class SourceServiceImpl extends ServiceImpl<TSourceMapper, TSource> imple
     /**
      * 修改菜单
      *
-     * @param source 菜单参数
-     * @return
+     * @param source
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
