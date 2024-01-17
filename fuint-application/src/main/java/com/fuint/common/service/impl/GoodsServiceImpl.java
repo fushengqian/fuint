@@ -111,6 +111,10 @@ public class GoodsServiceImpl extends ServiceImpl<MtGoodsMapper, MtGoods> implem
         if (StringUtils.isNotBlank(type)) {
             lambdaQueryWrapper.eq(MtGoods::getType, type);
         }
+        String cateId = paginationRequest.getSearchParams().get("cateId") == null ? "" : paginationRequest.getSearchParams().get("cateId").toString();
+        if (StringUtils.isNotBlank(cateId)) {
+            lambdaQueryWrapper.eq(MtGoods::getCateId, cateId);
+        }
         String hasStock = paginationRequest.getSearchParams().get("stock") == null ? "" : paginationRequest.getSearchParams().get("stock").toString();
         if (StringUtils.isNotBlank(hasStock)) {
             if (hasStock.equals(YesOrNoEnum.YES.getKey())) {

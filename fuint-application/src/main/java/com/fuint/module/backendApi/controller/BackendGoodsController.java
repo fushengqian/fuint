@@ -75,8 +75,8 @@ public class BackendGoodsController extends BaseController {
      * 分页查询商品列表
      *
      * @param request
-     * @return
      * @throws BusinessCheckException
+     * @return
      */
     @ApiOperation(value = "分页查询商品列表")
     @RequestMapping(value = "/list", method = RequestMethod.GET)
@@ -93,6 +93,7 @@ public class BackendGoodsController extends BaseController {
         String status = request.getParameter("status");
         String searchStoreId = request.getParameter("storeId");
         String stock = request.getParameter("stock");
+        String cateId = request.getParameter("cateId");
 
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
         if (accountInfo == null) {
@@ -122,6 +123,9 @@ public class BackendGoodsController extends BaseController {
         }
         if (StringUtil.isNotEmpty(type)) {
             params.put("type", type);
+        }
+        if (StringUtil.isNotEmpty(cateId)) {
+            params.put("cateId", cateId);
         }
         if (StringUtil.isNotEmpty(goodsNo)) {
             params.put("goodsNo", goodsNo);
@@ -159,10 +163,21 @@ public class BackendGoodsController extends BaseController {
         }
         List<MtStore> storeList = storeService.queryStoresByParams(paramsStore);
 
+        Map<String, Object> cateParam = new HashMap<>();
+        cateParam.put("status", StatusEnum.ENABLED.getKey());
+        if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
+            cateParam.put("merchantId", accountInfo.getMerchantId());
+        }
+        if (storeId != null && storeId > 0) {
+            cateParam.put("storeId", storeId.toString());
+        }
+        List<MtGoodsCate> cateList = cateService.queryCateListByParams(cateParam);
+
         Map<String, Object> result = new HashMap<>();
         result.put("paginationResponse", paginationResponse);
         result.put("typeList", typeList);
         result.put("storeList", storeList);
+        result.put("cateList", cateList);
 
         return getSuccessResult(result);
     }
@@ -171,13 +186,14 @@ public class BackendGoodsController extends BaseController {
      * 删除商品
      *
      * @param request
+     * @param goodsId 商品ID
      * @return
      */
     @ApiOperation(value = "删除商品")
     @RequestMapping(value = "/delete/{id}", method = RequestMethod.GET)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('goods:goods:edit')")
-    public ResponseObject delete(HttpServletRequest request, @PathVariable("id") Integer id) throws BusinessCheckException {
+    public ResponseObject delete(HttpServletRequest request, @PathVariable("id") Integer goodsId) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
 
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
@@ -185,7 +201,7 @@ public class BackendGoodsController extends BaseController {
             return getFailureResult(1001, "请先登录");
         }
         String operator = accountInfo.getAccountName();
-        goodsService.deleteGoods(id, operator);
+        goodsService.deleteGoods(goodsId, operator);
         return getSuccessResult(true);
     }
 
