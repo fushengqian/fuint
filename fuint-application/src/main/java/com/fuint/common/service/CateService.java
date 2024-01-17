@@ -28,8 +28,9 @@ public interface CateService extends IService<MtGoodsCate> {
     /**
      * 添加商品分类
      *
-     * @param  reqDto
+     * @param  reqDto 分类参数
      * @throws BusinessCheckException
+     * @return
      */
     MtGoodsCate addCate(MtGoodsCate reqDto) throws BusinessCheckException;
 
@@ -44,7 +45,7 @@ public interface CateService extends IService<MtGoodsCate> {
     /**
      * 根据ID删除
      *
-     * @param  id       ID
+     * @param  id 分类ID
      * @param  operator 操作人
      * @throws BusinessCheckException
      * @return
@@ -53,7 +54,7 @@ public interface CateService extends IService<MtGoodsCate> {
 
     /**
      * 更新分类
-     * @param  reqDto
+     * @param  reqDto 分类参数
      * @throws BusinessCheckException
      * @return
      * */

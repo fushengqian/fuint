@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 
+import com.fuint.common.service.StoreService;
 import com.fuint.framework.annoation.OperationServiceLog;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.pagination.PaginationRequest;
@@ -15,6 +16,7 @@ import com.fuint.common.service.SettingService;
 import com.fuint.common.enums.StatusEnum;
 import com.fuint.repository.mapper.MtBannerMapper;
 
+import com.fuint.repository.model.MtStore;
 import com.github.pagehelper.PageHelper;
 import lombok.AllArgsConstructor;
 import org.apache.commons.lang.StringUtils;
@@ -48,7 +50,12 @@ public class BannerServiceImpl extends ServiceImpl<MtBannerMapper, MtBanner> imp
     private SettingService settingService;
 
     /**
-     * 分页查询Banner列表
+     * 店铺接口
+     */
+    private StoreService storeService;
+
+    /**
+     * 分页查询焦点图列表
      *
      * @param paginationRequest
      * @return
@@ -92,14 +99,22 @@ public class BannerServiceImpl extends ServiceImpl<MtBannerMapper, MtBanner> imp
     /**
      * 添加焦点图
      *
-     * @param bannerDto
+     * @param bannerDto 焦点图信息
+     * @return
      */
     @Override
     @OperationServiceLog(description = "新增焦点图")
-    public MtBanner addBanner(BannerDto bannerDto) {
+    public MtBanner addBanner(BannerDto bannerDto) throws BusinessCheckException {
         MtBanner mtBanner = new MtBanner();
         BeanUtils.copyProperties(bannerDto, mtBanner);
-        mtBanner.setStoreId(bannerDto.getStoreId() == null ? 0 : bannerDto.getStoreId());
+        Integer storeId = bannerDto.getStoreId() == null ? 0 : bannerDto.getStoreId();
+        if (bannerDto.getMerchantId() == null || bannerDto.getMerchantId() <= 0) {
+            MtStore mtStore = storeService.queryStoreById(storeId);
+            if (mtStore != null) {
+                mtBanner.setMerchantId(mtStore.getMerchantId());
+            }
+        }
+        mtBanner.setStoreId(storeId);
         mtBanner.setStatus(StatusEnum.ENABLED.getKey());
         mtBanner.setUpdateTime(new Date());
         mtBanner.setCreateTime(new Date());
@@ -108,7 +123,7 @@ public class BannerServiceImpl extends ServiceImpl<MtBannerMapper, MtBanner> imp
             return mtBanner;
         } else {
             logger.error("新增焦点图失败.");
-            return null;
+            throw new BusinessCheckException("新增焦点图失败");
         }
     }
 
@@ -149,7 +164,7 @@ public class BannerServiceImpl extends ServiceImpl<MtBannerMapper, MtBanner> imp
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    @OperationServiceLog(description = "更新Banner图")
+    @OperationServiceLog(description = "更新焦点图")
     public MtBanner updateBanner(BannerDto bannerDto) throws BusinessCheckException {
         MtBanner mtBanner = queryBannerById(bannerDto.getId());
         if (mtBanner == null) {

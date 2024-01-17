@@ -29,7 +29,7 @@ public interface AccountService extends IService<TAccount> {
     /**
      * 根据用户名获取用户对象
      *
-     * @param userName
+     * @param userName 用户名
      * @return
      */
     AccountInfo getAccountByName(String userName);
@@ -49,7 +49,7 @@ public interface AccountService extends IService<TAccount> {
      * @param  duties
      * @return
      * */
-    TAccount createAccountInfo(TAccount accountInfo, List<TDuty> duties);
+    TAccount createAccountInfo(TAccount accountInfo, List<TDuty> duties) throws BusinessCheckException;
 
     /**
      * 获取账号角色ID

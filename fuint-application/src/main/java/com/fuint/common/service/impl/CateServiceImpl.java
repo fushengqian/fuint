@@ -109,15 +109,23 @@ public class CateServiceImpl extends ServiceImpl<MtGoodsCateMapper, MtGoodsCate>
     /**
      * 添加商品分类
      *
-     * @param reqDto
+     * @param reqDto 商品分类参数
      * @throws BusinessCheckException
+     * @return
      */
     @Override
     @OperationServiceLog(description = "新增商品分类")
-    public MtGoodsCate addCate(MtGoodsCate reqDto) {
+    public MtGoodsCate addCate(MtGoodsCate reqDto) throws BusinessCheckException {
         MtGoodsCate mtCate = new MtGoodsCate();
         if (null != reqDto.getId()) {
             mtCate.setId(reqDto.getId());
+        }
+        Integer storeId = reqDto.getStoreId() == null ? 0 : reqDto.getStoreId();
+        if (storeId > 0 && (reqDto.getMerchantId() == null || reqDto.getMerchantId() <= 0)) {
+            MtStore mtStore = storeService.queryStoreById(storeId);
+            if (mtStore != null) {
+                reqDto.setMerchantId(mtStore.getMerchantId());
+            }
         }
         mtCate.setName(reqDto.getName());
         mtCate.setStatus(StatusEnum.ENABLED.getKey());
@@ -125,7 +133,7 @@ public class CateServiceImpl extends ServiceImpl<MtGoodsCateMapper, MtGoodsCate>
         mtCate.setDescription(reqDto.getDescription());
         mtCate.setOperator(reqDto.getOperator());
         mtCate.setMerchantId(reqDto.getMerchantId());
-        mtCate.setStoreId(reqDto.getStoreId() == null ? 0 : reqDto.getStoreId());
+        mtCate.setStoreId(storeId);
         mtCate.setUpdateTime(new Date());
         mtCate.setCreateTime(new Date());
         this.save(mtCate);
@@ -146,7 +154,7 @@ public class CateServiceImpl extends ServiceImpl<MtGoodsCateMapper, MtGoodsCate>
     /**
      * 根据ID删除分类信息
      *
-     * @param id       ID
+     * @param id ID
      * @param operator 操作人
      * @throws BusinessCheckException
      */

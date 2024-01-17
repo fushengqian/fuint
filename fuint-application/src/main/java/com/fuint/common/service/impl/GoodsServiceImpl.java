@@ -169,13 +169,14 @@ public class GoodsServiceImpl extends ServiceImpl<MtGoodsMapper, MtGoods> implem
     /**
      * 保存商品信息
      *
-     * @param  reqDto
+     * @param  reqDto 商品参数
      * @throws BusinessCheckException
+     * @return
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
     @OperationServiceLog(description = "保存商品信息")
-    public MtGoods saveGoods(MtGoods reqDto) {
+    public MtGoods saveGoods(MtGoods reqDto) throws BusinessCheckException {
         MtGoods mtGoods = new MtGoods();
         if (reqDto.getId() > 0) {
             mtGoods = queryGoodsById(reqDto.getId());
@@ -186,6 +187,13 @@ public class GoodsServiceImpl extends ServiceImpl<MtGoodsMapper, MtGoods> implem
         }
         if (reqDto.getStoreId() != null) {
             mtGoods.setStoreId(reqDto.getStoreId() >= 0 ? reqDto.getStoreId() : 0);
+        }
+        Integer storeId = reqDto.getStoreId() == null ? 0 : reqDto.getStoreId();
+        if (reqDto.getMerchantId() == null || reqDto.getMerchantId() <= 0) {
+            MtStore mtStore = storeService.queryStoreById(storeId);
+            if (mtStore != null) {
+                mtGoods.setMerchantId(mtStore.getMerchantId());
+            }
         }
         if (StringUtil.isNotEmpty(reqDto.getIsSingleSpec())) {
             mtGoods.setIsSingleSpec(reqDto.getIsSingleSpec());

@@ -89,7 +89,8 @@ public class UserGradeServiceImpl extends ServiceImpl<MtUserGradeMapper, MtUserG
     /**
      * 添加会员等级信息
      *
-     * @param mtUserGrade
+     * @param mtUserGrade 会员等级
+     * @return
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -108,7 +109,7 @@ public class UserGradeServiceImpl extends ServiceImpl<MtUserGradeMapper, MtUserG
     /**
      * 根据ID获取会员等级信息
      *
-     * @param merchantId
+     * @param merchantId 商户ID
      * @param gradeId 会员等级ID
      * @param userId 会员ID
      * @return
@@ -202,8 +203,9 @@ public class UserGradeServiceImpl extends ServiceImpl<MtUserGradeMapper, MtUserG
     /**
      * 获取付费会员等级列表
      *
-     * @param merchantId
-     * @param userInfo
+     * @param merchantId 商户ID
+     * @param userInfo 会员信息
+     * @return
      * */
     @Override
     public List<MtUserGrade> getPayUserGradeList(Integer merchantId, MtUser userInfo) {

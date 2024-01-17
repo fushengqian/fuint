@@ -43,6 +43,11 @@ public class MemberGroupServiceImpl extends ServiceImpl<MtUserGroupMapper, MtUse
     private MtUserGroupMapper mtUserGroupMapper;
 
     /**
+     * 店铺接口
+     */
+    private StoreService storeService;
+
+    /**
      * 分页查询会员分组列表
      *
      * @param paginationRequest
@@ -101,15 +106,23 @@ public class MemberGroupServiceImpl extends ServiceImpl<MtUserGroupMapper, MtUse
     /**
      * 添加会员分组
      *
-     * @param  memberGroupDto
+     * @param  memberGroupDto 会员分组
      * @throws BusinessCheckException
+     * @return
      */
     @Override
     @OperationServiceLog(description = "新增会员分组")
-    public MtUserGroup addMemberGroup(MemberGroupDto memberGroupDto) {
+    public MtUserGroup addMemberGroup(MemberGroupDto memberGroupDto) throws BusinessCheckException {
         MtUserGroup userGroup = new MtUserGroup();
+        Integer storeId = memberGroupDto.getStoreId() == null ? 0 : memberGroupDto.getStoreId();
+        if (memberGroupDto.getMerchantId() == null || memberGroupDto.getMerchantId() <= 0) {
+            MtStore mtStore = storeService.queryStoreById(storeId);
+            if (mtStore != null) {
+                memberGroupDto.setMerchantId(mtStore.getMerchantId());
+            }
+        }
         userGroup.setMerchantId(memberGroupDto.getMerchantId());
-        userGroup.setStoreId(memberGroupDto.getStoreId());
+        userGroup.setStoreId(storeId);
         userGroup.setParentId(memberGroupDto.getParentId());
         userGroup.setName(CommonUtil.replaceXSS(memberGroupDto.getName()));
         userGroup.setDescription(CommonUtil.replaceXSS(memberGroupDto.getDescription()));
@@ -126,6 +139,7 @@ public class MemberGroupServiceImpl extends ServiceImpl<MtUserGroupMapper, MtUse
      *
      * @param  id 分组ID
      * @throws BusinessCheckException
+     * @return
      */
     @Override
     public MtUserGroup queryMemberGroupById(Integer id) {
@@ -138,6 +152,7 @@ public class MemberGroupServiceImpl extends ServiceImpl<MtUserGroupMapper, MtUse
      * @param  id       分组ID
      * @param  operator 操作人
      * @throws BusinessCheckException
+     * @return
      */
     @Override
     @OperationServiceLog(description = "删除会员分组")
@@ -155,10 +170,11 @@ public class MemberGroupServiceImpl extends ServiceImpl<MtUserGroupMapper, MtUse
     }
 
     /**
-     * 修改卡券分组
+     * 修改会员分组
      *
      * @param  memberGroupDto
      * @throws BusinessCheckException
+     * @return
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -188,7 +204,7 @@ public class MemberGroupServiceImpl extends ServiceImpl<MtUserGroupMapper, MtUse
     /**
      * 获取会员分组子类
      *
-     * @param groupId
+     * @param groupId 分组ID
      * @return
      * */
     public List<UserGroupDto> getChildren(Integer groupId) {
@@ -212,7 +228,7 @@ public class MemberGroupServiceImpl extends ServiceImpl<MtUserGroupMapper, MtUse
     /**
      * 获取分组会员数量
      *
-     * @param groupId
+     * @param groupId 分组ID
      * @return
      * */
     public Long getMemberNum(Integer groupId) {
@@ -224,7 +240,7 @@ public class MemberGroupServiceImpl extends ServiceImpl<MtUserGroupMapper, MtUse
     /**
      * 获取会员分组子类ID
      *
-     * @param groupId
+     * @param groupId 分组ID
      * @return
      * */
     public List<Integer> getGroupIds(Integer groupId) {

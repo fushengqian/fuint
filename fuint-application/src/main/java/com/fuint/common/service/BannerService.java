@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * banner业务接口
+ * 焦点图业务接口
  *
  * Created by FSQ
  * CopyRight https://www.fuint.cn
@@ -30,6 +30,7 @@ public interface BannerService extends IService<MtBanner> {
      *
      * @param reqBannerDto
      * @throws BusinessCheckException
+     * @return
      */
     MtBanner addBanner(BannerDto reqBannerDto) throws BusinessCheckException;
 
@@ -38,31 +39,34 @@ public interface BannerService extends IService<MtBanner> {
      *
      * @param id Banner ID
      * @throws BusinessCheckException
+     * @return
      */
     MtBanner queryBannerById(Integer id) throws BusinessCheckException;
 
     /**
-     * 根据ID删除
+     * 根据ID删除焦点图
      *
      * @param id ID
      * @param operator 操作人
      * @throws BusinessCheckException
+     * @return
      */
     void deleteBanner(Integer id, String operator) throws BusinessCheckException;
 
     /**
-     * 更新Banner
+     * 更新焦点图
      * @param bannerDto
      * @throws BusinessCheckException
+     * @return
      * */
     MtBanner updateBanner(BannerDto bannerDto) throws BusinessCheckException;
 
     /**
-     * 根据条件搜索Banner
+     * 根据条件搜索焦点图
      *
      * @param params 查询参数
+     * @throws BusinessCheckException
      * @return
      * */
     List<MtBanner> queryBannerListByParams(Map<String, Object> params) throws BusinessCheckException;
-
 }

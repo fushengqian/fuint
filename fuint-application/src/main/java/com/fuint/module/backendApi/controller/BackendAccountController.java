@@ -205,7 +205,7 @@ public class BackendAccountController extends BaseController {
     @RequestMapping(value = "/doCreate", method = RequestMethod.POST)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('system:account:add')")
-    public ResponseObject doCreate(HttpServletRequest request, @RequestBody Map<String, Object> param) {
+    public ResponseObject doCreate(HttpServletRequest request, @RequestBody Map<String, Object> param) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
         AccountInfo loginAccount = TokenUtil.getAccountInfoByToken(token);
         if (loginAccount == null) {

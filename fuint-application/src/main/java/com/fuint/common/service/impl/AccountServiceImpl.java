@@ -7,6 +7,7 @@ import com.fuint.common.dto.AccountDto;
 import com.fuint.common.dto.AccountInfo;
 import com.fuint.common.service.AccountService;
 import com.fuint.common.service.StaffService;
+import com.fuint.common.service.StoreService;
 import com.fuint.framework.annoation.OperationServiceLog;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.exception.BusinessRuntimeException;
@@ -51,6 +52,11 @@ public class AccountServiceImpl extends ServiceImpl<TAccountMapper, TAccount> im
      * 员工接口
      */
     private StaffService staffService;
+
+    /**
+     * 店铺服务接口
+     * */
+    private StoreService storeService;
 
     /**
      * 分页查询账号列表
@@ -156,14 +162,14 @@ public class AccountServiceImpl extends ServiceImpl<TAccountMapper, TAccount> im
     }
 
     /**
-     * 创建账号信息
+     * 新增后台账户
      *
      * @param tAccount
      * @return
      * */
     @Override
     @OperationServiceLog(description = "新增后台账户")
-    public TAccount createAccountInfo(TAccount tAccount, List<TDuty> duties) {
+    public TAccount createAccountInfo(TAccount tAccount, List<TDuty> duties) throws BusinessCheckException {
         TAccount account = new TAccount();
         account.setAccountKey(tAccount.getAccountKey());
         account.setAccountName(tAccount.getAccountName().toLowerCase());
@@ -171,6 +177,13 @@ public class AccountServiceImpl extends ServiceImpl<TAccountMapper, TAccount> im
         account.setRealName(tAccount.getRealName());
         account.setRoleIds(tAccount.getRoleIds());
         account.setStaffId(tAccount.getStaffId());
+        Integer storeId = tAccount.getStoreId() == null ? 0 : tAccount.getStoreId();
+        if (tAccount.getMerchantId() == null || tAccount.getMerchantId() <= 0) {
+            MtStore mtStore = storeService.queryStoreById(storeId);
+            if (mtStore != null) {
+                tAccount.setMerchantId(mtStore.getMerchantId());
+            }
+        }
         account.setMerchantId(tAccount.getMerchantId());
         account.setStoreId(tAccount.getStoreId());
         account.setCreateDate(new Date());

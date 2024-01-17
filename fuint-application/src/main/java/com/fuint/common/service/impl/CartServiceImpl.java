@@ -197,7 +197,7 @@ public class CartServiceImpl extends ServiceImpl<MtCartMapper, MtCart> implement
     /**
      * 删除购物车
      *
-     * @param  cartIds
+     * @param  cartIds 购物车ID
      * @throws BusinessCheckException
      * @return
      */
@@ -235,7 +235,7 @@ public class CartServiceImpl extends ServiceImpl<MtCartMapper, MtCart> implement
     /**
      * 清空会员购物车
      *
-     * @param userId
+     * @param userId 会员ID
      * @throws BusinessCheckException
      * @return
      */
