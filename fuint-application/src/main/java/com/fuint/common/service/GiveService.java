@@ -48,11 +48,11 @@ public interface GiveService extends IService<MtGive> {
     MtGive queryGiveById(Long id) throws BusinessCheckException;
 
     /**
-     * 根据条件搜索详情
+     * 根据条件搜索转赠详情
      *
      * @param params
      * @throws BusinessCheckException
      * @return
      * */
-    List<MtGiveItem> queryItemByParams(Map<String, Object> params) throws BusinessCheckException;
+    List<MtGiveItem> queryItemByParams(Map<String, Object> params);
 }

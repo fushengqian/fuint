@@ -31,6 +31,7 @@ public class VerifyCodeServiceImpl extends ServiceImpl<MtVerifyCodeMapper, MtVer
      * @param mobile
      * @param verifyCode
      * @throws BusinessCheckException
+     * @return
      */
     public MtVerifyCode addVerifyCode(String mobile, String verifyCode, Integer expireSecond) {
         if (null == expireSecond || expireSecond<0) {
@@ -78,6 +79,7 @@ public class VerifyCodeServiceImpl extends ServiceImpl<MtVerifyCodeMapper, MtVer
      * @param id
      * @param validFlag
      * @throws BusinessCheckException
+     * @return
      */
     @Override
     public MtVerifyCode updateValidFlag(Long id, String validFlag)  throws BusinessCheckException {
@@ -101,6 +103,7 @@ public class VerifyCodeServiceImpl extends ServiceImpl<MtVerifyCodeMapper, MtVer
      * @param mobile 电话号码
      * @param verifyCode 验证码
      * @throws BusinessCheckException
+     * @return
      */
     public MtVerifyCode checkVerifyCode(String mobile, String verifyCode) {
         MtVerifyCode reVerifyCode;

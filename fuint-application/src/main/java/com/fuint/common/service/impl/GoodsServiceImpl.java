@@ -300,6 +300,7 @@ public class GoodsServiceImpl extends ServiceImpl<MtGoodsMapper, MtGoods> implem
      *
      * @param  id 商品ID
      * @throws BusinessCheckException
+     * @return
      */
     @Override
     public MtGoods queryGoodsById(Integer id) {
@@ -313,9 +314,10 @@ public class GoodsServiceImpl extends ServiceImpl<MtGoodsMapper, MtGoods> implem
     /**
      * 根据编码获取商品信息
      *
-     * @param  merchantId
-     * @param  goodsNo
+     * @param  merchantId 商户ID
+     * @param  goodsNo 商品编码
      * @throws BusinessCheckException
+     * @return
      */
     @Override
     public MtGoods queryGoodsByGoodsNo(Integer merchantId, String goodsNo) {
@@ -417,6 +419,7 @@ public class GoodsServiceImpl extends ServiceImpl<MtGoodsMapper, MtGoods> implem
      * @param  id ID
      * @param  operator 操作人
      * @throws BusinessCheckException
+     * @return
      */
     @Override
     @OperationServiceLog(description = "删除商品信息")
@@ -434,11 +437,12 @@ public class GoodsServiceImpl extends ServiceImpl<MtGoodsMapper, MtGoods> implem
     /**
      * 获取店铺的商品列表
      *
-     * @param storeId
-     * @param keyword
-     * @param cateId
-     * @param page
-     * @param pageSize
+     * @param storeId 店铺ID
+     * @param keyword 关键字
+     * @param cateId 分类ID
+     * @param page 当前页码
+     * @param pageSize 每页页数
+     * @throws BusinessCheckException
      * @return
      * */
     @Override
@@ -503,7 +507,7 @@ public class GoodsServiceImpl extends ServiceImpl<MtGoodsMapper, MtGoods> implem
     /**
      * 通过SKU获取规格列表
      *
-     * @param skuId
+     * @param skuId skuID
      * @return
      * */
     @Override
@@ -535,7 +539,7 @@ public class GoodsServiceImpl extends ServiceImpl<MtGoodsMapper, MtGoods> implem
     /**
      * 获取商品规格详情
      *
-     * @param specId
+     * @param specId 规格ID
      * @return
      * */
     @Override
@@ -547,7 +551,7 @@ public class GoodsServiceImpl extends ServiceImpl<MtGoodsMapper, MtGoods> implem
     /**
      * 更新已售数量
      *
-     * @param goodsId
+     * @param goodsId 商品ID
      * @return
      * */
     @Override
@@ -559,7 +563,7 @@ public class GoodsServiceImpl extends ServiceImpl<MtGoodsMapper, MtGoods> implem
     /**
      * 获取选择商品列表
      *
-     * @param params
+     * @param params 查询参数
      * @return
      */
     @Override
@@ -632,10 +636,10 @@ public class GoodsServiceImpl extends ServiceImpl<MtGoodsMapper, MtGoods> implem
     /**
      * 获取商品销售排行榜
      *
-     * @param merchantId
-     * @param storeId
-     * @param startTime
-     * @param endTime
+     * @param merchantId 商户ID
+     * @param storeId 店铺ID
+     * @param startTime 开始时间
+     * @param endTime 结束时间
      * @return
      * */
     @Override

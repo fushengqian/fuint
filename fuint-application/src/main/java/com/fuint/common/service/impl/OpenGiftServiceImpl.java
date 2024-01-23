@@ -122,7 +122,7 @@ public class OpenGiftServiceImpl extends ServiceImpl<MtOpenGiftMapper, MtOpenGif
     /**
      * 新增开卡赠礼
      *
-     * @param  mtOpenGift
+     * @param  mtOpenGift 赠礼信息
      * @throws BusinessCheckException
      * @return
      */
@@ -152,7 +152,7 @@ public class OpenGiftServiceImpl extends ServiceImpl<MtOpenGiftMapper, MtOpenGif
     /**
      * 根据ID删除数据
      *
-     * @param  id       开卡赠礼ID
+     * @param  id 开卡赠礼ID
      * @param  operator 操作人
      * @throws BusinessCheckException
      * @return

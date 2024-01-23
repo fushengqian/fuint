@@ -21,7 +21,7 @@ public interface DutyService extends IService<TDuty> {
     /**
      * 角色保存方法
      *
-     * @param duty
+     * @param duty 角色信息
      * @return
      */
     void saveDuty(TDuty duty, List<TSource> sources) throws BusinessCheckException;
@@ -38,7 +38,7 @@ public interface DutyService extends IService<TDuty> {
     /**
      * 根据ID获取角色实体
      *
-     * @param roleId
+     * @param roleId 角色ID
      * @return
      */
     TDuty getRoleById(Long roleId);
@@ -54,7 +54,7 @@ public interface DutyService extends IService<TDuty> {
     /**
      * 根据ID数组获取角色集合
      *
-     * @param ids
+     * @param ids 角色ID
      * @return
      */
     List<TDuty> findDatasByIds(String[] ids);
@@ -62,8 +62,8 @@ public interface DutyService extends IService<TDuty> {
     /**
      * 删除方法
      *
-     * @param merchantId
-     * @param dutyId
+     * @param merchantId 商户ID
+     * @param dutyId 角色ID
      * @return
      */
     void deleteDuty(Integer merchantId, long dutyId) throws BusinessCheckException;
@@ -80,7 +80,8 @@ public interface DutyService extends IService<TDuty> {
     /**
      * 修改角色
      *
-     * @param tduty
+     * @param tduty 角色信息
+     * @param sources 菜单列表
      * @return
      */
     void updateDuty(TDuty tduty, List<TSource> sources) throws BusinessCheckException;
@@ -88,8 +89,8 @@ public interface DutyService extends IService<TDuty> {
     /**
      * 根据角色名称合状态查询角色
      *
-     * @param merchantId
-     * @param name
+     * @param merchantId 商户ID
+     * @param name 角色名称
      * @return
      */
     TDuty findByName(Integer merchantId, String name);
@@ -97,7 +98,7 @@ public interface DutyService extends IService<TDuty> {
     /**
      * 根据角色名称获取已经分配的菜单ID集合
      *
-     * @param dutyId
+     * @param dutyId 角色ID
      * @return
      */
     List<Long> getSourceIdsByDutyId(Integer dutyId);
@@ -105,7 +106,7 @@ public interface DutyService extends IService<TDuty> {
     /**
      * 获取角色的树形结构
      *
-     * @param merchantId
+     * @param merchantId 商户ID
      * @return
      */
     List<TreeNode> getDutyTree(Integer merchantId);
@@ -113,7 +114,7 @@ public interface DutyService extends IService<TDuty> {
     /**
      * 根据账户获取角色
      *
-     * @param accountId
+     * @param accountId 账号ID
      * @return
      */
     List<Long> findDutiesByAccountId(Integer accountId);

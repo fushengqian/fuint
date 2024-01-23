@@ -132,7 +132,8 @@ public class UserGradeServiceImpl extends ServiceImpl<MtUserGradeMapper, MtUserG
     /**
      * 修改会员等级
      *
-     * @param mtUserGrade
+     * @param mtUserGrade 会员等级
+     * @return
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -157,6 +158,7 @@ public class UserGradeServiceImpl extends ServiceImpl<MtUserGradeMapper, MtUserG
      *
      * @param id ID
      * @param operator 操作人
+     * @return
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -174,7 +176,7 @@ public class UserGradeServiceImpl extends ServiceImpl<MtUserGradeMapper, MtUserG
     /**
      * 获取默认的会员等级
      *
-     * @param merchantId
+     * @param merchantId 商户ID
      * @return
      */
     @Override

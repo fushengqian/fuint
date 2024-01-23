@@ -1245,7 +1245,7 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
     /**
      * 更新订单
      *
-     * @param mtOrder
+     * @param mtOrder 订单信息
      * @return
      * */
     @Override

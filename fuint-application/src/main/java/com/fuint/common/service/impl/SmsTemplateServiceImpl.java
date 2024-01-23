@@ -86,7 +86,7 @@ public class SmsTemplateServiceImpl extends ServiceImpl<MtSmsTemplateMapper, MtS
     /**
      * 保存模板信息
      *
-     * @param mtSmsTemplateDto
+     * @param mtSmsTemplateDto 短信模板
      * @return
      */
     @Override
@@ -125,6 +125,7 @@ public class SmsTemplateServiceImpl extends ServiceImpl<MtSmsTemplateMapper, MtS
      *
      * @param id 模板ID
      * @param operator 操作人
+     * @return
      */
     @Override
     @Transactional(rollbackFor = Exception.class)

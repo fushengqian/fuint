@@ -135,8 +135,8 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
 
     /**
      * 获取当前操作会员信息
-     * @param userId
-     * @param token
+     * @param userId 会员ID
+     * @param token 登录token
      * @return
      * */
     @Override
@@ -312,8 +312,9 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
     /**
      * 添加会员
      *
-     * @param  mtUser
+     * @param  mtUser 会员信息
      * @throws BusinessCheckException
+     * @return
      */
     @Override
     @OperationServiceLog(description = "新增会员信息")
@@ -404,8 +405,9 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
     /**
      * 更新会员信息
      *
-     * @param  mtUser
+     * @param  mtUser 会员信息
      * @throws BusinessCheckException
+     * @return
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -458,8 +460,9 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
     /**
      * 通过手机号新增会员
      *
-     * @param  mobile
+     * @param  mobile 手机号
      * @throws BusinessCheckException
+     * @return
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -496,9 +499,10 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
     /**
      * 根据手机号获取会员信息
      *
-     * @param  merchantId
+     * @param  merchantId 商户ID
      * @param  mobile 手机号
      * @throws BusinessCheckException
+     * @return
      */
     @Override
     public MtUser queryMemberByMobile(Integer merchantId, String mobile) {
@@ -518,7 +522,7 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
      *
      * @param  merchantId 商户ID
      * @param  userNo     会员号
-     * @throws BusinessCheckException
+     * @return
      */
     @Override
     public MtUser queryMemberByUserNo(Integer merchantId, String userNo) {
@@ -537,8 +541,8 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
      * 根据会员ID获取会员信息
      *
      * @param  id 会员ID
-     * @return
      * @throws BusinessCheckException
+     * @return
      */
     @Override
     public MtUser queryMemberById(Integer id) throws BusinessCheckException {
@@ -583,6 +587,7 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
      * @param  merchantId 商户ID
      * @param  name 会员名称
      * @throws BusinessCheckException
+     * @return
      */
     @Override
     public MtUser queryMemberByName(Integer merchantId, String name) {
@@ -601,6 +606,7 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
      * @param  merchantId
      * @param  openId
      * @throws BusinessCheckException
+     * @return
      */
     @Override
     public MtUser queryMemberByOpenId(Integer merchantId, String openId, JSONObject userInfo) throws BusinessCheckException {
@@ -718,6 +724,7 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
      *
      * @param  id 等级ID
      * @throws BusinessCheckException
+     * @return
      */
     @Override
     public MtUserGrade queryMemberGradeByGradeId(Integer id) {
@@ -731,6 +738,7 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
      * @param  id 会员ID
      * @param  operator 操作人
      * @throws BusinessCheckException
+     * @return
      */
     @Override
     @OperationServiceLog(description = "删除会员信息")

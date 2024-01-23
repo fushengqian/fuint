@@ -141,6 +141,7 @@ public class GiveServiceImpl extends ServiceImpl<MtGiveMapper, MtGive> implement
      *
      * @param  giveParam
      * @throws BusinessCheckException
+     * @return
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -299,12 +300,19 @@ public class GiveServiceImpl extends ServiceImpl<MtGiveMapper, MtGive> implement
      *
      * @param id ID
      * @throws BusinessCheckException
+     * @return
      */
     @Override
     public MtGive queryGiveById(Long id) {
         return mtGiveMapper.selectById(id.intValue());
     }
 
+    /**
+     * 根据条件搜索转赠详情
+     *
+     * @param params 转赠查询条件
+     * @return
+     * */
     @Override
     public List<MtGiveItem> queryItemByParams(Map<String, Object> params) {
         if (params == null) {

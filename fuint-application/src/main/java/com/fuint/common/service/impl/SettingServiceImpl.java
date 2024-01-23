@@ -57,7 +57,7 @@ public class SettingServiceImpl extends ServiceImpl<MtSettingMapper, MtSetting> 
     /**
      * 保存配置
      *
-     * @param  mtSetting
+     * @param  mtSetting 配置参数
      * @throws BusinessCheckException
      * @return
      */

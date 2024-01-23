@@ -44,6 +44,13 @@ public class DutyServiceImpl extends ServiceImpl<TDutyMapper, TDuty> implements 
 
     private TDutySourceMapper tDutySourceMapper;
 
+    /**
+     * 获取有效的角色集合
+     *
+     * @param merchantId 商户ID
+     * @param accountId  账号ID
+     * @return
+     */
     @Override
     public List<TDuty> getAvailableRoles(Integer merchantId, Integer accountId) {
         List<TDuty> result = tDutyMapper.findByStatus(merchantId, StatusEnum.ENABLED.getKey());
@@ -65,6 +72,12 @@ public class DutyServiceImpl extends ServiceImpl<TDutyMapper, TDuty> implements 
         return result;
     }
 
+    /**
+     * 根据ID获取角色实体
+     *
+     * @param roleId 角色ID
+     * @return
+     */
     @Override
     public TDuty getRoleById(Long roleId) {
         TDuty htDuty = tDutyMapper.selectById(roleId);
@@ -74,7 +87,7 @@ public class DutyServiceImpl extends ServiceImpl<TDutyMapper, TDuty> implements 
     /**
      * 根据ID数组获取角色集合
      *
-     * @param ids
+     * @param ids 角色ID
      * @return
      */
     @Override
@@ -89,7 +102,7 @@ public class DutyServiceImpl extends ServiceImpl<TDutyMapper, TDuty> implements 
     /**
      * 删除角色
      *
-     * @param dutyId
+     * @param dutyId 角色ID
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -106,8 +119,8 @@ public class DutyServiceImpl extends ServiceImpl<TDutyMapper, TDuty> implements 
     /**
      * 更新角色状态
      *
-     * @param merchantId
-     * @param dutyStatusRequest
+     * @param merchantId 商户ID
+     * @param dutyStatusRequest 请求参数
      * @return
      */
     @Override
@@ -131,7 +144,8 @@ public class DutyServiceImpl extends ServiceImpl<TDutyMapper, TDuty> implements 
     /**
      * 修改角色
      *
-     * @param tduty
+     * @param tduty 角色信息
+     * @return
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -169,8 +183,8 @@ public class DutyServiceImpl extends ServiceImpl<TDutyMapper, TDuty> implements 
     /**
      * 根据角色名称合状态查询角色
      *
-     * @param merchantId
-     * @param name
+     * @param merchantId 商户ID
+     * @param name 角色名称
      * @return
      */
     @Override
@@ -181,7 +195,7 @@ public class DutyServiceImpl extends ServiceImpl<TDutyMapper, TDuty> implements 
     /**
      * 根据角色名称获取已经分配的菜单ID集合
      *
-     * @param dutyId
+     * @param dutyId 角色ID
      * @return
      */
     @Override
@@ -192,7 +206,8 @@ public class DutyServiceImpl extends ServiceImpl<TDutyMapper, TDuty> implements 
     /**
      * 角色保存方法
      *
-     * @param duty
+     * @param duty 角色信息
+     * @return
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -216,6 +231,7 @@ public class DutyServiceImpl extends ServiceImpl<TDutyMapper, TDuty> implements 
     /**
      * 分页查询后台角色
      * @param paginationRequest
+     * @return
      * */
     @Override
     public PaginationResponse<TDuty> findDutiesByPagination(PaginationRequest paginationRequest) {
@@ -279,7 +295,7 @@ public class DutyServiceImpl extends ServiceImpl<TDutyMapper, TDuty> implements 
     /**
      * 根据账户获取角色
      *
-     * @param accountId
+     * @param accountId 账号ID
      * @return
      */
     @Override
