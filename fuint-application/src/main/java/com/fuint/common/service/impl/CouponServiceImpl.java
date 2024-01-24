@@ -667,32 +667,35 @@ public class CouponServiceImpl extends ServiceImpl<MtCouponMapper, MtCoupon> imp
         sendLogService.addSendLog(sendLogDto);
 
         if (sendMessage) {
-            // 发送手机短信
-            if (StringUtil.isNotEmpty(mobile)) {
-                List<String> mobileList = new ArrayList<>();
-                mobileList.add(mobile);
-                Integer totalNum = 0;
-                BigDecimal totalMoney = new BigDecimal("0.0");
-                List<MtCoupon> couponList = queryCouponListByGroupId(couponInfo.getGroupId());
-                for (MtCoupon coupon : couponList) {
-                    totalNum = totalNum + (coupon.getSendNum() * num);
-                    totalMoney = totalMoney.add((coupon.getAmount().multiply(new BigDecimal(num).multiply(new BigDecimal(coupon.getSendNum())))));
+            try {
+                // 发送手机短信
+                if (StringUtil.isNotEmpty(mobile)) {
+                    List<String> mobileList = new ArrayList<>();
+                    mobileList.add(mobile);
+                    Integer totalNum = 0;
+                    BigDecimal totalMoney = new BigDecimal("0.0");
+                    List<MtCoupon> couponList = queryCouponListByGroupId(couponInfo.getGroupId());
+                    for (MtCoupon coupon : couponList) {
+                        totalNum = totalNum + (coupon.getSendNum() * num);
+                        totalMoney = totalMoney.add((coupon.getAmount().multiply(new BigDecimal(num).multiply(new BigDecimal(coupon.getSendNum())))));
+                    }
+                    Map<String, String> params = new HashMap<>();
+                    params.put("totalNum", totalNum + "");
+                    params.put("totalMoney", totalMoney + "");
+                    sendSmsService.sendSms(couponInfo.getMerchantId(), "received-coupon", mobileList, params);
                 }
-                Map<String, String> params = new HashMap<>();
-                params.put("totalNum", totalNum + "");
-                params.put("totalMoney", totalMoney + "");
-                sendSmsService.sendSms(couponInfo.getMerchantId(), "received-coupon", mobileList, params);
-            }
-
-            // 发送小程序订阅消息
-            if (userInfo != null && couponInfo != null && couponInfo.getAmount().compareTo(new BigDecimal("0")) > 0) {
-                Date nowTime = new Date();
-                Date sendTime = new Date(nowTime.getTime());
-                Map<String, Object> params = new HashMap<>();
-                params.put("name", couponInfo.getName());
-                params.put("amount", couponInfo.getAmount());
-                params.put("tips", "您的卡券已到账，请查收~");
-                weixinService.sendSubscribeMessage(userInfo.getMerchantId(), userInfo.getId(), userInfo.getOpenId(), WxMessageEnum.COUPON_ARRIVAL.getKey(), "pages/user/index", params, sendTime);
+                // 发送小程序订阅消息
+                if (userInfo != null && couponInfo != null && couponInfo.getAmount().compareTo(new BigDecimal("0")) > 0) {
+                    Date nowTime = new Date();
+                    Date sendTime = new Date(nowTime.getTime());
+                    Map<String, Object> params = new HashMap<>();
+                    params.put("name", couponInfo.getName());
+                    params.put("amount", couponInfo.getAmount());
+                    params.put("tips", "您的卡券已到账，请查收~");
+                    weixinService.sendSubscribeMessage(userInfo.getMerchantId(), userInfo.getId(), userInfo.getOpenId(), WxMessageEnum.COUPON_ARRIVAL.getKey(), "pages/user/index", params, sendTime);
+                }
+            } catch (Exception e) {
+                // empty
             }
         }
     }

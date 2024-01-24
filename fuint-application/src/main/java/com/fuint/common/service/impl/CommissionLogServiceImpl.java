@@ -4,6 +4,8 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fuint.common.dto.CommissionLogDto;
+import com.fuint.common.enums.CommissionTargetEnum;
+import com.fuint.common.enums.GoodsTypeEnum;
 import com.fuint.common.enums.OrderTypeEnum;
 import com.fuint.common.service.*;
 import com.fuint.framework.annoation.OperationServiceLog;
@@ -11,6 +13,7 @@ import com.fuint.framework.pagination.PaginationRequest;
 import com.fuint.framework.pagination.PaginationResponse;
 import com.fuint.repository.mapper.MtCommissionLogMapper;
 import com.fuint.common.enums.StatusEnum;
+import com.fuint.repository.mapper.MtCommissionRuleItemMapper;
 import com.fuint.repository.mapper.MtOrderGoodsMapper;
 import com.fuint.repository.model.*;
 import com.github.pagehelper.PageHelper;
@@ -40,6 +43,8 @@ public class CommissionLogServiceImpl extends ServiceImpl<MtCommissionLogMapper,
     private static final Logger logger = LoggerFactory.getLogger(CommissionLogServiceImpl.class);
 
     private MtCommissionLogMapper mtCommissionLogMapper;
+
+    private MtCommissionRuleItemMapper mtCommissionRuleItemMapper;
 
     private MtOrderGoodsMapper mtOrderGoodsMapper;
 
@@ -120,7 +125,7 @@ public class CommissionLogServiceImpl extends ServiceImpl<MtCommissionLogMapper,
     /**
      * 新增分销提成记录
      *
-     * @param orderId
+     * @param orderId 订单ID
      * @return
      */
     @Override
@@ -137,28 +142,38 @@ public class CommissionLogServiceImpl extends ServiceImpl<MtCommissionLogMapper,
                 List<MtOrderGoods> goodsList = mtOrderGoodsMapper.selectByMap(params);
                 if (goodsList != null && goodsList.size() > 0) {
                     for (MtOrderGoods orderGoods : goodsList) {
-                         orderGoods.getGoodsId();
+                         Integer goodsId = orderGoods.getGoodsId();
+                         LambdaQueryWrapper<MtCommissionRuleItem> lambdaQueryWrapper = Wrappers.lambdaQuery();
+                         lambdaQueryWrapper.eq(MtCommissionRuleItem::getMerchantId, mtOrder.getMerchantId());
+                         lambdaQueryWrapper.eq(MtCommissionRuleItem::getTargetId, goodsId);
+                         lambdaQueryWrapper.eq(MtCommissionRuleItem::getType, OrderTypeEnum.GOOGS.getKey());
+                         lambdaQueryWrapper.eq(MtCommissionRuleItem::getStatus, StatusEnum.ENABLED.getKey());
+                         lambdaQueryWrapper.orderByDesc(MtCommissionRuleItem::getId);
+                         List<MtCommissionRuleItem> commissionRuleItemList = mtCommissionRuleItemMapper.selectList(lambdaQueryWrapper);
+                         if (commissionRuleItemList != null && commissionRuleItemList.size() > 0) {
+                             MtCommissionRuleItem mtCommissionRuleItem = commissionRuleItemList.get(0);
+                             MtCommissionLog mtCommissionLog = new MtCommissionLog();
+                             BigDecimal amount = orderGoods.getPrice().multiply(mtCommissionRuleItem.getGuest().divide(new BigDecimal("100")));
+                             mtCommissionLog.setType(mtOrder.getType());
+                             mtCommissionLog.setLevel(0);
+                             mtCommissionLog.setUserId(mtOrder.getUserId());
+                             mtCommissionLog.setOrderId(orderId);
+                             mtCommissionLog.setMerchantId(mtOrder.getMerchantId());
+                             mtCommissionLog.setStoreId(mtOrder.getStoreId());
+                             mtCommissionLog.setStaffId(mtOrder.getStaffId());
+                             mtCommissionLog.setAmount(amount);
+                             mtCommissionLog.setRuleId(mtCommissionRuleItem.getRuleId());
+                             mtCommissionLog.setRuleItemId(mtCommissionRuleItem.getId());
+                             mtCommissionLog.setCashId(0);
+                             mtCommissionLog.setCashTime(null);
+                             mtCommissionLog.setCreateTime(new Date());
+                             mtCommissionLog.setUpdateTime(new Date());
+                             mtCommissionLog.setStatus(StatusEnum.ENABLED.getKey());
+                             mtCommissionLog.setOperator(null);
+                             mtCommissionLogMapper.insert(mtCommissionLog);
+                         }
                     }
                 }
-            }
-            if (mtOrder != null) {
-                MtCommissionLog mtCommissionLog = new MtCommissionLog();
-                mtCommissionLog.setType(mtOrder.getType());
-                mtCommissionLog.setLevel(0);
-                mtCommissionLog.setUserId(0);
-                mtCommissionLog.setOrderId(orderId);
-                mtCommissionLog.setMerchantId(mtOrder.getMerchantId());
-                mtCommissionLog.setStoreId(mtOrder.getStoreId());
-                mtCommissionLog.setStaffId(mtOrder.getStaffId());
-                mtCommissionLog.setAmount(new BigDecimal("0"));
-                mtCommissionLog.setRuleId(0);
-                mtCommissionLog.setCashId(0);
-                mtCommissionLog.setCashTime(null);
-                mtCommissionLog.setCreateTime(new Date());
-                mtCommissionLog.setUpdateTime(new Date());
-                mtCommissionLog.setStatus(StatusEnum.ENABLED.getKey());
-                mtCommissionLog.setOperator(null);
-                mtCommissionLogMapper.insert(mtCommissionLog);
             }
         } else {
             logger.error("分销提成记录订单不能ID为空...");
@@ -168,7 +183,8 @@ public class CommissionLogServiceImpl extends ServiceImpl<MtCommissionLogMapper,
     /**
      * 根据ID获取记录信息
      *
-     * @param id
+     * @param id 分佣提成记录ID
+     * @return
      */
     @Override
     public CommissionLogDto queryCommissionLogById(Integer id) {
@@ -183,8 +199,9 @@ public class CommissionLogServiceImpl extends ServiceImpl<MtCommissionLogMapper,
     /**
      * 根据ID删除
      *
-     * @param id
+     * @param id 分佣提成记录ID
      * @param operator 操作人
+     * @return
      */
     @Override
     @Transactional

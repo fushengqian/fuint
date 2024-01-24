@@ -26,25 +26,28 @@ public interface CommissionLogService extends IService<MtCommissionLog> {
     /**
      * 添加分销提成记录
      *
-     * @param  orderId
+     * @param  orderId 订单ID
      * @throws BusinessCheckException
+     * @return
      */
     void addCommissionLog(Integer orderId) throws BusinessCheckException;
 
     /**
      * 根据ID获取记录信息
      *
-     * @param  id
+     * @param  id 记录ID
      * @throws BusinessCheckException
+     * @return
      */
     CommissionLogDto queryCommissionLogById(Integer id) throws BusinessCheckException;
 
     /**
      * 根据ID删除分销提成记录
      *
-     * @param id       ID
+     * @param id 记录ID
      * @param operator 操作人
      * @throws BusinessCheckException
+     * @return
      */
     void deleteCommissionLog(Integer id, String operator) throws BusinessCheckException;
 }

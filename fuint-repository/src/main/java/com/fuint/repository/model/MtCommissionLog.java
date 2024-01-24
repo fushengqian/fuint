@@ -56,6 +56,9 @@ public class MtCommissionLog implements Serializable {
     @ApiModelProperty("规则ID")
     private Integer ruleId;
 
+    @ApiModelProperty("规则项ID")
+    private Integer ruleItemId;
+
     @ApiModelProperty("备注")
     private String description;
 
