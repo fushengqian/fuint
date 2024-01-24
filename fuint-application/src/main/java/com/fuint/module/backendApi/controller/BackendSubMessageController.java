@@ -216,6 +216,9 @@ public class BackendSubMessageController extends BaseController {
         if (accountInfo == null) {
             return getFailureResult(1001, "请先登录");
         }
+        if (accountInfo.getMerchantId() == null || accountInfo.getMerchantId() <= 0) {
+            return getFailureResult(201, "请使用商户账号操作");
+        }
 
         SubMessageDto subMessageDto = new SubMessageDto();
         subMessageDto.setKey(key);

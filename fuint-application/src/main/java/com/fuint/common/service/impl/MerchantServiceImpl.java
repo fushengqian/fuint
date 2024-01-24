@@ -19,6 +19,8 @@ import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import lombok.AllArgsConstructor;
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -38,6 +40,8 @@ public class MerchantServiceImpl extends ServiceImpl<MtMerchantMapper, MtMerchan
     private MtMerchantMapper mtMerchantMapper;
 
     private MtStoreMapper mtStoreMapper;
+
+    private static final Logger logger = LoggerFactory.getLogger(MerchantServiceImpl.class);
 
     /**
      * 分页查询商户列表
@@ -179,12 +183,14 @@ public class MerchantServiceImpl extends ServiceImpl<MtMerchantMapper, MtMerchan
     @Override
     public Integer getMerchantId(String merchantNo) {
        if (merchantNo == null || StringUtil.isEmpty(merchantNo)) {
+           logger.error("根据商户号获取商户ID，商户号不能为空！");
            return 0;
        }
        MtMerchant mtMerchant = queryMerchantByNo(merchantNo);
        if (mtMerchant != null) {
            return  mtMerchant.getId();
        } else {
+           logger.error("根据商户号获取商户ID，该商户不存在！");
            return 0;
        }
     }
