@@ -123,15 +123,14 @@ public class CommissionLogServiceImpl extends ServiceImpl<MtCommissionLogMapper,
     }
 
     /**
-     * 新增分销提成记录
+     * 计算订单分销提成
      *
      * @param orderId 订单ID
      * @return
      */
     @Override
     @Transactional
-    @OperationServiceLog(description = "新增分销提成记录")
-    public void addCommissionLog(Integer orderId) {
+    public void calculateCommission(Integer orderId) {
         if (orderId != null && orderId > 0) {
             MtOrder mtOrder = orderService.getById(orderId);
             // 商品订单佣金计算
@@ -176,7 +175,7 @@ public class CommissionLogServiceImpl extends ServiceImpl<MtCommissionLogMapper,
                 }
             }
         } else {
-            logger.error("分销提成记录订单不能ID为空...");
+            logger.error("计算分销提成订单不能ID为空...");
         }
     }
 

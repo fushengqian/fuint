@@ -24,13 +24,13 @@ public interface CommissionLogService extends IService<MtCommissionLog> {
     PaginationResponse<CommissionLogDto> queryCommissionLogByPagination(PaginationRequest paginationRequest) throws BusinessCheckException;
 
     /**
-     * 添加分销提成记录
+     * 计算订单分销提成
      *
      * @param  orderId 订单ID
      * @throws BusinessCheckException
      * @return
      */
-    void addCommissionLog(Integer orderId) throws BusinessCheckException;
+    void calculateCommission(Integer orderId) throws BusinessCheckException;
 
     /**
      * 根据ID获取记录信息
