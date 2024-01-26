@@ -5,6 +5,7 @@ import com.fuint.common.dto.CommissionLogDto;
 import com.fuint.framework.pagination.PaginationRequest;
 import com.fuint.framework.pagination.PaginationResponse;
 import com.fuint.framework.exception.BusinessCheckException;
+import com.fuint.module.backendApi.request.CommissionLogRequest;
 import com.fuint.repository.model.MtCommissionLog;
 
 /**
@@ -42,12 +43,11 @@ public interface CommissionLogService extends IService<MtCommissionLog> {
     CommissionLogDto queryCommissionLogById(Integer id) throws BusinessCheckException;
 
     /**
-     * 根据ID删除分销提成记录
+     * 更新分销提成记录
      *
-     * @param id 记录ID
-     * @param operator 操作人
+     * @param commissionLogRequest 请求参数
      * @throws BusinessCheckException
      * @return
      */
-    void deleteCommissionLog(Integer id, String operator) throws BusinessCheckException;
+    void updateCommissionLog(CommissionLogRequest commissionLogRequest) throws BusinessCheckException;
 }

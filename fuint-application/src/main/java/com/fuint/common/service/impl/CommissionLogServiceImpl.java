@@ -4,15 +4,14 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fuint.common.dto.CommissionLogDto;
-import com.fuint.common.enums.CommissionTargetEnum;
-import com.fuint.common.enums.GoodsTypeEnum;
-import com.fuint.common.enums.OrderTypeEnum;
+import com.fuint.common.enums.*;
 import com.fuint.common.service.*;
 import com.fuint.framework.annoation.OperationServiceLog;
+import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.pagination.PaginationRequest;
 import com.fuint.framework.pagination.PaginationResponse;
+import com.fuint.module.backendApi.request.CommissionLogRequest;
 import com.fuint.repository.mapper.MtCommissionLogMapper;
-import com.fuint.common.enums.StatusEnum;
 import com.fuint.repository.mapper.MtCommissionRuleItemMapper;
 import com.fuint.repository.mapper.MtOrderGoodsMapper;
 import com.fuint.repository.model.*;
@@ -196,23 +195,29 @@ public class CommissionLogServiceImpl extends ServiceImpl<MtCommissionLogMapper,
     }
 
     /**
-     * 根据ID删除
+     * 更新分销提成记录
      *
-     * @param id 分佣提成记录ID
-     * @param operator 操作人
+     * @param commissionLogRequest 请求参数
      * @return
      */
     @Override
     @Transactional
-    @OperationServiceLog(description = "删除分销提成记录")
-    public void deleteCommissionLog(Integer id, String operator) {
-        MtCommissionLog mtCommissionLog =  mtCommissionLogMapper.selectById(id);
+    @OperationServiceLog(description = "更新分销提成记录")
+    public void updateCommissionLog(CommissionLogRequest commissionLogRequest) throws BusinessCheckException {
+        MtCommissionLog mtCommissionLog =  mtCommissionLogMapper.selectById(commissionLogRequest.getId());
         if (mtCommissionLog == null) {
-            logger.error("删除分销提成记录失败...");
-            return;
+            logger.error("更新分销提成记录失败...");
+            throw new BusinessCheckException("更新分销提成记录失败");
         }
-        mtCommissionLog.setStatus(StatusEnum.DISABLE.getKey());
+        mtCommissionLog.setStatus(commissionLogRequest.getStatus() == null ? CommissionStatusEnum.NORMAL.getKey() : commissionLogRequest.getStatus());
         mtCommissionLog.setUpdateTime(new Date());
+        if (commissionLogRequest.getAmount() != null) {
+            mtCommissionLog.setAmount(new BigDecimal(commissionLogRequest.getAmount()));
+        }
+        if (commissionLogRequest.getDescription() != null) {
+            mtCommissionLog.setDescription(commissionLogRequest.getDescription());
+        }
+        mtCommissionLog.setOperator(commissionLogRequest.getOperator());
         mtCommissionLogMapper.updateById(mtCommissionLog);
     }
 }

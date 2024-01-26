@@ -2,6 +2,8 @@ package com.fuint.module.backendApi.controller;
 
 import com.fuint.common.dto.AccountInfo;
 import com.fuint.common.dto.CommissionLogDto;
+import com.fuint.common.dto.ParamDto;
+import com.fuint.common.enums.CommissionStatusEnum;
 import com.fuint.common.service.CommissionLogService;
 import com.fuint.common.service.StoreService;
 import com.fuint.common.util.TokenUtil;
@@ -12,7 +14,7 @@ import com.fuint.common.enums.StatusEnum;
 import com.fuint.framework.pagination.PaginationRequest;
 import com.fuint.framework.pagination.PaginationResponse;
 import com.fuint.framework.exception.BusinessCheckException;
-import com.fuint.repository.model.MtCommissionLog;
+import com.fuint.module.backendApi.request.CommissionLogRequest;
 import com.fuint.repository.model.MtStore;
 import com.fuint.utils.StringUtil;
 import io.swagger.annotations.Api;
@@ -21,6 +23,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -103,9 +106,21 @@ public class BackendCommissionLogController extends BaseController {
         }
         List<MtStore> storeList = storeService.queryStoresByParams(paramsStore);
 
+        // 状态列表
+        CommissionStatusEnum[] statusListEnum = CommissionStatusEnum.values();
+        List<ParamDto> statusList = new ArrayList<>();
+        for (CommissionStatusEnum enumItem : statusListEnum) {
+            ParamDto paramDto = new ParamDto();
+            paramDto.setKey(enumItem.getKey());
+            paramDto.setName(enumItem.getValue());
+            paramDto.setValue(enumItem.getKey());
+            statusList.add(paramDto);
+        }
+
         Map<String, Object> result = new HashMap<>();
         result.put("dataList", paginationResponse);
         result.put("storeList", storeList);
+        result.put("statusList", statusList);
 
         return getSuccessResult(result);
     }
@@ -132,5 +147,28 @@ public class BackendCommissionLogController extends BaseController {
         result.put("commissionLog", commissionLog);
 
         return getSuccessResult(result);
+    }
+
+    /**
+     * 修改分销提成记录
+     *
+     * @param request HttpServletRequest对象
+     * @return
+     */
+    @ApiOperation(value = "修改分销提成记录")
+    @RequestMapping(value = "/save", method = RequestMethod.POST)
+    @PreAuthorize("@pms.hasPermission('commission:log:index')")
+    public ResponseObject save(HttpServletRequest request, @RequestBody CommissionLogRequest commissionLogRequest) throws BusinessCheckException {
+        String token = request.getHeader("Access-Token");
+
+        AccountInfo accountDto = TokenUtil.getAccountInfoByToken(token);
+        if (accountDto == null) {
+            return getFailureResult(1001, "请先登录");
+        }
+
+        commissionLogRequest.setOperator(accountDto.getAccountName());
+        commissionLogService.updateCommissionLog(commissionLogRequest);
+
+        return getSuccessResult(true);
     }
 }

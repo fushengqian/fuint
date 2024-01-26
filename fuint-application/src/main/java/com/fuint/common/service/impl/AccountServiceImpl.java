@@ -122,6 +122,12 @@ public class AccountServiceImpl extends ServiceImpl<TAccountMapper, TAccount> im
         return paginationResponse;
     }
 
+    /**
+     * 根据账号名称获取账号信息
+     *
+     * @param userName 账号名称
+     * @return
+     * */
     @Override
     public AccountInfo getAccountByName(String userName) {
         Map<String, Object> param = new HashMap();
@@ -155,9 +161,15 @@ public class AccountServiceImpl extends ServiceImpl<TAccountMapper, TAccount> im
         }
     }
 
+    /**
+     * 根据ID获取账号信息
+     *
+     * @param userId 账号ID
+     * @return
+     * */
     @Override
-    public TAccount getAccountInfoById(Integer id) {
-        TAccount tAccount = tAccountMapper.selectById(id);
+    public TAccount getAccountInfoById(Integer userId) {
+        TAccount tAccount = tAccountMapper.selectById(userId);
         return tAccount;
     }
 
@@ -283,14 +295,14 @@ public class AccountServiceImpl extends ServiceImpl<TAccountMapper, TAccount> im
     /**
      * 删除账号
      *
-     * @param userId
+     * @param accountId 账号ID
      * @return
      * */
     @Override
     @Transactional(rollbackFor = Exception.class)
     @OperationServiceLog(description = "删除后台账户")
-    public void deleteAccount(Long userId) {
-        TAccount tAccount = tAccountMapper.selectById(userId);
+    public void deleteAccount(Long accountId) {
+        TAccount tAccount = tAccountMapper.selectById(accountId);
         tAccount.setAccountStatus(-1);
         tAccount.setModifyDate(new Date());
         tAccountMapper.updateById(tAccount);
@@ -299,15 +311,15 @@ public class AccountServiceImpl extends ServiceImpl<TAccountMapper, TAccount> im
     /**
      * 设定安全的密码
      *
-     * @param user
+     * @param tAccount 账号信息
      * @return
      */
     @Override
-    public void entryptPassword(TAccount user) {
+    public void entryptPassword(TAccount tAccount) {
         byte[] salt = Digests.generateSalt(8);
-        user.setSalt(Encodes.encodeHex(salt));
-        byte[] hashPassword = Digests.sha1(user.getPassword().getBytes(), salt, 1024);
-        user.setPassword(Encodes.encodeHex(hashPassword));
+        tAccount.setSalt(Encodes.encodeHex(salt));
+        byte[] hashPassword = Digests.sha1(tAccount.getPassword().getBytes(), salt, 1024);
+        tAccount.setPassword(Encodes.encodeHex(hashPassword));
     }
 
     /**
