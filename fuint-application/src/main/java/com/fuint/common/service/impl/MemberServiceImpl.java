@@ -406,13 +406,14 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
      * 更新会员信息
      *
      * @param  mtUser 会员信息
+     * @param  modifyPassword 修改密码
      * @throws BusinessCheckException
      * @return
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
     @OperationServiceLog(description = "修改会员信息")
-    public MtUser updateMember(MtUser mtUser) throws BusinessCheckException {
+    public MtUser updateMember(MtUser mtUser, boolean modifyPassword) throws BusinessCheckException {
         mtUser.setUpdateTime(new Date());
 
         MtUser oldUserInfo = mtUserMapper.selectById(mtUser.getId());
@@ -438,7 +439,7 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
                 }
             }
         }
-        if (mtUser.getPassword() != null) {
+        if (mtUser.getPassword() != null && modifyPassword) {
             String salt = SeqUtil.getRandomLetter(4);
             mtUser.setSalt(salt);
             mtUser.setPassword(enCodePassword(mtUser.getPassword(), salt));

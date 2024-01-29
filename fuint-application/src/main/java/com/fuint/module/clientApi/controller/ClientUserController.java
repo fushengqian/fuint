@@ -242,6 +242,7 @@ public class ClientUserController extends BaseController {
         String mobile = "";
         Integer merchantId = merchantService.getMerchantId(merchantNo);
         UserInfo userInfo = TokenUtil.getUserInfoByToken(token);
+        boolean modifyPassword = false;
         if (userInfo == null) {
             return getFailureResult(1001);
         }
@@ -265,6 +266,7 @@ public class ClientUserController extends BaseController {
                 }
             }
             mtUser.setPassword(password);
+            modifyPassword = true;
         }
         if (sex.equals(1) || sex.equals(0) || sex.equals(2)) {
             mtUser.setSex(sex);
@@ -279,7 +281,7 @@ public class ClientUserController extends BaseController {
             mtUser.setAvatar(avatar);
         }
 
-        MtUser result = memberService.updateMember(mtUser);
+        MtUser result = memberService.updateMember(mtUser, modifyPassword);
         return getSuccessResult(result);
     }
 
@@ -296,7 +298,7 @@ public class ClientUserController extends BaseController {
         UserInfo userInfo = TokenUtil.getUserInfoByToken(token);
         if (userInfo != null && storeId > 0) {
             MtUser mtUser = memberService.queryMemberById(userInfo.getId());
-            memberService.updateMember(mtUser);
+            memberService.updateMember(mtUser, false);
         }
 
         Map<String, Object> outParams = new HashMap<>();

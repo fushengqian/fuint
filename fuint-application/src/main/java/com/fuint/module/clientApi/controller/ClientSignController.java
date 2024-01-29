@@ -162,7 +162,7 @@ public class ClientSignController extends BaseController {
         MtUser userInfo = memberService.queryMemberById(loginInfo.getId());
         userInfo.setOpenId(mpUserInfo.get("openid").toString());
         userInfo.setStoreId(Integer.parseInt(storeId));
-        MtUser mtUser = memberService.updateMember(userInfo);
+        MtUser mtUser = memberService.updateMember(userInfo, false);
 
         if (mtUser == null) {
             return getFailureResult(0, "用户状态异常");

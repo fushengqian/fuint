@@ -123,7 +123,7 @@ public class ClientSystemController extends BaseController {
         if (mtUser != null && (mtUser.getStoreId() == null || mtUser.getStoreId() < 1)) {
             mtUser.setStoreId(storeInfo.getId());
             mtUser.setUpdateTime(new Date());
-            memberService.updateMember(mtUser);
+            memberService.updateMember(mtUser, false);
         }
 
         StoreDto storeDto = new StoreDto();

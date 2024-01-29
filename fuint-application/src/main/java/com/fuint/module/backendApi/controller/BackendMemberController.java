@@ -206,7 +206,7 @@ public class BackendMemberController extends BaseController {
         }
 
         userInfo.setStatus(status);
-        memberService.updateMember(userInfo);
+        memberService.updateMember(userInfo, false);
 
         return getSuccessResult(true);
     }
@@ -302,7 +302,7 @@ public class BackendMemberController extends BaseController {
             memberInfo.setStoreId(storeId);
             memberService.addMember(memberInfo);
         } else {
-            memberService.updateMember(memberInfo);
+            memberService.updateMember(memberInfo, false);
         }
         return getSuccessResult(true);
     }
@@ -434,7 +434,7 @@ public class BackendMemberController extends BaseController {
         }
 
         userInfo.setPassword(password);
-        memberService.updateMember(userInfo);
+        memberService.updateMember(userInfo, true);
 
         return getSuccessResult(true);
     }

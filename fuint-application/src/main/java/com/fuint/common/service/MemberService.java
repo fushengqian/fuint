@@ -60,11 +60,12 @@ public interface MemberService extends IService<MtUser> {
     /**
      * 编辑会员
      *
-     * @param  reqUserDto
+     * @param  reqUserDto 会员信息
+     * @param  modifyPassword 修改密码
      * @throws BusinessCheckException
      * @return
      */
-    MtUser updateMember(MtUser reqUserDto) throws BusinessCheckException;
+    MtUser updateMember(MtUser reqUserDto, boolean modifyPassword) throws BusinessCheckException;
 
     /**
      * 通过手机号添加会员
