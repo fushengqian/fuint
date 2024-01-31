@@ -20,6 +20,9 @@ public class Constants {
     // 读取数据最多行数
     public static final int MAX_ROWS = 2000;
 
+    // 读取数据全部行数
+    public static final int ALL_ROWS = 1000000;
+
     /**
      * 系统配置, 从setting表中读取
      */

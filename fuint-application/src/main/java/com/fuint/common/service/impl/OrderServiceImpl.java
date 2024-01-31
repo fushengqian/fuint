@@ -2003,7 +2003,7 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
     /**
      * 获取会员支付金额
      *
-     * @param  userId 会员ID
+     * @param userId 会员ID
      * @return
      * */
     @Override
@@ -2014,7 +2014,7 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
     /**
      * 获取会员订单数
      *
-     * @param  userId 会员ID
+     * @param userId 会员ID
      * @return
      * */
     @Override
@@ -2023,7 +2023,7 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
     }
 
     /**
-     * 获取待分佣订单列表
+     * 获取等待分佣的订单列表
      *
      * @param dateTime 时间
      * @return

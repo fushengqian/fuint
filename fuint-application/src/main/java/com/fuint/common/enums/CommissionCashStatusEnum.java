@@ -1,21 +1,22 @@
 package com.fuint.common.enums;
 
 /**
- * 分佣状态
+ * 分佣结算状态
  *
  * Created by FSQ
  * CopyRight https://www.fuint.cn
  */
-public enum CommissionStatusEnum {
-    NORMAL("A", "待结算"),
-    SETTLED("B", "已结算"),
-    CANCEL("C", "已作废");
+public enum CommissionCashStatusEnum {
+    WAIT("A", "待确认"),
+    SETTLED("B", "已确认"),
+    CANCEL("C", "已支付"),
+    PAYED("D", "已作废");
 
     private String key;
 
     private String value;
 
-    CommissionStatusEnum(String key, String value) {
+    CommissionCashStatusEnum(String key, String value) {
         this.key = key;
         this.value = value;
     }

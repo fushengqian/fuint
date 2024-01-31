@@ -233,7 +233,7 @@ public interface OrderService extends IService<MtOrder> {
     Integer getUserPayOrderCount(Integer userId) throws BusinessCheckException;
 
     /**
-     * 获取待分佣订单列表
+     * 获取等待分佣的订单列表
      *
      * @param dateTime 时间
      * @throws BusinessCheckException

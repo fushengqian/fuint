@@ -4,6 +4,8 @@ import com.fuint.common.dto.AccountInfo;
 import com.fuint.common.dto.CommissionLogDto;
 import com.fuint.common.dto.ParamDto;
 import com.fuint.common.enums.CommissionStatusEnum;
+import com.fuint.common.enums.CommissionTargetEnum;
+import com.fuint.common.service.CommissionCashService;
 import com.fuint.common.service.CommissionLogService;
 import com.fuint.common.service.StoreService;
 import com.fuint.common.util.TokenUtil;
@@ -15,6 +17,7 @@ import com.fuint.framework.pagination.PaginationRequest;
 import com.fuint.framework.pagination.PaginationResponse;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.module.backendApi.request.CommissionLogRequest;
+import com.fuint.module.backendApi.request.CommissionSettleRequest;
 import com.fuint.repository.model.MtStore;
 import com.fuint.utils.StringUtil;
 import io.swagger.annotations.Api;
@@ -46,6 +49,11 @@ public class BackendCommissionLogController extends BaseController {
     private CommissionLogService commissionLogService;
 
     /**
+     * 分销提成提现业务接口
+     */
+    private CommissionCashService commissionCashService;
+
+    /**
      * 店铺服务接口
      */
     private StoreService storeService;
@@ -64,9 +72,13 @@ public class BackendCommissionLogController extends BaseController {
         String token = request.getHeader("Access-Token");
         Integer page = request.getParameter("page") == null ? Constants.PAGE_NUMBER : Integer.parseInt(request.getParameter("page"));
         Integer pageSize = request.getParameter("pageSize") == null ? Constants.PAGE_SIZE : Integer.parseInt(request.getParameter("pageSize"));
-        String title = request.getParameter("title");
+        String target = request.getParameter("target");
         String status = request.getParameter("status");
         String searchStoreId = request.getParameter("storeId");
+        String realName = request.getParameter("realName");
+        String mobile = request.getParameter("mobile");
+        String startTime = request.getParameter("startTime") == null ? "" : request.getParameter("startTime");
+        String endTime = request.getParameter("endTime") == null ? "" : request.getParameter("endTime");
 
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
         Integer storeId;
@@ -81,8 +93,8 @@ public class BackendCommissionLogController extends BaseController {
         paginationRequest.setPageSize(pageSize);
 
         Map<String, Object> params = new HashMap<>();
-        if (StringUtil.isNotEmpty(title)) {
-            params.put("title", title);
+        if (StringUtil.isNotEmpty(target)) {
+            params.put("target", target);
         }
         if (StringUtil.isNotEmpty(status)) {
             params.put("status", status);
@@ -92,6 +104,21 @@ public class BackendCommissionLogController extends BaseController {
         }
         if (storeId != null && storeId > 0) {
             params.put("storeId", storeId);
+        }
+        if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
+            params.put("merchantId", accountInfo.getMerchantId());
+        }
+        if (StringUtil.isNotEmpty(startTime)) {
+            params.put("startTime", startTime);
+        }
+        if (StringUtil.isNotEmpty(endTime)) {
+            params.put("endTime", endTime);
+        }
+        if (StringUtil.isNotEmpty(realName)) {
+            params.put("realName", realName);
+        }
+        if (StringUtil.isNotEmpty(mobile)) {
+            params.put("mobile", mobile);
         }
         paginationRequest.setSearchParams(params);
         PaginationResponse<CommissionLogDto> paginationResponse = commissionLogService.queryCommissionLogByPagination(paginationRequest);
@@ -117,10 +144,22 @@ public class BackendCommissionLogController extends BaseController {
             statusList.add(paramDto);
         }
 
+        // 分佣对象列表
+        CommissionTargetEnum[] targetListEnum = CommissionTargetEnum.values();
+        List<ParamDto> targetList = new ArrayList<>();
+        for (CommissionTargetEnum enumItem : targetListEnum) {
+            ParamDto paramDto = new ParamDto();
+            paramDto.setKey(enumItem.getKey());
+            paramDto.setName(enumItem.getValue());
+            paramDto.setValue(enumItem.getKey());
+            targetList.add(paramDto);
+        }
+
         Map<String, Object> result = new HashMap<>();
         result.put("dataList", paginationResponse);
         result.put("storeList", storeList);
         result.put("statusList", statusList);
+        result.put("targetList", targetList);
 
         return getSuccessResult(result);
     }
@@ -170,5 +209,56 @@ public class BackendCommissionLogController extends BaseController {
         commissionLogService.updateCommissionLog(commissionLogRequest);
 
         return getSuccessResult(true);
+    }
+
+    /**
+     * 作废分销提成记录
+     *
+     * @param  id
+     * @return
+     */
+    @ApiOperation(value = "作废分销提成记录")
+    @RequestMapping(value = "/delete/{id}", method = RequestMethod.GET)
+    @CrossOrigin
+    @PreAuthorize("@pms.hasPermission('commission:log:index')")
+    public ResponseObject delete(HttpServletRequest request, @PathVariable("id") Integer id) throws BusinessCheckException {
+        String token = request.getHeader("Access-Token");
+        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
+        if (accountInfo == null) {
+            return getFailureResult(1001, "请先登录");
+        }
+
+        CommissionLogRequest commissionLogRequest = new CommissionLogRequest();
+        commissionLogRequest.setId(id);
+        commissionLogRequest.setStatus(CommissionStatusEnum.CANCEL.getKey());
+        commissionLogService.updateCommissionLog(commissionLogRequest);
+
+        return getSuccessResult(true);
+    }
+
+    /**
+     * 分销提成结算
+     *
+     * @param request HttpServletRequest对象
+     * @return
+     */
+    @ApiOperation(value = "分销提成结算")
+    @RequestMapping(value = "/doSettle", method = RequestMethod.POST)
+    @PreAuthorize("@pms.hasPermission('commission:log:index')")
+    public ResponseObject doSettle(HttpServletRequest request, @RequestBody CommissionSettleRequest commissionSettleRequest) throws BusinessCheckException {
+        String token = request.getHeader("Access-Token");
+
+        AccountInfo accountDto = TokenUtil.getAccountInfoByToken(token);
+        if (accountDto == null) {
+            return getFailureResult(1001, "请先登录");
+        }
+
+        commissionSettleRequest.setOperator(accountDto.getAccountName());
+        commissionSettleRequest.setMerchantId(accountDto.getMerchantId());
+        if (accountDto.getStoreId() != null && accountDto.getStoreId() > 0) {
+            commissionSettleRequest.setStoreId(accountDto.getStoreId());
+        }
+        String settleNo = commissionCashService.settleCommission(commissionSettleRequest);
+        return getSuccessResult(settleNo);
     }
 }

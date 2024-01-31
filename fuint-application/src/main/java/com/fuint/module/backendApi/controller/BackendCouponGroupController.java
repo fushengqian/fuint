@@ -326,7 +326,7 @@ public class BackendCouponGroupController extends BaseController {
 
         PaginationRequest paginationRequest = new PaginationRequest();
         paginationRequest.setCurrentPage(Constants.PAGE_NUMBER);
-        paginationRequest.setPageSize(Constants.MAX_ROWS);
+        paginationRequest.setPageSize(Constants.ALL_ROWS);
 
         Map<String, Object> param = new HashMap<>();
         param.put("status", StatusEnum.ENABLED.getKey());

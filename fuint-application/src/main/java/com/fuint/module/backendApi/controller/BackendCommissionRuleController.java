@@ -3,7 +3,7 @@ package com.fuint.module.backendApi.controller;
 import com.fuint.common.dto.AccountInfo;
 import com.fuint.common.dto.CommissionRuleDto;
 import com.fuint.common.dto.ParamDto;
-import com.fuint.common.enums.OrderTypeEnum;
+import com.fuint.common.enums.CommissionTypeEnum;
 import com.fuint.common.param.CommissionRuleParam;
 import com.fuint.common.service.CommissionRuleService;
 import com.fuint.common.service.StoreService;
@@ -103,10 +103,10 @@ public class BackendCommissionRuleController extends BaseController {
         paginationRequest.setSearchParams(params);
         PaginationResponse<MtCommissionRule> paginationResponse = commissionRuleService.queryDataByPagination(paginationRequest);
 
-        // 订单类型列表
-        OrderTypeEnum[] typeListEnum = OrderTypeEnum.values();
+        // 分佣提成类型列表
+        CommissionTypeEnum[] typeListEnum = CommissionTypeEnum.values();
         List<ParamDto> typeList = new ArrayList<>();
-        for (OrderTypeEnum enumItem : typeListEnum) {
+        for (CommissionTypeEnum enumItem : typeListEnum) {
             ParamDto paramDto = new ParamDto();
             paramDto.setKey(enumItem.getKey());
             paramDto.setName(enumItem.getValue());

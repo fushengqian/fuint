@@ -513,7 +513,7 @@ public class BackendMemberController extends BaseController {
         }
         PaginationRequest groupRequest = new PaginationRequest();
         groupRequest.setCurrentPage(1);
-        groupRequest.setPageSize(Constants.MAX_ROWS);
+        groupRequest.setPageSize(Constants.ALL_ROWS);
         groupRequest.setSearchParams(searchParams);
         PaginationResponse<UserGroupDto> groupResponse = memberGroupService.queryMemberGroupListByPagination(groupRequest);
         if (groupResponse != null && groupResponse.getContent() != null) {
