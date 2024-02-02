@@ -268,7 +268,6 @@ public class CommissionLogServiceImpl extends ServiceImpl<MtCommissionLogMapper,
             logger.error("更新分销提成记录失败...");
             throw new BusinessCheckException("更新分销提成记录失败，该记录不存在");
         }
-        mtCommissionLog.setUpdateTime(new Date());
         if (commissionLogRequest.getAmount() != null) {
             mtCommissionLog.setAmount(new BigDecimal(commissionLogRequest.getAmount()));
         }
@@ -278,7 +277,11 @@ public class CommissionLogServiceImpl extends ServiceImpl<MtCommissionLogMapper,
         if (commissionLogRequest.getStatus() != null) {
             mtCommissionLog.setStatus(commissionLogRequest.getStatus());
         }
+        if (commissionLogRequest.getSettleUuid() != null) {
+            mtCommissionLog.setSettleUuid(commissionLogRequest.getSettleUuid());
+        }
         mtCommissionLog.setOperator(commissionLogRequest.getOperator());
+        mtCommissionLog.setUpdateTime(new Date());
         mtCommissionLogMapper.updateById(mtCommissionLog);
     }
 }

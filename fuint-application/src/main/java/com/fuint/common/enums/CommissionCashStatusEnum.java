@@ -9,7 +9,7 @@ package com.fuint.common.enums;
 public enum CommissionCashStatusEnum {
     WAIT("A", "待确认"),
     SETTLED("B", "已确认"),
-    CANCEL("C", "已支付"),
+    CANCEL("C", "已打款"),
     PAYED("D", "已作废");
 
     private String key;

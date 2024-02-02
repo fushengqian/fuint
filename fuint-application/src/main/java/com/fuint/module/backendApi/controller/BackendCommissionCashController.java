@@ -15,6 +15,7 @@ import com.fuint.framework.pagination.PaginationRequest;
 import com.fuint.framework.pagination.PaginationResponse;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.module.backendApi.request.CommissionCashRequest;
+import com.fuint.module.backendApi.request.CommissionSettleConfirmRequest;
 import com.fuint.repository.model.MtStore;
 import com.fuint.utils.StringUtil;
 import io.swagger.annotations.Api;
@@ -67,6 +68,7 @@ public class BackendCommissionCashController extends BaseController {
         String title = request.getParameter("title");
         String status = request.getParameter("status");
         String searchStoreId = request.getParameter("storeId");
+        String uuid = request.getParameter("uuid");
 
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
         Integer storeId;
@@ -92,6 +94,9 @@ public class BackendCommissionCashController extends BaseController {
         }
         if (storeId != null && storeId > 0) {
             params.put("storeId", storeId);
+        }
+        if (StringUtil.isNotEmpty(uuid)) {
+            params.put("uuid", uuid);
         }
         paginationRequest.setSearchParams(params);
         PaginationResponse<CommissionCashDto> paginationResponse = commissionCashService.queryCommissionCashByPagination(paginationRequest);
@@ -150,12 +155,12 @@ public class BackendCommissionCashController extends BaseController {
     }
 
     /**
-     * 修改分销提成提现记录
+     * 修改分销提成提现
      *
      * @param request HttpServletRequest对象
      * @return
      */
-    @ApiOperation(value = "修改分销提成提现记录")
+    @ApiOperation(value = "修改分销提成提现")
     @RequestMapping(value = "/save", method = RequestMethod.POST)
     @PreAuthorize("@pms.hasPermission('commission:cash:index')")
     public ResponseObject save(HttpServletRequest request, @RequestBody CommissionCashRequest commissionCashRequest) throws BusinessCheckException {
@@ -168,6 +173,58 @@ public class BackendCommissionCashController extends BaseController {
 
         commissionCashRequest.setOperator(accountDto.getAccountName());
         commissionCashService.updateCommissionCash(commissionCashRequest);
+
+        return getSuccessResult(true);
+    }
+
+    /**
+     * 结算确认
+     *
+     * @param request HttpServletRequest对象
+     * @return
+     */
+    @ApiOperation(value = "结算确认")
+    @RequestMapping(value = "/confirm", method = RequestMethod.POST)
+    @PreAuthorize("@pms.hasPermission('commission:cash:index')")
+    public ResponseObject confirm(HttpServletRequest request, @RequestBody CommissionSettleConfirmRequest requestParam) throws BusinessCheckException {
+        String token = request.getHeader("Access-Token");
+
+        AccountInfo accountDto = TokenUtil.getAccountInfoByToken(token);
+        if (accountDto == null) {
+            return getFailureResult(1001, "请先登录");
+        }
+
+        requestParam.setOperator(accountDto.getAccountName());
+        if (accountDto.getMerchantId() != null && accountDto.getMerchantId() > 0) {
+            requestParam.setMerchantId(accountDto.getMerchantId());
+        }
+        commissionCashService.confirmCommissionCash(requestParam);
+
+        return getSuccessResult(true);
+    }
+
+    /**
+     * 取消结算
+     *
+     * @param request HttpServletRequest对象
+     * @return
+     */
+    @ApiOperation(value = "取消结算")
+    @RequestMapping(value = "/cancel", method = RequestMethod.POST)
+    @PreAuthorize("@pms.hasPermission('commission:cash:index')")
+    public ResponseObject cancel(HttpServletRequest request, @RequestBody CommissionSettleConfirmRequest requestParam) throws BusinessCheckException {
+        String token = request.getHeader("Access-Token");
+
+        AccountInfo accountDto = TokenUtil.getAccountInfoByToken(token);
+        if (accountDto == null) {
+            return getFailureResult(1001, "请先登录");
+        }
+        if (accountDto.getMerchantId() != null && accountDto.getMerchantId() > 0) {
+            requestParam.setMerchantId(accountDto.getMerchantId());
+        }
+
+        requestParam.setOperator(accountDto.getAccountName());
+        commissionCashService.cancelCommissionCash(requestParam);
 
         return getSuccessResult(true);
     }

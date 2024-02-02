@@ -3,7 +3,6 @@ package com.fuint.common.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.fuint.common.Constants;
 import com.fuint.common.enums.*;
 import com.fuint.common.service.*;
 import com.fuint.common.util.CommonUtil;
@@ -13,6 +12,7 @@ import com.fuint.framework.pagination.PaginationRequest;
 import com.fuint.framework.pagination.PaginationResponse;
 import com.fuint.module.backendApi.request.CommissionCashRequest;
 import com.fuint.module.backendApi.request.CommissionLogRequest;
+import com.fuint.module.backendApi.request.CommissionSettleConfirmRequest;
 import com.fuint.module.backendApi.request.CommissionSettleRequest;
 import com.fuint.repository.mapper.MtCommissionCashMapper;
 import com.fuint.common.dto.CommissionCashDto;
@@ -88,7 +88,10 @@ public class CommissionCashServiceImpl extends ServiceImpl<MtCommissionCashMappe
         if (StringUtils.isNotBlank(storeId)) {
             lambdaQueryWrapper.eq(MtCommissionCash::getStoreId, storeId);
         }
-
+        String uuid = paginationRequest.getSearchParams().get("uuid") == null ? "" : paginationRequest.getSearchParams().get("uuid").toString();
+        if (StringUtils.isNotBlank(uuid)) {
+            lambdaQueryWrapper.eq(MtCommissionCash::getUuid, uuid);
+        }
         lambdaQueryWrapper.orderByDesc(MtCommissionCash::getId);
         List<MtCommissionCash> commissionCashList = mtCommissionCashMapper.selectList(lambdaQueryWrapper);
         List<CommissionCashDto> dataList = new ArrayList<>();
@@ -163,6 +166,7 @@ public class CommissionCashServiceImpl extends ServiceImpl<MtCommissionCashMappe
                  BigDecimal totalAmount = new BigDecimal("0");
                  Integer cashMerchantId = 0;
                  Integer cashStoreId = 0;
+                String settleNo = CommonUtil.createSettlementNo();
                  for (MtCommissionLog mtCommissionLog : commissionLogList) {
                       if (mtCommissionLog.getStaffId().equals(staffId)) {
                           totalAmount = totalAmount.add(mtCommissionLog.getAmount());
@@ -174,13 +178,13 @@ public class CommissionCashServiceImpl extends ServiceImpl<MtCommissionCashMappe
                           }
                           CommissionLogRequest commissionLogRequest = new CommissionLogRequest();
                           commissionLogRequest.setId(mtCommissionLog.getId());
+                          commissionLogRequest.setSettleUuid(uuid);
                           commissionLogRequest.setOperator(commissionSettleRequest.getOperator());
                           commissionLogRequest.setStatus(CommissionStatusEnum.SETTLED.getKey());
                           commissionLogService.updateCommissionLog(commissionLogRequest);
                       }
                  }
                  MtCommissionCash mtCommissionCash = new MtCommissionCash();
-                String settleNo = CommonUtil.createSettlementNo();
                  mtCommissionCash.setSettleNo(settleNo);
                  mtCommissionCash.setUuid(uuid);
                  mtCommissionCash.setStaffId(staffId);
@@ -231,9 +235,8 @@ public class CommissionCashServiceImpl extends ServiceImpl<MtCommissionCashMappe
         MtCommissionCash mtCommissionCash =  mtCommissionCashMapper.selectById(commissionCashRequest.getId());
         if (mtCommissionCash == null) {
             logger.error("更新分销提成提现失败...");
-            throw new BusinessCheckException("更新分销提成提现失败");
+            throw new BusinessCheckException("更新分销提成提现失败，数据不存在");
         }
-        mtCommissionCash.setStatus(commissionCashRequest.getStatus() == null ? CommissionStatusEnum.NORMAL.getKey() : commissionCashRequest.getStatus());
         mtCommissionCash.setUpdateTime(new Date());
         if (commissionCashRequest.getAmount() != null) {
             mtCommissionCash.setAmount(new BigDecimal(commissionCashRequest.getAmount()));
@@ -241,7 +244,44 @@ public class CommissionCashServiceImpl extends ServiceImpl<MtCommissionCashMappe
         if (commissionCashRequest.getDescription() != null) {
             mtCommissionCash.setDescription(commissionCashRequest.getDescription());
         }
+        if (commissionCashRequest.getStatus() != null) {
+            mtCommissionCash.setStatus(commissionCashRequest.getStatus());
+        }
         mtCommissionCash.setOperator(commissionCashRequest.getOperator());
         mtCommissionCashMapper.updateById(mtCommissionCash);
+    }
+
+    /**
+     * 结算确认
+     *
+     * @param  requestParam 确认参数
+     * @throws BusinessCheckException
+     * @return
+     */
+    @Override
+    @Transactional
+    @OperationServiceLog(description = "结算确认")
+    public void confirmCommissionCash(CommissionSettleConfirmRequest requestParam) throws BusinessCheckException {
+       if (StringUtil.isEmpty(requestParam.getUuid())) {
+           throw new BusinessCheckException("请求有误.");
+       }
+       mtCommissionCashMapper.confirmCommissionCash(requestParam.getMerchantId(), requestParam.getUuid(), requestParam.getOperator());
+    }
+
+    /**
+     * 结算确认
+     *
+     * @param requestParam 确认参数
+     * @throws BusinessCheckException
+     * @return
+     */
+    @Override
+    @Transactional
+    @OperationServiceLog(description = "结算确认")
+    public void cancelCommissionCash(CommissionSettleConfirmRequest requestParam) throws BusinessCheckException {
+        if (StringUtil.isEmpty(requestParam.getUuid())) {
+            throw new BusinessCheckException("请求有误.");
+        }
+        mtCommissionCashMapper.cancelCommissionCash(requestParam.getMerchantId(), requestParam.getUuid(), requestParam.getOperator());
     }
 }

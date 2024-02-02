@@ -65,6 +65,9 @@ public class MtCommissionLog implements Serializable {
     @ApiModelProperty("备注")
     private String description;
 
+    @ApiModelProperty("结算uuid")
+    private String settleUuid;
+
     @ApiModelProperty("提现记录ID")
     private Integer cashId;
 
@@ -83,7 +86,7 @@ public class MtCommissionLog implements Serializable {
     @ApiModelProperty("最后操作人")
     private String operator;
 
-    @ApiModelProperty("状态")
+    @ApiModelProperty("状态，A：待结算；B：已结算；C：已作废")
     private String status;
 
 }

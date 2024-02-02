@@ -16,6 +16,9 @@ public class CommissionLogRequest implements Serializable {
     @ApiModelProperty(value="ID", name="id")
     private Integer id;
 
+    @ApiModelProperty(value="结算uuid", name="settleUuid")
+    private String settleUuid;
+
     @ApiModelProperty(value="分佣金额", name="amount")
     private String amount;
 

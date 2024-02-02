@@ -6,6 +6,7 @@ import com.fuint.framework.pagination.PaginationRequest;
 import com.fuint.framework.pagination.PaginationResponse;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.module.backendApi.request.CommissionCashRequest;
+import com.fuint.module.backendApi.request.CommissionSettleConfirmRequest;
 import com.fuint.module.backendApi.request.CommissionSettleRequest;
 import com.fuint.repository.model.MtCommissionCash;
 
@@ -51,4 +52,23 @@ public interface CommissionCashService extends IService<MtCommissionCash> {
      * @return
      */
     void updateCommissionCash(CommissionCashRequest commissionCashRequest) throws BusinessCheckException;
+
+    /**
+     * 结算确认
+     *
+     * @param requestParam 确认参数
+     * @throws BusinessCheckException
+     * @return
+     */
+    void confirmCommissionCash(CommissionSettleConfirmRequest requestParam) throws BusinessCheckException;
+
+    /**
+     * 取消结算
+     *
+     * @param requestParam 取消参数
+     * @throws BusinessCheckException
+     * @return
+     */
+    void cancelCommissionCash(CommissionSettleConfirmRequest requestParam) throws BusinessCheckException;
+
 }
