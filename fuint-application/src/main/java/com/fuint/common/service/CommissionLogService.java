@@ -45,9 +45,9 @@ public interface CommissionLogService extends IService<MtCommissionLog> {
     /**
      * 更新分销提成记录
      *
-     * @param commissionLogRequest 请求参数
+     * @param requestParam 请求参数
      * @throws BusinessCheckException
      * @return
      */
-    void updateCommissionLog(CommissionLogRequest commissionLogRequest) throws BusinessCheckException;
+    void updateCommissionLog(CommissionLogRequest requestParam) throws BusinessCheckException;
 }

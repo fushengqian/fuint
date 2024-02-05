@@ -258,7 +258,7 @@ public class BackendBalanceController extends BaseController {
     @RequestMapping(value = "/saveSetting", method = RequestMethod.POST)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('balance:setting')")
-    public ResponseObject saveSettingHandler(HttpServletRequest request, @RequestBody Map<String, Object> param) throws BusinessCheckException {
+    public ResponseObject saveSetting(HttpServletRequest request, @RequestBody Map<String, Object> param) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
         String status = param.get("status") == null ? StatusEnum.ENABLED.getKey() : param.get("status").toString();
         String remark = param.get("remark") == null ? "" : param.get("remark").toString();

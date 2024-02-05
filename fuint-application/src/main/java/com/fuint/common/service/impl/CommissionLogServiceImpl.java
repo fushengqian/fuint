@@ -162,6 +162,7 @@ public class CommissionLogServiceImpl extends ServiceImpl<MtCommissionLogMapper,
      */
     @Override
     @Transactional
+    @OperationServiceLog(description = "计算订单分销提成")
     public void calculateCommission(Integer orderId) throws BusinessCheckException {
         if (orderId != null && orderId > 0) {
             MtOrder mtOrder = orderService.getById(orderId);
@@ -201,8 +202,9 @@ public class CommissionLogServiceImpl extends ServiceImpl<MtCommissionLogMapper,
                                  mtCommissionLog.setRuleItemId(mtCommissionRuleItem.getId());
                                  mtCommissionLog.setCashId(0);
                                  mtCommissionLog.setCashTime(null);
-                                 mtCommissionLog.setCreateTime(new Date());
-                                 mtCommissionLog.setUpdateTime(new Date());
+                                 Date dateTime = new Date();
+                                 mtCommissionLog.setCreateTime(dateTime);
+                                 mtCommissionLog.setUpdateTime(dateTime);
                                  mtCommissionLog.setStatus(StatusEnum.ENABLED.getKey());
                                  mtCommissionLog.setOperator(null);
                                  boolean flag = true;
@@ -256,31 +258,31 @@ public class CommissionLogServiceImpl extends ServiceImpl<MtCommissionLogMapper,
     /**
      * 更新分销提成记录
      *
-     * @param commissionLogRequest 请求参数
+     * @param requestParam 请求参数
      * @return
      */
     @Override
     @Transactional
     @OperationServiceLog(description = "更新分销提成记录")
-    public void updateCommissionLog(CommissionLogRequest commissionLogRequest) throws BusinessCheckException {
-        MtCommissionLog mtCommissionLog =  mtCommissionLogMapper.selectById(commissionLogRequest.getId());
+    public void updateCommissionLog(CommissionLogRequest requestParam) throws BusinessCheckException {
+        MtCommissionLog mtCommissionLog =  mtCommissionLogMapper.selectById(requestParam.getId());
         if (mtCommissionLog == null) {
             logger.error("更新分销提成记录失败...");
             throw new BusinessCheckException("更新分销提成记录失败，该记录不存在");
         }
-        if (commissionLogRequest.getAmount() != null) {
-            mtCommissionLog.setAmount(new BigDecimal(commissionLogRequest.getAmount()));
+        if (requestParam.getAmount() != null) {
+            mtCommissionLog.setAmount(new BigDecimal(requestParam.getAmount()));
         }
-        if (commissionLogRequest.getDescription() != null) {
-            mtCommissionLog.setDescription(commissionLogRequest.getDescription());
+        if (requestParam.getDescription() != null) {
+            mtCommissionLog.setDescription(requestParam.getDescription());
         }
-        if (commissionLogRequest.getStatus() != null) {
-            mtCommissionLog.setStatus(commissionLogRequest.getStatus());
+        if (requestParam.getStatus() != null) {
+            mtCommissionLog.setStatus(requestParam.getStatus());
         }
-        if (commissionLogRequest.getSettleUuid() != null) {
-            mtCommissionLog.setSettleUuid(commissionLogRequest.getSettleUuid());
+        if (requestParam.getSettleUuid() != null) {
+            mtCommissionLog.setSettleUuid(requestParam.getSettleUuid());
         }
-        mtCommissionLog.setOperator(commissionLogRequest.getOperator());
+        mtCommissionLog.setOperator(requestParam.getOperator());
         mtCommissionLog.setUpdateTime(new Date());
         mtCommissionLogMapper.updateById(mtCommissionLog);
     }
