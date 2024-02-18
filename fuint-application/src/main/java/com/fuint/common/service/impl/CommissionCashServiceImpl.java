@@ -225,29 +225,29 @@ public class CommissionCashServiceImpl extends ServiceImpl<MtCommissionCashMappe
     /**
      * 更新分销提成提现
      *
-     * @param commissionCashRequest 请求参数
+     * @param requestParam 请求参数
      * @return
      */
     @Override
     @Transactional
     @OperationServiceLog(description = "更新分销提成提现")
-    public void updateCommissionCash(CommissionCashRequest commissionCashRequest) throws BusinessCheckException {
-        MtCommissionCash mtCommissionCash =  mtCommissionCashMapper.selectById(commissionCashRequest.getId());
+    public void updateCommissionCash(CommissionCashRequest requestParam) throws BusinessCheckException {
+        MtCommissionCash mtCommissionCash =  mtCommissionCashMapper.selectById(requestParam.getId());
         if (mtCommissionCash == null) {
             logger.error("更新分销提成提现失败...");
             throw new BusinessCheckException("更新分销提成提现失败，数据不存在");
         }
         mtCommissionCash.setUpdateTime(new Date());
-        if (commissionCashRequest.getAmount() != null) {
-            mtCommissionCash.setAmount(new BigDecimal(commissionCashRequest.getAmount()));
+        if (requestParam.getAmount() != null) {
+            mtCommissionCash.setAmount(new BigDecimal(requestParam.getAmount()));
         }
-        if (commissionCashRequest.getDescription() != null) {
-            mtCommissionCash.setDescription(commissionCashRequest.getDescription());
+        if (requestParam.getDescription() != null) {
+            mtCommissionCash.setDescription(requestParam.getDescription());
         }
-        if (commissionCashRequest.getStatus() != null) {
-            mtCommissionCash.setStatus(commissionCashRequest.getStatus());
+        if (requestParam.getStatus() != null) {
+            mtCommissionCash.setStatus(requestParam.getStatus());
         }
-        mtCommissionCash.setOperator(commissionCashRequest.getOperator());
+        mtCommissionCash.setOperator(requestParam.getOperator());
         mtCommissionCashMapper.updateById(mtCommissionCash);
     }
 

@@ -604,14 +604,17 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
     /**
      * 根据openId获取会员信息(为空就注册)
      *
-     * @param  merchantId
-     * @param  openId
+     * @param  merchantId 商户ID
+     * @param  openId 微信openId
      * @throws BusinessCheckException
      * @return
      */
     @Override
     public MtUser queryMemberByOpenId(Integer merchantId, String openId, JSONObject userInfo) throws BusinessCheckException {
         MtUser user = mtUserMapper.queryMemberByOpenId(merchantId, openId);
+        if (user != null && !user.getStatus().equals(StatusEnum.ENABLED.getKey())) {
+            return null;
+        }
 
         String avatar = StringUtil.isNotEmpty(userInfo.getString("avatarUrl")) ? userInfo.getString("avatarUrl") : "";
         String gender = StringUtil.isNotEmpty(userInfo.getString("gender")) ? userInfo.getString("gender") : GenderEnum.MAN.getKey().toString();
