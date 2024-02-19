@@ -71,11 +71,9 @@ public class CommissionCashServiceImpl extends ServiceImpl<MtCommissionCashMappe
      * @return
      */
     @Override
-    public PaginationResponse<CommissionCashDto> queryCommissionCashByPagination(PaginationRequest paginationRequest) {
+    public PaginationResponse<CommissionCashDto> queryCommissionCashByPagination(PaginationRequest paginationRequest) throws BusinessCheckException {
         Page<MtCommissionCash> pageHelper = PageHelper.startPage(paginationRequest.getCurrentPage(), paginationRequest.getPageSize());
         LambdaQueryWrapper<MtCommissionCash> lambdaQueryWrapper = Wrappers.lambdaQuery();
-        lambdaQueryWrapper.ne(MtCommissionCash::getStatus, StatusEnum.DISABLE.getKey());
-
         String status = paginationRequest.getSearchParams().get("status") == null ? "" : paginationRequest.getSearchParams().get("status").toString();
         if (StringUtils.isNotBlank(status)) {
             lambdaQueryWrapper.eq(MtCommissionCash::getStatus, status);
@@ -88,9 +86,39 @@ public class CommissionCashServiceImpl extends ServiceImpl<MtCommissionCashMappe
         if (StringUtils.isNotBlank(storeId)) {
             lambdaQueryWrapper.eq(MtCommissionCash::getStoreId, storeId);
         }
+        String realName = paginationRequest.getSearchParams().get("realName") == null ? "" : paginationRequest.getSearchParams().get("realName").toString();
+        if (StringUtils.isNotEmpty(realName)) {
+            Map<String, Object> params = new HashMap<>();
+            params.put("REAL_NAME", realName);
+            params.put("AUDITED_STATUS", StatusEnum.ENABLED.getKey());
+            List<MtStaff> staffList = staffService.queryStaffByParams(params);
+            if (staffList != null && staffList.size() > 0) {
+                lambdaQueryWrapper.eq(MtCommissionCash::getStaffId, staffList.get(0).getId());
+            } else {
+                lambdaQueryWrapper.eq(MtCommissionCash::getStaffId, -1);
+            }
+        }
+        String mobile = paginationRequest.getSearchParams().get("mobile") == null ? "" : paginationRequest.getSearchParams().get("mobile").toString();
+        if (StringUtils.isNotEmpty(mobile)) {
+            MtStaff mtStaff = staffService.queryStaffByMobile(mobile);
+            if (mtStaff != null) {
+                lambdaQueryWrapper.eq(MtCommissionCash::getStaffId, mtStaff.getId());
+            } else {
+                lambdaQueryWrapper.eq(MtCommissionCash::getStaffId, -1);
+            }
+        }
         String uuid = paginationRequest.getSearchParams().get("uuid") == null ? "" : paginationRequest.getSearchParams().get("uuid").toString();
         if (StringUtils.isNotBlank(uuid)) {
             lambdaQueryWrapper.eq(MtCommissionCash::getUuid, uuid);
+        }
+        // 开始时间、结束时间
+        String startTime = paginationRequest.getSearchParams().get("startTime") == null ? "" : paginationRequest.getSearchParams().get("startTime").toString();
+        String endTime = paginationRequest.getSearchParams().get("endTime") == null ? "" : paginationRequest.getSearchParams().get("endTime").toString();
+        if (StringUtil.isNotEmpty(startTime)) {
+            lambdaQueryWrapper.ge(MtCommissionCash::getCreateTime, startTime);
+        }
+        if (StringUtil.isNotEmpty(endTime)) {
+            lambdaQueryWrapper.le(MtCommissionCash::getCreateTime, endTime);
         }
         lambdaQueryWrapper.orderByDesc(MtCommissionCash::getId);
         List<MtCommissionCash> commissionCashList = mtCommissionCashMapper.selectList(lambdaQueryWrapper);
@@ -265,23 +293,29 @@ public class CommissionCashServiceImpl extends ServiceImpl<MtCommissionCashMappe
        if (StringUtil.isEmpty(requestParam.getUuid())) {
            throw new BusinessCheckException("请求有误.");
        }
-       mtCommissionCashMapper.confirmCommissionCash(requestParam.getMerchantId(), requestParam.getUuid(), requestParam.getOperator());
+       boolean flag = mtCommissionCashMapper.confirmCommissionCash(requestParam.getMerchantId(), requestParam.getUuid(), requestParam.getOperator());
+       if (flag) {
+           mtCommissionLogMapper.confirmCommissionLog(requestParam.getMerchantId(), requestParam.getUuid(), requestParam.getOperator());
+       }
     }
 
     /**
      * 结算确认
      *
-     * @param requestParam 确认参数
+     * @param requestParam 取消参数
      * @throws BusinessCheckException
      * @return
      */
     @Override
     @Transactional
-    @OperationServiceLog(description = "结算确认")
+    @OperationServiceLog(description = "取消结算")
     public void cancelCommissionCash(CommissionSettleConfirmRequest requestParam) throws BusinessCheckException {
         if (StringUtil.isEmpty(requestParam.getUuid())) {
             throw new BusinessCheckException("请求有误.");
         }
-        mtCommissionCashMapper.cancelCommissionCash(requestParam.getMerchantId(), requestParam.getUuid(), requestParam.getOperator());
+        boolean flag = mtCommissionCashMapper.cancelCommissionCash(requestParam.getMerchantId(), requestParam.getUuid(), requestParam.getOperator());
+        if (flag) {
+            mtCommissionLogMapper.cancelCommissionLog(requestParam.getMerchantId(), requestParam.getUuid(), requestParam.getOperator());
+        }
     }
 }

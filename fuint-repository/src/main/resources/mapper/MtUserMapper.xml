@@ -16,7 +16,7 @@
     </select>
 
     <select id="queryMemberByOpenId" resultType="com.fuint.repository.model.MtUser">
-        select * from mt_user t where t.OPEN_ID = #{openId} and t.STATUS = 'A'
+        select * from mt_user t where t.OPEN_ID = #{openId} and t.STATUS != 'D'
         <if test="merchantId != null and merchantId > 0">
             AND t.MERCHANT_ID = #{merchantId}
         </if>

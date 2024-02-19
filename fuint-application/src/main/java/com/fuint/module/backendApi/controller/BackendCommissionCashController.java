@@ -65,10 +65,13 @@ public class BackendCommissionCashController extends BaseController {
         String token = request.getHeader("Access-Token");
         Integer page = request.getParameter("page") == null ? Constants.PAGE_NUMBER : Integer.parseInt(request.getParameter("page"));
         Integer pageSize = request.getParameter("pageSize") == null ? Constants.PAGE_SIZE : Integer.parseInt(request.getParameter("pageSize"));
-        String title = request.getParameter("title");
+        String realName = request.getParameter("realName");
+        String mobile = request.getParameter("mobile");
         String status = request.getParameter("status");
         String searchStoreId = request.getParameter("storeId");
         String uuid = request.getParameter("uuid");
+        String startTime = request.getParameter("startTime") == null ? "" : request.getParameter("startTime");
+        String endTime = request.getParameter("endTime") == null ? "" : request.getParameter("endTime");
 
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
         Integer storeId;
@@ -83,8 +86,11 @@ public class BackendCommissionCashController extends BaseController {
         paginationRequest.setPageSize(pageSize);
 
         Map<String, Object> params = new HashMap<>();
-        if (StringUtil.isNotEmpty(title)) {
-            params.put("title", title);
+        if (StringUtil.isNotEmpty(realName)) {
+            params.put("realName", realName);
+        }
+        if (StringUtil.isNotEmpty(mobile)) {
+            params.put("mobile", mobile);
         }
         if (StringUtil.isNotEmpty(status)) {
             params.put("status", status);
@@ -97,6 +103,12 @@ public class BackendCommissionCashController extends BaseController {
         }
         if (StringUtil.isNotEmpty(uuid)) {
             params.put("uuid", uuid);
+        }
+        if (StringUtil.isNotEmpty(startTime)) {
+            params.put("startTime", startTime);
+        }
+        if (StringUtil.isNotEmpty(endTime)) {
+            params.put("endTime", endTime);
         }
         paginationRequest.setSearchParams(params);
         PaginationResponse<CommissionCashDto> paginationResponse = commissionCashService.queryCommissionCashByPagination(paginationRequest);

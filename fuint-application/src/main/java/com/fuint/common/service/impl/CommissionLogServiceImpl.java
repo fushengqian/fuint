@@ -93,6 +93,8 @@ public class CommissionLogServiceImpl extends ServiceImpl<MtCommissionLogMapper,
             List<MtStaff> staffList = staffService.queryStaffByParams(params);
             if (staffList != null && staffList.size() > 0) {
                 lambdaQueryWrapper.eq(MtCommissionLog::getStaffId, staffList.get(0).getId());
+            } else {
+                lambdaQueryWrapper.eq(MtCommissionLog::getStaffId, -1);
             }
         }
         String mobile = paginationRequest.getSearchParams().get("mobile") == null ? "" : paginationRequest.getSearchParams().get("mobile").toString();
@@ -100,6 +102,8 @@ public class CommissionLogServiceImpl extends ServiceImpl<MtCommissionLogMapper,
             MtStaff mtStaff = staffService.queryStaffByMobile(mobile);
             if (mtStaff != null) {
                 lambdaQueryWrapper.eq(MtCommissionLog::getStaffId, mtStaff.getId());
+            } else {
+                lambdaQueryWrapper.eq(MtCommissionLog::getStaffId, -1);
             }
         }
         String status = paginationRequest.getSearchParams().get("status") == null ? "" : paginationRequest.getSearchParams().get("status").toString();

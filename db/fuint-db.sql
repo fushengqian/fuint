@@ -1,17 +1,3 @@
-/*
-SQLyog Ultimate v13.1.1 (64 bit)
-MySQL - 8.0.21 : Database - fuint-db
-*********************************************************************
-*/
-
-/*!40101 SET NAMES utf8 */;
-
-/*!40101 SET SQL_MODE=''*/;
-
-/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
-/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
-/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
-/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 CREATE DATABASE /*!32312 IF NOT EXISTS*/`fuint-db` /*!40100 DEFAULT CHARACTER SET utf8 */ /*!80016 DEFAULT ENCRYPTION='N' */;
 
 USE `fuint-db`;
@@ -166,16 +152,20 @@ DROP TABLE IF EXISTS `mt_commission_cash`;
 
 CREATE TABLE `mt_commission_cash` (
   `ID` int NOT NULL AUTO_INCREMENT COMMENT '自增ID',
+  `SETTLE_NO` varchar(32) DEFAULT NULL COMMENT '结算单号',
+  `UUID` varchar(32) DEFAULT NULL COMMENT '结算UUID',
   `MERCHANT_ID` int NOT NULL COMMENT '商户ID',
+  `STORE_ID` int DEFAULT NULL COMMENT '店铺ID',
   `USER_ID` int DEFAULT NULL COMMENT '会员ID',
   `STAFF_ID` int DEFAULT NULL COMMENT '员工ID',
+  `AMOUNT` decimal(10,2) DEFAULT NULL COMMENT '金额',
   `CREATE_TIME` datetime DEFAULT NULL COMMENT '创建时间',
   `UPDATE_TIME` datetime DEFAULT NULL COMMENT '更新时间',
   `DESCRIPTION` varchar(500) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL COMMENT '备注信息',
   `OPERATOR` varchar(30) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT '' COMMENT '最后操作人',
-  `STATUS` char(1) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT 'A' COMMENT '状态，A：申请中；B：审核通过待付款；C：已付款；D：审核未通过',
+  `STATUS` char(1) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT 'A' COMMENT '状态，A:待确认,B:已确认,C:已支付,D:已作废',
   PRIMARY KEY (`ID`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='分佣提现记录表';
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8 COMMENT='分佣提现记录表';
 
 /*Table structure for table `mt_commission_log` */
 
@@ -184,6 +174,7 @@ DROP TABLE IF EXISTS `mt_commission_log`;
 CREATE TABLE `mt_commission_log` (
   `ID` int NOT NULL AUTO_INCREMENT COMMENT '自增ID',
   `MERCHANT_ID` int NOT NULL COMMENT '商户ID',
+  `TARGET` varchar(30) DEFAULT '' COMMENT '对象,member:会员分销；staff：员工提成',
   `TYPE` varchar(30) NOT NULL COMMENT '分佣类型',
   `LEVEL` int DEFAULT '1' COMMENT '分销等级',
   `USER_ID` int DEFAULT NULL COMMENT '会员ID',
@@ -194,15 +185,16 @@ CREATE TABLE `mt_commission_log` (
   `RULE_ID` int DEFAULT NULL COMMENT '分佣规则ID',
   `RULE_ITEM_ID` int DEFAULT NULL COMMENT '分佣规则项ID',
   `DESCRIPTION` varchar(500) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL COMMENT '备注信息',
+  `SETTLE_UUID` varchar(32) DEFAULT NULL COMMENT '结算uuid',
   `CASH_ID` int DEFAULT NULL COMMENT '提现记录ID',
   `IS_CASH` char(1) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT 'N' COMMENT '是否提现，Y：是；N：否',
   `CASH_TIME` datetime DEFAULT NULL COMMENT '提现时间',
   `CREATE_TIME` datetime DEFAULT NULL COMMENT '创建时间',
   `UPDATE_TIME` datetime DEFAULT NULL COMMENT '更新时间',
-  `STATUS` char(1) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT 'A' COMMENT '状态，A：激活；D：删除',
+  `STATUS` char(1) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT 'A' COMMENT '状态，A：待结算；B：已结算；C：已作废',
   `OPERATOR` varchar(30) DEFAULT '' COMMENT '最后操作人',
   PRIMARY KEY (`ID`)
-) ENGINE=InnoDB AUTO_INCREMENT=826 DEFAULT CHARSET=utf8 COMMENT='佣金记录表';
+) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8 COMMENT='佣金记录表';
 
 /*Table structure for table `mt_commission_relation` */
 
@@ -572,7 +564,7 @@ CREATE TABLE `mt_message` (
   `SEND_TIME` datetime DEFAULT NULL COMMENT '发送时间',
   `STATUS` char(1) DEFAULT 'A' COMMENT '状态',
   PRIMARY KEY (`ID`)
-) ENGINE=InnoDB AUTO_INCREMENT=463951 DEFAULT CHARSET=utf8 COMMENT='系统消息表';
+) ENGINE=InnoDB AUTO_INCREMENT=463952 DEFAULT CHARSET=utf8 COMMENT='系统消息表';
 
 /*Table structure for table `mt_open_gift` */
 
@@ -638,6 +630,7 @@ CREATE TABLE `mt_order` (
   `PAY_STATUS` char(1) DEFAULT '' COMMENT '支付状态',
   `SETTLE_STATUS` char(1) DEFAULT 'A' COMMENT '结算状态',
   `STAFF_ID` int DEFAULT '0' COMMENT '操作员工',
+  `COMMISSION_STATUS` char(1) DEFAULT 'A' COMMENT '分佣提成计算状态',
   `OPERATOR` varchar(30) DEFAULT '' COMMENT '最后操作人',
   PRIMARY KEY (`ID`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2160 DEFAULT CHARSET=utf8 COMMENT='订单表';
@@ -696,7 +689,7 @@ CREATE TABLE `mt_point` (
   `OPERATOR` varchar(30) DEFAULT '' COMMENT '最后操作人',
   `STATUS` char(1) DEFAULT 'A' COMMENT '状态，A正常；D作废',
   PRIMARY KEY (`ID`)
-) ENGINE=InnoDB AUTO_INCREMENT=2487 DEFAULT CHARSET=utf8 COMMENT='积分变化表';
+) ENGINE=InnoDB AUTO_INCREMENT=2490 DEFAULT CHARSET=utf8 COMMENT='积分变化表';
 
 /*Table structure for table `mt_refund` */
 
@@ -976,7 +969,7 @@ CREATE TABLE `mt_user` (
   `OPERATOR` varchar(30) DEFAULT '' COMMENT '最后操作人',
   PRIMARY KEY (`ID`),
   KEY `index_phone` (`MOBILE`)
-) ENGINE=InnoDB AUTO_INCREMENT=7906 DEFAULT CHARSET=utf8 COMMENT='会员个人信息';
+) ENGINE=InnoDB AUTO_INCREMENT=8125 DEFAULT CHARSET=utf8 COMMENT='会员个人信息';
 
 /*Table structure for table `mt_user_action` */
 
@@ -996,7 +989,7 @@ CREATE TABLE `mt_user_action` (
   `OPERATOR` varchar(30) DEFAULT '' COMMENT '最后操作人',
   PRIMARY KEY (`ID`),
   KEY `index_user_id` (`USER_ID`,`ACTION`,`PARAM`)
-) ENGINE=InnoDB AUTO_INCREMENT=26195 DEFAULT CHARSET=utf8 COMMENT='会员行为记录表';
+) ENGINE=InnoDB AUTO_INCREMENT=26196 DEFAULT CHARSET=utf8 COMMENT='会员行为记录表';
 
 /*Table structure for table `mt_user_coupon` */
 
@@ -1028,7 +1021,7 @@ CREATE TABLE `mt_user_coupon` (
   KEY `index_coupon_id` (`COUPON_ID`),
   KEY `index_group_id` (`GROUP_ID`) USING BTREE,
   KEY `index_code` (`CODE`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=418176 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='会员卡券表';
+) ENGINE=InnoDB AUTO_INCREMENT=418177 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='会员卡券表';
 
 /*Table structure for table `mt_user_grade` */
 
@@ -1139,7 +1132,7 @@ CREATE TABLE `t_action_log` (
   `user_agent` varchar(255) DEFAULT NULL COMMENT '用户系统以及浏览器信息',
   `client_port` int DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=15918 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
+) ENGINE=InnoDB AUTO_INCREMENT=16503 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
 
 /*Table structure for table `t_duty` */
 
@@ -1204,9 +1197,4 @@ CREATE TABLE `t_source` (
   PRIMARY KEY (`source_id`),
   KEY `index-name` (`source_name`,`parent_id`),
   KEY `index-parent-id` (`parent_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=198 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='菜单表';
-
-/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
-/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
-/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
-/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='菜单表';
