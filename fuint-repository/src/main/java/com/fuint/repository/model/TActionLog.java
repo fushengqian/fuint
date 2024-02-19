@@ -56,5 +56,9 @@ public class TActionLog implements Serializable {
     @ApiModelProperty("用户系统以及浏览器信息")
     private String userAgent;
 
+    @ApiModelProperty("端口号")
     private Integer clientPort;
+
+    @ApiModelProperty("操作参数")
+    private String param;
 }

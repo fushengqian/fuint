@@ -1,5 +1,6 @@
 package com.fuint.common.aspect;
 
+import com.alibaba.fastjson.JSON;
 import com.fuint.common.dto.AccountInfo;
 import com.fuint.common.service.ActionLogService;
 import com.fuint.common.util.CommonUtil;
@@ -7,8 +8,13 @@ import com.fuint.common.util.TokenUtil;
 import com.fuint.framework.annoation.OperationServiceLog;
 import com.fuint.repository.model.TActionLog;
 import org.apache.commons.lang.StringUtils;
+import org.apache.ibatis.javassist.*;
+import org.apache.ibatis.javassist.bytecode.CodeAttribute;
+import org.apache.ibatis.javassist.bytecode.LocalVariableAttribute;
+import org.apache.ibatis.javassist.bytecode.MethodInfo;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.*;
+import org.aspectj.lang.reflect.MethodSignature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,8 +24,11 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
+import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * 后台操作日志
@@ -31,7 +40,7 @@ import java.util.Date;
 @Aspect
 public class TActionLogAop {
 
-    private Logger LOGGER = LoggerFactory.getLogger(TActionLogAop.class);
+    private Logger logger = LoggerFactory.getLogger(TActionLogAop.class);
 
     @Lazy
     @Autowired
@@ -47,6 +56,7 @@ public class TActionLogAop {
     private String module = "";
     private String url = "";
     private String userAgent = "";
+    private String param = "";
 
     // Service层切点
     @Pointcut("@annotation(com.fuint.framework.annoation.OperationServiceLog)")
@@ -61,7 +71,53 @@ public class TActionLogAop {
      */
     @Before("serviceAspect()")
     public void doBeforeService(JoinPoint joinPoint) {
-        startTimeMillis = System.currentTimeMillis(); // 记录方法开始执行的时间
+        // 记录方法开始执行的时间
+        startTimeMillis = System.currentTimeMillis();
+
+        Map<String, String> params = getJoinPointPramas(joinPoint);
+        String methodName = params.get("methodName");
+        String classPath = params.get("classPath");
+        Class<?> clazz = null;
+        CtMethod ctMethod = null;
+        LocalVariableAttribute attr = null;
+        int length = 0;
+        int pos = 0;
+
+        try {
+            //获取切入点参数
+            clazz = Class.forName(classPath);
+            String clazzName = clazz.getName();
+            ClassPool pool = ClassPool.getDefault();
+            ClassClassPath classClassPath = new ClassClassPath(clazz);
+            pool.insertClassPath(classClassPath);
+            CtClass ctClass = pool.get(clazzName);
+            ctMethod = ctClass.getDeclaredMethod(methodName);
+            MethodInfo methodInfo = ctMethod.getMethodInfo();
+            CodeAttribute codeAttribute = methodInfo.getCodeAttribute();
+            attr = (LocalVariableAttribute) codeAttribute.getAttribute(LocalVariableAttribute.tag);
+            length = ctMethod.getParameterTypes().length;
+            pos = Modifier.isStatic(ctMethod.getModifiers()) ? 0 : 1;
+            Object[] paramsArgsValues = joinPoint.getArgs();
+            String[] parmasArgsNames = new String[length];
+            Map<String, Object> parmasMap = new HashMap<String, Object>();
+            for (int i = 0; i < length; i++) {
+                parmasArgsNames[i] = attr.variableName(i + pos);
+                String paramsArgsName = attr.variableName(i + pos);
+                if (paramsArgsName.equalsIgnoreCase("request")
+                        || paramsArgsName.equalsIgnoreCase("response")
+                        || paramsArgsName.equalsIgnoreCase("session")
+                        || paramsArgsName.equalsIgnoreCase("model")) {
+                    continue;
+                }
+                Object paramsArgsValue = paramsArgsValues[i];
+                parmasMap.put(paramsArgsName, paramsArgsValue);
+            }
+            param = JSON.toJSONString(parmasMap);
+        } catch (ClassNotFoundException e) {
+            logger.info("AOP切入点获取参数异常", e);
+        } catch (NotFoundException e) {
+            logger.info("AOP切入点获取参数异常", e);
+        }
     }
 
     /**
@@ -116,6 +172,7 @@ public class TActionLogAop {
         hal.setUserAgent(userAgent);
         hal.setMerchantId(merchantId);
         hal.setStoreId(storeId);
+        hal.setParam(param);
         if (StringUtils.isNotEmpty(module) && userName != null && StringUtils.isNotEmpty(userName)) {
             this.tActionLogService.saveActionLog(hal);
         }
@@ -123,5 +180,24 @@ public class TActionLogAop {
 
     protected HttpServletRequest getRequest(){
         return ((ServletRequestAttributes) (RequestContextHolder.currentRequestAttributes())).getRequest();
+    }
+
+    /**
+     * 获取切入点参数信息
+     *
+     * @param joinPoint
+     * @return
+     */
+    public Map<String, String> getJoinPointPramas(JoinPoint joinPoint) {
+        Map<String, String> mapParams = new HashMap<String, String>();
+        // 获取切入点所在的方法
+        MethodSignature signature = (MethodSignature) joinPoint.getSignature();
+        Method smethod = signature.getMethod();
+        String classPath = joinPoint.getTarget().getClass().getName();
+        String methodName = joinPoint.getSignature().getName();
+        mapParams.put("module", module);
+        mapParams.put("classPath", classPath);
+        mapParams.put("methodName", methodName);
+        return mapParams;
     }
 }
