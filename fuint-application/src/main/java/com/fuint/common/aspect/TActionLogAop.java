@@ -117,6 +117,8 @@ public class TActionLogAop {
             logger.info("AOP切入点获取参数异常", e);
         } catch (NotFoundException e) {
             logger.info("AOP切入点获取参数异常", e);
+        } catch (Exception e) {
+            logger.info("AOP切入点获取参数异常", e.getMessage());
         }
     }
 
@@ -172,7 +174,10 @@ public class TActionLogAop {
         hal.setUserAgent(userAgent);
         hal.setMerchantId(merchantId);
         hal.setStoreId(storeId);
-        hal.setParam(param);
+        if (param.length() > 10000) {
+            param = param.substring(0, 10000);
+        }
+        hal.setParam(param.equals("{}") ? "" : param);
         if (StringUtils.isNotEmpty(module) && userName != null && StringUtils.isNotEmpty(userName)) {
             this.tActionLogService.saveActionLog(hal);
         }

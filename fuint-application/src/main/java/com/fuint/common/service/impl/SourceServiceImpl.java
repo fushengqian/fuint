@@ -240,7 +240,7 @@ public class SourceServiceImpl extends ServiceImpl<TSourceMapper, TSource> imple
     /**
      * 菜单去重
      *
-     * @param sources
+     * @param sources 菜单列表
      * @return
      */
     private List<TSource> delRepeated(List<TSource> sources) {

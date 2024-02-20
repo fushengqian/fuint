@@ -34,6 +34,8 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import weixin.popular.util.JsonUtil;
+
 import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
 import java.util.*;
@@ -289,6 +291,7 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
     @Transactional(rollbackFor = Exception.class)
     @OperationServiceLog(description = "提交订单信息")
     public MtOrder saveOrder(OrderDto orderDto) throws BusinessCheckException {
+        logger.info("orderService.saveOrder orderDto = {}", JsonUtil.toJSONString(orderDto));
         MtOrder mtOrder;
         if (null != orderDto.getId() && orderDto.getId() > 0) {
             mtOrder = mtOrderMapper.selectById(orderDto.getId());
@@ -1042,6 +1045,7 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
     @OperationServiceLog(description = "取消订单")
     public MtOrder cancelOrder(Integer orderId, String remark) throws BusinessCheckException {
         MtOrder mtOrder = mtOrderMapper.selectById(orderId);
+        logger.info("orderService.cancelOrder orderId = {}, remark = {}", orderId, remark);
 
         if (mtOrder != null && mtOrder.getStatus().equals(OrderStatusEnum.CREATED.getKey()) && mtOrder.getPayStatus().equals(PayStatusEnum.WAIT.getKey())) {
             if (StringUtil.isNotEmpty(remark)) {
@@ -1131,6 +1135,7 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
     @Override
     @OperationServiceLog(description = "删除订单信息")
     public void deleteOrder(Integer orderId, String operator) {
+        logger.info("orderService.deleteOrder orderId = {}, operator = {}", orderId, operator);
         MtOrder mtOrder = mtOrderMapper.selectById(orderId);
         if (mtOrder == null) {
             return;
@@ -1170,6 +1175,7 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
     @Transactional(rollbackFor = Exception.class)
     @OperationServiceLog(description = "更新订单信息")
     public MtOrder updateOrder(OrderDto orderDto) throws BusinessCheckException {
+        logger.info("orderService.updateOrder orderDto = {}", JsonUtil.toJSONString(orderDto));
         MtOrder mtOrder = mtOrderMapper.selectById(orderDto.getId());
         if (null == mtOrder || OrderStatusEnum.DELETED.getKey().equals(mtOrder.getStatus())) {
             throw new BusinessCheckException("该订单状态异常");
@@ -1256,6 +1262,7 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
         if (id > 0) {
             mtOrder = mtOrderMapper.selectById(mtOrder.getId());
         }
+        logger.info("orderService.updateOrder orderInfo = {}", JsonUtil.toJSONString(mtOrder));
         return mtOrder;
     }
 

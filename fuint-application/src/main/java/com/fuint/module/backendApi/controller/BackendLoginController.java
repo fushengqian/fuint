@@ -53,54 +53,14 @@ public class BackendLoginController extends BaseController {
     private DutyService dutyService;
 
     /**
-     * 验证码服务接口
-     * */
-    private CaptchaService captchaService;
-
-    /**
      * 后台登录
      * */
     @ApiOperation(value = "后台登录")
     @RequestMapping(value="/doLogin", method = RequestMethod.POST)
-    @OperationServiceLog(description = "登录后台系统")
-    public ResponseObject doLogin(HttpServletRequest request, @RequestBody LoginRequest loginRequest) {
+    public ResponseObject doLogin(HttpServletRequest request, @RequestBody LoginRequest loginRequest) throws BusinessCheckException {
         String userAgent = request.getHeader("user-agent");
-        String accountName = loginRequest.getUsername();
-        String password = loginRequest.getPassword();
-        String captchaCode = loginRequest.getCaptchaCode();
-        String uuid = loginRequest.getUuid();
-
-        Boolean captchaVerify = captchaService.checkCodeByUuid(captchaCode, uuid);
-        if (!captchaVerify) {
-            return getFailureResult(201,"图形验证码有误");
-        }
-
-        if (StringUtil.isEmpty(accountName)|| StringUtil.isEmpty(password) || StringUtil.isEmpty(captchaCode)) {
-            return getFailureResult(Constants.HTTP_RESPONSE_CODE_PARAM_ERROR);
-        } else {
-            AccountInfo accountInfo = accountService.getAccountByName(loginRequest.getUsername());
-            if (accountInfo == null) {
-                return getFailureResult(Constants.HTTP_RESPONSE_CODE_USER_LOGIN_ERROR);
-            }
-
-            TAccount tAccount = accountService.getAccountInfoById(accountInfo.getId());
-            String myPassword = tAccount.getPassword();
-            String inputPassword = accountService.getEntryptPassword(password, tAccount.getSalt());
-            if (!myPassword.equals(inputPassword) || !tAccount.getAccountStatus().toString().equals("1")) {
-                return getFailureResult(201, "账号或密码有误");
-            }
-
-            String token = TokenUtil.generateToken(userAgent, accountInfo.getId());
-            accountInfo.setToken(token);
-            TokenUtil.saveAccountToken(accountInfo);
-
-            LoginResponse response = new LoginResponse();
-            response.setLogin(true);
-            response.setToken(token);
-            response.setTokenCreatedTime(new Date());
-
-            return getSuccessResult(response);
-        }
+        LoginResponse response = accountService.doLogin(loginRequest, userAgent);
+        return getSuccessResult(response);
     }
 
     /**

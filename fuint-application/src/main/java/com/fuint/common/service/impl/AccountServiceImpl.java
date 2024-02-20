@@ -6,17 +6,22 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fuint.common.dto.AccountDto;
 import com.fuint.common.dto.AccountInfo;
 import com.fuint.common.service.AccountService;
+import com.fuint.common.service.CaptchaService;
 import com.fuint.common.service.StaffService;
 import com.fuint.common.service.StoreService;
+import com.fuint.common.util.TokenUtil;
 import com.fuint.framework.annoation.OperationServiceLog;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.exception.BusinessRuntimeException;
 import com.fuint.framework.pagination.PaginationRequest;
 import com.fuint.framework.pagination.PaginationResponse;
+import com.fuint.module.backendApi.request.LoginRequest;
+import com.fuint.module.backendApi.response.LoginResponse;
 import com.fuint.repository.mapper.*;
 import com.fuint.repository.model.*;
 import com.fuint.utils.Digests;
 import com.fuint.utils.Encodes;
+import com.fuint.utils.StringUtil;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import lombok.AllArgsConstructor;
@@ -57,6 +62,11 @@ public class AccountServiceImpl extends ServiceImpl<TAccountMapper, TAccount> im
      * 店铺服务接口
      * */
     private StoreService storeService;
+
+    /**
+     * 验证码服务接口
+     * */
+    private CaptchaService captchaService;
 
     /**
      * 分页查询账号列表
@@ -334,5 +344,53 @@ public class AccountServiceImpl extends ServiceImpl<TAccountMapper, TAccount> im
         byte[] salt1 = Encodes.decodeHex(salt);
         byte[] hashPassword = Digests.sha1(password.getBytes(), salt1, 1024);
         return Encodes.encodeHex(hashPassword);
+    }
+
+    /**
+     * 登录后台系统
+     *
+     * @param loginRequest 登录参数
+     * @param userAgent 登录浏览器
+     * @return
+     * */
+    @Override
+    @OperationServiceLog(description = "登录后台系统")
+    public LoginResponse doLogin(LoginRequest loginRequest, String userAgent) throws BusinessCheckException {
+        String accountName = loginRequest.getUsername();
+        String password = loginRequest.getPassword();
+        String captchaCode = loginRequest.getCaptchaCode();
+        String uuid = loginRequest.getUuid();
+
+        Boolean captchaVerify = captchaService.checkCodeByUuid(captchaCode, uuid);
+        if (!captchaVerify) {
+            throw new BusinessCheckException("图形验证码有误");
+        }
+
+        if (StringUtil.isEmpty(accountName)|| StringUtil.isEmpty(password) || StringUtil.isEmpty(captchaCode)) {
+            throw new BusinessCheckException("登录参数有误");
+        } else {
+            AccountInfo accountInfo = getAccountByName(loginRequest.getUsername());
+            if (accountInfo == null) {
+                throw new BusinessCheckException("登录账号或密码有误");
+            }
+
+            TAccount tAccount = getAccountInfoById(accountInfo.getId());
+            String myPassword = tAccount.getPassword();
+            String inputPassword = getEntryptPassword(password, tAccount.getSalt());
+            if (!myPassword.equals(inputPassword) || !tAccount.getAccountStatus().toString().equals("1")) {
+                throw new BusinessCheckException("登录账号或密码有误");
+            }
+
+            String token = TokenUtil.generateToken(userAgent, accountInfo.getId());
+            accountInfo.setToken(token);
+            TokenUtil.saveAccountToken(accountInfo);
+
+            LoginResponse response = new LoginResponse();
+            response.setLogin(true);
+            response.setToken(token);
+            response.setTokenCreatedTime(new Date());
+
+            return response;
+        }
     }
 }
