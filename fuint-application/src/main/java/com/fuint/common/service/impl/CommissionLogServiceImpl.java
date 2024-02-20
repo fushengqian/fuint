@@ -106,6 +106,10 @@ public class CommissionLogServiceImpl extends ServiceImpl<MtCommissionLogMapper,
                 lambdaQueryWrapper.eq(MtCommissionLog::getStaffId, -1);
             }
         }
+        String uuid = paginationRequest.getSearchParams().get("uuid") == null ? "" : paginationRequest.getSearchParams().get("uuid").toString();
+        if (StringUtils.isNotBlank(uuid)) {
+            lambdaQueryWrapper.eq(MtCommissionLog::getSettleUuid, uuid);
+        }
         String status = paginationRequest.getSearchParams().get("status") == null ? "" : paginationRequest.getSearchParams().get("status").toString();
         if (StringUtils.isNotBlank(status)) {
             lambdaQueryWrapper.eq(MtCommissionLog::getStatus, status);

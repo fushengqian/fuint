@@ -77,6 +77,7 @@ public class BackendCommissionLogController extends BaseController {
         String searchStoreId = request.getParameter("storeId");
         String realName = request.getParameter("realName");
         String mobile = request.getParameter("mobile");
+        String uuid = request.getParameter("uuid");
         String startTime = request.getParameter("startTime") == null ? "" : request.getParameter("startTime");
         String endTime = request.getParameter("endTime") == null ? "" : request.getParameter("endTime");
 
@@ -119,6 +120,9 @@ public class BackendCommissionLogController extends BaseController {
         }
         if (StringUtil.isNotEmpty(mobile)) {
             params.put("mobile", mobile);
+        }
+        if (StringUtil.isNotEmpty(uuid)) {
+            params.put("uuid", uuid);
         }
         paginationRequest.setSearchParams(params);
         PaginationResponse<CommissionLogDto> paginationResponse = commissionLogService.queryCommissionLogByPagination(paginationRequest);
@@ -254,7 +258,9 @@ public class BackendCommissionLogController extends BaseController {
         }
 
         commissionSettleRequest.setOperator(accountDto.getAccountName());
-        commissionSettleRequest.setMerchantId(accountDto.getMerchantId());
+        if (accountDto.getMerchantId() != null && accountDto.getMerchantId() > 0) {
+            commissionSettleRequest.setMerchantId(accountDto.getMerchantId());
+        }
         if (accountDto.getStoreId() != null && accountDto.getStoreId() > 0) {
             commissionSettleRequest.setStoreId(accountDto.getStoreId());
         }

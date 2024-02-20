@@ -19,7 +19,7 @@ public class CommissionSettleRequest implements Serializable {
     @ApiModelProperty(value="店铺ID", name="storeId")
     private Integer storeId;
 
-    @ApiModelProperty(value="员工姓名", name="name")
+    @ApiModelProperty(value="员工姓名", name="realName")
     private String realName;
 
     @ApiModelProperty(value="员工手机号", name="mobile")

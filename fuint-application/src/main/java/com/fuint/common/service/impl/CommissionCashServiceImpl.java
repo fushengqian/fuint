@@ -171,7 +171,7 @@ public class CommissionCashServiceImpl extends ServiceImpl<MtCommissionCashMappe
                 lambdaQueryWrapper.eq(MtCommissionLog::getStaffId, staffList.get(0).getId());
             }
         }
-        String mobile =commissionSettleRequest.getMobile();
+        String mobile = commissionSettleRequest.getMobile();
         if (StringUtils.isNotBlank(mobile)) {
             MtStaff mtStaff = staffService.queryStaffByMobile(mobile);
             if (mtStaff != null) {
