@@ -215,23 +215,19 @@ public class CommissionLogServiceImpl extends ServiceImpl<MtCommissionLogMapper,
                                  mtCommissionLog.setUpdateTime(dateTime);
                                  mtCommissionLog.setStatus(StatusEnum.ENABLED.getKey());
                                  mtCommissionLog.setOperator(null);
-                                 boolean flag = true;
-                                 // 员工提成校验
+                                 // 员工提成计算
                                  if (mtCommissionRule.getTarget().equals(CommissionTargetEnum.STAFF.getKey())) {
                                      // 员工信息不能为空
-                                     if (mtCommissionLog.getStaffId() == null || mtCommissionLog.getStaffId() <= 0) {
-                                         flag = false;
+                                     if (mtCommissionLog.getStaffId() != null && mtCommissionLog.getStaffId() > 0) {
+                                         mtCommissionLogMapper.insert(mtCommissionLog);
                                      }
                                  }
-                                 // 会员分销校验
+                                 // 会员分销计算
                                  if (mtCommissionRule.getTarget().equals(CommissionTargetEnum.MEMBER.getKey())) {
                                      // 会员信息不能为空
-                                     if (mtCommissionLog.getUserId() == null || mtCommissionLog.getUserId() <= 0) {
-                                         flag = false;
+                                     if (mtCommissionLog.getUserId() != null && mtCommissionLog.getUserId() > 0) {
+                                         mtCommissionLogMapper.insert(mtCommissionLog);
                                      }
-                                 }
-                                 if (flag) {
-                                     mtCommissionLogMapper.insert(mtCommissionLog);
                                  }
                              }
                          }

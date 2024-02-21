@@ -164,7 +164,7 @@ public class CommissionRuleServiceImpl extends ServiceImpl<MtCommissionRuleMappe
     /**
      * 根据ID获取规则信息
      *
-     * @param id
+     * @param id 规则ID
      * @return
      */
     @Override
@@ -179,11 +179,11 @@ public class CommissionRuleServiceImpl extends ServiceImpl<MtCommissionRuleMappe
         Map<String, Object> param = new HashMap();
         param.put("RULE_ID", id);
         param.put("STATUS", StatusEnum.ENABLED.getKey());
-        List<MtCommissionRuleItem> mtCommissionRuleItem = mtCommissionRuleItemMapper.selectByMap(param);
+        List<MtCommissionRuleItem> mtCommissionRuleItems = mtCommissionRuleItemMapper.selectByMap(param);
         List<CommissionRuleItemDto> detailList = new ArrayList<>();
         String basePath = settingService.getUploadBasePath();
-        if (mtCommissionRuleItem != null && mtCommissionRuleItem.size() > 0) {
-            for (MtCommissionRuleItem item : mtCommissionRuleItem) {
+        if (mtCommissionRuleItems != null && mtCommissionRuleItems.size() > 0) {
+            for (MtCommissionRuleItem item : mtCommissionRuleItems) {
                  CommissionRuleItemDto commissionRuleItemDto = new CommissionRuleItemDto();
                  commissionRuleItemDto.setGoodsId(item.getTargetId());
                  MtGoods mtGoods = goodsService.queryGoodsById(item.getTargetId());
@@ -218,8 +218,9 @@ public class CommissionRuleServiceImpl extends ServiceImpl<MtCommissionRuleMappe
     /**
      * 更新分销提成规则
      *
-     * @param  commissionRule
+     * @param  commissionRule 规则参数
      * @throws BusinessCheckException
+     * @return
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -255,6 +256,62 @@ public class CommissionRuleServiceImpl extends ServiceImpl<MtCommissionRuleMappe
                 mtCommissionRuleItemMapper.deleteByRuleId(commissionRule.getId(), new Date());
             }
         }
+        String storeIds = StringUtil.join(commissionRule.getStoreIdList().toArray(), ",");
+        mtCommissionRule.setStoreIds(storeIds);
+
+        // 更新或插入
+        Date date = new Date();
+        List<Integer> itemIds = new ArrayList<>();
+        if (commissionRule.getDetailList() != null && commissionRule.getDetailList().size() > 0) {
+            for (CommissionRuleItemParam itemParam : commissionRule.getDetailList()) {
+                MtCommissionRuleItem mtCommissionRuleItem = new MtCommissionRuleItem();
+                mtCommissionRuleItem.setRuleId(mtCommissionRule.getId());
+                mtCommissionRuleItem.setType(mtCommissionRule.getType());
+                mtCommissionRuleItem.setMerchantId(mtCommissionRule.getMerchantId());
+                mtCommissionRuleItem.setStoreId(mtCommissionRule.getStoreId());
+                mtCommissionRuleItem.setStoreIds(storeIds);
+                mtCommissionRuleItem.setCreateTime(date);
+                mtCommissionRuleItem.setUpdateTime(date);
+                mtCommissionRuleItem.setOperator(commissionRule.getOperator());
+                mtCommissionRuleItem.setStatus(mtCommissionRule.getStatus());
+                mtCommissionRuleItem.setMethod(itemParam.getMethod());
+                mtCommissionRuleItem.setTarget(commissionRule.getTarget());
+                mtCommissionRuleItem.setTargetId(itemParam.getGoodsId());
+                mtCommissionRuleItem.setMember(itemParam.getMemberVal());
+                mtCommissionRuleItem.setGuest(itemParam.getVisitorVal());
+                // 判断是否已经存在，存在则更新
+                if (itemParam.getGoodsId() != null && itemParam.getGoodsId() > 0) {
+                    Map<String, Object> param = new HashMap();
+                    param.put("RULE_ID", commissionRule.getId());
+                    param.put("TARGET_ID", itemParam.getGoodsId());
+                    param.put("STATUS", StatusEnum.ENABLED.getKey());
+                    List<MtCommissionRuleItem> items = mtCommissionRuleItemMapper.selectByMap(param);
+                    if (items != null && items.size() > 0) {
+                        mtCommissionRuleItem.setId(items.get(0).getId());
+                        itemIds.add(items.get(0).getId());
+                    }
+                }
+                if (mtCommissionRuleItem.getId() != null && mtCommissionRuleItem.getId() > 0) {
+                    mtCommissionRuleItemMapper.updateById(mtCommissionRuleItem);
+                } else {
+                    mtCommissionRuleItemMapper.insert(mtCommissionRuleItem);
+                    itemIds.add(mtCommissionRuleItem.getId());
+                }
+            }
+        }
+
+        // 删除
+        Map<String, Object> params = new HashMap();
+        params.put("RULE_ID", commissionRule.getId());
+        params.put("STATUS", StatusEnum.ENABLED.getKey());
+        List<MtCommissionRuleItem> mtCommissionRuleItems = mtCommissionRuleItemMapper.selectByMap(params);
+        for (MtCommissionRuleItem item : mtCommissionRuleItems) {
+             if (!itemIds.contains(item.getId())) {
+                 item.setStatus(StatusEnum.DISABLE.getKey());
+                 mtCommissionRuleItemMapper.updateById(item);
+             }
+        }
+
         mtCommissionRule.setUpdateTime(new Date());
         mtCommissionRuleMapper.updateById(mtCommissionRule);
         return mtCommissionRule;

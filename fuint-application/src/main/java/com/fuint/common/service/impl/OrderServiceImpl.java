@@ -1262,7 +1262,6 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
         if (id > 0) {
             mtOrder = mtOrderMapper.selectById(mtOrder.getId());
         }
-        logger.info("orderService.updateOrder orderInfo = {}", JsonUtil.toJSONString(mtOrder));
         return mtOrder;
     }
 

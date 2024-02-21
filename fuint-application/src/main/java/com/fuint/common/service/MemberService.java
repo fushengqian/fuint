@@ -34,7 +34,7 @@ public interface MemberService extends IService<MtUser> {
     /**
      * 获取当前操作会员信息
      *
-     * @param userId
+     * @param userId 会员ID
      * @param accessToken
      * @return
      * */
@@ -70,8 +70,8 @@ public interface MemberService extends IService<MtUser> {
     /**
      * 通过手机号添加会员
      *
-     * @param  merchantId
-     * @param  mobile
+     * @param  merchantId 商户ID
+     * @param  mobile 手机号
      * @throws BusinessCheckException
      * @return
      */
@@ -89,7 +89,7 @@ public interface MemberService extends IService<MtUser> {
     /**
      * 根据会员名称获取会员信息
      *
-     * @param  merchantId
+     * @param  merchantId 商户ID
      * @param  name 会员名称
      * @throws BusinessCheckException
      * @return
@@ -99,7 +99,7 @@ public interface MemberService extends IService<MtUser> {
     /**
      * 根据会员ID获取会员信息
      *
-     * @param  merchantId
+     * @param  merchantId 商户ID
      * @param  openId 微信openId
      * @throws BusinessCheckException
      * @return
@@ -118,7 +118,7 @@ public interface MemberService extends IService<MtUser> {
     /**
      * 根据会员手机获取会员信息
      *
-     * @param merchantId
+     * @param merchantId 商户ID
      * @param  mobile 会员手机
      * @throws BusinessCheckException
      * @return
@@ -128,7 +128,7 @@ public interface MemberService extends IService<MtUser> {
     /**
      * 根据会员号获取会员信息
      *
-     * @param  merchantId
+     * @param  merchantId 商户ID
      * @param  userNo 会员号
      * @throws BusinessCheckException
      * @return
@@ -138,7 +138,7 @@ public interface MemberService extends IService<MtUser> {
     /**
      * 根据会员ID 删除店铺信息
      *
-     * @param  id      会员ID
+     * @param  id 会员ID
      * @param  operator 操作人
      * @throws BusinessCheckException
      * @return
