@@ -91,6 +91,7 @@ public class BackendOpenGiftController extends BaseController {
         if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
             params.put("MERCHANT_ID", accountInfo.getMerchantId());
         }
+        params.put("STATUS", StatusEnum.ENABLED.getKey());
         List<MtUserGrade> userGradeList = memberService.queryMemberGradeByParams(params);
 
         Map<String, Object> result = new HashMap<>();

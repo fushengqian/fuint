@@ -211,6 +211,9 @@ public class BalanceServiceImpl extends ServiceImpl<MtBalanceMapper, MtBalance> 
             throw new BusinessCheckException("平台账号不能执行该操作");
         }
         BigDecimal balanceAmount = new BigDecimal(amount);
+        if (balanceAmount.compareTo(new BigDecimal(20000)) > 0) {
+            throw new BusinessCheckException("单次充值金额不能大于20000");
+        }
 
         List<Integer> userIdArr = new ArrayList<>();
         List<String> userIdList = Arrays.asList(userIds.split(","));

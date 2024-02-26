@@ -51,8 +51,8 @@ public interface GoodsService {
     /**
      * 根据编码获取商品信息
      *
-     * @param  merchantId
-     * @param  goodsNo
+     * @param  merchantId 商户ID
+     * @param  goodsNo 商品编码
      * @throws BusinessCheckException
      * @return
      */
@@ -70,7 +70,7 @@ public interface GoodsService {
     /**
      * 根据ID获取商品详情
      *
-     * @param  id
+     * @param  id 商品ID
      * @throws BusinessCheckException
      * @return
      */
@@ -79,7 +79,7 @@ public interface GoodsService {
     /**
      * 根据ID删除
      *
-     * @param  id       ID
+     * @param  id 商品ID
      * @param  operator 操作人
      * @throws BusinessCheckException
      * @return
@@ -89,11 +89,11 @@ public interface GoodsService {
     /**
      * 获取店铺的商品列表
      *
-     * @param storeId
-     * @param keyword
-     * @param cateId
-     * @param page
-     * @param pageSize
+     * @param storeId 店铺ID
+     * @param keyword 关键字
+     * @param cateId 分类ID
+     * @param page 当前页码
+     * @param pageSize 每页数量
      * @return
      * */
     Map<String, Object> getStoreGoodsList(Integer storeId, String keyword, Integer cateId, Integer page, Integer pageSize) throws BusinessCheckException;
@@ -109,7 +109,7 @@ public interface GoodsService {
     /**
      * 获取规格详情
      *
-     * @param specId
+     * @param specId 规格ID
      * @return
      * */
     MtGoodsSpec getSpecDetail(Integer specId);
