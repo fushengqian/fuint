@@ -37,11 +37,11 @@ public interface BalanceService extends IService<MtBalance> {
     /**
      * 发放余额
      *
-     * @param accountInfo
-     * @param object
-     * @param userIds
-     * @param amount
-     * @param remark
+     * @param accountInfo 账号信息
+     * @param object 发放对象，all全部
+     * @param userIds 会员ID
+     * @param amount 发放金额
+     * @param remark 备注
      * @return
      */
     void distribute(AccountInfo accountInfo, String object, String userIds, String amount, String remark) throws BusinessCheckException;

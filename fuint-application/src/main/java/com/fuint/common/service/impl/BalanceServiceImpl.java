@@ -191,10 +191,11 @@ public class BalanceServiceImpl extends ServiceImpl<MtBalanceMapper, MtBalance> 
     /**
      * 发放余额
      *
-     * @param accountInfo
-     * @param userIds
-     * @param amount
-     * @param remark
+     * @param accountInfo 账号信息
+     * @param object 发放对象，all全部
+     * @param userIds 会员ID
+     * @param amount 发放金额
+     * @param remark 备注
      * @return
      */
     @Override
