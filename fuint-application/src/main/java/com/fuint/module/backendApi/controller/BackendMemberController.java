@@ -143,7 +143,7 @@ public class BackendMemberController extends BaseController {
 
         // 会员等级列表
         Map<String, Object> param = new HashMap<>();
-        param.put("status", StatusEnum.ENABLED.getKey());
+        param.put("STATUS", StatusEnum.ENABLED.getKey());
         if (account.getMerchantId() != null && account.getMerchantId() > 0) {
             param.put("MERCHANT_ID", account.getMerchantId());
         }
@@ -240,7 +240,6 @@ public class BackendMemberController extends BaseController {
      * @param request HttpServletRequest对象
      * @return
      */
-    @ApiOperation(value = "保存会员信息")
     @RequestMapping(value = "/save", method = RequestMethod.POST)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('member:add')")
@@ -349,6 +348,7 @@ public class BackendMemberController extends BaseController {
         if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
             param.put("MERCHANT_ID", accountInfo.getMerchantId());
         }
+        param.put("STATUS", StatusEnum.ENABLED.getKey());
         List<MtUserGrade> userGradeList = memberService.queryMemberGradeByParams(param);
 
         Map<String, Object> result = new HashMap<>();

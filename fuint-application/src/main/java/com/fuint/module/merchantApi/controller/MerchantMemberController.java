@@ -204,6 +204,7 @@ public class MerchantMemberController extends BaseController {
         if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
             param.put("MERCHANT_ID", accountInfo.getMerchantId());
         }
+        param.put("STATUS", StatusEnum.ENABLED.getKey());
         List<MtUserGrade> userGradeList = memberService.queryMemberGradeByParams(param);
 
         Map<String, Object> result = new HashMap<>();
