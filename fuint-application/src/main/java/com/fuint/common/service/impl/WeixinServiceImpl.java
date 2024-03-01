@@ -205,6 +205,7 @@ public class WeixinServiceImpl implements WeixinService {
         } else {
             respData = jsapiPay(orderInfo.getStoreId(), reqData, ip, platform);
         }
+        logger.info("微信支付接口调用返回:{}", JsonUtil.toJSONString(respData));
 
         if (respData == null) {
             logger.error("微信支付接口调用异常......");
