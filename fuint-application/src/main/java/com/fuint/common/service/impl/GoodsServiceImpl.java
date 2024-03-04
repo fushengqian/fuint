@@ -476,7 +476,7 @@ public class GoodsServiceImpl extends ServiceImpl<MtGoodsMapper, MtGoods> implem
         if (goodsList.size() > 0) {
             for (MtGoods mtGoods : goodsList) {
                 // 多规格商品价格、库存数量
-                if (mtGoods.getIsSingleSpec().equals(YesOrNoEnum.NO.getKey())) {
+                if (mtGoods != null && mtGoods.getIsSingleSpec().equals(YesOrNoEnum.NO.getKey())) {
                     Map<String, Object> param = new HashMap<>();
                     param.put("goods_id", mtGoods.getId().toString());
                     param.put("status", StatusEnum.ENABLED.getKey());
