@@ -7,6 +7,7 @@
             AND t.CATE_ID = #{cateId}
         </if>
         and t.MERCHANT_ID = #{merchantId}
+        and t.PRICE > 0
         and t.STATUS = 'A' order by t.sort asc
     </select>
 
@@ -18,6 +19,7 @@
         <if test="storeId != null and storeId > 0">
             and (t.STORE_ID = #{storeId} or t.STORE_ID = 0)
         </if>
+        and t.PRICE > 0
         and (t.name like concat('%',#{keyword},'%') or t.goods_no = #{keyword} or t.ID = #{keyword} or t.description like concat('%',#{keyword},'%'))
         order by t.sort asc
     </select>

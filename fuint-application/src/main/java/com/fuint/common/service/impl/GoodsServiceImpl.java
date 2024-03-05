@@ -123,6 +123,12 @@ public class GoodsServiceImpl extends ServiceImpl<MtGoodsMapper, MtGoods> implem
                 lambdaQueryWrapper.lt(MtGoods::getStock, 1);
             }
         }
+        String hasPrice = paginationRequest.getSearchParams().get("hasPrice") == null ? "" : paginationRequest.getSearchParams().get("hasPrice").toString();
+        if (StringUtils.isNotBlank(hasPrice)) {
+            if (hasPrice.equals(YesOrNoEnum.YES.getKey())) {
+                lambdaQueryWrapper.gt(MtGoods::getPrice, 0);
+            }
+        }
         lambdaQueryWrapper.orderByAsc(MtGoods::getSort);
         List<MtGoods> goodsList = mtGoodsMapper.selectList(lambdaQueryWrapper);
         List<GoodsDto> dataList = new ArrayList<>();

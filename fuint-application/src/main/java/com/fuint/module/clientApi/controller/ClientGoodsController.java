@@ -143,6 +143,7 @@ public class ClientGoodsController extends BaseController {
 
         Map<String, Object> searchParams = new HashMap<>();
         searchParams.put("status", StatusEnum.ENABLED.getKey());
+        searchParams.put("hasPrice", YesOrNoEnum.YES.getKey());
         if (storeId > 0) {
             searchParams.put("storeId", storeId.toString());
         }
@@ -158,7 +159,6 @@ public class ClientGoodsController extends BaseController {
         }
 
         paginationRequest.setSearchParams(searchParams);
-        paginationRequest.setSortColumn(new String[]{"sort asc", "id desc"});
         PaginationResponse<GoodsDto> paginationResponse = goodsService.queryGoodsListByPagination(paginationRequest);
 
         return getSuccessResult(paginationResponse);
