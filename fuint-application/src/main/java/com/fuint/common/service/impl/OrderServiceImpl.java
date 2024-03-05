@@ -629,9 +629,12 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
             storeId = accountInfo.getStoreId();
             merchantId = accountInfo.getMerchantId();
             if (storeId <= 0) {
-                MtStore mtStore = storeService.getDefaultStore(merchantNo);
-                if (mtStore != null) {
-                    storeId = mtStore.getId();
+                MtMerchant mtMerchant = merchantService.queryMerchantById(merchantId);
+                if (mtMerchant != null) {
+                    MtStore mtStore = storeService.getDefaultStore(mtMerchant.getNo());
+                    if (mtStore != null) {
+                        storeId = mtStore.getId();
+                    }
                 }
             }
             if (userId < 1) {
