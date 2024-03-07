@@ -1,6 +1,5 @@
 package com.fuint.module.schedule;
 
-import com.fuint.common.service.MerchantService;
 import com.fuint.common.service.MessageService;
 import com.fuint.common.service.WeixinService;
 import com.fuint.framework.exception.BusinessCheckException;
@@ -53,7 +52,7 @@ public class MessageJob {
     @Transactional(rollbackFor = Exception.class)
     public void dealMessage() throws BusinessCheckException {
         String theSwitch = environment.getProperty("message.job.switch");
-        if (theSwitch.equals("1")) {
+        if (theSwitch != null && theSwitch.equals("1")) {
             logger.info("MessageJobStart!!!");
             List<MtMessage> dataList = messageService.getNeedSendList();
             if (dataList.size() > 0) {

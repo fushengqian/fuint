@@ -60,7 +60,7 @@ public class CommissionJob {
     @Transactional(rollbackFor = Exception.class)
     public void dealOrder() throws BusinessCheckException {
         String theSwitch = environment.getProperty("commission.job.switch");
-         if (theSwitch.equals("1")) {
+         if (theSwitch != null && theSwitch.equals("1")) {
              logger.info("CommissionJobStart!!!");
              Map<String, Object> param = new HashMap<>();
              param.put("PAY_STATUS", PayStatusEnum.SUCCESS.getKey());

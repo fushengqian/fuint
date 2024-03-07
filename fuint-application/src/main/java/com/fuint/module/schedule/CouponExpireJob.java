@@ -73,7 +73,7 @@ public class CouponExpireJob {
     @Transactional(rollbackFor = Exception.class)
     public void dealCoupon() throws BusinessCheckException {
         String theSwitch = environment.getProperty("couponExpire.job.switch");
-        if (theSwitch.equals("1")) {
+        if (theSwitch != null && theSwitch.equals("1")) {
             logger.info("CouponExpireJobJobStart!!!");
 
             // 获取3天内到期的会员卡券

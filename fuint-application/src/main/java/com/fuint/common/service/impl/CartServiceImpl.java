@@ -41,8 +41,8 @@ public class CartServiceImpl extends ServiceImpl<MtCartMapper, MtCart> implement
     /**
      * 切换购物车给会员
      *
-     * @param userId
-     * @param cartIds
+     * @param userId 会员ID
+     * @param cartIds 购物车ID
      * @return
      * */
     @Override
@@ -69,7 +69,7 @@ public class CartServiceImpl extends ServiceImpl<MtCartMapper, MtCart> implement
     /**
      * 保存购物车
      *
-     * @param  reqDto
+     * @param  reqDto 购物车参数
      * @throws BusinessCheckException
      * @return
      */

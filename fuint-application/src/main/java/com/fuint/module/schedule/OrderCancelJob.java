@@ -55,7 +55,7 @@ public class OrderCancelJob {
     @Transactional(rollbackFor = Exception.class)
     public void dealOrder() throws BusinessCheckException {
         String theSwitch = environment.getProperty("orderCancel.job.switch");
-         if (theSwitch.equals("1")) {
+         if (theSwitch != null && theSwitch.equals("1")) {
             logger.info("OrderCancelJobStart!!!");
             Map<String, Object> param = new HashMap<>();
             param.put("status", OrderStatusEnum.CREATED.getKey());

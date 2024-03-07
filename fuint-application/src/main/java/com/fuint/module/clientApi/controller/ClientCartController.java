@@ -97,7 +97,7 @@ public class ClientCartController extends BaseController {
         if (mtUser == null) {
             AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
             if (accountInfo != null) {
-                return getFailureResult(201, "请先将该账号关联店铺员工");
+                return getFailureResult(201, "该管理员还未关联店铺员工");
             }
             return getFailureResult(1001);
         }
