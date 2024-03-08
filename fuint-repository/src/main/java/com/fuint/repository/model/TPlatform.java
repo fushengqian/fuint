@@ -10,9 +10,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * <p>
- * 
- * </p>
+ * 平台实体类
  *
  * Created by FSQ
  * CopyRight https://www.fuint.cn
@@ -20,7 +18,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @TableName("t_platform")
-@ApiModel(value = "TPlatform对象", description = "")
+@ApiModel(value = "TPlatform对象", description = "平台")
 public class TPlatform implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -38,8 +36,7 @@ public class TPlatform implements Serializable {
     @ApiModelProperty("描述")
     private String description;
 
-    @ApiModelProperty("平台类型 1：免税易购 2：其他体验店")
+    @ApiModelProperty("平台类型")
     private Integer platformType;
-
 
 }

@@ -1,5 +1,8 @@
 package com.fuint.utils;
 
+import com.fuint.text.StrFormatter;
+import org.apache.commons.lang3.StringUtils;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -125,12 +128,6 @@ public class StringUtil {
 
         return false;
     }
-
-    /* ============================================================================ */
-    /*  默认值函数。                                                                */
-    /*                                                                              */
-    /*  当字符串为null、empty或blank时，将字符串转换成指定的默认字符串。            */
-    /* ============================================================================ */
 
     /**
      * 如果字符串是<code>null</code>，则返回空字符串<code>""</code>，否则返回字符串本身。
@@ -3977,36 +3974,6 @@ public class StringUtil {
      * 如果字符串为<code>null</code>，则返回<code>null</code>。
      * </p>
      * <pre>
-     * StringUtil.reverseDelimited(null, *)      = null
-     * StringUtil.reverseDelimited("", *)        = ""
-     * StringUtil.reverseDelimited("a.b.c", 'x') = "a.b.c"
-     * StringUtil.reverseDelimited("a.b.c", '.') = "c.b.a"
-     * </pre>
-     *
-     * @param str 要反转的字符串
-     * @param separatorChar 分隔符
-     *
-     * @return 反转后的字符串，如果原字符串为<code>null</code>，则返回<code>null</code>
-     */
-    public static String reverseDelimited(String str, char separatorChar) {
-        if (str == null) {
-            return null;
-        }
-
-        String[] strs = split(str, separatorChar);
-
-        ArrayUtil.reverse(strs);
-
-        return join(strs, separatorChar);
-    }
-
-    /**
-     * 反转指定分隔符分隔的各子串的顺序。
-     *
-     * <p>
-     * 如果字符串为<code>null</code>，则返回<code>null</code>。
-     * </p>
-     * <pre>
      * StringUtil.reverseDelimited(null, *, *)          = null
      * StringUtil.reverseDelimited("", *, *)            = ""
      * StringUtil.reverseDelimited("a.b.c", null, null) = "a.b.c"
@@ -4149,50 +4116,6 @@ public class StringUtil {
         return "..." + str.substring(str.length() - (maxWidth - 3));
     }
 
-    /* ============================================================================ */
-    /*  比较两个字符串的异同。                                                      */
-    /*                                                                              */
-    /*  查找字符串之间的差异，比较字符串的相似度。                                  */
-    /* ============================================================================ */
-
-    /**
-     * 比较两个字符串，取得第二个字符串中，和第一个字符串不同的部分。
-     * <pre>
-     * StringUtil.difference("i am a machine", "i am a robot")  = "robot"
-     * StringUtil.difference(null, null)                        = null
-     * StringUtil.difference("", "")                            = ""
-     * StringUtil.difference("", null)                          = ""
-     * StringUtil.difference("", "abc")                         = "abc"
-     * StringUtil.difference("abc", "")                         = ""
-     * StringUtil.difference("abc", "abc")                      = ""
-     * StringUtil.difference("ab", "abxyz")                     = "xyz"
-     * StringUtil.difference("abcde", "abxyz")                  = "xyz"
-     * StringUtil.difference("abcde", "xyz")                    = "xyz"
-     * </pre>
-     *
-     * @param str1 字符串1
-     * @param str2 字符串2
-     *
-     * @return 第二个字符串中，和第一个字符串不同的部分。如果两个字符串相同，则返回空字符串<code>""</code>
-     */
-    public static String difference(String str1, String str2) {
-        if (str1 == null) {
-            return str2;
-        }
-
-        if (str2 == null) {
-            return str1;
-        }
-
-        int index = indexOfDifference(str1, str2);
-
-        if (index == -1) {
-            return EMPTY_STRING;
-        }
-
-        return str2.substring(index);
-    }
-
     /**
      * 比较两个字符串，取得两字符串开始不同的索引值。
      * <pre>
@@ -4234,181 +4157,59 @@ public class StringUtil {
     }
 
     /**
-     * 取得两个字符串的相似度，<code>0</code>代表字符串相等，数字越大表示字符串越不像。
+     * 将下划线大写方式命名的字符串转换为驼峰式。如果转换前的下划线大写方式命名的字符串为空，则返回空字符串。 例如：HELLO_WORLD->HelloWorld
      *
-     * <p>
-     * 这个算法取自<a href="http://www.merriampark.com/ld.htm">http://www.merriampark.com/ld.htm</a>。
-     * 它计算的是从字符串1转变到字符串2所需要的删除、插入和替换的步骤数。
-     * </p>
-     * <pre>
-     * StringUtil.getLevenshteinDistance(null, *)             = IllegalArgumentException
-     * StringUtil.getLevenshteinDistance(*, null)             = IllegalArgumentException
-     * StringUtil.getLevenshteinDistance("","")               = 0
-     * StringUtil.getLevenshteinDistance("","a")              = 1
-     * StringUtil.getLevenshteinDistance("aaapppp", "")       = 7
-     * StringUtil.getLevenshteinDistance("frog", "fog")       = 1
-     * StringUtil.getLevenshteinDistance("fly", "ant")        = 3
-     * StringUtil.getLevenshteinDistance("elephant", "hippo") = 7
-     * StringUtil.getLevenshteinDistance("hippo", "elephant") = 7
-     * StringUtil.getLevenshteinDistance("hippo", "zzzzzzzz") = 8
-     * StringUtil.getLevenshteinDistance("hello", "hallo")    = 1
-     * </pre>
-     *
-     * @param s 第一个字符串，如果是<code>null</code>，则看作空字符串
-     * @param t 第二个字符串，如果是<code>null</code>，则看作空字符串
-     *
-     * @return 相似度值
+     * @param name 转换前的下划线大写方式命名的字符串
+     * @return 转换后的驼峰式命名的字符串
      */
-    public static int getLevenshteinDistance(String s, String t) {
-        s = defaultIfNull(s);
-        t = defaultIfNull(t);
-
-        int[][] d; // matrix
-        int n; // length of s
-        int m; // length of t
-        int i; // iterates through s
-        int j; // iterates through t
-        char s_i; // ith character of s
-        char t_j; // jth character of t
-        int cost; // cost
-
-        // Step 1
-        n = s.length();
-        m = t.length();
-
-        if (n == 0) {
-            return m;
-        }
-
-        if (m == 0) {
-            return n;
-        }
-
-        d = new int[n + 1][m + 1];
-
-        // Step 2
-        for (i = 0; i <= n; i++) {
-            d[i][0] = i;
-        }
-
-        for (j = 0; j <= m; j++) {
-            d[0][j] = j;
-        }
-
-        // Step 3
-        for (i = 1; i <= n; i++) {
-            s_i = s.charAt(i - 1);
-
-            // Step 4
-            for (j = 1; j <= m; j++) {
-                t_j = t.charAt(j - 1);
-
-                // Step 5
-                if (s_i == t_j) {
-                    cost = 0;
-                } else {
-                    cost = 1;
-                }
-
-                // Step 6
-                d[i][j] = min(d[i - 1][j] + 1, d[i][j - 1] + 1, d[i - 1][j - 1] + cost);
-            }
-        }
-
-        // Step 7
-        return d[n][m];
-    }
-
-    /**
-     * 取得最小数。
-     *
-     * @param a 整数1
-     * @param b 整数2
-     * @param c 整数3
-     *
-     * @return 三个数中的最小值
-     */
-    private static int min(int a, int b, int c) {
-        if (b < a) {
-            a = b;
-        }
-
-        if (c < a) {
-            a = c;
-        }
-
-        return a;
-    }
-
-    /**
-     * 页面输入：@{}<TR>d1~!&):?</TR>
-     * 保存或修改后输出：@{}<TR>d1~!&):?</TR>
-     */
-    public static String html(String content) {
-        if (content == null)
+    public static String convertToCamelCase(String name)
+    {
+        StringBuilder result = new StringBuilder();
+        // 快速检查
+        if (name == null || name.isEmpty())
+        {
+            // 没必要转换
             return "";
-        String html = content;
-
-        html = html.replaceAll("&", "、;");
-        html = html.replace("\"", "&quot;"); //"
-        html = html.replace("\t", "&nbsp;&nbsp;");// 替换跳格
-        html = html.replace(" ", "&nbsp;");// 替换空格
-        html = html.replace("<", "&lt;");
-        html = html.replace("'", "&#39;");
-        html = html.replaceAll(">", "&gt;");
-
-        return html;
-    }
-    
-    public static String splitAndFilterString(String input) {        
-        if (input == null || input.trim().equals("")) {        
-            return "";        
-        }        
-        // 去掉所有html元素,        
-        String str = input.replaceAll("\\&[a-zA-Z]{1,10};", "").replaceAll(        
-                "<[^>]*>", "");        
-        str = str.replaceAll("[(/>)<]", "");        
-        return str;        
-    } 
-    
-    /** 
-     * 使用java正则表达式去掉多余的.与0 
-     * @param s 
-     * @return  
-     */  
-    public static String subZeroAndDot(String s){  
-        if(s.indexOf(".") > 0){  
-            s = s.replaceAll("0+?$", "");//去掉多余的0  
-            s = s.replaceAll("[.]$", "");//如最后一位是.则去掉  
-        }  
-        return s;  
-    }
-
-    /**
-     * 左填充字符
-     * @param str
-     * @param c
-     * @param length
-     * @return String
-     */
-    public static String leftFill(String str, char c, int length){
-        int strLength = str.length();
-        if(strLength >= length){
-            return str;
-        }else{
-            StringBuilder builder = new StringBuilder();
-            for(int i=0; i<length-strLength; i++){
-                builder.append(c);
-            }
-            builder.append(str);
-
-            return builder.toString();
         }
+        else if (!name.contains("_"))
+        {
+            // 不含下划线，仅将首字母大写
+            return name.substring(0, 1).toUpperCase() + name.substring(1);
+        }
+        // 用下划线将原始字符串分割
+        String[] camels = name.split("_");
+        for (String camel : camels)
+        {
+            // 跳过原始字符串中开头、结尾的下换线或双重下划线
+            if (camel.isEmpty())
+            {
+                continue;
+            }
+            // 首字母大写
+            result.append(camel.substring(0, 1).toUpperCase());
+            result.append(camel.substring(1).toLowerCase());
+        }
+        return result.toString();
     }
+
     /**
-     * 获取RSA公钥.
-     * */
-    public static String getPublicKey() {
-        return RSAKeys.PUBLIC_KEY;
+     * 格式化文本, {} 表示占位符<br>
+     * 此方法只是简单将占位符 {} 按照顺序替换为参数<br>
+     * 如果想输出 {} 使用 \\转义 { 即可，如果想输出 {} 之前的 \ 使用双转义符 \\\\ 即可<br>
+     * 例：<br>
+     * 通常使用：format("this is {} for {}", "a", "b") -> this is a for b<br>
+     * 转义{}： format("this is \\{} for {}", "a", "b") -> this is \{} for a<br>
+     * 转义\： format("this is \\\\{} for {}", "a", "b") -> this is \a for b<br>
+     *
+     * @param template 文本模板，被替换的部分用 {} 表示
+     * @param params 参数值
+     * @return 格式化后的文本
+     */
+    public static String format(String template, Object... params) {
+        if (params == null || isEmpty(template)) {
+            return template;
+        }
+        return StrFormatter.format(template, params);
     }
+
 }
