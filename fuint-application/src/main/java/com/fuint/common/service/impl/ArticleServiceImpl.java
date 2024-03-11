@@ -182,7 +182,7 @@ public class ArticleServiceImpl extends ServiceImpl<MtArticleMapper, MtArticle> 
     /**
      * 编辑文章
      *
-     * @param  articleDto
+     * @param  articleDto 文章参数
      * @throws BusinessCheckException
      */
     @Override
@@ -235,7 +235,7 @@ public class ArticleServiceImpl extends ServiceImpl<MtArticleMapper, MtArticle> 
     /**
      * 根据条件搜索文章
      *
-     * @param params
+     * @param params 搜索条件
      * @return
      * */
     @Override
