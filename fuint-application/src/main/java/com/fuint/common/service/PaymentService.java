@@ -26,9 +26,10 @@ public interface PaymentService {
      * @param giveAmount 赠送金额
      * @param ip 支付IP地址
      * @param platform 支付平台
+     * @param isWechat 是否微信客户端
      * @return
      * */
-    ResponseObject createPrepayOrder(MtUser userInfo, MtOrder orderInfo, Integer payAmount, String authCode, Integer giveAmount, String ip, String platform) throws BusinessCheckException;
+    ResponseObject createPrepayOrder(MtUser userInfo, MtOrder orderInfo, Integer payAmount, String authCode, Integer giveAmount, String ip, String platform, String isWechat) throws BusinessCheckException;
 
     /**
      * 支付回调

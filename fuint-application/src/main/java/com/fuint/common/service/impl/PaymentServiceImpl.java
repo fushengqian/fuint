@@ -81,10 +81,11 @@ public class PaymentServiceImpl implements PaymentService {
      * @param giveAmount 赠送金额
      * @param ip 支付IP地址
      * @param platform 支付平台
+     * @param isWechat 是否微信客户端
      * @return
      * */
     @Override
-    public ResponseObject createPrepayOrder(MtUser userInfo, MtOrder orderInfo, Integer payAmount, String authCode, Integer giveAmount, String ip, String platform) throws BusinessCheckException {
+    public ResponseObject createPrepayOrder(MtUser userInfo, MtOrder orderInfo, Integer payAmount, String authCode, Integer giveAmount, String ip, String platform, String isWechat) throws BusinessCheckException {
         logger.info("PaymentService createPrepayOrder inParams userInfo={} payAmount={} giveAmount={} goodsInfo={}", userInfo, payAmount, giveAmount, orderInfo);
 
         ResponseObject responseObject;
@@ -93,7 +94,7 @@ public class PaymentServiceImpl implements PaymentService {
             responseObject = alipayService.createPrepayOrder(userInfo, orderInfo, payAmount, authCode, giveAmount, ip, platform);
         } else {
             // 微信支付
-            responseObject = weixinService.createPrepayOrder(userInfo, orderInfo, payAmount, authCode, giveAmount, ip, platform);
+            responseObject = weixinService.createPrepayOrder(userInfo, orderInfo, payAmount, authCode, giveAmount, ip, platform, isWechat);
         }
 
         logger.info("PaymentService createPrepayOrder outParams {}", responseObject.toString());
@@ -170,6 +171,7 @@ public class PaymentServiceImpl implements PaymentService {
     public Map<String, Object> doPay(HttpServletRequest request) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
         String platform = request.getHeader("platform") == null ? "" : request.getHeader("platform");
+        String isWechat = request.getHeader("isWechat") == null ? "" : request.getHeader("isWechat");
         String payType = request.getParameter("payType") == null ? PayTypeEnum.JSAPI.getKey() : request.getParameter("payType");
         String cashierPayAmount = request.getParameter("cashierPayAmount") == null ? "" : request.getParameter("cashierPayAmount"); // 收银台实付金额
         String cashierDiscountAmount = request.getParameter("cashierDiscountAmount") == null ? "" : request.getParameter("cashierDiscountAmount"); // 收银台优惠金额
@@ -263,7 +265,7 @@ public class PaymentServiceImpl implements PaymentService {
             String ip = CommonUtil.getIPFromHttpRequest(request);
             BigDecimal pay = realPayAmount.multiply(new BigDecimal("100"));
             orderInfo.setPayType(payType);
-            ResponseObject paymentInfo = createPrepayOrder(mtUser, orderInfo, (pay.intValue()), authCode, 0, ip, platform);
+            ResponseObject paymentInfo = createPrepayOrder(mtUser, orderInfo, (pay.intValue()), authCode, 0, ip, platform, isWechat);
             if (paymentInfo.getData() == null) {
                 throw new BusinessCheckException("抱歉，支付失败");
             }

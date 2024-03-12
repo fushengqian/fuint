@@ -69,4 +69,7 @@ public class SettlementParam implements Serializable {
     @ApiModelProperty(value="订单ID", name="orderId")
     private Integer orderId;
 
+    @ApiModelProperty(value="是否微信客户端", name="isWechat")
+    private String isWechat;
+
 }

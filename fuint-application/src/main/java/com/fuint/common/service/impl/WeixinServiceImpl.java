@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.JSONArray;
 import com.aliyun.oss.OSS;
+import com.fuint.common.bean.H5SceneInfo;
 import com.fuint.common.bean.WxPayBean;
 import com.fuint.common.dto.OrderDto;
 import com.fuint.common.dto.UserOrderDto;
@@ -18,6 +19,7 @@ import com.fuint.repository.model.*;
 import com.fuint.utils.QRCodeUtil;
 import com.fuint.utils.StringUtil;
 import com.ijpay.core.enums.SignType;
+import com.ijpay.core.enums.TradeType;
 import com.ijpay.core.kit.HttpKit;
 import com.ijpay.core.kit.WxPayKit;
 import com.ijpay.wxpay.WxPayApi;
@@ -158,12 +160,13 @@ public class WeixinServiceImpl implements WeixinService {
      * @param giveAmount 赠送金额
      * @param ip 支付IP
      * @param platform 支付平台
+     * @param isWechat 是否微信客户端
      * @throws BusinessCheckException
      * @return
      * */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public ResponseObject createPrepayOrder(MtUser userInfo, MtOrder orderInfo, Integer payAmount, String authCode, Integer giveAmount, String ip, String platform) throws BusinessCheckException {
+    public ResponseObject createPrepayOrder(MtUser userInfo, MtOrder orderInfo, Integer payAmount, String authCode, Integer giveAmount, String ip, String platform, String isWechat) throws BusinessCheckException {
         logger.info("WeixinService createPrepayOrder inParams userInfo={} payAmount={} giveAmount={} goodsInfo={}", userInfo, payAmount, giveAmount, orderInfo);
 
         String goodsInfo = orderInfo.getOrderSn();
@@ -203,11 +206,15 @@ public class WeixinServiceImpl implements WeixinService {
         if (reqData.get("auth_code") != null && StringUtil.isNotEmpty(reqData.get("auth_code"))) {
             respData = microPay(orderInfo.getStoreId(), reqData, ip, platform);
         } else {
-            respData = jsapiPay(orderInfo.getStoreId(), reqData, ip, platform);
+            if (platform.equals(PlatformTypeEnum.H5.getCode()) && isWechat.equals(YesOrNoEnum.NO.getKey())) {
+                respData = wapPay(orderInfo.getStoreId(), reqData, ip, platform);
+            } else {
+                respData = jsapiPay(orderInfo.getStoreId(), reqData, ip, platform);
+            }
         }
         logger.info("微信支付接口调用返回:{}", JsonUtil.toJSONString(respData));
 
-        if (respData == null) {
+        if (respData == null || respData.get("return_code").equals("FAIL")) {
             logger.error("微信支付接口调用异常......");
             return new ResponseObject(3000, "微信支付接口调用异常", null);
         }
@@ -698,6 +705,68 @@ public class WeixinServiceImpl implements WeixinService {
             }
 
             logger.info("调用微信支付下单接口返回{}", JsonUtil.toJSONString(result));
+            return result;
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+        }
+        return null;
+    }
+
+    /**
+     * h5支付
+     *
+     * @param storeId 店铺ID
+     * @param reqData 请求参数
+     * @param ip 支付IP
+     * @param platform 支付平台
+     * @return
+     * */
+    private Map<String, String> wapPay(Integer storeId, Map<String, String> reqData, String ip, String platform) {
+        try {
+            logger.info("调用微信h5支付下单接口入参{}", JsonUtil.toJSONString(reqData));
+            logger.info("请求平台：{}", platform);
+            // 支付配置
+            getApiConfig(storeId, platform);
+            WxPayApiConfig wxPayApiConfig = WxPayApiConfigKit.getWxPayApiConfig();
+            H5SceneInfo sceneInfo = new H5SceneInfo();
+            H5SceneInfo.H5 h5Info = new H5SceneInfo.H5();
+            h5Info.setType("Wap");
+            // 支付域名必须在商户平台->"产品中心"->"开发配置"中添加
+            h5Info.setWap_url(wxPayApiConfig.getDomain());
+            h5Info.setWap_name("WEB");
+            sceneInfo.setH5Info(h5Info);
+            Map<String, String> params = UnifiedOrderModel
+                    .builder()
+                    .appid(wxPayApiConfig.getAppId())
+                    .mch_id(wxPayApiConfig.getMchId())
+                    .nonce_str(WxPayKit.generateStr())
+                    .body(reqData.get("body"))
+                    .attach(reqData.get("body"))
+                    .out_trade_no(WxPayKit.generateStr())
+                    .total_fee(reqData.get("total_fee"))
+                    .spbill_create_ip(ip)
+                    .notify_url(wxPayApiConfig.getDomain() + CALL_BACK_URL)
+                    .trade_type(TradeType.MWEB.getTradeType())
+                    .scene_info(JSON.toJSONString(sceneInfo))
+                    .build()
+                    .createSign(wxPayApiConfig.getPartnerKey(), SignType.HMACSHA256);
+
+            String xmlResult = WxPayApi.pushOrder(false, params);
+            logger.info("调用微信h5支付接口返回xml：{}", xmlResult);
+
+            Map<String, String> result = WxPayKit.xmlToMap(xmlResult);
+
+            String return_code = result.get("return_code");
+            String return_msg = result.get("return_msg");
+            if (!WxPayKit.codeIsOk(return_code)) {
+                throw new RuntimeException(return_msg);
+            }
+            String result_code = result.get("result_code");
+            if (!WxPayKit.codeIsOk(result_code)) {
+                throw new RuntimeException(return_msg);
+            }
+            result.put("backUrl", env.getProperty("website.url"));
+            logger.info("调用微信h5支付接口返回{}", JsonUtil.toJSONString(result));
             return result;
         } catch (Exception e) {
             logger.error(e.getMessage(), e);

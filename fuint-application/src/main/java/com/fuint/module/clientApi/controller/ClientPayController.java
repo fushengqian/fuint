@@ -159,13 +159,9 @@ public class ClientPayController extends BaseController {
     @ApiOperation(value = "发起支付")
     @RequestMapping(value = "/doPay", method = RequestMethod.GET)
     @CrossOrigin
-    public ResponseObject doPay(HttpServletRequest request) {
-        try {
-            Map<String, Object> result = paymentService.doPay(request);
-            return getSuccessResult(result);
-        } catch (BusinessCheckException e) {
-            return getFailureResult(201, e.getMessage() == null ? "订单支付出错" : e.getMessage());
-        }
+    public ResponseObject doPay(HttpServletRequest request) throws BusinessCheckException {
+       Map<String, Object> result = paymentService.doPay(request);
+       return getSuccessResult(result);
     }
 
     /**

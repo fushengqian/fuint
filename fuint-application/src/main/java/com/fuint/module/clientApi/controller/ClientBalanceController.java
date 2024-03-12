@@ -133,6 +133,7 @@ public class ClientBalanceController extends BaseController {
     public ResponseObject doRecharge(HttpServletRequest request, @RequestBody RechargeParam rechargeParam) throws BusinessCheckException {
         Integer storeId = request.getHeader("storeId") == null ? 0 : Integer.parseInt(request.getHeader("storeId"));
         String platform = request.getHeader("platform") == null ? "" : request.getHeader("platform");
+        String isWechat = request.getHeader("isWechat") == null ? "" : request.getHeader("isWechat");
         String merchantNo = request.getHeader("merchantNo") == null ? "" : request.getHeader("merchantNo");
 
         String token = request.getHeader("Access-Token");
@@ -206,7 +207,7 @@ public class ClientBalanceController extends BaseController {
         String ip = CommonUtil.getIPFromHttpRequest(request);
         BigDecimal pay = amount.multiply(new BigDecimal("100"));
         orderInfo.setPayType(PayTypeEnum.JSAPI.getKey());
-        ResponseObject paymentInfo = paymentService.createPrepayOrder(mtUser, orderInfo, (pay.intValue()), "", 0, ip, platform);
+        ResponseObject paymentInfo = paymentService.createPrepayOrder(mtUser, orderInfo, (pay.intValue()), "", 0, ip, platform, isWechat);
         if (paymentInfo.getData() == null) {
             return getFailureResult(201, "抱歉，发起支付失败");
         }
