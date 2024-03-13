@@ -58,9 +58,9 @@ public class GenCodeServiceImpl implements GenCodeService {
         LambdaQueryWrapper<TGenCode> lambdaQueryWrapper = Wrappers.lambdaQuery();
         lambdaQueryWrapper.ne(TGenCode::getStatus, StatusEnum.DISABLE.getKey());
 
-        String title = paginationRequest.getSearchParams().get("title") == null ? "" : paginationRequest.getSearchParams().get("title").toString();
-        if (org.apache.commons.lang.StringUtils.isNotBlank(title)) {
-            lambdaQueryWrapper.like(TGenCode::getTableName, title);
+        String tableName = paginationRequest.getSearchParams().get("tableName") == null ? "" : paginationRequest.getSearchParams().get("tableName").toString();
+        if (org.apache.commons.lang.StringUtils.isNotBlank(tableName)) {
+            lambdaQueryWrapper.like(TGenCode::getTableName, tableName);
         }
         String status = paginationRequest.getSearchParams().get("status") == null ? "" : paginationRequest.getSearchParams().get("status").toString();
         if (org.apache.commons.lang.StringUtils.isNotBlank(status)) {

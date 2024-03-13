@@ -53,7 +53,7 @@ public class BackendGenCodeController extends BaseController {
         String token = request.getHeader("Access-Token");
         Integer page = request.getParameter("page") == null ? Constants.PAGE_NUMBER : Integer.parseInt(request.getParameter("page"));
         Integer pageSize = request.getParameter("pageSize") == null ? Constants.PAGE_SIZE : Integer.parseInt(request.getParameter("pageSize"));
-        String title = request.getParameter("title");
+        String tableName = request.getParameter("title");
         String status = request.getParameter("status");
 
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
@@ -66,8 +66,8 @@ public class BackendGenCodeController extends BaseController {
         paginationRequest.setPageSize(pageSize);
 
         Map<String, Object> params = new HashMap<>();
-        if (StringUtil.isNotEmpty(title)) {
-            params.put("title", title);
+        if (StringUtil.isNotEmpty(tableName)) {
+            params.put("tableName", tableName);
         }
         if (StringUtil.isNotEmpty(status)) {
             params.put("status", status);
