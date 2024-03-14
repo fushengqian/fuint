@@ -132,9 +132,11 @@ public class GenCodeServiceImpl implements GenCodeService {
     public void generatorCode(String tableName) throws BusinessRuntimeException {
         // 查询表信息
         TGenCode table = tGenCodeMapper.findGenCodeByTableName(tableName);
+        if (table == null) {
+            throw new BusinessRuntimeException("渲染模板失败，该表不存在.");
+        }
 
         VelocityInitializer.initVelocity();
-
         VelocityContext context = VelocityUtils.prepareContext(table);
 
         // 获取模板列表

@@ -23,7 +23,7 @@ import com.fuint.common.core.domain.TreeEntity;
 #elseif($table.tree)
 #set($Entity="TreeEntity")
 #end
-public class ${ClassName} extends ${Entity}
+public class ${modelName} implements Serializable
 {
     private static final long serialVersionUID = 1L;
 

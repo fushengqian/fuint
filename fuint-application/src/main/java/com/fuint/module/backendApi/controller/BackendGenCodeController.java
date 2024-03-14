@@ -53,7 +53,7 @@ public class BackendGenCodeController extends BaseController {
         String token = request.getHeader("Access-Token");
         Integer page = request.getParameter("page") == null ? Constants.PAGE_NUMBER : Integer.parseInt(request.getParameter("page"));
         Integer pageSize = request.getParameter("pageSize") == null ? Constants.PAGE_SIZE : Integer.parseInt(request.getParameter("pageSize"));
-        String tableName = request.getParameter("title");
+        String tableName = request.getParameter("tableName");
         String status = request.getParameter("status");
 
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
@@ -187,7 +187,7 @@ public class BackendGenCodeController extends BaseController {
             // empty
         }
 
-        genCodeService.generatorCode("mt_luck");
+        genCodeService.generatorCode("luck");
         return getSuccessResult(true);
     }
 }

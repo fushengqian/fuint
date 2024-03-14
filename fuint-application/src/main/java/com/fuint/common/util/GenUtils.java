@@ -66,7 +66,7 @@ public class GenUtils {
      */
     public static String convertClassName(String tableName) {
         boolean autoRemovePre = false;
-        String tablePrefix = "mt_";
+        String tablePrefix = "mt";
         if (autoRemovePre && StringUtils.isNotEmpty(tablePrefix)) {
             String[] searchList = StringUtils.split(tablePrefix, ",");
             tableName = replaceFirst(tableName, searchList);
