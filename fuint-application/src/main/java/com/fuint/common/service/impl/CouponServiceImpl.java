@@ -59,6 +59,8 @@ public class CouponServiceImpl extends ServiceImpl<MtCouponMapper, MtCoupon> imp
 
     private MtCouponGoodsMapper mtCouponGoodsMapper;
 
+    private MtOrderMapper mtOrderMapper;
+
     /**
      * 会员卡券服务接口
      * */
@@ -808,6 +810,16 @@ public class CouponServiceImpl extends ServiceImpl<MtCouponMapper, MtCoupon> imp
                              }
                          }
                      }
+                }
+            }
+        }
+
+        // 使用优惠券，判断满多少可用
+        if (couponInfo.getType().equals(CouponTypeEnum.COUPON.getKey()) && StringUtil.isNotEmpty(couponInfo.getOutRule()) && orderId != null && orderId > 0) {
+            MtOrder mtOrder = mtOrderMapper.selectById(orderId);
+            if (mtOrder != null) {
+                if (mtOrder.getAmount().compareTo(new BigDecimal(couponInfo.getOutRule())) < 0) {
+                    throw new BusinessCheckException("该卡券满"+ couponInfo.getOutRule() +"元才能使用");
                 }
             }
         }
