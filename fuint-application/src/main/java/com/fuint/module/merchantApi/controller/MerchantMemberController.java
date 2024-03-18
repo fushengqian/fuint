@@ -56,7 +56,7 @@ public class MerchantMemberController extends BaseController {
     /**
      * 会员列表查询
      *
-     * @param  request HttpServletRequest对象
+     * @param request HttpServletRequest对象
      * @return 会员列表
      */
     @ApiOperation(value = "查询会员列表")

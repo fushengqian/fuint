@@ -75,7 +75,7 @@
     </select>
 
     <select id="getMemberConsumeTopList" resultType="com.fuint.repository.bean.MemberTopBean">
-        SELECT u.id AS ID,u.name AS NAME,u.`USER_NO`,SUM(o.`AMOUNT`) AS amount FROM `mt_user` u,`mt_order` o WHERE u.`ID` = o.`USER_ID` AND o.PAY_STATUS = 'B'
+        SELECT u.id AS ID,u.name AS NAME,u.`USER_NO`,SUM(o.`AMOUNT`) AS amount FROM `mt_user` u,`mt_order` o WHERE u.`ID` = o.`USER_ID` AND u.STATUS = 'A' AND o.STATUS != 'G' AND o.PAY_STATUS = 'B'
         <if test="merchantId != null and merchantId > 0">
             AND u.MERCHANT_ID = #{merchantId}
         </if>

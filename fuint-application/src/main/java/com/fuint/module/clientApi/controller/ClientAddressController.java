@@ -87,7 +87,6 @@ public class ClientAddressController extends BaseController {
         mtAddress.setIsDefault(isDefault);
 
         addressService.saveAddress(mtAddress);
-
         return getSuccessResult(true);
     }
 
@@ -114,41 +113,39 @@ public class ClientAddressController extends BaseController {
 
         List<AddressDto> dataList = new ArrayList<>();
         for (MtAddress mtAddress : addressList) {
-            AddressDto dto = new AddressDto();
-            BeanUtils.copyProperties(mtAddress, dto);
+            AddressDto address = new AddressDto();
+            BeanUtils.copyProperties(mtAddress, address);
 
             String province = "";
             String city = "";
             String region = "";
 
-            if (dto.getProvinceId() > 0) {
-                MtRegion mtProvince = mtRegionMapper.selectById(dto.getProvinceId());
+            if (address.getProvinceId() > 0) {
+                MtRegion mtProvince = mtRegionMapper.selectById(address.getProvinceId());
                 if (mtProvince != null) {
                     province = mtProvince.getName();
                 }
             }
-            if (dto.getCityId() > 0) {
-                MtRegion mtCity = mtRegionMapper.selectById(dto.getCityId());
+            if (address.getCityId() > 0) {
+                MtRegion mtCity = mtRegionMapper.selectById(address.getCityId());
                 if (mtCity != null) {
                     city = mtCity.getName();
                 }
             }
-            if (dto.getCityId() > 0) {
-                MtRegion mtRegion = mtRegionMapper.selectById(dto.getRegionId());
+            if (address.getCityId() > 0) {
+                MtRegion mtRegion = mtRegionMapper.selectById(address.getRegionId());
                 if (mtRegion != null) {
                     region = mtRegion.getName();
                 }
             }
 
-            dto.setProvinceName(province);
-            dto.setCityName(city);
-            dto.setRegionName(region);
-
-            dataList.add(dto);
+            address.setProvinceName(province);
+            address.setCityName(city);
+            address.setRegionName(region);
+            dataList.add(address);
         }
 
         result.put("list", dataList);
-
         return getSuccessResult(result);
     }
 
@@ -214,7 +211,6 @@ public class ClientAddressController extends BaseController {
                 dto.setProvinceName(province);
                 dto.setCityName(city);
                 dto.setRegionName(region);
-
                 result.put("address", dto);
             }
         }
