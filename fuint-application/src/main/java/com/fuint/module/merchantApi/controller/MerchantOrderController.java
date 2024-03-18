@@ -55,7 +55,7 @@ public class MerchantOrderController extends BaseController {
     @ApiOperation(value = "获取订单列表")
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @CrossOrigin
-    public ResponseObject list(HttpServletRequest request, @RequestBody OrderListParam orderListParam) throws BusinessCheckException {
+    public ResponseObject list(HttpServletRequest request, @RequestBody OrderListParam params) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
         UserInfo userInfo = TokenUtil.getUserInfoByToken(token);
 
@@ -69,12 +69,12 @@ public class MerchantOrderController extends BaseController {
             staffInfo = staffService.queryStaffByMobile(mtUser.getMobile());
         }
         if (staffInfo == null) {
-            return getFailureResult(1002, "该账号不是商户");
+            return getFailureResult(1002, "该账号属于任何商户");
         } else if(staffInfo.getStoreId() != null && staffInfo.getStoreId() > 0){
-            orderListParam.setStoreId(staffInfo.getStoreId());
+            params.setStoreId(staffInfo.getStoreId());
         }
 
-        PaginationResponse orderData = orderService.getUserOrderList(orderListParam);
+        PaginationResponse orderData = orderService.getUserOrderList(params);
         return getSuccessResult(orderData);
     }
 
@@ -84,7 +84,7 @@ public class MerchantOrderController extends BaseController {
     @ApiOperation(value = "获取订单详情")
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @CrossOrigin
-    public ResponseObject detail(HttpServletRequest request, @RequestBody OrderDetailParam orderDetailParam) throws BusinessCheckException {
+    public ResponseObject detail(HttpServletRequest request, @RequestBody OrderDetailParam param) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
 
         UserInfo userInfo = TokenUtil.getUserInfoByToken(token);
@@ -92,12 +92,12 @@ public class MerchantOrderController extends BaseController {
             return getFailureResult(1001, "用户未登录");
         }
 
-        String orderId = orderDetailParam.getOrderId();
+        String orderId = param.getOrderId();
         if (orderId == null || StringUtil.isEmpty(orderId)) {
             return getFailureResult(2000, "订单不能为空");
         }
 
-        UserOrderDto orderInfo = orderService.getMyOrderById(Integer.parseInt(orderDetailParam.getOrderId()));
+        UserOrderDto orderInfo = orderService.getMyOrderById(Integer.parseInt(param.getOrderId()));
 
         return getSuccessResult(orderInfo);
     }
@@ -108,7 +108,7 @@ public class MerchantOrderController extends BaseController {
     @ApiOperation(value = "取消订单")
     @RequestMapping(value = "/cancel", method = RequestMethod.POST)
     @CrossOrigin
-    public ResponseObject cancel(HttpServletRequest request, @RequestBody OrderDetailParam orderDetailParam) throws BusinessCheckException {
+    public ResponseObject cancel(HttpServletRequest request, @RequestBody OrderDetailParam param) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
         UserInfo mtUser = TokenUtil.getUserInfoByToken(token);
 
@@ -116,7 +116,7 @@ public class MerchantOrderController extends BaseController {
             return getFailureResult(1001, "请先登录");
         }
 
-        String orderId = orderDetailParam.getOrderId();
+        String orderId = param.getOrderId();
         if (orderId == null || StringUtil.isEmpty(orderId)) {
             return getFailureResult(201, "订单不能为空");
         }

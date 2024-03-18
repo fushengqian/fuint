@@ -23,8 +23,7 @@ import com.fuint.common.core.domain.TreeEntity;
 #elseif($table.tree)
 #set($Entity="TreeEntity")
 #end
-public class ${modelName} implements Serializable
-{
+public class ${modelName} implements Serializable {
     private static final long serialVersionUID = 1L;
 
 #foreach ($column in $columns)
