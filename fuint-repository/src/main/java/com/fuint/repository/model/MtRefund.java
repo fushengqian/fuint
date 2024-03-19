@@ -50,6 +50,9 @@ public class MtRefund implements Serializable {
     @ApiModelProperty("退款备注")
     private String remark;
 
+    @ApiModelProperty("拒绝原因")
+    private String rejectReason;
+
     @ApiModelProperty("创建时间")
     private Date createTime;
 
@@ -64,6 +67,5 @@ public class MtRefund implements Serializable {
 
     @ApiModelProperty("最后操作人")
     private String operator;
-
 
 }

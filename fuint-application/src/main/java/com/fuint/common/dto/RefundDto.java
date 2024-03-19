@@ -42,6 +42,9 @@ public class RefundDto implements Serializable {
     @ApiModelProperty("用户备注")
     private String remark;
 
+    @ApiModelProperty("拒绝原因")
+    private String rejectReason;
+
     @ApiModelProperty("申请凭证图片")
     private List<String> imageList;
 

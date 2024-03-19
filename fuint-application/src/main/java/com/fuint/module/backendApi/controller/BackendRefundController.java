@@ -204,6 +204,7 @@ public class BackendRefundController extends BaseController {
         Integer refundId = param.get("refundId") == null ? 0 : Integer.parseInt(param.get("refundId").toString());
         String status = param.get("status") == null ? "" : param.get("status").toString();
         String remark = param.get("remark") == null ? "" : param.get("remark").toString();
+        String rejectReason = param.get("rejectReason") == null ? "" : param.get("rejectReason").toString();
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
         if (accountInfo == null) {
             return getFailureResult(1001, "请先登录");
@@ -215,6 +216,7 @@ public class BackendRefundController extends BaseController {
             dto.setOperator(operator);
             dto.setStatus(RefundStatusEnum.REJECT.getKey());
             dto.setRemark(remark);
+            dto.setRejectReason(rejectReason);
             refundService.updateRefund(dto);
         } else {
             RefundDto dto = new RefundDto();
