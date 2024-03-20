@@ -812,8 +812,8 @@ public class WeixinServiceImpl implements WeixinService {
                     .notify_url(wxPayApiConfig.getDomain() + REFUND_NOTIFY_URL)
                     .build()
                     .createSign(wxPayApiConfig.getPartnerKey(), SignType.MD5);
-            String refundStr = WxPayApi.orderRefund(false, params, wxPayApiConfig.getCertPath(), wxPayApiConfig.getMchId());
             logger.info("WeixinService doRefund params: {}", params);
+            String refundStr = WxPayApi.orderRefundByProtocol(false, params, wxPayApiConfig.getCertPath(), wxPayApiConfig.getMchId(), "");
             logger.info("WeixinService doRefund return: {}", refundStr);
             Map<String, String> result = WxPayKit.xmlToMap(refundStr);
             String returnCode = result.get("return_code");
