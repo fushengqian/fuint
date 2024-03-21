@@ -161,7 +161,7 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     /**
-     * 订单支付
+     * 发起支付
      *
      * @param request 请求参数
      * @return
@@ -191,6 +191,11 @@ public class PaymentServiceImpl implements PaymentService {
         if (loginInfo != null) {
             mtUser = memberService.queryMemberById(loginInfo.getId());
         }
+
+        // 重新生成订单号
+        String orderSn = CommonUtil.createOrderSN(orderInfo.getUserId().toString());
+        orderInfo.setOrderSn(orderSn);
+        orderService.updateOrder(orderInfo);
 
         // 收银员操作
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);

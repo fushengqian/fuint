@@ -295,12 +295,10 @@ public class BackendOrderController extends BaseController {
         String discount = param.get("discount") == null ? "" : param.get("discount").toString();
         String remark = param.get("remark") == null ? "" : param.get("remark").toString();
         String orderMode = param.get("orderMode") == null ? "" : param.get("orderMode").toString();
-
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
         if (accountInfo == null) {
             return getFailureResult(1001, "请先登录");
         }
-
         if (orderId < 0) {
             return getFailureResult(201, "系统出错啦，订单ID不能为空");
         }
