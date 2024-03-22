@@ -1406,7 +1406,7 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
                 sendSmsService.sendSms(mtOrder.getMerchantId(), "new-order", mobileList, params);
             }
         } catch (Exception e) {
-            // empty
+            logger.error("给商家发送短信出错啦，message = {}", e.getMessage());
         }
 
         return true;
@@ -1433,96 +1433,96 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
      * @return UserOrderDto
      * */
     private UserOrderDto getOrderDetail(MtOrder orderInfo, boolean needAddress, boolean getPayStatus) throws BusinessCheckException {
-        UserOrderDto dto = new UserOrderDto();
+        UserOrderDto userOrderDto = new UserOrderDto();
 
-        dto.setId(orderInfo.getId());
-        dto.setMerchantId(orderInfo.getMerchantId());
-        dto.setUserId(orderInfo.getUserId());
-        dto.setCouponId(orderInfo.getCouponId());
-        dto.setOrderSn(orderInfo.getOrderSn());
-        dto.setRemark(orderInfo.getRemark());
-        dto.setType(orderInfo.getType());
-        dto.setPayType(orderInfo.getPayType());
-        dto.setOrderMode(orderInfo.getOrderMode());
-        dto.setCreateTime(DateUtil.formatDate(orderInfo.getCreateTime(), "yyyy.MM.dd HH:mm"));
-        dto.setUpdateTime(DateUtil.formatDate(orderInfo.getUpdateTime(), "yyyy.MM.dd HH:mm"));
-        dto.setAmount(orderInfo.getAmount());
-        dto.setIsVisitor(orderInfo.getIsVisitor());
-        dto.setStaffId(orderInfo.getStaffId());
-        dto.setVerifyCode("");
-        dto.setDeliveryFee(orderInfo.getDeliveryFee());
+        userOrderDto.setId(orderInfo.getId());
+        userOrderDto.setMerchantId(orderInfo.getMerchantId());
+        userOrderDto.setUserId(orderInfo.getUserId());
+        userOrderDto.setCouponId(orderInfo.getCouponId());
+        userOrderDto.setOrderSn(orderInfo.getOrderSn());
+        userOrderDto.setRemark(orderInfo.getRemark());
+        userOrderDto.setType(orderInfo.getType());
+        userOrderDto.setPayType(orderInfo.getPayType());
+        userOrderDto.setOrderMode(orderInfo.getOrderMode());
+        userOrderDto.setCreateTime(DateUtil.formatDate(orderInfo.getCreateTime(), "yyyy.MM.dd HH:mm"));
+        userOrderDto.setUpdateTime(DateUtil.formatDate(orderInfo.getUpdateTime(), "yyyy.MM.dd HH:mm"));
+        userOrderDto.setAmount(orderInfo.getAmount());
+        userOrderDto.setIsVisitor(orderInfo.getIsVisitor());
+        userOrderDto.setStaffId(orderInfo.getStaffId());
+        userOrderDto.setVerifyCode("");
+        userOrderDto.setDeliveryFee(orderInfo.getDeliveryFee());
 
         // 核销码为空，说明已经核销
         if (orderInfo.getVerifyCode() == null || StringUtil.isEmpty(orderInfo.getVerifyCode())) {
-            dto.setIsVerify(true);
+            userOrderDto.setIsVerify(true);
         } else {
-            dto.setIsVerify(false);
+            userOrderDto.setIsVerify(false);
         }
 
         if (orderInfo.getPayAmount() != null) {
-            dto.setPayAmount(orderInfo.getPayAmount());
+            userOrderDto.setPayAmount(orderInfo.getPayAmount());
         } else {
-            dto.setPayAmount(new BigDecimal("0"));
+            userOrderDto.setPayAmount(new BigDecimal("0"));
         }
 
         if (orderInfo.getDiscount() != null) {
-            dto.setDiscount(orderInfo.getDiscount());
+            userOrderDto.setDiscount(orderInfo.getDiscount());
         } else {
-            dto.setDiscount(new BigDecimal("0"));
+            userOrderDto.setDiscount(new BigDecimal("0"));
         }
 
         if (orderInfo.getPointAmount() != null) {
-            dto.setPointAmount(orderInfo.getPointAmount());
+            userOrderDto.setPointAmount(orderInfo.getPointAmount());
         } else {
-            dto.setPointAmount(new BigDecimal("0"));
+            userOrderDto.setPointAmount(new BigDecimal("0"));
         }
 
-        dto.setStatus(orderInfo.getStatus());
-        dto.setParam(orderInfo.getParam());
-        dto.setPayStatus(orderInfo.getPayStatus());
+        userOrderDto.setStatus(orderInfo.getStatus());
+        userOrderDto.setParam(orderInfo.getParam());
+        userOrderDto.setPayStatus(orderInfo.getPayStatus());
 
         if (orderInfo.getUsePoint() != null) {
-            dto.setUsePoint(orderInfo.getUsePoint());
+            userOrderDto.setUsePoint(orderInfo.getUsePoint());
         } else {
-            dto.setUsePoint(0);
+            userOrderDto.setUsePoint(0);
         }
         if (orderInfo.getPayTime() != null) {
-            dto.setPayTime(DateUtil.formatDate(orderInfo.getPayTime(), "yyyy.MM.dd HH:mm"));
+            userOrderDto.setPayTime(DateUtil.formatDate(orderInfo.getPayTime(), "yyyy.MM.dd HH:mm"));
         }
 
-        if (dto.getType().equals(OrderTypeEnum.PRESTORE.getKey())) {
-            dto.setTypeName(OrderTypeEnum.PRESTORE.getValue());
-        } else if(dto.getType().equals(OrderTypeEnum.PAYMENT.getKey())) {
-            dto.setTypeName(OrderTypeEnum.PAYMENT.getValue());
-        } else if(dto.getType().equals(OrderTypeEnum.GOOGS.getKey())) {
-            dto.setTypeName(OrderTypeEnum.GOOGS.getValue());
-        } else if(dto.getType().equals(OrderTypeEnum.MEMBER.getKey())) {
-            dto.setTypeName(OrderTypeEnum.MEMBER.getValue());
-        } else if(dto.getType().equals(OrderTypeEnum.RECHARGE.getKey())) {
-            dto.setTypeName(OrderTypeEnum.RECHARGE.getValue());
+        if (userOrderDto.getType().equals(OrderTypeEnum.PRESTORE.getKey())) {
+            userOrderDto.setTypeName(OrderTypeEnum.PRESTORE.getValue());
+        } else if(userOrderDto.getType().equals(OrderTypeEnum.PAYMENT.getKey())) {
+            userOrderDto.setTypeName(OrderTypeEnum.PAYMENT.getValue());
+        } else if(userOrderDto.getType().equals(OrderTypeEnum.GOOGS.getKey())) {
+            userOrderDto.setTypeName(OrderTypeEnum.GOOGS.getValue());
+        } else if(userOrderDto.getType().equals(OrderTypeEnum.MEMBER.getKey())) {
+            userOrderDto.setTypeName(OrderTypeEnum.MEMBER.getValue());
+        } else if(userOrderDto.getType().equals(OrderTypeEnum.RECHARGE.getKey())) {
+            userOrderDto.setTypeName(OrderTypeEnum.RECHARGE.getValue());
         }
 
-        if (dto.getStatus().equals(OrderStatusEnum.CREATED.getKey())) {
-            dto.setStatusText(OrderStatusEnum.CREATED.getValue());
-        } else if(dto.getStatus().equals(OrderStatusEnum.CANCEL.getKey())) {
-            dto.setStatusText(OrderStatusEnum.CANCEL.getValue());
-        } else if(dto.getStatus().equals(OrderStatusEnum.PAID.getKey())) {
-            dto.setStatusText(OrderStatusEnum.PAID.getValue());
-        } else if(dto.getStatus().equals(OrderStatusEnum.DELIVERY.getKey())) {
-            dto.setStatusText(OrderStatusEnum.DELIVERY.getValue());
-        } else if(dto.getStatus().equals(OrderStatusEnum.DELIVERED.getKey())) {
-            dto.setStatusText(OrderStatusEnum.DELIVERED.getValue());
-        } else if(dto.getStatus().equals(OrderStatusEnum.RECEIVED.getKey())) {
-            dto.setStatusText(OrderStatusEnum.RECEIVED.getValue());
-        } else if(dto.getStatus().equals(OrderStatusEnum.DELETED.getKey())) {
-            dto.setStatusText(OrderStatusEnum.DELETED.getValue());
-        } else if(dto.getStatus().equals(OrderStatusEnum.REFUND.getKey())) {
-            dto.setStatusText(OrderStatusEnum.REFUND.getValue());
+        if (userOrderDto.getStatus().equals(OrderStatusEnum.CREATED.getKey())) {
+            userOrderDto.setStatusText(OrderStatusEnum.CREATED.getValue());
+        } else if(userOrderDto.getStatus().equals(OrderStatusEnum.CANCEL.getKey())) {
+            userOrderDto.setStatusText(OrderStatusEnum.CANCEL.getValue());
+        } else if(userOrderDto.getStatus().equals(OrderStatusEnum.PAID.getKey())) {
+            userOrderDto.setStatusText(OrderStatusEnum.PAID.getValue());
+        } else if(userOrderDto.getStatus().equals(OrderStatusEnum.DELIVERY.getKey())) {
+            userOrderDto.setStatusText(OrderStatusEnum.DELIVERY.getValue());
+        } else if(userOrderDto.getStatus().equals(OrderStatusEnum.DELIVERED.getKey())) {
+            userOrderDto.setStatusText(OrderStatusEnum.DELIVERED.getValue());
+        } else if(userOrderDto.getStatus().equals(OrderStatusEnum.RECEIVED.getKey())) {
+            userOrderDto.setStatusText(OrderStatusEnum.RECEIVED.getValue());
+        } else if(userOrderDto.getStatus().equals(OrderStatusEnum.DELETED.getKey())) {
+            userOrderDto.setStatusText(OrderStatusEnum.DELETED.getValue());
+        } else if(userOrderDto.getStatus().equals(OrderStatusEnum.REFUND.getKey())) {
+            userOrderDto.setStatusText(OrderStatusEnum.REFUND.getValue());
         }
 
         // 订单所属店铺
         MtStore storeInfo = storeService.queryStoreById(orderInfo.getStoreId());
-        dto.setStoreInfo(storeInfo);
+        userOrderDto.setStoreInfo(storeInfo);
 
         // 下单用户信息直接取会员个人信息
         OrderUserDto userInfo = new OrderUserDto();
@@ -1533,11 +1533,10 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
             userInfo.setMobile(user.getMobile());
             userInfo.setCardNo(user.getCarNo());
             userInfo.setAddress(user.getAddress());
-            dto.setUserInfo(userInfo);
+            userOrderDto.setUserInfo(userInfo);
         }
 
         List<OrderGoodsDto> goodsList = new ArrayList<>();
-
         String baseImage = settingService.getUploadBasePath();
 
         // 储值卡的订单
@@ -1627,7 +1626,7 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
                     }
                 }
 
-                dto.setAddress(address);
+                userOrderDto.setAddress(address);
             }
         }
 
@@ -1638,12 +1637,12 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
             expressInfo.setExpressNo(express.get("expressNo").toString());
             expressInfo.setExpressCompany(express.get("expressCompany").toString());
             expressInfo.setExpressTime(express.get("expressTime").toString());
-            dto.setExpressInfo(expressInfo);
+            userOrderDto.setExpressInfo(expressInfo);
         }
 
         // 使用的卡券
-        if (dto.getCouponId() != null && dto.getCouponId() > 0) {
-            MtUserCoupon mtUserCoupon = userCouponService.getUserCouponDetail(dto.getCouponId());
+        if (userOrderDto.getCouponId() != null && userOrderDto.getCouponId() > 0) {
+            MtUserCoupon mtUserCoupon = userCouponService.getUserCouponDetail(userOrderDto.getCouponId());
             if (mtUserCoupon != null) {
                 MtCoupon mtCoupon = couponService.queryCouponById(mtUserCoupon.getCouponId());
                 if (mtCoupon != null) {
@@ -1655,7 +1654,7 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
                     couponInfo.setBalance(mtUserCoupon.getBalance());
                     couponInfo.setStatus(mtUserCoupon.getStatus());
                     couponInfo.setType(mtCoupon.getType());
-                    dto.setCouponInfo(couponInfo);
+                    userOrderDto.setCouponInfo(couponInfo);
                 }
             }
         }
@@ -1669,7 +1668,7 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
                     if (payResult != null && payResult.get("trade_state").equals("SUCCESS")) {
                         BigDecimal payAmount = new BigDecimal(payResult.get("total_fee")).divide(new BigDecimal("100"));
                         setOrderPayed(orderInfo.getId(), payAmount);
-                        dto.setPayStatus(PayStatusEnum.SUCCESS.getKey());
+                        userOrderDto.setPayStatus(PayStatusEnum.SUCCESS.getKey());
                     }
                 } catch (Exception e) {
                     // empty
@@ -1682,15 +1681,15 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
                     if (payResult != null) {
                         BigDecimal payAmount = new BigDecimal(payResult.get("payAmount"));
                         setOrderPayed(orderInfo.getId(), payAmount);
-                        dto.setPayStatus(PayStatusEnum.SUCCESS.getKey());
+                        userOrderDto.setPayStatus(PayStatusEnum.SUCCESS.getKey());
                     }
                 } catch (Exception e) {
                     // empty
                 }
             }
         }
-        dto.setGoods(goodsList);
-        return dto;
+        userOrderDto.setGoods(goodsList);
+        return userOrderDto;
     }
 
     /**
