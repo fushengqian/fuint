@@ -746,6 +746,10 @@ public class CouponServiceImpl extends ServiceImpl<MtCouponMapper, MtCoupon> imp
     @OperationServiceLog(description = "核销卡券")
     public String useCoupon(Integer userCouponId, Integer userId, Integer storeId, Integer orderId, BigDecimal amount, String remark) throws BusinessCheckException {
         MtUserCoupon userCoupon = mtUserCouponMapper.selectById(userCouponId.intValue());
+        MtOrder orderInfo = null;
+        if (orderId != null && orderId > 0) {
+            orderInfo = mtOrderMapper.selectById(orderId);
+        }
 
         if (userCoupon == null) {
             throw new BusinessCheckException("该卡券不存在！");
@@ -814,12 +818,26 @@ public class CouponServiceImpl extends ServiceImpl<MtCouponMapper, MtCoupon> imp
             }
         }
 
+
+
         // 使用优惠券，判断满多少可用
-        if (couponInfo.getType().equals(CouponTypeEnum.COUPON.getKey()) && StringUtil.isNotEmpty(couponInfo.getOutRule()) && orderId != null && orderId > 0) {
-            MtOrder mtOrder = mtOrderMapper.selectById(orderId);
-            if (mtOrder != null) {
-                if (mtOrder.getAmount().compareTo(new BigDecimal(couponInfo.getOutRule())) < 0) {
+        if (couponInfo.getType().equals(CouponTypeEnum.COUPON.getKey()) && StringUtil.isNotEmpty(couponInfo.getOutRule())) {
+            if (orderInfo != null) {
+                if (orderInfo.getAmount().compareTo(new BigDecimal(couponInfo.getOutRule())) < 0) {
                     throw new BusinessCheckException("该卡券满"+ couponInfo.getOutRule() +"元才能使用");
+                }
+            }
+        }
+
+        // 判断可用店铺
+        if (couponInfo.getStoreId() != null || StringUtil.isNotEmpty(couponInfo.getStoreIds())) {
+            if (couponInfo.getStoreId() != null && !couponInfo.getStoreId().equals(orderInfo.getStoreId())) {
+                throw new BusinessCheckException("该卡券不能在当前门店使用");
+            }
+            if (StringUtil.isNotEmpty(couponInfo.getStoreIds())) {
+                String[] storeIds = couponInfo.getStoreIds().split(",");
+                if (storeIds.length > 0 && !Arrays.asList(storeIds).contains(orderInfo.getStoreId().toString())) {
+                    throw new BusinessCheckException("该卡券不能在当前门店使用");
                 }
             }
         }
