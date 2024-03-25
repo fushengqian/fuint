@@ -72,6 +72,11 @@ public class CouponServiceImpl extends ServiceImpl<MtCouponMapper, MtCoupon> imp
     private MemberService memberService;
 
     /**
+     * 会员等级服务接口
+     * */
+    private UserGradeService userGradeService;
+
+    /**
      * 短信发送服务接口
      * */
     private SendSmsService sendSmsService;
@@ -818,8 +823,6 @@ public class CouponServiceImpl extends ServiceImpl<MtCouponMapper, MtCoupon> imp
             }
         }
 
-
-
         // 使用优惠券，判断满多少可用
         if (couponInfo.getType().equals(CouponTypeEnum.COUPON.getKey()) && StringUtil.isNotEmpty(couponInfo.getOutRule())) {
             if (orderInfo != null) {
@@ -830,15 +833,29 @@ public class CouponServiceImpl extends ServiceImpl<MtCouponMapper, MtCoupon> imp
         }
 
         // 判断可用店铺
-        if (couponInfo.getStoreId() != null || StringUtil.isNotEmpty(couponInfo.getStoreIds())) {
-            if (couponInfo.getStoreId() != null && !couponInfo.getStoreId().equals(orderInfo.getStoreId())) {
-                throw new BusinessCheckException("该卡券不能在当前门店使用");
-            }
+        if (StringUtil.isNotEmpty(couponInfo.getStoreIds())) {
             if (StringUtil.isNotEmpty(couponInfo.getStoreIds())) {
                 String[] storeIds = couponInfo.getStoreIds().split(",");
                 if (storeIds.length > 0 && !Arrays.asList(storeIds).contains(orderInfo.getStoreId().toString())) {
                     throw new BusinessCheckException("该卡券不能在当前门店使用");
                 }
+            }
+        }
+
+        // 判断适用会员等级
+        if (userId != null && userId > 0 && StringUtil.isNotEmpty(couponInfo.getGradeIds())) {
+            MtUser mtUser = memberService.queryMemberById(userId);
+            if (StringUtil.isEmpty(mtUser.getGradeId())) {
+                MtUserGrade defaultGrade = userGradeService.getInitUserGrade(mtUser.getMerchantId());
+                if (defaultGrade != null) {
+                    mtUser.setGradeId(defaultGrade.getId().toString());
+                } else {
+                    mtUser.setGradeId("0");
+                }
+            }
+            String[] gradeIds = couponInfo.getGradeIds().split(",");
+            if (gradeIds.length > 0 && !Arrays.asList(gradeIds).contains(mtUser.getGradeId())) {
+                throw new BusinessCheckException("该卡券不适用该会员等级");
             }
         }
 

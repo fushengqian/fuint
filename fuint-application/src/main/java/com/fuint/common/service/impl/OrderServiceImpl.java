@@ -426,6 +426,7 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
 
             // 购物使用了卡券
             if (mtOrder.getCouponId() > 0) {
+                updateOrder(mtOrder);
                 String useCode = couponService.useCoupon(mtOrder.getCouponId(), mtOrder.getUserId(), mtOrder.getStoreId(), mtOrder.getId(), mtOrder.getDiscount(), "购物使用卡券");
                 // 卡券使用失败
                 if (StringUtil.isEmpty(useCode)) {
