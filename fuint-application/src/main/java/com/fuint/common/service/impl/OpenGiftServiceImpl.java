@@ -230,10 +230,6 @@ public class OpenGiftServiceImpl extends ServiceImpl<MtOpenGiftMapper, MtOpenGif
         if (gradeId == null || gradeId.compareTo(0) <= 0) {
             return false;
         }
-        Map<String, Object> params = new HashMap<>();
-        params.put("grade_id", gradeId.toString());
-        params.put("status", StatusEnum.ENABLED.getKey());
-
         MtUser user = mtUserMapper.selectById(userId);
         if (user == null) {
             throw new BusinessCheckException("会员状态异常");
@@ -244,7 +240,7 @@ public class OpenGiftServiceImpl extends ServiceImpl<MtOpenGiftMapper, MtOpenGif
         MtUserGrade oldGrade = userGradeService.queryUserGradeById(user.getMerchantId(), Integer.parseInt(user.getGradeId()), user.getId());
         MtUserGrade gradeInfo = userGradeService.queryUserGradeById(user.getMerchantId(), gradeId, user.getId());
         // 设置有效期
-        if (gradeInfo.getValidDay() > 0) {
+        if (gradeInfo.getValidDay() >= 0) {
             user.setStartTime(new Date());
             Date endDate = new Date();
             Calendar calendar = new GregorianCalendar();
@@ -252,6 +248,10 @@ public class OpenGiftServiceImpl extends ServiceImpl<MtOpenGiftMapper, MtOpenGif
             calendar.add(calendar.DATE, gradeInfo.getValidDay());
             endDate = calendar.getTime();
             user.setEndTime(endDate);
+            if (gradeInfo.getValidDay() == 0) {
+                user.setStartTime(null);
+                user.setEndTime(null);
+            }
         }
         user.setGradeId(gradeId.toString());
         user.setUpdateTime(new Date());
@@ -260,6 +260,10 @@ public class OpenGiftServiceImpl extends ServiceImpl<MtOpenGiftMapper, MtOpenGif
         if (!isNewMember && oldGrade != null && oldGrade.getGrade() >= gradeInfo.getGrade()) {
             return false;
         }
+        Map<String, Object> params = new HashMap<>();
+        params.put("grade_id", gradeId.toString());
+        params.put("status", StatusEnum.ENABLED.getKey());
+        params.put("merchant_id", user.getMerchantId());
         List<MtOpenGift> openGiftList = mtOpenGiftMapper.selectByMap(params);
         if (openGiftList.size() > 0) {
             Integer totalPoint = 0;

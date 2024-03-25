@@ -74,6 +74,11 @@ public class ClientUserCouponController extends BaseController {
     private MemberService memberService;
 
     /**
+     * 店铺接口
+     */
+    private StoreService storeService;
+
+    /**
      * 查询会员卡券详情
      *
      * @param param Request对象
@@ -171,6 +176,10 @@ public class ClientUserCouponController extends BaseController {
             result.setBalance(userCoupon.getBalance());
             result.setStatus(userCoupon.getStatus());
             result.setIsGive(couponInfo.getIsGive());
+
+            // 适用店铺
+            String storeNames = storeService.getStoreNames(couponInfo.getStoreIds());
+            result.setStoreNames(storeNames);
 
             // 如果是计次卡，获取核销列表
             if (couponInfo.getType().equals(CouponTypeEnum.TIMER.getKey())) {

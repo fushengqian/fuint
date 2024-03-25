@@ -382,4 +382,28 @@ public class StoreServiceImpl extends ServiceImpl<MtStoreMapper, MtStore> implem
 
         return dataList;
     }
+
+    /**
+     * 获取店铺名称
+     *
+     * @param storeIds 店铺ID
+     * @return
+     * */
+    @Override
+    public String getStoreNames(String storeIds) {
+       if (StringUtil.isEmpty(storeIds)) {
+           return "";
+       }
+       String[] ids = storeIds.split(",");
+       List<String> storeNames = new ArrayList<>();
+       if (ids.length > 0) {
+           for (int i = 0; i < ids.length; i++) {
+                MtStore mtStore = mtStoreMapper.selectById(Integer.parseInt(ids[i]));
+                if (mtStore != null) {
+                    storeNames.add(mtStore.getName());
+                }
+           }
+       }
+       return String.join(",", storeNames);
+    }
 }

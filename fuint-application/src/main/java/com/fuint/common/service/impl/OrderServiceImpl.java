@@ -39,6 +39,7 @@ import weixin.popular.util.JsonUtil;
 import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * 订单接口实现类
@@ -71,6 +72,8 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
     private MtRegionMapper mtRegionMapper;
 
     private MtUserGradeMapper mtUserGradeMapper;
+
+    private MtCouponGoodsMapper mtCouponGoodsMapper;
 
     /**
      * 系统设置服务接口
@@ -426,6 +429,30 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
 
             // 购物使用了卡券
             if (mtOrder.getCouponId() > 0) {
+                // 查询是否适用商品
+                MtUserCoupon userCoupon = mtUserCouponMapper.selectById(mtOrder.getCouponId());
+                if (userCoupon != null) {
+                    MtCoupon couponInfo = couponService.queryCouponById(userCoupon.getCouponId());
+                    if (couponInfo.getApplyGoods() != null && couponInfo.getApplyGoods().equals(ApplyGoodsEnum.PARK_GOODS.getKey())) {
+                        List<MtCouponGoods> couponGoodsList = mtCouponGoodsMapper.getCouponGoods(couponInfo.getId());
+                        if (couponGoodsList != null && couponGoodsList.size() > 0 && cartList.size() > 0) {
+                            List<Integer> applyGoodsIds = new ArrayList<>();
+                            List<Integer> goodsIds = new ArrayList<>();
+                            for (MtCouponGoods mtCouponGoods : couponGoodsList) {
+                                 applyGoodsIds.add(mtCouponGoods.getGoodsId());
+                            }
+                            for (MtCart mtCart : cartList) {
+                                 goodsIds.add(mtCart.getGoodsId());
+                            }
+                            List<Integer> intersection = applyGoodsIds.stream()
+                                    .filter(goodsIds::contains)
+                                    .collect(Collectors.toList());
+                            if (intersection.size() == 0) {
+                                throw new BusinessCheckException("该卡券不适用于购买的商品列表");
+                            }
+                        }
+                    }
+                }
                 updateOrder(mtOrder);
                 String useCode = couponService.useCoupon(mtOrder.getCouponId(), mtOrder.getUserId(), mtOrder.getStoreId(), mtOrder.getId(), mtOrder.getDiscount(), "购物使用卡券");
                 // 卡券使用失败
@@ -1916,6 +1943,28 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
                         // 余额须大于0
                         if (isEffective && (userCoupon.getBalance().compareTo(new BigDecimal("0")) > 0)) {
                             couponDto.setStatus(UserCouponStatusEnum.UNUSED.getKey());
+                        }
+                    }
+                    // 适用商品
+                    if (userCoupon != null) {
+                        if (couponInfo.getApplyGoods() != null && couponInfo.getApplyGoods().equals(ApplyGoodsEnum.PARK_GOODS.getKey())) {
+                            List<MtCouponGoods> couponGoodsList = mtCouponGoodsMapper.getCouponGoods(couponInfo.getId());
+                            if (couponGoodsList != null && couponGoodsList.size() > 0 && cartList.size() > 0) {
+                                List<Integer> applyGoodsIds = new ArrayList<>();
+                                List<Integer> goodsIds = new ArrayList<>();
+                                for (MtCouponGoods mtCouponGoods : couponGoodsList) {
+                                    applyGoodsIds.add(mtCouponGoods.getGoodsId());
+                                }
+                                for (MtCart mtCart : cartList) {
+                                    goodsIds.add(mtCart.getGoodsId());
+                                }
+                                List<Integer> intersection = applyGoodsIds.stream()
+                                        .filter(goodsIds::contains)
+                                        .collect(Collectors.toList());
+                                if (intersection.size() == 0) {
+                                    couponDto.setStatus(UserCouponStatusEnum.DISABLE.getKey());
+                                }
+                            }
                         }
                     }
                     if (couponInfo.getExpireType().equals(CouponExpireTypeEnum.FIX.getKey())) {

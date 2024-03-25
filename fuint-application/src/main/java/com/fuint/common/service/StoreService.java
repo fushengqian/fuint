@@ -96,4 +96,12 @@ public interface StoreService extends IService<MtStore> {
      * */
     List<MtStore> queryByDistance(String merchantNo, String keyword, String latitude, String longitude) throws BusinessCheckException;
 
+    /**
+     * 获取店铺名称
+     *
+     * @param storeIds 店铺ID
+     * @return
+     * */
+    String getStoreNames(String storeIds);
+
 }

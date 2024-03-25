@@ -67,6 +67,9 @@ public class UserCouponDto implements Serializable {
     @ApiModelProperty("有效期")
     private String effectiveDate;
 
+    @ApiModelProperty("适用店铺")
+    private String storeNames;
+
     @ApiModelProperty("提示信息")
     private String tips;
 
