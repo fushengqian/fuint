@@ -1326,6 +1326,11 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
         reqDto.setUpdateTime(new Date());
         updateOrder(reqDto);
 
+        // 处理会员升级订单
+        if (mtOrder.getType().equals(OrderTypeEnum.MEMBER.getKey())) {
+            openGiftService.openGift(mtOrder.getUserId(), Integer.parseInt(mtOrder.getParam()), false);
+        }
+
         // 处理购物订单
         UserOrderDto orderInfo = getOrderByOrderSn(mtOrder.getOrderSn());
         if (orderInfo.getType().equals(OrderTypeEnum.GOOGS.getKey())) {

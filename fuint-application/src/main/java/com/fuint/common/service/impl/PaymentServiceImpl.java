@@ -119,11 +119,6 @@ public class PaymentServiceImpl implements PaymentService {
             return false;
         }
 
-        // 会员升级订单
-        if (mtOrder.getType().equals(OrderTypeEnum.MEMBER.getKey())) {
-            openGiftService.openGift(mtOrder.getUserId(), Integer.parseInt(mtOrder.getParam()), false);
-        }
-
         // 储值卡订单
         if (orderInfo.getType().equals(OrderTypeEnum.PRESTORE.getKey())) {
             Map<String, Object> param = new HashMap<>();
