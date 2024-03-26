@@ -836,7 +836,8 @@ public class CouponServiceImpl extends ServiceImpl<MtCouponMapper, MtCoupon> imp
         if (StringUtil.isNotEmpty(couponInfo.getStoreIds())) {
             if (StringUtil.isNotEmpty(couponInfo.getStoreIds())) {
                 String[] storeIds = couponInfo.getStoreIds().split(",");
-                if (storeIds.length > 0 && !Arrays.asList(storeIds).contains(orderInfo.getStoreId().toString())) {
+                String useStoreId = (orderInfo != null) ? orderInfo.getStoreId().toString() : (storeId > 0 ? storeId.toString() : "");
+                if (StringUtil.isNotEmpty(useStoreId) && storeIds.length > 0 && !Arrays.asList(storeIds).contains(useStoreId)) {
                     throw new BusinessCheckException("该卡券不能在当前门店使用");
                 }
             }
