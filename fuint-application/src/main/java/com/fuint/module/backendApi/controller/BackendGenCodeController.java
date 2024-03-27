@@ -104,8 +104,6 @@ public class BackendGenCodeController extends BaseController {
         if (tGenCode == null) {
             return getFailureResult(201);
         }
-
-        tGenCode.setOperator(accountInfo.getAccountName());
         tGenCode.setId(id);
         tGenCode.setStatus(status);
         genCodeService.updateGenCode(tGenCode);
@@ -134,7 +132,6 @@ public class BackendGenCodeController extends BaseController {
         }
 
         TGenCode tGenCode = new TGenCode();
-        tGenCode.setOperator(accountInfo.getAccountName());
         tGenCode.setStatus(status);
         if (StringUtil.isNotEmpty(id)) {
             tGenCode.setId(Integer.parseInt(id));
@@ -187,7 +184,7 @@ public class BackendGenCodeController extends BaseController {
             // empty
         }
 
-        genCodeService.generatorCode("luck");
+        genCodeService.generatorCode("banner");
         return getSuccessResult(true);
     }
 }

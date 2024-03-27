@@ -11,6 +11,7 @@ import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.exception.BusinessRuntimeException;
 import com.fuint.framework.pagination.PaginationRequest;
 import com.fuint.framework.pagination.PaginationResponse;
+import com.fuint.repository.bean.ColumnBean;
 import com.fuint.repository.mapper.TGenCodeMapper;
 import com.fuint.repository.model.TGenCode;
 import com.github.pagehelper.Page;
@@ -136,8 +137,10 @@ public class GenCodeServiceImpl implements GenCodeService {
             throw new BusinessRuntimeException("渲染模板失败，该表不存在.");
         }
 
+        List<ColumnBean> columns = tGenCodeMapper.getTableColumnList(table.getTablePrefix() + table.getTableName());
+
         VelocityInitializer.initVelocity();
-        VelocityContext context = VelocityUtils.prepareContext(table);
+        VelocityContext context = VelocityUtils.prepareContext(table, columns);
 
         // 获取模板列表
         List<String> templates = VelocityUtils.getTemplateList();

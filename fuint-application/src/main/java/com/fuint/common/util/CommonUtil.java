@@ -36,6 +36,33 @@ public class CommonUtil {
     }
 
     /**
+     * 功能：将输入字符串的首字母改成驼峰格式
+     *
+     * @param str
+     * @return
+     */
+    public static String toCamelCase(String str) {
+        if (str == null) {
+            return null;
+        }
+        str = str.toLowerCase();
+        StringBuilder sb = new StringBuilder();
+        boolean upperCase = false;
+        for (int i = 0; i < str.length(); i++) {
+            char c = str.charAt(i);
+            if (c == '_') {
+                upperCase = true;
+            } else if (upperCase) {
+                sb.append(Character.toUpperCase(c));
+                upperCase = false;
+            } else {
+                sb.append(c);
+            }
+        }
+        return sb.toString();
+    }
+
+    /**
      * 判断是否UTF-8编码
      *
      * @param str

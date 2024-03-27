@@ -1,14 +1,12 @@
 package com.fuint.common.util;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
+import com.fuint.repository.bean.ColumnBean;
 import org.apache.commons.lang3.StringUtils;
 import com.fuint.repository.model.TGenCode;
 import com.fuint.utils.StringUtil;
 import org.apache.velocity.VelocityContext;
-import com.alibaba.fastjson2.JSON;
-import com.alibaba.fastjson2.JSONObject;
 
 /**
  * 模板处理工具类
@@ -24,16 +22,14 @@ public class VelocityUtils {
     /** mybatis空间路径 */
     private static final String MYBATIS_PATH = "main/resources/mapper";
 
-    /** 默认上级菜单，系统工具 */
-    private static final String DEFAULT_PARENT_MENU_ID = "3";
-
     /**
      * 设置模板变量信息
      *
      * @return 模板列表
      */
-    public static VelocityContext prepareContext(TGenCode genTable) {
+    public static VelocityContext prepareContext(TGenCode genTable, List<ColumnBean> columns) {
         VelocityContext velocityContext = new VelocityContext();
+        velocityContext.put("tablePrefix", genTable.getTablePrefix());
         velocityContext.put("tableName", genTable.getTableName());
         velocityContext.put("moduleName", genTable.getModuleName());
         String modelName = CommonUtil.firstLetterToUpperCase(genTable.getTablePrefix()).replaceAll("_", "") + CommonUtil.firstLetterToUpperCase(genTable.getTableName());
@@ -41,18 +37,22 @@ public class VelocityUtils {
         velocityContext.put("basePackage", getPackagePrefix(genTable.getPackageName()));
         velocityContext.put("packageName", genTable.getPackageName());
         velocityContext.put("pkColumn", genTable.getPkName());
-        velocityContext.put("importList", getImportList(genTable));
+        velocityContext.put("author", genTable.getAuthor());
         velocityContext.put("table", genTable);
-        velocityContext.put("columns", new ArrayList<>());
-        setMenuVelocityContext(velocityContext, genTable);
+        if (columns != null && columns.size() > 0) {
+            for (ColumnBean columnBean : columns) {
+                 columnBean.setField(CommonUtil.toCamelCase(columnBean.getField()));
+                 if (columnBean.getType().equals("char") || columnBean.getType().equals("varchar") || columnBean.getType().equals("text")) {
+                     columnBean.setType("String");
+                 } else if(columnBean.getType().equals("int") || columnBean.getType().equals("tinyint")) {
+                     columnBean.setType("Integer");
+                 } else if(columnBean.getType().equals("datetime")) {
+                     columnBean.setType("Date");
+                }
+            }
+        }
+        velocityContext.put("columns", columns);
         return velocityContext;
-    }
-
-    public static void setMenuVelocityContext(VelocityContext context, TGenCode genTable) {
-        String options = (genTable.getTableName() == null) ? genTable.getTableName() : null;
-        JSONObject paramsObj = JSON.parseObject(options);
-        String parentMenuId = getParentMenuId(paramsObj);
-        context.put("parentMenuId", parentMenuId);
     }
 
     /**
@@ -117,6 +117,7 @@ public class VelocityUtils {
         } else if (template.contains("index-tree.vue.vm")) {
             fileName = StringUtil.format("{}/views/{}/{}/index.vue", vuePath, moduleName, businessName);
         }
+
         return fileName;
     }
 
@@ -129,78 +130,5 @@ public class VelocityUtils {
     public static String getPackagePrefix(String packageName) {
         int lastIndex = packageName.lastIndexOf(".");
         return StringUtils.substring(packageName, 0, lastIndex);
-    }
-
-    /**
-     * 根据列类型获取导入包
-     * 
-     * @param genTable 业务表对象
-     * @return 返回需要导入的包列表
-     */
-    public static HashSet<String> getImportList(TGenCode genTable) {
-        HashSet<String> importList = new HashSet<>();
-        return importList;
-    }
-
-    /**
-     * 获取权限前缀
-     *
-     * @param moduleName 模块名称
-     * @param businessName 业务名称
-     * @return 返回权限前缀
-     */
-    public static String getPermissionPrefix(String moduleName, String businessName) {
-        return StringUtil.format("{}:{}", moduleName, businessName);
-    }
-
-    /**
-     * 获取上级菜单ID字段
-     *
-     * @param paramsObj 生成其他选项
-     * @return 上级菜单ID字段
-     */
-    public static String getParentMenuId(JSONObject paramsObj) {
-        return DEFAULT_PARENT_MENU_ID;
-    }
-
-    /**
-     * 获取树编码
-     *
-     * @param paramsObj 生成其他选项
-     * @return 树编码
-     */
-    public static String getTreecode(JSONObject paramsObj) {
-        return StringUtils.EMPTY;
-    }
-
-    /**
-     * 获取树父编码
-     *
-     * @param paramsObj 生成其他选项
-     * @return 树父编码
-     */
-    public static String getTreeParentCode(JSONObject paramsObj) {
-        return StringUtils.EMPTY;
-    }
-
-    /**
-     * 获取树名称
-     *
-     * @param paramsObj 生成其他选项
-     * @return 树名称
-     */
-    public static String getTreeName(JSONObject paramsObj) {
-        return StringUtils.EMPTY;
-    }
-
-    /**
-     * 获取需要在哪一列上面显示展开按钮
-     *
-     * @param genTable 业务表对象
-     * @return 展开按钮列序号
-     */
-    public static int getExpandColumn(TGenCode genTable) {
-        int num = 0;
-        return num;
     }
 }

@@ -58,8 +58,8 @@ public class TGenCode implements Serializable {
     @ApiModelProperty("更新时间")
     private Date updateTime;
 
-    @ApiModelProperty("最后操作人")
-    private String operator;
+    @ApiModelProperty("作者")
+    private String author;
 
     @ApiModelProperty("状态 0 无效 1 有效")
     private String status;
