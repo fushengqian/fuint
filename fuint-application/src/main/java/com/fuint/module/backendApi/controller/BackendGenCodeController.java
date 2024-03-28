@@ -183,7 +183,6 @@ public class BackendGenCodeController extends BaseController {
         if (accountInfo == null) {
             // empty
         }
-
         genCodeService.generatorCode("banner");
         return getSuccessResult(true);
     }

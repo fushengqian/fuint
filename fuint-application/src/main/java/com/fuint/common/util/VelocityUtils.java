@@ -16,11 +16,23 @@ import org.apache.velocity.VelocityContext;
  */
 public class VelocityUtils {
 
-    /** 项目空间路径 */
-    private static final String PROJECT_PATH = "main/java";
+    /** 数据库项目路径 */
+    private static final String REPOSITORY_PATH = "/fuint-repository/src";
 
-    /** mybatis空间路径 */
-    private static final String MYBATIS_PATH = "main/resources/mapper";
+    /** mapper路径 */
+    private static final String MAPPER_PATH = "/mapper";
+
+    /** model路径 */
+    private static final String MODEL_PATH = "/model";
+
+    /** mybatis xml路径 */
+    private static final String MAPPER_XML_PATH = "/main/resources/mapper";
+
+    /** 接口服务路径 */
+    private static final String SERVICE_PATH = "/fuint-application/src/main/java/com/fuint/common/service";
+
+    /** 控制器路径 */
+    private static final String CONTROLLER_PATH = "/fuint-application/src/main/java/com/fuint/module/backendApi/controller";
 
     /**
      * 设置模板变量信息
@@ -39,6 +51,10 @@ public class VelocityUtils {
         velocityContext.put("pkColumn", genTable.getPkName());
         velocityContext.put("author", genTable.getAuthor());
         velocityContext.put("table", genTable);
+        String tableName = CommonUtil.firstLetterToUpperCase(genTable.getTableName());
+        String tablePrefix = CommonUtil.firstLetterToUpperCase(genTable.getTablePrefix()).replaceAll("_", "");
+        velocityContext.put("className", tablePrefix + tableName);
+
         if (columns != null && columns.size() > 0) {
             for (ColumnBean columnBean : columns) {
                  columnBean.setField(CommonUtil.toCamelCase(columnBean.getField()));
@@ -81,41 +97,33 @@ public class VelocityUtils {
     public static String getFileName(String template, TGenCode genTable) {
         // 文件名称
         String fileName = "";
-        // 包路径
-        String packageName = genTable.getPackageName();
         // 模块名
         String moduleName = genTable.getModuleName();
-        // 大写类名
-        String className = genTable.getTableName();
-        // 业务名称
-        String businessName = genTable.getModuleName();
-        // 模型名称
-        String modelName = CommonUtil.firstLetterToUpperCase(genTable.getTablePrefix()).replaceAll("_", "") + CommonUtil.firstLetterToUpperCase(genTable.getTableName());
-
-        String javaPath = PROJECT_PATH + "/" + StringUtils.replace(packageName, ".", "/");
-        String mybatisPath = MYBATIS_PATH + "/" + moduleName;
-        String vuePath = "vue";
-
+        // 表名称
+        String tableName = CommonUtil.firstLetterToUpperCase(genTable.getTableName());
+        // 表前缀
+        String tablePrefix = CommonUtil.firstLetterToUpperCase(genTable.getTablePrefix()).replaceAll("_", "");
+        String vuePath = "/src";
         if (template.contains("model.java.vm")) {
-            fileName = StringUtil.format("{}/model/{}.java", javaPath, modelName);
+            fileName = StringUtil.format("{}/{}.java", REPOSITORY_PATH + MODEL_PATH, tablePrefix + tableName);
         } else if (template.contains("mapper.java.vm")) {
-            fileName = StringUtil.format("{}/mapper/{}Mapper.java", javaPath, className);
+            fileName = StringUtil.format("{}/{}Mapper.java", REPOSITORY_PATH + MAPPER_PATH, tablePrefix + tableName);
         } else if (template.contains("service.java.vm")) {
-            fileName = StringUtil.format("{}/service/I{}Service.java", javaPath, className);
+            fileName = StringUtil.format("{}/{}Service.java", SERVICE_PATH, tableName);
         } else if (template.contains("serviceImpl.java.vm")) {
-            fileName = StringUtil.format("{}/service/impl/{}ServiceImpl.java", javaPath, className);
+            fileName = StringUtil.format("{}/impl/{}ServiceImpl.java", SERVICE_PATH, tableName);
         } else if (template.contains("controller.java.vm")) {
-            fileName = StringUtil.format("{}/controller/{}Controller.java", javaPath, className);
+            fileName = StringUtil.format("{}/{}Controller.java", CONTROLLER_PATH, "Backend" + tableName);
         } else if (template.contains("mapper.xml.vm")) {
-            fileName = StringUtil.format("{}/{}Mapper.xml", mybatisPath, className);
+            fileName = StringUtil.format("{}/{}Mapper.xml", REPOSITORY_PATH + MAPPER_XML_PATH, tablePrefix + tableName);
         } else if (template.contains("sql.vm")) {
-            fileName = businessName + "Menu.sql";
+            fileName = tablePrefix + tableName + "Menu.sql";
         } else if (template.contains("api.js.vm")) {
-            fileName = StringUtil.format("{}/api/{}/{}.js", vuePath, moduleName, businessName);
+            fileName = StringUtil.format("{}/api/{}/{}.js", vuePath, moduleName, tablePrefix + tableName);
         } else if (template.contains("index.vue.vm")) {
-            fileName = StringUtil.format("{}/views/{}/{}/index.vue", vuePath, moduleName, businessName);
+            fileName = StringUtil.format("{}/views/{}/{}/index.vue", vuePath, moduleName, tablePrefix + tableName);
         } else if (template.contains("index-tree.vue.vm")) {
-            fileName = StringUtil.format("{}/views/{}/{}/index.vue", vuePath, moduleName, businessName);
+            fileName = StringUtil.format("{}/views/{}/{}/index.vue", vuePath, moduleName, tablePrefix + tableName);
         }
 
         return fileName;

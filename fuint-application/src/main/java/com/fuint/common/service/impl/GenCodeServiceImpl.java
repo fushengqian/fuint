@@ -152,6 +152,7 @@ public class GenCodeServiceImpl implements GenCodeService {
                 tpl.merge(context, sw);
                 try {
                     String path = getGenPath(table, template);
+                    logger.info("path ====== {}", path);
                     FileUtils.writeStringToFile(new File(path), sw.toString(), "UTF-8");
                 } catch (IOException e) {
                     throw new BusinessRuntimeException("渲染模板失败，表名：" + table.getTableName());

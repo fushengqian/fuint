@@ -21,6 +21,7 @@ import lombok.Setter;
 @TableName("${tablePrefix}${tableName}")
 @ApiModel(value = "${tableName}表对象", description = "${tableName}表对象")
 public class ${modelName} implements Serializable {
+
     private static final long serialVersionUID = 1L;
 
 #foreach ($column in $columns)
@@ -28,22 +29,6 @@ public class ${modelName} implements Serializable {
     #if($column.fild == 'id')
     @TableId(value = "ID", type = IdType.AUTO)
     #end
-#if($column.list)
-#set($parentheseIndex=$column.columnComment.indexOf("（"))
-#if($parentheseIndex != -1)
-#set($comment=$column.columnComment.substring(0, $parentheseIndex))
-#else
-#set($comment=$column.columnComment)
-#end
-#if($parentheseIndex != -1)
-    @Excel(name = "${comment}", readConverterExp = "$column.readConverterExp()")
-#elseif($column.javaType == 'Date')
-    @JsonFormat(pattern = "yyyy-MM-dd")
-    @Excel(name = "${comment}", width = 30, dateFormat = "yyyy-MM-dd")
-#else
-    @Excel(name = "${comment}")
-#end
-#end
     private $column.type $column.field;
 
 #end
