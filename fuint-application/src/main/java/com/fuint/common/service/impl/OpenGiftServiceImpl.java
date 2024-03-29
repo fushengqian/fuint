@@ -226,7 +226,7 @@ public class OpenGiftServiceImpl extends ServiceImpl<MtOpenGiftMapper, MtOpenGif
      * @return
      * */
     @Override
-    public boolean openGift(Integer userId, Integer gradeId, boolean isNewMember) throws BusinessCheckException {
+    public Boolean openGift(Integer userId, Integer gradeId, boolean isNewMember) throws BusinessCheckException {
         if (gradeId == null || gradeId.compareTo(0) <= 0) {
             return false;
         }
@@ -288,11 +288,12 @@ public class OpenGiftServiceImpl extends ServiceImpl<MtOpenGiftMapper, MtOpenGif
                            param.setCouponId(item.getCouponId());
                            param.setUserId(userId);
                            param.setNum(item.getCouponNum() == null ? 1 : item.getCouponNum());
-                           userCouponService.receiveCoupon(param);
+                           String uuid = UUID.randomUUID().toString().replaceAll("-", "");
+                           couponService.sendCoupon(item.getCouponId(), userId, param.getNum(), true, uuid, "");
                            totalAmount = totalAmount.add(mtCoupon.getAmount());
                        }
-                   } catch (BusinessCheckException e) {
-                       // empty
+                   } catch (Exception e) {
+                       throw new BusinessCheckException(e.getMessage());
                    }
                }
             }

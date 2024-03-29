@@ -701,7 +701,7 @@ public class CouponServiceImpl extends ServiceImpl<MtCouponMapper, MtCoupon> imp
                     weixinService.sendSubscribeMessage(userInfo.getMerchantId(), userInfo.getId(), userInfo.getOpenId(), WxMessageEnum.COUPON_ARRIVAL.getKey(), "pages/user/index", params, sendTime);
                 }
             } catch (Exception e) {
-                // empty
+                throw new BusinessCheckException("卡券发放失败.");
             }
         }
     }

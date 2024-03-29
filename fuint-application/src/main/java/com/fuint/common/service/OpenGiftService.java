@@ -69,5 +69,5 @@ public interface OpenGiftService {
      * @throws BusinessCheckException
      * @return
      * */
-    boolean openGift(Integer userId, Integer gradeId, boolean isNewMember) throws BusinessCheckException;
+    Boolean openGift(Integer userId, Integer gradeId, boolean isNewMember) throws BusinessCheckException;
 }
