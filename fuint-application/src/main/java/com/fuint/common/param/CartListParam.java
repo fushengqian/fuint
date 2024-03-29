@@ -39,4 +39,7 @@ public class CartListParam extends PageParam implements Serializable {
     @ApiModelProperty(value="下单会员ID", name="userId")
     private Integer userId;
 
+    @ApiModelProperty(value="订单模式", name="orderMode")
+    private String orderMode;
+
 }

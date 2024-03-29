@@ -2048,6 +2048,16 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
             deliveryFee = new BigDecimal(mtSetting.getValue());
         }
 
+        // 会员折扣
+        BigDecimal payDiscount = new BigDecimal("1");
+        MtUserGrade userGrade = userGradeService.queryUserGradeById(merchantId, Integer.parseInt(userInfo.getGradeId()), userInfo.getId());
+        if (userGrade != null) {
+            if (userGrade.getDiscount() > 0) {
+                payDiscount = new BigDecimal(userGrade.getDiscount()).divide(new BigDecimal("10"), BigDecimal.ROUND_CEILING, 3);
+            }
+        }
+        payPrice = payPrice.multiply(payDiscount).add(deliveryFee);
+
         result.put("list", cartDtoList);
         result.put("totalNum", totalNum);
         result.put("totalPrice", totalPrice);

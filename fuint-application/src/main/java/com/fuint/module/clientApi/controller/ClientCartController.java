@@ -184,19 +184,20 @@ public class ClientCartController extends BaseController {
     @ApiOperation(value = "获取购物车列表")
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @CrossOrigin
-    public ResponseObject list(HttpServletRequest request, @RequestBody CartListParam cartListParam) throws BusinessCheckException {
+    public ResponseObject list(HttpServletRequest request, @RequestBody CartListParam params) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
         String merchantNo = request.getHeader("merchantNo") == null ? "" : request.getHeader("merchantNo");
         Integer storeId = request.getHeader("storeId") == null ? 0 : Integer.parseInt(request.getHeader("storeId"));
         String platform = request.getHeader("platform") == null ? "" : request.getHeader("platform");
-        Integer goodsId = cartListParam.getGoodsId() == null ? 0 : cartListParam.getGoodsId();
-        Integer skuId = cartListParam.getSkuId() == null ? 0 : cartListParam.getSkuId();
-        Integer buyNum = cartListParam.getBuyNum() == null ? 1 : cartListParam.getBuyNum();
-        String cartIds = cartListParam.getCartIds() == null ? "" : cartListParam.getCartIds();
-        Integer userCouponId = cartListParam.getCouponId() == null ? 0 : cartListParam.getCouponId();// 会员卡券ID
-        Integer userId = cartListParam.getUserId() == null ? 0 : cartListParam.getUserId(); // 会员ID
-        String point = cartListParam.getPoint() == null ? "" : cartListParam.getPoint();
-        String hangNo = cartListParam.getHangNo() == null ? "" : cartListParam.getHangNo();
+        Integer goodsId = params.getGoodsId() == null ? 0 : params.getGoodsId();
+        Integer skuId = params.getSkuId() == null ? 0 : params.getSkuId();
+        Integer buyNum = params.getBuyNum() == null ? 1 : params.getBuyNum();
+        String cartIds = params.getCartIds() == null ? "" : params.getCartIds();
+        Integer userCouponId = params.getCouponId() == null ? 0 : params.getCouponId();// 会员卡券ID
+        Integer userId = params.getUserId() == null ? 0 : params.getUserId(); // 会员ID
+        String point = params.getPoint() == null ? "" : params.getPoint();
+        String hangNo = params.getHangNo() == null ? "" : params.getHangNo();
+        String orderMode = params.getOrderMode() == null ? OrderModeEnum.ONESELF.getKey() : params.getOrderMode();
         Integer merchantId = merchantService.getMerchantId(merchantNo);
         boolean isUsePoint = false;
         if (point.equals("true")) {
@@ -286,7 +287,7 @@ public class ClientCartController extends BaseController {
         if (merchantId <= 0) {
             merchantId = mtUser.getMerchantId();
         }
-        result = orderService.calculateCartGoods(merchantId, mtUser.getId(), cartList, userCouponId, isUsePoint, platform, OrderModeEnum.EXPRESS.getKey());
+        result = orderService.calculateCartGoods(merchantId, mtUser.getId(), cartList, userCouponId, isUsePoint, platform, orderMode);
 
         return getSuccessResult(result);
     }
