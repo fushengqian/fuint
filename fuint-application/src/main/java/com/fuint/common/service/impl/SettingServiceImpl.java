@@ -106,8 +106,7 @@ public class SettingServiceImpl extends ServiceImpl<MtSettingMapper, MtSetting> 
      */
     @Override
     public List<MtSetting> getSettingList(Integer merchantId, String type) {
-        List<MtSetting> dataList = mtSettingMapper.querySettingByType(merchantId, type);
-        return dataList;
+        return mtSettingMapper.querySettingByType(merchantId, type);
     }
 
     /**

@@ -51,9 +51,10 @@ public class VelocityUtils {
         velocityContext.put("pkColumn", genTable.getPkName());
         velocityContext.put("author", genTable.getAuthor());
         velocityContext.put("table", genTable);
-        String tableName = CommonUtil.firstLetterToUpperCase(genTable.getTableName());
+        String tableClass = CommonUtil.firstLetterToUpperCase(genTable.getTableName());
         String tablePrefix = CommonUtil.firstLetterToUpperCase(genTable.getTablePrefix()).replaceAll("_", "");
-        velocityContext.put("className", tablePrefix + tableName);
+        velocityContext.put("className", tablePrefix + tableClass);
+        velocityContext.put("tableClass", tableClass);
 
         if (columns != null && columns.size() > 0) {
             for (ColumnBean columnBean : columns) {
@@ -83,7 +84,7 @@ public class VelocityUtils {
         templates.add("vm/java/mapper.java.vm");
         templates.add("vm/java/service.java.vm");
         templates.add("vm/java/serviceImpl.java.vm");
-        templates.add("vm/java/controller.java.vm");
+        templates.add("vm/java/BackendController.java.vm");
         templates.add("vm/xml/mapper.xml.vm");
         templates.add("vm/sql/sql.vm");
         templates.add("vm/js/api.js.vm");
@@ -112,17 +113,13 @@ public class VelocityUtils {
             fileName = StringUtil.format("{}/{}Service.java", SERVICE_PATH, tableName);
         } else if (template.contains("serviceImpl.java.vm")) {
             fileName = StringUtil.format("{}/impl/{}ServiceImpl.java", SERVICE_PATH, tableName);
-        } else if (template.contains("controller.java.vm")) {
+        } else if (template.contains("BackendController.java.vm")) {
             fileName = StringUtil.format("{}/{}Controller.java", CONTROLLER_PATH, "Backend" + tableName);
         } else if (template.contains("mapper.xml.vm")) {
             fileName = StringUtil.format("{}/{}Mapper.xml", REPOSITORY_PATH + MAPPER_XML_PATH, tablePrefix + tableName);
-        } else if (template.contains("sql.vm")) {
-            fileName = tablePrefix + tableName + "Menu.sql";
         } else if (template.contains("api.js.vm")) {
             fileName = StringUtil.format("{}/api/{}/{}.js", vuePath, moduleName, tablePrefix + tableName);
         } else if (template.contains("index.vue.vm")) {
-            fileName = StringUtil.format("{}/views/{}/{}/index.vue", vuePath, moduleName, tablePrefix + tableName);
-        } else if (template.contains("index-tree.vue.vm")) {
             fileName = StringUtil.format("{}/views/{}/{}/index.vue", vuePath, moduleName, tablePrefix + tableName);
         }
 
