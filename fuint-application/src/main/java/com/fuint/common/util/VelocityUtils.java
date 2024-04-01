@@ -41,7 +41,7 @@ public class VelocityUtils {
      */
     public static VelocityContext prepareContext(TGenCode genTable, List<ColumnBean> columns) {
         VelocityContext velocityContext = new VelocityContext();
-        velocityContext.put("tablePrefix", genTable.getTablePrefix());
+        velocityContext.put("tablePrefix", genTable.getTablePrefix().replaceAll("_", ""));
         velocityContext.put("tableName", genTable.getTableName());
         velocityContext.put("moduleName", genTable.getModuleName());
         String modelName = CommonUtil.firstLetterToUpperCase(genTable.getTablePrefix()).replaceAll("_", "") + CommonUtil.firstLetterToUpperCase(genTable.getTableName());

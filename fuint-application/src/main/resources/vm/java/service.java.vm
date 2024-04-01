@@ -1,61 +1,71 @@
-package ${packageName}.service;
+package com.fuint.common.service;
 
+import com.baomidou.mybatisplus.extension.service.IService;
+import com.fuint.framework.pagination.PaginationRequest;
+import com.fuint.framework.pagination.PaginationResponse;
+import com.fuint.repository.model.${className};
+import com.fuint.framework.exception.BusinessCheckException;
 import java.util.List;
-import ${packageName}.domain.${ClassName};
+import java.util.Map;
 
 /**
- * ${functionName}Service接口
- * 
- * @author ${author}
- * @date ${datetime}
+ * ${moduleName}业务接口
+ *
+ * Created by FSQ
+ * CopyRight https://www.fuint.cn
  */
-public interface I${ClassName}Service 
-{
-    /**
-     * 查询${functionName}
-     * 
-     * @param ${pkColumn.javaField} ${functionName}主键
-     * @return ${functionName}
-     */
-    public ${ClassName} select${ClassName}By${pkColumn.capJavaField}(${pkColumn.javaType} ${pkColumn.javaField});
+public interface ${tableClass}Service extends IService<${className}> {
 
     /**
-     * 查询${functionName}列表
-     * 
-     * @param ${className} ${functionName}
-     * @return ${functionName}集合
+     * 分页查询列表
+     *
+     * @param paginationRequest
+     * @return
      */
-    public List<${ClassName}> select${ClassName}List(${ClassName} ${className});
+    PaginationResponse<${className}> queryBannerListByPagination(PaginationRequest paginationRequest) throws BusinessCheckException;
 
     /**
-     * 新增${functionName}
-     * 
-     * @param ${className} ${functionName}
-     * @return 结果
+     * 添加数据
+     *
+     * @param  ${tablePrefix}${tableClass}
+     * @throws BusinessCheckException
+     * @return
      */
-    public int insert${ClassName}(${ClassName} ${className});
+    ${className} add${tableClass}(${className} ${tablePrefix}${tableClass}) throws BusinessCheckException;
 
     /**
-     * 修改${functionName}
-     * 
-     * @param ${className} ${functionName}
-     * @return 结果
+     * 根据ID获取信息
+     *
+     * @param id ID
+     * @throws BusinessCheckException
+     * @return
      */
-    public int update${ClassName}(${ClassName} ${className});
+    ${className} query${tableClass}ById(Integer id) throws BusinessCheckException;
 
     /**
-     * 批量删除${functionName}
-     * 
-     * @param ${pkColumn.javaField}s 需要删除的${functionName}主键集合
-     * @return 结果
+     * 根据ID删除数据
+     *
+     * @param id ID
+     * @param operator 操作人
+     * @throws BusinessCheckException
+     * @return
      */
-    public int delete${ClassName}By${pkColumn.capJavaField}s(${pkColumn.javaType}[] ${pkColumn.javaField}s);
+    void delete${tableClass}(Integer id, String operator) throws BusinessCheckException;
 
     /**
-     * 删除${functionName}信息
-     * 
-     * @param ${pkColumn.javaField} ${functionName}主键
-     * @return 结果
-     */
-    public int delete${ClassName}By${pkColumn.capJavaField}(${pkColumn.javaType} ${pkColumn.javaField});
+     * 更新数据
+     * @param  ${tablePrefix}${tableClass}
+     * @throws BusinessCheckException
+     * @return
+     * */
+    ${className} update${tableClass}(${className} ${tablePrefix}${tableClass}) throws BusinessCheckException;
+
+    /**
+     * 根据条件搜索数据
+     *
+     * @param params 查询参数
+     * @throws BusinessCheckException
+     * @return
+     * */
+    List<${className}> query${tableClass}ListByParams(Map<String, Object> params) throws BusinessCheckException;
 }

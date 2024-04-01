@@ -1,169 +1,165 @@
-package ${packageName}.service.impl;
+package com.fuint.common.service.impl;
 
-import java.util.List;
-#foreach ($column in $columns)
-#if($column.javaField == 'createTime' || $column.javaField == 'updateTime')
-import com.fuint.common.utils.DateUtils;
-#break
-#end
-#end
-import org.springframework.beans.factory.annotation.Autowired;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.fuint.framework.annoation.OperationServiceLog;
+import com.fuint.framework.exception.BusinessCheckException;
+import com.fuint.framework.pagination.PaginationRequest;
+import com.fuint.framework.pagination.PaginationResponse;
+import com.fuint.repository.model.${className};
+import com.fuint.common.service.BannerService;
+import com.fuint.common.service.SettingService;
+import com.fuint.common.enums.StatusEnum;
+import com.fuint.repository.mapper.${className}Mapper;
+import com.fuint.repository.model.MtStore;
+import com.github.pagehelper.PageHelper;
+import lombok.AllArgsConstructor;
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import com.github.pagehelper.Page;
+import org.springframework.beans.BeanUtils;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
-#if($table.sub)
-import java.util.ArrayList;
-import com.fuint.common.utils.StringUtils;
 import org.springframework.transaction.annotation.Transactional;
-import ${packageName}.domain.${subClassName};
-#end
-import ${packageName}.mapper.${ClassName}Mapper;
-import ${packageName}.domain.${ClassName};
-import ${packageName}.service.I${ClassName}Service;
+import java.util.*;
 
 /**
- * ${functionName}Service业务层处理
- * 
- * @author ${author}
- * @date ${datetime}
+ * ${moduleName}服务接口
+ *
+ * Created by FSQ
+ * CopyRight https://www.fuint.cn
  */
 @Service
-public class ${ClassName}ServiceImpl implements I${ClassName}Service 
-{
-    @Autowired
-    private ${ClassName}Mapper ${className}Mapper;
+@AllArgsConstructor
+public class BannerServiceImpl extends ServiceImpl<${className}Mapper, ${className}> implements BannerService {
+
+    private static final Logger logger = LoggerFactory.getLogger(BannerServiceImpl.class);
+
+    private ${className}Mapper ${tablePrefix}${tableClass}Mapper;
 
     /**
-     * 查询${functionName}
-     * 
-     * @param ${pkColumn.javaField} ${functionName}主键
-     * @return ${functionName}
+     * 分页查询数据列表
+     *
+     * @param paginationRequest
+     * @return
      */
     @Override
-    public ${ClassName} select${ClassName}By${pkColumn.capJavaField}(${pkColumn.javaType} ${pkColumn.javaField})
-    {
-        return ${className}Mapper.select${ClassName}By${pkColumn.capJavaField}(${pkColumn.javaField});
+    public PaginationResponse<${className}> queryBannerListByPagination(PaginationRequest paginationRequest) {
+        Page<${className}> pageHelper = PageHelper.startPage(paginationRequest.getCurrentPage(), paginationRequest.getPageSize());
+        LambdaQueryWrapper<${className}> lambdaQueryWrapper = Wrappers.lambdaQuery();
+        lambdaQueryWrapper.ne(${className}::getStatus, StatusEnum.DISABLE.getKey());
+
+        lambdaQueryWrapper.orderByAsc(${className}::getSort);
+        List<${className}> dataList = ${tablePrefix}${tableClass}Mapper.selectList(lambdaQueryWrapper);
+
+        PageRequest pageRequest = PageRequest.of(paginationRequest.getCurrentPage(), paginationRequest.getPageSize());
+        PageImpl pageImpl = new PageImpl(dataList, pageRequest, pageHelper.getTotal());
+        PaginationResponse<${className}> paginationResponse = new PaginationResponse(pageImpl, ${className}.class);
+        paginationResponse.setTotalPages(pageHelper.getPages());
+        paginationResponse.setTotalElements(pageHelper.getTotal());
+        paginationResponse.setContent(dataList);
+
+        return paginationResponse;
     }
 
     /**
-     * 查询${functionName}列表
-     * 
-     * @param ${className} ${functionName}
-     * @return ${functionName}
+     * 添加数据
+     *
+     * @param ${tablePrefix}${tableClass} ${moduleName}信息
+     * @return
      */
     @Override
-    public List<${ClassName}> select${ClassName}List(${ClassName} ${className})
-    {
-        return ${className}Mapper.select${ClassName}List(${className});
-    }
-
-    /**
-     * 新增${functionName}
-     * 
-     * @param ${className} ${functionName}
-     * @return 结果
-     */
-#if($table.sub)
-    @Transactional
-#end
-    @Override
-    public int insert${ClassName}(${ClassName} ${className})
-    {
-#foreach ($column in $columns)
-#if($column.javaField == 'createTime')
-        ${className}.setCreateTime(DateUtils.getNowDate());
-#end
-#end
-#if($table.sub)
-        int rows = ${className}Mapper.insert${ClassName}(${className});
-        insert${subClassName}(${className});
-        return rows;
-#else
-        return ${className}Mapper.insert${ClassName}(${className});
-#end
-    }
-
-    /**
-     * 修改${functionName}
-     * 
-     * @param ${className} ${functionName}
-     * @return 结果
-     */
-#if($table.sub)
-    @Transactional
-#end
-    @Override
-    public int update${ClassName}(${ClassName} ${className})
-    {
-#foreach ($column in $columns)
-#if($column.javaField == 'updateTime')
-        ${className}.setUpdateTime(DateUtils.getNowDate());
-#end
-#end
-#if($table.sub)
-        ${className}Mapper.delete${subClassName}By${subTableFkClassName}(${className}.get${pkColumn.capJavaField}());
-        insert${subClassName}(${className});
-#end
-        return ${className}Mapper.update${ClassName}(${className});
-    }
-
-    /**
-     * 批量删除${functionName}
-     * 
-     * @param ${pkColumn.javaField}s 需要删除的${functionName}主键
-     * @return 结果
-     */
-#if($table.sub)
-    @Transactional
-#end
-    @Override
-    public int delete${ClassName}By${pkColumn.capJavaField}s(${pkColumn.javaType}[] ${pkColumn.javaField}s)
-    {
-#if($table.sub)
-        ${className}Mapper.delete${subClassName}By${subTableFkClassName}s(${pkColumn.javaField}s);
-#end
-        return ${className}Mapper.delete${ClassName}By${pkColumn.capJavaField}s(${pkColumn.javaField}s);
-    }
-
-    /**
-     * 删除${functionName}信息
-     * 
-     * @param ${pkColumn.javaField} ${functionName}主键
-     * @return 结果
-     */
-#if($table.sub)
-    @Transactional
-#end
-    @Override
-    public int delete${ClassName}By${pkColumn.capJavaField}(${pkColumn.javaType} ${pkColumn.javaField})
-    {
-#if($table.sub)
-        ${className}Mapper.delete${subClassName}By${subTableFkClassName}(${pkColumn.javaField});
-#end
-        return ${className}Mapper.delete${ClassName}By${pkColumn.capJavaField}(${pkColumn.javaField});
-    }
-#if($table.sub)
-
-    /**
-     * 新增${subTable.functionName}信息
-     * 
-     * @param ${className} ${functionName}对象
-     */
-    public void insert${subClassName}(${ClassName} ${className})
-    {
-        List<${subClassName}> ${subclassName}List = ${className}.get${subClassName}List();
-        ${pkColumn.javaType} ${pkColumn.javaField} = ${className}.get${pkColumn.capJavaField}();
-        if (StringUtils.isNotNull(${subclassName}List))
-        {
-            List<${subClassName}> list = new ArrayList<${subClassName}>();
-            for (${subClassName} ${subclassName} : ${subclassName}List)
-            {
-                ${subclassName}.set${subTableFkClassName}(${pkColumn.javaField});
-                list.add(${subclassName});
-            }
-            if (list.size() > 0)
-            {
-                ${className}Mapper.batch${subClassName}(list);
-            }
+    @OperationServiceLog(description = "新增${moduleName}")
+    public ${className} addBanner(BannerDto ${tablePrefix}${tableClass}) throws BusinessCheckException {
+        ${className} ${tablePrefix}${tableClass} = new ${className}();
+        ${tablePrefix}${tableClass}.setStatus(StatusEnum.ENABLED.getKey());
+        ${tablePrefix}${tableClass}.setUpdateTime(new Date());
+        ${tablePrefix}${tableClass}.setCreateTime(new Date());
+        Integer id = ${tablePrefix}${tableClass}Mapper.insert(${tablePrefix}${tableClass});
+        if (id > 0) {
+            return ${tablePrefix}${tableClass};
+        } else {
+            throw new BusinessCheckException("新增${moduleName}数据失败");
         }
     }
-#end
+
+    /**
+     * 根据ID获取息
+     *
+     * @param id
+     */
+    @Override
+    public ${className} query${tableClass}ById(Integer id) {
+        return ${tablePrefix}${tableClass}Mapper.selectById(id);
+    }
+
+    /**
+     * 根据ID删除数据
+     *
+     * @param id
+     * @param operator 操作人
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    @OperationServiceLog(description = "删除${moduleName}")
+    public void deleteBanner(Integer id, String operator) {
+        ${className} ${tablePrefix}${tableClass} = query${tableClass}ById(id);
+        if (null == ${tablePrefix}${tableClass}) {
+            return;
+        }
+        ${tablePrefix}${tableClass}.setStatus(StatusEnum.DISABLE.getKey());
+        ${tablePrefix}${tableClass}.setUpdateTime(new Date());
+        ${tablePrefix}${tableClass}.updateById(${tablePrefix}${tableClass});
+    }
+
+    /**
+     * 修改数据
+     *
+     * @param ${tablePrefix}${tableClass}
+     * @throws BusinessCheckException
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    @OperationServiceLog(description = "更新${moduleName}")
+    public ${className} updateBanner(${className} ${tablePrefix}${tableClass}) throws BusinessCheckException {
+        ${className} ${tablePrefix}${tableClass} = queryBannerById(bannerDto.getId());
+        if (${tablePrefix}${tableClass} == null) {
+            throw new BusinessCheckException("该${moduleName}状态异常");
+        }
+        ${tablePrefix}${tableClass}.setUpdateTime(new Date());
+        ${tablePrefix}${tableClass}Mapper.updateById(${tablePrefix}${tableClass});
+        return ${tablePrefix}${tableClass};
+    }
+
+    @Override
+    public List<${className}> query${tableClass}ListByParams(Map<String, Object> params) {
+        String status =  params.get("status") == null ? StatusEnum.ENABLED.getKey(): params.get("status").toString();
+        String storeId =  params.get("storeId") == null ? "" : params.get("storeId").toString();
+        String merchantId =  params.get("merchantId") == null ? "" : params.get("merchantId").toString();
+        String title = params.get("title") == null ? "" : params.get("title").toString();
+
+        LambdaQueryWrapper<${className}> lambdaQueryWrapper = Wrappers.lambdaQuery();
+        if (StringUtils.isNotBlank(title)) {
+            lambdaQueryWrapper.like(${className}::getTitle, title);
+        }
+        if (StringUtils.isNotBlank(status)) {
+            lambdaQueryWrapper.eq(${className}::getStatus, status);
+        }
+        if (StringUtils.isNotBlank(merchantId)) {
+            lambdaQueryWrapper.eq(${className}::getMerchantId, merchantId);
+        }
+        if (StringUtils.isNotBlank(storeId)) {
+            lambdaQueryWrapper.and(wq -> wq
+                    .eq(${className}::getStoreId, 0)
+                    .or()
+                    .eq(${className}::getStoreId, storeId));
+        }
+
+        lambdaQueryWrapper.orderByAsc(${className}::getSort);
+        List<${className}> dataList = ${tablePrefix}${tableClass}Mapper.selectList(lambdaQueryWrapper);
+        return dataList;
+    }
 }
