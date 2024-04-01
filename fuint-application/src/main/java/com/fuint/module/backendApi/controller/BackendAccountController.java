@@ -222,7 +222,7 @@ public class BackendAccountController extends BaseController {
         String staffId = param.get("staffId") == null ? "0" : param.get("staffId").toString();
 
         AccountInfo accountInfo = tAccountService.getAccountByName(accountName);
-        if (accountInfo != null) {
+        if (accountInfo != null && accountInfo.getAccountStatus() == 1) {
             return getFailureResult(201, "该用户名已存在");
         }
 
@@ -309,7 +309,7 @@ public class BackendAccountController extends BaseController {
         }
 
         AccountInfo accountInfo = tAccountService.getAccountByName(accountName);
-        if (accountInfo != null && accountInfo.getId() != id.intValue()) {
+        if (accountInfo != null && accountInfo.getId() != id.intValue() && accountInfo.getAccountStatus() == 1) {
             return getFailureResult(201, "该用户名已存在");
         }
 
