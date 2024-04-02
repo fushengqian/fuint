@@ -131,6 +131,7 @@ public class BannerServiceImpl extends ServiceImpl<MtBannerMapper, MtBanner> imp
      * 根据ID获取Banner信息
      *
      * @param id BannerID
+     * @return
      */
     @Override
     public MtBanner queryBannerById(Integer id) {
@@ -142,6 +143,7 @@ public class BannerServiceImpl extends ServiceImpl<MtBannerMapper, MtBanner> imp
      *
      * @param id BannerID
      * @param operator 操作人
+     * @return
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -161,6 +163,7 @@ public class BannerServiceImpl extends ServiceImpl<MtBannerMapper, MtBanner> imp
      *
      * @param bannerDto
      * @throws BusinessCheckException
+     * @return
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -201,6 +204,13 @@ public class BannerServiceImpl extends ServiceImpl<MtBannerMapper, MtBanner> imp
         return mtBanner;
     }
 
+    /**
+     * 根据条件搜索焦点图
+     *
+     * @param params 查询参数
+     * @throws BusinessCheckException
+     * @return
+     * */
     @Override
     public List<MtBanner> queryBannerListByParams(Map<String, Object> params) {
         String status =  params.get("status") == null ? StatusEnum.ENABLED.getKey(): params.get("status").toString();

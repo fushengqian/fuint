@@ -8,18 +8,15 @@ import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.pagination.PaginationRequest;
 import com.fuint.framework.pagination.PaginationResponse;
 import com.fuint.repository.model.${className};
-import com.fuint.common.service.BannerService;
-import com.fuint.common.service.SettingService;
+import com.fuint.common.service.${tableClass}Service;
 import com.fuint.common.enums.StatusEnum;
 import com.fuint.repository.mapper.${className}Mapper;
-import com.fuint.repository.model.MtStore;
 import com.github.pagehelper.PageHelper;
 import lombok.AllArgsConstructor;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.github.pagehelper.Page;
-import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -34,9 +31,9 @@ import java.util.*;
  */
 @Service
 @AllArgsConstructor
-public class BannerServiceImpl extends ServiceImpl<${className}Mapper, ${className}> implements BannerService {
+public class ${tableClass}ServiceImpl extends ServiceImpl<${className}Mapper, ${className}> implements ${tableClass}Service {
 
-    private static final Logger logger = LoggerFactory.getLogger(BannerServiceImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(${tableClass}ServiceImpl.class);
 
     private ${className}Mapper ${tablePrefix}${tableClass}Mapper;
 
@@ -47,7 +44,7 @@ public class BannerServiceImpl extends ServiceImpl<${className}Mapper, ${classNa
      * @return
      */
     @Override
-    public PaginationResponse<${className}> queryBannerListByPagination(PaginationRequest paginationRequest) {
+    public PaginationResponse<${className}> query${tableClass}ListByPagination(PaginationRequest paginationRequest) {
         Page<${className}> pageHelper = PageHelper.startPage(paginationRequest.getCurrentPage(), paginationRequest.getPageSize());
         LambdaQueryWrapper<${className}> lambdaQueryWrapper = Wrappers.lambdaQuery();
         lambdaQueryWrapper.ne(${className}::getStatus, StatusEnum.DISABLE.getKey());
@@ -66,15 +63,14 @@ public class BannerServiceImpl extends ServiceImpl<${className}Mapper, ${classNa
     }
 
     /**
-     * 添加数据
+     * 添加${moduleName}
      *
      * @param ${tablePrefix}${tableClass} ${moduleName}信息
      * @return
      */
     @Override
     @OperationServiceLog(description = "新增${moduleName}")
-    public ${className} addBanner(BannerDto ${tablePrefix}${tableClass}) throws BusinessCheckException {
-        ${className} ${tablePrefix}${tableClass} = new ${className}();
+    public ${className} add${tableClass}(${className} ${tablePrefix}${tableClass}) throws BusinessCheckException {
         ${tablePrefix}${tableClass}.setStatus(StatusEnum.ENABLED.getKey());
         ${tablePrefix}${tableClass}.setUpdateTime(new Date());
         ${tablePrefix}${tableClass}.setCreateTime(new Date());
@@ -87,9 +83,10 @@ public class BannerServiceImpl extends ServiceImpl<${className}Mapper, ${classNa
     }
 
     /**
-     * 根据ID获取息
+     * 根据ID获${moduleName}取息
      *
-     * @param id
+     * @param id ${moduleName}ID
+     * @return
      */
     @Override
     public ${className} query${tableClass}ById(Integer id) {
@@ -97,35 +94,37 @@ public class BannerServiceImpl extends ServiceImpl<${className}Mapper, ${classNa
     }
 
     /**
-     * 根据ID删除数据
+     * 根据ID删除${moduleName}
      *
-     * @param id
+     * @param id ${moduleName}ID
      * @param operator 操作人
+     * @return
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
     @OperationServiceLog(description = "删除${moduleName}")
-    public void deleteBanner(Integer id, String operator) {
+    public void delete${tableClass}(Integer id, String operator) {
         ${className} ${tablePrefix}${tableClass} = query${tableClass}ById(id);
         if (null == ${tablePrefix}${tableClass}) {
             return;
         }
         ${tablePrefix}${tableClass}.setStatus(StatusEnum.DISABLE.getKey());
         ${tablePrefix}${tableClass}.setUpdateTime(new Date());
-        ${tablePrefix}${tableClass}.updateById(${tablePrefix}${tableClass});
+        ${tablePrefix}${tableClass}Mapper..updateById(${tablePrefix}${tableClass});
     }
 
     /**
-     * 修改数据
+     * 修改${moduleName}数据
      *
      * @param ${tablePrefix}${tableClass}
      * @throws BusinessCheckException
+     * @return
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
     @OperationServiceLog(description = "更新${moduleName}")
-    public ${className} updateBanner(${className} ${tablePrefix}${tableClass}) throws BusinessCheckException {
-        ${className} ${tablePrefix}${tableClass} = queryBannerById(bannerDto.getId());
+    public ${className} update${tableClass}(${className} ${tablePrefix}${tableClass}) throws BusinessCheckException {
+        ${tablePrefix}${tableClass} = query${tableClass}ById(${tablePrefix}${tableClass}.getId());
         if (${tablePrefix}${tableClass} == null) {
             throw new BusinessCheckException("该${moduleName}状态异常");
         }
@@ -134,6 +133,13 @@ public class BannerServiceImpl extends ServiceImpl<${className}Mapper, ${classNa
         return ${tablePrefix}${tableClass};
     }
 
+   /**
+    * 根据条件搜索${moduleName}
+    *
+    * @param params 查询参数
+    * @throws BusinessCheckException
+    * @return
+    * */
     @Override
     public List<${className}> query${tableClass}ListByParams(Map<String, Object> params) {
         String status =  params.get("status") == null ? StatusEnum.ENABLED.getKey(): params.get("status").toString();

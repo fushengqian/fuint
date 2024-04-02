@@ -25,7 +25,7 @@ public interface ${tableClass}Service extends IService<${className}> {
     PaginationResponse<${className}> queryBannerListByPagination(PaginationRequest paginationRequest) throws BusinessCheckException;
 
     /**
-     * 添加数据
+     * 添加${moduleName}
      *
      * @param  ${tablePrefix}${tableClass}
      * @throws BusinessCheckException
@@ -34,7 +34,7 @@ public interface ${tableClass}Service extends IService<${className}> {
     ${className} add${tableClass}(${className} ${tablePrefix}${tableClass}) throws BusinessCheckException;
 
     /**
-     * 根据ID获取信息
+     * 根据ID获取${moduleName}信息
      *
      * @param id ID
      * @throws BusinessCheckException
@@ -43,7 +43,7 @@ public interface ${tableClass}Service extends IService<${className}> {
     ${className} query${tableClass}ById(Integer id) throws BusinessCheckException;
 
     /**
-     * 根据ID删除数据
+     * 根据ID删除${moduleName}
      *
      * @param id ID
      * @param operator 操作人
@@ -53,7 +53,7 @@ public interface ${tableClass}Service extends IService<${className}> {
     void delete${tableClass}(Integer id, String operator) throws BusinessCheckException;
 
     /**
-     * 更新数据
+     * 更新${moduleName}
      * @param  ${tablePrefix}${tableClass}
      * @throws BusinessCheckException
      * @return
@@ -61,7 +61,7 @@ public interface ${tableClass}Service extends IService<${className}> {
     ${className} update${tableClass}(${className} ${tablePrefix}${tableClass}) throws BusinessCheckException;
 
     /**
-     * 根据条件搜索数据
+     * 根据条件搜索${moduleName}
      *
      * @param params 查询参数
      * @throws BusinessCheckException
