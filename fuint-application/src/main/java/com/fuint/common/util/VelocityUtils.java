@@ -17,16 +17,16 @@ import org.apache.velocity.VelocityContext;
 public class VelocityUtils {
 
     /** 数据库项目路径 */
-    private static final String REPOSITORY_PATH = "/fuint-repository/src";
+    private static final String REPOSITORY_PATH = "/fuint-repository/src/main";
 
     /** mapper路径 */
-    private static final String MAPPER_PATH = "/mapper";
+    private static final String MAPPER_PATH = "/java/com/fuint/repository/mapper";
 
     /** model路径 */
-    private static final String MODEL_PATH = "/model";
+    private static final String MODEL_PATH = "/java/com/fuint/repository/model";
 
     /** mybatis xml路径 */
-    private static final String MAPPER_XML_PATH = "/main/resources/mapper";
+    private static final String MAPPER_XML_PATH = "/resources/mapper";
 
     /** 接口服务路径 */
     private static final String SERVICE_PATH = "/fuint-application/src/main/java/com/fuint/common/service";

@@ -26,7 +26,7 @@ import java.util.*;
 /**
  * ${moduleName}服务接口
  *
- * Created by FSQ
+ * Created by ${author}
  * CopyRight https://www.fuint.cn
  */
 @Service
@@ -110,7 +110,7 @@ public class ${tableClass}ServiceImpl extends ServiceImpl<${className}Mapper, ${
         }
         ${tablePrefix}${tableClass}.setStatus(StatusEnum.DISABLE.getKey());
         ${tablePrefix}${tableClass}.setUpdateTime(new Date());
-        ${tablePrefix}${tableClass}Mapper..updateById(${tablePrefix}${tableClass});
+        ${tablePrefix}${tableClass}Mapper.updateById(${tablePrefix}${tableClass});
     }
 
     /**
