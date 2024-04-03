@@ -142,6 +142,7 @@ public class AccountServiceImpl extends ServiceImpl<TAccountMapper, TAccount> im
     public AccountInfo getAccountByName(String userName) {
         Map<String, Object> param = new HashMap();
         param.put("account_name", userName);
+        param.put("account_status", 1);
         List<TAccount> accountList = tAccountMapper.selectByMap(param);
         if (accountList != null && accountList.size() > 0) {
             AccountInfo accountInfo = new AccountInfo();
