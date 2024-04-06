@@ -26,6 +26,8 @@ import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import lombok.AllArgsConstructor;
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.PageImpl;
@@ -46,6 +48,8 @@ import java.util.*;
 @Service
 @AllArgsConstructor(onConstructor_= {@Lazy})
 public class CouponServiceImpl extends ServiceImpl<MtCouponMapper, MtCoupon> implements CouponService {
+
+    private static final Logger logger = LoggerFactory.getLogger(CouponServiceImpl.class);
 
     private MtCouponMapper mtCouponMapper;
 
@@ -701,7 +705,8 @@ public class CouponServiceImpl extends ServiceImpl<MtCouponMapper, MtCoupon> imp
                     weixinService.sendSubscribeMessage(userInfo.getMerchantId(), userInfo.getId(), userInfo.getOpenId(), WxMessageEnum.COUPON_ARRIVAL.getKey(), "pages/user/index", params, sendTime);
                 }
             } catch (Exception e) {
-                throw new BusinessCheckException("卡券发放失败.");
+                logger.error("卡券发放失败：{}", e.getMessage());
+                throw new BusinessCheckException("抱歉，卡券发放失败");
             }
         }
     }

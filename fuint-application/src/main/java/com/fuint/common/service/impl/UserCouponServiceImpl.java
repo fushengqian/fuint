@@ -464,6 +464,7 @@ public class UserCouponServiceImpl extends ServiceImpl<MtUserCouponMapper, MtUse
                 dto.setCreateTime(userCouponDto.getCreateTime());
                 dto.setUserInfo(userInfo);
                 dto.setStoreInfo(storeInfo);
+                dto.setNum(0);
 
                 boolean canUse = couponService.isCouponEffective(couponInfo, userCouponDto);
                 if (!userCouponDto.getStatus().equals(UserCouponStatusEnum.UNUSED.getKey())) {
@@ -499,7 +500,8 @@ public class UserCouponServiceImpl extends ServiceImpl<MtUserCouponMapper, MtUse
                 // 计次卡tips
                 if (couponInfo.getType().equals(CouponTypeEnum.TIMER.getKey())) {
                     Long confirmNum = confirmLogService.getConfirmNum(userCouponDto.getId());
-                    tips = "已集"+ confirmNum +"次，需集满" + couponInfo.getOutRule() + "次";
+                    tips = "已使用"+ confirmNum +"次，可使用" + couponInfo.getOutRule() + "次";
+                    dto.setNum(Integer.parseInt(couponInfo.getOutRule()) - confirmNum.intValue());
                 }
 
                 dto.setTips(tips);

@@ -6,10 +6,7 @@ import com.fuint.common.enums.CouponExpireTypeEnum;
 import com.fuint.common.param.CouponInfoParam;
 import com.fuint.common.param.CouponListParam;
 import com.fuint.common.param.CouponReceiveParam;
-import com.fuint.common.service.CouponService;
-import com.fuint.common.service.MerchantService;
-import com.fuint.common.service.SettingService;
-import com.fuint.common.service.UserCouponService;
+import com.fuint.common.service.*;
 import com.fuint.common.util.DateUtil;
 import com.fuint.common.util.TokenUtil;
 import com.fuint.framework.exception.BusinessCheckException;
@@ -63,6 +60,11 @@ public class ClientCouponController extends BaseController {
      * 商户服务接口
      */
     private MerchantService merchantService;
+
+    /**
+     * 店铺接口
+     */
+    private StoreService storeService;
 
     /**
      * 获取卡券列表数据
@@ -164,6 +166,10 @@ public class ClientCouponController extends BaseController {
                 couponDto.setUserCouponId(userCoupon.get(0).getId());
             }
         }
+
+        // 适用店铺
+        String storeNames = storeService.getStoreNames(couponInfo.getStoreIds());
+        couponDto.setStoreNames(storeNames);
 
         String baseImage = settingService.getUploadBasePath();
         couponDto.setImage(baseImage + couponInfo.getImage());

@@ -53,6 +53,9 @@ public class CouponDto implements Serializable {
     @ApiModelProperty("限制数量")
     private Integer limitNum;
 
+    @ApiModelProperty("适用店铺")
+    private String storeNames;
+
     @ApiModelProperty("是否领取")
     private Boolean isReceive;
 

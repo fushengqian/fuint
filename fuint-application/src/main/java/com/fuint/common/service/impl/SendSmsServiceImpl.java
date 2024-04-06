@@ -71,15 +71,15 @@ public class SendSmsServiceImpl implements SendSmsService {
      * @return
      * */
     @Override
-    public Map<Boolean,List<String>> sendSms(Integer merchantId, String templateUname, List<String> phones, Map<String, String> contentParams) throws BusinessCheckException {
+    public Map<Boolean,List<String>> sendSms(Integer merchantId, String templateUname, List<String> phones, Map<String, String> contentParams) {
         logger.info("使用短信平台发送短信.....");
+        Map<Boolean, List<String>> result = new HashMap<>();
         Integer mode = Integer.parseInt(env.getProperty("aliyun.sms.mode"));
         if (mode.intValue() != 1) {
-            throw new BusinessCheckException("未开启短信发送开关，请联系管理员！");
+            logger.info("短信平台未开启 mode = {}", mode);
+            return result;
         }
-
         if (templateUname != null && !CollectionUtils.isEmpty(phones)) {
-            Map<Boolean, List<String>> result = new HashMap<>();
             try {
                 if (mode != null && mode.intValue() == 1) {
                     // 手机号以","分隔拼接
@@ -92,13 +92,13 @@ public class SendSmsServiceImpl implements SendSmsService {
                 }
             } catch (Exception e) {
                 result.put(Boolean.FALSE,phones);
-                logger.error("推送至短信平台出错...参数[smscontent={},phones={}]", templateUname, phones);
+                logger.error("推送至短信平台出错，参数[templateUname={}，phones={}]", templateUname, phones);
                 logger.error(e.getMessage(),e);
             }
-            return result;
         } else {
-            throw new BusinessCheckException("手机号码和短信内容不能为空，请确认！");
+            logger.error("手机号码和短信内容不能为空，请确认！");
         }
+        return result;
     }
 
     /**
