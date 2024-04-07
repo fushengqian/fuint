@@ -183,7 +183,6 @@ public class MerchantServiceImpl extends ServiceImpl<MtMerchantMapper, MtMerchan
     @Override
     public Integer getMerchantId(String merchantNo) {
        if (merchantNo == null || StringUtil.isEmpty(merchantNo)) {
-           logger.error("根据商户号获取商户ID，商户号不能为空！");
            return 0;
        }
        MtMerchant mtMerchant = queryMerchantByNo(merchantNo);
