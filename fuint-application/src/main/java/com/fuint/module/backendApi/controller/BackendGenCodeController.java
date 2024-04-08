@@ -42,13 +42,13 @@ public class BackendGenCodeController extends BaseController {
     /**
      * 代码生成列表
      *
-     * @param  request HttpServletRequest对象
+     * @param request HttpServletRequest对象
      * @return 代码生成列表
      */
     @ApiOperation(value = "代码生成列表查询")
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     @CrossOrigin
-    @PreAuthorize("@pms.hasPermission('system:genCode:list')")
+    @PreAuthorize("@pms.hasPermission('system:genCode:index')")
     public ResponseObject list(HttpServletRequest request) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
         Integer page = request.getParameter("page") == null ? Constants.PAGE_NUMBER : Integer.parseInt(request.getParameter("page"));
@@ -89,7 +89,7 @@ public class BackendGenCodeController extends BaseController {
     @ApiOperation(value = "更新代码状态")
     @RequestMapping(value = "/updateStatus", method = RequestMethod.POST)
     @CrossOrigin
-    @PreAuthorize("@pms.hasPermission('system:genCode:edit')")
+    @PreAuthorize("@pms.hasPermission('system:genCode:add')")
     public ResponseObject updateStatus(HttpServletRequest request, @RequestBody Map<String, Object> params) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
         String status = params.get("status") != null ? params.get("status").toString() : StatusEnum.ENABLED.getKey();

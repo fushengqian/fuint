@@ -18,7 +18,7 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-@TableName("t_")
+@TableName("t_gen_code")
 @ApiModel(value = "TGenCode对象", description = "生成代码实体")
 public class TGenCode implements Serializable {
 
