@@ -93,6 +93,7 @@ public class CartServiceImpl extends ServiceImpl<MtCartMapper, MtCart> implement
             param.put("status", StatusEnum.ENABLED.getKey());
             param.put("USER_ID", reqDto.getUserId());
             param.put("GOODS_ID", reqDto.getGoodsId());
+            param.put("MERCHANT_ID", reqDto.getMerchantId());
             if (reqDto.getSkuId() != null && reqDto.getSkuId() > 0) {
                 param.put("SKU_ID", reqDto.getSkuId());
             }
@@ -172,6 +173,7 @@ public class CartServiceImpl extends ServiceImpl<MtCartMapper, MtCart> implement
         // 已存在，仅操作数量增加或减少
         if (cartList.size() > 0 && (mtCart.getId() == null || mtCart.getId() < 1)) {
             mtCart = cartList.get(0);
+            mtCart.setMerchantId(reqDto.getMerchantId());
             if (action.equals("+")) {
                 mtCart.setNum(mtCart.getNum() + reqDto.getNum());
             } else if (action.equals("=")) {

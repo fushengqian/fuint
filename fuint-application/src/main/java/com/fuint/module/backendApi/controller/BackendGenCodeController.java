@@ -145,6 +145,7 @@ public class BackendGenCodeController extends BaseController {
         tGenCode.setAuthor(author);
         tGenCode.setBackendPath(backendPath);
         tGenCode.setServiceName(CommonUtil.firstLetterToUpperCase(tableName));
+        tGenCode.setPackageName(tableName);
         if (StringUtil.isNotEmpty(id)) {
             tGenCode.setId(Integer.parseInt(id));
             genCodeService.updateGenCode(tGenCode);

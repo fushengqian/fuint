@@ -31,6 +31,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -91,6 +92,9 @@ public class GenCodeServiceImpl implements GenCodeService {
     @OperationServiceLog(description = "新增生成代码")
     public TGenCode addGenCode(TGenCode tGenCode) throws BusinessCheckException {
         tGenCode.setStatus(StatusEnum.ENABLED.getKey());
+        Date dateTime = new Date();
+        tGenCode.setCreateTime(dateTime);
+        tGenCode.setUpdateTime(dateTime);
         Integer id = tGenCodeMapper.insert(tGenCode);
         if (id > 0) {
             return tGenCode;
@@ -120,6 +124,8 @@ public class GenCodeServiceImpl implements GenCodeService {
     @Transactional(rollbackFor = Exception.class)
     @OperationServiceLog(description = "修改生成代码")
     public TGenCode updateGenCode(TGenCode tGenCode) {
+        Date dateTime = new Date();
+        tGenCode.setUpdateTime(dateTime);
         tGenCodeMapper.updateById(tGenCode);
         return tGenCode;
     }
