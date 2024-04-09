@@ -2,8 +2,8 @@ package com.fuint.module.backendApi.controller;
 
 import com.fuint.common.dto.AccountInfo;
 import com.fuint.common.service.GenCodeService;
+import com.fuint.common.util.CommonUtil;
 import com.fuint.common.util.TokenUtil;
-import com.fuint.framework.exception.BusinessRuntimeException;
 import com.fuint.framework.web.BaseController;
 import com.fuint.framework.web.ResponseObject;
 import com.fuint.common.Constants;
@@ -125,6 +125,11 @@ public class BackendGenCodeController extends BaseController {
         String token = request.getHeader("Access-Token");
         String id = params.get("id") == null ? "" : params.get("id").toString();
         String status = params.get("status") == null ? "" : params.get("status").toString();
+        String tableName = params.get("tableName") == null ? "" : params.get("tableName").toString();
+        String moduleName = params.get("moduleName") == null ? "" : params.get("moduleName").toString();
+        String tablePrefix = params.get("tablePrefix") == null ? "" : params.get("tablePrefix").toString();
+        String author = params.get("author") == null ? "" : params.get("author").toString();
+        String backendPath = params.get("backendPath") == null ? "" : params.get("backendPath").toString();
 
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
         if (accountInfo == null) {
@@ -132,7 +137,14 @@ public class BackendGenCodeController extends BaseController {
         }
 
         TGenCode tGenCode = new TGenCode();
+        tGenCode.setPkName("id");
         tGenCode.setStatus(status);
+        tGenCode.setTableName(tableName);
+        tGenCode.setModuleName(moduleName);
+        tGenCode.setTablePrefix(tablePrefix);
+        tGenCode.setAuthor(author);
+        tGenCode.setBackendPath(backendPath);
+        tGenCode.setServiceName(CommonUtil.firstLetterToUpperCase(tableName));
         if (StringUtil.isNotEmpty(id)) {
             tGenCode.setId(Integer.parseInt(id));
             genCodeService.updateGenCode(tGenCode);
@@ -152,7 +164,7 @@ public class BackendGenCodeController extends BaseController {
     @ApiOperation(value = "获取代码生成详情")
     @RequestMapping(value = "/info/{id}", method = RequestMethod.GET)
     @CrossOrigin
-    @PreAuthorize("@pms.hasPermission('system:genCode:list')")
+    @PreAuthorize("@pms.hasPermission('system:genCode:index')")
     public ResponseObject info(HttpServletRequest request, @PathVariable("id") Integer id) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
@@ -175,15 +187,22 @@ public class BackendGenCodeController extends BaseController {
      * @return
      */
     @ApiOperation(value = "生成代码")
-    @RequestMapping(value = "/gen", method = RequestMethod.GET)
+    @RequestMapping(value = "/gen/{id}", method = RequestMethod.GET)
     @CrossOrigin
-    public ResponseObject gen(HttpServletRequest request) throws BusinessRuntimeException {
+    @PreAuthorize("@pms.hasPermission('system:genCode:gen')")
+    public ResponseObject gen(HttpServletRequest request, @PathVariable("id") Integer id) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
         if (accountInfo == null) {
-            // empty
+            return getFailureResult(1001, "请先登录");
         }
-        genCodeService.generatorCode("banner");
+
+        TGenCode tGenCode = genCodeService.queryGenCodeById(id);
+        if (tGenCode == null) {
+            return getFailureResult(201, "生成代码不存在");
+        }
+
+        genCodeService.generatorCode(tGenCode.getTableName());
         return getSuccessResult(true);
     }
 }
