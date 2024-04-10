@@ -73,18 +73,18 @@ public class ClientCartController extends BaseController {
     @ApiOperation(value = "添加、保存购物车")
     @RequestMapping(value = "/save", method = RequestMethod.POST)
     @CrossOrigin
-    public ResponseObject save(HttpServletRequest request, @RequestBody CartSaveParam cartSaveParam) throws BusinessCheckException {
+    public ResponseObject save(HttpServletRequest request, @RequestBody CartSaveParam saveParam) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
         String merchantNo = request.getHeader("merchantNo") == null ? "" : request.getHeader("merchantNo");
         Integer storeId = request.getHeader("storeId") == null ? 0 : Integer.parseInt(request.getHeader("storeId"));
-        Integer cartId = cartSaveParam.getCartId() == null ? 0 : cartSaveParam.getCartId();
-        Integer goodsId = cartSaveParam.getGoodsId() == null ? 0 : cartSaveParam.getGoodsId();
-        Integer skuId = cartSaveParam.getSkuId() == null ? 0 : cartSaveParam.getSkuId();
-        String skuNo = cartSaveParam.getSkuNo() == null ? "" : cartSaveParam.getSkuNo();
-        Integer buyNum = cartSaveParam.getBuyNum() == null ? 1 : cartSaveParam.getBuyNum();
-        String action = cartSaveParam.getAction() == null ? "+" : cartSaveParam.getAction();
-        String hangNo = cartSaveParam.getHangNo() == null ? "" : cartSaveParam.getHangNo();
-        Integer userId = cartSaveParam.getUserId() == null ? 0 : cartSaveParam.getUserId(); // 指定会员ID
+        Integer cartId = saveParam.getCartId() == null ? 0 : saveParam.getCartId();
+        Integer goodsId = saveParam.getGoodsId() == null ? 0 : saveParam.getGoodsId();
+        Integer skuId = saveParam.getSkuId() == null ? 0 : saveParam.getSkuId();
+        String skuNo = saveParam.getSkuNo() == null ? "" : saveParam.getSkuNo();
+        Integer buyNum = saveParam.getBuyNum() == null ? 1 : saveParam.getBuyNum();
+        String action = saveParam.getAction() == null ? "+" : saveParam.getAction();
+        String hangNo = saveParam.getHangNo() == null ? "" : saveParam.getHangNo();
+        Integer userId = saveParam.getUserId() == null ? 0 : saveParam.getUserId(); // 指定会员ID
 
         UserInfo userInfo = TokenUtil.getUserInfoByToken(token);
         MtUser mtUser;
@@ -147,11 +147,11 @@ public class ClientCartController extends BaseController {
     @ApiOperation(value = "删除/清空购物车")
     @RequestMapping(value = "/clear", method = RequestMethod.POST)
     @CrossOrigin
-    public ResponseObject clear(HttpServletRequest request, @RequestBody CartClearParam cartClearParam) throws BusinessCheckException {
+    public ResponseObject clear(HttpServletRequest request, @RequestBody CartClearParam clearParam) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
-        String cartIds = cartClearParam.getCartId() == null ? "" : String.join(",", cartClearParam.getCartId());
-        Integer userId = cartClearParam.getUserId() == null ? 0 : cartClearParam.getUserId();
-        String hangNo = cartClearParam.getHangNo() == null ? "" : cartClearParam.getHangNo();
+        String cartIds = clearParam.getCartId() == null ? "" : String.join(",", clearParam.getCartId());
+        Integer userId = clearParam.getUserId() == null ? 0 : clearParam.getUserId();
+        String hangNo = clearParam.getHangNo() == null ? "" : clearParam.getHangNo();
 
         UserInfo userInfo = TokenUtil.getUserInfoByToken(token);
         MtUser mtUser;
