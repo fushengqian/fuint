@@ -1770,11 +1770,16 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
      * */
     @Override
     public BigDecimal getPayMoney(Integer merchantId, Integer storeId, Date beginTime, Date endTime) {
+        BigDecimal payMoney;
         if (storeId > 0) {
-            return mtOrderMapper.getStorePayMoneyByTime(storeId, beginTime, endTime);
+            payMoney = mtOrderMapper.getStorePayMoneyByTime(storeId, beginTime, endTime);
         } else {
-            return mtOrderMapper.getPayMoneyByTime(merchantId, beginTime, endTime);
+            payMoney = mtOrderMapper.getPayMoneyByTime(merchantId, beginTime, endTime);
         }
+        if (payMoney == null) {
+            return new BigDecimal("0");
+        }
+        return payMoney;
     }
 
     /**
