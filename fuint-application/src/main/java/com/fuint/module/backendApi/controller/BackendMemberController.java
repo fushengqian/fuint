@@ -163,6 +163,7 @@ public class BackendMemberController extends BaseController {
         if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
             searchParams.put("merchantId", accountInfo.getMerchantId());
         }
+        searchParams.put("status", StatusEnum.ENABLED.getKey());
         PaginationRequest groupRequest = new PaginationRequest();
         groupRequest.setCurrentPage(1);
         groupRequest.setPageSize(Constants.MAX_ROWS);
@@ -254,6 +255,7 @@ public class BackendMemberController extends BaseController {
         String name = param.get("name") == null ? "" : param.get("name").toString();
         String gradeId = param.get("gradeId") == null ? "0" :param.get("gradeId").toString();
         String groupId = param.get("groupId") == null ? "0" :param.get("groupId").toString();
+        String storeId = param.get("storeId") == null ? "0" :param.get("storeId").toString();
         String userNo = param.get("userNo") == null ? "" : param.get("userNo").toString();
         String mobile = param.get("mobile") == null ? "" : param.get("mobile").toString();
         String sex = param.get("sex") == null ? "0" : param.get("sex").toString();
@@ -295,10 +297,15 @@ public class BackendMemberController extends BaseController {
         memberInfo.setDescription(description);
         memberInfo.setStartTime(DateUtil.parseDate(startTime));
         memberInfo.setEndTime(DateUtil.parseDate(endTime));
+        if (StringUtil.isNotEmpty(storeId)) {
+            memberInfo.setStoreId(Integer.parseInt(storeId));
+        }
+        TAccount account = accountService.getAccountInfoById(accountInfo.getId());
+        Integer myStoreId = account.getStoreId();
+        if (myStoreId != null && myStoreId > 0) {
+            memberInfo.setStoreId(myStoreId);
+        }
         if (StringUtil.isEmpty(id)) {
-            TAccount account = accountService.getAccountInfoById(accountInfo.getId());
-            Integer storeId = account.getStoreId();
-            memberInfo.setStoreId(storeId);
             memberService.addMember(memberInfo);
         } else {
             memberService.updateMember(memberInfo, false);

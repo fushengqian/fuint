@@ -61,7 +61,7 @@ public class BackendStaffController extends BaseController {
         Integer pageSize = request.getParameter("pageSize") == null ? Constants.PAGE_SIZE : Integer.parseInt(request.getParameter("pageSize"));
         String mobile = request.getParameter("mobile");
         String realName = request.getParameter("realName");
-        String auditedStatus = request.getParameter("status");
+        String auditedStatus = request.getParameter("auditedStatus");
         String storeId = request.getParameter("storeId");
         String category = request.getParameter("category");
 
