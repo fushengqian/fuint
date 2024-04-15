@@ -573,6 +573,143 @@ public class WeixinServiceImpl implements WeixinService {
     }
 
     /**
+     * 发起售后
+     *
+     * @param storeId 店铺ID
+     * @param orderSn 订单号
+     * @param totalAmount 支付总金额
+     * @param refundAmount 退款金额
+     * @param platform 支付平台
+     * @throws BusinessCheckException
+     * @return
+     * */
+    @Override
+    public Boolean doRefund(Integer storeId, String orderSn, BigDecimal totalAmount, BigDecimal refundAmount, String platform) throws BusinessCheckException {
+        try {
+            logger.info("WeixinService.doRefund orderSn = {}, totalFee = {}, refundFee = {}", orderSn, totalAmount, refundAmount);
+            if (StringUtil.isEmpty(orderSn)) {
+                throw new BusinessCheckException("退款订单号不能为空...");
+            }
+
+            BigDecimal totalFee = totalAmount.multiply(new BigDecimal("100"));
+            BigDecimal refundFee = refundAmount.multiply(new BigDecimal("100"));
+            Integer totalFeeInt = totalFee.intValue();
+            Integer refundFeeInt = refundFee.intValue();
+
+            // 支付配置
+            getApiConfig(storeId, platform);
+            WxPayApiConfig wxPayApiConfig = WxPayApiConfigKit.getWxPayApiConfig();
+            Map<String, String> params = RefundModel.builder()
+                    .appid(wxPayApiConfig.getAppId())
+                    .mch_id(wxPayApiConfig.getMchId())
+                    .nonce_str(WxPayKit.generateStr())
+                    .transaction_id("")
+                    .out_trade_no(orderSn)
+                    .out_refund_no(orderSn)
+                    .total_fee(totalFeeInt.toString())
+                    .refund_fee(refundFeeInt.toString())
+                    .notify_url(wxPayApiConfig.getDomain() + REFUND_NOTIFY_URL)
+                    .build()
+                    .createSign(wxPayApiConfig.getPartnerKey(), SignType.MD5);
+            logger.info("WeixinService doRefund params: {}", params);
+            String refundStr = WxPayApi.orderRefundByProtocol(false, params, wxPayApiConfig.getCertPath(), wxPayApiConfig.getMchId(), "");
+            logger.info("WeixinService doRefund return: {}", refundStr);
+            Map<String, String> result = WxPayKit.xmlToMap(refundStr);
+            String returnCode = result.get("return_code");
+            String returnMsg = result.get("return_msg");
+            if (!WxPayKit.codeIsOk(returnCode)) {
+                logger.error(returnMsg);
+                return false;
+            }
+            return true;
+        } catch (Exception e) {
+            throw new BusinessCheckException("WeixinService.doRefund 微信退款失败：" + e.getMessage());
+        }
+    }
+
+    /***
+     * 生成店铺二维码
+     *
+     * @param merchantId 商户ID
+     * @param storeId 店铺ID
+     * @param width 宽度
+     * @return
+     * */
+    @Override
+    public String createStoreQrCode(Integer merchantId, Integer storeId, Integer width) {
+        try {
+            String accessToken = getAccessToken(merchantId, true);
+            String url = "https://api.weixin.qq.com/cgi-bin/wxaapp/createwxaqrcode?access_token=" + accessToken;
+            String reqDataJsonStr = "";
+
+            Map<String, Object> reqData = new HashMap<>();
+            reqData.put("access_token", accessToken);
+            reqData.put("path", "pages/index/index?storeId=" + storeId);
+            reqData.put("width", width);
+            reqDataJsonStr = JsonUtil.toJSONString(reqData);
+
+            byte[] bytes = HttpRESTDataClient.requestPost(url, reqDataJsonStr);
+            logger.info("WechatService createStoreQrCode response success");
+
+            String pathRoot = env.getProperty("images.root");
+            String baseImage = env.getProperty("images.path");
+            String filePath = "storeQr" + storeId + ".png";
+            String path = pathRoot + baseImage + filePath;
+            QRCodeUtil.saveQrCodeToLocal(bytes, path);
+
+            // 上传阿里云oss
+            String mode = env.getProperty("aliyun.oss.mode");
+            if (mode.equals("1")) { // 检查是否开启上传
+                String endpoint = env.getProperty("aliyun.oss.endpoint");
+                String accessKeyId = env.getProperty("aliyun.oss.accessKeyId");
+                String accessKeySecret = env.getProperty("aliyun.oss.accessKeySecret");
+                String bucketName = env.getProperty("aliyun.oss.bucketName");
+                String folder = env.getProperty("aliyun.oss.folder");
+                OSS ossClient = AliyunOssUtil.getOSSClient(accessKeyId, accessKeySecret, endpoint);
+                File ossFile = new File(path);
+                return AliyunOssUtil.upload(ossClient, ossFile, bucketName, folder);
+            } else {
+                return baseImage + filePath;
+            }
+        } catch (Exception e) {
+            logger.error("生成店铺二维码出错啦：{}", e.getMessage());
+        }
+        return "";
+    }
+
+    /**
+     * 开通微信卡券
+     *
+     * @param merchantId 商户ID
+     * @param storeId 店铺ID
+     * @return
+     * */
+    @Override
+    public String createWxCard(Integer merchantId, Integer storeId) {
+        String cardId = "";
+        try {
+            String accessToken = getAccessToken(merchantId, true);
+            String url = "https://api.weixin.qq.com/cgi-bin/wxaapp/createwxaqrcode?access_token=" + accessToken;
+            String reqDataJson = "";
+
+            Map<String, Object> params = new HashMap<>();
+            params.put("access_token", accessToken);
+            reqDataJson = JsonUtil.toJSONString(params);
+
+            String response = HttpRESTDataClient.requestPost(url, "application/json; charset=utf-8", reqDataJson);
+            logger.error("开通微信卡券接口返回：{}", response);
+            JSONObject data = (JSONObject) JSONObject.parse(response);
+            if (data.get("errcode").toString().equals("0")) {
+                cardId = data.get("card_id").toString();
+            }
+        } catch (Exception e) {
+            logger.error("开通微信卡券出错啦：{}", e.getMessage());
+        }
+
+        return cardId;
+    }
+
+    /**
      * 刷卡支付
      *
      * @param storeId 店铺ID
@@ -772,109 +909,6 @@ public class WeixinServiceImpl implements WeixinService {
             logger.error(e.getMessage(), e);
         }
         return null;
-    }
-
-    /**
-     * 发起售后
-     *
-     * @param storeId 店铺ID
-     * @param orderSn 订单号
-     * @param totalAmount 支付总金额
-     * @param refundAmount 退款金额
-     * @param platform 支付平台
-     * @throws BusinessCheckException
-     * @return
-     * */
-    public Boolean doRefund(Integer storeId, String orderSn, BigDecimal totalAmount, BigDecimal refundAmount, String platform) throws BusinessCheckException {
-        try {
-            logger.info("WeixinService.doRefund orderSn = {}, totalFee = {}, refundFee = {}", orderSn, totalAmount, refundAmount);
-            if (StringUtil.isEmpty(orderSn)) {
-                throw new BusinessCheckException("退款订单号不能为空...");
-            }
-
-            BigDecimal totalFee = totalAmount.multiply(new BigDecimal("100"));
-            BigDecimal refundFee = refundAmount.multiply(new BigDecimal("100"));
-            Integer totalFeeInt = totalFee.intValue();
-            Integer refundFeeInt = refundFee.intValue();
-
-            // 支付配置
-            getApiConfig(storeId, platform);
-            WxPayApiConfig wxPayApiConfig = WxPayApiConfigKit.getWxPayApiConfig();
-            Map<String, String> params = RefundModel.builder()
-                    .appid(wxPayApiConfig.getAppId())
-                    .mch_id(wxPayApiConfig.getMchId())
-                    .nonce_str(WxPayKit.generateStr())
-                    .transaction_id("")
-                    .out_trade_no(orderSn)
-                    .out_refund_no(orderSn)
-                    .total_fee(totalFeeInt.toString())
-                    .refund_fee(refundFeeInt.toString())
-                    .notify_url(wxPayApiConfig.getDomain() + REFUND_NOTIFY_URL)
-                    .build()
-                    .createSign(wxPayApiConfig.getPartnerKey(), SignType.MD5);
-            logger.info("WeixinService doRefund params: {}", params);
-            String refundStr = WxPayApi.orderRefundByProtocol(false, params, wxPayApiConfig.getCertPath(), wxPayApiConfig.getMchId(), "");
-            logger.info("WeixinService doRefund return: {}", refundStr);
-            Map<String, String> result = WxPayKit.xmlToMap(refundStr);
-            String returnCode = result.get("return_code");
-            String returnMsg = result.get("return_msg");
-            if (!WxPayKit.codeIsOk(returnCode)) {
-                logger.error(returnMsg);
-                return false;
-            }
-            return true;
-        } catch (Exception e) {
-            throw new BusinessCheckException("WeixinService.doRefund 微信退款失败：" + e.getMessage());
-        }
-    }
-
-    /***
-     * 生成店铺二维码
-     *
-     * @param merchantId 商户ID
-     * @param storeId 店铺ID
-     * @param width 宽度
-     * @return
-     * */
-    public String createStoreQrCode(Integer merchantId, Integer storeId, Integer width) {
-        try {
-            String accessToken = getAccessToken(merchantId, true);
-            String url = "https://api.weixin.qq.com/cgi-bin/wxaapp/createwxaqrcode?access_token=" + accessToken;
-            String reqDataJsonStr = "";
-
-            Map<String, Object> reqData = new HashMap<>();
-            reqData.put("access_token", accessToken);
-            reqData.put("path", "pages/index/index?storeId=" + storeId);
-            reqData.put("width", width);
-            reqDataJsonStr = JsonUtil.toJSONString(reqData);
-
-            byte[] bytes = HttpRESTDataClient.requestPost(url, reqDataJsonStr);
-            logger.info("WechatService createStoreQrCode response success");
-
-            String pathRoot = env.getProperty("images.root");
-            String baseImage = env.getProperty("images.path");
-            String filePath = "storeQr" + storeId + ".png";
-            String path = pathRoot + baseImage + filePath;
-            QRCodeUtil.saveQrCodeToLocal(bytes, path);
-
-            // 上传阿里云oss
-            String mode = env.getProperty("aliyun.oss.mode");
-            if (mode.equals("1")) { // 检查是否开启上传
-                String endpoint = env.getProperty("aliyun.oss.endpoint");
-                String accessKeyId = env.getProperty("aliyun.oss.accessKeyId");
-                String accessKeySecret = env.getProperty("aliyun.oss.accessKeySecret");
-                String bucketName = env.getProperty("aliyun.oss.bucketName");
-                String folder = env.getProperty("aliyun.oss.folder");
-                OSS ossClient = AliyunOssUtil.getOSSClient(accessKeyId, accessKeySecret, endpoint);
-                File ossFile = new File(path);
-                return AliyunOssUtil.upload(ossClient, ossFile, bucketName, folder);
-            } else {
-                return baseImage + filePath;
-            }
-        } catch (Exception e) {
-            logger.error("生成店铺二维码出错：" + e.getMessage());
-        }
-        return "";
     }
 
     /**
