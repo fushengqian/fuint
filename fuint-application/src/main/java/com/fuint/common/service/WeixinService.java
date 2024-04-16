@@ -147,9 +147,8 @@ public interface WeixinService {
      * 开通微信卡券
      *
      * @param merchantId 商户ID
-     * @param storeId 店铺ID
      * @return
      * */
-    String createWxCard(Integer merchantId, Integer storeId);
+    String createWxCard(Integer merchantId);
 
 }

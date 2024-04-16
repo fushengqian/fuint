@@ -1,10 +1,12 @@
 package com.fuint.common.http;
 
+import com.fuint.utils.StringUtil;
+import okhttp3.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import java.io.IOException;
-import okhttp3.*;
+
 
 /**
  * 调用REST接口并解析数据
@@ -43,11 +45,13 @@ public class HttpRESTDataClient {
     }
 
     public static String requestPost(String url, String contentType, String postData) throws IOException {
-        String postBody = postData;
-        MediaType mediaType = MediaType.parse(contentType);
+        MediaType mediaType = null;
+        if (StringUtil.isNotEmpty(contentType)) {
+            mediaType = MediaType.parse(contentType);
+        }
         Request request = new Request.Builder()
                 .url(url)
-                .post(RequestBody.create(mediaType, postBody))
+                .post(RequestBody.create(mediaType, postData))
                 .build();
         Response response = client.newCall(request).execute();
         if (!response.isSuccessful()) throw new IOException("Unexpected code " + response);

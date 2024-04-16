@@ -1,7 +1,6 @@
 package com.fuint.utils;
 
 import org.apache.commons.lang.StringUtils;
-
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -10,6 +9,8 @@ import java.util.Iterator;
 import java.util.Map;
 
 /**
+ * http请求工具
+ *
  * Created by FSQ
  * CopyRight https://www.fuint.cn
  */
