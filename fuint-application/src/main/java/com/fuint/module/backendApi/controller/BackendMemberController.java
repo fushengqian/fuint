@@ -1,10 +1,7 @@
 package com.fuint.module.backendApi.controller;
 
 import com.fuint.common.Constants;
-import com.fuint.common.dto.AccountInfo;
-import com.fuint.common.dto.GroupMemberDto;
-import com.fuint.common.dto.UserDto;
-import com.fuint.common.dto.UserGroupDto;
+import com.fuint.common.dto.*;
 import com.fuint.common.enums.SettingTypeEnum;
 import com.fuint.common.enums.StatusEnum;
 import com.fuint.common.enums.UserSettingEnum;
@@ -25,6 +22,8 @@ import lombok.AllArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import weixin.popular.util.JsonUtil;
+
 import javax.servlet.http.HttpServletRequest;
 import java.text.ParseException;
 import java.util.*;
@@ -387,23 +386,85 @@ public class BackendMemberController extends BaseController {
         String getCouponNeedPhone = "false";
         String submitOrderNeedPhone = "false";
         String loginNeedPhone = "false";
-
+        String openWxCard = "false";
+        WxCardDto wxMemberCard = null;
         for (MtSetting setting : settingList) {
-             if (setting.getName().equals("getCouponNeedPhone")) {
-                 getCouponNeedPhone = setting.getValue();
-             } else if (setting.getName().equals("submitOrderNeedPhone")) {
-                 submitOrderNeedPhone = setting.getValue();
-             } else if (setting.getName().equals("loginNeedPhone")) {
-                 loginNeedPhone = setting.getValue();
-             }
+            if (StringUtil.isNotEmpty(setting.getValue())) {
+                if (setting.getName().equals(UserSettingEnum.GET_COUPON_NEED_PHONE.getKey())) {
+                    getCouponNeedPhone = setting.getValue();
+                } else if (setting.getName().equals(UserSettingEnum.GET_COUPON_NEED_PHONE.getKey())) {
+                    submitOrderNeedPhone = setting.getValue();
+                } else if (setting.getName().equals(UserSettingEnum.LOGIN_NEED_PHONE.getKey())) {
+                    loginNeedPhone = setting.getValue();
+                } else if (setting.getName().equals(UserSettingEnum.OPEN_WX_CARD.getKey())) {
+                    openWxCard = setting.getValue();
+                } else if (setting.getName().equals(UserSettingEnum.WX_MEMBER_CARD.getKey())) {
+                    wxMemberCard = JsonUtil.parseObject(setting.getValue(), WxCardDto.class);
+                }
+            }
         }
 
         Map<String, Object> result = new HashMap<>();
         result.put("getCouponNeedPhone", getCouponNeedPhone);
         result.put("submitOrderNeedPhone", submitOrderNeedPhone);
         result.put("loginNeedPhone", loginNeedPhone);
+        result.put("openWxCard", openWxCard);
+        result.put("wxMemberCard", wxMemberCard);
 
         return getSuccessResult(result);
+    }
+
+    /**
+     * 保存会员设置
+     *
+     * @param request HttpServletRequest对象
+     * @return
+     */
+    @ApiOperation(value = "保存会员设置")
+    @RequestMapping(value = "/saveSetting", method = RequestMethod.POST)
+    @CrossOrigin
+    @PreAuthorize("@pms.hasPermission('member:setting')")
+    public ResponseObject saveSetting(HttpServletRequest request, @RequestBody Map<String, Object> param) throws BusinessCheckException {
+        String token = request.getHeader("Access-Token");
+        String getCouponNeedPhone = param.get("getCouponNeedPhone") != null ? param.get("getCouponNeedPhone").toString() : null;
+        String submitOrderNeedPhone = param.get("submitOrderNeedPhone") != null ? param.get("submitOrderNeedPhone").toString() : null;
+        String loginNeedPhone = param.get("loginNeedPhone") != null ? param.get("loginNeedPhone").toString() : null;
+        String openWxCard = param.get("openWxCard") != null ? param.get("openWxCard").toString() : null;
+        String wxMemberCard = param.get("wxMemberCard") != null ? param.get("wxMemberCard").toString() : null;
+
+        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
+        if (accountInfo == null) {
+            return getFailureResult(1001, "请先登录");
+        }
+
+        UserSettingEnum[] settingList = UserSettingEnum.values();
+        for (UserSettingEnum setting : settingList) {
+            MtSetting mtSetting = new MtSetting();
+            mtSetting.setType(SettingTypeEnum.USER.getKey());
+            mtSetting.setName(setting.getKey());
+
+            if (setting.getKey().equals(UserSettingEnum.GET_COUPON_NEED_PHONE.getKey())) {
+                mtSetting.setValue(getCouponNeedPhone);
+            } else if (setting.getKey().equals(UserSettingEnum.SUBMIT_ORDER_NEED_PHONE.getKey())) {
+                mtSetting.setValue(submitOrderNeedPhone);
+            } else if (setting.getKey().equals(UserSettingEnum.LOGIN_NEED_PHONE.getKey())) {
+                mtSetting.setValue(loginNeedPhone);
+            } else if (setting.getKey().equals(UserSettingEnum.OPEN_WX_CARD.getKey())) {
+                mtSetting.setValue(openWxCard);
+            } else if (setting.getKey().equals(UserSettingEnum.WX_MEMBER_CARD.getKey())) {
+                mtSetting.setValue(wxMemberCard);
+            }
+
+            mtSetting.setDescription(setting.getValue());
+            mtSetting.setOperator(accountInfo.getAccountName());
+            mtSetting.setUpdateTime(new Date());
+            mtSetting.setMerchantId(accountInfo.getMerchantId());
+            mtSetting.setStoreId(0);
+
+            settingService.saveSetting(mtSetting);
+        }
+
+        return getSuccessResult(true);
     }
 
     /**
@@ -442,55 +503,6 @@ public class BackendMemberController extends BaseController {
 
         userInfo.setPassword(password);
         memberService.updateMember(userInfo, true);
-
-        return getSuccessResult(true);
-    }
-
-    /**
-     * 保存设置
-     *
-     * @param request HttpServletRequest对象
-     * @return
-     */
-    @ApiOperation(value = "保存设置")
-    @RequestMapping(value = "/saveSetting", method = RequestMethod.POST)
-    @CrossOrigin
-    @PreAuthorize("@pms.hasPermission('member:setting')")
-    public ResponseObject saveSetting(HttpServletRequest request, @RequestBody Map<String, Object> param) throws BusinessCheckException {
-        String token = request.getHeader("Access-Token");
-        String getCouponNeedPhone = param.get("getCouponNeedPhone") != null ? param.get("getCouponNeedPhone").toString() : "false";
-        String submitOrderNeedPhone = param.get("submitOrderNeedPhone") != null ? param.get("submitOrderNeedPhone").toString() : "false";
-        String loginNeedPhone = param.get("loginNeedPhone") != null ? param.get("loginNeedPhone").toString() : "false";
-
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
-        if (accountInfo == null) {
-            return getFailureResult(1001, "请先登录");
-        }
-
-        String operator = accountInfo.getAccountName();
-
-        UserSettingEnum[] settingList = UserSettingEnum.values();
-        for (UserSettingEnum setting : settingList) {
-            MtSetting info = new MtSetting();
-            info.setType(SettingTypeEnum.USER.getKey());
-            info.setName(setting.getKey());
-
-            if (setting.getKey().equals("getCouponNeedPhone")) {
-                info.setValue(getCouponNeedPhone);
-            } else if (setting.getKey().equals("submitOrderNeedPhone")) {
-                info.setValue(submitOrderNeedPhone);
-            } else if (setting.getKey().equals("loginNeedPhone")) {
-                info.setValue(loginNeedPhone);
-            }
-
-            info.setDescription(setting.getValue());
-            info.setOperator(operator);
-            info.setUpdateTime(new Date());
-            info.setMerchantId(accountInfo.getMerchantId());
-            info.setStoreId(0);
-
-            settingService.saveSetting(info);
-        }
 
         return getSuccessResult(true);
     }

@@ -65,27 +65,27 @@ public class SettingServiceImpl extends ServiceImpl<MtSettingMapper, MtSetting> 
     @Transactional(rollbackFor = Exception.class)
     @OperationServiceLog(description = "保存配置信息")
     public MtSetting saveSetting(MtSetting mtSetting) {
-        MtSetting info = querySettingByName(mtSetting.getMerchantId(), mtSetting.getName());
-        if (null != info) {
+        MtSetting settingInfo = querySettingByName(mtSetting.getMerchantId(), mtSetting.getName());
+        if (null != settingInfo) {
             if (mtSetting.getValue() != null) {
-                info.setValue(mtSetting.getValue());
+                settingInfo.setValue(mtSetting.getValue());
             }
             if (mtSetting.getDescription() != null) {
-                info.setDescription(mtSetting.getDescription());
+                settingInfo.setDescription(mtSetting.getDescription());
             }
             if (StringUtil.isNotEmpty(mtSetting.getOperator())) {
-                info.setOperator(mtSetting.getOperator());
+                settingInfo.setOperator(mtSetting.getOperator());
             }
             if (mtSetting.getUpdateTime() != null) {
-                info.setUpdateTime(mtSetting.getUpdateTime());
+                settingInfo.setUpdateTime(mtSetting.getUpdateTime());
             }
             if (mtSetting.getStatus() != null) {
-                info.setStatus(mtSetting.getStatus());
+                settingInfo.setStatus(mtSetting.getStatus());
             }
             if (mtSetting.getType() != null) {
-                info.setType(mtSetting.getType());
+                settingInfo.setType(mtSetting.getType());
             }
-            mtSettingMapper.updateById(info);
+            mtSettingMapper.updateById(settingInfo);
         } else {
             // 创建配置
             mtSetting.setCreateTime(new Date());

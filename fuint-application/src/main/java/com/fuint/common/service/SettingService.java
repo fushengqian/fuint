@@ -17,8 +17,8 @@ public interface SettingService extends IService<MtSetting> {
     /**
      * 删除配置
      *
-     * @param  merchantId
-     * @param  name
+     * @param  merchantId 商户ID
+     * @param  name 配置名称
      * @throws BusinessCheckException
      */
     void removeSetting(Integer merchantId, String name) throws BusinessCheckException;
@@ -26,10 +26,10 @@ public interface SettingService extends IService<MtSetting> {
     /**
      * 保存配置
      *
-     * @param  reqDto
+     * @param  mtSetting
      * @throws BusinessCheckException
      */
-    MtSetting saveSetting(MtSetting reqDto) throws BusinessCheckException;
+    MtSetting saveSetting(MtSetting mtSetting) throws BusinessCheckException;
 
     /**
      * 获取配置列表
@@ -42,8 +42,8 @@ public interface SettingService extends IService<MtSetting> {
     /**
      * 根据配置名称获取配置信息
      *
-     * @param  merchantId
-     * @param  name name
+     * @param  merchantId 商户ID
+     * @param  name 配置名称
      * @throws BusinessCheckException
      */
     MtSetting querySettingByName(Integer merchantId, String name) throws BusinessCheckException;

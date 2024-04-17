@@ -9,7 +9,9 @@ package com.fuint.common.enums;
 public enum UserSettingEnum {
     GET_COUPON_NEED_PHONE("getCouponNeedPhone", "领券是否需要手机号码"),
     SUBMIT_ORDER_NEED_PHONE("submitOrderNeedPhone", "提交订单是否需要手机号码"),
-    LOGIN_NEED_PHONE("loginNeedPhone", "登录是否需要手机号");
+    LOGIN_NEED_PHONE("loginNeedPhone", "登录是否需要手机号"),
+    OPEN_WX_CARD("openWxCard", "开通微信会员卡"),
+    WX_MEMBER_CARD("wxMemberCard", "微信会员卡");
 
     private String key;
 
@@ -38,12 +40,12 @@ public enum UserSettingEnum {
 
     // 普通方法，通过key获取value
     public static String getValue(String k) {
-        for (UserSettingEnum c : UserSettingEnum.values()) {
+       for (UserSettingEnum c : UserSettingEnum.values()) {
             if (c.getKey().equals(k)) {
                 return c.getValue();
             }
-        }
-        return null;
+       }
+       return null;
     }
 
     // 普通方法，通过Value获取key

@@ -5,10 +5,12 @@ import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.JSONArray;
 import com.aliyun.oss.OSS;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fuint.common.Constants;
 import com.fuint.common.bean.H5SceneInfo;
 import com.fuint.common.bean.WxPayBean;
 import com.fuint.common.dto.OrderDto;
 import com.fuint.common.dto.UserOrderDto;
+import com.fuint.common.dto.WxCardDto;
 import com.fuint.common.enums.*;
 import com.fuint.common.http.HttpRESTDataClient;
 import com.fuint.common.service.*;
@@ -687,6 +689,12 @@ public class WeixinServiceImpl implements WeixinService {
     public String createWxCard(Integer merchantId) {
         String cardId = "";
         try {
+            MtSetting mtSetting = settingService.querySettingByName(merchantId, UserSettingEnum.WX_MEMBER_CARD.getKey());
+            if (mtSetting == null) {
+                return cardId;
+            }
+            WxCardDto wxCardDto = JsonUtil.parseObject(mtSetting.getValue(), WxCardDto.class);
+
             String accessToken = getAccessToken(merchantId, true);
             String url = "https://api.weixin.qq.com/card/create?access_token=" + accessToken;
 
@@ -694,45 +702,43 @@ public class WeixinServiceImpl implements WeixinService {
             Map<String, Object> card = new HashMap<>();
             card.put("card_type", "MEMBER_CARD");
             Map<String, Object> memberCard = new HashMap<>();
-            memberCard.put("background_pic_url", null);
+            memberCard.put("background_pic_url", wxCardDto.getBackgroundUrl());
 
             // baseInfo
             Map<String, Object> baseInfo = new HashMap<>();
-            baseInfo.put("logo_url", "");
-            baseInfo.put("brand_name", "小隅安");
+            baseInfo.put("logo_url", wxCardDto.getLogoUrl());
+            baseInfo.put("brand_name", wxCardDto.getBrandName());
             baseInfo.put("code_type", "CODE_TYPE_TEXT");
-            baseInfo.put("title", "小隅安会员卡");
-            baseInfo.put("color", "Color010");
-            baseInfo.put("notice", "使用时向服务员出示此券");
-            baseInfo.put("service_phone", "0898-88888888");
-            baseInfo.put("description", "不可与其他优惠同享");
+            baseInfo.put("title", wxCardDto.getTitle());
+            baseInfo.put("color", wxCardDto.getColor());
+            baseInfo.put("notice", wxCardDto.getNotice());
+            baseInfo.put("service_phone", wxCardDto.getServicePhone());
+            baseInfo.put("description", wxCardDto.getDescription());
             Map<String, Object> dateInfo = new HashMap<>();
             dateInfo.put("type", "DATE_TYPE_PERMANENT");
             baseInfo.put("date_info", dateInfo);
             Map<String, Object> sku = new HashMap<>();
-            sku.put("quantity", 50000000);
+            sku.put("quantity", Constants.ALL_ROWS);
             baseInfo.put("sku", sku);
-            baseInfo.put("get_limit", 3);
+            baseInfo.put("get_limit", 1);
             baseInfo.put("use_custom_code", false);
             baseInfo.put("bind_openid", false);
             baseInfo.put("can_give_friend", false);
             baseInfo.put("location_id_list", null);
-            baseInfo.put("custom_url_name", "立即使用");
-            baseInfo.put("custom_url", "https://www.fuint.cn/h5/");
-            baseInfo.put("custom_url_sub_title", "6个汉字tips");
-            baseInfo.put("promotion_url_name", "营销入口");
-            baseInfo.put("promotion_url", "https://www.fuint.cn/h5/");
+            baseInfo.put("custom_url_name", wxCardDto.getCustomUrlName());
+            baseInfo.put("custom_url", wxCardDto.getCustomUrl());
+            baseInfo.put("custom_url_sub_title", wxCardDto.getCustomUrlSubTitle());
             baseInfo.put("need_push_on_view", true);
             memberCard.put("base_info", baseInfo);
 
             // 特权说明
-            memberCard.put("prerogative", "会员卡特权说明,限制1024汉字。");
+            memberCard.put("prerogative", wxCardDto.getPrerogative());
             // 自动激活
             memberCard.put("auto_activate", true);
-            memberCard.put("supply_bonus", true);
-            memberCard.put("bonus_url", "https://www.fuint.cn/h5/");
-            memberCard.put("supply_balance", false);
-            memberCard.put("balance_url", "https://www.fuint.cn/h5/");
+            memberCard.put("supply_bonus", wxCardDto.getSupplyBonus());
+            memberCard.put("bonus_url", wxCardDto.getBonusUrl());
+            memberCard.put("supply_balance", wxCardDto.getSupplyBalance());
+            memberCard.put("balance_url", wxCardDto.getBalanceUrl());
 
             card.put("member_card", memberCard);
             params.put("card", card);

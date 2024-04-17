@@ -1360,7 +1360,7 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
         }
 
         // 处理消费返积分，查询返1积分所需消费金额
-        MtSetting setting = settingService.querySettingByName(mtOrder.getMerchantId(), "pointNeedConsume");
+        MtSetting setting = settingService.querySettingByName(mtOrder.getMerchantId(), PointSettingEnum.POINT_NEED_CONSUME.getKey());
         if (setting != null && !orderInfo.getPayType().equals(PayTypeEnum.BALANCE.getKey()) && orderInfo.getIsVisitor().equals(YesOrNoEnum.NO.getKey())) {
             String needPayAmount = setting.getValue();
             Integer needPayAmountInt = Math.round(Integer.parseInt(needPayAmount));
