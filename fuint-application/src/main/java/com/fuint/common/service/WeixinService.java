@@ -26,7 +26,7 @@ public interface WeixinService {
      * @param useCache 是否从缓存中读取
      * @return
      * */
-    String getAccessToken(Integer merchantId, boolean useCache) throws BusinessCheckException ;
+    String getAccessToken(Integer merchantId, boolean useCache) throws BusinessCheckException;
 
     /**
      * 提交预支付订单

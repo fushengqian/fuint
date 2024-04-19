@@ -164,13 +164,13 @@ public class ClientUserCouponController extends BaseController {
             result.setCouponId(couponInfo.getId());
             result.setType(couponInfo.getType());
             result.setUseRule(couponInfo.getOutRule());
+            String effectiveDate;
             if (couponInfo.getExpireType().equals(CouponExpireTypeEnum.FIX.getKey())) {
-                String effectiveDate = DateUtil.formatDate(couponInfo.getBeginTime(), "yyyy.MM.dd HH:mm") + " - " + DateUtil.formatDate(couponInfo.getEndTime(), "yyyy.MM.dd HH:mm");
-                result.setEffectiveDate(effectiveDate);
+                effectiveDate = DateUtil.formatDate(couponInfo.getEndTime(), "yyyy.MM.dd HH:mm");
             } else {
-                String effectiveDate = DateUtil.formatDate(userCoupon.getCreateTime(), "yyyy.MM.dd HH:mm") + " - " + DateUtil.formatDate(userCoupon.getExpireTime(), "yyyy.MM.dd HH:mm");
-                result.setEffectiveDate(effectiveDate);
+                effectiveDate = DateUtil.formatDate(userCoupon.getExpireTime(), "yyyy.MM.dd HH:mm");
             }
+            result.setEffectiveDate(effectiveDate);
             result.setCode(userCoupon.getCode());
             result.setAmount(userCoupon.getAmount());
             result.setBalance(userCoupon.getBalance());

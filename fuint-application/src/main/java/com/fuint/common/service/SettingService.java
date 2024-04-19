@@ -62,4 +62,5 @@ public interface SettingService extends IService<MtSetting> {
      * @return
      * */
     List<ParamDto> getPayTypeList(String platform);
+
 }
