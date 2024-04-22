@@ -66,6 +66,11 @@ public class BackendMemberController extends BaseController {
     private MemberGroupService memberGroupService;
 
     /**
+     * 微信相关接口
+     * */
+    private WeixinService weixinService;
+
+    /**
      * 查询会员列表
      *
      * @param request  HttpServletRequest对象
@@ -462,6 +467,11 @@ public class BackendMemberController extends BaseController {
             mtSetting.setStoreId(0);
 
             settingService.saveSetting(mtSetting);
+        }
+
+        MtSetting cardSetting = settingService.querySettingByName(accountInfo.getMerchantId(), UserSettingEnum.WX_MEMBER_CARD.getKey());
+        if (cardSetting != null && accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
+            weixinService.createWxCard(accountInfo.getMerchantId());
         }
 
         return getSuccessResult(true);
