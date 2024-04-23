@@ -768,7 +768,7 @@ public class CouponServiceImpl extends ServiceImpl<MtCouponMapper, MtCoupon> imp
         }
 
         MtStore mtStore = null;
-        if (storeId > 0) {
+        if (storeId != null && storeId > 0) {
             mtStore = mtStoreMapper.selectById(storeId);
             if (null == mtStore) {
                 throw new BusinessCheckException("该店铺不存在！");
@@ -892,7 +892,9 @@ public class CouponServiceImpl extends ServiceImpl<MtCouponMapper, MtCoupon> imp
 
         userCoupon.setUpdateTime(new Date());
         userCoupon.setUsedTime(new Date());
-        userCoupon.setStoreId(storeId);
+        if (storeId != null && storeId > 0) {
+            userCoupon.setStoreId(storeId);
+        }
         mtUserCouponMapper.updateById(userCoupon);
 
         // 生成核销流水
