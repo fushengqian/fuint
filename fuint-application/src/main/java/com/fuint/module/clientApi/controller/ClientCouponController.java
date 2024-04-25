@@ -122,17 +122,17 @@ public class ClientCouponController extends BaseController {
     /**
      * 查询卡券详情
      *
-     * @param couponInfoParam Request对象
+     * @param params Request对象
      */
     @ApiOperation(value = "查询卡券详情")
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @CrossOrigin
-    public ResponseObject detail(HttpServletRequest request, @RequestBody CouponInfoParam couponInfoParam) throws BusinessCheckException, InvocationTargetException, IllegalAccessException {
+    public ResponseObject detail(HttpServletRequest request, @RequestBody CouponInfoParam params) throws BusinessCheckException, InvocationTargetException, IllegalAccessException {
         String token = request.getHeader("Access-Token");
         UserInfo mtUser = TokenUtil.getUserInfoByToken(token);
 
-        Integer couponId = couponInfoParam.getCouponId() == null ? 0 : couponInfoParam.getCouponId();
-        String userCouponCode = couponInfoParam.getUserCouponCode() == null ? "" : couponInfoParam.getUserCouponCode();
+        Integer couponId = params.getCouponId() == null ? 0 : params.getCouponId();
+        String userCouponCode = params.getUserCouponCode() == null ? "" : params.getUserCouponCode();
 
         MtCoupon couponInfo = new MtCoupon();
         if (StringUtil.isNotEmpty(userCouponCode)) {

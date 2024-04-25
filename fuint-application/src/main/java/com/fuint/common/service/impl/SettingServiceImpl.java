@@ -88,9 +88,11 @@ public class SettingServiceImpl extends ServiceImpl<MtSettingMapper, MtSetting> 
             mtSettingMapper.updateById(settingInfo);
         } else {
             // 创建配置
-            mtSetting.setCreateTime(new Date());
-            mtSetting.setStatus(StatusEnum.ENABLED.getKey());
-            mtSettingMapper.insert(mtSetting);
+            if (mtSetting.getName() != null && mtSetting.getValue() != null) {
+                mtSetting.setCreateTime(new Date());
+                mtSetting.setStatus(StatusEnum.ENABLED.getKey());
+                mtSettingMapper.insert(mtSetting);
+            }
         }
 
         return mtSetting;

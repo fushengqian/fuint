@@ -409,12 +409,14 @@ public class BackendMemberController extends BaseController {
             }
         }
 
+        String imagePath = settingService.getUploadBasePath();
         Map<String, Object> result = new HashMap<>();
         result.put("getCouponNeedPhone", getCouponNeedPhone);
         result.put("submitOrderNeedPhone", submitOrderNeedPhone);
         result.put("loginNeedPhone", loginNeedPhone);
         result.put("openWxCard", openWxCard);
         result.put("wxMemberCard", wxMemberCard);
+        result.put("imagePath", imagePath);
 
         return getSuccessResult(result);
     }
@@ -447,7 +449,6 @@ public class BackendMemberController extends BaseController {
             MtSetting mtSetting = new MtSetting();
             mtSetting.setType(SettingTypeEnum.USER.getKey());
             mtSetting.setName(setting.getKey());
-
             if (setting.getKey().equals(UserSettingEnum.GET_COUPON_NEED_PHONE.getKey())) {
                 mtSetting.setValue(getCouponNeedPhone);
             } else if (setting.getKey().equals(UserSettingEnum.SUBMIT_ORDER_NEED_PHONE.getKey())) {
@@ -458,20 +459,33 @@ public class BackendMemberController extends BaseController {
                 mtSetting.setValue(openWxCard);
             } else if (setting.getKey().equals(UserSettingEnum.WX_MEMBER_CARD.getKey())) {
                 mtSetting.setValue(wxMemberCard);
+                if (StringUtil.isEmpty(wxMemberCard)) {
+                    mtSetting.setValue(null);
+                }
             }
-
             mtSetting.setDescription(setting.getValue());
             mtSetting.setOperator(accountInfo.getAccountName());
             mtSetting.setUpdateTime(new Date());
             mtSetting.setMerchantId(accountInfo.getMerchantId());
             mtSetting.setStoreId(0);
-
             settingService.saveSetting(mtSetting);
         }
 
         MtSetting cardSetting = settingService.querySettingByName(accountInfo.getMerchantId(), UserSettingEnum.WX_MEMBER_CARD.getKey());
-        if (cardSetting != null && accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
-            weixinService.createWxCard(accountInfo.getMerchantId());
+        MtSetting cardIdSetting = settingService.querySettingByName(accountInfo.getMerchantId(), UserSettingEnum.WX_MEMBER_CARD_ID.getKey());
+        if (cardIdSetting == null && cardSetting != null && accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
+            String cardId = weixinService.createWxCard(accountInfo.getMerchantId());
+            if (StringUtil.isNotEmpty(cardId)) {
+                MtSetting mtSetting = new MtSetting();
+                mtSetting.setType(SettingTypeEnum.USER.getKey());
+                mtSetting.setName(UserSettingEnum.WX_MEMBER_CARD_ID.getKey());
+                mtSetting.setValue(cardId);
+                mtSetting.setOperator(accountInfo.getAccountName());
+                mtSetting.setUpdateTime(new Date());
+                mtSetting.setMerchantId(accountInfo.getMerchantId());
+                mtSetting.setStoreId(0);
+                settingService.saveSetting(mtSetting);
+            }
         }
 
         return getSuccessResult(true);

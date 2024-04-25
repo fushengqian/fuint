@@ -11,7 +11,8 @@ public enum UserSettingEnum {
     SUBMIT_ORDER_NEED_PHONE("submitOrderNeedPhone", "提交订单是否需要手机号码"),
     LOGIN_NEED_PHONE("loginNeedPhone", "登录是否需要手机号"),
     OPEN_WX_CARD("openWxCard", "开通微信会员卡"),
-    WX_MEMBER_CARD("wxMemberCard", "微信会员卡");
+    WX_MEMBER_CARD("wxMemberCard", "微信会员卡设置"),
+    WX_MEMBER_CARD_ID("wxMemberCardId", "微信会员卡ID");
 
     private String key;
 

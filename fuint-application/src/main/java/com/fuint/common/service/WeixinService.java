@@ -149,6 +149,14 @@ public interface WeixinService {
      * @param merchantId 商户ID
      * @return
      * */
-    String createWxCard(Integer merchantId);
+    String createWxCard(Integer merchantId) throws BusinessCheckException;
+
+    /**
+     * 微信卡券apiTicket
+     *
+     * @param merchantId 商户ID
+     * @return
+     * */
+    String getApiTicket(Integer merchantId);
 
 }

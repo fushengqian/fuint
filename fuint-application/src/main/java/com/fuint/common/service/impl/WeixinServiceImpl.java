@@ -686,7 +686,7 @@ public class WeixinServiceImpl implements WeixinService {
      * @return
      * */
     @Override
-    public String createWxCard(Integer merchantId) {
+    public String createWxCard(Integer merchantId) throws BusinessCheckException {
         String cardId = "";
         try {
             MtSetting mtSetting = settingService.querySettingByName(merchantId, UserSettingEnum.WX_MEMBER_CARD.getKey());
@@ -751,12 +751,38 @@ public class WeixinServiceImpl implements WeixinService {
             JSONObject data = (JSONObject) JSONObject.parse(response);
             if (data.get("errcode").toString().equals("0")) {
                 cardId = data.get("card_id").toString();
+            } else {
+                throw new BusinessCheckException("开通微信卡券出错啦："+data.get("errmsg").toString());
             }
         } catch (Exception e) {
             logger.error("开通微信卡券出错啦：{}", e.getMessage());
+            throw new BusinessCheckException("开通微信卡券出错啦");
         }
 
         return cardId;
+    }
+
+    /**
+     * 微信卡券apiTicket
+     *
+     * @param merchantId 商户ID
+     * @return
+     * */
+    @Override
+    public String getApiTicket(Integer merchantId) {
+        try {
+            String accessToken = getAccessToken(merchantId, true);
+            String url = "https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token=" + accessToken + "&type=wx_card";
+            String response = HttpRESTDataClient.requestGet(url);
+            logger.error("微信卡券apiTicket接口返回：{}", response);
+            JSONObject data = (JSONObject) JSONObject.parse(response);
+            if (data.get("errcode").toString().equals("0")) {
+                return data.get("card_id").toString();
+            }
+        } catch (Exception e) {
+            return "";
+        }
+        return "";
     }
 
     /**
