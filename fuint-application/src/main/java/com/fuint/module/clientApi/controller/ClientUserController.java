@@ -2,18 +2,17 @@ package com.fuint.module.clientApi.controller;
 
 import com.alibaba.fastjson.JSONObject;
 import com.fuint.common.dto.AssetDto;
+import com.fuint.common.dto.OpenWxCardDto;
 import com.fuint.common.dto.UserDto;
 import com.fuint.common.dto.UserInfo;
 import com.fuint.common.enums.*;
 import com.fuint.common.service.*;
-import com.fuint.common.util.Base64Util;
-import com.fuint.common.util.DateUtil;
-import com.fuint.common.util.QRCodeUtil;
-import com.fuint.common.util.TokenUtil;
+import com.fuint.common.util.*;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.web.BaseController;
 import com.fuint.framework.web.ResponseObject;
 import com.fuint.repository.model.*;
+import com.fuint.utils.Digests;
 import com.fuint.utils.StringUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -147,6 +146,34 @@ public class ClientUserController extends BaseController {
             }
         }
         outParams.put("isMerchant", isMerchant);
+
+        // 是否开通微信会员卡
+        if (StringUtil.isNotEmpty(mtUser.getOpenId())) {
+            MtSetting cardSetting = settingService.querySettingByName(mtUser.getMerchantId(), UserSettingEnum.OPEN_WX_CARD.getKey());
+            if (cardSetting != null && cardSetting.getValue().equals(YesOrNoEnum.YES.getKey())) {
+                MtSetting cardIdSetting = settingService.querySettingByName(mtUser.getMerchantId(), UserSettingEnum.WX_MEMBER_CARD_ID.getKey());
+                if (cardIdSetting != null) {
+                    String apiTicket = weixinService.getApiTicket(mtUser.getMerchantId());
+                    if (StringUtil.isNotEmpty(apiTicket)) {
+                        String cardId = cardIdSetting.getValue();
+                        String openId = mtUser.getOpenId();
+                        String code = mtUser.getUserNo();
+                        String timestamp = System.currentTimeMillis() + "";
+                        String nonce_str = CommonUtil.createAccountKey();
+                        String str = nonce_str + timestamp + code + apiTicket + cardId;
+                        String signature = Digests.sha1(str.getBytes()).toString();
+
+                        OpenWxCardDto openWxCardDto = new OpenWxCardDto();
+                        openWxCardDto.setCode(code);
+                        openWxCardDto.setOpenId(openId);
+                        openWxCardDto.setTimestamp(timestamp);
+                        openWxCardDto.setSignature(signature);
+                        openWxCardDto.setCardId(cardId);
+                        outParams.put("openCardPara", openWxCardDto);
+                    }
+                }
+            }
+        }
 
         return getSuccessResult(outParams);
     }
