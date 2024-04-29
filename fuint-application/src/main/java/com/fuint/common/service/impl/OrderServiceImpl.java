@@ -686,7 +686,7 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
         }
 
         MtSetting config = settingService.querySettingByName(merchantId, OrderSettingEnum.IS_CLOSE.getKey());
-        if (config != null && config.getValue().equals("true")) {
+        if (config != null && config.getValue().equals(YesOrNoEnum.TRUE.getKey())) {
             throw new BusinessCheckException("系统已关闭交易功能，请稍后再试！");
         }
 
@@ -747,7 +747,7 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
 
         MtSetting pointSetting = settingService.querySettingByName(merchantId, PointSettingEnum.CAN_USE_AS_MONEY.getKey());
         // 使用积分数量
-        if (pointSetting != null && pointSetting.getValue().equals("true")) {
+        if (pointSetting != null && pointSetting.getValue().equals(YesOrNoEnum.TRUE.getKey())) {
             orderDto.setUsePoint(usePoint);
         } else {
             orderDto.setUsePoint(0);
@@ -824,7 +824,7 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
         // 使用积分抵扣
         if (usePoint > 0) {
             List<MtSetting> settingList = settingService.getSettingList(merchantId, SettingTypeEnum.POINT.getKey());
-            String canUsedAsMoney = "false";
+            String canUsedAsMoney = YesOrNoEnum.FALSE.getKey();
             String exchangeNeedPoint = "0";
             for (MtSetting setting : settingList) {
                 if (setting.getName().equals("canUsedAsMoney")) {
@@ -834,7 +834,7 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
                 }
             }
             // 是否可以使用积分，并且积分数量足够
-            if (canUsedAsMoney.equals("true") && Float.parseFloat(exchangeNeedPoint) > 0 && (userInfo.getPoint() >= usePoint)) {
+            if (canUsedAsMoney.equals(YesOrNoEnum.TRUE.getKey()) && Float.parseFloat(exchangeNeedPoint) > 0 && (userInfo.getPoint() >= usePoint)) {
                 orderDto.setUsePoint(usePoint);
                 orderDto.setPointAmount(new BigDecimal(usePoint).divide(new BigDecimal(exchangeNeedPoint), BigDecimal.ROUND_CEILING, 3));
                 if (orderDto.getPayAmount().compareTo(orderDto.getPointAmount()) > 0) {
@@ -1832,7 +1832,7 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
 
         // 设置是否不能用积分抵扣
         MtSetting pointSetting = settingService.querySettingByName(merchantId, PointSettingEnum.CAN_USE_AS_MONEY.getKey());
-        if (pointSetting != null && !pointSetting.getValue().equals("true")) {
+        if (pointSetting != null && !pointSetting.getValue().equals(YesOrNoEnum.TRUE.getKey())) {
             isUsePoint = false;
         }
 

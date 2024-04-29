@@ -108,15 +108,21 @@ public class WeixinServiceImpl implements WeixinService {
      * 获取微信accessToken
      *
      * @param merchantId 商户ID
+     * @param isMinApp 是否小程序
      * @param useCache 是否读取缓存
      * @throws BusinessCheckException
      * @return
      * */
     @Override
-    public String getAccessToken(Integer merchantId, boolean useCache) throws BusinessCheckException {
+    public String getAccessToken(Integer merchantId, boolean isMinApp, boolean useCache) throws BusinessCheckException {
+        String platForm = isMinApp == true ? "minApp" : "mp";
         String wxAppId = env.getProperty("weixin.official.appId");
         String wxAppSecret = env.getProperty("weixin.official.appSecret");
-        String tokenKey = FUINT_ACCESS_TOKEN_PRE;
+        if (isMinApp) {
+            wxAppId = env.getProperty("wxpay.appId");
+            wxAppSecret = env.getProperty("wxpay.appSecret");
+        }
+        String tokenKey = FUINT_ACCESS_TOKEN_PRE + platForm;
         if (merchantId != null && merchantId > 0) {
             MtMerchant mtMerchant = merchantService.queryMerchantById(merchantId);
             if (mtMerchant != null && StringUtil.isNotEmpty(mtMerchant.getWxAppId()) && StringUtil.isNotEmpty(mtMerchant.getWxAppSecret())) {
@@ -518,12 +524,12 @@ public class WeixinServiceImpl implements WeixinService {
     @Override
     public Boolean doSendSubscribeMessage(Integer merchantId, String reqDataJsonStr) {
         try {
-            String url = "https://api.weixin.qq.com/cgi-bin/message/subscribe/send?access_token=" + getAccessToken(merchantId, true);
+            String url = "https://api.weixin.qq.com/cgi-bin/message/subscribe/send?access_token=" + getAccessToken(merchantId, true,true);
             String response = HttpRESTDataClient.requestPost(url, "application/json; charset=utf-8", reqDataJsonStr);
             logger.info("WeixinService sendSubscribeMessage response={}", response);
             JSONObject json = (JSONObject) JSONObject.parse(response);
             if (json.get("errcode").toString().equals("40001")) {
-                getAccessToken(merchantId, true);
+                getAccessToken(merchantId, true,true);
                 logger.error("发送订阅消息出错error1：" + json.get("errcode").toString());
                 return false;
             } else if (!json.get("errcode").toString().equals("0")) {
@@ -638,9 +644,9 @@ public class WeixinServiceImpl implements WeixinService {
      * @return
      * */
     @Override
-    public String createStoreQrCode(Integer merchantId, Integer storeId, Integer width) {
+    public String createStoreQrCode(Integer merchantId, Integer storeId, Integer width) throws BusinessCheckException {
         try {
-            String accessToken = getAccessToken(merchantId, true);
+            String accessToken = getAccessToken(merchantId, true,true);
             String url = "https://api.weixin.qq.com/cgi-bin/wxaapp/createwxaqrcode?access_token=" + accessToken;
             String reqDataJsonStr = "";
 
@@ -651,7 +657,7 @@ public class WeixinServiceImpl implements WeixinService {
             reqDataJsonStr = JsonUtil.toJSONString(reqData);
 
             byte[] bytes = HttpRESTDataClient.requestPost(url, reqDataJsonStr);
-            logger.info("WechatService createStoreQrCode response success");
+            logger.info("WechatService createStoreQrCode reqData：{}", reqDataJsonStr);
 
             String pathRoot = env.getProperty("images.root");
             String baseImage = env.getProperty("images.path");
@@ -675,8 +681,8 @@ public class WeixinServiceImpl implements WeixinService {
             }
         } catch (Exception e) {
             logger.error("生成店铺二维码出错啦：{}", e.getMessage());
+            throw new BusinessCheckException("生成店铺二维码出错，请检查小程序配置");
         }
-        return "";
     }
 
     /**
@@ -695,7 +701,7 @@ public class WeixinServiceImpl implements WeixinService {
             }
             WxCardDto wxCardDto = JsonUtil.parseObject(mtSetting.getValue(), WxCardDto.class);
 
-            String accessToken = getAccessToken(merchantId, true);
+            String accessToken = getAccessToken(merchantId, false,true);
             String url = "https://api.weixin.qq.com/card/create?access_token=" + accessToken;
 
             Map<String, Object> params = new HashMap<>();
@@ -771,13 +777,13 @@ public class WeixinServiceImpl implements WeixinService {
     @Override
     public String getApiTicket(Integer merchantId) {
         try {
-            String accessToken = getAccessToken(merchantId, true);
+            String accessToken = getAccessToken(merchantId, false,true);
             String url = "https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token=" + accessToken + "&type=wx_card";
             String response = HttpRESTDataClient.requestGet(url);
             logger.error("微信卡券apiTicket接口返回：{}", response);
             JSONObject data = (JSONObject) JSONObject.parse(response);
             if (data.get("errcode").toString().equals("0")) {
-                return data.get("card_id").toString();
+                return data.get("ticket").toString();
             }
         } catch (Exception e) {
             return "";

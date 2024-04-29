@@ -6,6 +6,7 @@ import com.fuint.common.dto.UserInfo;
 import com.fuint.common.enums.GenderEnum;
 import com.fuint.common.enums.MemberSourceEnum;
 import com.fuint.common.enums.StatusEnum;
+import com.fuint.common.enums.YesOrNoEnum;
 import com.fuint.common.service.*;
 import com.fuint.common.util.TokenUtil;
 import com.fuint.framework.exception.BusinessCheckException;
@@ -270,7 +271,7 @@ public class ClientSignController extends BaseController {
         if (StringUtil.isNotEmpty(mobile) && StringUtil.isNotEmpty(verifyCode)) {
             // 如果已经登录，免输入验证码
             if (StringUtil.isNotEmpty(token) && TokenUtil.checkTokenLogin(token)) {
-                dto.setIsLogin("true");
+                dto.setIsLogin(YesOrNoEnum.TRUE.getKey());
                 dto.setToken(token);
                 return getSuccessResult(JSONObject.toJSONString(dto));
             }
@@ -303,11 +304,11 @@ public class ClientSignController extends BaseController {
                 loginInfo.setToken(userToken);
                 TokenUtil.saveToken(loginInfo);
 
-                dto.setIsLogin("true");
+                dto.setIsLogin(YesOrNoEnum.TRUE.getKey());
                 dto.setToken(userToken);
                 dto.setTokenCreatedTime(System.currentTimeMillis());
             } else {
-                dto.setIsLogin("false");
+                dto.setIsLogin(YesOrNoEnum.FALSE.getKey());
                 return getFailureResult(201, "验证码错误或已过期，登录失败");
             }
         }

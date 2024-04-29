@@ -8,6 +8,7 @@ import com.fuint.common.enums.StatusEnum;
 import com.fuint.common.enums.WxMessageEnum;
 import com.fuint.common.service.MemberService;
 import com.fuint.common.service.PointService;
+import com.fuint.common.service.SendSmsService;
 import com.fuint.common.service.WeixinService;
 import com.fuint.common.util.DateUtil;
 import com.fuint.framework.annoation.OperationServiceLog;
@@ -23,10 +24,14 @@ import com.github.pagehelper.PageHelper;
 import lombok.AllArgsConstructor;
 import org.apache.commons.lang.StringUtils;
 import com.github.pagehelper.Page;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.math.BigDecimal;
 import java.util.*;
 
 /**
@@ -39,9 +44,16 @@ import java.util.*;
 @AllArgsConstructor
 public class PointServiceImpl extends ServiceImpl<MtPointMapper, MtPoint> implements PointService {
 
+    private static final Logger logger = LoggerFactory.getLogger(PointServiceImpl.class);
+
     private MtPointMapper mtPointMapper;
 
     private MtUserMapper mtUserMapper;
+
+    /**
+     * 短信发送服务接口
+     * */
+    private SendSmsService sendSmsService;
 
     /**
      * 会员服务接口
@@ -162,6 +174,21 @@ public class PointServiceImpl extends ServiceImpl<MtPointMapper, MtPoint> implem
         mtPoint.setMerchantId(mtUser.getMerchantId());
         mtUserMapper.updateById(mtUser);
         mtPointMapper.insert(mtPoint);
+
+        try {
+            List<String> mobileList = new ArrayList<>();
+            mobileList.add(mtUser.getMobile());
+            Map<String, String> params = new HashMap<>();
+            String action = "";
+            if (mtPoint.getAmount() > 0) {
+                action = "+";
+            }
+            params.put("amount", action + mtPoint.getAmount().toString());
+            params.put("balance", mtUser.getPoint().toString());
+            sendSmsService.sendSms(mtUser.getMerchantId(), "points-change", mobileList, params);
+        } catch (Exception e) {
+            logger.error("积分变动短信发送失败:{}", e.getMessage());
+        }
 
         // 发送小程序订阅消息
         Date nowTime = new Date();

@@ -23,10 +23,11 @@ public interface WeixinService {
      * 获取微信登录token
      *
      * @param merchantId 商户ID
+     * @param isMinApp 是否小程序
      * @param useCache 是否从缓存中读取
      * @return
      * */
-    String getAccessToken(Integer merchantId, boolean useCache) throws BusinessCheckException;
+    String getAccessToken(Integer merchantId, boolean isMinApp, boolean useCache) throws BusinessCheckException;
 
     /**
      * 提交预支付订单
@@ -141,7 +142,7 @@ public interface WeixinService {
      * @param width 宽度
      * @return
      * */
-    String createStoreQrCode(Integer merchantId, Integer storeId, Integer width);
+    String createStoreQrCode(Integer merchantId, Integer storeId, Integer width) throws BusinessCheckException;
 
     /**
      * 开通微信卡券

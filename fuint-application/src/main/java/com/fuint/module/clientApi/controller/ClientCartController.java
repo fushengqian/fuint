@@ -200,7 +200,7 @@ public class ClientCartController extends BaseController {
         String orderMode = params.getOrderMode() == null ? OrderModeEnum.ONESELF.getKey() : params.getOrderMode();
         Integer merchantId = merchantService.getMerchantId(merchantNo);
         boolean isUsePoint = false;
-        if (point.equals("true")) {
+        if (point.equals(YesOrNoEnum.TRUE.getKey())) {
             isUsePoint = true;
         }
 

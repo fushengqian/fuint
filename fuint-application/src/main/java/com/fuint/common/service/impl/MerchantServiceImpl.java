@@ -166,7 +166,7 @@ public class MerchantServiceImpl extends ServiceImpl<MtMerchantMapper, MtMerchan
     /**
      * 根据商户号获取商户信息
      *
-     * @param  merchantNo 商户号
+     * @param merchantNo 商户号
      * @return
      */
     @Override
@@ -189,7 +189,6 @@ public class MerchantServiceImpl extends ServiceImpl<MtMerchantMapper, MtMerchan
        if (mtMerchant != null) {
            return  mtMerchant.getId();
        } else {
-           logger.error("根据商户号获取商户ID，该商户不存在！");
            return 0;
        }
     }

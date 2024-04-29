@@ -4,6 +4,7 @@ import com.alipay.api.AlipayApiException;
 import com.fuint.common.dto.*;
 import com.fuint.common.enums.OrderStatusEnum;
 import com.fuint.common.enums.SettingTypeEnum;
+import com.fuint.common.enums.YesOrNoEnum;
 import com.fuint.common.service.*;
 import com.fuint.common.util.TokenUtil;
 import com.fuint.framework.exception.BusinessCheckException;
@@ -106,7 +107,7 @@ public class ClientPayController extends BaseController {
         Map<String, Object> outParams = new HashMap<>();
 
         List<MtSetting> settingList = settingService.getSettingList(mtUser.getMerchantId(), SettingTypeEnum.POINT.getKey());
-        String canUsedAsMoney = "false";
+        String canUsedAsMoney = YesOrNoEnum.FALSE.getKey();
         String exchangeNeedPoint = "0";
         for (MtSetting setting : settingList) {
             if (setting.getName().equals("canUsedAsMoney")) {
@@ -139,7 +140,7 @@ public class ClientPayController extends BaseController {
 
         // 可用积分
         Integer canUsePointAmount = 0;
-        if (mtUser != null && canUsedAsMoney.equals("true")) {
+        if (mtUser != null && canUsedAsMoney.equals(YesOrNoEnum.TRUE.getKey())) {
             canUsePointAmount = mtUser.getPoint();
         }
 

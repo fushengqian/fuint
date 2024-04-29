@@ -630,7 +630,7 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
         if (StringUtil.isEmpty(mobile) && user == null) {
             MtSetting mtSetting = settingService.querySettingByName(merchantId, UserSettingEnum.LOGIN_NEED_PHONE.getKey());
             if (mtSetting != null) {
-                if (mtSetting.getValue().equals("true")) {
+                if (mtSetting.getValue().equals(YesOrNoEnum.TRUE.getKey())) {
                     MtUser tempUser = new MtUser();
                     tempUser.setOpenId(openId);
                     tempUser.setId(0);
@@ -642,7 +642,9 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
         // 手机号已经存在
         if (StringUtil.isNotEmpty(mobile) && user == null) {
             user = queryMemberByMobile(merchantId, mobile);
-            user.setOpenId(openId);
+            if (user != null) {
+                user.setOpenId(openId);
+            }
         }
 
         if (user == null) {

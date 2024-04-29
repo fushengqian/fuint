@@ -5,6 +5,7 @@ import com.fuint.common.dto.*;
 import com.fuint.common.enums.SettingTypeEnum;
 import com.fuint.common.enums.StatusEnum;
 import com.fuint.common.enums.UserSettingEnum;
+import com.fuint.common.enums.YesOrNoEnum;
 import com.fuint.common.service.*;
 import com.fuint.common.util.DateUtil;
 import com.fuint.common.util.PhoneFormatCheckUtils;
@@ -388,10 +389,10 @@ public class BackendMemberController extends BaseController {
 
         List<MtSetting> settingList = settingService.getSettingList(accountInfo.getMerchantId(), SettingTypeEnum.USER.getKey());
 
-        String getCouponNeedPhone = "false";
-        String submitOrderNeedPhone = "false";
-        String loginNeedPhone = "false";
-        String openWxCard = "false";
+        String getCouponNeedPhone = YesOrNoEnum.FALSE.getKey();
+        String submitOrderNeedPhone = YesOrNoEnum.FALSE.getKey();
+        String loginNeedPhone = YesOrNoEnum.FALSE.getKey();
+        String openWxCard = YesOrNoEnum.FALSE.getKey();
         WxCardDto wxMemberCard = null;
         for (MtSetting setting : settingList) {
             if (StringUtil.isNotEmpty(setting.getValue())) {

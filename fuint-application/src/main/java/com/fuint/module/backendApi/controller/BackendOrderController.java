@@ -471,7 +471,7 @@ public class BackendOrderController extends BaseController {
     public ResponseObject saveSetting(HttpServletRequest request, @RequestBody Map<String, Object> param) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
         String deliveryFee = param.get("deliveryFee") != null ? param.get("deliveryFee").toString() : "0";
-        String isClose = param.get("isClose") != null ? param.get("isClose").toString() : "false";
+        String isClose = param.get("isClose") != null ? param.get("isClose").toString() : YesOrNoEnum.FALSE.getKey();
 
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
         if (accountInfo == null) {

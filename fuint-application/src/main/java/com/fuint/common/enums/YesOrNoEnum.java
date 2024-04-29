@@ -8,7 +8,9 @@ package com.fuint.common.enums;
  */
 public enum YesOrNoEnum {
     YES("Y", "是"),
-    NO("N", "否");
+    NO("N", "否"),
+    TRUE("true", "真"),
+    FALSE("false", "假");
 
     private String key;
 

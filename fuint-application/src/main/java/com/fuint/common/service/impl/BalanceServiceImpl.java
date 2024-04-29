@@ -9,6 +9,7 @@ import com.fuint.common.enums.StatusEnum;
 import com.fuint.common.enums.WxMessageEnum;
 import com.fuint.common.service.BalanceService;
 import com.fuint.common.service.MemberService;
+import com.fuint.common.service.SendSmsService;
 import com.fuint.common.service.WeixinService;
 import com.fuint.common.util.CommonUtil;
 import com.fuint.common.util.DateUtil;
@@ -27,6 +28,8 @@ import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import lombok.AllArgsConstructor;
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -44,6 +47,8 @@ import java.util.*;
 @AllArgsConstructor
 public class BalanceServiceImpl extends ServiceImpl<MtBalanceMapper, MtBalance> implements BalanceService {
 
+    private static final Logger logger = LoggerFactory.getLogger(BalanceServiceImpl.class);
+
     private MtBalanceMapper mtBalanceMapper;
 
     private MtUserMapper mtUserMapper;
@@ -57,6 +62,11 @@ public class BalanceServiceImpl extends ServiceImpl<MtBalanceMapper, MtBalance> 
      * 会员服务接口
      * */
     private MemberService memberService;
+
+    /**
+     * 短信发送服务接口
+     * */
+    private SendSmsService sendSmsService;
 
     /**
      * 分页查询余额列表
@@ -174,6 +184,21 @@ public class BalanceServiceImpl extends ServiceImpl<MtBalanceMapper, MtBalance> 
             mtBalance.setMobile(mtUser.getMobile());
         }
         mtBalanceMapper.insert(mtBalance);
+
+        try {
+            List<String> mobileList = new ArrayList<>();
+            mobileList.add(mtUser.getMobile());
+            Map<String, String> params = new HashMap<>();
+            String action = "";
+            if (mtBalance.getAmount().compareTo(new BigDecimal("0")) > 0) {
+                action = "+";
+            }
+            params.put("amount", action + String.format("%.2f", mtBalance.getAmount()));
+            params.put("balance", String.format("%.2f", mtUser.getBalance()));
+            sendSmsService.sendSms(mtUser.getMerchantId(), "balance-change", mobileList, params);
+        } catch (Exception e) {
+            logger.error("余额变动短信发送失败:{}", e.getMessage());
+        }
 
         // 发送小程序订阅消息
         Date nowTime = new Date();

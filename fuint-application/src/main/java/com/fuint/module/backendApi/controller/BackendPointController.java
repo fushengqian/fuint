@@ -6,6 +6,7 @@ import com.fuint.common.dto.PointDto;
 import com.fuint.common.enums.PointSettingEnum;
 import com.fuint.common.enums.SettingTypeEnum;
 import com.fuint.common.enums.StatusEnum;
+import com.fuint.common.enums.YesOrNoEnum;
 import com.fuint.common.service.MemberService;
 import com.fuint.common.service.PointService;
 import com.fuint.common.service.SettingService;
@@ -180,7 +181,7 @@ public class BackendPointController extends BaseController {
     public ResponseObject saveSetting(HttpServletRequest request, @RequestBody Map<String, Object> param) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
         String pointNeedConsume = param.get("pointNeedConsume") != null ? param.get("pointNeedConsume").toString() : "1";
-        String canUsedAsMoney = param.get("canUsedAsMoney") != null ? param.get("canUsedAsMoney").toString() : "false";
+        String canUsedAsMoney = param.get("canUsedAsMoney") != null ? param.get("canUsedAsMoney").toString() : YesOrNoEnum.FALSE.getKey();
         String exchangeNeedPoint = param.get("exchangeNeedPoint") != null ? param.get("exchangeNeedPoint").toString() : "0";
         String rechargePointSpeed = param.get("rechargePointSpeed") != null ? param.get("rechargePointSpeed").toString() : "1";
         String status = request.getParameter("status");
