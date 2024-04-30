@@ -153,11 +153,23 @@ public interface WeixinService {
     String createWxCard(Integer merchantId) throws BusinessCheckException;
 
     /**
-     * 微信卡券apiTicket
+     * 创建微信卡券领取的二维码
      *
      * @param merchantId 商户ID
+     * @param cardId 微信卡券ID
+     * @param code 会员卡编码
      * @return
      * */
-    String getApiTicket(Integer merchantId);
+    String createCardQrCode(Integer merchantId, String cardId, String code);
+
+    /**
+     * 是否已领取卡券
+     *
+     * @param merchantId 商户ID
+     * @param cardId 微信卡券ID
+     * @param openId openId
+     * @return
+     * */
+    Boolean isOpenCard(Integer merchantId, String cardId, String openId);
 
 }

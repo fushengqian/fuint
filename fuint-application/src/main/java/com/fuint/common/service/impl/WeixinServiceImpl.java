@@ -15,6 +15,7 @@ import com.fuint.common.enums.*;
 import com.fuint.common.http.HttpRESTDataClient;
 import com.fuint.common.service.*;
 import com.fuint.common.util.AliyunOssUtil;
+import com.fuint.common.util.Base64Util;
 import com.fuint.common.util.RedisUtil;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.web.ResponseObject;
@@ -769,26 +770,89 @@ public class WeixinServiceImpl implements WeixinService {
     }
 
     /**
-     * 微信卡券apiTicket
+     * 创建微信卡券领取的二维码
      *
      * @param merchantId 商户ID
+     * @param cardId 微信卡券ID
+     * @param code 会员卡编码
      * @return
      * */
     @Override
-    public String getApiTicket(Integer merchantId) {
+    public String createCardQrCode(Integer merchantId, String cardId, String code) {
         try {
-            String accessToken = getAccessToken(merchantId, false,true);
-            String url = "https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token=" + accessToken + "&type=wx_card";
-            String response = HttpRESTDataClient.requestGet(url);
-            logger.error("微信卡券apiTicket接口返回：{}", response);
+            String accessToken = getAccessToken(merchantId, false,false);
+            String url = "https://api.weixin.qq.com/card/qrcode/create?access_token="+accessToken;
+
+            Map<String, Object> param = new HashMap<>();
+            Map<String, Object> actionInfo = new HashMap<>();
+            Map<String, Object> card = new HashMap<>();
+            card.put("card_id", cardId);
+            card.put("code", code);
+            card.put("is_unique_code", false);
+            card.put("outer_str", "12b");
+            actionInfo.put("card", card);
+            param.put("action_name", "QR_CARD");
+            param.put("action_info", actionInfo);
+
+            String reqDataJsonStr = JsonUtil.toJSONString(param);
+            String response = HttpRESTDataClient.requestPostBody(url, reqDataJsonStr);
+            logger.info("微信卡券createCardQrCode接口返回：{}", response);
             JSONObject data = (JSONObject) JSONObject.parse(response);
+            String qrCode = "";
             if (data.get("errcode").toString().equals("0")) {
-                return data.get("ticket").toString();
+                String content = data.get("url").toString();
+                try {
+                    // 生成并输出二维码
+                    ByteArrayOutputStream out = new ByteArrayOutputStream();
+                    com.fuint.common.util.QRCodeUtil.createQrCode(out, content, 800, 800, "png", "");
+                    // 对数据进行Base64编码
+                    qrCode = new String(Base64Util.baseEncode(out.toByteArray()), "UTF-8");
+                    return "data:image/jpg;base64," + qrCode;
+                } catch (Exception e) {
+                    logger.error("生成并输出二维码出错：{}", e.getMessage());
+                }
             }
         } catch (Exception e) {
+            logger.error("创建微信卡券领取二维码出错：{}", e.getMessage());
             return "";
         }
         return "";
+    }
+
+    /**
+     * 是否已领取卡券
+     *
+     * @param merchantId 商户ID
+     * @param cardId 微信卡券ID
+     * @param openId openId
+     * @return
+     * */
+    @Override
+    public Boolean isOpenCard(Integer merchantId, String cardId, String openId) {
+        try {
+            String accessToken = getAccessToken(merchantId, false,false);
+            String url = "https://api.weixin.qq.com/card/user/getcardlist?access_token="+accessToken;
+
+            Map<String, Object> param = new HashMap<>();
+            param.put("openid", openId);
+            param.put("card_id", cardId);
+
+            String reqDataJsonStr = JsonUtil.toJSONString(param);
+            String response = HttpRESTDataClient.requestPostBody(url, reqDataJsonStr);
+            logger.info("微信卡券createCardQrCode接口返回：{}", response);
+            JSONObject data = (JSONObject) JSONObject.parse(response);
+            if (data.get("errcode").toString().equals("0")) {
+                Object cards = data.get("card_list");
+                if (cards != null && StringUtil.isNotEmpty(cards.toString())) {
+                    return true;
+                }
+                return false;
+            }
+        } catch (Exception e) {
+            logger.error("创建微信卡券领取二维码出错：{}", e.getMessage());
+            return true;
+        }
+        return true;
     }
 
     /**

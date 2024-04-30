@@ -184,6 +184,7 @@ public class SendSmsServiceImpl implements SendSmsService {
             String res = "";
             try {
                 CommonResponse response = client.getCommonResponse(request);
+                logger.info("sendMessage response:{}", response.toString());
                 res = response.getData();
                 System.out.println(response.getData());
             } catch (ServerException e) {
