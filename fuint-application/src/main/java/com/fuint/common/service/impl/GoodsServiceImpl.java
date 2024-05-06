@@ -10,10 +10,7 @@ import com.fuint.common.dto.GoodsTopDto;
 import com.fuint.common.enums.GoodsTypeEnum;
 import com.fuint.common.enums.StatusEnum;
 import com.fuint.common.enums.YesOrNoEnum;
-import com.fuint.common.service.CateService;
-import com.fuint.common.service.GoodsService;
-import com.fuint.common.service.SettingService;
-import com.fuint.common.service.StoreService;
+import com.fuint.common.service.*;
 import com.fuint.framework.annoation.OperationServiceLog;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.pagination.PaginationRequest;
@@ -67,6 +64,11 @@ public class GoodsServiceImpl extends ServiceImpl<MtGoodsMapper, MtGoods> implem
      * 店铺服务接口
      * */
     private StoreService storeService;
+
+    /**
+     * 卡券服务接口
+     * */
+    private CouponService couponService;
 
     /**
      * 分页查询商品列表
@@ -289,7 +291,17 @@ public class GoodsServiceImpl extends ServiceImpl<MtGoodsMapper, MtGoods> implem
         if (!mtGoods.getType().equals(GoodsTypeEnum.COUPON.getKey())) {
             mtGoods.setCouponIds("");
         }
-
+        if (mtGoods.getCouponIds() != null && StringUtil.isNotEmpty(mtGoods.getCouponIds())) {
+            String couponIds[] = mtGoods.getCouponIds().split(",");
+            if (couponIds.length > 0) {
+                for (int i = 0; i < couponIds.length; i++) {
+                     MtCoupon mtCoupon = couponService.queryCouponById(Integer.parseInt(couponIds[i]));
+                     if (mtCoupon == null) {
+                         throw new BusinessCheckException("卡券ID等于“"+couponIds[i]+"”的虚拟卡券不存在.");
+                     }
+                }
+            }
+        }
         mtGoods.setUpdateTime(new Date());
         if (reqDto.getId() == null || reqDto.getId() <= 0) {
             mtGoods.setCreateTime(new Date());
