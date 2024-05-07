@@ -148,9 +148,10 @@ public interface WeixinService {
      * 开通微信卡券
      *
      * @param merchantId 商户ID
+     * @param wxCardId 微信会员卡ID
      * @return
      * */
-    String createWxCard(Integer merchantId) throws BusinessCheckException;
+    String createWxCard(Integer merchantId, String wxCardId) throws BusinessCheckException;
 
     /**
      * 创建微信卡券领取的二维码

@@ -460,9 +460,6 @@ public class BackendMemberController extends BaseController {
                 mtSetting.setValue(openWxCard);
             } else if (setting.getKey().equals(UserSettingEnum.WX_MEMBER_CARD.getKey())) {
                 mtSetting.setValue(wxMemberCard);
-                if (StringUtil.isEmpty(wxMemberCard)) {
-                    mtSetting.setValue(null);
-                }
             }
             mtSetting.setDescription(setting.getValue());
             mtSetting.setOperator(accountInfo.getAccountName());
@@ -472,10 +469,15 @@ public class BackendMemberController extends BaseController {
             settingService.saveSetting(mtSetting);
         }
 
+        MtSetting openCardSetting = settingService.querySettingByName(accountInfo.getMerchantId(), UserSettingEnum.OPEN_WX_CARD.getKey());
         MtSetting cardSetting = settingService.querySettingByName(accountInfo.getMerchantId(), UserSettingEnum.WX_MEMBER_CARD.getKey());
         MtSetting cardIdSetting = settingService.querySettingByName(accountInfo.getMerchantId(), UserSettingEnum.WX_MEMBER_CARD_ID.getKey());
-        if (cardIdSetting == null && cardSetting != null && accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
-            String cardId = weixinService.createWxCard(accountInfo.getMerchantId());
+        if (openCardSetting != null && openCardSetting.getValue().equals(YesOrNoEnum.TRUE.getKey()) && cardSetting != null && accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
+            String wxCardId = "";
+            if (cardIdSetting != null) {
+                wxCardId = cardIdSetting.getValue();
+            }
+            String cardId = weixinService.createWxCard(accountInfo.getMerchantId(), wxCardId);
             if (StringUtil.isNotEmpty(cardId)) {
                 MtSetting mtSetting = new MtSetting();
                 mtSetting.setType(SettingTypeEnum.USER.getKey());

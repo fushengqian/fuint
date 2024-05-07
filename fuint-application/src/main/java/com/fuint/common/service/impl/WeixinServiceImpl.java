@@ -690,10 +690,11 @@ public class WeixinServiceImpl implements WeixinService {
      * 开通微信卡券
      *
      * @param merchantId 商户ID
+     * @param wxCardId 微信会员卡ID
      * @return
      * */
     @Override
-    public String createWxCard(Integer merchantId) throws BusinessCheckException {
+    public String createWxCard(Integer merchantId, String wxCardId) throws BusinessCheckException {
         String cardId = "";
         try {
             MtSetting mtSetting = settingService.querySettingByName(merchantId, UserSettingEnum.WX_MEMBER_CARD.getKey());
@@ -703,63 +704,110 @@ public class WeixinServiceImpl implements WeixinService {
             WxCardDto wxCardDto = JsonUtil.parseObject(mtSetting.getValue(), WxCardDto.class);
 
             String accessToken = getAccessToken(merchantId, false,true);
-            String url = "https://api.weixin.qq.com/card/create?access_token=" + accessToken;
+            String createUrl = "https://api.weixin.qq.com/card/create?access_token=" + accessToken;
+            String updateUrl = "https://api.weixin.qq.com/card/update?access_token=" + accessToken;
 
             Map<String, Object> params = new HashMap<>();
             Map<String, Object> card = new HashMap<>();
-            card.put("card_type", "MEMBER_CARD");
+            if (StringUtil.isEmpty(wxCardId)) {
+                card.put("card_type", "MEMBER_CARD");
+            }
             Map<String, Object> memberCard = new HashMap<>();
-            memberCard.put("background_pic_url", wxCardDto.getBackgroundUrl());
+            String baseImage = settingService.getUploadBasePath();
+            if (StringUtil.isNotEmpty(wxCardDto.getBackgroundUrl())) {
+                memberCard.put("background_pic_url", baseImage + wxCardDto.getBackgroundUrl());
+            }
 
             // baseInfo
             Map<String, Object> baseInfo = new HashMap<>();
-            baseInfo.put("logo_url", wxCardDto.getLogoUrl());
-            baseInfo.put("brand_name", wxCardDto.getBrandName());
+            if (StringUtil.isNotEmpty(wxCardDto.getLogoUrl())) {
+                baseInfo.put("logo_url", baseImage + wxCardDto.getLogoUrl());
+            }
+            if (StringUtil.isEmpty(wxCardId)) {
+                baseInfo.put("brand_name", wxCardDto.getBrandName());
+            }
             baseInfo.put("code_type", "CODE_TYPE_TEXT");
             baseInfo.put("title", wxCardDto.getTitle());
             baseInfo.put("color", wxCardDto.getColor());
             baseInfo.put("notice", wxCardDto.getNotice());
-            baseInfo.put("service_phone", wxCardDto.getServicePhone());
+            if (StringUtil.isNotEmpty(wxCardDto.getServicePhone())) {
+                baseInfo.put("service_phone", wxCardDto.getServicePhone());
+            }
             baseInfo.put("description", wxCardDto.getDescription());
             Map<String, Object> dateInfo = new HashMap<>();
             dateInfo.put("type", "DATE_TYPE_PERMANENT");
-            baseInfo.put("date_info", dateInfo);
+            if (StringUtil.isEmpty(wxCardId)) {
+                baseInfo.put("date_info", dateInfo);
+            }
             Map<String, Object> sku = new HashMap<>();
             sku.put("quantity", Constants.ALL_ROWS);
-            baseInfo.put("sku", sku);
-            baseInfo.put("get_limit", 1);
-            baseInfo.put("use_custom_code", false);
-            baseInfo.put("bind_openid", false);
+            if (StringUtil.isEmpty(wxCardId)) {
+                baseInfo.put("sku", sku);
+                baseInfo.put("get_limit", 1);
+            }
+            if (StringUtil.isEmpty(wxCardId)) {
+                baseInfo.put("use_custom_code", false);
+                baseInfo.put("bind_openid", false);
+            }
             baseInfo.put("can_give_friend", false);
-            baseInfo.put("location_id_list", null);
-            baseInfo.put("custom_url_name", wxCardDto.getCustomUrlName());
-            baseInfo.put("custom_url", wxCardDto.getCustomUrl());
-            baseInfo.put("custom_url_sub_title", wxCardDto.getCustomUrlSubTitle());
+            if (StringUtil.isEmpty(wxCardId)) {
+                baseInfo.put("location_id_list", null);
+            }
+            if (StringUtil.isNotEmpty(wxCardDto.getCustomUrlName())) {
+                baseInfo.put("custom_url_name", wxCardDto.getCustomUrlName());
+            }
+            if (StringUtil.isNotEmpty(wxCardDto.getCustomUrl())) {
+                baseInfo.put("custom_url", wxCardDto.getCustomUrl());
+            }
+            if (StringUtil.isNotEmpty(wxCardDto.getCustomUrlSubTitle())) {
+                baseInfo.put("custom_url_sub_title", wxCardDto.getCustomUrlSubTitle());
+            }
             baseInfo.put("need_push_on_view", true);
             memberCard.put("base_info", baseInfo);
 
             // 特权说明
-            memberCard.put("prerogative", wxCardDto.getPrerogative());
+            if (StringUtil.isNotEmpty(wxCardDto.getPrerogative())) {
+                memberCard.put("prerogative", wxCardDto.getPrerogative());
+            }
             // 自动激活
             memberCard.put("auto_activate", true);
             memberCard.put("supply_bonus", wxCardDto.getSupplyBonus());
-            memberCard.put("bonus_url", wxCardDto.getBonusUrl());
-            memberCard.put("supply_balance", wxCardDto.getSupplyBalance());
-            memberCard.put("balance_url", wxCardDto.getBalanceUrl());
-
+            if (StringUtil.isNotEmpty(wxCardDto.getBonusUrl())) {
+                memberCard.put("bonus_url", wxCardDto.getBonusUrl());
+            }
+            if (StringUtil.isEmpty(wxCardId)) {
+                memberCard.put("supply_balance", wxCardDto.getSupplyBalance());
+            }
+            if (StringUtil.isNotEmpty(wxCardDto.getBalanceUrl())) {
+                memberCard.put("balance_url", wxCardDto.getBalanceUrl());
+            }
             card.put("member_card", memberCard);
-            params.put("card", card);
+            if (StringUtil.isEmpty(wxCardId)) {
+                params.put("card", card);
+            } else {
+                card.put("card_id", wxCardId);
+                params = card;
+            }
 
             ObjectMapper mapper = new ObjectMapper();
             String reqDataJson = mapper.writeValueAsString(params);
-
+            String url = createUrl;
+            if (StringUtil.isNotEmpty(wxCardId)) {
+                url = updateUrl;
+            }
+            logger.info("开通微信卡券接口url：{}，请求参数：{}", url, reqDataJson);
             String response = HttpRESTDataClient.requestPost(url, "application/json; charset=utf-8", reqDataJson);
-            logger.error("开通微信卡券接口返回：{}", response);
+            logger.info("开通微信卡券接口返回：{}", response);
             JSONObject data = (JSONObject) JSONObject.parse(response);
             if (data.get("errcode").toString().equals("0")) {
-                cardId = data.get("card_id").toString();
+                if (StringUtil.isEmpty(wxCardId)) {
+                    cardId = data.get("card_id").toString();
+                } else {
+                    cardId = wxCardId;
+                }
             } else {
-                throw new BusinessCheckException("开通微信卡券出错啦："+data.get("errmsg").toString());
+                logger.error("开通微信卡券出错啦{}", data.get("errmsg").toString());
+                throw new BusinessCheckException("开通微信卡券出错啦：" + data.get("errmsg").toString());
             }
         } catch (Exception e) {
             logger.error("开通微信卡券出错啦：{}", e.getMessage());
@@ -780,7 +828,7 @@ public class WeixinServiceImpl implements WeixinService {
     @Override
     public String createCardQrCode(Integer merchantId, String cardId, String code) {
         try {
-            String accessToken = getAccessToken(merchantId, false,false);
+            String accessToken = getAccessToken(merchantId, false, true);
             String url = "https://api.weixin.qq.com/card/qrcode/create?access_token="+accessToken;
 
             Map<String, Object> param = new HashMap<>();
@@ -830,7 +878,7 @@ public class WeixinServiceImpl implements WeixinService {
     @Override
     public Boolean isOpenCard(Integer merchantId, String cardId, String openId) {
         try {
-            String accessToken = getAccessToken(merchantId, false,false);
+            String accessToken = getAccessToken(merchantId, false,true);
             String url = "https://api.weixin.qq.com/card/user/getcardlist?access_token="+accessToken;
 
             Map<String, Object> param = new HashMap<>();
@@ -839,7 +887,7 @@ public class WeixinServiceImpl implements WeixinService {
 
             String reqDataJsonStr = JsonUtil.toJSONString(param);
             String response = HttpRESTDataClient.requestPostBody(url, reqDataJsonStr);
-            logger.info("微信卡券createCardQrCode接口返回：{}", response);
+            logger.info("微信卡券getCardList接口返回：{}", response);
             JSONObject data = (JSONObject) JSONObject.parse(response);
             if (data.get("errcode").toString().equals("0")) {
                 Object cards = data.get("card_list");
@@ -849,7 +897,7 @@ public class WeixinServiceImpl implements WeixinService {
                 return false;
             }
         } catch (Exception e) {
-            logger.error("创建微信卡券领取二维码出错：{}", e.getMessage());
+            logger.error("微信卡券getCardList接口出错：{}", e.getMessage());
             return true;
         }
         return true;
