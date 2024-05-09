@@ -41,8 +41,13 @@ public class TokenUtil {
         token.append(userId);
         token.append(new SimpleDateFormat("yyyyMMddHHmmssSSS").format(new Date()) + "_");
         token.append(new Random().nextInt((999999 - 111111 + 1)) + 111111);
-
         String tokenStr = MD5Util.getMD5(token.toString()).replace("+", "1").replaceAll("&", "8");
+
+        UserInfo userLoginInfo = new UserInfo();
+        userLoginInfo.setId(userId);
+        userLoginInfo.setToken(tokenStr);
+        saveToken(userLoginInfo);
+
         return tokenStr;
     }
 

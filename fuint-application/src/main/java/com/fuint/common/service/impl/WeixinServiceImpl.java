@@ -811,7 +811,7 @@ public class WeixinServiceImpl implements WeixinService {
             }
         } catch (Exception e) {
             logger.error("开通微信卡券出错啦：{}", e.getMessage());
-            throw new BusinessCheckException("开通微信卡券出错啦");
+            throw new BusinessCheckException("开通微信卡券出错啦：" + e.getMessage());
         }
 
         return cardId;
