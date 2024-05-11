@@ -22,7 +22,7 @@ public interface ${tableClass}Service extends IService<${className}> {
      * @param paginationRequest
      * @return
      */
-    PaginationResponse<${className}> queryBannerListByPagination(PaginationRequest paginationRequest) throws BusinessCheckException;
+    PaginationResponse<${className}> query${tableClass}ListByPagination(PaginationRequest paginationRequest) throws BusinessCheckException;
 
     /**
      * 添加${moduleName}

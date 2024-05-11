@@ -145,12 +145,8 @@ public class ${tableClass}ServiceImpl extends ServiceImpl<${className}Mapper, ${
         String status =  params.get("status") == null ? StatusEnum.ENABLED.getKey(): params.get("status").toString();
         String storeId =  params.get("storeId") == null ? "" : params.get("storeId").toString();
         String merchantId =  params.get("merchantId") == null ? "" : params.get("merchantId").toString();
-        String title = params.get("title") == null ? "" : params.get("title").toString();
 
         LambdaQueryWrapper<${className}> lambdaQueryWrapper = Wrappers.lambdaQuery();
-        if (StringUtils.isNotBlank(title)) {
-            lambdaQueryWrapper.like(${className}::getTitle, title);
-        }
         if (StringUtils.isNotBlank(status)) {
             lambdaQueryWrapper.eq(${className}::getStatus, status);
         }
