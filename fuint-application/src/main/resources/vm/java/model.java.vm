@@ -18,7 +18,7 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-@TableName("${tablePrefix}${tableName}")
+@TableName("${tablePrefix}_${tableName}")
 @ApiModel(value = "${tableName}表对象", description = "${tableName}表对象")
 public class ${modelName} implements Serializable {
 

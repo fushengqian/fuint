@@ -96,7 +96,7 @@ public class Backend${tableClass}Controller extends BaseController {
         }
 
         Map<String, Object> result = new HashMap<>();
-        result.put("dataList", paginationResponse);
+        result.put("paginationResponse", paginationResponse);
 
         return getSuccessResult(result);
     }
