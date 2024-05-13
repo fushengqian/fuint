@@ -135,14 +135,16 @@ public interface WeixinService {
     Boolean doRefund(Integer storeId, String orderSn, BigDecimal totalAmount, BigDecimal refundAmount, String platform) throws BusinessCheckException;
 
     /**
-     * 生成店铺二维码
+     * 生成二维码
      *
      * @param merchantId 商户ID
-     * @param storeId 店铺ID
+     * @param type 类型
+     * @param id 数据ID
+     * @param page 页面
      * @param width 宽度
      * @return
      * */
-    String createStoreQrCode(Integer merchantId, Integer storeId, Integer width) throws BusinessCheckException;
+    String createQrCode(Integer merchantId, String type, Integer id, String page, Integer width) throws BusinessCheckException;
 
     /**
      * 开通微信卡券

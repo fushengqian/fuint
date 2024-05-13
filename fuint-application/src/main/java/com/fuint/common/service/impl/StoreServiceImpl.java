@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fuint.common.dto.StoreDto;
+import com.fuint.common.enums.QrCodeEnum;
 import com.fuint.common.enums.StatusEnum;
 import com.fuint.common.enums.YesOrNoEnum;
 import com.fuint.common.service.MerchantService;
@@ -179,9 +180,6 @@ public class StoreServiceImpl extends ServiceImpl<MtStoreMapper, MtStore> implem
             mtStore.setMerchantId(storeDto.getMerchantId());
         }
 
-        String qr = weixinService.createStoreQrCode(mtStore.getMerchantId(), mtStore.getId(), 320);
-        mtStore.setQrCode(qr);
-
         if (mtStore.getStatus() == null) {
             mtStore.setStatus(StatusEnum.ENABLED.getKey());
         }
@@ -190,6 +188,13 @@ public class StoreServiceImpl extends ServiceImpl<MtStoreMapper, MtStore> implem
         } else {
             mtStoreMapper.updateById(mtStore);
         }
+
+        // 保存二维码
+        String page = QrCodeEnum.STORE.getPage() + "?" + QrCodeEnum.STORE.getKey() + "Id=" + mtStore.getId();
+        String qr = weixinService.createQrCode(mtStore.getMerchantId(), QrCodeEnum.STORE.getKey(), mtStore.getId(), page, 320);
+        mtStore.setQrCode(qr);
+        mtStoreMapper.updateById(mtStore);
+
         return mtStore;
     }
 
@@ -277,7 +282,8 @@ public class StoreServiceImpl extends ServiceImpl<MtStoreMapper, MtStore> implem
         BeanUtils.copyProperties(mtStore, mtStoreDto);
 
         if (StringUtil.isEmpty(mtStore.getQrCode())) {
-            String qr = weixinService.createStoreQrCode(mtStore.getMerchantId(), mtStore.getId(), 320);
+            String page = QrCodeEnum.STORE.getPage() + "?" + QrCodeEnum.STORE.getKey() + "Id = " + mtStore.getId();
+            String qr = weixinService.createQrCode(mtStore.getMerchantId(), QrCodeEnum.STORE.getKey(), mtStore.getId(), page, 320);
             mtStoreDto.setQrCode(qr);
         }
 

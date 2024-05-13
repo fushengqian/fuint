@@ -14,9 +14,7 @@ import com.fuint.common.dto.WxCardDto;
 import com.fuint.common.enums.*;
 import com.fuint.common.http.HttpRESTDataClient;
 import com.fuint.common.service.*;
-import com.fuint.common.util.AliyunOssUtil;
-import com.fuint.common.util.Base64Util;
-import com.fuint.common.util.RedisUtil;
+import com.fuint.common.util.*;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.web.ResponseObject;
 import com.fuint.repository.model.*;
@@ -637,15 +635,17 @@ public class WeixinServiceImpl implements WeixinService {
     }
 
     /***
-     * 生成店铺二维码
+     * 生成二维码
      *
      * @param merchantId 商户ID
-     * @param storeId 店铺ID
+     * @param type 类型
+     * @param id 数据ID
+     * @param page 页面
      * @param width 宽度
      * @return
      * */
     @Override
-    public String createStoreQrCode(Integer merchantId, Integer storeId, Integer width) throws BusinessCheckException {
+    public String createQrCode(Integer merchantId, String type, Integer id, String page, Integer width) throws BusinessCheckException {
         try {
             String accessToken = getAccessToken(merchantId, true,true);
             String url = "https://api.weixin.qq.com/cgi-bin/wxaapp/createwxaqrcode?access_token=" + accessToken;
@@ -653,7 +653,7 @@ public class WeixinServiceImpl implements WeixinService {
 
             Map<String, Object> reqData = new HashMap<>();
             reqData.put("access_token", accessToken);
-            reqData.put("path", "pages/index/index?storeId=" + storeId);
+            reqData.put("path", page);
             reqData.put("width", width);
             reqDataJsonStr = JsonUtil.toJSONString(reqData);
 
@@ -662,7 +662,8 @@ public class WeixinServiceImpl implements WeixinService {
 
             String pathRoot = env.getProperty("images.root");
             String baseImage = env.getProperty("images.path");
-            String filePath = "storeQr" + storeId + ".png";
+
+            String filePath = "Qr" + type + id + ".png";
             String path = pathRoot + baseImage + filePath;
             QRCodeUtil.saveQrCodeToLocal(bytes, path);
 
@@ -715,7 +716,7 @@ public class WeixinServiceImpl implements WeixinService {
             Map<String, Object> memberCard = new HashMap<>();
             String baseImage = settingService.getUploadBasePath();
             if (StringUtil.isNotEmpty(wxCardDto.getBackgroundUrl())) {
-                memberCard.put("background_pic_url", baseImage + wxCardDto.getBackgroundUrl());
+                // memberCard.put("background_pic_url", baseImage + wxCardDto.getBackgroundUrl());
             }
 
             // baseInfo
