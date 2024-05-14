@@ -134,6 +134,9 @@ public class ClientPayController extends BaseController {
             if (userGrade != null) {
                 if (userGrade.getDiscount() > 0) {
                     payDiscount = new BigDecimal(userGrade.getDiscount()).divide(new BigDecimal("10"), BigDecimal.ROUND_CEILING, 3);
+                    if (payDiscount.compareTo(new BigDecimal("0")) <= 0) {
+                        payDiscount = new BigDecimal("1");
+                    }
                 }
             }
         }

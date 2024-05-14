@@ -85,9 +85,9 @@ public class BackendCommonController extends BaseController {
         }
         String h5QrCode = "";
         try {
-            page = env.getProperty("website.url") + "#" + page;
+            String h5Page = env.getProperty("website.url") + "#" + page;
             ByteArrayOutputStream out = new ByteArrayOutputStream();
-            QRCodeUtil.createQrCode(out, page, 800, 800, "png", "");
+            QRCodeUtil.createQrCode(out, h5Page, 800, 800, "png", "");
             h5QrCode = new String(Base64Util.baseEncode(out.toByteArray()), "UTF-8");
             h5QrCode = "data:image/jpg;base64," + h5QrCode;
         } catch (Exception e) {
