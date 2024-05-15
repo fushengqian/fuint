@@ -87,13 +87,18 @@ public class RefundServiceImpl extends ServiceImpl<MtRefundMapper, MtRefund> imp
     private AlipayService alipayService;
 
     /**
+     * 店铺接口
+     */
+    private StoreService storeService;
+
+    /**
      * 分页查询售后订单列表
      *
      * @param paginationRequest
      * @return
      */
     @Override
-    public PaginationResponse<MtRefund> getRefundListByPagination(PaginationRequest paginationRequest) {
+    public PaginationResponse<RefundDto> getRefundListByPagination(PaginationRequest paginationRequest) throws BusinessCheckException {
         Page<MtBanner> pageHelper = PageHelper.startPage(paginationRequest.getCurrentPage(), paginationRequest.getPageSize());
         LambdaQueryWrapper<MtRefund> lambdaQueryWrapper = Wrappers.lambdaQuery();
         lambdaQueryWrapper.ne(MtRefund::getStatus, StatusEnum.DISABLE.getKey());
@@ -130,11 +135,28 @@ public class RefundServiceImpl extends ServiceImpl<MtRefundMapper, MtRefund> imp
             lambdaQueryWrapper.le(MtRefund::getCreateTime, endTime);
         }
         lambdaQueryWrapper.orderByDesc(MtRefund::getId);
-        List<MtRefund> dataList = mtRefundMapper.selectList(lambdaQueryWrapper);
-
+        List<MtRefund> refundList = mtRefundMapper.selectList(lambdaQueryWrapper);
+        List<RefundDto> dataList = new ArrayList<>();
+        if (refundList != null && refundList.size() > 0) {
+            for (MtRefund mtRefund : refundList) {
+                 RefundDto refundDto = new RefundDto();
+                 BeanUtils.copyProperties(mtRefund, refundDto);
+                 refundDto.setCreateTime(DateUtil.formatDate(mtRefund.getCreateTime(), "yyyy-MM-dd HH:mm"));
+                 refundDto.setUpdateTime(DateUtil.formatDate(mtRefund.getCreateTime(), "yyyy-MM-dd HH:mm"));
+                 if (refundDto.getStoreId() != null && refundDto.getStoreId() > 0) {
+                     MtStore mtStore = storeService.queryStoreById(refundDto.getStoreId());
+                     refundDto.setStoreInfo(mtStore);
+                 }
+                 if (refundDto.getOrderId() != null && refundDto.getOrderId() > 0) {
+                     UserOrderDto orderDto = orderService.getOrderById(refundDto.getOrderId());
+                     refundDto.setOrderInfo(orderDto);
+                 }
+                 dataList.add(refundDto);
+            }
+        }
         PageRequest pageRequest = PageRequest.of(paginationRequest.getCurrentPage(), paginationRequest.getPageSize());
         PageImpl pageImpl = new PageImpl(dataList, pageRequest, pageHelper.getTotal());
-        PaginationResponse<MtRefund> paginationResponse = new PaginationResponse(pageImpl, MtRefund.class);
+        PaginationResponse<RefundDto> paginationResponse = new PaginationResponse(pageImpl, RefundDto.class);
         paginationResponse.setTotalPages(pageHelper.getPages());
         paginationResponse.setTotalElements(pageHelper.getTotal());
         paginationResponse.setContent(dataList);

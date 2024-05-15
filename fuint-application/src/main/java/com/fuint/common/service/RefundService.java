@@ -25,7 +25,7 @@ public interface RefundService extends IService<MtRefund> {
      * @param paginationRequest
      * @return
      */
-    PaginationResponse<MtRefund> getRefundListByPagination(PaginationRequest paginationRequest) throws BusinessCheckException;
+    PaginationResponse<RefundDto> getRefundListByPagination(PaginationRequest paginationRequest) throws BusinessCheckException;
 
     /**
      * 获取用户的售后订单

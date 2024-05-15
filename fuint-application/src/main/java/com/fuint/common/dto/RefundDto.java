@@ -1,9 +1,9 @@
 package com.fuint.common.dto;
 
+import com.fuint.repository.model.MtStore;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
-
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.List;
@@ -59,6 +59,9 @@ public class RefundDto implements Serializable {
 
     @ApiModelProperty("退货地址")
     private AddressDto address;
+
+    @ApiModelProperty("店铺信息")
+    private MtStore storeInfo;
 
     @ApiModelProperty("创建时间")
     private String createTime;

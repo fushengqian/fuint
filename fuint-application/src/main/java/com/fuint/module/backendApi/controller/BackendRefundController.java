@@ -14,7 +14,6 @@ import com.fuint.framework.pagination.PaginationRequest;
 import com.fuint.framework.pagination.PaginationResponse;
 import com.fuint.framework.web.BaseController;
 import com.fuint.framework.web.ResponseObject;
-import com.fuint.repository.model.MtRefund;
 import com.fuint.repository.model.MtUser;
 import com.fuint.repository.model.TAccount;
 import com.fuint.utils.StringUtil;
@@ -130,7 +129,7 @@ public class BackendRefundController extends BaseController {
             params.put("endTime", endTime);
         }
         paginationRequest.setSearchParams(params);
-        PaginationResponse<MtRefund> paginationResponse = refundService.getRefundListByPagination(paginationRequest);
+        PaginationResponse<RefundDto> paginationResponse = refundService.getRefundListByPagination(paginationRequest);
 
         // 售后状态列表
         RefundStatusEnum[] statusListEnum = RefundStatusEnum.values();
