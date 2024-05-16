@@ -9,7 +9,6 @@ import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.pagination.PaginationResponse;
 import com.fuint.repository.model.MtCart;
 import com.fuint.repository.model.MtOrder;
-
 import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
 import java.util.Date;
@@ -36,11 +35,11 @@ public interface OrderService extends IService<MtOrder> {
     /**
      * 创建订单
      *
-     * @param  reqDto
+     * @param  orderDto
      * @throws BusinessCheckException
      * @return
      */
-    MtOrder saveOrder(OrderDto reqDto) throws BusinessCheckException;
+    MtOrder saveOrder(OrderDto orderDto) throws BusinessCheckException;
 
     /**
      * 订单提交结算
@@ -55,7 +54,7 @@ public interface OrderService extends IService<MtOrder> {
     /**
      * 获取订单详情
      *
-     * @param  id
+     * @param  id 订单ID
      * @throws BusinessCheckException
      * @return
      */
@@ -64,7 +63,7 @@ public interface OrderService extends IService<MtOrder> {
     /**
      * 根据ID获取订单
      *
-     * @param  id
+     * @param  id 订单ID
      * @throws BusinessCheckException
      * @return
      */
