@@ -189,7 +189,7 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
         String type =  orderListParam.getType() == null ? "": orderListParam.getType();
         String orderSn =  orderListParam.getOrderSn() == null ? "": orderListParam.getOrderSn();
         String mobile =  orderListParam.getMobile() == null ? "": orderListParam.getMobile();
-        String orderMode =  orderListParam.getOrderMode() == null ? "": orderListParam.getOrderMode();
+        String orderMode =  orderListParam.getOrderMode() == null ? OrderModeEnum.ONESELF.getKey(): orderListParam.getOrderMode();
         String staffId = orderListParam.getStaffId() == null ? "" : orderListParam.getStaffId();
         String couponId = orderListParam.getCouponId() == null ? "" : orderListParam.getCouponId();
         String storeIds = orderListParam.getStoreIds() == null ? "" : orderListParam.getStoreIds();
@@ -1564,9 +1564,10 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
         MtUser user = memberService.queryMemberById(orderInfo.getUserId());
         if (user != null) {
             userInfo.setId(user.getId());
+            userInfo.setNo(user.getUserNo());
             userInfo.setName(user.getName());
             userInfo.setMobile(user.getMobile());
-            userInfo.setCardNo(user.getCarNo());
+            userInfo.setCardNo(user.getIdcard());
             userInfo.setAddress(user.getAddress());
             userOrderDto.setUserInfo(userInfo);
         }

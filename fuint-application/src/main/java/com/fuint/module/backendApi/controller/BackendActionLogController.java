@@ -32,6 +32,9 @@ import java.util.Map;
 @RequestMapping(value = "/backendApi/actlog")
 public class BackendActionLogController extends BaseController {
 
+    /**
+     * 管理员接口
+     * */
     private ActionLogService tActionLogService;
 
     /**
@@ -84,8 +87,6 @@ public class BackendActionLogController extends BaseController {
         }
 
         paginationRequest.setSearchParams(searchParams);
-        paginationRequest.setSortColumn(new String[]{"actionTime desc"});
-
         PaginationResponse<TActionLog> paginationResponse = tActionLogService.findLogsByPagination(paginationRequest);
         return getSuccessResult(paginationResponse);
     }

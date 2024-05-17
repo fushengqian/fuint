@@ -18,6 +18,9 @@ public class OrderUserDto implements Serializable {
     @ApiModelProperty("会员ID")
     private Integer id;
 
+    @ApiModelProperty("会员号")
+    private String no;
+
     @ApiModelProperty("会员姓名")
     private String name;
 

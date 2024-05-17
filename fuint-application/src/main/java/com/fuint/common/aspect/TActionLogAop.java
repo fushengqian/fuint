@@ -1,12 +1,15 @@
 package com.fuint.common.aspect;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.fuint.common.dto.AccountInfo;
+import com.fuint.common.service.AccountService;
 import com.fuint.common.service.ActionLogService;
 import com.fuint.common.util.CommonUtil;
 import com.fuint.common.util.TokenUtil;
 import com.fuint.framework.annoation.OperationServiceLog;
 import com.fuint.repository.model.TActionLog;
+import com.fuint.utils.StringUtil;
 import org.apache.commons.lang.StringUtils;
 import org.apache.ibatis.javassist.*;
 import org.apache.ibatis.javassist.bytecode.CodeAttribute;
@@ -23,7 +26,6 @@ import org.springframework.stereotype.Component;
 import javax.servlet.http.HttpServletRequest;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
-
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.util.Date;
@@ -45,6 +47,10 @@ public class TActionLogAop {
     @Lazy
     @Autowired
     private ActionLogService tActionLogService;
+
+    @Lazy
+    @Autowired
+    private AccountService tAccountService;
 
     private String userName = ""; // 用户名
     private Integer merchantId = 0; // 商户ID
@@ -146,10 +152,27 @@ public class TActionLogAop {
                 userName = accountInfo.getAccountName();
                 merchantId = accountInfo.getMerchantId() == null ? 0 : accountInfo.getMerchantId();
                 storeId = accountInfo.getStoreId() == null ? 0 : accountInfo.getStoreId();
+            } else {
+                if (StringUtil.isNotEmpty(param)) {
+                    JSONObject jsonObject = JSON.parseObject(param);
+                    if (jsonObject != null) {
+                        JSONObject tAccount = jsonObject.getJSONObject("tAccount");
+                        if (tAccount != null) {
+                            String accountName = tAccount.getString("username");
+                            AccountInfo accountInfo = tAccountService.getAccountByName(accountName);
+                            if (accountInfo != null) {
+                                userName = accountInfo.getAccountName();
+                                merchantId = accountInfo.getMerchantId();
+                                storeId = accountInfo.getStoreId();
+                            }
+                        }
+                    }
+                }
             }
-            this.printOptLog();
+            printOptLog();
         } catch (Exception e) {
-            // empty
+            logger.error("保存后台日志出错：{}", e.getMessage());
+            e.printStackTrace();
         }
     }
 
@@ -179,7 +202,7 @@ public class TActionLogAop {
         }
         hal.setParam(param.equals("{}") ? "" : param);
         if (StringUtils.isNotEmpty(module) && userName != null && StringUtils.isNotEmpty(userName)) {
-            this.tActionLogService.saveActionLog(hal);
+            tActionLogService.saveActionLog(hal);
         }
     }
 
