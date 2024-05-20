@@ -225,6 +225,9 @@ public class PaymentServiceImpl implements PaymentService {
         BigDecimal realPayAmount = orderInfo.getAmount().subtract(new BigDecimal(orderInfo.getDiscount().toString())).subtract(new BigDecimal(orderInfo.getPointAmount().toString())).add(orderInfo.getDeliveryFee());
         Object payment = null;
         if (payType.equals(PayTypeEnum.BALANCE.getKey())) {
+            if (orderInfo.getType().equals(OrderTypeEnum.PRESTORE.getKey()) || orderInfo.getType().equals(OrderTypeEnum.RECHARGE.getKey())) {
+                throw new BusinessCheckException("抱歉，不能使用余额支付");
+            }
             // 余额支付
             MtBalance balance = new MtBalance();
             balance.setMobile(mtUser.getMobile());
