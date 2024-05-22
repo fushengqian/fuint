@@ -149,11 +149,13 @@ public class TActionLogAop {
             String token = request.getHeader("Access-Token");
             if (StringUtils.isNotEmpty(token)) {
                 AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
-                userName = accountInfo.getAccountName();
-                merchantId = accountInfo.getMerchantId() == null ? 0 : accountInfo.getMerchantId();
-                storeId = accountInfo.getStoreId() == null ? 0 : accountInfo.getStoreId();
+                if (accountInfo != null) {
+                    userName = accountInfo.getAccountName();
+                    merchantId = accountInfo.getMerchantId() == null ? 0 : accountInfo.getMerchantId();
+                    storeId = accountInfo.getStoreId() == null ? 0 : accountInfo.getStoreId();
+                }
             } else {
-                if (StringUtil.isNotEmpty(param)) {
+                if (StringUtil.isNotEmpty(param) && param.length() > 10) {
                     JSONObject jsonObject = JSON.parseObject(param);
                     if (jsonObject != null) {
                         JSONObject tAccount = jsonObject.getJSONObject("tAccount");
@@ -171,7 +173,7 @@ public class TActionLogAop {
             }
             printOptLog();
         } catch (Exception e) {
-            logger.error("保存后台日志出错：{}", e.getMessage());
+            logger.error("保存后台日志出错啦：{}", e.getMessage());
             e.printStackTrace();
         }
     }
