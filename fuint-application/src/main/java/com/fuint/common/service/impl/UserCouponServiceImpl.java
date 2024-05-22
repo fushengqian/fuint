@@ -527,11 +527,12 @@ public class UserCouponServiceImpl extends ServiceImpl<MtUserCouponMapper, MtUse
      * 获取会员可支付使用的卡券
      *
      * @param userId 会员ID
+     * @param storeId 使用门店
      * @param useFor 用途
      * @return
      * */
     @Override
-    public List<CouponDto> getPayAbleCouponList(Integer userId, String useFor) throws BusinessCheckException {
+    public List<CouponDto> getPayAbleCouponList(Integer userId, Integer storeId, String useFor) throws BusinessCheckException {
         List<String> statusList = Arrays.asList(UserCouponStatusEnum.UNUSED.getKey());
         List<MtUserCoupon> userCouponList = mtUserCouponMapper.getUserCouponList(userId, statusList);
         List<CouponDto> dataList = new ArrayList<>();
@@ -539,6 +540,13 @@ public class UserCouponServiceImpl extends ServiceImpl<MtUserCouponMapper, MtUse
         if (userCouponList.size() > 0) {
             for (MtUserCoupon userCoupon : userCouponList) {
                  MtCoupon couponInfo = couponService.queryCouponById(userCoupon.getCouponId());
+                 // 适用门店
+                 if (storeId != null && storeId > 0 && StringUtil.isNotEmpty(couponInfo.getStoreIds())) {
+                     String[] storeIds = couponInfo.getStoreIds().split(",");
+                     if (!Arrays.asList(storeIds).contains(storeId.toString())) {
+                         continue;
+                     }
+                 }
                  // 只取专用卡券
                  if (StringUtil.isNotEmpty(useFor) && !couponInfo.getUseFor().equals(useFor)) {
                      continue;

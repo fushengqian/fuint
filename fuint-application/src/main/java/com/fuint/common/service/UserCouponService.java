@@ -61,11 +61,12 @@ public interface UserCouponService extends IService<MtUserCoupon> {
     /**
      * 获取会员可支付用的卡券
      *
-     * @param userId
-     * @param type
+     * @param userId 会员ID
+     * @param storeId 使用门店
+     * @param useFor 用途
      * @return
      * */
-    List<CouponDto> getPayAbleCouponList(Integer userId, String type) throws BusinessCheckException;
+    List<CouponDto> getPayAbleCouponList(Integer userId, Integer storeId, String useFor) throws BusinessCheckException;
 
     /**
      * 获取会员卡券详情

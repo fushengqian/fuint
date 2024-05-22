@@ -97,6 +97,7 @@ public class ClientPayController extends BaseController {
     @CrossOrigin
     public ResponseObject prePay(HttpServletRequest request) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
+        Integer storeId = request.getHeader("storeId") == null ? 0 : Integer.parseInt(request.getHeader("storeId"));
         String useFor = request.getParameter("type") == null ? "" : request.getParameter("type");
         String merchantNo = request.getHeader("merchantNo");
         UserInfo userInfo = TokenUtil.getUserInfoByToken(token);
@@ -120,7 +121,7 @@ public class ClientPayController extends BaseController {
         // 可用卡券
         CouponDto canUseCouponInfo = null;
         if (mtUser != null) {
-            List<CouponDto> couponList = userCouponService.getPayAbleCouponList(mtUser.getId(), useFor);
+            List<CouponDto> couponList = userCouponService.getPayAbleCouponList(mtUser.getId(), storeId, useFor);
             if (couponList.size() > 0) {
                 canUseCouponInfo = couponList.get(0);
             }
