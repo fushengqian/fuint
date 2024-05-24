@@ -2,6 +2,7 @@ package com.fuint.module.backendApi.controller;
 
 import com.fuint.common.dto.AccountInfo;
 import com.fuint.common.enums.QrCodeEnum;
+import com.fuint.common.service.CouponService;
 import com.fuint.common.service.SettingService;
 import com.fuint.common.service.StoreService;
 import com.fuint.common.service.WeixinService;
@@ -11,6 +12,7 @@ import com.fuint.common.util.TokenUtil;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.web.BaseController;
 import com.fuint.framework.web.ResponseObject;
+import com.fuint.repository.model.MtCoupon;
 import com.fuint.repository.model.MtStore;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -56,11 +58,16 @@ public class BackendCommonController extends BaseController {
     private StoreService storeService;
 
     /**
-     * 获取二维码
+     * 卡券服务接口
+     */
+    private CouponService couponService;
+
+    /**
+     * 生成二维码
      *
      * @return
      */
-    @ApiOperation(value = "获取二维码")
+    @ApiOperation(value = "生成二维码")
     @RequestMapping(value = "/createQrCode", method = RequestMethod.POST)
     @CrossOrigin
     public ResponseObject createQrCode(HttpServletRequest request, @RequestBody Map<String, Object> params) throws BusinessCheckException {
@@ -77,10 +84,19 @@ public class BackendCommonController extends BaseController {
         if (type.equals(QrCodeEnum.TABLE.getKey())) {
             page = QrCodeEnum.TABLE.getPage() + "?" + QrCodeEnum.TABLE.getKey() + "Id=" + id;
         }
+        if (type.equals(QrCodeEnum.COUPON.getKey())) {
+            page = QrCodeEnum.COUPON.getPage() + "?" + QrCodeEnum.COUPON.getKey() + "Id=" + id;
+        }
         if (type.equals(QrCodeEnum.STORE.getKey())) {
             MtStore mtStore = storeService.queryStoreById(id);
             if (mtStore != null) {
                 merchantId = mtStore.getMerchantId();
+            }
+        }
+        if (type.equals(QrCodeEnum.COUPON.getKey())) {
+            MtCoupon mtCoupon = couponService.queryCouponById(id);
+            if (mtCoupon != null) {
+                merchantId = mtCoupon.getMerchantId();
             }
         }
         String h5QrCode = "";
