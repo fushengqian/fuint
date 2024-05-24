@@ -595,6 +595,22 @@ public class CouponServiceImpl extends ServiceImpl<MtCouponMapper, MtCoupon> imp
             throw new BusinessCheckException("卡券“"+couponInfo.getName()+"”已停用,不能发放");
         }
 
+        // 是否超过拥有数量
+        if (couponInfo.getLimitNum() != null && couponInfo.getLimitNum() > 0) {
+            if (num > couponInfo.getLimitNum()) {
+                throw new BusinessCheckException("该卡券每个会员最多拥有数量是" + couponInfo.getLimitNum());
+            }
+        }
+
+        // 发放总数量是否已经超额
+        if (couponInfo.getTotal() != null && couponInfo.getTotal() > 0) {
+            Long sendNum = mtUserCouponMapper.getSendNum(couponId);
+            Long total = Long.parseLong(couponInfo.getTotal().toString());
+            if (sendNum.compareTo(total) >= 0) {
+                throw new BusinessCheckException("该卡券发行总数量是" + couponInfo.getTotal() + "，现已超额！");
+            }
+        }
+
         // 发放的是储值卡
         if (couponInfo.getType().equals(CouponTypeEnum.PRESTORE.getKey())) {
             if (StringUtil.isNotEmpty(couponInfo.getInRule())) {
