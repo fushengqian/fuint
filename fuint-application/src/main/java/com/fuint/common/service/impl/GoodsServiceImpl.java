@@ -207,6 +207,9 @@ public class GoodsServiceImpl extends ServiceImpl<MtGoodsMapper, MtGoods> implem
                 mtGoods.setMerchantId(mtStore.getMerchantId());
             }
         }
+        if (mtGoods.getId() == null && (mtGoods.getMerchantId() == null || mtGoods.getMerchantId() < 1)) {
+            throw new BusinessCheckException("平台方帐号无法执行该操作，请使用商户帐号操作");
+        }
         if (StringUtil.isNotEmpty(reqDto.getIsSingleSpec())) {
             mtGoods.setIsSingleSpec(reqDto.getIsSingleSpec());
         }

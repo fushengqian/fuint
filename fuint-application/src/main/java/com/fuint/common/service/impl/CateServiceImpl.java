@@ -127,6 +127,9 @@ public class CateServiceImpl extends ServiceImpl<MtGoodsCateMapper, MtGoodsCate>
                 reqDto.setMerchantId(mtStore.getMerchantId());
             }
         }
+        if (reqDto.getMerchantId() == null || reqDto.getMerchantId() < 1) {
+            throw new BusinessCheckException("平台方帐号无法执行该操作，请使用商户帐号操作");
+        }
         mtCate.setName(reqDto.getName());
         mtCate.setStatus(StatusEnum.ENABLED.getKey());
         mtCate.setLogo(reqDto.getLogo());
@@ -166,6 +169,7 @@ public class CateServiceImpl extends ServiceImpl<MtGoodsCateMapper, MtGoodsCate>
         Map<String, Object> params = new HashMap<>();
         params.put("cate_id", id);
         params.put("status", StatusEnum.ENABLED.getKey());
+        params.put("merchant_id", cateInfo.getMerchantId());
         List<MtGoods> goodsList = mtGoodsMapper.selectByMap(params);
         if (goodsList != null && goodsList.size() > 0) {
             throw new BusinessCheckException("删除失败，该分类有商品存在");
