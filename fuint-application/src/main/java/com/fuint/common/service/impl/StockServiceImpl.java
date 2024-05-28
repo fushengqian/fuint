@@ -98,6 +98,7 @@ public class StockServiceImpl extends ServiceImpl<MtStockMapper, MtStock> implem
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
+    @OperationServiceLog(description = "新增库存管理记录")
     public ResponseObject addStock(MtStock stockParam, List<LinkedHashMap> goodsList) throws BusinessCheckException {
         MtStock mtStock = new MtStock();
         mtStock.setMerchantId(stockParam.getMerchantId());
@@ -175,7 +176,7 @@ public class StockServiceImpl extends ServiceImpl<MtStockMapper, MtStock> implem
      * @return
      */
     @Override
-    @OperationServiceLog(description = "删除商品分类")
+    @OperationServiceLog(description = "删除库存管理记录")
     public void delete(Integer id, String operator) throws BusinessCheckException {
         MtStock mtStock = mtStockMapper.selectById(id);
         if (mtStock == null) {

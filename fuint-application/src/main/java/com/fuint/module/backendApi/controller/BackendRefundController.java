@@ -66,7 +66,6 @@ public class BackendRefundController extends BaseController {
      * @param request HttpServletRequest对象
      * @return
      */
-    @ApiOperation(value = "退款列表查询")
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('refund:index')")
@@ -166,7 +165,6 @@ public class BackendRefundController extends BaseController {
      * @param request HttpServletRequest对象
      * @return
      * */
-    @ApiOperation(value = "查询退款详情")
     @RequestMapping(value = "/info/{refundId}", method = RequestMethod.GET)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('refund:index')")
@@ -192,9 +190,7 @@ public class BackendRefundController extends BaseController {
 
     /**
      * 保存售后订单
-     * @return
      */
-    @ApiOperation(value = "保存售后订单")
     @RequestMapping(value = "save", method = RequestMethod.POST)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('refund:edit')")
@@ -232,7 +228,6 @@ public class BackendRefundController extends BaseController {
      * 发起退款
      * @return
      */
-    @ApiOperation(value = "发起退款")
     @RequestMapping(value = "doRefund", method = RequestMethod.POST)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('refund:edit')")

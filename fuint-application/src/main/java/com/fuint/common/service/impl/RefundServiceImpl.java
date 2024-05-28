@@ -330,7 +330,7 @@ public class RefundServiceImpl extends ServiceImpl<MtRefundMapper, MtRefund> imp
     }
 
     /**
-     * 修改订单
+     * 修改售后订单
      *
      * @param  refundDto
      * @throws BusinessCheckException
@@ -340,23 +340,34 @@ public class RefundServiceImpl extends ServiceImpl<MtRefundMapper, MtRefund> imp
     @Transactional(rollbackFor = Exception.class)
     @OperationServiceLog(description = "更新售后订单")
     public MtRefund updateRefund(RefundDto refundDto) throws BusinessCheckException {
-        MtRefund refund = mtRefundMapper.selectById(refundDto.getId());
-        if (refund == null) {
+        MtRefund mtRefund = mtRefundMapper.selectById(refundDto.getId());
+        if (mtRefund == null) {
             throw new BusinessCheckException("该售后订单状态异常");
         }
 
-        refund.setId(refundDto.getId());
-        refund.setUpdateTime(new Date());
+        // 已同意的不能再设置为已拒绝
+        if (mtRefund.getStatus().equals(RefundStatusEnum.APPROVED.getKey()) && refundDto.getStatus().equals(RefundStatusEnum.REJECT.getKey())) {
+            throw new BusinessCheckException("该售后订单已同意，不能再改成已拒绝");
+        }
+
+        mtRefund.setId(refundDto.getId());
+        mtRefund.setUpdateTime(new Date());
 
         if (null != refundDto.getOperator()) {
-            refund.setOperator(refundDto.getOperator());
+            mtRefund.setOperator(refundDto.getOperator());
         }
         if (null != refundDto.getStatus()) {
-            refund.setStatus(refundDto.getStatus());
+            mtRefund.setStatus(refundDto.getStatus());
+        }
+        if (null != refundDto.getRemark()) {
+            mtRefund.setRemark(refundDto.getRemark());
+        }
+        if (null != refundDto.getRejectReason()) {
+            mtRefund.setRejectReason(refundDto.getRejectReason());
         }
 
-        mtRefundMapper.updateById(refund);
-        return refund;
+        mtRefundMapper.updateById(mtRefund);
+        return mtRefund;
     }
 
     /**
@@ -368,6 +379,7 @@ public class RefundServiceImpl extends ServiceImpl<MtRefundMapper, MtRefund> imp
      * */
     @Override
     @Transactional(rollbackFor = Exception.class)
+    @OperationServiceLog(description = "同意售后订单")
     public MtRefund agreeRefund(RefundDto refundDto) throws BusinessCheckException {
         MtRefund refund = mtRefundMapper.selectById(refundDto.getId());
         if (null == refund) {
@@ -529,6 +541,7 @@ public class RefundServiceImpl extends ServiceImpl<MtRefundMapper, MtRefund> imp
      * */
     @Override
     @Transactional(rollbackFor = Exception.class)
+    @OperationServiceLog(description = "发起退款")
     public Boolean doRefund(Integer orderId, String refundAmount, String remark, AccountInfo accountInfo) throws BusinessCheckException {
         UserOrderDto orderInfo = orderService.getOrderById(orderId);
         if (orderInfo == null) {
