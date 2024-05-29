@@ -111,7 +111,6 @@ public class BackendCateController extends BaseController {
         }
 
         paginationRequest.setSearchParams(params);
-        paginationRequest.setSortColumn(new String[]{"sort asc", "status asc"});
         PaginationResponse<GoodsCateDto> paginationResponse = cateService.queryCateListByPagination(paginationRequest);
 
         Map<String, Object> paramsStore = new HashMap<>();

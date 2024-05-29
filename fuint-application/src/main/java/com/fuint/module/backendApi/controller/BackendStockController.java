@@ -113,7 +113,6 @@ public class BackendStockController extends BaseController {
         }
 
         paginationRequest.setSearchParams(params);
-        paginationRequest.setSortColumn(new String[]{"sort asc", "status asc"});
         PaginationResponse<MtStock> paginationResponse = stockService.queryStockListByPagination(paginationRequest);
 
         Map<String, Object> paramsStore = new HashMap<>();

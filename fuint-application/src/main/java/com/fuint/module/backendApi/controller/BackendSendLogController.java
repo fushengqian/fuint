@@ -108,7 +108,6 @@ public class BackendSendLogController extends BaseController {
             }
         }
 
-        paginationRequest.setSortColumn(new String[]{"updateTime desc", "id desc"});
         paginationRequest.setSearchParams(searchParams);
         PaginationResponse<MtSendLog> paginationResponse = sendLogService.querySendLogListByPagination(paginationRequest);
 

@@ -75,10 +75,10 @@ public interface RefundService extends IService<MtRefund> {
     /**
      * 发起退款
      *
-     * @param orderId
-     * @param refundAmount
-     * @param remark
-     * @param accountInfo
+     * @param orderId 订单号
+     * @param refundAmount 退款金额
+     * @param remark 备注
+     * @param accountInfo 操作人信息
      * throws BusinessCheckException;
      * */
     Boolean doRefund(Integer orderId, String refundAmount, String remark, AccountInfo accountInfo) throws BusinessCheckException;

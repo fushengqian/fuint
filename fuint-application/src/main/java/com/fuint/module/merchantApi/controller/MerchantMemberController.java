@@ -70,7 +70,6 @@ public class MerchantMemberController extends BaseController {
         String birthday = memberListParam.getBirthday();
         String userNo = memberListParam.getUserNo();
         String gradeId = memberListParam.getGradeId();
-        String orderBy = memberListParam.getOrderBy() == null ? "" : memberListParam.getOrderBy();
         String regTime = memberListParam.getRegTime() == null ? "" : memberListParam.getRegTime();
         String activeTime = memberListParam.getActiveTime() == null ? "" : memberListParam.getActiveTime();
         String memberTime = memberListParam.getMemberTime() == null ? "" : memberListParam.getMemberTime();
@@ -143,25 +142,6 @@ public class MerchantMemberController extends BaseController {
         // 会员有效期比对
         if (StringUtil.isNotEmpty(memberTime)) {
             params.put("memberTime", memberTime);
-        }
-
-        // 会员排序方式
-        if (StringUtil.isNotEmpty(orderBy)) {
-            if (orderBy.equals("balance")) {
-                paginationRequest.setSortColumn(new String[]{"balance desc"});
-            } else if (orderBy.equals("point")) {
-                paginationRequest.setSortColumn(new String[]{"point desc"});
-            } else if (orderBy.equals("memberGrade")) {
-                paginationRequest.setSortColumn(new String[]{"gradeId desc"});
-            } else if (orderBy.equals("payAmount")) {
-                paginationRequest.setSortColumn(new String[]{"balance desc"});
-            } else if (orderBy.equals("memberTime")) {
-                paginationRequest.setSortColumn(new String[]{"endTime desc", "gradeId desc"});
-                MtUserGrade defaultGrade = userGradeService.getInitUserGrade(mtUser.getMerchantId());
-                if (defaultGrade != null) {
-                    params.put("gradeId", defaultGrade.getId().toString());
-                }
-            }
         }
         paginationRequest.setSearchParams(params);
         PaginationResponse<UserDto> paginationResponse = memberService.queryMemberListByPagination(paginationRequest);
