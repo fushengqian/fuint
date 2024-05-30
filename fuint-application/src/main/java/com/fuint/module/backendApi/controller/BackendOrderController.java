@@ -443,17 +443,21 @@ public class BackendOrderController extends BaseController {
         Map<String, Object> result = new HashMap();
         String deliveryFee = "";
         String isClose = "";
+        String deliveryMinAmount = "";
 
         for (MtSetting setting : settingList) {
-            if (setting.getName().equals("deliveryFee")) {
+            if (setting.getName().equals(OrderSettingEnum.DELIVERY_FEE.getKey())) {
                 deliveryFee = setting.getValue();
-            } else if (setting.getName().equals("isClose")) {
+            } else if (setting.getName().equals(OrderSettingEnum.IS_CLOSE.getKey())) {
                 isClose = setting.getValue();
+            } else if (setting.getName().equals(OrderSettingEnum.DELIVERY_MIN_AMOUNT.getKey())) {
+                deliveryMinAmount = setting.getValue();
             }
         }
 
         result.put("deliveryFee", deliveryFee);
         result.put("isClose", isClose);
+        result.put("deliveryMinAmount", deliveryMinAmount);
 
         return getSuccessResult(result);
     }
@@ -472,6 +476,7 @@ public class BackendOrderController extends BaseController {
         String token = request.getHeader("Access-Token");
         String deliveryFee = param.get("deliveryFee") != null ? param.get("deliveryFee").toString() : "0";
         String isClose = param.get("isClose") != null ? param.get("isClose").toString() : YesOrNoEnum.FALSE.getKey();
+        String deliveryMinAmount = param.get("deliveryMinAmount") != null ? param.get("deliveryMinAmount").toString() : "0";
 
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
         if (accountInfo == null) {
@@ -486,10 +491,12 @@ public class BackendOrderController extends BaseController {
             info.setType(SettingTypeEnum.ORDER.getKey());
             info.setName(setting.getKey());
 
-            if (setting.getKey().equals("deliveryFee")) {
+            if (setting.getKey().equals(OrderSettingEnum.DELIVERY_FEE.getKey())) {
                 info.setValue(deliveryFee);
-            } else if (setting.getKey().equals("isClose")) {
+            } else if (setting.getKey().equals(OrderSettingEnum.IS_CLOSE.getKey())) {
                 info.setValue(isClose);
+            } else if (setting.getKey().equals(OrderSettingEnum.DELIVERY_MIN_AMOUNT.getKey())) {
+                info.setValue(deliveryMinAmount);
             }
             info.setMerchantId(accountInfo.getMerchantId());
             info.setStoreId(accountInfo.getStoreId());
