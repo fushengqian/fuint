@@ -61,11 +61,12 @@ public class BackendRefundController extends BaseController {
     private MemberService memberService;
 
     /**
-     * 退款列表查询
+     * 售后列表查询
      *
      * @param request HttpServletRequest对象
      * @return
      */
+    @ApiOperation(value = "售后列表查询")
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('refund:index')")
@@ -165,6 +166,7 @@ public class BackendRefundController extends BaseController {
      * @param request HttpServletRequest对象
      * @return
      * */
+    @ApiOperation(value = "查询售后详情")
     @RequestMapping(value = "/info/{refundId}", method = RequestMethod.GET)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('refund:index')")
@@ -191,6 +193,7 @@ public class BackendRefundController extends BaseController {
     /**
      * 保存售后订单
      */
+    @ApiOperation(value = "保存售后订单")
     @RequestMapping(value = "save", method = RequestMethod.POST)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('refund:edit')")
@@ -228,10 +231,11 @@ public class BackendRefundController extends BaseController {
      * 发起退款
      * @return
      */
+    @ApiOperation(value = "发起退款")
     @RequestMapping(value = "doRefund", method = RequestMethod.POST)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('refund:edit')")
-    public ResponseObject doRefund(HttpServletRequest request, @RequestBody Map<String, Object> param) {
+    public ResponseObject doRefund(HttpServletRequest request, @RequestBody Map<String, Object> param) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
         Integer orderId = param.get("orderId") == null ? 0 : Integer.parseInt(param.get("orderId").toString());
         String remark = param.get("remark") == null ? "" : param.get("remark").toString();
@@ -243,15 +247,11 @@ public class BackendRefundController extends BaseController {
         if (orderId <= 0 || StringUtil.isEmpty(refundAmount)) {
             return getFailureResult(201, "参数有误，发起退款失败");
         }
-        try {
-            Boolean result = refundService.doRefund(orderId, refundAmount, remark, accountInfo);
-            if (result) {
-                return getSuccessResult(true);
-            } else {
-                return getFailureResult(201, "退款失败");
-            }
-        } catch (BusinessCheckException e) {
-            return getFailureResult(201, e.getMessage() == null ? "退款失败" : e.getMessage());
+        Boolean result = refundService.doRefund(orderId, refundAmount, remark, accountInfo);
+        if (result) {
+            return getSuccessResult(true);
+        } else {
+            return getFailureResult(201, "退款失败");
         }
     }
 }

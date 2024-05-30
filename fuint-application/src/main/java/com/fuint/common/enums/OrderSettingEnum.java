@@ -8,6 +8,7 @@ package com.fuint.common.enums;
  */
 public enum OrderSettingEnum {
     DELIVERY_FEE("deliveryFee", "订单配送费用"),
+    DELIVERY_MIN_AMOUNT("deliveryMinAmount", "订单起送金额"),
     IS_CLOSE("isClose", "关闭交易功能");
 
     private String key;
