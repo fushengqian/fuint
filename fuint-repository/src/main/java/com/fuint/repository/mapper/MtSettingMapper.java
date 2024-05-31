@@ -15,6 +15,6 @@ public interface MtSettingMapper extends BaseMapper<MtSetting> {
 
     List<MtSetting> querySettingByType(@Param("merchantId") Integer merchantId, @Param("type") String type);
 
-    MtSetting querySettingByName(@Param("merchantId") Integer merchantId, @Param("name") String name);
+    MtSetting querySettingByName(@Param("merchantId") Integer merchantId, @Param("type") String type, @Param("name") String name);
 
 }

@@ -447,7 +447,7 @@ public class WeixinServiceImpl implements WeixinService {
             return false;
         }
 
-        MtSetting mtSetting = settingService.querySettingByName(merchantId, key);
+        MtSetting mtSetting = settingService.querySettingByName(merchantId, SettingTypeEnum.SUB_MESSAGE.getKey(), key);
         if (mtSetting == null) {
             return false;
         }
@@ -698,7 +698,7 @@ public class WeixinServiceImpl implements WeixinService {
     public String createWxCard(Integer merchantId, String wxCardId) throws BusinessCheckException {
         String cardId = "";
         try {
-            MtSetting mtSetting = settingService.querySettingByName(merchantId, UserSettingEnum.WX_MEMBER_CARD.getKey());
+            MtSetting mtSetting = settingService.querySettingByName(merchantId, SettingTypeEnum.USER.getKey(), UserSettingEnum.WX_MEMBER_CARD.getKey());
             if (mtSetting == null) {
                 return cardId;
             }

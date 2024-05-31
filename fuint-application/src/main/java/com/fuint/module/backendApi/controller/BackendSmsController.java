@@ -111,10 +111,10 @@ public class BackendSmsController extends BaseController {
 
         List<MtSetting> settingList = settingService.getSettingList(accountInfo.getMerchantId(), SettingTypeEnum.SMS_CONFIG.getKey());
 
-        String isClose = "";
-        String accessKeyId = YesOrNoEnum.FALSE.getKey();
-        String accessKeySecret = YesOrNoEnum.FALSE.getKey();
-        String signName = YesOrNoEnum.FALSE.getKey();
+        String isClose = "0";
+        String accessKeyId = "";
+        String accessKeySecret = "";
+        String signName = "";
         for (MtSetting setting : settingList) {
             if (StringUtil.isNotEmpty(setting.getValue())) {
                 if (setting.getName().equals(SmsSettingEnum.IS_CLOSE.getKey())) {

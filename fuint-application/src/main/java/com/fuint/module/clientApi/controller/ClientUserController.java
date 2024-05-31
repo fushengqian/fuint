@@ -89,6 +89,8 @@ public class ClientUserController extends BaseController {
     public ResponseObject info(HttpServletRequest request) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
         String merchantNo = request.getHeader("merchantNo") == null ? "" : request.getHeader("merchantNo");
+        String isWechat = request.getHeader("isWechat") == null ? YesOrNoEnum.NO.getKey() : request.getHeader("isWechat");
+        String platform = request.getHeader("platform") == null ? "" : request.getHeader("platform");
         String userNo = request.getParameter("code") == null ? "" : request.getParameter("code");
         UserInfo loginInfo = TokenUtil.getUserInfoByToken(token);
 
@@ -146,12 +148,13 @@ public class ClientUserController extends BaseController {
 
         // 是否开通微信会员卡
         boolean openWxCard = false;
-        if (mtUser != null && StringUtil.isNotEmpty(mtUser.getOpenId())) {
-            MtSetting cardSetting = settingService.querySettingByName(mtUser.getMerchantId(), UserSettingEnum.OPEN_WX_CARD.getKey());
+        if (platform.equals(PlatformTypeEnum.H5.getCode()) && isWechat.equals(YesOrNoEnum.YES.getKey()) && mtUser != null && StringUtil.isNotEmpty(mtUser.getOpenId())) {
+            MtSetting cardSetting = settingService.querySettingByName(mtUser.getMerchantId(), SettingTypeEnum.USER.getKey(), UserSettingEnum.OPEN_WX_CARD.getKey());
             if (cardSetting != null && cardSetting.getValue().equals(YesOrNoEnum.TRUE.getKey())) {
-                MtSetting cardIdSetting = settingService.querySettingByName(mtUser.getMerchantId(), UserSettingEnum.WX_MEMBER_CARD_ID.getKey());
+                MtSetting cardIdSetting = settingService.querySettingByName(mtUser.getMerchantId(), SettingTypeEnum.USER.getKey(), UserSettingEnum.WX_MEMBER_CARD_ID.getKey());
                 if (cardIdSetting != null) {
-                    boolean isOpen = weixinService.isOpenCard(mtUser.getMerchantId(), cardIdSetting.getValue(), mtUser.getOpenId());
+                    Boolean isOpen = weixinService.isOpenCard(mtUser.getMerchantId(), cardIdSetting.getValue(), mtUser.getOpenId());
+                    logger.info("weixinService.isOpenCard userId = {}，isOpen = {}", mtUser.getId(), isOpen);
                     if (!isOpen) {
                         openWxCard = true;
                     }
@@ -352,7 +355,7 @@ public class ClientUserController extends BaseController {
 
         // 微信会员卡领取二维码
         String wxCardQrCode = "";
-        MtSetting cardIdSetting = settingService.querySettingByName(mtUser.getMerchantId(), UserSettingEnum.WX_MEMBER_CARD_ID.getKey());
+        MtSetting cardIdSetting = settingService.querySettingByName(mtUser.getMerchantId(), SettingTypeEnum.USER.getKey(), UserSettingEnum.WX_MEMBER_CARD_ID.getKey());
         if (cardIdSetting != null) {
             wxCardQrCode = weixinService.createCardQrCode(mtUser.getMerchantId(), cardIdSetting.getValue(), mtUser.getUserNo());
         }

@@ -40,14 +40,15 @@ public class SettingServiceImpl extends ServiceImpl<MtSettingMapper, MtSetting> 
      * 删除配置
      *
      * @param  merchantId 商户ID
+     * @param  type 类型
      * @param  name 配置名称
      * @throws BusinessCheckException
      * @return
      */
     @Override
     @OperationServiceLog(description = "删除配置信息")
-    public void removeSetting(Integer merchantId, String name) {
-        MtSetting info = querySettingByName(merchantId, name);
+    public void removeSetting(Integer merchantId, String type, String name) {
+        MtSetting info = querySettingByName(merchantId, type, name);
         if (info != null) {
             mtSettingMapper.deleteById(info.getId());
         }
@@ -65,7 +66,7 @@ public class SettingServiceImpl extends ServiceImpl<MtSettingMapper, MtSetting> 
     @Transactional(rollbackFor = Exception.class)
     @OperationServiceLog(description = "保存配置信息")
     public MtSetting saveSetting(MtSetting mtSetting) {
-        MtSetting settingInfo = querySettingByName(mtSetting.getMerchantId(), mtSetting.getName());
+        MtSetting settingInfo = querySettingByName(mtSetting.getMerchantId(), mtSetting.getType(), mtSetting.getName());
         if (null != settingInfo) {
             if (mtSetting.getValue() != null) {
                 settingInfo.setValue(mtSetting.getValue());
@@ -115,13 +116,14 @@ public class SettingServiceImpl extends ServiceImpl<MtSettingMapper, MtSetting> 
      * 根据ID获取配置信息
      *
      * @param  merchantId 商户ID
+     * @param  type 类型
      * @param  name 配置名称
      * @throws BusinessCheckException
      * @return
      */
     @Override
-    public MtSetting querySettingByName(Integer merchantId, String name) {
-        return mtSettingMapper.querySettingByName(merchantId, name);
+    public MtSetting querySettingByName(Integer merchantId, String type, String name) {
+        return mtSettingMapper.querySettingByName(merchantId, type, name);
     }
 
     /**

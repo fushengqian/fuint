@@ -628,7 +628,7 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
 
         // 需要手机号登录
         if (StringUtil.isEmpty(mobile) && user == null) {
-            MtSetting mtSetting = settingService.querySettingByName(merchantId, UserSettingEnum.LOGIN_NEED_PHONE.getKey());
+            MtSetting mtSetting = settingService.querySettingByName(merchantId, SettingTypeEnum.USER.getKey(), UserSettingEnum.LOGIN_NEED_PHONE.getKey());
             if (mtSetting != null) {
                 if (mtSetting.getValue().equals(YesOrNoEnum.TRUE.getKey())) {
                     MtUser tempUser = new MtUser();

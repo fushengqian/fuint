@@ -156,7 +156,7 @@ public class ClientBalanceController extends BaseController {
 
         // 充值赠送金额
         String ruleParam = "";
-        MtSetting mtSetting = settingService.querySettingByName(merchantId, BalanceSettingEnum.RECHARGE_RULE.getKey());
+        MtSetting mtSetting = settingService.querySettingByName(merchantId, SettingTypeEnum.BALANCE.getKey(), BalanceSettingEnum.RECHARGE_RULE.getKey());
         if (StringUtil.isNotEmpty(rechargeAmount) && mtSetting != null) {
             if (mtSetting.getValue() != null && StringUtil.isNotEmpty(mtSetting.getValue())) {
                 String rules[] = mtSetting.getValue().split(",");

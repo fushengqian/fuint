@@ -469,9 +469,9 @@ public class BackendMemberController extends BaseController {
             settingService.saveSetting(mtSetting);
         }
 
-        MtSetting openCardSetting = settingService.querySettingByName(accountInfo.getMerchantId(), UserSettingEnum.OPEN_WX_CARD.getKey());
-        MtSetting cardSetting = settingService.querySettingByName(accountInfo.getMerchantId(), UserSettingEnum.WX_MEMBER_CARD.getKey());
-        MtSetting cardIdSetting = settingService.querySettingByName(accountInfo.getMerchantId(), UserSettingEnum.WX_MEMBER_CARD_ID.getKey());
+        MtSetting openCardSetting = settingService.querySettingByName(accountInfo.getMerchantId(), SettingTypeEnum.USER.getKey(), UserSettingEnum.OPEN_WX_CARD.getKey());
+        MtSetting cardSetting = settingService.querySettingByName(accountInfo.getMerchantId(), SettingTypeEnum.USER.getKey(), UserSettingEnum.WX_MEMBER_CARD.getKey());
+        MtSetting cardIdSetting = settingService.querySettingByName(accountInfo.getMerchantId(), SettingTypeEnum.USER.getKey(), UserSettingEnum.WX_MEMBER_CARD_ID.getKey());
         if (openCardSetting != null && openCardSetting.getValue().equals(YesOrNoEnum.TRUE.getKey()) && cardSetting != null && accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
             String wxCardId = "";
             if (cardIdSetting != null) {

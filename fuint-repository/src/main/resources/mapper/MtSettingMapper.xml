@@ -6,6 +6,6 @@
     </select>
 
     <select id="querySettingByName" resultType="com.fuint.repository.model.MtSetting">
-        select * from mt_setting t where t.NAME = #{name} and t.MERCHANT_ID = #{merchantId} limit 1
+        select * from mt_setting t where t.NAME = #{name} and t.TYPE = #{type} and t.MERCHANT_ID = #{merchantId} limit 1
     </select>
 </mapper>
