@@ -438,6 +438,7 @@ public class CouponServiceImpl extends ServiceImpl<MtCouponMapper, MtCoupon> imp
         Integer userId = couponListParam.getUserId() == null ? 0 : couponListParam.getUserId();
         Integer needPoint = couponListParam.getNeedPoint() == null ? 0 : couponListParam.getNeedPoint();
         String sendWay = couponListParam.getSendWay() == null ? "front" : couponListParam.getSendWay();
+        Integer merchantId = couponListParam.getMerchantId() == null ? 0 : couponListParam.getMerchantId();
 
         Page<MtCoupon> pageHelper = PageHelper.startPage(pageNumber, pageSize);
         LambdaQueryWrapper<MtCoupon> lambdaQueryWrapper = Wrappers.lambdaQuery();
@@ -453,6 +454,9 @@ public class CouponServiceImpl extends ServiceImpl<MtCouponMapper, MtCoupon> imp
         }
         if (needPoint != null && needPoint > 0) {
             lambdaQueryWrapper.eq(MtCoupon::getPoint, 0);
+        }
+        if (merchantId != null && merchantId > 0) {
+            lambdaQueryWrapper.eq(MtCoupon::getMerchantId, merchantId);
         }
 
         lambdaQueryWrapper.orderByDesc(MtCoupon::getId);
