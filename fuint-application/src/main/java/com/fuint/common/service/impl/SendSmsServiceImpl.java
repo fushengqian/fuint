@@ -1,5 +1,6 @@
 package com.fuint.common.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.fuint.common.dto.MessageResDto;
@@ -14,7 +15,6 @@ import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.pagination.PaginationRequest;
 import com.fuint.framework.pagination.PaginationResponse;
 import com.fuint.repository.mapper.MtSmsSendedLogMapper;
-import com.fuint.repository.model.MtMerchant;
 import com.fuint.repository.model.MtSetting;
 import com.fuint.repository.model.MtSmsSendedLog;
 import com.fuint.repository.model.MtSmsTemplate;
@@ -88,6 +88,7 @@ public class SendSmsServiceImpl implements SendSmsService {
         MtSetting mtSetting = settingService.querySettingByName(merchantId, SettingTypeEnum.SMS_CONFIG.getKey(), SmsSettingEnum.IS_CLOSE.getKey());
         if (mtSetting != null && StringUtil.isNotEmpty(mtSetting.getValue())) {
             mode = Integer.parseInt(mtSetting.getValue());
+            logger.info("商户短信设置 mtSetting = {}", JSON.toJSONString(mtSetting));
         }
         if (mode.intValue() != 1) {
             logger.info("短信平台未开启 mode = {}", mode);
@@ -137,16 +138,25 @@ public class SendSmsServiceImpl implements SendSmsService {
 
         List<MtSetting> settings = settingService.getSettingList(merchantId, SettingTypeEnum.SMS_CONFIG.getKey());
         if (settings != null && settings.size() > 0) {
+            logger.info("商户短信设置 mtSetting = {}", JSON.toJSONString(settings.get(0)));
+            String accessKeyId1 = "";
+            String secret1 = "";
+            String signName1 = "";
             for (MtSetting mtSetting : settings) {
                  if (mtSetting.getName().equals(SmsSettingEnum.ACCESS_KEY_ID.getKey()) && StringUtil.isNotEmpty(mtSetting.getValue())) {
-                     accessKeyId = mtSetting.getValue();
+                     accessKeyId1 = mtSetting.getValue();
                  }
                  if (mtSetting.getName().equals(SmsSettingEnum.ACCESS_KEY_SECRET.getKey()) && StringUtil.isNotEmpty(mtSetting.getValue())) {
-                     secret = mtSetting.getValue();
+                     secret1 = mtSetting.getValue();
                  }
                  if (mtSetting.getName().equals(SmsSettingEnum.SIGN_NAME.getKey()) && StringUtil.isNotEmpty(mtSetting.getValue())) {
-                     signName = mtSetting.getValue();
+                     signName1 = mtSetting.getValue();
                  }
+            }
+            if (StringUtil.isNotEmpty(accessKeyId1) && StringUtil.isNotEmpty(secret1) && StringUtil.isNotEmpty(signName1)) {
+                accessKeyId = accessKeyId1;
+                secret = secret1;
+                signName = signName1;
             }
         }
 
