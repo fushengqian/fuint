@@ -190,6 +190,7 @@ public class PaymentServiceImpl implements PaymentService {
         // 重新生成订单号
         String orderSn = CommonUtil.createOrderSN(orderInfo.getUserId().toString());
         orderInfo.setOrderSn(orderSn);
+        orderInfo.setPayType(payType);
         orderService.updateOrder(orderInfo);
 
         // 收银员操作
