@@ -75,11 +75,7 @@ public class BackendSubMessageController extends BaseController {
             e.setTitle(wxMessageEnum.getValue());
             JSONObject jsonObject = null;
             if (setting != null) {
-                try {
-                    jsonObject = JSONObject.parseObject(setting.getValue());
-                } catch (Exception ex) {
-                    // empty
-                }
+                jsonObject = JSONObject.parseObject(setting.getValue());
                 if (jsonObject != null) {
                     String templateId = jsonObject.get("templateId").toString();
                     String tid = jsonObject.get("tid").toString();
