@@ -189,7 +189,7 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
         String type =  orderListParam.getType() == null ? "": orderListParam.getType();
         String orderSn =  orderListParam.getOrderSn() == null ? "": orderListParam.getOrderSn();
         String mobile =  orderListParam.getMobile() == null ? "": orderListParam.getMobile();
-        String orderMode =  orderListParam.getOrderMode() == null ? OrderModeEnum.ONESELF.getKey(): orderListParam.getOrderMode();
+        String orderMode =  orderListParam.getOrderMode() == null ? "" : orderListParam.getOrderMode();
         String staffId = orderListParam.getStaffId() == null ? "" : orderListParam.getStaffId();
         String couponId = orderListParam.getCouponId() == null ? "" : orderListParam.getCouponId();
         String storeIds = orderListParam.getStoreIds() == null ? "" : orderListParam.getStoreIds();
