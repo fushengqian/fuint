@@ -2,6 +2,7 @@ package com.fuint.module.backendApi.controller;
 
 import com.fuint.common.dto.AccountInfo;
 import com.fuint.common.service.PrinterService;
+import com.fuint.common.service.StoreService;
 import com.fuint.common.util.TokenUtil;
 import com.fuint.framework.web.BaseController;
 import com.fuint.framework.web.ResponseObject;
@@ -11,6 +12,7 @@ import com.fuint.framework.pagination.PaginationRequest;
 import com.fuint.framework.pagination.PaginationResponse;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.repository.model.MtPrinter;
+import com.fuint.repository.model.MtStore;
 import com.fuint.utils.StringUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -19,6 +21,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -39,6 +42,11 @@ public class BackendPrinterController extends BaseController {
     private PrinterService printerService;
 
     /**
+     * 店铺服务接口
+     */
+    private StoreService storeService;
+
+    /**
      * 打印机列表查询
      *
      * @param  request HttpServletRequest对象
@@ -47,12 +55,13 @@ public class BackendPrinterController extends BaseController {
     @ApiOperation(value = "打印机列表查询")
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     @CrossOrigin
-    @PreAuthorize("@pms.hasPermission('printer:list')")
+    @PreAuthorize("@pms.hasPermission('printer:index')")
     public ResponseObject list(HttpServletRequest request) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
         Integer page = request.getParameter("page") == null ? Constants.PAGE_NUMBER : Integer.parseInt(request.getParameter("page"));
         Integer pageSize = request.getParameter("pageSize") == null ? Constants.PAGE_SIZE : Integer.parseInt(request.getParameter("pageSize"));
-        String title = request.getParameter("title");
+        String name = request.getParameter("name");
+        String sn = request.getParameter("sn");
         String status = request.getParameter("status");
         String searchStoreId = request.getParameter("storeId");
 
@@ -72,8 +81,11 @@ public class BackendPrinterController extends BaseController {
         if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
             params.put("merchantId", accountInfo.getMerchantId());
         }
-        if (StringUtil.isNotEmpty(title)) {
-            params.put("title", title);
+        if (StringUtil.isNotEmpty(name)) {
+            params.put("name", name);
+        }
+        if (StringUtil.isNotEmpty(sn)) {
+            params.put("sn", sn);
         }
         if (StringUtil.isNotEmpty(status)) {
             params.put("status", status);
@@ -95,9 +107,11 @@ public class BackendPrinterController extends BaseController {
         if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
             paramsStore.put("merchantId", accountInfo.getMerchantId());
         }
+        List<MtStore> storeList = storeService.queryStoresByParams(paramsStore);
 
         Map<String, Object> result = new HashMap<>();
         result.put("paginationResponse", paginationResponse);
+        result.put("storeList", storeList);
 
         return getSuccessResult(result);
     }
@@ -110,7 +124,7 @@ public class BackendPrinterController extends BaseController {
     @ApiOperation(value = "更新打印机状态")
     @RequestMapping(value = "/updateStatus", method = RequestMethod.POST)
     @CrossOrigin
-    @PreAuthorize("@pms.hasPermission('printer:edit')")
+    @PreAuthorize("@pms.hasPermission('printer:index')")
     public ResponseObject updateStatus(HttpServletRequest request, @RequestBody Map<String, Object> params) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
         String status = params.get("status") != null ? params.get("status").toString() : StatusEnum.ENABLED.getKey();
@@ -143,7 +157,7 @@ public class BackendPrinterController extends BaseController {
     @ApiOperation(value = "保存打印机")
     @RequestMapping(value = "/save", method = RequestMethod.POST)
     @CrossOrigin
-    @PreAuthorize("@pms.hasPermission('printer:add')")
+    @PreAuthorize("@pms.hasPermission('printer:index')")
     public ResponseObject saveHandler(HttpServletRequest request, @RequestBody Map<String, Object> params) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
         String id = params.get("id") == null ? "" : params.get("id").toString();
@@ -185,7 +199,7 @@ public class BackendPrinterController extends BaseController {
     @ApiOperation(value = "获取打印机详情")
     @RequestMapping(value = "/info/{id}", method = RequestMethod.GET)
     @CrossOrigin
-    @PreAuthorize("@pms.hasPermission('printer:list')")
+    @PreAuthorize("@pms.hasPermission('printer:index')")
     public ResponseObject info(HttpServletRequest request, @PathVariable("id") Integer id) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);

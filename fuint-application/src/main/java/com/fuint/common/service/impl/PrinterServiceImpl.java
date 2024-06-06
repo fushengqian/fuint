@@ -17,6 +17,7 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.github.pagehelper.Page;
+import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -124,13 +125,14 @@ public class PrinterServiceImpl extends ServiceImpl<MtPrinterMapper, MtPrinter> 
     @Transactional(rollbackFor = Exception.class)
     @OperationServiceLog(description = "更新打印机")
     public MtPrinter updatePrinter(MtPrinter mtPrinter) throws BusinessCheckException {
-        mtPrinter = queryPrinterById(mtPrinter.getId());
+        MtPrinter printer = queryPrinterById(mtPrinter.getId());
+        BeanUtils.copyProperties(mtPrinter, printer);
         if (mtPrinter == null) {
             throw new BusinessCheckException("该打印机状态异常");
         }
         mtPrinter.setUpdateTime(new Date());
-        mtPrinterMapper.updateById(mtPrinter);
-        return mtPrinter;
+        mtPrinterMapper.updateById(printer);
+        return printer;
     }
 
    /**
