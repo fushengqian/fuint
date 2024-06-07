@@ -26,7 +26,7 @@ public class ${modelName} implements Serializable {
 
 #foreach ($column in $columns)
     @ApiModelProperty("$column.comment")
-    #if($column.fild == 'id')
+    #if($column.field == 'id')
     @TableId(value = "ID", type = IdType.AUTO)
     #end
     private $column.type $column.field;
