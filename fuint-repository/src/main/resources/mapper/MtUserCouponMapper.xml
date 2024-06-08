@@ -59,7 +59,7 @@
             AND USER_ID = #{userId}
         </if>
         AND t.EXPIRE_TIME &lt; #{endTime} AND t.EXPIRE_TIME &gt; #{startTime} AND t.USED_TIME IS NULL
-        ORDER BY t.ID ASC
+        ORDER BY t.UPDATE_TIME ASC
     </select>
 
     <update id="updateExpireTime">

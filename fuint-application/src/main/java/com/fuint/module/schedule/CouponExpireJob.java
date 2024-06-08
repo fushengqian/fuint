@@ -20,6 +20,7 @@ import org.springframework.core.env.Environment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
+import java.text.ParseException;
 import java.util.*;
 
 /**
@@ -71,19 +72,37 @@ public class CouponExpireJob {
 
     @Scheduled(cron = "${couponExpire.job.time}")
     @Transactional(rollbackFor = Exception.class)
-    public void dealCoupon() throws BusinessCheckException {
+    public void dealCoupon() throws BusinessCheckException, ParseException {
         String theSwitch = environment.getProperty("couponExpire.job.switch");
         if (theSwitch != null && theSwitch.equals("1")) {
             logger.info("CouponExpireJobJobStart!!!");
+            // 处理已过期消息
+            Calendar calendarExpire = Calendar.getInstance();
+            calendarExpire.add(Calendar.DATE, -365);
+            Date dateTimeExpire = calendarExpire.getTime();
+            String endTimeExpire = DateUtil.formatDate(new Date(), "yyyy-MM-dd HH:mm:ss");
+            String startTimeExpire = DateUtil.formatDate(dateTimeExpire, "yyyy-MM-dd HH:mm:ss");
+            List<MtUserCoupon> userCoupons = userCouponService.getUserCouponListByExpireTime(0, UserCouponStatusEnum.UNUSED.getKey(), startTimeExpire, endTimeExpire);
+            if (userCoupons != null && userCoupons.size() > 0) {
+                int dealNum = 0;
+                for (MtUserCoupon mtUserCoupon : userCoupons) {
+                    if (dealNum <= MAX_SEND_NUM) {
+                        mtUserCoupon.setStatus(UserCouponStatusEnum.EXPIRE.getKey());
+                        mtUserCoupon.setUpdateTime(new Date());
+                        mtUserCouponMapper.updateById(mtUserCoupon);
+                        dealNum++;
+                    }
+                }
+            }
 
-            // 获取3天内到期的会员卡券
+            // 获取3天内到期的会员卡券，发送通知消息
             Calendar calendar = Calendar.getInstance();
             calendar.add(Calendar.DATE, 3);
             Date dateTime = calendar.getTime();
             String endTime = DateUtil.formatDate(dateTime, "yyyy-MM-dd HH:mm:ss");
             String startTime = DateUtil.formatDate(new Date(), "yyyy-MM-dd HH:mm:ss");
             List<MtUserCoupon> dataList = userCouponService.getUserCouponListByExpireTime(0, UserCouponStatusEnum.UNUSED.getKey(), startTime, endTime);
-            if (dataList.size() > 0) {
+            if (dataList != null && dataList.size() > 0) {
                 int dealNum = 0;
                 for (MtUserCoupon mtUserCoupon : dataList) {
                     if (dealNum <= MAX_SEND_NUM) {
@@ -95,17 +114,20 @@ public class CouponExpireJob {
                         }
 
                         if (couponInfo != null && userInfo != null) {
-                            Date now = new Date();
-                            Date sendTime = new Date(now.getTime());
-                            Map<String, Object> params = new HashMap<>();
-                            String couponExpireTime = DateUtil.formatDate(mtUserCoupon.getExpireTime(), "yyyy-MM-dd HH:mm");
-                            params.put("expireTime", couponExpireTime);
-                            params.put("name", couponInfo.getName());
-                            params.put("tips", "您的卡券即将到期，请留意~");
-                            weixinService.sendSubscribeMessage(userInfo.getMerchantId(), userInfo.getId(), userInfo.getOpenId(), WxMessageEnum.COUPON_EXPIRE.getKey(), "pages/user/index", params, sendTime);
-                            mtUserCoupon.setExpireTime(null);
-                            mtUserCoupon.setUsedTime(new Date());
-                            mtUserCouponMapper.updateById(mtUserCoupon);
+                            mtUserCoupon.getUpdateTime();
+                            Integer days = DateUtil.daysBetween(DateUtil.formatDate(mtUserCoupon.getUpdateTime(), "yyyy-MM-dd HH:mm:ss"), endTime);
+                            if (days > 1) {
+                                Date now = new Date();
+                                Date sendTime = new Date(now.getTime());
+                                Map<String, Object> params = new HashMap<>();
+                                String couponExpireTime = DateUtil.formatDate(mtUserCoupon.getExpireTime(), "yyyy-MM-dd HH:mm");
+                                params.put("expireTime", couponExpireTime);
+                                params.put("name", couponInfo.getName());
+                                params.put("tips", "您的卡券即将到期，请留意~");
+                                weixinService.sendSubscribeMessage(userInfo.getMerchantId(), userInfo.getId(), userInfo.getOpenId(), WxMessageEnum.COUPON_EXPIRE.getKey(), "pages/user/index", params, sendTime);
+                                mtUserCoupon.setUpdateTime(new Date());
+                                mtUserCouponMapper.updateById(mtUserCoupon);
+                            }
                         }
 
                         dealNum++;
