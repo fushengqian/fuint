@@ -50,6 +50,30 @@ public class PrinterServiceImpl extends ServiceImpl<MtPrinterMapper, MtPrinter> 
         LambdaQueryWrapper<MtPrinter> lambdaQueryWrapper = Wrappers.lambdaQuery();
         lambdaQueryWrapper.ne(MtPrinter::getStatus, StatusEnum.DISABLE.getKey());
 
+        String status =  paginationRequest.getSearchParams().get("status") == null ? "" : paginationRequest.getSearchParams().get("status").toString();
+        if (StringUtils.isNotBlank(status)) {
+            lambdaQueryWrapper.eq(MtPrinter::getStatus, status);
+        }
+        String merchantId =  paginationRequest.getSearchParams().get("merchantId") == null ? "" : paginationRequest.getSearchParams().get("merchantId").toString();
+        if (StringUtils.isNotBlank(merchantId)) {
+            lambdaQueryWrapper.eq(MtPrinter::getMerchantId, merchantId);
+        }
+        String storeId =  paginationRequest.getSearchParams().get("storeId") == null ? "" : paginationRequest.getSearchParams().get("storeId").toString();
+        if (StringUtils.isNotBlank(storeId)) {
+            lambdaQueryWrapper.and(wq -> wq
+                    .eq(MtPrinter::getStoreId, 0)
+                    .or()
+                    .eq(MtPrinter::getStoreId, storeId));
+        }
+        String sn =  paginationRequest.getSearchParams().get("sn") == null ? "" : paginationRequest.getSearchParams().get("sn").toString();
+        if (StringUtils.isNotBlank(sn)) {
+            lambdaQueryWrapper.eq(MtPrinter::getSn, sn);
+        }
+        String name =  paginationRequest.getSearchParams().get("name") == null ? "" : paginationRequest.getSearchParams().get("name").toString();
+        if (StringUtils.isNotBlank(name)) {
+            lambdaQueryWrapper.eq(MtPrinter::getName, name);
+        }
+
         lambdaQueryWrapper.orderByAsc(MtPrinter::getId);
         List<MtPrinter> dataList = mtPrinterMapper.selectList(lambdaQueryWrapper);
 
@@ -75,10 +99,15 @@ public class PrinterServiceImpl extends ServiceImpl<MtPrinterMapper, MtPrinter> 
         mtPrinter.setStatus(StatusEnum.ENABLED.getKey());
         mtPrinter.setUpdateTime(new Date());
         mtPrinter.setCreateTime(new Date());
+        if (mtPrinter.getMerchantId() == null || mtPrinter.getMerchantId() < 1) {
+            throw new BusinessCheckException("平台方帐号无法执行该操作，请使用商户帐号操作");
+        }
+
         Integer id = mtPrinterMapper.insert(mtPrinter);
         if (id > 0) {
             return mtPrinter;
         } else {
+            logger.error("新增打印机数据失败.");
             throw new BusinessCheckException("新增打印机数据失败");
         }
     }
@@ -130,6 +159,9 @@ public class PrinterServiceImpl extends ServiceImpl<MtPrinterMapper, MtPrinter> 
         if (mtPrinter == null) {
             throw new BusinessCheckException("该打印机状态异常");
         }
+        if (printer.getMerchantId() == null || printer.getMerchantId() < 1) {
+            throw new BusinessCheckException("平台方帐号无法执行该操作，请使用商户帐号操作");
+        }
         mtPrinter.setUpdateTime(new Date());
         mtPrinterMapper.updateById(printer);
         return printer;
@@ -147,6 +179,8 @@ public class PrinterServiceImpl extends ServiceImpl<MtPrinterMapper, MtPrinter> 
         String status =  params.get("status") == null ? StatusEnum.ENABLED.getKey(): params.get("status").toString();
         String storeId =  params.get("storeId") == null ? "" : params.get("storeId").toString();
         String merchantId =  params.get("merchantId") == null ? "" : params.get("merchantId").toString();
+        String sn =  params.get("sn") == null ? "" : params.get("sn").toString();
+        String name =  params.get("name") == null ? "" : params.get("name").toString();
 
         LambdaQueryWrapper<MtPrinter> lambdaQueryWrapper = Wrappers.lambdaQuery();
         if (StringUtils.isNotBlank(status)) {
@@ -154,6 +188,12 @@ public class PrinterServiceImpl extends ServiceImpl<MtPrinterMapper, MtPrinter> 
         }
         if (StringUtils.isNotBlank(merchantId)) {
             lambdaQueryWrapper.eq(MtPrinter::getMerchantId, merchantId);
+        }
+        if (StringUtils.isNotBlank(sn)) {
+            lambdaQueryWrapper.eq(MtPrinter::getSn, sn);
+        }
+        if (StringUtils.isNotBlank(name)) {
+            lambdaQueryWrapper.eq(MtPrinter::getName, name);
         }
         if (StringUtils.isNotBlank(storeId)) {
             lambdaQueryWrapper.and(wq -> wq
