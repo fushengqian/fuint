@@ -3,6 +3,8 @@ package com.fuint.common.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.fuint.common.util.PrintUtil;
+import com.fuint.common.vo.printer.AddPrinterRequest;
 import com.fuint.framework.annoation.OperationServiceLog;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.pagination.PaginationRequest;
@@ -103,8 +105,10 @@ public class PrinterServiceImpl extends ServiceImpl<MtPrinterMapper, MtPrinter> 
             throw new BusinessCheckException("平台方帐号无法执行该操作，请使用商户帐号操作");
         }
 
-        Integer id = mtPrinterMapper.insert(mtPrinter);
-        if (id > 0) {
+        Integer printerId = mtPrinterMapper.insert(mtPrinter);
+        if (printerId > 0) {
+            AddPrinterRequest restRequest = new AddPrinterRequest();
+            PrintUtil.addPrinters(restRequest);
             return mtPrinter;
         } else {
             logger.error("新增打印机数据失败.");

@@ -20,7 +20,7 @@ public class PrintUtil {
      * @param restRequest
      * @return
      */
-    public ObjectRestResponse<PrinterResult> addPrinters(AddPrinterRequest restRequest) {
+    public static ObjectRestResponse<PrinterResult> addPrinters(AddPrinterRequest restRequest) {
         String url = BASE_URL + "/xprinter/addPrinters";
         String jsonRequest = JSON.toJSONString(restRequest);
         String resp = HttpClientUtil.doPostJSON(url, jsonRequest);
