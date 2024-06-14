@@ -33,7 +33,7 @@ public class PrintUtil {
      * @param restRequest
      * @return
      */
-    public ObjectRestResponse<Boolean> setPrinterVoiceType(SetVoiceTypeRequest restRequest) {
+    public static ObjectRestResponse<Boolean> setPrinterVoiceType(SetVoiceTypeRequest restRequest) {
         String url = BASE_URL + "/xprinter/setVoiceType";
         String jsonRequest = JSON.toJSONString(restRequest);
         String resp = HttpClientUtil.doPostJSON(url, jsonRequest);
@@ -46,7 +46,7 @@ public class PrintUtil {
      * @param restRequest
      * @return
      */
-    public ObjectRestResponse<String> print(PrintRequest restRequest) {
+    public static ObjectRestResponse<String> print(PrintRequest restRequest) {
         String url = BASE_URL + "/xprinter/print";
         String jsonRequest = JSON.toJSONString(restRequest);
         String resp = HttpClientUtil.doPostJSON(url, jsonRequest);
@@ -60,7 +60,7 @@ public class PrintUtil {
      * @param restRequest
      * @return
      */
-    public ObjectRestResponse<String> printLabel(PrintRequest restRequest) {
+    public static ObjectRestResponse<String> printLabel(PrintRequest restRequest) {
         String url = BASE_URL + "/xprinter/printLabel";
         String jsonRequest = JSON.toJSONString(restRequest);
         String resp = HttpClientUtil.doPostJSON(url, jsonRequest);
@@ -74,7 +74,7 @@ public class PrintUtil {
      * @param restRequest
      * @return
      */
-    public ObjectRestResponse<PrinterResult> delPrinters(DelPrinterRequest restRequest) {
+    public static ObjectRestResponse<PrinterResult> delPrinters(DelPrinterRequest restRequest) {
         String url = BASE_URL + "/xprinter/delPrinters";
         String jsonRequest = JSON.toJSONString(restRequest);
         String resp = HttpClientUtil.doPostJSON(url, jsonRequest);
@@ -88,7 +88,7 @@ public class PrintUtil {
      * @param restRequest
      * @return
      */
-    public ObjectRestResponse<Boolean> updPrinter(UpdPrinterRequest restRequest) {
+    public static ObjectRestResponse<Boolean> updPrinter(UpdPrinterRequest restRequest) {
         String url = BASE_URL + "/xprinter/updPrinter";
         String jsonRequest = JSON.toJSONString(restRequest);
         String resp = HttpClientUtil.doPostJSON(url, jsonRequest);
@@ -102,7 +102,7 @@ public class PrintUtil {
      * @param restRequest
      * @return
      */
-    public ObjectRestResponse<Boolean> delPrinterQueue(PrinterRequest restRequest) {
+    public static ObjectRestResponse<Boolean> delPrinterQueue(PrinterRequest restRequest) {
         String url = BASE_URL + "/xprinter/delPrinterQueue";
         String jsonRequest = JSON.toJSONString(restRequest);
         String resp = HttpClientUtil.doPostJSON(url, jsonRequest);
@@ -116,7 +116,7 @@ public class PrintUtil {
      * @param restRequest
      * @return
      */
-    public ObjectRestResponse<Boolean> queryOrderState(QueryOrderStateRequest restRequest) {
+    public static ObjectRestResponse<Boolean> queryOrderState(QueryOrderStateRequest restRequest) {
         String url = BASE_URL + "/xprinter/queryOrderState";
         String jsonRequest = JSON.toJSONString(restRequest);
         String resp = HttpClientUtil.doPostJSON(url, jsonRequest);
@@ -130,7 +130,7 @@ public class PrintUtil {
      * @param restRequest
      * @return
      */
-    public ObjectRestResponse<OrderStatisResult> queryOrderStatis(QueryOrderStatisRequest restRequest) {
+    public static ObjectRestResponse<OrderStatisResult> queryOrderStatis(QueryOrderStatisRequest restRequest) {
         String url = BASE_URL + "/xprinter/queryOrderStatis";
         String jsonRequest = JSON.toJSONString(restRequest);
         String resp = HttpClientUtil.doPostJSON(url, jsonRequest);
@@ -146,7 +146,7 @@ public class PrintUtil {
      * @param restRequest
      * @return
      */
-    public ObjectRestResponse<Integer> queryPrinterStatus(PrinterRequest restRequest) {
+    public static ObjectRestResponse<Integer> queryPrinterStatus(PrinterRequest restRequest) {
         String url = BASE_URL + "/xprinter/queryPrinterStatus";
         String jsonRequest = JSON.toJSONString(restRequest);
         String resp = HttpClientUtil.doPostJSON(url, jsonRequest);
@@ -162,7 +162,7 @@ public class PrintUtil {
      * @param restRequest
      * @return
      */
-    public ObjectRestResponse<List<Integer>> queryPrintersStatus(PrintersRequest restRequest) {
+    public static ObjectRestResponse<List<Integer>> queryPrintersStatus(PrintersRequest restRequest) {
         String url = BASE_URL + "/xprinter/queryPrintersStatus";
         String jsonRequest = JSON.toJSONString(restRequest);
         String resp = HttpClientUtil.doPostJSON(url, jsonRequest);
@@ -176,7 +176,7 @@ public class PrintUtil {
      * @param restRequest
      * @return
      */
-    public ObjectRestResponse<String> playVoice(VoiceRequest restRequest) {
+    public static ObjectRestResponse<String> playVoice(VoiceRequest restRequest) {
         String url = BASE_URL + "/xprinter/playVoice";
         String jsonRequest = JSON.toJSONString(restRequest);
         String resp = HttpClientUtil.doPostJSON(url, jsonRequest);
@@ -190,7 +190,7 @@ public class PrintUtil {
      * @param restRequest
      * @return
      */
-    public ObjectRestResponse<String> pos(PrintRequest restRequest) {
+    public static ObjectRestResponse<String> pos(PrintRequest restRequest) {
         String url = BASE_URL + "/xprinter/pos";
         String jsonRequest = JSON.toJSONString(restRequest);
         String resp = HttpClientUtil.doPostJSON(url, jsonRequest);
@@ -204,7 +204,7 @@ public class PrintUtil {
      * @param restRequest
      * @return
      */
-    public ObjectRestResponse<String> controlBox(PrintRequest restRequest) {
+    public static ObjectRestResponse<String> controlBox(PrintRequest restRequest) {
         String url = BASE_URL + "/xprinter/controlBox";
         String jsonRequest = JSON.toJSONString(restRequest);
         String resp = HttpClientUtil.doPostJSON(url, jsonRequest);

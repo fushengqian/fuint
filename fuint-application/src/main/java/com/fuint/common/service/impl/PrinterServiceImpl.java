@@ -5,6 +5,8 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fuint.common.util.PrintUtil;
 import com.fuint.common.vo.printer.AddPrinterRequest;
+import com.fuint.common.vo.printer.AddPrinterRequestItem;
+import com.fuint.common.vo.printer.DelPrinterRequest;
 import com.fuint.framework.annoation.OperationServiceLog;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.pagination.PaginationRequest;
@@ -13,6 +15,7 @@ import com.fuint.repository.model.MtPrinter;
 import com.fuint.common.service.PrinterService;
 import com.fuint.common.enums.StatusEnum;
 import com.fuint.repository.mapper.MtPrinterMapper;
+import com.fuint.utils.StringUtil;
 import com.github.pagehelper.PageHelper;
 import lombok.AllArgsConstructor;
 import org.apache.commons.lang.StringUtils;
@@ -107,8 +110,16 @@ public class PrinterServiceImpl extends ServiceImpl<MtPrinterMapper, MtPrinter> 
 
         Integer printerId = mtPrinterMapper.insert(mtPrinter);
         if (printerId > 0) {
-            AddPrinterRequest restRequest = new AddPrinterRequest();
-            PrintUtil.addPrinters(restRequest);
+            // 添加云打印机
+            if (mtPrinter.getSn() != null && mtPrinter.getName() != null) {
+                AddPrinterRequest restRequest = new AddPrinterRequest();
+                AddPrinterRequestItem item = new AddPrinterRequestItem();
+                item.setName(mtPrinter.getName());
+                item.setSn(mtPrinter.getSn());
+                AddPrinterRequestItem[] items = {item};
+                restRequest.setItems(items);
+                PrintUtil.addPrinters(restRequest);
+            }
             return mtPrinter;
         } else {
             logger.error("新增打印机数据失败.");
@@ -141,6 +152,13 @@ public class PrinterServiceImpl extends ServiceImpl<MtPrinterMapper, MtPrinter> 
         MtPrinter mtPrinter = queryPrinterById(id);
         if (null == mtPrinter) {
             return;
+        }
+        // 删除云打印机
+        if (StringUtil.isNotEmpty(mtPrinter.getSn())) {
+            DelPrinterRequest restRequest = new DelPrinterRequest();
+            String[] snList = { mtPrinter.getSn() };
+            restRequest.setSnlist(snList);
+            PrintUtil.delPrinters(restRequest);
         }
         mtPrinter.setStatus(StatusEnum.DISABLE.getKey());
         mtPrinter.setUpdateTime(new Date());
