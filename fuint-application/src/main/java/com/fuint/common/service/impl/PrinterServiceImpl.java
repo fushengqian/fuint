@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fuint.common.util.PrintUtil;
+import com.fuint.common.util.PrinterConfig;
 import com.fuint.common.vo.printer.AddPrinterRequest;
 import com.fuint.common.vo.printer.AddPrinterRequestItem;
 import com.fuint.common.vo.printer.DelPrinterRequest;
@@ -113,6 +114,7 @@ public class PrinterServiceImpl extends ServiceImpl<MtPrinterMapper, MtPrinter> 
             // 添加云打印机
             if (mtPrinter.getSn() != null && mtPrinter.getName() != null) {
                 AddPrinterRequest restRequest = new AddPrinterRequest();
+                PrinterConfig.createRequestHeader(restRequest);
                 AddPrinterRequestItem item = new AddPrinterRequestItem();
                 item.setName(mtPrinter.getName());
                 item.setSn(mtPrinter.getSn());
@@ -156,6 +158,7 @@ public class PrinterServiceImpl extends ServiceImpl<MtPrinterMapper, MtPrinter> 
         // 删除云打印机
         if (StringUtil.isNotEmpty(mtPrinter.getSn())) {
             DelPrinterRequest restRequest = new DelPrinterRequest();
+            PrinterConfig.createRequestHeader(restRequest);
             String[] snList = { mtPrinter.getSn() };
             restRequest.setSnlist(snList);
             PrintUtil.delPrinters(restRequest);
