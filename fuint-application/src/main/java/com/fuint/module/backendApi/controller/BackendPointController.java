@@ -194,9 +194,11 @@ public class BackendPointController extends BaseController {
         if (accountInfo == null) {
             return getFailureResult(1001, "请先登录");
         }
+        if (accountInfo.getMerchantId() == null || accountInfo.getMerchantId() < 0) {
+            return getFailureResult(201, "平台方帐号无法执行该操作，请使用商户帐号操作");
+        }
 
         String operator = accountInfo.getAccountName();
-
         PointSettingEnum[] settingList = PointSettingEnum.values();
         for (PointSettingEnum setting : settingList) {
             MtSetting info = new MtSetting();
@@ -205,13 +207,13 @@ public class BackendPointController extends BaseController {
             info.setType(SettingTypeEnum.POINT.getKey());
             info.setName(setting.getKey());
 
-            if (setting.getKey().equals("pointNeedConsume")) {
+            if (setting.getKey().equals(PointSettingEnum.POINT_NEED_CONSUME.getKey())) {
                 info.setValue(pointNeedConsume);
-            } else if (setting.getKey().equals("canUsedAsMoney")) {
+            } else if (setting.getKey().equals(PointSettingEnum.CAN_USE_AS_MONEY.getKey())) {
                 info.setValue(canUsedAsMoney);
-            } else if (setting.getKey().equals("exchangeNeedPoint")) {
+            } else if (setting.getKey().equals(PointSettingEnum.EXCHANGE_NEED_POINT.getKey())) {
                 info.setValue(exchangeNeedPoint);
-            } else if (setting.getKey().equals("rechargePointSpeed")) {
+            } else if (setting.getKey().equals(PointSettingEnum.RECHARGE_POINT_SPEED.getKey())) {
                 info.setValue(rechargePointSpeed);
             }
 
