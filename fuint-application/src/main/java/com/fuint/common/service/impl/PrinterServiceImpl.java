@@ -3,11 +3,15 @@ package com.fuint.common.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.fuint.common.util.PrintUtil;
-import com.fuint.common.util.PrinterConfig;
+import com.fuint.common.enums.PrinterSettingEnum;
+import com.fuint.common.enums.SettingTypeEnum;
+import com.fuint.common.service.SettingService;
+import com.fuint.common.util.HashSignUtil;
+import com.fuint.common.util.PrinterUtil;
 import com.fuint.common.vo.printer.AddPrinterRequest;
 import com.fuint.common.vo.printer.AddPrinterRequestItem;
 import com.fuint.common.vo.printer.DelPrinterRequest;
+import com.fuint.common.vo.printer.RestRequest;
 import com.fuint.framework.annoation.OperationServiceLog;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.pagination.PaginationRequest;
@@ -16,6 +20,7 @@ import com.fuint.repository.model.MtPrinter;
 import com.fuint.common.service.PrinterService;
 import com.fuint.common.enums.StatusEnum;
 import com.fuint.repository.mapper.MtPrinterMapper;
+import com.fuint.repository.model.MtSetting;
 import com.fuint.utils.StringUtil;
 import com.github.pagehelper.PageHelper;
 import lombok.AllArgsConstructor;
@@ -43,6 +48,11 @@ public class PrinterServiceImpl extends ServiceImpl<MtPrinterMapper, MtPrinter> 
     private static final Logger logger = LoggerFactory.getLogger(PrinterServiceImpl.class);
 
     private MtPrinterMapper mtPrinterMapper;
+
+    /**
+     * 系统配置服务接口
+     * */
+    private SettingService settingService;
 
     /**
      * 分页查询数据列表
@@ -100,6 +110,7 @@ public class PrinterServiceImpl extends ServiceImpl<MtPrinterMapper, MtPrinter> 
      * @return
      */
     @Override
+    @Transactional(rollbackFor = Exception.class)
     @OperationServiceLog(description = "新增打印机")
     public MtPrinter addPrinter(MtPrinter mtPrinter) throws BusinessCheckException {
         mtPrinter.setStatus(StatusEnum.ENABLED.getKey());
@@ -114,13 +125,13 @@ public class PrinterServiceImpl extends ServiceImpl<MtPrinterMapper, MtPrinter> 
             // 添加云打印机
             if (mtPrinter.getSn() != null && mtPrinter.getName() != null) {
                 AddPrinterRequest restRequest = new AddPrinterRequest();
-                PrinterConfig.createRequestHeader(restRequest);
+                createRequestHeader(0, restRequest);
                 AddPrinterRequestItem item = new AddPrinterRequestItem();
                 item.setName(mtPrinter.getName());
                 item.setSn(mtPrinter.getSn());
-                AddPrinterRequestItem[] items = {item};
+                AddPrinterRequestItem[] items = { item };
                 restRequest.setItems(items);
-                PrintUtil.addPrinters(restRequest);
+                PrinterUtil.addPrinters(restRequest);
             }
             return mtPrinter;
         } else {
@@ -150,7 +161,7 @@ public class PrinterServiceImpl extends ServiceImpl<MtPrinterMapper, MtPrinter> 
     @Override
     @Transactional(rollbackFor = Exception.class)
     @OperationServiceLog(description = "删除打印机")
-    public void deletePrinter(Integer id, String operator) {
+    public void deletePrinter(Integer id, String operator) throws BusinessCheckException {
         MtPrinter mtPrinter = queryPrinterById(id);
         if (null == mtPrinter) {
             return;
@@ -158,10 +169,10 @@ public class PrinterServiceImpl extends ServiceImpl<MtPrinterMapper, MtPrinter> 
         // 删除云打印机
         if (StringUtil.isNotEmpty(mtPrinter.getSn())) {
             DelPrinterRequest restRequest = new DelPrinterRequest();
-            PrinterConfig.createRequestHeader(restRequest);
+            createRequestHeader(0, restRequest);
             String[] snList = { mtPrinter.getSn() };
             restRequest.setSnlist(snList);
-            PrintUtil.delPrinters(restRequest);
+            PrinterUtil.delPrinters(restRequest);
         }
         mtPrinter.setStatus(StatusEnum.DISABLE.getKey());
         mtPrinter.setUpdateTime(new Date());
@@ -230,5 +241,37 @@ public class PrinterServiceImpl extends ServiceImpl<MtPrinterMapper, MtPrinter> 
         lambdaQueryWrapper.orderByAsc(MtPrinter::getId);
         List<MtPrinter> dataList = mtPrinterMapper.selectList(lambdaQueryWrapper);
         return dataList;
+    }
+
+    /**
+     * @param merchantId 商户ID
+     * @param request RestRequest
+     * @return
+     * */
+    public void createRequestHeader(Integer merchantId, RestRequest request) throws BusinessCheckException {
+        List<MtSetting> settings = settingService.getSettingList(merchantId, SettingTypeEnum.PRINTER.getKey());
+        if (settings != null && settings.size() > 0) {
+            String userName = "";
+            String userKey = "";
+            for (MtSetting mtSetting : settings) {
+                if (mtSetting.getName().equals(PrinterSettingEnum.USER_NAME.getKey())) {
+                    userName = mtSetting.getValue();
+                }
+                if (mtSetting.getName().equals(PrinterSettingEnum.USER_KEY.getKey())) {
+                    userKey = mtSetting.getValue();
+                }
+            }
+            if (StringUtil.isNotEmpty(userName) && StringUtil.isNotEmpty(userKey)) {
+                //*必填*：芯烨云平台注册用户名（开发者ID）
+                request.setUser(userName);
+                //*必填*：当前UNIX时间戳
+                request.setTimestamp(System.currentTimeMillis() + "");
+                //*必填*：对参数 user + UserKEY + timestamp 拼接后（+号表示连接符）进行SHA1加密得到签名，值为40位小写字符串，其中 UserKEY 为用户开发者密钥
+                request.setSign(HashSignUtil.sign(request.getUser() + userKey + request.getTimestamp()));
+
+                //debug=1返回非json格式的数据，仅测试时候使用
+                request.setDebug("0");
+            }
+        }
     }
 }

@@ -3,6 +3,9 @@ package com.fuint.common.util;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
 import com.fuint.common.vo.printer.*;
+import com.fuint.framework.exception.BusinessCheckException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import java.util.List;
 
 /**
@@ -11,20 +14,26 @@ import java.util.List;
  * Created by FSQ
  * CopyRight https://www.fuint.cn
  */
-public class PrintUtil {
+public class PrinterUtil {
 
     private static String BASE_URL = "https://open.xpyun.net/api/openapi";
+
+    private static final Logger logger = LoggerFactory.getLogger(PrinterUtil.class);
     
     /**
      * 1.批量添加打印机
      * @param restRequest
      * @return
      */
-    public static ObjectRestResponse<PrinterResult> addPrinters(AddPrinterRequest restRequest) {
+    public static ObjectRestResponse<PrinterResult> addPrinters(AddPrinterRequest restRequest) throws BusinessCheckException {
         String url = BASE_URL + "/xprinter/addPrinters";
         String jsonRequest = JSON.toJSONString(restRequest);
         String resp = HttpClientUtil.doPostJSON(url, jsonRequest);
         ObjectRestResponse<PrinterResult> result = JSON.parseObject(resp, new TypeReference<ObjectRestResponse<PrinterResult>>(){});
+        logger.info("添加打印机接口参数：{},返回：{}", JSON.toJSONString(restRequest), JSON.toJSONString(result));
+        if (result != null && result.getData().getSuccess().size() <= 0) {
+            throw new BusinessCheckException("添加打印机失败，请检查设备编号是否正确！");
+        }
         return result;
     }
 

@@ -1,25 +1,22 @@
 package com.fuint.common.enums;
 
 /**
- * 配置类型枚举
+ * 云打印设置
  *
  * Created by FSQ
  * CopyRight https://www.fuint.cn
  */
-public enum SettingTypeEnum {
-    POINT("point", "积分配置"),
-    BALANCE("balance", "余额配置"),
-    USER("user", "会员配置"),
-    ORDER("order", "交易配置"),
-    SUB_MESSAGE("sub_message", "订阅消息"),
-    PRINTER("printer", "打印设置"),
-    SMS_CONFIG("sms_config", "短信配置");
+public enum PrinterSettingEnum {
+
+    USER_NAME("userName", "用户名"),
+    USER_KEY("userKey", "开发者密钥"),
+    ENABLE("enable", "是否启用");
 
     private String key;
 
     private String value;
 
-    SettingTypeEnum(String key, String value) {
+    PrinterSettingEnum(String key, String value) {
         this.key = key;
         this.value = value;
     }
@@ -42,7 +39,7 @@ public enum SettingTypeEnum {
 
     // 普通方法，通过key获取value
     public static String getValue(String k) {
-        for (SettingTypeEnum c : SettingTypeEnum.values()) {
+        for (PrinterSettingEnum c : PrinterSettingEnum.values()) {
             if (c.getKey().equals(k)) {
                 return c.getValue();
             }
@@ -52,7 +49,7 @@ public enum SettingTypeEnum {
 
     // 普通方法，通过Value获取key
     public static String getKey(String v) {
-        for (SettingTypeEnum c : SettingTypeEnum.values()) {
+        for (PrinterSettingEnum c : PrinterSettingEnum.values()) {
             if (c.getValue() == v) {
                 return c.getKey();
             }

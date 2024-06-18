@@ -147,13 +147,13 @@ public class BackendPointController extends BaseController {
         String status = "";
 
         for (MtSetting setting : settingList) {
-            if (setting.getName().equals("pointNeedConsume")) {
+            if (setting.getName().equals(PointSettingEnum.POINT_NEED_CONSUME.getKey())) {
                 pointNeedConsume = setting.getValue();
-            } else if (setting.getName().equals("canUsedAsMoney")) {
+            } else if (setting.getName().equals(PointSettingEnum.CAN_USE_AS_MONEY.getKey())) {
                 canUsedAsMoney = setting.getValue();
-            } else if (setting.getName().equals("exchangeNeedPoint")) {
+            } else if (setting.getName().equals(PointSettingEnum.EXCHANGE_NEED_POINT.getKey())) {
                 exchangeNeedPoint = setting.getValue();
-            } else if (setting.getName().equals("rechargePointSpeed")) {
+            } else if (setting.getName().equals(PointSettingEnum.RECHARGE_POINT_SPEED.getKey())) {
                 rechargePointSpeed = setting.getValue();
             }
             status = setting.getStatus();

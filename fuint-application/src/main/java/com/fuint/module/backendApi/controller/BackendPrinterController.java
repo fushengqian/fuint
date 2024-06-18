@@ -1,17 +1,19 @@
 package com.fuint.module.backendApi.controller;
 
 import com.fuint.common.dto.AccountInfo;
+import com.fuint.common.enums.*;
 import com.fuint.common.service.PrinterService;
+import com.fuint.common.service.SettingService;
 import com.fuint.common.service.StoreService;
 import com.fuint.common.util.TokenUtil;
 import com.fuint.framework.web.BaseController;
 import com.fuint.framework.web.ResponseObject;
 import com.fuint.common.Constants;
-import com.fuint.common.enums.StatusEnum;
 import com.fuint.framework.pagination.PaginationRequest;
 import com.fuint.framework.pagination.PaginationResponse;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.repository.model.MtPrinter;
+import com.fuint.repository.model.MtSetting;
 import com.fuint.repository.model.MtStore;
 import com.fuint.utils.StringUtil;
 import io.swagger.annotations.Api;
@@ -20,6 +22,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -45,6 +48,11 @@ public class BackendPrinterController extends BaseController {
      * 店铺服务接口
      */
     private StoreService storeService;
+
+    /**
+     * 配置服务接口
+     * */
+    private SettingService settingService;
 
     /**
      * 打印机列表查询
@@ -213,5 +221,91 @@ public class BackendPrinterController extends BaseController {
         result.put("printerInfo", printerInfo);
 
         return getSuccessResult(result);
+    }
+
+    /**
+     * 获取打印设置
+     *
+     * @param request
+     * @return
+     */
+    @ApiOperation(value = "获取打印设置")
+    @RequestMapping(value = "/setting", method = RequestMethod.GET)
+    @CrossOrigin
+    @PreAuthorize("@pms.hasPermission('printer:setting')")
+    public ResponseObject setting(HttpServletRequest request) throws BusinessCheckException {
+        String token = request.getHeader("Access-Token");
+        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
+        if (accountInfo == null) {
+            return getFailureResult(1001, "请先登录");
+        }
+
+        List<MtSetting> settingList = settingService.getSettingList(accountInfo.getMerchantId(), SettingTypeEnum.PRINTER.getKey());
+
+        String userName = "";
+        String userKey = "";
+        String enable = "";
+        for (MtSetting setting : settingList) {
+            if (StringUtil.isNotEmpty(setting.getValue())) {
+                if (setting.getName().equals(PrinterSettingEnum.USER_NAME.getKey())) {
+                    userName = setting.getValue();
+                } else if (setting.getName().equals(PrinterSettingEnum.USER_KEY.getKey())) {
+                    userKey = setting.getValue();
+                } else if (setting.getName().equals(PrinterSettingEnum.ENABLE.getKey())) {
+                    enable = setting.getValue();
+                }
+            }
+        }
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("userName", userName);
+        result.put("userKey", userKey);
+        result.put("enable", enable);
+
+        return getSuccessResult(result);
+    }
+
+    /**
+     * 保存打印设置
+     *
+     * @param request HttpServletRequest对象
+     * @return
+     */
+    @ApiOperation(value = "保存打印设置")
+    @RequestMapping(value = "/saveSetting", method = RequestMethod.POST)
+    @CrossOrigin
+    @PreAuthorize("@pms.hasPermission('printer:setting')")
+    public ResponseObject saveSetting(HttpServletRequest request, @RequestBody Map<String, Object> param) throws BusinessCheckException {
+        String token = request.getHeader("Access-Token");
+        String userName = param.get("userName") != null ? param.get("userName").toString() : null;
+        String userKey = param.get("userKey") != null ? param.get("userKey").toString() : null;
+        String enable = param.get("enable") != null ? param.get("enable").toString() : null;
+
+        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
+        if (accountInfo == null) {
+            return getFailureResult(1001, "请先登录");
+        }
+
+        PrinterSettingEnum[] settingList = PrinterSettingEnum.values();
+        for (PrinterSettingEnum setting : settingList) {
+            MtSetting mtSetting = new MtSetting();
+            mtSetting.setType(SettingTypeEnum.PRINTER.getKey());
+            mtSetting.setName(setting.getKey());
+            if (setting.getKey().equals(PrinterSettingEnum.USER_NAME.getKey())) {
+                mtSetting.setValue(userName);
+            } else if (setting.getKey().equals(PrinterSettingEnum.USER_KEY.getKey())) {
+                mtSetting.setValue(userKey);
+            } else if (setting.getKey().equals(PrinterSettingEnum.ENABLE.getKey())) {
+                mtSetting.setValue(enable);
+            }
+            mtSetting.setDescription(setting.getValue());
+            mtSetting.setOperator(accountInfo.getAccountName());
+            mtSetting.setUpdateTime(new Date());
+            mtSetting.setMerchantId(accountInfo.getMerchantId());
+            mtSetting.setStoreId(0);
+            settingService.saveSetting(mtSetting);
+        }
+
+        return getSuccessResult(true);
     }
 }
