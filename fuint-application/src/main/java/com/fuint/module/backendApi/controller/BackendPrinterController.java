@@ -174,6 +174,7 @@ public class BackendPrinterController extends BaseController {
         String name = params.get("name") == null ? "" : params.get("name").toString();
         String sn = params.get("sn") == null ? "" : params.get("sn").toString();
         String description = params.get("description") == null ? "" : params.get("description").toString();
+        String autoPrint = params.get("autoPrint") == null ? YesOrNoEnum.NO.getKey() : params.get("autoPrint").toString();
 
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
         if (accountInfo == null) {
@@ -186,6 +187,7 @@ public class BackendPrinterController extends BaseController {
         mtPrinter.setStoreId(Integer.parseInt(storeId));
         mtPrinter.setName(name);
         mtPrinter.setSn(sn);
+        mtPrinter.setAutoPrint(autoPrint);
         mtPrinter.setDescription(description);
         mtPrinter.setMerchantId(accountInfo.getMerchantId());
         if (StringUtil.isNotEmpty(id)) {
