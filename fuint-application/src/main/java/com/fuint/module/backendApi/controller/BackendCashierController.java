@@ -349,7 +349,7 @@ public class BackendCashierController extends BaseController {
     @RequestMapping(value = "/doHangUp", method = RequestMethod.POST)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('cashier:index')")
-    public ResponseObject doHangUp(HttpServletRequest request, @RequestBody Map<String, Object> param) {
+    public ResponseObject doHangUp(HttpServletRequest request, @RequestBody Map<String, Object> param) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
         String cartIds = param.get("cartIds") == null ? "" : param.get("cartIds").toString();
         String hangNo = param.get("hangNo") == null ? "" : param.get("hangNo").toString();
@@ -365,17 +365,13 @@ public class BackendCashierController extends BaseController {
             isVisitor = YesOrNoEnum.YES.getKey();
         }
 
-        try {
-            if (StringUtil.isNotEmpty(cartIds)) {
-                String[] ids = cartIds.split(",");
-                if (ids.length > 0) {
-                    for (int i = 0; i < ids.length; i++) {
-                         cartService.setHangNo(Integer.parseInt(ids[i]), hangNo, isVisitor);
-                    }
+        if (StringUtil.isNotEmpty(cartIds)) {
+            String[] ids = cartIds.split(",");
+            if (ids.length > 0) {
+                for (int i = 0; i < ids.length; i++) {
+                     cartService.setHangNo(Integer.parseInt(ids[i]), hangNo, isVisitor);
                 }
             }
-        } catch (BusinessCheckException e) {
-            return getFailureResult(201, "挂单失败");
         }
 
         return getSuccessResult(true);

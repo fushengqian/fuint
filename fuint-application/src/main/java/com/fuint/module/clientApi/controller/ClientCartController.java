@@ -122,6 +122,12 @@ public class ClientCartController extends BaseController {
         if (merchantId <= 0) {
             merchantId = mtUser.getMerchantId();
         }
+        if (merchantId <= 0) {
+            AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
+            if (accountInfo != null && accountInfo.getMerchantId() != null) {
+                merchantId = accountInfo.getMerchantId();
+            }
+        }
 
         MtCart mtCart = new MtCart();
         mtCart.setGoodsId(goodsId);

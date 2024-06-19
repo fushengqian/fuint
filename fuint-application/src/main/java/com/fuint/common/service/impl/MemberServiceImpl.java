@@ -147,7 +147,7 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
         if (accountInfo != null) {
             // 输入了会员ID就用会员的账号下单，否则用员工账号下单
-            if (userId > 0) {
+            if (userId != null && userId > 0) {
                 mtUser = queryMemberById(userId);
             } else {
                 Integer accountId = accountInfo.getId();
