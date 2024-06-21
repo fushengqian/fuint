@@ -97,6 +97,9 @@ public class MtUser implements Serializable {
     @ApiModelProperty("默认店铺")
     private Integer storeId;
 
+    @ApiModelProperty("是否员工")
+    private String isStaff;
+
     @ApiModelProperty("创建时间")
     private Date createTime;
 
