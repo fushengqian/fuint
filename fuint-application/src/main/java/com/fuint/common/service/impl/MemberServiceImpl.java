@@ -157,8 +157,14 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
                         MtStaff staff = staffService.queryStaffById(account.getStaffId());
                         if (staff != null) {
                             mtUser = queryMemberById(staff.getUserId());
-                            if (mtUser != null && (mtUser.getStoreId() == null || mtUser.getStoreId() <= 0)) {
-                                mtUser.setStoreId(staff.getStoreId());
+                            if (mtUser != null) {
+                                if (staff.getStoreId() != null && staff.getStoreId() > 0) {
+                                    mtUser.setStoreId(staff.getStoreId());
+                                }
+                                if (account.getMerchantId() != null && account.getMerchantId() > 0 && !account.getMerchantId().equals(mtUser.getMerchantId())) {
+                                    mtUser.setMerchantId(account.getMerchantId());
+                                }
+                                mtUser.setUpdateTime(new Date());
                                 updateById(mtUser);
                             }
                         }
