@@ -222,10 +222,13 @@ public class BackendMerchantController extends BaseController {
         if (StringUtil.isEmpty(name)) {
             return getFailureResult(201, "商户名称不能为空");
         } else {
-            MtMerchant tempDto = merchantService.queryMerchantByName(name);
-            if (null != tempDto && !tempDto.getId().equals(merchantId)) {
+            MtMerchant merchant = merchantService.queryMerchantByName(name);
+            if (null != merchant && !merchant.getId().equals(merchantId)) {
                 return getFailureResult(201, "该商户名称已经存在");
             }
+        }
+        if (merchantId <= 0 && accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
+            return getFailureResult(201, "抱歉，您没有添加商户的权限");
         }
 
         // 修改商户信息

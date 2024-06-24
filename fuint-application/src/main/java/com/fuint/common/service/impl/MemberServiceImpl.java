@@ -186,7 +186,7 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
         Page<MtUser> pageHelper = PageHelper.startPage(paginationRequest.getCurrentPage(), paginationRequest.getPageSize());
         LambdaQueryWrapper<MtUser> wrapper = Wrappers.lambdaQuery();
         wrapper.ne(MtUser::getStatus, StatusEnum.DISABLE.getKey());
-        wrapper.ne(MtUser::getIsStaff, YesOrNoEnum.NO.getKey());
+        wrapper.eq(MtUser::getIsStaff, YesOrNoEnum.NO.getKey());
         String name = paginationRequest.getSearchParams().get("name") == null ? "" : paginationRequest.getSearchParams().get("name").toString();
         if (StringUtils.isNotBlank(name)) {
             wrapper.like(MtUser::getName, name);
@@ -364,6 +364,9 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
         mtUser.setUpdateTime(time);
         mtUser.setStartTime(mtUser.getStartTime());
         mtUser.setEndTime(mtUser.getEndTime());
+        if (mtUser.getIsStaff() == null) {
+            mtUser.setIsStaff(YesOrNoEnum.NO.getKey());
+        }
         if (mtUser.getStoreId() != null) {
             mtUser.setStoreId(mtUser.getStoreId());
         } else {

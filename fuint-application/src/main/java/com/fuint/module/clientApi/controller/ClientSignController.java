@@ -214,6 +214,7 @@ public class ClientSignController extends BaseController {
         mtUser.setSex(GenderEnum.MAN.getKey());
         mtUser.setMobile("");
         mtUser.setDescription("会员自行注册新账号");
+        mtUser.setIsStaff(YesOrNoEnum.NO.getKey());
         MtUser userInfo = memberService.addMember(mtUser);
 
         if (userInfo != null) {

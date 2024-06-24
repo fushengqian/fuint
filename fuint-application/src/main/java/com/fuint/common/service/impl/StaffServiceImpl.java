@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fuint.common.enums.StatusEnum;
+import com.fuint.common.enums.YesOrNoEnum;
 import com.fuint.common.service.MemberService;
 import com.fuint.common.service.SendSmsService;
 import com.fuint.common.service.StaffService;
@@ -151,6 +152,7 @@ public class StaffServiceImpl extends ServiceImpl<MtStaffMapper, MtStaff> implem
             userInfo.setDescription("系统自动注册店铺员工账号");
             userInfo.setStoreId(mtStaff.getStoreId());
             userInfo.setMerchantId(mtStaff.getMerchantId());
+            userInfo.setIsStaff(YesOrNoEnum.TRUE.getKey());
             mtUser = memberService.addMember(userInfo);
             if (mtUser != null) {
                 mtStaff.setUserId(mtUser.getId());

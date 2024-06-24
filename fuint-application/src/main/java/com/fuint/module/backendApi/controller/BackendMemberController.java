@@ -302,6 +302,7 @@ public class BackendMemberController extends BaseController {
         memberInfo.setDescription(description);
         memberInfo.setStartTime(DateUtil.parseDate(startTime));
         memberInfo.setEndTime(DateUtil.parseDate(endTime));
+        memberInfo.setIsStaff(YesOrNoEnum.NO.getKey());
         if (StringUtil.isNotEmpty(storeId)) {
             memberInfo.setStoreId(Integer.parseInt(storeId));
         }
