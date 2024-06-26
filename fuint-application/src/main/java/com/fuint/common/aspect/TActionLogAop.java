@@ -208,8 +208,12 @@ public class TActionLogAop {
         }
     }
 
-    protected HttpServletRequest getRequest(){
-        return ((ServletRequestAttributes) (RequestContextHolder.currentRequestAttributes())).getRequest();
+    protected HttpServletRequest getRequest() {
+        try {
+            return ((ServletRequestAttributes) (RequestContextHolder.currentRequestAttributes())).getRequest();
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     /**
