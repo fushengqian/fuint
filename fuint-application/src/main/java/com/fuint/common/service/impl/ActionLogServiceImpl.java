@@ -41,7 +41,7 @@ public class ActionLogServiceImpl extends ServiceImpl<TActionLogMapper, TActionL
             lambdaQueryWrapper.eq(TActionLog::getMerchantId, merchantId);
         }
         String storeId = paginationRequest.getSearchParams().get("storeId") == null ? "" : paginationRequest.getSearchParams().get("storeId").toString();
-        if (StringUtils.isNotBlank(merchantId)) {
+        if (StringUtils.isNotBlank(storeId)) {
             lambdaQueryWrapper.eq(TActionLog::getStoreId, storeId);
         }
         String module = paginationRequest.getSearchParams().get("module") == null ? "" : paginationRequest.getSearchParams().get("module").toString();
