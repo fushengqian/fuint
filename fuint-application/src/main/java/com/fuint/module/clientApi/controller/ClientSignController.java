@@ -105,7 +105,7 @@ public class ClientSignController extends BaseController {
             userInfo.put("phone", phone);
         }
         // 默认店铺
-        if (storeId == null || StringUtil.isEmpty(storeId)) {
+        if (StringUtil.isEmpty(storeId)) {
             MtStore mtStore = storeService.getDefaultStore(merchantNo);
             if (mtStore != null) {
                 storeId = mtStore.getId().toString();
@@ -119,6 +119,11 @@ public class ClientSignController extends BaseController {
 
         String userAgent = request.getHeader("user-agent");
         String token = TokenUtil.generateToken(userAgent, mtUser.getId());
+        UserInfo userLoginInfo = new UserInfo();
+        userLoginInfo.setId(mtUser.getId());
+        userLoginInfo.setToken(token);
+        TokenUtil.saveToken(userLoginInfo);
+
         Map<String, Object> result = new HashMap<>();
         result.put("token", token);
         result.put("userId", mtUser.getId());
@@ -136,35 +141,30 @@ public class ClientSignController extends BaseController {
     @ResponseBody
     @CrossOrigin
     public ResponseObject mpWxAuth(HttpServletRequest request, @RequestBody Map<String, Object> param) throws BusinessCheckException {
-        String token = request.getHeader("Access-Token");
         String merchantNo = request.getHeader("merchantNo") == null ? "" : request.getHeader("merchantNo");
         String storeId = request.getHeader("storeId") == null ? "0" : request.getHeader("storeId");
 
         Integer merchantId = merchantService.getMerchantId(merchantNo);
-        JSONObject mpUserInfo = weixinService.getWxOpenId(merchantId, param.get("code").toString());
-        if (mpUserInfo == null) {
+        JSONObject userInfo = weixinService.getWxOpenId(merchantId, param.get("code").toString());
+        if (userInfo == null) {
             return getFailureResult(201, "微信公众号授权失败");
         }
 
-        if (StringUtil.isEmpty(token)) {
-            return getFailureResult(1001);
-        }
-
-        UserInfo loginInfo = TokenUtil.getUserInfoByToken(token);
-        if (loginInfo == null) {
-            return getFailureResult(1001);
-        }
-
-        MtUser userInfo = memberService.queryMemberById(loginInfo.getId());
-        userInfo.setOpenId(mpUserInfo.get("openid").toString());
-        userInfo.setStoreId(Integer.parseInt(storeId));
-        MtUser mtUser = memberService.updateMember(userInfo, false);
-
+        userInfo.put("storeId", storeId);
+        MtUser mtUser = memberService.queryMemberByOpenId(merchantId, userInfo.get("openid").toString(), userInfo);
         if (mtUser == null) {
-            return getFailureResult(0, "用户状态异常");
+            return getFailureResult(201, "微信公众号授权失败");
         }
+
+        String userAgent = request.getHeader("user-agent");
+        String token = TokenUtil.generateToken(userAgent, mtUser.getId());
+        UserInfo userLoginInfo = new UserInfo();
+        userLoginInfo.setId(mtUser.getId());
+        userLoginInfo.setToken(token);
+        TokenUtil.saveToken(userLoginInfo);
 
         Map<String, Object> result = new HashMap<>();
+        result.put("token", token);
         result.put("userId", mtUser.getId());
         result.put("userName", mtUser.getName());
         result.put("openId", mtUser.getOpenId());
@@ -219,6 +219,10 @@ public class ClientSignController extends BaseController {
 
         if (userInfo != null) {
             String token = TokenUtil.generateToken(userAgent, userInfo.getId());
+            UserInfo loginInfo = new UserInfo();
+            loginInfo.setId(userInfo.getId());
+            loginInfo.setToken(token);
+            TokenUtil.saveToken(loginInfo);
             Map<String, Object> outParams = new HashMap<>();
             outParams.put("userId", userInfo.getId());
             outParams.put("userName", userInfo.getName());
@@ -256,16 +260,16 @@ public class ClientSignController extends BaseController {
         String password = param.get("password") == null ? "" : param.get("password").toString();
         String captchaCode = param.get("captchaCode") == null ? "" : param.get("captchaCode").toString();
         String uuid = param.get("uuid") == null ? "" : param.get("uuid").toString();
-        TokenDto tokenDto = new TokenDto();
+        TokenDto dto = new TokenDto();
         MtUser mtUser = null;
         Integer merchantId = merchantService.getMerchantId(merchantNo);
         // 方式1：通过短信验证码登录
         if (StringUtil.isNotEmpty(mobile) && StringUtil.isNotEmpty(verifyCode)) {
             // 如果已经登录，免输入验证码
             if (StringUtil.isNotEmpty(token) && TokenUtil.checkTokenLogin(token)) {
-                tokenDto.setIsLogin(YesOrNoEnum.TRUE.getKey());
-                tokenDto.setToken(token);
-                return getSuccessResult(JSONObject.toJSONString(tokenDto));
+                dto.setIsLogin(YesOrNoEnum.TRUE.getKey());
+                dto.setToken(token);
+                return getSuccessResult(JSONObject.toJSONString(dto));
             }
 
             // 1、验证码验证
@@ -291,12 +295,16 @@ public class ClientSignController extends BaseController {
                 // 更新验证码
                 verifyCodeService.updateValidFlag(mtVerifyCode.getId(), "1");
                 String userToken = TokenUtil.generateToken(userAgent, mtUser.getId());
+                UserInfo loginInfo = new UserInfo();
+                loginInfo.setId(mtUser.getId());
+                loginInfo.setToken(userToken);
+                TokenUtil.saveToken(loginInfo);
 
-                tokenDto.setIsLogin(YesOrNoEnum.TRUE.getKey());
-                tokenDto.setToken(userToken);
-                tokenDto.setTokenCreatedTime(System.currentTimeMillis());
+                dto.setIsLogin(YesOrNoEnum.TRUE.getKey());
+                dto.setToken(userToken);
+                dto.setTokenCreatedTime(System.currentTimeMillis());
             } else {
-                tokenDto.setIsLogin(YesOrNoEnum.FALSE.getKey());
+                dto.setIsLogin(YesOrNoEnum.FALSE.getKey());
                 return getFailureResult(201, "验证码错误或已过期，登录失败");
             }
         }
@@ -313,7 +321,11 @@ public class ClientSignController extends BaseController {
                 String myPassword = userInfo.getPassword();
                 String inputPassword = memberService.deCodePassword(password, userInfo.getSalt());
                 if (myPassword.equals(inputPassword)) {
-                    tokenDto.setToken(TokenUtil.generateToken(userAgent, userInfo.getId()));
+                    UserInfo loginInfo = new UserInfo();
+                    loginInfo.setToken(TokenUtil.generateToken(userAgent, userInfo.getId()));
+                    loginInfo.setId(userInfo.getId());
+                    TokenUtil.saveToken(loginInfo);
+                    dto.setToken(loginInfo.getToken());
                     mtUser = userInfo;
                 } else {
                     return getFailureResult(201, "账号或密码有误");
@@ -325,7 +337,7 @@ public class ClientSignController extends BaseController {
 
         if (mtUser != null) {
             Map<String, Object> outParams = new HashMap<>();
-            outParams.put("token", tokenDto.getToken());
+            outParams.put("token", dto.getToken());
             outParams.put("userId", mtUser.getId());
             outParams.put("userName", mtUser.getName());
             outParams.put("openId", mtUser.getOpenId());
@@ -356,6 +368,30 @@ public class ClientSignController extends BaseController {
             return getFailureResult(1001, "用户没登录!");
         }
         return getSuccessResult(userInfo);
+    }
+
+    /**
+     * 获取授权登录配置
+     */
+    @ApiOperation(value = "获取授权登录配置")
+    @RequestMapping(value = "/authLoginConfig", method = RequestMethod.GET)
+    @CrossOrigin
+    public ResponseObject authLoginConfig(HttpServletRequest request) {
+        String merchantNo = request.getHeader("merchantNo") == null ? "" : request.getHeader("merchantNo");
+
+        MtMerchant mtMerchant = merchantService.queryMerchantByNo(merchantNo);
+
+        Map<String, Object> outParams = new HashMap<>();
+        String domain = env.getProperty("website.url");
+        String appId = env.getProperty("weixin.official.appId");
+        if (mtMerchant != null && StringUtil.isNotEmpty(mtMerchant.getWxOfficialAppId())) {
+            appId = mtMerchant.getWxOfficialAppId();
+        }
+
+        outParams.put("appId", appId);
+        outParams.put("domain", domain);
+
+        return getSuccessResult(outParams);
     }
 
     /**

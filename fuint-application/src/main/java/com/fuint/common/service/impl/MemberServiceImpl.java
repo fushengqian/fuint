@@ -677,7 +677,11 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
             mtUser.setUserNo(userNo);
             mtUser.setMobile(mobile);
             mtUser.setAvatar(avatar);
-            mtUser.setName(nickName);
+            if (StringUtil.isNotEmpty(nickName)) {
+                mtUser.setName(nickName);
+            } else {
+                mtUser.setName(userNo);
+            }
             mtUser.setOpenId(openId);
             MtUserGrade grade = userGradeService.getInitUserGrade(merchantId);
             if (grade != null) {
