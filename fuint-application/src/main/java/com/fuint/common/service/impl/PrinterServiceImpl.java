@@ -8,10 +8,7 @@ import com.fuint.common.enums.SettingTypeEnum;
 import com.fuint.common.service.SettingService;
 import com.fuint.common.util.HashSignUtil;
 import com.fuint.common.util.PrinterUtil;
-import com.fuint.common.vo.printer.AddPrinterRequest;
-import com.fuint.common.vo.printer.AddPrinterRequestItem;
-import com.fuint.common.vo.printer.DelPrinterRequest;
-import com.fuint.common.vo.printer.RestRequest;
+import com.fuint.common.vo.printer.*;
 import com.fuint.framework.annoation.OperationServiceLog;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.pagination.PaginationRequest;
@@ -141,6 +138,60 @@ public class PrinterServiceImpl extends ServiceImpl<MtPrinterMapper, MtPrinter> 
     }
 
     /**
+     * 执行打印
+     *
+     * @param
+     * */
+    @Override
+    public void doPrint() throws BusinessCheckException {
+        PrintRequest printRequest = new PrintRequest();
+        createRequestHeader(0, printRequest);
+        printRequest.setSn("74BLW3L8C2FE448");
+
+        StringBuilder printContent = new StringBuilder();
+        printContent.append("不加标签：").append("默认字体大小<BR>");
+        printContent.append("<BR>");
+        printContent.append("L标签：").append("<L>左对齐<BR></L>");
+        printContent.append("<BR>");
+        printContent.append("R标签：").append("<R>右对齐<BR></R>");
+        printContent.append("<BR>");
+        printContent.append("C标签：").append("<C>居中对齐<BR></C>");
+
+        printContent.append("<BR>");
+        printContent.append("N标签：").append("<N>字体正常大小<BR></N>");
+        printContent.append("<BR>");
+        printContent.append("HB标签：").append("<HB>字体变高一倍<BR></HB>");
+        printContent.append("<BR>");
+        printContent.append("WB标签：").append("<WB>字体变宽一倍<BR></WB>");
+        printContent.append("<BR>");
+        printContent.append("B标签：").append("<B>字体放大一倍<BR></B>");
+        printContent.append("<BR>");
+        printContent.append("HB2标签：").append("<HB2>字体变高二倍<BR></HB2>");
+        printContent.append("<BR>");
+        printContent.append("WB2标签：").append("<WB2>字体变宽二倍<BR></WB2>");
+        printContent.append("<BR>");
+        printContent.append("B2标签：").append("<B2>字体放大二倍<BR></B2>");
+        printContent.append("<BR>");
+        printContent.append("BOLD标签：").append("<BOLD>字体加粗<BR></BOLD>");
+
+        // 嵌套使用对齐和字体
+        printContent.append("<BR>");
+        printContent.append("<C>嵌套使用：").append("<BOLD>居中加粗</BOLD>").append("<BR></C>");
+
+        // 打印条形码和二维码
+        printContent.append("<BR>");
+        printContent.append("<C><BARCODE>9884822189</BARCODE></C>");
+        printContent.append("<C><QR>https://www.xpyun.net</QR></C>");
+
+        printRequest.setContent(printContent.toString());
+        printRequest.setCopies(1);
+        printRequest.setVoice(2);
+        printRequest.setMode(0);
+        ObjectRestResponse<String> resp = PrinterUtil.print(printRequest);
+        String a = "abc";
+    }
+
+    /**
      * 根据ID获打印机取息
      *
      * @param id 打印机ID
@@ -182,7 +233,7 @@ public class PrinterServiceImpl extends ServiceImpl<MtPrinterMapper, MtPrinter> 
     /**
      * 修改打印机数据
      *
-     * @param mtPrinter
+     * @param mtPrinter 打印机参数
      * @throws BusinessCheckException
      * @return
      */
@@ -268,7 +319,6 @@ public class PrinterServiceImpl extends ServiceImpl<MtPrinterMapper, MtPrinter> 
                 request.setTimestamp(System.currentTimeMillis() + "");
                 //*必填*：对参数 user + UserKEY + timestamp 拼接后（+号表示连接符）进行SHA1加密得到签名，值为40位小写字符串，其中 UserKEY 为用户开发者密钥
                 request.setSign(HashSignUtil.sign(request.getUser() + userKey + request.getTimestamp()));
-
                 //debug=1返回非json格式的数据，仅测试时候使用
                 request.setDebug("0");
             }

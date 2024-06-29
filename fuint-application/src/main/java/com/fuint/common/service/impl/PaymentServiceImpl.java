@@ -67,11 +67,6 @@ public class PaymentServiceImpl implements PaymentService {
     private UserCouponService userCouponService;
 
     /**
-     * 开卡赠礼服务接口
-     * */
-    private OpenGiftService openGiftService;
-
-    /**
      * 创建预支付订单
      *
      * @param userInfo 会员信息

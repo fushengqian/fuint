@@ -10,10 +10,9 @@ import com.fuint.common.enums.*;
 import com.fuint.common.param.OrderListParam;
 import com.fuint.common.param.SettlementParam;
 import com.fuint.common.service.*;
-import com.fuint.common.util.CommonUtil;
-import com.fuint.common.util.DateUtil;
-import com.fuint.common.util.SeqUtil;
-import com.fuint.common.util.TokenUtil;
+import com.fuint.common.util.*;
+import com.fuint.common.vo.printer.ObjectRestResponse;
+import com.fuint.common.vo.printer.PrintRequest;
 import com.fuint.framework.annoation.OperationServiceLog;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.pagination.PaginationResponse;
@@ -168,6 +167,11 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
      * 支付服务接口
      * */
     private PaymentService paymentService;
+
+    /**
+     * 会员卡券服务接口
+     * */
+    private PrinterService printerService;
 
     /**
      * 获取用户订单列表
@@ -1437,6 +1441,8 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
                 logger.error("会员升级出错啦，userId = {}，message = {}", orderInfo.getUserId(), ex.getMessage());
             }
         }
+
+        printerService.doPrint();
 
         // 给商家发送通知短信
         try {

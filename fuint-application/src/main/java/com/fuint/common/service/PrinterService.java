@@ -33,6 +33,8 @@ public interface PrinterService extends IService<MtPrinter> {
      */
     MtPrinter addPrinter(MtPrinter mtPrinter) throws BusinessCheckException;
 
+    void doPrint() throws BusinessCheckException;
+
     /**
      * 根据ID获取打印机信息
      *

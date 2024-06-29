@@ -136,16 +136,19 @@ public class TActionLogAop {
     @After("serviceAspect() && @annotation(operationServiceLog)")
     public void doAfterInService(OperationServiceLog operationServiceLog) {
         try {
+            HttpServletRequest request = getRequest();
+            if (request == null) {
+                return;
+            }
             endTimeMillis = System.currentTimeMillis(); // 记录方法执行完成的时间
-            clientIp = CommonUtil.getIPFromHttpRequest(getRequest());
-            userAgent = getRequest().getHeader("user-agent");
-            url = getRequest().getRequestURI();
+            clientIp = CommonUtil.getIPFromHttpRequest(request);
+            userAgent = request.getHeader("user-agent");
+            url = request.getRequestURI();
             clientPort = 0;
             module = operationServiceLog.description();
             if (module.length() > 255) {
                 module = module.substring(0, 255);
             }
-            HttpServletRequest request = getRequest();
             String token = request.getHeader("Access-Token");
             if (StringUtils.isNotEmpty(token)) {
                 AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
