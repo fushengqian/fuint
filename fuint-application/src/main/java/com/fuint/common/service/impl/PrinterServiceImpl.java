@@ -3,8 +3,10 @@ package com.fuint.common.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.fuint.common.dto.UserOrderDto;
 import com.fuint.common.enums.PrinterSettingEnum;
 import com.fuint.common.enums.SettingTypeEnum;
+import com.fuint.common.enums.YesOrNoEnum;
 import com.fuint.common.service.SettingService;
 import com.fuint.common.util.HashSignUtil;
 import com.fuint.common.util.PrinterUtil;
@@ -18,6 +20,7 @@ import com.fuint.common.service.PrinterService;
 import com.fuint.common.enums.StatusEnum;
 import com.fuint.repository.mapper.MtPrinterMapper;
 import com.fuint.repository.model.MtSetting;
+import com.fuint.repository.model.MtStore;
 import com.fuint.utils.StringUtil;
 import com.github.pagehelper.PageHelper;
 import lombok.AllArgsConstructor;
@@ -138,57 +141,49 @@ public class PrinterServiceImpl extends ServiceImpl<MtPrinterMapper, MtPrinter> 
     }
 
     /**
-     * 执行打印
+     * 打印订单
      *
-     * @param
+     * @param orderInfo 订单信息
+     * @return
      * */
     @Override
-    public void doPrint() throws BusinessCheckException {
+    public Boolean printOrder(UserOrderDto orderInfo) throws BusinessCheckException {
         PrintRequest printRequest = new PrintRequest();
         createRequestHeader(0, printRequest);
-        printRequest.setSn("74BLW3L8C2FE448");
+        if (orderInfo.getStoreInfo() == null) {
+            return false;
+        }
 
-        StringBuilder printContent = new StringBuilder();
-        printContent.append("不加标签：").append("默认字体大小<BR>");
-        printContent.append("<BR>");
-        printContent.append("L标签：").append("<L>左对齐<BR></L>");
-        printContent.append("<BR>");
-        printContent.append("R标签：").append("<R>右对齐<BR></R>");
-        printContent.append("<BR>");
-        printContent.append("C标签：").append("<C>居中对齐<BR></C>");
+        // 获取打印机列表
+        Map<String, Object> params = new HashMap<>();
+        params.put("storeId", orderInfo.getStoreInfo().getId());
+        params.put("status", StatusEnum.ENABLED.getKey());
+        params.put("autoPrint", YesOrNoEnum.YES.getKey());
+        List<MtPrinter> printers = queryPrinterListByParams(params);
+        if (printers == null || printers.size() < 1) {
+            return false;
+        }
 
-        printContent.append("<BR>");
-        printContent.append("N标签：").append("<N>字体正常大小<BR></N>");
-        printContent.append("<BR>");
-        printContent.append("HB标签：").append("<HB>字体变高一倍<BR></HB>");
-        printContent.append("<BR>");
-        printContent.append("WB标签：").append("<WB>字体变宽一倍<BR></WB>");
-        printContent.append("<BR>");
-        printContent.append("B标签：").append("<B>字体放大一倍<BR></B>");
-        printContent.append("<BR>");
-        printContent.append("HB2标签：").append("<HB2>字体变高二倍<BR></HB2>");
-        printContent.append("<BR>");
-        printContent.append("WB2标签：").append("<WB2>字体变宽二倍<BR></WB2>");
-        printContent.append("<BR>");
-        printContent.append("B2标签：").append("<B2>字体放大二倍<BR></B2>");
-        printContent.append("<BR>");
-        printContent.append("BOLD标签：").append("<BOLD>字体加粗<BR></BOLD>");
+        MtStore storeInfo = orderInfo.getStoreInfo();
+        for (MtPrinter mtPrinter : printers) {
+            printRequest.setSn(mtPrinter.getSn());
+            StringBuilder printContent = new StringBuilder();
+            printContent.append("<C>下单店铺：").append("<BOLD>"+storeInfo.getName()+"</BOLD>").append("<BR></C>");
+            printContent.append("<BR>");
+            printContent.append("订单号：").append("<BOLD>" + orderInfo.getOrderSn()+ "<BR></BOLD>");
+            printContent.append("订单金额：").append("<BOLD>" + orderInfo.getPayAmount()+ "<BR></BOLD>");
+            // 订单号条形码
+            printContent.append("<BR>");
+            printContent.append("<C><BARCODE>"+ orderInfo.getOrderSn() +"</BARCODE></C>");
 
-        // 嵌套使用对齐和字体
-        printContent.append("<BR>");
-        printContent.append("<C>嵌套使用：").append("<BOLD>居中加粗</BOLD>").append("<BR></C>");
+            printRequest.setContent(printContent.toString());
+            printRequest.setCopies(1);
+            printRequest.setVoice(2);
+            printRequest.setMode(0);
+            ObjectRestResponse<String> resp = PrinterUtil.print(printRequest);
+        }
 
-        // 打印条形码和二维码
-        printContent.append("<BR>");
-        printContent.append("<C><BARCODE>9884822189</BARCODE></C>");
-        printContent.append("<C><QR>https://www.xpyun.net</QR></C>");
-
-        printRequest.setContent(printContent.toString());
-        printRequest.setCopies(1);
-        printRequest.setVoice(2);
-        printRequest.setMode(0);
-        ObjectRestResponse<String> resp = PrinterUtil.print(printRequest);
-        String a = "abc";
+        return true;
     }
 
     /**
@@ -283,18 +278,16 @@ public class PrinterServiceImpl extends ServiceImpl<MtPrinterMapper, MtPrinter> 
             lambdaQueryWrapper.eq(MtPrinter::getName, name);
         }
         if (StringUtils.isNotBlank(storeId)) {
-            lambdaQueryWrapper.and(wq -> wq
-                    .eq(MtPrinter::getStoreId, 0)
-                    .or()
-                    .eq(MtPrinter::getStoreId, storeId));
+            lambdaQueryWrapper.eq(MtPrinter::getStoreId, storeId);
         }
-
         lambdaQueryWrapper.orderByAsc(MtPrinter::getId);
-        List<MtPrinter> dataList = mtPrinterMapper.selectList(lambdaQueryWrapper);
-        return dataList;
+
+        return mtPrinterMapper.selectList(lambdaQueryWrapper);
     }
 
     /**
+     * 创建接口请求header
+     *
      * @param merchantId 商户ID
      * @param request RestRequest
      * @return
@@ -313,13 +306,9 @@ public class PrinterServiceImpl extends ServiceImpl<MtPrinterMapper, MtPrinter> 
                 }
             }
             if (StringUtil.isNotEmpty(userName) && StringUtil.isNotEmpty(userKey)) {
-                //*必填*：芯烨云平台注册用户名（开发者ID）
                 request.setUser(userName);
-                //*必填*：当前UNIX时间戳
                 request.setTimestamp(System.currentTimeMillis() + "");
-                //*必填*：对参数 user + UserKEY + timestamp 拼接后（+号表示连接符）进行SHA1加密得到签名，值为40位小写字符串，其中 UserKEY 为用户开发者密钥
                 request.setSign(HashSignUtil.sign(request.getUser() + userKey + request.getTimestamp()));
-                //debug=1返回非json格式的数据，仅测试时候使用
                 request.setDebug("0");
             }
         }

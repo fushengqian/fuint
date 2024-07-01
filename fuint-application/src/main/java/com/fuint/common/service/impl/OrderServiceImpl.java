@@ -1442,10 +1442,11 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
             }
         }
 
-        printerService.doPrint();
-
-        // 给商家发送通知短信
         try {
+            // 打印订单
+            printerService.printOrder(orderInfo);
+
+            // 给商家发送通知短信
             MtStore mtStore = storeService.queryStoreById(mtOrder.getStoreId());
             if (mtStore != null && orderInfo.getIsVisitor().equals(YesOrNoEnum.NO.getKey())) {
                 Map<String, String> params = new HashMap<>();
