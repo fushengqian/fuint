@@ -116,12 +116,13 @@ public class StaffServiceImpl extends ServiceImpl<MtStaffMapper, MtStaff> implem
      * 保存员工信息
      *
      * @param  mtStaff 员工参数
+     * @param operator 操作人
      * @throws BusinessCheckException
      * @return
      */
     @Override
     @OperationServiceLog(description = "保存店铺员工")
-    public MtStaff saveStaff(MtStaff mtStaff) throws BusinessCheckException {
+    public MtStaff saveStaff(MtStaff mtStaff, String operator) throws BusinessCheckException {
         mtStaff.setUpdateTime(new Date());
         if (mtStaff.getId() == null || mtStaff.getId() <= 0) {
             mtStaff.setCreateTime(new Date());
@@ -153,12 +154,17 @@ public class StaffServiceImpl extends ServiceImpl<MtStaffMapper, MtStaff> implem
             userInfo.setStoreId(mtStaff.getStoreId());
             userInfo.setMerchantId(mtStaff.getMerchantId());
             userInfo.setIsStaff(YesOrNoEnum.YES.getKey());
+            userInfo.setOperator(operator);
             mtUser = memberService.addMember(userInfo);
             if (mtUser != null) {
                 mtStaff.setUserId(mtUser.getId());
             } else {
                 throw new BusinessCheckException("新增员工失败");
             }
+        } else {
+            mtUser.setIsStaff(YesOrNoEnum.YES.getKey());
+            mtUser.setOperator(operator);
+            memberService.updateMember(mtUser, false);
         }
 
         // 更新员工

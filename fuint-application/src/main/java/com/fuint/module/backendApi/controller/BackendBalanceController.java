@@ -272,7 +272,7 @@ public class BackendBalanceController extends BaseController {
         if (rechargeItems.size() < 0) {
             return getFailureResult(201, "充值规则设置不能为空");
         }
-        if (accountInfo.getMerchantId() == null || accountInfo.getMerchantId() < 0) {
+        if (accountInfo.getMerchantId() == null || accountInfo.getMerchantId() <= 0) {
             return getFailureResult(201, "平台方帐号无法执行该操作，请使用商户帐号操作");
         }
 

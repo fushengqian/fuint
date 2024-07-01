@@ -165,6 +165,7 @@ public class GoodsServiceImpl extends ServiceImpl<MtGoodsMapper, MtGoods> implem
             item.setUpdateTime(mtGoods.getUpdateTime());
             item.setStatus(mtGoods.getStatus());
             item.setOperator(mtGoods.getOperator());
+            item.setWeight(mtGoods.getWeight());
             dataList.add(item);
         }
 

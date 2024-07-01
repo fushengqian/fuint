@@ -189,7 +189,7 @@ public class BackendStaffController extends BaseController {
                 return getFailureResult(201, "该手机号码已经存在");
             }
         }
-        staffService.saveStaff(mtStaff);
+        staffService.saveStaff(mtStaff, accountInfo.getAccountName());
         return getSuccessResult(true);
     }
 

@@ -114,6 +114,9 @@ public class BannerServiceImpl extends ServiceImpl<MtBannerMapper, MtBanner> imp
                 mtBanner.setMerchantId(mtStore.getMerchantId());
             }
         }
+        if (mtBanner.getMerchantId() == null || mtBanner.getMerchantId() <= 0) {
+            throw new BusinessCheckException("新增焦点图失败：所属商户不能为空！");
+        }
         mtBanner.setStoreId(storeId);
         mtBanner.setStatus(StatusEnum.ENABLED.getKey());
         mtBanner.setUpdateTime(new Date());
@@ -123,7 +126,7 @@ public class BannerServiceImpl extends ServiceImpl<MtBannerMapper, MtBanner> imp
             return mtBanner;
         } else {
             logger.error("新增焦点图失败.");
-            throw new BusinessCheckException("新增焦点图失败");
+            throw new BusinessCheckException("抱歉，新增焦点图失败！");
         }
     }
 

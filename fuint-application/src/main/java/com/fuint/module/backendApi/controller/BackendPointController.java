@@ -194,7 +194,7 @@ public class BackendPointController extends BaseController {
         if (accountInfo == null) {
             return getFailureResult(1001, "请先登录");
         }
-        if (accountInfo.getMerchantId() == null || accountInfo.getMerchantId() < 0) {
+        if (accountInfo.getMerchantId() == null || accountInfo.getMerchantId() <= 0) {
             return getFailureResult(201, "平台方帐号无法执行该操作，请使用商户帐号操作");
         }
 
