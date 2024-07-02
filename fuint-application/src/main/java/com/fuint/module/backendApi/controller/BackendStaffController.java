@@ -163,6 +163,10 @@ public class BackendStaffController extends BaseController {
             return getFailureResult(1001, "请先登录");
         }
 
+        if (accountInfo.getMerchantId() == null || accountInfo.getMerchantId() <= 0) {
+            return getFailureResult(201, "平台方帐号无法执行该操作，请使用商户帐号操作");
+        }
+
         MtStaff mtStaff = new MtStaff();
         if (StringUtil.isNotEmpty(id)) {
             mtStaff = staffService.queryStaffById(Integer.parseInt(id));

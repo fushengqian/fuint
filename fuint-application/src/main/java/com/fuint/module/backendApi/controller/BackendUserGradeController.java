@@ -164,8 +164,13 @@ public class BackendUserGradeController extends BaseController {
         }
 
         String operator = accountInfo.getAccountName();
-        userGradeService.deleteUserGrade(id, operator);
 
+        MtUserGrade mtUserGrade = userGradeService.queryUserGradeById(0, id, 0);
+        if (mtUserGrade == null || !mtUserGrade.getMerchantId().equals(accountInfo.getMerchantId())) {
+            return getFailureResult(201, "您没有删除权限");
+        }
+
+        userGradeService.deleteUserGrade(id, operator);
         return getSuccessResult(true);
     }
 
@@ -197,6 +202,10 @@ public class BackendUserGradeController extends BaseController {
         String privilege = param.get("userPrivilege") == null ? "" : CommonUtil.replaceXSS(param.get("userPrivilege").toString());
         String status = param.get("status") == null ? StatusEnum.ENABLED.getKey() : CommonUtil.replaceXSS(param.get("status").toString());
         String id = param.get("id") == null ? "" : param.get("id").toString();
+
+        if (accountInfo.getMerchantId() == null || accountInfo.getMerchantId() <= 0) {
+            return getFailureResult(201, "平台方帐号无法执行该操作，请使用商户帐号操作");
+        }
 
         if (StringUtil.isEmpty(grade) || StringUtil.isEmpty(name)) {
             return getFailureResult(201, "参数有误");

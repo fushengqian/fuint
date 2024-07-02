@@ -183,21 +183,22 @@ public class BackendBannerController extends BaseController {
             return getFailureResult(1001, "请先登录");
         }
 
-        BannerDto info = new BannerDto();
-        info.setTitle(title);
-        info.setDescription(description);
-        info.setImage(image);
-        info.setUrl(url);
-        info.setOperator(accountInfo.getAccountName());
-        info.setStatus(status);
-        info.setStoreId(Integer.parseInt(storeId));
-        info.setSort(Integer.parseInt(sort));
-        info.setMerchantId(accountInfo.getMerchantId());
+        BannerDto bannerDto = new BannerDto();
+        bannerDto.setTitle(title);
+        bannerDto.setDescription(description);
+        bannerDto.setImage(image);
+        bannerDto.setUrl(url);
+        bannerDto.setOperator(accountInfo.getAccountName());
+        bannerDto.setStatus(status);
+        bannerDto.setStoreId(Integer.parseInt(storeId));
+        bannerDto.setSort(Integer.parseInt(sort));
+        bannerDto.setMerchantId(accountInfo.getMerchantId());
+
         if (StringUtil.isNotEmpty(id)) {
-            info.setId(Integer.parseInt(id));
-            bannerService.updateBanner(info);
+            bannerDto.setId(Integer.parseInt(id));
+            bannerService.updateBanner(bannerDto);
         } else {
-            bannerService.addBanner(info);
+            bannerService.addBanner(bannerDto);
         }
 
         return getSuccessResult(true);
