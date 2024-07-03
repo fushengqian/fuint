@@ -1273,6 +1273,10 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
             mtOrder.setPayTime(orderDto.getPayTime());
         }
 
+        if (null != orderDto.getPayType()) {
+            mtOrder.setPayType(orderDto.getPayType());
+        }
+
         if (null != orderDto.getPayStatus()) {
             mtOrder.setPayStatus(orderDto.getPayStatus());
         }
