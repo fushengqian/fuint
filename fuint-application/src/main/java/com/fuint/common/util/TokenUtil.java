@@ -30,25 +30,52 @@ public class TokenUtil {
      * @return
      * */
     public static String generateToken(String userAgent, Integer userId) {
-        StringBuilder token = new StringBuilder();
+        StringBuilder stringBuilder = new StringBuilder();
         UserAgent userAgent1 = UserAgent.parseUserAgentString(userAgent);
         if (userAgent1.getOperatingSystem().isMobileDevice()) {
-            token.append("APP_");
+            stringBuilder.append("APP_");
         } else {
-            token.append("PC_");
+            stringBuilder.append("PC_");
         }
 
-        token.append(userId);
-        token.append(new SimpleDateFormat("yyyyMMddHHmmssSSS").format(new Date()) + "_");
-        token.append(new Random().nextInt((999999 - 111111 + 1)) + 111111);
-        String tokenStr = MD5Util.getMD5(token.toString()).replace("+", "1").replaceAll("&", "8");
+        stringBuilder.append(userId);
+        stringBuilder.append(new SimpleDateFormat("yyyyMMddHHmmssSSS").format(new Date()) + "_");
+        stringBuilder.append(new Random().nextInt((999999 - 111111 + 1)) + 111111);
+        String token = MD5Util.getMD5(stringBuilder.toString()).replace("+", "1").replaceAll("&", "8");
 
         UserInfo userLoginInfo = new UserInfo();
         userLoginInfo.setId(userId);
-        userLoginInfo.setToken(tokenStr);
+        userLoginInfo.setToken(token);
         saveToken(userLoginInfo);
 
-        return tokenStr;
+        return token;
+    }
+
+    /**
+     * 生成token
+     *
+     * @param userAgent
+     * @param accountInfo
+     * @return
+     * */
+    public static String generateToken(String userAgent, AccountInfo accountInfo) {
+        StringBuilder stringBuilder = new StringBuilder();
+        UserAgent userAgent1 = UserAgent.parseUserAgentString(userAgent);
+        if (userAgent1.getOperatingSystem().isMobileDevice()) {
+            stringBuilder.append("APP_");
+        } else {
+            stringBuilder.append("PC_");
+        }
+
+        stringBuilder.append(accountInfo.getId());
+        stringBuilder.append(new SimpleDateFormat("yyyyMMddHHmmssSSS").format(new Date()) + "_");
+        stringBuilder.append(new Random().nextInt((999999 - 111111 + 1)) + 111111);
+        String token = MD5Util.getMD5(stringBuilder.toString()).replace("+", "1").replaceAll("&", "8");
+
+        accountInfo.setToken(token);
+        saveAccountToken(accountInfo);
+
+        return token;
     }
 
     /**

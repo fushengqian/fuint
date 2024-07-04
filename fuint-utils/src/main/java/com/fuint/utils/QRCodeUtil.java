@@ -2,9 +2,6 @@ package com.fuint.utils;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
-
 import java.io.*;
 
 /**
@@ -14,10 +11,8 @@ import java.io.*;
  * CopyRight https://www.fuint.cn
  */
 public class QRCodeUtil {
-    public static final Logger logger = LoggerFactory.getLogger(QRCodeUtil.class);
 
-    @Autowired
-    private Environment env;
+    public static final Logger logger = LoggerFactory.getLogger(QRCodeUtil.class);
 
     /**
      * 保存二维码

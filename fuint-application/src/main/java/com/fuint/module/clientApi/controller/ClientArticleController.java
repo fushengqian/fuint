@@ -18,6 +18,8 @@ import io.swagger.annotations.ApiOperation;
 import lombok.AllArgsConstructor;
 import java.lang.reflect.InvocationTargetException;
 import org.springframework.web.bind.annotation.*;
+
+import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -46,11 +48,11 @@ public class ClientArticleController extends BaseController {
     @ApiOperation(value="获取文章列表", notes="获取文章列表")
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @CrossOrigin
-    public ResponseObject list(@RequestBody ArticleListParam articleListParam) throws BusinessCheckException, InvocationTargetException, IllegalAccessException {
+    public ResponseObject list(HttpServletRequest request,  @RequestBody ArticleListParam articleListParam) throws BusinessCheckException, InvocationTargetException, IllegalAccessException {
         String title = articleListParam.getTitle();
         Integer page = articleListParam.getPage() == null ? Constants.PAGE_NUMBER : articleListParam.getPage();
         Integer pageSize = articleListParam.getPageSize() == null ? Constants.PAGE_SIZE : articleListParam.getPageSize();
-        String merchantNo = articleListParam.getMerchantNo() == null ? "" : articleListParam.getMerchantNo();
+        String merchantNo = request.getHeader("merchantNo") == null ? "" : request.getHeader("merchantNo");
 
         PaginationRequest paginationRequest = new PaginationRequest();
         paginationRequest.setCurrentPage(page);

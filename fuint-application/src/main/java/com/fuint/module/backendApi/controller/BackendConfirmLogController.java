@@ -111,8 +111,6 @@ public class BackendConfirmLogController extends BaseController {
                 searchParams.put("userId", "0");
             }
         }
-
-        paginationRequest.setSortColumn(new String[]{"updateTime desc", "id desc"});
         paginationRequest.setSearchParams(searchParams);
 
         // 登录员工所属店铺处理

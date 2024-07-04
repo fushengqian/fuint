@@ -43,7 +43,7 @@ public class GiveItemDto implements Serializable {
     @ApiModelProperty("总金额")
     private BigDecimal money;
 
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     @ApiModelProperty("赠送时间")
     private Date createTime;
 

@@ -183,22 +183,30 @@ public class BackendArticleController extends BaseController {
             return getFailureResult(1001, "请先登录");
         }
 
-        ArticleDto info = new ArticleDto();
-        info.setTitle(title);
-        info.setDescription(description);
-        info.setImage(image);
-        info.setUrl(url);
-        info.setOperator(accountInfo.getAccountName());
-        info.setStatus(status);
-        info.setStoreId(Integer.parseInt(storeId));
-        info.setSort(Integer.parseInt(sort));
-        info.setBrief(brief);
+        ArticleDto articleDto = new ArticleDto();
+        articleDto.setTitle(title);
+        articleDto.setDescription(description);
+        articleDto.setImage(image);
+        articleDto.setUrl(url);
+        articleDto.setOperator(accountInfo.getAccountName());
+        articleDto.setStatus(status);
+        if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
+            articleDto.setMerchantId(accountInfo.getMerchantId());
+        }
+        if (accountInfo.getStoreId() != null && accountInfo.getStoreId() > 0) {
+            storeId = accountInfo.getStoreId().toString();
+        }
+        if (StringUtil.isNotEmpty(storeId)) {
+            articleDto.setStoreId(Integer.parseInt(storeId));
+        }
+        articleDto.setSort(Integer.parseInt(sort));
+        articleDto.setBrief(brief);
 
         if (StringUtil.isNotEmpty(id)) {
-            info.setId(Integer.parseInt(id));
-            articleService.updateArticle(info);
+            articleDto.setId(Integer.parseInt(id));
+            articleService.updateArticle(articleDto);
         } else {
-            articleService.addArticle(info);
+            articleService.addArticle(articleDto);
         }
 
         return getSuccessResult(true);

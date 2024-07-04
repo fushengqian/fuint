@@ -38,7 +38,7 @@ import java.util.*;
 @AllArgsConstructor
 public class AlipayServiceImpl implements AlipayService {
 
-    private static final Logger logger = LoggerFactory.getLogger(WeixinServiceImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(AlipayServiceImpl.class);
 
     private AliPayBean aliPayBean;
 
