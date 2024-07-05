@@ -49,7 +49,7 @@ public class CommissionJob {
     /**
      * 一次最多处理订单数量
      **/
-    private int MAX_ROWS = 50;
+    private int MAX_ROWS = 10;
 
     /**
      * 订单完成后n天可产生佣金

@@ -200,7 +200,7 @@ public class CommissionLogServiceImpl extends ServiceImpl<MtCommissionLogMapper,
                                  mtCommissionLog.setType(mtOrder.getType());
                                  mtCommissionLog.setTarget(mtCommissionRule.getTarget());
                                  mtCommissionLog.setLevel(0);
-                                 mtCommissionLog.setUserId(mtOrder.getUserId());
+                                 mtCommissionLog.setUserId(0);
                                  mtCommissionLog.setOrderId(orderId);
                                  mtCommissionLog.setMerchantId(mtOrder.getMerchantId());
                                  mtCommissionLog.setStoreId(mtOrder.getStoreId());
@@ -215,19 +215,15 @@ public class CommissionLogServiceImpl extends ServiceImpl<MtCommissionLogMapper,
                                  mtCommissionLog.setUpdateTime(dateTime);
                                  mtCommissionLog.setStatus(StatusEnum.ENABLED.getKey());
                                  mtCommissionLog.setOperator(null);
-                                 // 员工提成计算
-                                 if (mtCommissionRule.getTarget().equals(CommissionTargetEnum.STAFF.getKey())) {
-                                     // 员工信息不能为空
+                                 if (mtOrder.getStaffId() > 0 && mtCommissionRule.getTarget().equals(CommissionTargetEnum.STAFF.getKey())) {
+                                     // 员工提成计算，员工信息不能为空
                                      if (mtCommissionLog.getStaffId() != null && mtCommissionLog.getStaffId() > 0) {
                                          mtCommissionLogMapper.insert(mtCommissionLog);
                                      }
-                                 }
-                                 // 会员分销计算
-                                 if (mtCommissionRule.getTarget().equals(CommissionTargetEnum.MEMBER.getKey())) {
-                                     // 会员信息不能为空
-                                     if (mtCommissionLog.getUserId() != null && mtCommissionLog.getUserId() > 0) {
-                                         mtCommissionLogMapper.insert(mtCommissionLog);
-                                     }
+                                 } else if (mtOrder.getCommissionUserId() > 0 && mtCommissionRule.getTarget().equals(CommissionTargetEnum.MEMBER.getKey())) {
+                                     // 会员分销计算，会员信息不能为空
+                                     mtCommissionLog.setUserId(mtOrder.getCommissionUserId());
+                                     mtCommissionLogMapper.insert(mtCommissionLog);
                                  }
                              }
                          }
@@ -235,7 +231,7 @@ public class CommissionLogServiceImpl extends ServiceImpl<MtCommissionLogMapper,
                 }
             }
             if (mtOrder != null) {
-                mtOrder.setCommissionStatus(StatusEnum.DISABLE.getKey());
+                mtOrder.setCommissionStatus(CommissionStatusEnum.SETTLED.getKey());
                 orderService.updateOrder(mtOrder);
             }
         } else {

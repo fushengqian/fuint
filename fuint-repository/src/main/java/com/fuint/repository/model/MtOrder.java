@@ -107,10 +107,13 @@ public class MtOrder implements Serializable {
     @ApiModelProperty("操作员工")
     private Integer staffId;
 
-    @ApiModelProperty("最后操作人")
-    private String operator;
+    @ApiModelProperty("分佣提成用户ID")
+    private Integer commissionUserId;
 
     @ApiModelProperty("分佣提成计算状态")
     private String commissionStatus;
+
+    @ApiModelProperty("最后操作人")
+    private String operator;
 
 }
