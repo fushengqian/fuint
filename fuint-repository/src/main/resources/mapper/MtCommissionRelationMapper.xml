@@ -2,4 +2,8 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.fuint.repository.mapper.MtCommissionRelationMapper">
 
+    <select id="getCommissionUserId" resultType="java.lang.Integer">
+        select `USER_ID` from mt_commission_relation r where r.MERCHANT_ID = #{merchantId} and r.SUB_USER_ID = #{userId} and `STATUS` = 'A';
+    </select>
+
 </mapper>

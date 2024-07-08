@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fuint.common.dto.CommissionLogDto;
+import com.fuint.common.dto.OrderUserDto;
 import com.fuint.common.enums.*;
 import com.fuint.common.service.*;
 import com.fuint.framework.annoation.OperationServiceLog;
@@ -11,10 +12,7 @@ import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.pagination.PaginationRequest;
 import com.fuint.framework.pagination.PaginationResponse;
 import com.fuint.module.backendApi.request.CommissionLogRequest;
-import com.fuint.repository.mapper.MtCommissionLogMapper;
-import com.fuint.repository.mapper.MtCommissionRuleItemMapper;
-import com.fuint.repository.mapper.MtCommissionRuleMapper;
-import com.fuint.repository.mapper.MtOrderGoodsMapper;
+import com.fuint.repository.mapper.*;
 import com.fuint.repository.model.*;
 import com.fuint.utils.StringUtil;
 import com.github.pagehelper.PageHelper;
@@ -51,6 +49,8 @@ public class CommissionLogServiceImpl extends ServiceImpl<MtCommissionLogMapper,
 
     private MtOrderGoodsMapper mtOrderGoodsMapper;
 
+    private MtCommissionRelationMapper mtCommissionRelationMapper;
+
     /**
      * 订单服务接口
      * */
@@ -65,6 +65,11 @@ public class CommissionLogServiceImpl extends ServiceImpl<MtCommissionLogMapper,
      * 员工服务接口
      * */
     private StaffService staffService;
+
+    /**
+     * 会员服务接口
+     * */
+    private MemberService memberService;
 
     /**
      * 提成方案规则服务接口
@@ -149,6 +154,19 @@ public class CommissionLogServiceImpl extends ServiceImpl<MtCommissionLogMapper,
                  commissionLogDto.setStaffInfo(mtStaff);
                  MtCommissionRule mtCommissionRule = commissionRuleService.getById(mtCommissionLog.getRuleId());
                  commissionLogDto.setRuleInfo(mtCommissionRule);
+                 if (mtCommissionLog.getUserId() != null && mtCommissionLog.getUserId() > 0) {
+                     MtUser userInfo = memberService.queryMemberById(mtCommissionLog.getUserId());
+                     if (userInfo != null) {
+                         OrderUserDto userDto = new OrderUserDto();
+                         userDto.setNo(userInfo.getUserNo());
+                         userDto.setId(userInfo.getId());
+                         userDto.setName(userInfo.getName());
+                         userDto.setCardNo(userInfo.getIdcard());
+                         userDto.setAddress(userInfo.getAddress());
+                         userDto.setMobile(userInfo.getMobile());
+                         commissionLogDto.setUserInfo(userDto);
+                     }
+                 }
                  dataList.add(commissionLogDto);
             }
         }
@@ -176,6 +194,12 @@ public class CommissionLogServiceImpl extends ServiceImpl<MtCommissionLogMapper,
             MtOrder mtOrder = orderService.getById(orderId);
             // 商品订单佣金计算
             if (mtOrder != null && mtOrder.getType().equals(CommissionTypeEnum.GOOGS.getKey())) {
+                // 获取分销关系
+                Integer commissionUserId = mtCommissionRelationMapper.getCommissionUserId(mtOrder.getMerchantId(), mtOrder.getUserId());
+                if (commissionUserId != null && commissionUserId > 0) {
+                    mtOrder.setCommissionUserId(commissionUserId);
+                    orderService.updateOrder(mtOrder);
+                }
                 Map<String, Object> params = new HashMap<>();
                 params.put("ORDER_ID", mtOrder.getId());
                 params.put("STATUS", StatusEnum.ENABLED.getKey());
@@ -196,7 +220,12 @@ public class CommissionLogServiceImpl extends ServiceImpl<MtCommissionLogMapper,
                              // 规则状态正常
                              if (mtCommissionRule != null && mtCommissionRule.getStatus().equals(StatusEnum.ENABLED.getKey())) {
                                  MtCommissionLog mtCommissionLog = new MtCommissionLog();
-                                 BigDecimal amount = orderGoods.getPrice().multiply(mtCommissionRuleItem.getGuest().divide(new BigDecimal("100")));
+                                 // 分佣金额计算，散客和会员佣金比例不同
+                                 BigDecimal rate = mtCommissionRuleItem.getMember();
+                                 if (mtOrder.getStaffId() != null && mtOrder.getStaffId() > 0 && mtOrder.getIsVisitor().equals(YesOrNoEnum.YES.getKey())) {
+                                     rate = mtCommissionRuleItem.getGuest();
+                                 }
+                                 BigDecimal amount = orderGoods.getPrice().multiply(rate.divide(new BigDecimal("100")));
                                  mtCommissionLog.setType(mtOrder.getType());
                                  mtCommissionLog.setTarget(mtCommissionRule.getTarget());
                                  mtCommissionLog.setLevel(0);
@@ -215,13 +244,16 @@ public class CommissionLogServiceImpl extends ServiceImpl<MtCommissionLogMapper,
                                  mtCommissionLog.setUpdateTime(dateTime);
                                  mtCommissionLog.setStatus(StatusEnum.ENABLED.getKey());
                                  mtCommissionLog.setOperator(null);
+
+                                 // 员工提成计算，员工信息不能为空
                                  if (mtOrder.getStaffId() > 0 && mtCommissionRule.getTarget().equals(CommissionTargetEnum.STAFF.getKey())) {
-                                     // 员工提成计算，员工信息不能为空
                                      if (mtCommissionLog.getStaffId() != null && mtCommissionLog.getStaffId() > 0) {
                                          mtCommissionLogMapper.insert(mtCommissionLog);
                                      }
-                                 } else if (mtOrder.getCommissionUserId() > 0 && mtCommissionRule.getTarget().equals(CommissionTargetEnum.MEMBER.getKey())) {
-                                     // 会员分销计算，会员信息不能为空
+                                 }
+
+                                 // 会员分销计算，会员信息不能为空
+                                 if (mtOrder.getCommissionUserId() > 0 && mtCommissionRule.getTarget().equals(CommissionTargetEnum.MEMBER.getKey())) {
                                      mtCommissionLog.setUserId(mtOrder.getCommissionUserId());
                                      mtCommissionLogMapper.insert(mtCommissionLog);
                                  }

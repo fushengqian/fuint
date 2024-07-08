@@ -3,6 +3,7 @@ package com.fuint.common.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.fuint.common.dto.OrderUserDto;
 import com.fuint.common.enums.*;
 import com.fuint.common.service.*;
 import com.fuint.common.util.CommonUtil;
@@ -58,6 +59,11 @@ public class CommissionCashServiceImpl extends ServiceImpl<MtCommissionCashMappe
      * 员工服务接口
      * */
     private StaffService staffService;
+
+    /**
+     * 会员服务接口
+     * */
+    private MemberService memberService;
 
     /**
      * 分销提成记录业务接口
@@ -130,6 +136,19 @@ public class CommissionCashServiceImpl extends ServiceImpl<MtCommissionCashMappe
                  MtStore mtStore = storeService.getById(mtCommissionCash.getStoreId());
                  commissionCashDto.setStoreInfo(mtStore);
                  MtStaff mtStaff = staffService.getById(mtCommissionCash.getStaffId());
+                 if (mtCommissionCash.getUserId() != null && mtCommissionCash.getUserId() > 0) {
+                     MtUser userInfo = memberService.queryMemberById(mtCommissionCash.getUserId());
+                     if (userInfo != null) {
+                         OrderUserDto userDto = new OrderUserDto();
+                         userDto.setNo(userInfo.getUserNo());
+                         userDto.setId(userInfo.getId());
+                         userDto.setName(userInfo.getName());
+                         userDto.setCardNo(userInfo.getIdcard());
+                         userDto.setAddress(userInfo.getAddress());
+                         userDto.setMobile(userInfo.getMobile());
+                         commissionCashDto.setUserInfo(userDto);
+                     }
+                 }
                  commissionCashDto.setStaffInfo(mtStaff);
                  dataList.add(commissionCashDto);
             }
@@ -180,23 +199,40 @@ public class CommissionCashServiceImpl extends ServiceImpl<MtCommissionCashMappe
         }
         lambdaQueryWrapper.orderByDesc(MtCommissionLog::getId);
         List<MtCommissionLog> commissionLogList = mtCommissionLogMapper.selectList(lambdaQueryWrapper);
-        List<Integer> staffIds = new ArrayList<>();
+        List<String> staffIds = new ArrayList<>();
+        List<String> userIds = new ArrayList<>();
         String uuid = UUID.randomUUID().toString().replaceAll("-", "");
         if (commissionLogList != null && commissionLogList.size() > 0) {
             for (MtCommissionLog mtCommissionLog : commissionLogList) {
-                 if (mtCommissionLog.getStaffId() != null && mtCommissionLog.getStaffId() > 0 && !staffIds.contains(mtCommissionLog.getStaffId())) {
-                     staffIds.add(mtCommissionLog.getStaffId());
-                 }
+                 if (mtCommissionLog.getStaffId() != null && mtCommissionLog.getStaffId() > 0 && !staffIds.contains(CommissionTargetEnum.STAFF.getKey() + mtCommissionLog.getStaffId())) {
+                     staffIds.add(CommissionTargetEnum.STAFF.getKey() + mtCommissionLog.getStaffId());
+                 } else if (mtCommissionLog.getUserId() != null && mtCommissionLog.getUserId() > 0 && !userIds.contains(CommissionTargetEnum.MEMBER.getKey() + mtCommissionLog.getUserId())){
+                     userIds.add(CommissionTargetEnum.MEMBER.getKey() + mtCommissionLog.getUserId());
+                }
             }
         }
+        staffIds.addAll(userIds);
+        // 生成结算数据
         if (staffIds.size() > 0) {
-            for (Integer staffId : staffIds) {
+            for (String staffId : staffIds) {
                  BigDecimal totalAmount = new BigDecimal("0");
                  Integer cashMerchantId = 0;
                  Integer cashStoreId = 0;
-                String settleNo = CommonUtil.createSettlementNo();
+                 String settleNo = CommonUtil.createSettlementNo();
+                 Integer targetId;
+                 if (staffId.indexOf(CommissionTargetEnum.STAFF.getKey()) >= 0) {
+                     targetId = Integer.parseInt(staffId.replaceAll(CommissionTargetEnum.STAFF.getKey(), ""));
+                 } else {
+                     targetId = Integer.parseInt(staffId.replaceAll(CommissionTargetEnum.MEMBER.getKey(), ""));
+                 }
                  for (MtCommissionLog mtCommissionLog : commissionLogList) {
-                      if (mtCommissionLog.getStaffId().equals(staffId)) {
+                      if (mtCommissionLog.getStaffId().equals(targetId) || mtCommissionLog.getUserId().equals(targetId)) {
+                          if (mtCommissionLog.getType().equals(CommissionTargetEnum.STAFF.getKey()) && staffId.indexOf(CommissionTargetEnum.STAFF.getKey()) < 0) {
+                              continue;
+                          }
+                          if (mtCommissionLog.getType().equals(CommissionTargetEnum.MEMBER.getKey()) && staffId.indexOf(CommissionTargetEnum.MEMBER.getKey()) < 0) {
+                              continue;
+                          }
                           totalAmount = totalAmount.add(mtCommissionLog.getAmount());
                           if (mtCommissionLog.getMerchantId() != null && mtCommissionLog.getMerchantId() > 0) {
                               cashMerchantId = mtCommissionLog.getMerchantId();
@@ -210,12 +246,18 @@ public class CommissionCashServiceImpl extends ServiceImpl<MtCommissionCashMappe
                           commissionLogRequest.setOperator(commissionSettleRequest.getOperator());
                           commissionLogRequest.setStatus(CommissionStatusEnum.SETTLED.getKey());
                           commissionLogService.updateCommissionLog(commissionLogRequest);
-                      }
+                     }
                  }
                  MtCommissionCash mtCommissionCash = new MtCommissionCash();
                  mtCommissionCash.setSettleNo(settleNo);
                  mtCommissionCash.setUuid(uuid);
-                 mtCommissionCash.setStaffId(staffId);
+                 if (staffId.indexOf(CommissionTargetEnum.STAFF.getKey()) >= 0) {
+                     mtCommissionCash.setStaffId(targetId);
+                     mtCommissionCash.setUserId(0);
+                 } else {
+                     mtCommissionCash.setUserId(targetId);
+                     mtCommissionCash.setStaffId(0);
+                 }
                  if (cashStoreId > 0) {
                      mtCommissionCash.setStoreId(cashStoreId);
                  }
