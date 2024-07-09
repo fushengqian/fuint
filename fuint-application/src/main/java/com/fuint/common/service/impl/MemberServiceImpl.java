@@ -92,6 +92,11 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
     private SettingService settingService;
 
     /**
+     * 分佣提成关系服务接口
+     * */
+    private CommissionRelationService commissionRelationService;
+
+    /**
      * 更新活跃时间
      * @param userId 会员ID
      * @return
@@ -319,12 +324,13 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
      * 添加会员
      *
      * @param  mtUser 会员信息
+     * @param  shareId 分享用户ID
      * @throws BusinessCheckException
      * @return
      */
     @Override
     @OperationServiceLog(description = "新增会员信息")
-    public MtUser addMember(MtUser mtUser) throws BusinessCheckException {
+    public MtUser addMember(MtUser mtUser, String shareId) throws BusinessCheckException {
         // 手机号已存在
         if (StringUtil.isNotEmpty(mtUser.getMobile())) {
             MtUser userInfo = queryMemberByMobile(mtUser.getMerchantId(), mtUser.getMobile());
@@ -393,6 +399,9 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
 
         // 开卡赠礼
         openGiftService.openGift(mtUser.getId(), Integer.parseInt(mtUser.getGradeId()), true);
+
+        // 分佣关系
+        commissionRelationService.setCommissionRelation(mtUser.getId(), shareId);
 
         // 新增用户发短信通知
         if (mtUser.getId() > 0 && mtUser.getStatus().equals(StatusEnum.ENABLED.getKey())) {
@@ -470,14 +479,16 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
     /**
      * 通过手机号新增会员
      *
+     * @param merchantId 商户ID
      * @param  mobile 手机号
+     * @param  shareId 分享用户ID
      * @throws BusinessCheckException
      * @return
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
     @OperationServiceLog(description = "通过手机号新增会员")
-    public MtUser addMemberByMobile(Integer merchantId, String mobile) throws BusinessCheckException {
+    public MtUser addMemberByMobile(Integer merchantId, String mobile, String shareId) throws BusinessCheckException {
         MtUser mtUser = new MtUser();
         mtUser.setUserNo(CommonUtil.createUserNo());
         String nickName = mobile.replaceAll("(\\d{3})\\d{4}(\\d{4})","$1****$2");
@@ -503,6 +514,10 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
 
         // 开卡赠礼
         openGiftService.openGift(mtUser.getId(), Integer.parseInt(mtUser.getGradeId()), true);
+
+        // 分佣关系
+        commissionRelationService.setCommissionRelation(mtUser.getId(), shareId);
+
         return mtUser;
     }
 
@@ -633,6 +648,7 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
         String storeId = StringUtil.isNotEmpty(userInfo.getString("storeId")) ? userInfo.getString("storeId") : "0";
         String nickName = StringUtil.isNotEmpty(userInfo.getString("nickName")) ? userInfo.getString("nickName") : "";
         String mobile = StringUtil.isNotEmpty(userInfo.getString("phone")) ? userInfo.getString("phone") : "";
+        String shareId = StringUtil.isNotEmpty(userInfo.getString("shareId")) ? userInfo.getString("shareId") : "0";
         String source = StringUtil.isNotEmpty(userInfo.getString("source")) ? userInfo.getString("source") : MemberSourceEnum.WECHAT_LOGIN.getKey();
 
         // 需要手机号登录
@@ -718,6 +734,9 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
 
             // 开卡赠礼
             openGiftService.openGift(user.getId(), Integer.parseInt(user.getGradeId()), true);
+
+            // 分佣关系
+            commissionRelationService.setCommissionRelation(mtUser.getId(), shareId);
         } else {
             // 已被禁用
             if (user.getStatus().equals(StatusEnum.DISABLE.getKey())) {

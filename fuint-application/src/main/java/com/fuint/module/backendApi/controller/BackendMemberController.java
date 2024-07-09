@@ -312,7 +312,7 @@ public class BackendMemberController extends BaseController {
             memberInfo.setStoreId(myStoreId);
         }
         if (StringUtil.isEmpty(id)) {
-            memberService.addMember(memberInfo);
+            memberService.addMember(memberInfo, "0");
         } else {
             memberService.updateMember(memberInfo, false);
         }

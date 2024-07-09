@@ -180,7 +180,7 @@ public class GiveServiceImpl extends ServiceImpl<MtGiveMapper, MtGive> implement
             userInfo.setGradeId(grade.getId()+"");
             userInfo.setBalance(new BigDecimal(0));
             userInfo.setStatus(StatusEnum.ENABLED.getKey());
-            user = memberService.addMember(userInfo);
+            user = memberService.addMember(userInfo, "0");
         } else {
             if (!user.getStatus().equals(StatusEnum.ENABLED.getKey())) {
                 throw new BusinessCheckException("转增对象可能已被禁用");
