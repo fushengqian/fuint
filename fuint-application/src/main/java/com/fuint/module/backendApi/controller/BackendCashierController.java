@@ -399,6 +399,7 @@ public class BackendCashierController extends BaseController {
              Map<String, Object> param = new HashMap<>();
              param.put("hangNo", hangNo);
              param.put("merchantId", accountInfo.getMerchantId());
+             param.put("storeId", accountInfo.getStoreId());
              List<MtCart> cartList = cartService.queryCartListByParams(param);
              HangUpDto dto = new HangUpDto();
              dto.setIsEmpty(true);

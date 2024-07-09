@@ -23,6 +23,8 @@ import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import lombok.AllArgsConstructor;
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -39,6 +41,8 @@ import java.util.*;
 @Service
 @AllArgsConstructor
 public class OpenGiftServiceImpl extends ServiceImpl<MtOpenGiftMapper, MtOpenGift> implements OpenGiftService {
+
+    private static final Logger logger = LoggerFactory.getLogger(OpenGiftServiceImpl.class);
 
     private MtOpenGiftMapper mtOpenGiftMapper;
 
@@ -293,7 +297,7 @@ public class OpenGiftServiceImpl extends ServiceImpl<MtOpenGiftMapper, MtOpenGif
                            totalAmount = totalAmount.add(mtCoupon.getAmount());
                        }
                    } catch (Exception e) {
-                       throw new BusinessCheckException(e.getMessage());
+                       logger.error(e.getMessage());
                    }
                }
             }

@@ -25,6 +25,8 @@ import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import lombok.AllArgsConstructor;
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.PageImpl;
@@ -44,6 +46,8 @@ import java.util.*;
 @Service
 @AllArgsConstructor(onConstructor_= {@Lazy})
 public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> implements MemberService {
+
+    private static final Logger logger = LoggerFactory.getLogger(MemberServiceImpl.class);
 
     private MtUserMapper mtUserMapper;
 
@@ -140,6 +144,7 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
 
     /**
      * 获取当前操作会员信息
+     *
      * @param userId 会员ID
      * @param token 登录token
      * @return
@@ -401,7 +406,7 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
         openGiftService.openGift(mtUser.getId(), Integer.parseInt(mtUser.getGradeId()), true);
 
         // 分佣关系
-        commissionRelationService.setCommissionRelation(mtUser.getId(), shareId);
+        commissionRelationService.setCommissionRelation(mtUser, shareId);
 
         // 新增用户发短信通知
         if (mtUser.getId() > 0 && mtUser.getStatus().equals(StatusEnum.ENABLED.getKey())) {
@@ -413,7 +418,7 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
                 Map<String, String> params = new HashMap<>();
                 sendSmsService.sendSms(mtUser.getMerchantId(), "register-sms", mobileList, params);
             } catch (BusinessCheckException e) {
-                // empty
+                logger.error(e.getMessage());
             }
         }
 
@@ -516,7 +521,7 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
         openGiftService.openGift(mtUser.getId(), Integer.parseInt(mtUser.getGradeId()), true);
 
         // 分佣关系
-        commissionRelationService.setCommissionRelation(mtUser.getId(), shareId);
+        commissionRelationService.setCommissionRelation(mtUser, shareId);
 
         return mtUser;
     }
@@ -736,7 +741,7 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
             openGiftService.openGift(user.getId(), Integer.parseInt(user.getGradeId()), true);
 
             // 分佣关系
-            commissionRelationService.setCommissionRelation(mtUser.getId(), shareId);
+            commissionRelationService.setCommissionRelation(mtUser, shareId);
         } else {
             // 已被禁用
             if (user.getStatus().equals(StatusEnum.DISABLE.getKey())) {

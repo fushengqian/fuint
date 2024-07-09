@@ -3,7 +3,7 @@
 <mapper namespace="com.fuint.repository.mapper.MtCommissionRelationMapper">
 
     <select id="getCommissionUserId" resultType="java.lang.Integer">
-        select `USER_ID` from mt_commission_relation r where r.MERCHANT_ID = #{merchantId} and r.SUB_USER_ID = #{userId} and `STATUS` = 'A';
+        select `USER_ID` from mt_commission_relation r where r.MERCHANT_ID = #{merchantId} and r.SUB_USER_ID = #{userId} and `LEVEL` = 1 and `STATUS` = 'A' LIMIT 1;
     </select>
 
 </mapper>

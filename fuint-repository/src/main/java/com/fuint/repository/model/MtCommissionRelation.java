@@ -40,6 +40,9 @@ public class MtCommissionRelation implements Serializable {
     @ApiModelProperty("被邀请会员ID")
     private Integer subUserId;
 
+    @ApiModelProperty("等级")
+    private Integer level;
+
     @ApiModelProperty("备注")
     private String description;
 
