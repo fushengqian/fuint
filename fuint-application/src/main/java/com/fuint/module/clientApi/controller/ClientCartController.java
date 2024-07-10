@@ -70,7 +70,7 @@ public class ClientCartController extends BaseController {
     /**
      * 保存购物车
      */
-    @ApiOperation(value = "添加、保存购物车")
+    @ApiOperation(value = "保存购物车")
     @RequestMapping(value = "/save", method = RequestMethod.POST)
     @CrossOrigin
     public ResponseObject save(HttpServletRequest request, @RequestBody CartSaveParam saveParam) throws BusinessCheckException {
@@ -94,7 +94,7 @@ public class ClientCartController extends BaseController {
             mtUser = memberService.queryMemberById(userInfo.getId());
         }
 
-        if (mtUser == null) {
+        if (mtUser == null && StringUtil.isNotEmpty(token)) {
             AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
             if (accountInfo != null) {
                 return getFailureResult(201, "该管理员还未关联店铺员工");
@@ -126,6 +126,9 @@ public class ClientCartController extends BaseController {
             AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
             if (accountInfo != null && accountInfo.getMerchantId() != null) {
                 merchantId = accountInfo.getMerchantId();
+                if (merchantId <= 0) {
+                    return getFailureResult(201, "平台方账户无操作权限");
+                }
             }
         }
 
@@ -251,7 +254,7 @@ public class ClientCartController extends BaseController {
         }
         param.put("status", StatusEnum.ENABLED.getKey());
         if (StringUtil.isNotEmpty(hangNo)) {
-            param = new HashMap<>();
+            param.remove("userId");
             param.put("hangNo", hangNo);
         } else {
             param.put("hangNo", "");
