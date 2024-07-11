@@ -66,7 +66,7 @@ public class CommissionJob {
              param.put("PAY_STATUS", PayStatusEnum.SUCCESS.getKey());
 
              Calendar calendar = Calendar.getInstance();
-             calendar.add(Calendar.DATE, OVER_DAY);
+             calendar.add(Calendar.DATE, -OVER_DAY);
              Date dateTime = calendar.getTime();
              String endTime = DateUtil.formatDate(dateTime, "yyyy-MM-dd HH:mm:ss");
 
