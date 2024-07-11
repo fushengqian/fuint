@@ -93,7 +93,7 @@ public class ClientSignController extends BaseController {
         Integer merchantId = merchantService.getMerchantId(merchantNo);
         JSONObject userInfo = paramsObj.getJSONObject("userInfo");
         JSONObject loginInfo = weixinService.getWxProfile(merchantId, param.get("code").toString());
-        loginInfo.put("shareId", shareId);
+        userInfo.put("shareId", shareId);
         if (loginInfo == null) {
             return getFailureResult(0, "微信登录失败");
         }
