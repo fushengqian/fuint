@@ -73,7 +73,7 @@ public class UserGradeServiceImpl extends ServiceImpl<MtUserGradeMapper, MtUserG
             lambdaQueryWrapper.eq(MtUserGrade::getMerchantId, merchantId);
         }
 
-        lambdaQueryWrapper.orderByDesc(MtUserGrade::getId);
+        lambdaQueryWrapper.orderByDesc(MtUserGrade::getGrade);
         List<MtUserGrade> dataList = mtUserGradeMapper.selectList(lambdaQueryWrapper);
 
         PageRequest pageRequest = PageRequest.of(paginationRequest.getCurrentPage(), paginationRequest.getPageSize());
@@ -211,11 +211,13 @@ public class UserGradeServiceImpl extends ServiceImpl<MtUserGradeMapper, MtUserG
      * */
     @Override
     public List<MtUserGrade> getPayUserGradeList(Integer merchantId, MtUser userInfo) {
-        Map<String, Object> param = new HashMap<>();
-        param.put("status", StatusEnum.ENABLED.getKey());
-        param.put("catch_type", UserGradeCatchTypeEnum.PAY.getKey());
-        param.put("merchant_id", merchantId);
-        List<MtUserGrade> userGrades = mtUserGradeMapper.selectByMap(param);
+        LambdaQueryWrapper<MtUserGrade> lambdaQueryWrapper = Wrappers.lambdaQuery();
+        lambdaQueryWrapper.eq(MtUserGrade::getStatus, StatusEnum.ENABLED.getKey());
+        lambdaQueryWrapper.eq(MtUserGrade::getCatchType, UserGradeCatchTypeEnum.PAY.getKey());
+        lambdaQueryWrapper.eq(MtUserGrade::getMerchantId, merchantId);
+        lambdaQueryWrapper.orderByAsc(MtUserGrade::getGrade);
+
+        List<MtUserGrade> userGrades = mtUserGradeMapper.selectList(lambdaQueryWrapper);
         List<MtUserGrade> dataList = new ArrayList<>();
         if (userGrades.size() > 0 && userInfo != null && StringUtil.isNotEmpty(userInfo.getGradeId())) {
             MtUserGrade myGradeInfo = mtUserGradeMapper.selectById(userInfo.getGradeId());
