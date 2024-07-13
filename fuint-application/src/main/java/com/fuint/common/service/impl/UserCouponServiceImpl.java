@@ -237,6 +237,7 @@ public class UserCouponServiceImpl extends ServiceImpl<MtUserCouponMapper, MtUse
                  userCoupon = mtUserCouponMapper.selectById(userCouponId);
              }
              userCoupon.setMerchantId(userInfo.getMerchantId());
+             userCoupon.setStoreId(couponInfo.getStoreId());
              userCoupon.setCouponId(couponInfo.getId());
              userCoupon.setType(couponInfo.getType());
              userCoupon.setAmount(couponInfo.getAmount());
@@ -634,6 +635,8 @@ public class UserCouponServiceImpl extends ServiceImpl<MtUserCouponMapper, MtUse
         MtCoupon couponInfo = couponService.queryCouponById(couponId);
         MtUserCoupon userCoupon = new MtUserCoupon();
         userCoupon.setCouponId(couponId);
+        userCoupon.setMerchantId(couponInfo.getMerchantId());
+        userCoupon.setStoreId(couponInfo.getStoreId());
         userCoupon.setType(couponInfo.getType());
         userCoupon.setGroupId(couponInfo.getGroupId());
         userCoupon.setMobile(mobile);
@@ -705,6 +708,7 @@ public class UserCouponServiceImpl extends ServiceImpl<MtUserCouponMapper, MtUse
         userCoupon.setGroupId(couponInfo.getGroupId());
         userCoupon.setMobile(userInfo.getMobile());
         userCoupon.setMerchantId(couponInfo.getMerchantId());
+        userCoupon.setStoreId(couponInfo.getStoreId());
         userCoupon.setUserId(userInfo.getId());
         userCoupon.setStatus(UserCouponStatusEnum.UNUSED.getKey());
         userCoupon.setCreateTime(new Date());
