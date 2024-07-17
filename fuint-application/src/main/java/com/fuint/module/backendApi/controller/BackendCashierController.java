@@ -360,6 +360,10 @@ public class BackendCashierController extends BaseController {
             return getFailureResult(1001, "请先登录");
         }
 
+        if (accountInfo.getMerchantId() == null || accountInfo.getMerchantId() <= 0) {
+            return getFailureResult(201, "平台账号不能执行该操作");
+        }
+
         String isVisitor = YesOrNoEnum.NO.getKey();
         if (StringUtil.isEmpty(userId)) {
             isVisitor = YesOrNoEnum.YES.getKey();

@@ -307,13 +307,15 @@ public class CartServiceImpl extends ServiceImpl<MtCartMapper, MtCart> implement
     @Override
     @OperationServiceLog(description = "执行挂单")
     @Transactional(rollbackFor = Exception.class)
-    public MtCart setHangNo(Integer cartId, String hangNo, String isVisitor) {
+    public MtCart setHangNo(Integer cartId, String hangNo, String isVisitor) throws BusinessCheckException {
         MtCart mtCart = mtCartMapper.selectById(cartId);
         if (mtCart != null) {
             mtCart.setHangNo(hangNo);
             mtCart.setUpdateTime(new Date());
             mtCart.setIsVisitor(isVisitor);
             this.updateById(mtCart);
+        } else {
+            throw new BusinessCheckException("执行挂单失败");
         }
         return mtCart;
     }
