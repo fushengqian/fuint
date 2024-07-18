@@ -1,0 +1,62 @@
+package com.fuint.common.service;
+
+import com.baomidou.mybatisplus.extension.service.IService;
+import com.fuint.framework.pagination.PaginationRequest;
+import com.fuint.framework.pagination.PaginationResponse;
+import com.fuint.framework.exception.BusinessCheckException;
+import com.fuint.repository.model.MtBookItem;
+import java.util.List;
+import java.util.Map;
+
+/**
+ * 预约订单业务接口
+ *
+ * Created by FSQ
+ * CopyRight https://www.fuint.cn
+ */
+public interface BookItemService extends IService<MtBookItem> {
+
+    /**
+     * 分页查询列表
+     *
+     * @param paginationRequest
+     * @return
+     */
+    PaginationResponse<MtBookItem> queryBookItemListByPagination(PaginationRequest paginationRequest) throws BusinessCheckException;
+
+    /**
+     * 添加预约订单
+     *
+     * @param  mtBookItem
+     * @throws BusinessCheckException
+     * @return
+     */
+    MtBookItem addBookItem(MtBookItem mtBookItem) throws BusinessCheckException;
+
+    /**
+     * 根据ID获取预约订单信息
+     *
+     * @param  id 预约订单ID
+     * @throws BusinessCheckException
+     * @return
+     */
+    MtBookItem getBookItemById(Integer id) throws BusinessCheckException;
+
+    /**
+     * 更新预约订单
+     *
+     * @param  mtBookItem
+     * @throws BusinessCheckException
+     * @return
+     * */
+    MtBookItem updateBookItem(MtBookItem mtBookItem) throws BusinessCheckException;
+
+    /**
+     * 根据条件搜索预约订单
+     *
+     * @param  params 查询参数
+     * @throws BusinessCheckException
+     * @return
+     * */
+    List<MtBookItem> queryBookItemListByParams(Map<String, Object> params) throws BusinessCheckException;
+}

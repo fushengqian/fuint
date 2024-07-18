@@ -131,6 +131,9 @@ public class ClientCartController extends BaseController {
                 }
             }
         }
+        if (storeId <= 0 && mtUser.getStoreId() != null) {
+            storeId = mtUser.getStoreId();
+        }
 
         MtCart mtCart = new MtCart();
         mtCart.setGoodsId(goodsId);
