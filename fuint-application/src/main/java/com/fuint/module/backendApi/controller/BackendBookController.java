@@ -1,7 +1,7 @@
 package com.fuint.module.backendApi.controller;
 
 import com.fuint.common.dto.AccountInfo;
-import com.fuint.common.service.BookCateService;
+import com.fuint.common.service.BookService;
 import com.fuint.common.service.StoreService;
 import com.fuint.common.util.TokenUtil;
 import com.fuint.framework.web.BaseController;
@@ -12,7 +12,7 @@ import com.fuint.common.service.SettingService;
 import com.fuint.framework.pagination.PaginationRequest;
 import com.fuint.framework.pagination.PaginationResponse;
 import com.fuint.framework.exception.BusinessCheckException;
-import com.fuint.repository.model.MtBookCate;
+import com.fuint.repository.model.MtBook;
 import com.fuint.repository.model.MtStore;
 import com.fuint.utils.StringUtil;
 import io.swagger.annotations.Api;
@@ -26,21 +26,21 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * 预约分类管理类controller
+ * 预约管理类controller
  *
  * Created by FSQ
  * CopyRight https://www.fuint.cn
  */
-@Api(tags="管理端-预约分类相关接口")
+@Api(tags="管理端-预约相关接口")
 @RestController
 @AllArgsConstructor
-@RequestMapping(value = "/backendApi/bookCate")
-public class BackendBookCateController extends BaseController {
+@RequestMapping(value = "/backendApi/book")
+public class BackendBookController extends BaseController {
 
     /**
-     * 预约分类服务接口
+     * 预约服务接口
      */
-    private BookCateService bookCateService;
+    private BookService bookService;
 
     /**
      * 系统设置服务接口
@@ -53,12 +53,12 @@ public class BackendBookCateController extends BaseController {
     private StoreService storeService;
 
     /**
-     * 预约分类列表查询
+     * 预约列表查询
      *
      * @param  request HttpServletRequest对象
-     * @return 预约分类列表
+     * @return 预约列表
      */
-    @ApiOperation(value = "预约分类列表查询")
+    @ApiOperation(value = "预约列表查询")
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('book:index')")
@@ -99,7 +99,7 @@ public class BackendBookCateController extends BaseController {
             params.put("storeId", storeId);
         }
         paginationRequest.setSearchParams(params);
-        PaginationResponse<MtBookCate> paginationResponse = bookCateService.queryBookCateListByPagination(paginationRequest);
+        PaginationResponse<MtBook> paginationResponse = bookService.queryBookListByPagination(paginationRequest);
 
         Map<String, Object> paramsStore = new HashMap<>();
         paramsStore.put("status", StatusEnum.ENABLED.getKey());
@@ -122,11 +122,11 @@ public class BackendBookCateController extends BaseController {
     }
 
     /**
-     * 更新预约分类状态
+     * 更新预约状态
      *
      * @return
      */
-    @ApiOperation(value = "更新预约分类状态")
+    @ApiOperation(value = "更新预约状态")
     @RequestMapping(value = "/updateStatus", method = RequestMethod.POST)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('book:index')")
@@ -140,27 +140,27 @@ public class BackendBookCateController extends BaseController {
             return getFailureResult(1001, "请先登录");
         }
 
-        MtBookCate mtBookCate = bookCateService.getBookCateById(id);
-        if (mtBookCate == null) {
+        MtBook mtBook = bookService.getBookById(id);
+        if (mtBook == null) {
             return getFailureResult(201);
         }
 
         String operator = accountInfo.getAccountName();
 
-        mtBookCate.setOperator(operator);
-        mtBookCate.setStatus(status);
-        bookCateService.updateBookCate(mtBookCate);
+        mtBook.setOperator(operator);
+        mtBook.setStatus(status);
+        bookService.updateBook(mtBook);
 
         return getSuccessResult(true);
     }
 
     /**
-     * 保存预约分类
+     * 保存预约
      *
      * @param request HttpServletRequest对象
      * @return
      */
-    @ApiOperation(value = "保存预约分类")
+    @ApiOperation(value = "保存预约")
     @RequestMapping(value = "/save", method = RequestMethod.POST)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('book:index')")
@@ -179,32 +179,32 @@ public class BackendBookCateController extends BaseController {
             return getFailureResult(1001, "请先登录");
         }
 
-        MtBookCate mtBookCate = new MtBookCate();
-        mtBookCate.setName(name);
-        mtBookCate.setDescription(description);
-        mtBookCate.setLogo(logo);
-        mtBookCate.setOperator(accountInfo.getAccountName());
-        mtBookCate.setStatus(status);
-        mtBookCate.setStoreId(Integer.parseInt(storeId));
-        mtBookCate.setSort(Integer.parseInt(sort));
-        mtBookCate.setMerchantId(accountInfo.getMerchantId());
+        MtBook mtBook = new MtBook();
+        mtBook.setName(name);
+        mtBook.setDescription(description);
+        mtBook.setLogo(logo);
+        mtBook.setOperator(accountInfo.getAccountName());
+        mtBook.setStatus(status);
+        mtBook.setStoreId(Integer.parseInt(storeId));
+        mtBook.setSort(Integer.parseInt(sort));
+        mtBook.setMerchantId(accountInfo.getMerchantId());
 
         if (StringUtil.isNotEmpty(id)) {
-            bookCateService.updateBookCate(mtBookCate);
+            bookService.updateBook(mtBook);
         } else {
-            bookCateService.addBookCate(mtBookCate);
+            bookService.addBook(mtBook);
         }
 
         return getSuccessResult(true);
     }
 
     /**
-     * 获取预约分类详情
+     * 获取预约详情
      *
-     * @param id
+     * @param id 预约ID
      * @return
      */
-    @ApiOperation(value = "获取预约分类详情")
+    @ApiOperation(value = "获取预约详情")
     @RequestMapping(value = "/info/{id}", method = RequestMethod.GET)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('book:index')")
@@ -215,11 +215,11 @@ public class BackendBookCateController extends BaseController {
             return getFailureResult(1001, "请先登录");
         }
 
-        MtBookCate bookCate = bookCateService.getBookCateById(id);
+        MtBook mtBook = bookService.getBookById(id);
         String imagePath = settingService.getUploadBasePath();
 
         Map<String, Object> result = new HashMap<>();
-        result.put("bookCate", bookCate);
+        result.put("bookInfo", mtBook);
         result.put("imagePath", imagePath);
 
         return getSuccessResult(result);
