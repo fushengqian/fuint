@@ -173,7 +173,7 @@ public class ClientBalanceController extends BaseController {
         }
 
         // 自定义充值没有赠送金额
-        if (StringUtil.isEmpty(rechargeAmount)) {
+        if (StringUtil.isNotEmpty(customAmount) && Integer.parseInt(customAmount) > 0 && (StringUtil.isEmpty(rechargeAmount) || Integer.parseInt(rechargeAmount) <= 0)) {
             rechargeAmount = customAmount;
             ruleParam = customAmount + "_0";
         }
@@ -183,6 +183,9 @@ public class ClientBalanceController extends BaseController {
         }
 
         BigDecimal amount = new BigDecimal(rechargeAmount);
+        if (amount.compareTo(new BigDecimal("0")) <= 0) {
+            return getFailureResult(201, "请确认充值金额");
+        }
 
         OrderDto orderDto = new OrderDto();
         orderDto.setType(OrderTypeEnum.RECHARGE.getKey());
