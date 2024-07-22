@@ -6,6 +6,10 @@
     </select>
 
     <select id="querySettingByName" resultType="com.fuint.repository.model.MtSetting">
-        select * from mt_setting t where t.NAME = #{name} and t.TYPE = #{type} and t.MERCHANT_ID = #{merchantId} and t.status='A' limit 1
+        select * from mt_setting t where t.NAME = #{name} AND t.TYPE = #{type} AND t.MERCHANT_ID = #{merchantId}
+        <if test="storeId != null and storeId > 0">
+          AND (t.STORE_ID = #{storeId} OR t.STORE_ID = 0)
+        </if>
+          AND t.STATUS='A' LIMIT 1
     </select>
 </mapper>

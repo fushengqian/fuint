@@ -691,7 +691,7 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
             }
         }
 
-        MtSetting config = settingService.querySettingByName(merchantId, SettingTypeEnum.ORDER.getKey(), OrderSettingEnum.IS_CLOSE.getKey());
+        MtSetting config = settingService.querySettingByName(merchantId, storeId, SettingTypeEnum.ORDER.getKey(), OrderSettingEnum.IS_CLOSE.getKey());
         if (config != null && config.getValue().equals(YesOrNoEnum.TRUE.getKey())) {
             throw new BusinessCheckException("系统已关闭交易功能，请稍后再试！");
         }

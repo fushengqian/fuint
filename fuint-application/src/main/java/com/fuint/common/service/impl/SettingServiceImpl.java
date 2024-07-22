@@ -123,7 +123,22 @@ public class SettingServiceImpl extends ServiceImpl<MtSettingMapper, MtSetting> 
      */
     @Override
     public MtSetting querySettingByName(Integer merchantId, String type, String name) {
-        return mtSettingMapper.querySettingByName(merchantId, type, name);
+        return mtSettingMapper.querySettingByName(merchantId, 0, type, name);
+    }
+
+    /**
+     * 根据ID获取配置信息
+     *
+     * @param  merchantId 商户ID
+     * @param  storeId 店铺ID
+     * @param  type 类型
+     * @param  name 配置名称
+     * @throws BusinessCheckException
+     * @return
+     */
+    @Override
+    public MtSetting querySettingByName(Integer merchantId, Integer storeId, String type, String name) {
+        return mtSettingMapper.querySettingByName(merchantId, storeId, type, name);
     }
 
     /**

@@ -868,8 +868,8 @@ public class CouponServiceImpl extends ServiceImpl<MtCouponMapper, MtCoupon> imp
         }
 
         // 判断适用会员等级
-        if (userId != null && userId > 0 && StringUtil.isNotEmpty(couponInfo.getGradeIds())) {
-            MtUser mtUser = memberService.queryMemberById(userId);
+        if (userCoupon.getUserId() != null && userCoupon.getUserId() > 0 && StringUtil.isNotEmpty(couponInfo.getGradeIds())) {
+            MtUser mtUser = memberService.queryMemberById(userCoupon.getUserId());
             if (StringUtil.isEmpty(mtUser.getGradeId())) {
                 MtUserGrade defaultGrade = userGradeService.getInitUserGrade(mtUser.getMerchantId());
                 if (defaultGrade != null) {
