@@ -85,7 +85,7 @@ public class TokenUtil {
      * @return
      * */
     public static void saveToken(UserInfo userInfo) {
-        if (userInfo == null || userInfo.getToken() == null) {
+        if (userInfo == null || userInfo.getToken() == null || userInfo.getId() == null) {
             return;
         }
         RedisUtil.set(Constants.SESSION_USER + userInfo.getToken(), userInfo, TOKEN_OVER_TIME);
@@ -117,9 +117,13 @@ public class TokenUtil {
      * @return
      * */
     public static boolean checkTokenLogin(String token) {
-        UserInfo userInfo = RedisUtil.get(Constants.SESSION_USER + token);
-        if (userInfo != null && userInfo.getToken().equals(token)) {
-            return true;
+        try {
+            UserInfo userInfo = RedisUtil.get(Constants.SESSION_USER + token);
+            if (userInfo != null && userInfo.getToken().equals(token)) {
+                return true;
+            }
+        } catch (Exception e) {
+            return false;
         }
         return false;
     }

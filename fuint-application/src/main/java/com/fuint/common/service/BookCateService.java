@@ -36,7 +36,7 @@ public interface BookCateService extends IService<MtBookCate> {
     /**
      * 根据ID获取预约类别
      *
-     * @param  id
+     * @param  id 预约分类ID
      * @throws BusinessCheckException
      * @return
      */

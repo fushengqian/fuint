@@ -336,6 +336,13 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
     @Override
     @OperationServiceLog(description = "新增会员信息")
     public MtUser addMember(MtUser mtUser, String shareId) throws BusinessCheckException {
+        // 用户名就是手机号
+        if (StringUtil.isNotEmpty(mtUser.getName()) && StringUtil.isEmpty(mtUser.getMobile()) && PhoneFormatCheckUtils.isChinaPhoneLegal(mtUser.getName())) {
+            mtUser.setMobile(mtUser.getName());
+            String name = mtUser.getName().replaceAll("(\\d{3})\\d{4}(\\d{4})","$1****$2");
+            mtUser.setName(name);
+        }
+
         // 手机号已存在
         if (StringUtil.isNotEmpty(mtUser.getMobile())) {
             MtUser userInfo = queryMemberByMobile(mtUser.getMerchantId(), mtUser.getMobile());

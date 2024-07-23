@@ -294,7 +294,7 @@ public class ClientSignController extends BaseController {
                 }
 
                 if (!mtUser.getStatus().equals(StatusEnum.ENABLED.getKey())) {
-                    return getFailureResult(201, "账号异常，登录失败");
+                    return getFailureResult(201, "账号状态异常，登录失败");
                 }
 
                 // 更新验证码
