@@ -113,9 +113,14 @@ public class BookCateServiceImpl extends ServiceImpl<MtBookCateMapper, MtBookCat
             throw new BusinessCheckException("新增预约分类失败：所属商户不能为空！");
         }
         bookCate.setStoreId(storeId);
+        bookCate.setName(mtBookCate.getName());
+        bookCate.setLogo(mtBookCate.getLogo());
+        bookCate.setDescription(mtBookCate.getDescription());
         bookCate.setStatus(StatusEnum.ENABLED.getKey());
         bookCate.setUpdateTime(new Date());
         bookCate.setCreateTime(new Date());
+        bookCate.setSort(mtBookCate.getSort());
+        bookCate.setOperator(mtBookCate.getOperator());
         Integer id = mtBookCateMapper.insert(bookCate);
         if (id > 0) {
             return bookCate;
