@@ -439,11 +439,13 @@ public class RefundServiceImpl extends ServiceImpl<MtRefundMapper, MtRefund> imp
                 balanceReq.setMerchantId(orderInfo.getMerchantId());
                 balanceReq.setOrderSn(orderInfo.getOrderSn());
                 balanceReq.setMobile(orderInfo.getUserInfo().getMobile());
+
                 if (mtRefund.getAmount() != null && mtRefund.getAmount().compareTo(new BigDecimal("0")) > 0) {
-                    balanceReq.setAmount(mtRefund.getAmount().negate());
-                } else if (refundAmount.compareTo(orderInfo.getPayAmount()) <= 0) {
-                    balanceReq.setAmount(refundAmount);
+                    balanceReq.setAmount(mtRefund.getAmount());
+                } else {
+                    balanceReq.setAmount(refundAmount.negate());
                 }
+
                 balanceReq.setStatus(StatusEnum.ENABLED.getKey());
                 balanceReq.setCreateTime(new Date());
                 balanceReq.setUpdateTime(new Date());
