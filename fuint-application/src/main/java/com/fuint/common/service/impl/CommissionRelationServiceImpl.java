@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fuint.common.dto.CommissionRelationDto;
 import com.fuint.common.service.CommissionRelationService;
 import com.fuint.common.service.MemberService;
+import com.fuint.common.service.MerchantService;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.pagination.PaginationRequest;
 import com.fuint.framework.pagination.PaginationResponse;
@@ -46,6 +47,11 @@ public class CommissionRelationServiceImpl extends ServiceImpl<MtCommissionRelat
     private MemberService memberService;
 
     /**
+     * 商户服务接口
+     */
+    private MerchantService merchantService;
+
+    /**
      * 分页查询关系列表
      *
      * @param paginationRequest
@@ -69,6 +75,15 @@ public class CommissionRelationServiceImpl extends ServiceImpl<MtCommissionRelat
             lambdaQueryWrapper.eq(MtCommissionRelation::getSubUserId, subUserId);
         }
         String merchantId = paginationRequest.getSearchParams().get("merchantId") == null ? "" : paginationRequest.getSearchParams().get("merchantId").toString();
+
+        String merchantNo = paginationRequest.getSearchParams().get("merchantNo") == null ? "" : paginationRequest.getSearchParams().get("merchantNo").toString();
+        if (StringUtils.isNotBlank(merchantNo) && StringUtil.isEmpty(merchantId)) {
+            Integer mchId = merchantService.getMerchantId(merchantNo);
+            if (mchId != null && mchId > 0) {
+                merchantId = mchId.toString();
+            }
+        }
+
         if (StringUtils.isNotBlank(merchantId)) {
             lambdaQueryWrapper.eq(MtCommissionRelation::getMerchantId, merchantId);
         }
@@ -82,9 +97,11 @@ public class CommissionRelationServiceImpl extends ServiceImpl<MtCommissionRelat
                  BeanUtils.copyProperties(mtCommissionRelation, commissionRelationDto);
                  MtUser userInfo = memberService.queryMemberById(mtCommissionRelation.getUserId());
                  MtUser subUserInfo = memberService.queryMemberById(mtCommissionRelation.getSubUserId());
-                 commissionRelationDto.setUserInfo(userInfo);
-                 commissionRelationDto.setSubUserInfo(subUserInfo);
-                 dataList.add(commissionRelationDto);
+                 if (userInfo != null && subUserInfo != null) {
+                     commissionRelationDto.setUserInfo(userInfo);
+                     commissionRelationDto.setSubUserInfo(subUserInfo);
+                     dataList.add(commissionRelationDto);
+                 }
             }
         }
         PageRequest pageRequest = PageRequest.of(paginationRequest.getCurrentPage(), paginationRequest.getPageSize());
