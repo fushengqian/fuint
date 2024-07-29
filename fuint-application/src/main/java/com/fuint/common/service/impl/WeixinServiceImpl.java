@@ -905,6 +905,45 @@ public class WeixinServiceImpl implements WeixinService {
     }
 
     /**
+     * 生成小程序链接
+     *
+     * @param merchantId 商户ID
+     * @param path 页面路径
+     * @return
+     * */
+    @Override
+    public String createMiniAppLink(Integer merchantId, String path) {
+        String link = "";
+        try {
+            String accessToken = getAccessToken(merchantId, true,true);
+            if (StringUtil.isEmpty(accessToken)) {
+                return "";
+            }
+            String url = "https://api.weixin.qq.com/wxa/genwxashortlink?access_token=" + accessToken +"&";
+
+            Map<String, Object> param = new HashMap<>();
+            param.put("page_url", path);
+
+            String reqDataJsonStr = JsonUtil.toJSONString(param);
+            String response = HttpRESTDataClient.requestPostBody(url, reqDataJsonStr);
+            logger.info("微信生成链接接口返回：{}", response);
+            JSONObject data = (JSONObject) JSONObject.parse(response);
+
+            if (data.get("errcode").toString().equals("0")) {
+                Object linkObject = data.get("link");
+                if (linkObject != null && StringUtil.isNotEmpty(linkObject.toString())) {
+                    link = linkObject.toString();
+                }
+            }
+        } catch (Exception e) {
+            logger.error("微信生成链接接口出错：{}", e.getMessage());
+            return "";
+        }
+
+        return link;
+    }
+
+    /**
      * 刷卡支付
      *
      * @param storeId 店铺ID

@@ -175,4 +175,13 @@ public interface WeixinService {
      * */
     Boolean isOpenCard(Integer merchantId, String cardId, String openId);
 
+    /**
+     * 生成小程序链接
+     *
+     * @param merchantId 商户ID
+     * @param path 页面路径
+     * @return
+     * */
+    String createMiniAppLink(Integer merchantId, String path);
+
 }
