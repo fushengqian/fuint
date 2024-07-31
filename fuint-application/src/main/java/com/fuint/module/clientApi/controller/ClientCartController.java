@@ -102,6 +102,10 @@ public class ClientCartController extends BaseController {
             return getFailureResult(1001);
         }
 
+        if (mtUser == null) {
+            return getFailureResult(1001);
+        }
+
         // 通过商品条码操作
         if (StringUtil.isNotEmpty(skuNo)) {
             MtGoodsSku mtGoodsSku = goodsService.getSkuInfoBySkuNo(skuNo);
