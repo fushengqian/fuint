@@ -179,6 +179,10 @@ public class BackendBookCateController extends BaseController {
             return getFailureResult(1001, "请先登录");
         }
 
+        if (accountInfo.getMerchantId() == null || accountInfo.getMerchantId() < 1) {
+            throw new BusinessCheckException("平台方帐号无法执行该操作，请使用商户帐号操作");
+        }
+
         MtBookCate mtBookCate = new MtBookCate();
         mtBookCate.setName(name);
         mtBookCate.setDescription(description);
