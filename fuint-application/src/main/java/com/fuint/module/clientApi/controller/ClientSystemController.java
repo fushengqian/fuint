@@ -95,7 +95,7 @@ public class ClientSystemController extends BaseController {
             }
         }
 
-        // 默认的店铺
+        // 之前选择的店铺
         if (StringUtil.isNotEmpty(storeId)) {
             storeInfo = storeService.queryStoreById(Integer.parseInt(storeId));
             // 店铺是否已关闭
@@ -107,7 +107,7 @@ public class ClientSystemController extends BaseController {
         }
 
         // 取距离最近的
-        if (storeInfo == null && StringUtil.isNotEmpty(latitude) && StringUtil.isNotEmpty(longitude)) {
+        if (StringUtil.isNotEmpty(latitude) && StringUtil.isNotEmpty(longitude) && mtUser == null) {
             List<MtStore> storeList = storeService.queryByDistance(merchantNo, "", latitude, longitude);
             if (storeList.size() > 0) {
                 storeInfo = storeList.get(0);
