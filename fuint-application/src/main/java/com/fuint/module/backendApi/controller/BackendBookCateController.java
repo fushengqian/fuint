@@ -133,14 +133,14 @@ public class BackendBookCateController extends BaseController {
     public ResponseObject updateStatus(HttpServletRequest request, @RequestBody Map<String, Object> params) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
         String status = params.get("status") != null ? params.get("status").toString() : StatusEnum.ENABLED.getKey();
-        Integer id = params.get("id") == null ? 0 : Integer.parseInt(params.get("id").toString());
+        Integer cateId = params.get("cateId") == null ? 0 : Integer.parseInt(params.get("cateId").toString());
 
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
         if (accountInfo == null) {
             return getFailureResult(1001, "请先登录");
         }
 
-        MtBookCate mtBookCate = bookCateService.getBookCateById(id);
+        MtBookCate mtBookCate = bookCateService.getBookCateById(cateId);
         if (mtBookCate == null) {
             return getFailureResult(201);
         }
@@ -171,8 +171,8 @@ public class BackendBookCateController extends BaseController {
         String description = params.get("description") == null ? "" : params.get("description").toString();
         String logo = params.get("logo") == null ? "" : params.get("logo").toString();
         String status = params.get("status") == null ? "" : params.get("status").toString();
-        String storeId = params.get("storeId") == null ? "0" : params.get("storeId").toString();
-        String sort = params.get("sort") == null ? "0" : params.get("sort").toString();
+        String storeId = (params.get("storeId") == null || StringUtil.isEmpty(params.get("storeId").toString())) ? "0" : params.get("storeId").toString();
+        String sort = (params.get("sort") == null || StringUtil.isEmpty(params.get("sort").toString())) ? "0" : params.get("sort").toString();
 
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
         if (accountInfo == null) {
@@ -188,12 +188,13 @@ public class BackendBookCateController extends BaseController {
         mtBookCate.setDescription(description);
         mtBookCate.setLogo(logo);
         mtBookCate.setOperator(accountInfo.getAccountName());
-        mtBookCate.setStatus(status);
         mtBookCate.setStoreId(Integer.parseInt(storeId));
-        mtBookCate.setSort(Integer.parseInt(sort));
         mtBookCate.setMerchantId(accountInfo.getMerchantId());
+        mtBookCate.setSort(Integer.parseInt(sort));
+        mtBookCate.setStatus(status);
 
         if (StringUtil.isNotEmpty(id)) {
+            mtBookCate.setId(Integer.parseInt(id));
             bookCateService.updateBookCate(mtBookCate);
         } else {
             bookCateService.addBookCate(mtBookCate);

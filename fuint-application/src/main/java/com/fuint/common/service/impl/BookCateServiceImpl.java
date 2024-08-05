@@ -14,6 +14,7 @@ import com.fuint.common.service.SettingService;
 import com.fuint.common.enums.StatusEnum;
 import com.fuint.repository.model.MtBookCate;
 import com.fuint.repository.model.MtStore;
+import com.fuint.utils.StringUtil;
 import com.github.pagehelper.PageHelper;
 import lombok.AllArgsConstructor;
 import org.apache.commons.lang.StringUtils;
@@ -105,12 +106,15 @@ public class BookCateServiceImpl extends ServiceImpl<MtBookCateMapper, MtBookCat
         Integer storeId = mtBookCate.getStoreId() == null ? 0 : mtBookCate.getStoreId();
         if (mtBookCate.getMerchantId() == null || mtBookCate.getMerchantId() <= 0) {
             MtStore mtStore = storeService.queryStoreById(storeId);
-            if (mtStore != null) {
+            if (mtStore != null && mtStore.getMerchantId() != null) {
                 bookCate.setMerchantId(mtStore.getMerchantId());
             }
         }
-        if (bookCate.getMerchantId() == null || bookCate.getMerchantId() <= 0) {
+        if (mtBookCate.getMerchantId() == null || mtBookCate.getMerchantId() <= 0) {
             throw new BusinessCheckException("新增预约分类失败：所属商户不能为空！");
+        }
+        if (StringUtil.isEmpty(mtBookCate.getName())) {
+            throw new BusinessCheckException("新增预约分类失败：分类名称不能为空！");
         }
         bookCate.setStoreId(storeId);
         bookCate.setName(mtBookCate.getName());
@@ -121,6 +125,7 @@ public class BookCateServiceImpl extends ServiceImpl<MtBookCateMapper, MtBookCat
         bookCate.setCreateTime(new Date());
         bookCate.setSort(mtBookCate.getSort());
         bookCate.setOperator(mtBookCate.getOperator());
+        bookCate.setMerchantId(mtBookCate.getMerchantId());
         Integer id = mtBookCateMapper.insert(bookCate);
         if (id > 0) {
             return bookCate;
