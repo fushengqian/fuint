@@ -187,19 +187,20 @@ public class BackendStockController extends BaseController {
         }
 
         Integer myStoreId = accountDto.getStoreId();
-        if (myStoreId > 0) {
+        if (myStoreId != null && myStoreId > 0) {
             storeId = myStoreId;
         }
 
-        MtStock info = new MtStock();
-        info.setMerchantId(accountDto.getMerchantId());
-        info.setDescription(description);
-        info.setStatus(status);
-        info.setStoreId(storeId);
-        info.setType(type);
+        MtStock mtStock = new MtStock();
+        mtStock.setMerchantId(accountDto.getMerchantId());
+        mtStock.setDescription(description);
+        mtStock.setStatus(status);
+        mtStock.setStoreId(storeId);
+        mtStock.setType(type);
         String operator = accountDto.getAccountName();
-        info.setOperator(operator);
-        stockService.addStock(info, goodsList);
+        mtStock.setOperator(operator);
+        stockService.addStock(mtStock, goodsList);
+
         return getSuccessResult(true);
     }
 

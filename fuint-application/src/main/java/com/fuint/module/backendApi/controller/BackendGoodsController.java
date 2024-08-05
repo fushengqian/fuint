@@ -820,6 +820,9 @@ public class BackendGoodsController extends BaseController {
         if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
             params.put("merchantId", accountInfo.getMerchantId());
         }
+        if (accountInfo.getStoreId() != null && accountInfo.getStoreId() > 0) {
+            params.put("storeId", accountInfo.getStoreId());
+        }
         PaginationResponse<GoodsDto> paginationResponse = goodsService.selectGoodsList(params);
         String imagePath = settingService.getUploadBasePath();
 
