@@ -1,6 +1,7 @@
 package com.fuint.module.backendApi.controller;
 
 import com.fuint.common.dto.AccountInfo;
+import com.fuint.common.service.BookCateService;
 import com.fuint.common.service.BookService;
 import com.fuint.common.service.StoreService;
 import com.fuint.common.util.TokenUtil;
@@ -13,6 +14,7 @@ import com.fuint.framework.pagination.PaginationRequest;
 import com.fuint.framework.pagination.PaginationResponse;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.repository.model.MtBook;
+import com.fuint.repository.model.MtBookCate;
 import com.fuint.repository.model.MtStore;
 import com.fuint.utils.StringUtil;
 import io.swagger.annotations.Api;
@@ -51,6 +53,11 @@ public class BackendBookController extends BaseController {
      * 店铺服务接口
      */
     private StoreService storeService;
+
+    /**
+     * 预约分类服务接口
+     */
+    private BookCateService bookCateService;
 
     /**
      * 预约列表查询
@@ -101,22 +108,24 @@ public class BackendBookController extends BaseController {
         paginationRequest.setSearchParams(params);
         PaginationResponse<MtBook> paginationResponse = bookService.queryBookListByPagination(paginationRequest);
 
-        Map<String, Object> paramsStore = new HashMap<>();
-        paramsStore.put("status", StatusEnum.ENABLED.getKey());
+        Map<String, Object> param = new HashMap<>();
+        param.put("status", StatusEnum.ENABLED.getKey());
         if (accountInfo.getStoreId() != null && accountInfo.getStoreId() > 0) {
-            paramsStore.put("storeId", accountInfo.getStoreId().toString());
+            param.put("storeId", accountInfo.getStoreId().toString());
         }
         if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
-            paramsStore.put("merchantId", accountInfo.getMerchantId());
+            param.put("merchantId", accountInfo.getMerchantId());
         }
 
-        List<MtStore> storeList = storeService.queryStoresByParams(paramsStore);
+        List<MtStore> storeList = storeService.queryStoresByParams(param);
         String imagePath = settingService.getUploadBasePath();
+        List<MtBookCate> cateList = bookCateService.queryBookCateListByParams(param);
 
         Map<String, Object> result = new HashMap<>();
         result.put("dataList", paginationResponse);
         result.put("imagePath", imagePath);
         result.put("storeList", storeList);
+        result.put("cateList", cateList);
 
         return getSuccessResult(result);
     }
@@ -171,8 +180,8 @@ public class BackendBookController extends BaseController {
         String description = params.get("description") == null ? "" : params.get("description").toString();
         String logo = params.get("logo") == null ? "" : params.get("logo").toString();
         String status = params.get("status") == null ? "" : params.get("status").toString();
-        String storeId = params.get("storeId") == null ? "0" : params.get("storeId").toString();
-        String sort = params.get("sort") == null ? "0" : params.get("sort").toString();
+        String storeId = (params.get("storeId") == null || StringUtil.isEmpty(params.get("storeId").toString())) ? "0" : params.get("storeId").toString();
+        String sort = (params.get("sort") == null || StringUtil.isEmpty(params.get("sort").toString())) ? "0" : params.get("sort").toString();
 
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
         if (accountInfo == null) {
@@ -194,6 +203,7 @@ public class BackendBookController extends BaseController {
         mtBook.setMerchantId(accountInfo.getMerchantId());
 
         if (StringUtil.isNotEmpty(id)) {
+            mtBook.setId(Integer.parseInt(id));
             bookService.updateBook(mtBook);
         } else {
             bookService.addBook(mtBook);

@@ -8,8 +8,8 @@ package com.fuint.common.enums;
  */
 public enum BookStatusEnum {
     CREATED("A", "已提交"),
-    CONFIRM("B", "已确认"),
-    CANCEL("C", "已取消"),
+    CONFIRM("B", "审核通过"),
+    CANCEL("C", "审核未通过"),
     DELETE("D", "已删除"),
     COMPLETE("E", "已完成");
 
