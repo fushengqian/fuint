@@ -37,6 +37,9 @@ public class MtBookItem implements Serializable {
     @ApiModelProperty("预约ID")
     private Integer bookId;
 
+    @ApiModelProperty("预约用户ID")
+    private Integer userId;
+
     @ApiModelProperty("商品ID")
     private Integer goodsId;
 
@@ -55,7 +58,7 @@ public class MtBookItem implements Serializable {
     @ApiModelProperty("预约备注")
     private String remark;
 
-    @ApiModelProperty("预约备注")
+    @ApiModelProperty("预约员工ID")
     private Integer serviceStaffId;
 
     @ApiModelProperty("创建时间")

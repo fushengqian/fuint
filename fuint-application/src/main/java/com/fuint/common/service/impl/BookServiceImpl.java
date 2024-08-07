@@ -177,6 +177,15 @@ public class BookServiceImpl extends ServiceImpl<MtBookMapper, MtBook> implement
         if (mtBook.getSort() != null) {
             book.setSort(mtBook.getSort());
         }
+        if (mtBook.getServiceDates() != null) {
+            book.setServiceDates(mtBook.getServiceDates());
+        }
+        if (mtBook.getServiceTimes() != null) {
+            book.setServiceTimes(mtBook.getServiceTimes());
+        }
+        if (mtBook.getServiceStaffIds() != null) {
+            book.setServiceStaffIds(mtBook.getServiceStaffIds());
+        }
         book.setUpdateTime(new Date());
         mtBookMapper.updateById(book);
         return book;

@@ -23,9 +23,8 @@ import lombok.AllArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * 预约管理类controller
@@ -182,6 +181,8 @@ public class BackendBookController extends BaseController {
         String status = params.get("status") == null ? "" : params.get("status").toString();
         String storeId = (params.get("storeId") == null || StringUtil.isEmpty(params.get("storeId").toString())) ? "0" : params.get("storeId").toString();
         String sort = (params.get("sort") == null || StringUtil.isEmpty(params.get("sort").toString())) ? "0" : params.get("sort").toString();
+        String dates = params.get("dates") == null ? "" : params.get("dates").toString();
+        List<LinkedHashMap> times = params.get("times") == null ? new ArrayList<>() : (List) params.get("times");
 
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
         if (accountInfo == null) {
@@ -201,7 +202,27 @@ public class BackendBookController extends BaseController {
         mtBook.setStoreId(Integer.parseInt(storeId));
         mtBook.setSort(Integer.parseInt(sort));
         mtBook.setMerchantId(accountInfo.getMerchantId());
-
+        mtBook.setServiceDates(dates);
+        String timeStr = "";
+        if (times != null && times.size() > 0) {
+            List<String> timeArr = new ArrayList<>();
+            for (LinkedHashMap time : times) {
+                 String startTime = time.get("startTime") == null ? "" : time.get("startTime").toString();
+                 String endTime = time.get("endTime") == null ? "" : time.get("endTime").toString();
+                 String num = time.get("num") == null ? "" : time.get("num").toString();
+                 if (StringUtil.isNotEmpty(startTime) && StringUtil.isNotEmpty(endTime) && StringUtil.isNotEmpty(num)) {
+                     String item = startTime + "-" + endTime + "-" + num;
+                     if (!timeArr.contains(item)) {
+                         timeArr.add(item);
+                     }
+                 }
+            }
+            if (timeArr.size() > 0) {
+                timeStr = timeArr.stream().collect(Collectors.joining(","));
+                mtBook.setServiceTimes(timeStr);
+            }
+        }
+        mtBook.setServiceTimes(timeStr);
         if (StringUtil.isNotEmpty(id)) {
             mtBook.setId(Integer.parseInt(id));
             bookService.updateBook(mtBook);
