@@ -1,16 +1,24 @@
 package com.fuint.common.http;
 
+import com.alibaba.fastjson.JSONObject;
 import com.fuint.utils.StringUtil;
 import okhttp3.*;
+import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
+import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicHeader;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
@@ -56,6 +64,37 @@ public class HttpRESTDataClient {
         if (!response.isSuccessful()) throw new IOException("Unexpected code " + response);
 
         return response.body().bytes();
+    }
+
+    /**
+     *  请求
+     * @param url
+     * @param jsonParam
+     * @return
+     */
+    public static InputStream doWXPost(String url, JSONObject jsonParam) {
+        InputStream instreams = null;
+        HttpPost httpRequst = new HttpPost(url);// 创建HttpPost对象
+        try {
+            StringEntity se = new StringEntity(jsonParam.toString(),"utf-8");
+            se.setContentType("application/json");
+            se.setContentEncoding(new BasicHeader(HTTP.CONTENT_TYPE,"UTF-8"));
+            httpRequst.setEntity(se);
+            HttpResponse httpResponse = new DefaultHttpClient().execute(httpRequst);
+            if (httpResponse.getStatusLine().getStatusCode() == 200) {
+                HttpEntity httpEntity = httpResponse.getEntity();
+                if (httpEntity != null) {
+                    instreams = httpEntity.getContent();
+                }
+            }
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        } catch (ClientProtocolException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return instreams;
     }
 
     public static String requestPost(String url, String contentType, String postData) throws IOException {

@@ -3,7 +3,6 @@ package com.fuint.common.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-
 import com.fuint.common.service.BookService;
 import com.fuint.common.service.StoreService;
 import com.fuint.framework.annoation.OperationServiceLog;
@@ -95,13 +94,13 @@ public class BookServiceImpl extends ServiceImpl<MtBookMapper, MtBook> implement
     }
 
     /**
-     * 添加预约
+     * 添加预约项目
      *
      * @param mtBook 预约信息
      * @return
      */
     @Override
-    @OperationServiceLog(description = "添加预约")
+    @OperationServiceLog(description = "添加预约项目")
     public MtBook addBook(MtBook mtBook) throws BusinessCheckException {
         Integer storeId = mtBook.getStoreId() == null ? 0 : mtBook.getStoreId();
         if (mtBook.getMerchantId() == null || mtBook.getMerchantId() <= 0) {
@@ -134,11 +133,11 @@ public class BookServiceImpl extends ServiceImpl<MtBookMapper, MtBook> implement
      */
     @Override
     public MtBook getBookById(Integer id) {
-        return mtBookMapper.selectById(id);
+       return mtBookMapper.selectById(id);
     }
 
     /**
-     * 修改预约
+     * 修改预约项目
      *
      * @param  mtBook
      * @throws BusinessCheckException
@@ -146,11 +145,11 @@ public class BookServiceImpl extends ServiceImpl<MtBookMapper, MtBook> implement
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    @OperationServiceLog(description = "修改预约")
+    @OperationServiceLog(description = "修改预约项目")
     public MtBook updateBook(MtBook mtBook) throws BusinessCheckException {
         MtBook book = getBookById(mtBook.getId());
         if (book == null) {
-            throw new BusinessCheckException("该预约状态异常");
+            throw new BusinessCheckException("该预约项目状态异常");
         }
         book.setId(book.getId());
         if (book.getLogo() != null) {

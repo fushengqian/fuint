@@ -70,7 +70,7 @@ public class MtBookItem implements Serializable {
     @ApiModelProperty("最后操作人")
     private String operator;
 
-    @ApiModelProperty("A：正常；D：删除")
+    @ApiModelProperty("A：已提交；B：审核通过；C：审核未通过；D：删除；E：已完成")
     private String status;
 
 }
