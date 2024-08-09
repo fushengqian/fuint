@@ -678,8 +678,8 @@ public class WeixinServiceImpl implements WeixinService {
                 output.write(buffer, 0, n);
             }
             byte[] bytes = output.toByteArray();
-
             String resStr = output.toString();
+            logger.info("WechatService createStoreQrCode reqData：{},resStr:{}", reqDataJsonStr, resStr);
             try {
                 JSONObject res = JSON.parseObject(resStr);
                 String errCode = res.get("errcode").toString();
@@ -687,8 +687,6 @@ public class WeixinServiceImpl implements WeixinService {
                     getAccessToken(merchantId, true, false);
                 }
             } catch (Exception e) {
-                logger.info("WechatService createStoreQrCode reqData：{}", reqDataJsonStr);
-
                 String pathRoot = env.getProperty("images.root");
                 String baseImage = env.getProperty("images.path");
 

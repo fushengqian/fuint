@@ -219,14 +219,26 @@ public class UserGradeServiceImpl extends ServiceImpl<MtUserGradeMapper, MtUserG
 
         List<MtUserGrade> userGrades = mtUserGradeMapper.selectList(lambdaQueryWrapper);
         List<MtUserGrade> dataList = new ArrayList<>();
-        if (userGrades.size() > 0 && userInfo != null && StringUtil.isNotEmpty(userInfo.getGradeId())) {
-            MtUserGrade myGradeInfo = mtUserGradeMapper.selectById(userInfo.getGradeId());
+
+        String userGradeId = "0";
+        if (userInfo != null) {
+            if (StringUtil.isNotEmpty(userInfo.getGradeId())) {
+                userGradeId = userInfo.getGradeId();
+            }
+        }
+
+        if (userGrades.size() > 0) {
+            MtUserGrade myGradeInfo = mtUserGradeMapper.selectById(userGradeId);
             if (myGradeInfo != null) {
                 Integer myGrade = myGradeInfo.getGrade();
                 for (MtUserGrade grade : userGrades) {
                     if (!myGrade.equals(grade.getGrade().toString()) && (grade.getGrade() > myGrade)) {
                         dataList.add(grade);
                     }
+                }
+            } else {
+                for (MtUserGrade grade : userGrades) {
+                     dataList.add(grade);
                 }
             }
         }
