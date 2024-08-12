@@ -541,7 +541,7 @@ public class BackendGoodsController extends BaseController {
         if (StringUtil.isNotEmpty(description)) {
             mtGoods.setDescription(description);
         }
-        if (storeId != null) {
+        if (storeId != null && param.get("storeId") != null) {
             mtGoods.setStoreId(storeId);
         }
         if (images.size() > 0) {
