@@ -175,6 +175,7 @@ public class BackendBookController extends BaseController {
     public ResponseObject saveHandler(HttpServletRequest request, @RequestBody Map<String, Object> params) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
         String id = params.get("id") == null ? "" : params.get("id").toString();
+        String cateId = params.get("cateId") == null ? "0" : params.get("cateId").toString();
         String name = params.get("name") == null ? "" : params.get("name").toString();
         String description = params.get("description") == null ? "" : params.get("description").toString();
         String logo = params.get("logo") == null ? "" : params.get("logo").toString();
@@ -203,6 +204,9 @@ public class BackendBookController extends BaseController {
         mtBook.setSort(Integer.parseInt(sort));
         mtBook.setMerchantId(accountInfo.getMerchantId());
         mtBook.setServiceDates(dates);
+        if (StringUtil.isNotEmpty(cateId)) {
+            mtBook.setCateId(Integer.parseInt(cateId));
+        }
         String timeStr = "";
         if (times != null && times.size() > 0) {
             List<String> timeArr = new ArrayList<>();

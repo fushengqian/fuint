@@ -220,11 +220,11 @@ public class BackendBookCateController extends BaseController {
             return getFailureResult(1001, "请先登录");
         }
 
-        MtBookCate bookCate = bookCateService.getBookCateById(id);
+        MtBookCate bookCateInfo = bookCateService.getBookCateById(id);
         String imagePath = settingService.getUploadBasePath();
 
         Map<String, Object> result = new HashMap<>();
-        result.put("bookCate", bookCate);
+        result.put("bookCateInfo", bookCateInfo);
         result.put("imagePath", imagePath);
 
         return getSuccessResult(result);

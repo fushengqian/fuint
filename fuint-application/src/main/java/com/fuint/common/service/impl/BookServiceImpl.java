@@ -152,8 +152,11 @@ public class BookServiceImpl extends ServiceImpl<MtBookMapper, MtBook> implement
             throw new BusinessCheckException("该预约项目状态异常");
         }
         book.setId(book.getId());
-        if (book.getLogo() != null) {
+        if (mtBook.getLogo() != null) {
             book.setLogo(mtBook.getLogo());
+        }
+        if (mtBook.getCateId() != null) {
+            book.setCateId(mtBook.getCateId());
         }
         if (book.getName() != null) {
             book.setName(mtBook.getName());

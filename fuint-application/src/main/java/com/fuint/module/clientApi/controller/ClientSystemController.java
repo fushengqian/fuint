@@ -107,7 +107,7 @@ public class ClientSystemController extends BaseController {
         }
 
         // 取距离最近的
-        if (storeInfo == null && StringUtil.isNotEmpty(latitude) && StringUtil.isNotEmpty(longitude) && mtUser == null) {
+        if (storeInfo == null && StringUtil.isNotEmpty(latitude) && StringUtil.isNotEmpty(longitude)) {
             List<MtStore> storeList = storeService.queryByDistance(merchantNo, "", latitude, longitude);
             if (storeList.size() > 0) {
                 storeInfo = storeList.get(0);
