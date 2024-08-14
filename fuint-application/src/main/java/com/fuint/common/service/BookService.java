@@ -1,6 +1,7 @@
 package com.fuint.common.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.fuint.common.dto.BookDto;
 import com.fuint.framework.pagination.PaginationRequest;
 import com.fuint.framework.pagination.PaginationResponse;
 import com.fuint.framework.exception.BusinessCheckException;
@@ -22,7 +23,7 @@ public interface BookService extends IService<MtBook> {
      * @param paginationRequest
      * @return
      */
-    PaginationResponse<MtBook> queryBookListByPagination(PaginationRequest paginationRequest) throws BusinessCheckException;
+    PaginationResponse<BookDto> queryBookListByPagination(PaginationRequest paginationRequest) throws BusinessCheckException;
 
     /**
      * 添加预约
@@ -34,16 +35,16 @@ public interface BookService extends IService<MtBook> {
     MtBook addBook(MtBook mtBook) throws BusinessCheckException;
 
     /**
-     * 根据ID获取预约信息
+     * 根据ID获取预约项目信息
      *
-     * @param  id 预约ID
+     * @param  id 预约项目ID
      * @throws BusinessCheckException
      * @return
      */
-    MtBook getBookById(Integer id) throws BusinessCheckException;
+    BookDto getBookById(Integer id) throws BusinessCheckException;
 
     /**
-     * 更新预约
+     * 更新预约项目
      *
      * @param  mtBook
      * @throws BusinessCheckException
@@ -52,7 +53,7 @@ public interface BookService extends IService<MtBook> {
     MtBook updateBook(MtBook mtBook) throws BusinessCheckException;
 
     /**
-     * 根据条件搜索预约
+     * 根据条件搜索预约项目
      *
      * @param  params 查询参数
      * @throws BusinessCheckException

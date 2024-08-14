@@ -1,6 +1,7 @@
 package com.fuint.module.backendApi.controller;
 
 import com.fuint.common.dto.AccountInfo;
+import com.fuint.common.dto.BookDto;
 import com.fuint.common.service.BookCateService;
 import com.fuint.common.service.BookService;
 import com.fuint.common.service.StoreService;
@@ -20,6 +21,7 @@ import com.fuint.utils.StringUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.AllArgsConstructor;
+import org.springframework.beans.BeanUtils;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
@@ -73,6 +75,7 @@ public class BackendBookController extends BaseController {
         Integer page = request.getParameter("page") == null ? Constants.PAGE_NUMBER : Integer.parseInt(request.getParameter("page"));
         Integer pageSize = request.getParameter("pageSize") == null ? Constants.PAGE_SIZE : Integer.parseInt(request.getParameter("pageSize"));
         String name = request.getParameter("name");
+        String cateId = request.getParameter("cateId");
         String status = request.getParameter("status");
         String searchStoreId = request.getParameter("storeId");
 
@@ -95,6 +98,9 @@ public class BackendBookController extends BaseController {
         if (StringUtil.isNotEmpty(name)) {
             params.put("name", name);
         }
+        if (StringUtil.isNotEmpty(cateId)) {
+            params.put("cateId", cateId);
+        }
         if (StringUtil.isNotEmpty(status)) {
             params.put("status", status);
         }
@@ -105,7 +111,7 @@ public class BackendBookController extends BaseController {
             params.put("storeId", storeId);
         }
         paginationRequest.setSearchParams(params);
-        PaginationResponse<MtBook> paginationResponse = bookService.queryBookListByPagination(paginationRequest);
+        PaginationResponse<BookDto> paginationResponse = bookService.queryBookListByPagination(paginationRequest);
 
         Map<String, Object> param = new HashMap<>();
         param.put("status", StatusEnum.ENABLED.getKey());
@@ -148,12 +154,14 @@ public class BackendBookController extends BaseController {
             return getFailureResult(1001, "请先登录");
         }
 
-        MtBook mtBook = bookService.getBookById(id);
-        if (mtBook == null) {
+        BookDto bookDto = bookService.getBookById(id);
+        if (bookDto == null) {
             return getFailureResult(201);
         }
 
         String operator = accountInfo.getAccountName();
+        MtBook mtBook = new MtBook();
+        BeanUtils.copyProperties(bookDto, mtBook);
 
         mtBook.setOperator(operator);
         mtBook.setStatus(status);
@@ -254,12 +262,10 @@ public class BackendBookController extends BaseController {
             return getFailureResult(1001, "请先登录");
         }
 
-        MtBook mtBook = bookService.getBookById(id);
-        String imagePath = settingService.getUploadBasePath();
+        BookDto bookDto = bookService.getBookById(id);
 
         Map<String, Object> result = new HashMap<>();
-        result.put("bookInfo", mtBook);
-        result.put("imagePath", imagePath);
+        result.put("bookInfo", bookDto);
 
         return getSuccessResult(result);
     }

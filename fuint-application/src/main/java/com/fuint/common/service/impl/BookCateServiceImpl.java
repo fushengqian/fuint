@@ -13,6 +13,7 @@ import com.fuint.repository.mapper.MtBookCateMapper;
 import com.fuint.common.service.SettingService;
 import com.fuint.common.enums.StatusEnum;
 import com.fuint.repository.model.MtBookCate;
+import com.fuint.repository.model.MtGoodsCate;
 import com.fuint.repository.model.MtStore;
 import com.fuint.utils.StringUtil;
 import com.github.pagehelper.PageHelper;
@@ -215,7 +216,10 @@ public class BookCateServiceImpl extends ServiceImpl<MtBookCateMapper, MtBookCat
             lambdaQueryWrapper.eq(MtBookCate::getMerchantId, merchantId);
         }
         if (StringUtils.isNotBlank(storeId)) {
-            lambdaQueryWrapper.eq(MtBookCate::getStoreId, storeId);
+            lambdaQueryWrapper.and(wq -> wq
+                    .eq(MtBookCate::getStoreId, 0)
+                    .or()
+                    .eq(MtBookCate::getStoreId, storeId));
         }
 
         lambdaQueryWrapper.orderByAsc(MtBookCate::getSort);
