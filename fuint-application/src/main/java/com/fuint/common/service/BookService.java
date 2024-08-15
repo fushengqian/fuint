@@ -6,6 +6,7 @@ import com.fuint.framework.pagination.PaginationRequest;
 import com.fuint.framework.pagination.PaginationResponse;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.repository.model.MtBook;
+import java.text.ParseException;
 import java.util.List;
 import java.util.Map;
 
@@ -41,7 +42,7 @@ public interface BookService extends IService<MtBook> {
      * @throws BusinessCheckException
      * @return
      */
-    BookDto getBookById(Integer id) throws BusinessCheckException;
+    BookDto getBookById(Integer id) throws BusinessCheckException, ParseException;
 
     /**
      * 更新预约项目

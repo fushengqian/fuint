@@ -4,8 +4,11 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fuint.common.dto.BookDto;
+import com.fuint.common.dto.DayDto;
+import com.fuint.common.dto.TimeDto;
 import com.fuint.common.service.BookService;
 import com.fuint.common.service.StoreService;
+import com.fuint.common.util.DateUtil;
 import com.fuint.framework.annoation.OperationServiceLog;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.pagination.PaginationRequest;
@@ -16,6 +19,7 @@ import com.fuint.common.service.SettingService;
 import com.fuint.common.enums.StatusEnum;
 import com.fuint.repository.model.MtBook;
 import com.fuint.repository.model.MtStore;
+import com.fuint.utils.StringUtil;
 import com.github.pagehelper.PageHelper;
 import lombok.AllArgsConstructor;
 import org.apache.commons.lang.StringUtils;
@@ -27,6 +31,9 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -148,13 +155,48 @@ public class BookServiceImpl extends ServiceImpl<MtBookMapper, MtBook> implement
      * @return
      */
     @Override
-    public BookDto getBookById(Integer id) {
+    public BookDto getBookById(Integer id) throws ParseException {
         BookDto bookDto = new BookDto();
         MtBook mtBook = mtBookMapper.selectById(id);
         if (mtBook == null) {
             return null;
         }
         BeanUtils.copyProperties(mtBook, bookDto);
+
+        List<DayDto> dateList = new ArrayList<>();
+        String serviceDates = mtBook.getServiceDates();
+        if (StringUtil.isNotEmpty(serviceDates)) {
+            List<String> dates = Arrays.asList(serviceDates.split(",").clone());
+            if (dates.size() > 0) {
+                for (String date : dates) {
+                    Date currentDate = DateUtil.parseDate(date);
+                    SimpleDateFormat format = new SimpleDateFormat("EEEE");
+                    String week = format.format(currentDate);
+                    DayDto day = new DayDto();
+                    day.setWeek(week);
+                    day.setDate(DateUtil.formatDate(currentDate, "MM-dd"));
+                    day.setEnable(true);
+                    dateList.add(day);
+                }
+            }
+        }
+        bookDto.setDateList(dateList);
+
+        List<TimeDto> timeList = new ArrayList<>();
+        String serviceTimes = mtBook.getServiceTimes();
+        if (StringUtil.isNotEmpty(serviceTimes)) {
+            List<String> times = Arrays.asList(serviceTimes.split(",").clone());
+            if (times.size() > 0) {
+                for (String time : times) {
+                     TimeDto timeDto = new TimeDto();
+                     timeDto.setTime(time);
+                     timeDto.setEnable(true);
+                     timeList.add(timeDto);
+                }
+            }
+        }
+        bookDto.setTimeList(timeList);
+
         return bookDto;
     }
 

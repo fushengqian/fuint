@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -46,8 +47,14 @@ public class BookDto implements Serializable {
     @ApiModelProperty("可预约日期")
     private String serviceDates;
 
+    @ApiModelProperty("可预约日期列表")
+    private List<DayDto> dateList;
+
     @ApiModelProperty("可预约时间段")
     private String serviceTimes;
+
+    @ApiModelProperty("可预约时间段列表")
+    private List<TimeDto> timeList;
 
     @ApiModelProperty("可预约员工ID")
     private String serviceStaffIds;

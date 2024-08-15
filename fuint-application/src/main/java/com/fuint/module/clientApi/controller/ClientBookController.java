@@ -22,6 +22,7 @@ import lombok.AllArgsConstructor;
 import java.lang.reflect.InvocationTargetException;
 import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
+import java.text.ParseException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -100,7 +101,7 @@ public class ClientBookController extends BaseController {
     @ApiOperation(value="获取预约项目详情", notes="根据ID获取预约项目详情")
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @CrossOrigin
-    public ResponseObject detail(@RequestBody BookDetailParam param) throws BusinessCheckException, InvocationTargetException, IllegalAccessException {
+    public ResponseObject detail(@RequestBody BookDetailParam param) throws BusinessCheckException, InvocationTargetException, IllegalAccessException, ParseException {
         Integer bookId = param.getBookId() == null ? 0 : param.getBookId();
 
         BookDto bookInfo = bookService.getBookById(bookId);
