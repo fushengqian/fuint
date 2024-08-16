@@ -2,19 +2,21 @@ package com.fuint.module.clientApi.controller;
 
 import com.fuint.common.Constants;
 import com.fuint.common.dto.BookDto;
+import com.fuint.common.dto.UserInfo;
 import com.fuint.common.enums.StatusEnum;
 import com.fuint.common.param.BookDetailParam;
 import com.fuint.common.param.BookListParam;
-import com.fuint.common.service.BookCateService;
-import com.fuint.common.service.BookService;
-import com.fuint.common.service.MerchantService;
+import com.fuint.common.service.*;
+import com.fuint.common.util.DateUtil;
+import com.fuint.common.util.TokenUtil;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.pagination.PaginationRequest;
 import com.fuint.framework.pagination.PaginationResponse;
 import com.fuint.framework.web.BaseController;
 import com.fuint.framework.web.ResponseObject;
-import com.fuint.repository.model.MtBook;
 import com.fuint.repository.model.MtBookCate;
+import com.fuint.repository.model.MtBookItem;
+import com.fuint.repository.model.MtUser;
 import com.fuint.utils.StringUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -50,9 +52,19 @@ public class ClientBookController extends BaseController {
     private BookCateService bookCateService;
 
     /**
+     * 预约记录服务接口
+     * */
+    private BookItemService bookItemService;
+
+    /**
      * 商户服务接口
      */
     private MerchantService merchantService;
+
+    /**
+     * 会员服务接口
+     */
+    private MemberService memberService;
 
     /**
      * 获取预约项目列表
@@ -133,6 +145,49 @@ public class ClientBookController extends BaseController {
         List<MtBookCate> cateList = bookCateService.queryBookCateListByParams(param);
         Map<String, Object> result = new HashMap<>();
         result.put("cateList", cateList);
+
+        return getSuccessResult(result);
+    }
+
+    /**
+     * 预约提交
+     */
+    @ApiOperation(value = "预约提交")
+    @RequestMapping(value = "/submit", method = RequestMethod.POST)
+    @CrossOrigin
+    public ResponseObject submit(HttpServletRequest request, @RequestBody Map<String, Object> param) throws BusinessCheckException, ParseException {
+        String token = request.getHeader("Access-Token");
+        Integer storeId = request.getHeader("storeId") == null ? 0 : Integer.parseInt(request.getHeader("storeId"));
+        String bookId = param.get("bookId") == null ? "" : param.get("bookId").toString();
+        String remark = param.get("remark") == null ? "" : param.get("remark").toString();
+        String mobile = param.get("mobile") == null ? "" : param.get("mobile").toString();
+        String contact = param.get("contact") == null ? "" : param.get("contact").toString();
+        String date = param.get("date") == null ? "" : param.get("date").toString();
+        String time = param.get("time") == null ? "" : param.get("time").toString();
+
+        UserInfo loginInfo = TokenUtil.getUserInfoByToken(token);
+        if (null == loginInfo) {
+            return getFailureResult(1001);
+        }
+
+        MtUser mtUser = memberService.queryMemberById(loginInfo.getId());
+        BookDto bookInfo = bookService.getBookById(Integer.parseInt(bookId));
+        if (bookInfo == null) {
+            return getFailureResult(2001);
+        }
+
+        MtBookItem mtBookItem = new MtBookItem();
+        mtBookItem.setCateId(bookInfo.getCateId());
+        mtBookItem.setUserId(mtUser.getId());
+        mtBookItem.setRemark(remark);
+        mtBookItem.setMerchantId(mtUser.getMerchantId());
+        mtBookItem.setStoreId(storeId);
+        mtBookItem.setMobile(mobile);
+        mtBookItem.setContact(contact);
+        mtBookItem.setBookId(bookInfo.getId());
+        mtBookItem.setServiceDate(DateUtil.parseDate(date));
+        mtBookItem.setServiceTime(time);
+        MtBookItem result = bookItemService.addBookItem(mtBookItem);
 
         return getSuccessResult(result);
     }

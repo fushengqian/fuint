@@ -189,7 +189,8 @@ public class BookServiceImpl extends ServiceImpl<MtBookMapper, MtBook> implement
             if (times.size() > 0) {
                 for (String time : times) {
                      TimeDto timeDto = new TimeDto();
-                     timeDto.setTime(time);
+                     String arr[] = time.split("-");
+                     timeDto.setTime(arr[0] + "-" + arr[1]);
                      timeDto.setEnable(true);
                      timeList.add(timeDto);
                 }

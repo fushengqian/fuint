@@ -1,6 +1,7 @@
 package com.fuint.common.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.fuint.common.dto.BookItemDto;
 import com.fuint.framework.pagination.PaginationRequest;
 import com.fuint.framework.pagination.PaginationResponse;
 import com.fuint.framework.exception.BusinessCheckException;
@@ -22,7 +23,7 @@ public interface BookItemService extends IService<MtBookItem> {
      * @param paginationRequest
      * @return
      */
-    PaginationResponse<MtBookItem> queryBookItemListByPagination(PaginationRequest paginationRequest) throws BusinessCheckException;
+    PaginationResponse<BookItemDto> queryBookItemListByPagination(PaginationRequest paginationRequest) throws BusinessCheckException;
 
     /**
      * 添加预约订单

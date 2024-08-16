@@ -1,31 +1,22 @@
-package com.fuint.repository.model;
+package com.fuint.common.dto;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
 import java.io.Serializable;
 import java.util.Date;
-import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
 /**
- * 预约订单实体
+ * 预约订单Dto
  *
  * Created by FSQ
  * CopyRight https://www.fuint.cn
  */
-@Getter
-@Setter
-@TableName("mt_book_item")
-@ApiModel(value = "MtBookItem对象", description = "MtBookItem表对象")
-public class MtBookItem implements Serializable {
+@Data
+public class BookItemDto implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     @ApiModelProperty("自增ID")
-    @TableId(value = "ID", type = IdType.AUTO)
     private Integer id;
 
     @ApiModelProperty("所属商户ID")
@@ -37,8 +28,11 @@ public class MtBookItem implements Serializable {
     @ApiModelProperty("预约分类ID")
     private Integer cateId;
 
-    @ApiModelProperty("预约ID")
+    @ApiModelProperty("预约项目ID")
     private Integer bookId;
+
+    @ApiModelProperty("预约项目名称")
+    private String bookName;
 
     @ApiModelProperty("预约用户ID")
     private Integer userId;

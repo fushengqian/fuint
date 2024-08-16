@@ -3,6 +3,8 @@ package com.fuint.common.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.fuint.common.dto.BookItemDto;
+import com.fuint.common.enums.BookStatusEnum;
 import com.fuint.common.service.BookItemService;
 import com.fuint.common.service.StoreService;
 import com.fuint.framework.annoation.OperationServiceLog;
@@ -10,8 +12,9 @@ import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.pagination.PaginationRequest;
 import com.fuint.framework.pagination.PaginationResponse;
 import com.fuint.repository.mapper.MtBookItemMapper;
-import com.fuint.common.service.SettingService;
 import com.fuint.common.enums.StatusEnum;
+import com.fuint.repository.mapper.MtBookMapper;
+import com.fuint.repository.model.MtBook;
 import com.fuint.repository.model.MtBookItem;
 import com.fuint.repository.model.MtStore;
 import com.github.pagehelper.PageHelper;
@@ -20,6 +23,7 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.github.pagehelper.Page;
+import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -40,10 +44,7 @@ public class BookItemServiceImpl extends ServiceImpl<MtBookItemMapper, MtBookIte
 
     private MtBookItemMapper mtBookItemMapper;
 
-    /**
-     * 系统设置服务接口
-     * */
-    private SettingService settingService;
+    private MtBookMapper mtBookMapper;
 
     /**
      * 店铺接口
@@ -57,7 +58,7 @@ public class BookItemServiceImpl extends ServiceImpl<MtBookItemMapper, MtBookIte
      * @return
      */
     @Override
-    public PaginationResponse<MtBookItem> queryBookItemListByPagination(PaginationRequest paginationRequest) {
+    public PaginationResponse<BookItemDto> queryBookItemListByPagination(PaginationRequest paginationRequest) {
         Page<MtBookItem> pageHelper = PageHelper.startPage(paginationRequest.getCurrentPage(), paginationRequest.getPageSize());
         LambdaQueryWrapper<MtBookItem> lambdaQueryWrapper = Wrappers.lambdaQuery();
         lambdaQueryWrapper.ne(MtBookItem::getStatus, StatusEnum.DISABLE.getKey());
@@ -65,6 +66,10 @@ public class BookItemServiceImpl extends ServiceImpl<MtBookItemMapper, MtBookIte
         String mobile = paginationRequest.getSearchParams().get("mobile") == null ? "" : paginationRequest.getSearchParams().get("mobile").toString();
         if (StringUtils.isNotBlank(mobile)) {
             lambdaQueryWrapper.like(MtBookItem::getMobile, mobile);
+        }
+        String contact = paginationRequest.getSearchParams().get("contact") == null ? "" : paginationRequest.getSearchParams().get("contact").toString();
+        if (StringUtils.isNotBlank(contact)) {
+            lambdaQueryWrapper.like(MtBookItem::getContact, contact);
         }
         String status = paginationRequest.getSearchParams().get("status") == null ? "" : paginationRequest.getSearchParams().get("status").toString();
         if (StringUtils.isNotBlank(status)) {
@@ -78,13 +83,33 @@ public class BookItemServiceImpl extends ServiceImpl<MtBookItemMapper, MtBookIte
         if (StringUtils.isNotBlank(storeId)) {
             lambdaQueryWrapper.eq(MtBookItem::getStoreId, storeId);
         }
+        String userId = paginationRequest.getSearchParams().get("userId") == null ? "" : paginationRequest.getSearchParams().get("userId").toString();
+        if (StringUtils.isNotBlank(userId)) {
+            lambdaQueryWrapper.eq(MtBookItem::getUserId, userId);
+        }
+        String cateId = paginationRequest.getSearchParams().get("cateId") == null ? "" : paginationRequest.getSearchParams().get("cateId").toString();
+        if (StringUtils.isNotBlank(cateId)) {
+            lambdaQueryWrapper.eq(MtBookItem::getCateId, cateId);
+        }
 
         lambdaQueryWrapper.orderByDesc(MtBookItem::getId);
-        List<MtBookItem> dataList = mtBookItemMapper.selectList(lambdaQueryWrapper);
+        List<MtBookItem> bookItemList = mtBookItemMapper.selectList(lambdaQueryWrapper);
+        List<BookItemDto> dataList = new ArrayList<>();
+        if (bookItemList != null && bookItemList.size() > 0) {
+            for (MtBookItem mtBookItem : bookItemList) {
+                 BookItemDto bookItemDto = new BookItemDto();
+                 BeanUtils.copyProperties(mtBookItem, bookItemDto);
+                 MtBook mtBook = mtBookMapper.selectById(mtBookItem.getBookId());
+                 if (mtBook != null) {
+                     bookItemDto.setBookName(mtBook.getName());
+                 }
+                 dataList.add(bookItemDto);
+            }
+        }
 
         PageRequest pageRequest = PageRequest.of(paginationRequest.getCurrentPage(), paginationRequest.getPageSize());
         PageImpl pageImpl = new PageImpl(dataList, pageRequest, pageHelper.getTotal());
-        PaginationResponse<MtBookItem> paginationResponse = new PaginationResponse(pageImpl, MtBookItem.class);
+        PaginationResponse<BookItemDto> paginationResponse = new PaginationResponse(pageImpl, BookItemDto.class);
         paginationResponse.setTotalPages(pageHelper.getPages());
         paginationResponse.setTotalElements(pageHelper.getTotal());
         paginationResponse.setContent(dataList);
@@ -101,7 +126,6 @@ public class BookItemServiceImpl extends ServiceImpl<MtBookItemMapper, MtBookIte
     @Override
     @OperationServiceLog(description = "新增预约订单")
     public MtBookItem addBookItem(MtBookItem mtBookItem) throws BusinessCheckException {
-        MtBookItem bookItem = new MtBookItem();
         Integer storeId = mtBookItem.getStoreId() == null ? 0 : mtBookItem.getStoreId();
         if (mtBookItem.getMerchantId() == null || mtBookItem.getMerchantId() <= 0) {
             throw new BusinessCheckException("新增预约订单失败：所属商户不能为空！");
@@ -109,19 +133,30 @@ public class BookItemServiceImpl extends ServiceImpl<MtBookItemMapper, MtBookIte
         if (mtBookItem.getMerchantId() == null || mtBookItem.getMerchantId() <= 0) {
             MtStore mtStore = storeService.queryStoreById(storeId);
             if (mtStore != null) {
-                bookItem.setMerchantId(mtStore.getMerchantId());
+                mtBookItem.setMerchantId(mtStore.getMerchantId());
             }
         }
-        bookItem.setStoreId(storeId);
-        bookItem.setStatus(StatusEnum.ENABLED.getKey());
-        bookItem.setUpdateTime(new Date());
-        bookItem.setCreateTime(new Date());
-        Integer id = mtBookItemMapper.insert(bookItem);
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("merchantId", mtBookItem.getMerchantId());
+        params.put("storeId", mtBookItem.getMerchantId());
+        params.put("bookId", mtBookItem.getBookId());
+        params.put("mobile", mtBookItem.getMobile());
+        params.put("status", BookStatusEnum.CREATED.getKey());
+        List<MtBookItem> data = queryBookItemListByParams(params);
+        if (data != null && data.size() > 0) {
+            throw new BusinessCheckException("您已提交预约，请等待确认！");
+        }
+
+        mtBookItem.setStatus(BookStatusEnum.CREATED.getKey());
+        mtBookItem.setUpdateTime(new Date());
+        mtBookItem.setCreateTime(new Date());
+        Integer id = mtBookItemMapper.insert(mtBookItem);
         if (id > 0) {
-            return bookItem;
+            return mtBookItem;
         } else {
-            logger.error("新增预约订单失败.");
-            throw new BusinessCheckException("抱歉，新增预约订单失败！");
+            logger.error("新增预约记录失败.");
+            throw new BusinessCheckException("抱歉，新增预约记录失败！");
         }
     }
 
@@ -191,6 +226,7 @@ public class BookItemServiceImpl extends ServiceImpl<MtBookItemMapper, MtBookIte
         String merchantId =  params.get("merchantId") == null ? "" : params.get("merchantId").toString();
         String mobile = params.get("mobile") == null ? "" : params.get("mobile").toString();
         String contact = params.get("contact") == null ? "" : params.get("contact").toString();
+        String bookId = params.get("bookId") == null ? "" : params.get("bookId").toString();
 
         LambdaQueryWrapper<MtBookItem> lambdaQueryWrapper = Wrappers.lambdaQuery();
         if (StringUtils.isNotBlank(mobile)) {
@@ -198,6 +234,9 @@ public class BookItemServiceImpl extends ServiceImpl<MtBookItemMapper, MtBookIte
         }
         if (StringUtils.isNotBlank(contact)) {
             lambdaQueryWrapper.like(MtBookItem::getContact, contact);
+        }
+        if (StringUtils.isNotBlank(bookId)) {
+            lambdaQueryWrapper.like(MtBookItem::getBookId, bookId);
         }
         if (StringUtils.isNotBlank(status)) {
             lambdaQueryWrapper.eq(MtBookItem::getStatus, status);
