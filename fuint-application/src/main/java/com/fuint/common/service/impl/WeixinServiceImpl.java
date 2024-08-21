@@ -256,10 +256,22 @@ public class WeixinServiceImpl implements WeixinService {
     public Map<String, String> processResXml(HttpServletRequest request) {
         try {
             String xmlMsg = HttpKit.readData(request);
-            logger.info("支付通知=" + xmlMsg);
             Map<String, String> result = WxPayKit.xmlToMap(xmlMsg);
             String returnCode = result.get("return_code");
-            getApiConfig(0, PlatformTypeEnum.MP_WEIXIN.getCode());
+            String orderSn = result.get("out_trade_no");
+            logger.info("支付通知，xml = {}, orderSn = {}", xmlMsg, orderSn);
+
+            Integer storeId = 0;
+            String platform = PlatformTypeEnum.MP_WEIXIN.getCode();
+            if (StringUtil.isNotEmpty(orderSn)) {
+                MtOrder mtOrder = orderService.getOrderInfoByOrderSn(orderSn);
+                if (mtOrder != null) {
+                    storeId = mtOrder.getStoreId();
+                    platform = mtOrder.getPlatform();
+                }
+            }
+
+            getApiConfig(storeId, platform);
             if (WxPayKit.verifyNotify(result, WxPayApiConfigKit.getWxPayApiConfig().getPartnerKey(), SignType.MD5)) {
                 if (WxPayKit.codeIsOk(returnCode)) {
                     return result;
@@ -559,7 +571,12 @@ public class WeixinServiceImpl implements WeixinService {
     @Override
     public Map<String, String> queryPaidOrder(Integer storeId, String transactionId, String orderSn) {
         try {
-            getApiConfig(storeId, PlatformTypeEnum.MP_WEIXIN.getCode());
+            MtOrder mtOrder = orderService.getOrderInfoByOrderSn(orderSn);
+            String platform = PlatformTypeEnum.MP_WEIXIN.getCode();
+            if (mtOrder != null) {
+                platform = mtOrder.getPlatform();
+            }
+            getApiConfig(storeId, platform);
             WxPayApiConfig wxPayApiConfig = WxPayApiConfigKit.getWxPayApiConfig();
             Map<String, String> params = OrderQueryModel.builder()
                     .appid(wxPayApiConfig.getAppId())
@@ -1183,11 +1200,13 @@ public class WeixinServiceImpl implements WeixinService {
      * */
     private WxPayApiConfig getApiConfig(Integer storeId, String platform) throws BusinessCheckException {
         WxPayApiConfig apiConfig;
-        MtStore mtStore = storeService.queryStoreById(storeId);
+
         String mchId = wxPayBean.getMchId();
         String apiV2 = wxPayBean.getApiV2();
         String certPath = wxPayBean.getCertPath();
         String appId = wxPayBean.getAppId();
+
+        MtStore mtStore = storeService.queryStoreById(storeId);
         logger.info("微信支付店铺信息：{}", JsonUtil.toJSONString(mtStore));
         if (mtStore != null && StringUtil.isNotEmpty(mtStore.getWxApiV2()) && StringUtil.isNotEmpty(mtStore.getWxMchId())) {
             mchId = mtStore.getWxMchId();
@@ -1199,6 +1218,7 @@ public class WeixinServiceImpl implements WeixinService {
                 appId = mtMerchant.getWxAppId();
             }
         }
+
         apiConfig = WxPayApiConfig.builder()
                    .appId(appId)
                    .mchId(mchId)
@@ -1206,6 +1226,7 @@ public class WeixinServiceImpl implements WeixinService {
                    .certPath(certPath)
                    .domain(wxPayBean.getDomain())
                    .build();
+
         // 微信内h5公众号支付
         if (platform.equals(PlatformTypeEnum.H5.getCode())) {
             String wxAppId = env.getProperty("weixin.official.appId");
@@ -1224,8 +1245,10 @@ public class WeixinServiceImpl implements WeixinService {
                 apiConfig.setApiKey(wxAppSecret);
             }
         }
+
         WxPayApiConfigKit.setThreadLocalWxPayApiConfig(apiConfig);
         logger.info("微信支付参数：{}", JsonUtil.toJSONString(apiConfig));
+
         return apiConfig;
     }
 }

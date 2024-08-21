@@ -38,6 +38,9 @@ public class MtOrder implements Serializable {
     @ApiModelProperty("订单模式")
     private String orderMode;
 
+    @ApiModelProperty("下单平台")
+    private String platform;
+
     @ApiModelProperty("订单号")
     private String orderSn;
 

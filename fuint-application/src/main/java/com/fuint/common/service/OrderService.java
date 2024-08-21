@@ -108,6 +108,14 @@ public interface OrderService extends IService<MtOrder> {
     UserOrderDto getOrderByOrderSn(String orderSn) throws BusinessCheckException;
 
     /**
+     * 根据订单号获取订单
+     *
+     * @param orderSn 订单号
+     * @return
+     * */
+    MtOrder getOrderInfoByOrderSn(String orderSn);
+
+    /**
      * 更新订单
      *
      * @param  reqDto

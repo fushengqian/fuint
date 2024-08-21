@@ -21,7 +21,7 @@ public enum PlatformTypeEnum {
     /**
      * 微信小程序
      */
-    MP_WEIXIN("MP_WEIXIN", "微信小程序"),
+    MP_WEIXIN("MP-WEIXIN", "微信小程序"),
 
     /**
      * App客户端

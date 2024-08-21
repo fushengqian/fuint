@@ -335,6 +335,7 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
         mtOrder.setPayAmount(orderDto.getPayAmount());
         mtOrder.setDiscount(orderDto.getDiscount());
         mtOrder.setPayStatus(PayStatusEnum.WAIT.getKey());
+        mtOrder.setPlatform(orderDto.getPlatform());
         mtOrder.setPointAmount(orderDto.getPointAmount());
         mtOrder.setUsePoint(orderDto.getUsePoint());
         mtOrder.setOrderMode(orderDto.getOrderMode());
@@ -1207,6 +1208,17 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
             return null;
         }
         return getOrderDetail(orderInfo, true, true);
+    }
+
+    /**
+     * 根据订单号获取订单信息
+     *
+     * @param  orderSn 订单号
+     * @return
+     */
+    @Override
+    public MtOrder getOrderInfoByOrderSn(String orderSn) {
+        return mtOrderMapper.findByOrderSn(orderSn);
     }
 
     /**
