@@ -135,6 +135,12 @@ public class BookServiceImpl extends ServiceImpl<MtBookMapper, MtBook> implement
         if (mtBook.getMerchantId() == null || mtBook.getMerchantId() <= 0) {
             throw new BusinessCheckException("新增预约失败：所属商户不能为空！");
         }
+        if (StringUtil.isEmpty(mtBook.getName())) {
+            throw new BusinessCheckException("新增预约失败：项目名称不能为空！");
+        }
+        if (StringUtil.isEmpty(mtBook.getLogo())) {
+            throw new BusinessCheckException("新增预约失败：封面图片不能为空！");
+        }
         mtBook.setStoreId(storeId);
         mtBook.setStatus(StatusEnum.ENABLED.getKey());
         mtBook.setUpdateTime(new Date());

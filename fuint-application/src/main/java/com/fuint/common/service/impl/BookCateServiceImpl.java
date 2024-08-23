@@ -117,6 +117,9 @@ public class BookCateServiceImpl extends ServiceImpl<MtBookCateMapper, MtBookCat
         if (StringUtil.isEmpty(mtBookCate.getName())) {
             throw new BusinessCheckException("新增预约分类失败：分类名称不能为空！");
         }
+        if (StringUtil.isEmpty(mtBookCate.getLogo())) {
+            throw new BusinessCheckException("新增预约分类失败：封面图片不能为空！");
+        }
         bookCate.setStoreId(storeId);
         bookCate.setName(mtBookCate.getName());
         bookCate.setLogo(mtBookCate.getLogo());
