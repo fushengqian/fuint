@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 
 /**
- * 云打印相关接口封装类
+ * 芯烨云打印相关接口封装类
  *
  * Created by FSQ
  * CopyRight https://www.fuint.cn
@@ -31,7 +31,8 @@ public class PrinterUtil {
         String resp = HttpClientUtil.doPostJSON(url, jsonRequest);
         ObjectRestResponse<PrinterResult> result = JSON.parseObject(resp, new TypeReference<ObjectRestResponse<PrinterResult>>(){});
         logger.info("添加打印机接口参数：{},返回：{}", JSON.toJSONString(restRequest), JSON.toJSONString(result));
-        if (result != null && result.getData().getSuccess().size() <= 0) {
+        if (result == null || result.getCode() != 0 || result.getData().getSuccess() == null || result.getData().getSuccess().size() <= 0) {
+            logger.error("云打印机新增失败，原因：", result.getMsg());
             throw new BusinessCheckException("添加打印机失败，请检查设备编号是否正确！");
         }
         return result;
@@ -60,6 +61,11 @@ public class PrinterUtil {
         String jsonRequest = JSON.toJSONString(restRequest);
         String resp = HttpClientUtil.doPostJSON(url, jsonRequest);
         ObjectRestResponse<String> result = JSON.parseObject(resp, new TypeReference<ObjectRestResponse<String>>(){});
+
+        if (result == null || result.getCode() != 0) {
+            logger.error("云打印机打印失败，原因：", result.getMsg());
+        }
+
         return result;
     }
 
@@ -88,6 +94,11 @@ public class PrinterUtil {
         String jsonRequest = JSON.toJSONString(restRequest);
         String resp = HttpClientUtil.doPostJSON(url, jsonRequest);
         ObjectRestResponse<PrinterResult> result = JSON.parseObject(resp, new TypeReference<ObjectRestResponse<PrinterResult>>(){});
+
+        if (result == null || result.getCode() != 0) {
+            logger.error("云打印机删除失败，原因：", result.getMsg());
+        }
+
         return result;
     }
 
@@ -97,11 +108,17 @@ public class PrinterUtil {
      * @param restRequest
      * @return
      */
-    public static ObjectRestResponse<Boolean> updPrinter(UpdPrinterRequest restRequest) {
+    public static ObjectRestResponse<Boolean> updPrinter(UpdPrinterRequest restRequest) throws BusinessCheckException {
         String url = BASE_URL + "/xprinter/updPrinter";
         String jsonRequest = JSON.toJSONString(restRequest);
         String resp = HttpClientUtil.doPostJSON(url, jsonRequest);
         ObjectRestResponse<Boolean> result = JSON.parseObject(resp, new TypeReference<ObjectRestResponse<Boolean>>(){});
+
+        if (result == null || result.getCode() != 0 ) {
+            logger.error("云打印机更新失败，原因：", result.getMsg());
+            throw new BusinessCheckException("修改云打印机失败，请检查设备编号是否正确！");
+        }
+
         return result;
     }
 

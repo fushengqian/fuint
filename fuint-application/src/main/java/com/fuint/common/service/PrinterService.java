@@ -40,7 +40,7 @@ public interface PrinterService extends IService<MtPrinter> {
      * @param orderInfo 订单信息
      * @return
      * */
-    Boolean printOrder(UserOrderDto orderInfo) throws BusinessCheckException;
+    Boolean printOrder(UserOrderDto orderInfo) throws Exception;
 
     /**
      * 根据ID获取打印机信息

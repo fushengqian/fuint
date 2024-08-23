@@ -11,8 +11,6 @@ import com.fuint.common.param.OrderListParam;
 import com.fuint.common.param.SettlementParam;
 import com.fuint.common.service.*;
 import com.fuint.common.util.*;
-import com.fuint.common.vo.printer.ObjectRestResponse;
-import com.fuint.common.vo.printer.PrintRequest;
 import com.fuint.framework.annoation.OperationServiceLog;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.pagination.PaginationResponse;
@@ -169,7 +167,7 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
     private PaymentService paymentService;
 
     /**
-     * 会员卡券服务接口
+     * 云打印服务接口
      * */
     private PrinterService printerService;
 
