@@ -324,7 +324,10 @@ public class PrinterServiceImpl extends ServiceImpl<MtPrinterMapper, MtPrinter> 
             lambdaQueryWrapper.eq(MtPrinter::getName, name);
         }
         if (StringUtils.isNotBlank(storeId)) {
-            lambdaQueryWrapper.eq(MtPrinter::getStoreId, storeId);
+            lambdaQueryWrapper.and(wq -> wq
+                    .eq(MtPrinter::getStoreId, 0)
+                    .or()
+                    .eq(MtPrinter::getStoreId, storeId));
         }
         if (StringUtils.isNotBlank(autoPrint)) {
             lambdaQueryWrapper.eq(MtPrinter::getAutoPrint, autoPrint);
