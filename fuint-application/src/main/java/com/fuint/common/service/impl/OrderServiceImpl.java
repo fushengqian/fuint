@@ -1402,7 +1402,7 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
             String needPayAmount = setting.getValue();
             Integer needPayAmountInt = Math.round(Integer.parseInt(needPayAmount));
             Double pointNum = 0d;
-            if (needPayAmountInt > 0 && orderInfo.getPayAmount().compareTo(new BigDecimal(needPayAmountInt)) > 0) {
+            if (needPayAmountInt > 0 && orderInfo.getPayAmount().compareTo(new BigDecimal(needPayAmountInt)) >= 0) {
                 BigDecimal point = orderInfo.getPayAmount().divide(new BigDecimal(needPayAmountInt), BigDecimal.ROUND_CEILING, 3);
                 pointNum = Math.ceil(point.doubleValue());
             }
