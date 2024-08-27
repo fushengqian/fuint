@@ -1,7 +1,9 @@
 package com.fuint.module.backendApi.controller;
 
 import com.fuint.common.dto.AccountInfo;
+import com.fuint.common.dto.UserOrderDto;
 import com.fuint.common.enums.*;
+import com.fuint.common.service.OrderService;
 import com.fuint.common.service.PrinterService;
 import com.fuint.common.service.SettingService;
 import com.fuint.common.service.StoreService;
@@ -53,6 +55,11 @@ public class BackendPrinterController extends BaseController {
      * 配置服务接口
      * */
     private SettingService settingService;
+
+    /**
+     * 订单服务接口
+     * */
+    private OrderService orderService;
 
     /**
      * 打印机列表查询
@@ -309,5 +316,33 @@ public class BackendPrinterController extends BaseController {
         }
 
         return getSuccessResult(true);
+    }
+
+    /**
+     * 打印订单
+     *
+     * @param orderId
+     * @return
+     */
+    @ApiOperation(value = "打印订单")
+    @RequestMapping(value = "/doPrint/{orderId}", method = RequestMethod.GET)
+    @CrossOrigin
+    @PreAuthorize("@pms.hasPermission('order:index')")
+    public ResponseObject doPrint(HttpServletRequest request, @PathVariable("orderId") Integer orderId) throws Exception {
+        String token = request.getHeader("Access-Token");
+        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
+        if (accountInfo == null) {
+            return getFailureResult(1001, "请先登录");
+        }
+
+        UserOrderDto orderInfo = orderService.getOrderById(orderId);
+        if (orderInfo == null) {
+            return getFailureResult(201, "该订单不存在");
+        }
+
+        // 打印订单
+        Boolean result = printerService.printOrder(orderInfo);
+
+        return getSuccessResult(result);
     }
 }

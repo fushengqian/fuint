@@ -1040,6 +1040,9 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
      */
     @Override
     public MtOrder getOrderInfo(Integer orderId) {
+        if (orderId == null || orderId <= 0) {
+            return null;
+        }
         return mtOrderMapper.selectById(orderId);
     }
 
@@ -1052,6 +1055,9 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
      */
     @Override
     public UserOrderDto getOrderById(Integer orderId) throws BusinessCheckException {
+        if (orderId == null || orderId <= 0) {
+            return null;
+        }
         MtOrder mtOrder = mtOrderMapper.selectById(orderId);
         return getOrderDetail(mtOrder, true, true);
     }
@@ -1065,6 +1071,9 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
      */
     @Override
     public UserOrderDto getMyOrderById(Integer orderId) throws BusinessCheckException {
+        if (orderId == null || orderId <= 0) {
+            return null;
+        }
         MtOrder mtOrder = mtOrderMapper.selectById(orderId);
         UserOrderDto orderInfo = getOrderDetail(mtOrder, true, true);
 
