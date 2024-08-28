@@ -176,7 +176,7 @@ public class BookServiceImpl extends ServiceImpl<MtBookMapper, MtBook> implement
             if (dates.size() > 0) {
                 for (String date : dates) {
                     Date currentDate = DateUtil.parseDate(date);
-                    SimpleDateFormat format = new SimpleDateFormat("EEEE");
+                    SimpleDateFormat format = new SimpleDateFormat("EEEE", Locale.CHINA);
                     String week = format.format(currentDate);
                     DayDto day = new DayDto();
                     day.setWeek(week);

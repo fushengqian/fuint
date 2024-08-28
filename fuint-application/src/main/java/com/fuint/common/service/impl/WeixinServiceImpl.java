@@ -623,6 +623,9 @@ public class WeixinServiceImpl implements WeixinService {
             BigDecimal refundFee = refundAmount.multiply(new BigDecimal("100"));
             Integer totalFeeInt = totalFee.intValue();
             Integer refundFeeInt = refundFee.intValue();
+            if (refundFee.compareTo(totalFee) > 0) {
+                throw new BusinessCheckException("退款金额不能大于总金额");
+            }
 
             // 支付配置
             getApiConfig(storeId, platform);
