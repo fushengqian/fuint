@@ -133,9 +133,13 @@ public class OpenGiftServiceImpl extends ServiceImpl<MtOpenGiftMapper, MtOpenGif
     @Override
     @Transactional(rollbackFor = Exception.class)
     @OperationServiceLog(description = "新增开卡赠礼")
-    public MtOpenGift addOpenGift(MtOpenGift mtOpenGift) {
+    public MtOpenGift addOpenGift(MtOpenGift mtOpenGift) throws BusinessCheckException {
         mtOpenGift.setUpdateTime(new Date());
         mtOpenGift.setCreateTime(new Date());
+        if (mtOpenGift.getCouponNum() != null && mtOpenGift.getCouponNum() > 100) {
+            throw new BusinessCheckException("开卡赠礼卡券数量不能大于100");
+        }
+
         this.save(mtOpenGift);
         return mtOpenGift;
     }
@@ -215,6 +219,9 @@ public class OpenGiftServiceImpl extends ServiceImpl<MtOpenGiftMapper, MtOpenGif
         }
 
         if (null != reqDto.getCouponNum()) {
+            if (reqDto.getCouponNum() > 100) {
+                throw new BusinessCheckException("开卡赠礼卡券数量不能大于100");
+            }
             mtOpenGift.setCouponNum(reqDto.getCouponNum());
         }
 
