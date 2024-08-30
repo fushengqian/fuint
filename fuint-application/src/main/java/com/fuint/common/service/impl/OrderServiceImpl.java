@@ -395,17 +395,18 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
         List<MtCart> cartList = new ArrayList<>();
         Map<String, Object> cartData = new HashMap<>();
         if (orderDto.getType().equals(OrderTypeEnum.GOOGS.getKey())) {
-            Map<String, Object> param = new HashMap<>();
-            param.put("status", StatusEnum.ENABLED.getKey());
             if (StringUtil.isNotEmpty(orderDto.getCartIds())) {
+                Map<String, Object> param = new HashMap<>();
+                param.put("status", StatusEnum.ENABLED.getKey());
                 param.put("ids", orderDto.getCartIds());
-            }
-            if (orderDto.getGoodsId() < 1) {
                 cartList = cartService.queryCartListByParams(param);
                 if (cartList.size() < 1) {
                     throw new BusinessCheckException("生成订单失败，请稍后重试");
                 }
             } else {
+                if (orderDto.getGoodsId() == null || orderDto.getGoodsId() <= 0) {
+                    throw new BusinessCheckException("生成订单失败，请稍后重试");
+                }
                 // 直接购买
                 MtCart mtCart = new MtCart();
                 mtCart.setGoodsId(orderDto.getGoodsId());
