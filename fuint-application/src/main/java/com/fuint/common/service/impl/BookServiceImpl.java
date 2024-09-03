@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fuint.common.dto.BookDto;
 import com.fuint.common.dto.DayDto;
 import com.fuint.common.dto.TimeDto;
+import com.fuint.common.param.BookableParam;
 import com.fuint.common.service.BookService;
 import com.fuint.common.service.StoreService;
 import com.fuint.common.util.DateUtil;
@@ -13,6 +14,7 @@ import com.fuint.framework.annoation.OperationServiceLog;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.pagination.PaginationRequest;
 import com.fuint.framework.pagination.PaginationResponse;
+import com.fuint.repository.mapper.MtBookItemMapper;
 import com.fuint.repository.mapper.MtBookMapper;
 import com.fuint.repository.model.MtBanner;
 import com.fuint.common.service.SettingService;
@@ -49,6 +51,8 @@ public class BookServiceImpl extends ServiceImpl<MtBookMapper, MtBook> implement
     private static final Logger logger = LoggerFactory.getLogger(BookServiceImpl.class);
 
     private MtBookMapper mtBookMapper;
+
+    private MtBookItemMapper mtBookItemMapper;
 
     /**
      * 系统设置服务接口
@@ -262,6 +266,23 @@ public class BookServiceImpl extends ServiceImpl<MtBookMapper, MtBook> implement
         book.setUpdateTime(new Date());
         mtBookMapper.updateById(book);
         return book;
+    }
+
+    /**
+     * 是否可预约
+     *
+     * @param  param
+     * @throws BusinessCheckException
+     * @return
+     * */
+    @Override
+    public Boolean isBookable(BookableParam param) throws BusinessCheckException {
+       MtBook mtBook = mtBookMapper.selectById(param.getBookId());
+       if (mtBook == null) {
+           throw new BusinessCheckException("预约项目不存在");
+       }
+       Integer bookNum = mtBookItemMapper.getBookNum(param.getBookId(), param.getDate(), param.getTime());
+       return true;
     }
 
     /**

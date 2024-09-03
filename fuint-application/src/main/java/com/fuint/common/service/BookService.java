@@ -2,6 +2,7 @@ package com.fuint.common.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.fuint.common.dto.BookDto;
+import com.fuint.common.param.BookableParam;
 import com.fuint.framework.pagination.PaginationRequest;
 import com.fuint.framework.pagination.PaginationResponse;
 import com.fuint.framework.exception.BusinessCheckException;
@@ -52,6 +53,15 @@ public interface BookService extends IService<MtBook> {
      * @return
      * */
     MtBook updateBook(MtBook mtBook) throws BusinessCheckException;
+
+    /**
+     * 是否可预约
+     *
+     * @param  param
+     * @throws BusinessCheckException
+     * @return
+     * */
+    Boolean isBookable(BookableParam param) throws BusinessCheckException;
 
     /**
      * 根据条件搜索预约项目
