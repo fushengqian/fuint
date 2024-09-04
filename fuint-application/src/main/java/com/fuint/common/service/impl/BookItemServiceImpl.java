@@ -5,7 +5,9 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fuint.common.dto.BookItemDto;
 import com.fuint.common.enums.BookStatusEnum;
+import com.fuint.common.param.BookableParam;
 import com.fuint.common.service.BookItemService;
+import com.fuint.common.service.BookService;
 import com.fuint.common.service.StoreService;
 import com.fuint.framework.annoation.OperationServiceLog;
 import com.fuint.framework.exception.BusinessCheckException;
@@ -50,6 +52,11 @@ public class BookItemServiceImpl extends ServiceImpl<MtBookItemMapper, MtBookIte
      * 店铺接口
      */
     private StoreService storeService;
+
+    /**
+     * 预约项目服务接口
+     * */
+    private BookService bookService;
 
     /**
      * 分页查询预约订单列表
@@ -135,6 +142,15 @@ public class BookItemServiceImpl extends ServiceImpl<MtBookItemMapper, MtBookIte
             if (mtStore != null) {
                 mtBookItem.setMerchantId(mtStore.getMerchantId());
             }
+        }
+
+        BookableParam param = new BookableParam();
+        param.setBookId(mtBookItem.getBookId());
+        param.setDate(mtBookItem.getServiceDate());
+        param.setTime(mtBookItem.getServiceTime());
+        Boolean bookable = bookService.isBookable(param);
+        if (!bookable) {
+            throw new BusinessCheckException("当前时间段不可预约，请重新选择！");
         }
 
         Map<String, Object> params = new HashMap<>();

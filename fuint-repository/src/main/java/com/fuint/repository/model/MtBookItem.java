@@ -53,7 +53,7 @@ public class MtBookItem implements Serializable {
     private String mobile;
 
     @ApiModelProperty("预约日期")
-    private Date serviceDate;
+    private String serviceDate;
 
     @ApiModelProperty("预约时间段")
     private String serviceTime;

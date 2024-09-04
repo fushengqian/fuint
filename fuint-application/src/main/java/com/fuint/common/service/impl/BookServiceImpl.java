@@ -282,7 +282,26 @@ public class BookServiceImpl extends ServiceImpl<MtBookMapper, MtBook> implement
            throw new BusinessCheckException("预约项目不存在");
        }
        Integer bookNum = mtBookItemMapper.getBookNum(param.getBookId(), param.getDate(), param.getTime());
-       return true;
+       Integer limit = 0;
+       String serviceTime = mtBook.getServiceTimes();
+       if (StringUtil.isNotEmpty(serviceTime)) {
+           String[] times = serviceTime.split(",");
+           if (times.length > 0) {
+               for (String str : times) {
+                    if (str.indexOf(param.getTime()) >= 0) {
+                        String[] timeArr = str.split("-");
+                        if (timeArr.length > 2) {
+                            limit = Integer.parseInt(timeArr[2]);
+                        }
+                    }
+               }
+           }
+       }
+       if (bookNum >= limit) {
+           return false;
+       } else {
+           return true;
+       }
     }
 
     /**

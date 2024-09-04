@@ -197,7 +197,7 @@ public class ClientBookController extends BaseController {
         mtBookItem.setMobile(mobile);
         mtBookItem.setContact(contact);
         mtBookItem.setBookId(bookInfo.getId());
-        mtBookItem.setServiceDate(DateUtil.parseDate(date));
+        mtBookItem.setServiceDate(date);
         mtBookItem.setServiceTime(time);
         MtBookItem result = bookItemService.addBookItem(mtBookItem);
 
