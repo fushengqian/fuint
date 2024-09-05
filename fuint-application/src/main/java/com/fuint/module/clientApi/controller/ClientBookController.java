@@ -157,8 +157,8 @@ public class ClientBookController extends BaseController {
     @RequestMapping(value = "/bookable", method = RequestMethod.POST)
     @CrossOrigin
     public ResponseObject bookable(@RequestBody BookableParam param) throws BusinessCheckException {
-        Boolean bookable = bookService.isBookable(param);
-        return getSuccessResult(bookable);
+        List<String> result = bookService.isBookable(param);
+        return getSuccessResult(result);
     }
 
     /**

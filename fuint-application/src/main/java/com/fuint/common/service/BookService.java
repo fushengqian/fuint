@@ -61,7 +61,7 @@ public interface BookService extends IService<MtBook> {
      * @throws BusinessCheckException
      * @return
      * */
-    Boolean isBookable(BookableParam param) throws BusinessCheckException;
+    List<String> isBookable(BookableParam param) throws BusinessCheckException;
 
     /**
      * 根据条件搜索预约项目

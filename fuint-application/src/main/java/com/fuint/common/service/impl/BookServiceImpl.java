@@ -276,12 +276,15 @@ public class BookServiceImpl extends ServiceImpl<MtBookMapper, MtBook> implement
      * @return
      * */
     @Override
-    public Boolean isBookable(BookableParam param) throws BusinessCheckException {
+    public List<String> isBookable(BookableParam param) throws BusinessCheckException {
        MtBook mtBook = mtBookMapper.selectById(param.getBookId());
+       List<String> result = new ArrayList<>();
        if (mtBook == null) {
            throw new BusinessCheckException("预约项目不存在");
        }
-       Integer bookNum = mtBookItemMapper.getBookNum(param.getBookId(), param.getDate(), param.getTime());
+       List<String> bookList = mtBookItemMapper.getBookList(param.getBookId(), param.getDate(), param.getTime());
+       Integer bookNum = bookList.size();
+
        Integer limit = 0;
        String serviceTime = mtBook.getServiceTimes();
        if (StringUtil.isNotEmpty(serviceTime)) {
@@ -297,11 +300,25 @@ public class BookServiceImpl extends ServiceImpl<MtBookMapper, MtBook> implement
                }
            }
        }
-       if (bookNum >= limit) {
-           return false;
-       } else {
-           return true;
+       if (bookNum < limit) {
+           if (StringUtil.isNotEmpty(param.getTime())) {
+               result.add(param.getTime());
+           } else {
+               String[] times = mtBook.getServiceTimes().split(",");
+               if (times.length > 0) {
+                   for (String str : times) {
+                        String[] arr = str.split("-");
+                        if (arr.length > 2) {
+                            String item = arr[0] + "-" + arr[1];
+                            if (!bookList.contains(item)) {
+                                result.add(item);
+                            }
+                        }
+                   }
+               }
+           }
        }
+       return result;
     }
 
     /**

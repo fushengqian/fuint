@@ -4,6 +4,8 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.fuint.repository.model.MtBookItem;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.List;
+
 /**
  *  预约订单 Mapper 接口
  *
@@ -12,6 +14,6 @@ import org.apache.ibatis.annotations.Param;
  */
 public interface MtBookItemMapper extends BaseMapper<MtBookItem> {
 
-    Integer getBookNum(@Param("bookId") Integer bookId, @Param("date") String date, @Param("time") String time);
+    List<String> getBookList(@Param("bookId") Integer bookId, @Param("date") String date, @Param("time") String time);
 
 }
