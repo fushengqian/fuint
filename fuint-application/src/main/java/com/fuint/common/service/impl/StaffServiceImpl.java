@@ -181,8 +181,10 @@ public class StaffServiceImpl extends ServiceImpl<MtStaffMapper, MtStaff> implem
      */
     @Override
     public MtStaff queryStaffById(Integer id) {
-        MtStaff mtStaff = mtStaffMapper.selectById(id);
-        return mtStaff;
+        if (id == null || id <= 0) {
+            return null;
+        }
+        return mtStaffMapper.selectById(id);
     }
 
     /**

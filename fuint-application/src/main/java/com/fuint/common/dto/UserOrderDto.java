@@ -1,6 +1,7 @@
 package com.fuint.common.dto;
 
 import com.fuint.repository.model.MtRefund;
+import com.fuint.repository.model.MtStaff;
 import com.fuint.repository.model.MtStore;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
@@ -127,6 +128,9 @@ public class UserOrderDto implements Serializable {
 
     @ApiModelProperty("使用卡券")
     private UserCouponDto couponInfo;
+
+    @ApiModelProperty("所属员工")
+    private MtStaff staffInfo;
 
 }
 
