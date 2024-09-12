@@ -1,32 +1,38 @@
 package com.fuint.module.backendApi.controller;
 
+import com.fuint.common.Constants;
 import com.fuint.common.dto.*;
 import com.fuint.common.enums.*;
 import com.fuint.common.param.OrderListParam;
 import com.fuint.common.service.*;
+import com.fuint.common.util.DateUtil;
+import com.fuint.common.util.ExcelUtil;
 import com.fuint.common.util.TokenUtil;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.pagination.PaginationResponse;
 import com.fuint.framework.web.BaseController;
 import com.fuint.framework.web.ResponseObject;
-import com.fuint.repository.model.MtSetting;
-import com.fuint.repository.model.MtStore;
-import com.fuint.repository.model.MtUser;
-import com.fuint.repository.model.TAccount;
+import com.fuint.repository.model.*;
 import com.fuint.utils.StringUtil;
 import com.fuint.utils.TimeUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.AllArgsConstructor;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Date;
+
+import static com.fuint.common.util.XlsUtil.objectConvertToString;
 
 /**
  * 订单管理controller
@@ -39,6 +45,8 @@ import java.util.Date;
 @AllArgsConstructor
 @RequestMapping(value = "/backendApi/order")
 public class BackendOrderController extends BaseController {
+
+    private static final Logger logger = LoggerFactory.getLogger(BackendOrderController.class);
 
     /**
      * 订单服务接口
@@ -509,5 +517,83 @@ public class BackendOrderController extends BaseController {
         }
 
         return getSuccessResult(true);
+    }
+
+    /**
+     * 导出订单
+     *
+     * @return
+     */
+    @ApiOperation(value = "导出订单")
+    @RequestMapping(value = "/exportList", method = RequestMethod.GET)
+    @CrossOrigin
+    @PreAuthorize("@pms.hasPermission('order:index')")
+    public void exportList(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        String token = request.getParameter("token");
+        String storeId = request.getParameter("storeId") == null ? "" : request.getParameter("storeId");
+        String userId = request.getParameter("userId") == null ? "" : request.getParameter("userId");
+        String mobile = request.getParameter("mobile") == null ? "" : request.getParameter("mobile");
+        String status = request.getParameter("status") == null ? "" : request.getParameter("status");
+
+        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
+        if (accountInfo == null) {
+            logger.error("导出订单失败：token = {}", token);
+            return;
+        }
+
+        OrderListParam params = new OrderListParam();
+        params.setPage(1);
+        params.setPageSize(Constants.ALL_ROWS);
+
+        if (StringUtil.isNotEmpty(storeId)) {
+            params.setStoreId(Integer.parseInt(storeId));
+        }
+        if (StringUtil.isNotEmpty(userId)) {
+            params.setUserId(userId);
+        }
+        if (StringUtil.isNotEmpty(mobile)) {
+            params.setMobile(mobile);
+        }
+        if (StringUtil.isNotEmpty(status)) {
+            params.setStatus(status);
+        }
+
+        PaginationResponse<UserOrderDto> result = orderService.getUserOrderList(params);
+
+        // excel标题
+        String[] title = { "订单号", "会员名称", "订单类型", "所属门店", "总金额", "支付状态", "订单状态" };
+
+        // excel文件名
+        String fileName = "订单列表"+ DateUtil.formatDate(new Date(), "yyyy.MM.dd_HHmm") +".xls";
+
+        // sheet名
+        String sheetName = "订单列表";
+
+        String[][] content = null;
+
+        List<UserOrderDto> list = result.getContent();
+
+        if (list.size() > 0) {
+            content= new String[list.size()][title.length];
+        }
+
+        for (int i = 0; i < list.size(); i++) {
+            UserOrderDto orderDto = list.get(i);
+            if (orderDto != null) {
+                content[i][0] = objectConvertToString(orderDto.getOrderSn());
+                content[i][1] = objectConvertToString(orderDto.getUserInfo().getName());
+                content[i][2] = objectConvertToString(orderDto.getTypeName());
+                content[i][3] = objectConvertToString(orderDto.getStoreInfo().getName());
+                content[i][4] = objectConvertToString(orderDto.getAmount());
+                content[i][5] = objectConvertToString(orderDto.getPayStatus());
+                content[i][6] = objectConvertToString(orderDto.getStatusText());
+            }
+        }
+
+        // 创建HSSFWorkbook
+        HSSFWorkbook wb = ExcelUtil.getHSSFWorkbook(sheetName, title, content, null);
+        ExcelUtil.setResponseHeader(response, fileName, wb);
+
+        logger.info("导出订单成功...");
     }
 }
