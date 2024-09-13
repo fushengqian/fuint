@@ -546,7 +546,7 @@ public class BackendOrderController extends BaseController {
 
         OrderListParam params = new OrderListParam();
         params.setPage(1);
-        params.setPageSize(Constants.ALL_ROWS);
+        params.setPageSize(Constants.MAX_ROWS);
         if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
             params.setMerchantId(accountInfo.getMerchantId());
         }
@@ -594,10 +594,18 @@ public class BackendOrderController extends BaseController {
         for (int i = 0; i < list.size(); i++) {
             UserOrderDto orderDto = list.get(i);
             if (orderDto != null) {
+                String storeName = "";
+                String userName = "";
+                if (orderDto.getStoreInfo() != null) {
+                    storeName = orderDto.getStoreInfo().getName();
+                }
+                if (orderDto.getUserInfo() != null) {
+                    userName = orderDto.getUserInfo().getName();
+                }
                 content[i][0] = objectConvertToString(orderDto.getOrderSn());
-                content[i][1] = objectConvertToString(orderDto.getUserInfo().getName());
+                content[i][1] = objectConvertToString(userName);
                 content[i][2] = objectConvertToString(orderDto.getTypeName());
-                content[i][3] = objectConvertToString(orderDto.getStoreInfo().getName());
+                content[i][3] = objectConvertToString(storeName);
                 content[i][4] = objectConvertToString(orderDto.getAmount());
                 content[i][5] = objectConvertToString(orderDto.getPayStatus());
                 content[i][6] = objectConvertToString(orderDto.getStatusText());
