@@ -525,15 +525,18 @@ public class BackendOrderController extends BaseController {
      * @return
      */
     @ApiOperation(value = "导出订单")
-    @RequestMapping(value = "/exportList", method = RequestMethod.GET)
+    @RequestMapping(value = "/export", method = RequestMethod.GET)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('order:index')")
-    public void exportList(HttpServletRequest request, HttpServletResponse response) throws Exception {
+    public void export(HttpServletRequest request, HttpServletResponse response) throws Exception {
         String token = request.getParameter("token");
         String storeId = request.getParameter("storeId") == null ? "" : request.getParameter("storeId");
         String userId = request.getParameter("userId") == null ? "" : request.getParameter("userId");
         String mobile = request.getParameter("mobile") == null ? "" : request.getParameter("mobile");
         String status = request.getParameter("status") == null ? "" : request.getParameter("status");
+        String payStatus = request.getParameter("payStatus") == null ? "" : request.getParameter("payStatus");
+        String startTime = request.getParameter("startTime") == null ? "" : request.getParameter("startTime");
+        String endTime = request.getParameter("endTime") == null ? "" : request.getParameter("endTime");
 
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
         if (accountInfo == null) {
@@ -544,7 +547,9 @@ public class BackendOrderController extends BaseController {
         OrderListParam params = new OrderListParam();
         params.setPage(1);
         params.setPageSize(Constants.ALL_ROWS);
-
+        if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
+            params.setMerchantId(accountInfo.getMerchantId());
+        }
         if (StringUtil.isNotEmpty(storeId)) {
             params.setStoreId(Integer.parseInt(storeId));
         }
@@ -556,6 +561,15 @@ public class BackendOrderController extends BaseController {
         }
         if (StringUtil.isNotEmpty(status)) {
             params.setStatus(status);
+        }
+        if (StringUtil.isNotEmpty(payStatus)) {
+            params.setPayStatus(payStatus);
+        }
+        if (StringUtil.isNotEmpty(startTime)) {
+            params.setStartTime(startTime);
+        }
+        if (StringUtil.isNotEmpty(endTime)) {
+            params.setEndTime(endTime);
         }
 
         PaginationResponse<UserOrderDto> result = orderService.getUserOrderList(params);
