@@ -2,13 +2,13 @@ package com.fuint.module.clientApi.controller;
 
 import com.fuint.common.Constants;
 import com.fuint.common.dto.BookDto;
+import com.fuint.common.dto.BookItemDto;
 import com.fuint.common.dto.UserInfo;
 import com.fuint.common.enums.StatusEnum;
 import com.fuint.common.param.BookDetailParam;
 import com.fuint.common.param.BookListParam;
 import com.fuint.common.param.BookableParam;
 import com.fuint.common.service.*;
-import com.fuint.common.util.DateUtil;
 import com.fuint.common.util.TokenUtil;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.pagination.PaginationRequest;
@@ -201,6 +201,75 @@ public class ClientBookController extends BaseController {
         mtBookItem.setServiceTime(time);
         MtBookItem result = bookItemService.addBookItem(mtBookItem);
 
+        return getSuccessResult(result);
+    }
+
+    /**
+     * 获取我的预约
+     */
+    @ApiOperation(value = "获取我的预约")
+    @RequestMapping(value = "/myBook", method = RequestMethod.GET)
+    @CrossOrigin
+    public ResponseObject myBook(HttpServletRequest request) throws BusinessCheckException {
+        String token = request.getHeader("Access-Token");
+        String merchantNo = request.getHeader("merchantNo") == null ? "" : request.getHeader("merchantNo");
+        Integer page = request.getParameter("page") == null ? Constants.PAGE_NUMBER : Integer.parseInt(request.getParameter("page"));
+        Integer pageSize = request.getParameter("pageSize") == null ? Constants.PAGE_SIZE : Integer.parseInt(request.getParameter("pageSize"));
+
+        Map<String, Object> param = new HashMap<>();
+        param.put("status", StatusEnum.ENABLED.getKey());
+        Integer merchantId = merchantService.getMerchantId(merchantNo);
+        if (merchantId > 0) {
+            param.put("merchantId", merchantId);
+        }
+
+        UserInfo loginInfo = TokenUtil.getUserInfoByToken(token);
+        if (null == loginInfo) {
+            return getFailureResult(1001);
+        }
+        param.put("userId", loginInfo.getId());
+
+        PaginationRequest paginationRequest = new PaginationRequest();
+        paginationRequest.setCurrentPage(page);
+        paginationRequest.setPageSize(pageSize);
+        PaginationResponse<BookItemDto> paginationResponse = bookItemService.queryBookItemListByPagination(paginationRequest);
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("content", paginationResponse.getContent());
+        result.put("pageSize", paginationResponse.getPageSize());
+        result.put("pageNumber", paginationResponse.getCurrentPage());
+        result.put("totalRow", paginationResponse.getTotalElements());
+        result.put("totalPage", paginationResponse.getTotalPages());
+
+        return getSuccessResult(result);
+    }
+
+    /**
+     * 取消预约
+     */
+    @ApiOperation(value = "取消预约")
+    @RequestMapping(value = "/cancel", method = RequestMethod.GET)
+    @CrossOrigin
+    public ResponseObject cancel(HttpServletRequest request) throws BusinessCheckException {
+        String token = request.getHeader("Access-Token");
+        String remark = request.getParameter("remark") == null ? "会员取消" : request.getParameter("remark");
+        UserInfo mtUser = TokenUtil.getUserInfoByToken(token);
+
+        if (mtUser == null) {
+            return getFailureResult(1001, "用户未登录");
+        }
+
+        String orderId = request.getParameter("orderId");
+        if (StringUtil.isEmpty(orderId)) {
+            return getFailureResult(2000, "订单不能为空");
+        }
+
+        MtBookItem bookItem = bookItemService.getBookItemById(Integer.parseInt(orderId));
+        if (bookItem == null || !bookItem.getUserId().equals(mtUser.getId())) {
+            return getFailureResult(2000, "预约信息有误");
+        }
+
+        Boolean result = bookItemService.cancelBook(bookItem.getId(), remark);
         return getSuccessResult(result);
     }
 }

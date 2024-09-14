@@ -60,4 +60,14 @@ public interface BookItemService extends IService<MtBookItem> {
      * @return
      * */
     List<MtBookItem> queryBookItemListByParams(Map<String, Object> params) throws BusinessCheckException;
+
+    /**
+     * 取消预约
+     *
+     * @param id 预约订单ID
+     * @param remark 备注信息
+     * @throws BusinessCheckException
+     * @return
+     * */
+    Boolean cancelBook(Integer id, String remark) throws BusinessCheckException;
 }

@@ -19,6 +19,7 @@ import com.fuint.repository.mapper.MtBookMapper;
 import com.fuint.repository.model.MtBook;
 import com.fuint.repository.model.MtBookItem;
 import com.fuint.repository.model.MtStore;
+import com.fuint.utils.StringUtil;
 import com.github.pagehelper.PageHelper;
 import lombok.AllArgsConstructor;
 import org.apache.commons.lang.StringUtils;
@@ -268,5 +269,28 @@ public class BookItemServiceImpl extends ServiceImpl<MtBookItemMapper, MtBookIte
         List<MtBookItem> dataList = mtBookItemMapper.selectList(lambdaQueryWrapper);
 
         return dataList;
+    }
+
+    /**
+     * 取消预约
+     *
+     * @param id 预约ID
+     * @param remark 备注信息
+     * @throws BusinessCheckException
+     * @return
+     * */
+    @Override
+    @Transactional
+    public Boolean cancelBook(Integer id, String remark) throws BusinessCheckException {
+        MtBookItem mtBookItem = getBookItemById(id);
+        if (mtBookItem == null) {
+            throw new BusinessCheckException("该预约订单信息异常");
+        }
+        if (StringUtil.isNotEmpty(remark)) {
+            mtBookItem.setRemark(mtBookItem.getRemark() == null ? remark : mtBookItem.getRemark() + remark);
+        }
+        mtBookItem.setStatus(BookStatusEnum.CANCEL.getKey());
+        mtBookItemMapper.updateById(mtBookItem);
+        return true;
     }
 }
