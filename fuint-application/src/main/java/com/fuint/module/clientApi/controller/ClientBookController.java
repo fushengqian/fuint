@@ -215,9 +215,9 @@ public class ClientBookController extends BaseController {
         String merchantNo = request.getHeader("merchantNo") == null ? "" : request.getHeader("merchantNo");
         Integer page = request.getParameter("page") == null ? Constants.PAGE_NUMBER : Integer.parseInt(request.getParameter("page"));
         Integer pageSize = request.getParameter("pageSize") == null ? Constants.PAGE_SIZE : Integer.parseInt(request.getParameter("pageSize"));
+        String status = request.getParameter("status") == null ? "" : request.getParameter("status");
 
         Map<String, Object> param = new HashMap<>();
-        param.put("status", StatusEnum.ENABLED.getKey());
         Integer merchantId = merchantService.getMerchantId(merchantNo);
         if (merchantId > 0) {
             param.put("merchantId", merchantId);
@@ -228,10 +228,14 @@ public class ClientBookController extends BaseController {
             return getFailureResult(1001);
         }
         param.put("userId", loginInfo.getId());
+        if (StringUtil.isNotEmpty(status)) {
+            param.put("status", status);
+        }
 
         PaginationRequest paginationRequest = new PaginationRequest();
         paginationRequest.setCurrentPage(page);
         paginationRequest.setPageSize(pageSize);
+        paginationRequest.setSearchParams(param);
         PaginationResponse<BookItemDto> paginationResponse = bookItemService.queryBookItemListByPagination(paginationRequest);
 
         Map<String, Object> result = new HashMap<>();
