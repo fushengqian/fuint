@@ -3,7 +3,9 @@ package com.fuint.module.clientApi.controller;
 import com.fuint.common.Constants;
 import com.fuint.common.dto.BookDto;
 import com.fuint.common.dto.BookItemDto;
+import com.fuint.common.dto.ParamDto;
 import com.fuint.common.dto.UserInfo;
+import com.fuint.common.enums.BookStatusEnum;
 import com.fuint.common.enums.StatusEnum;
 import com.fuint.common.param.BookDetailParam;
 import com.fuint.common.param.BookListParam;
@@ -26,6 +28,7 @@ import java.lang.reflect.InvocationTargetException;
 import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -238,12 +241,26 @@ public class ClientBookController extends BaseController {
         paginationRequest.setSearchParams(param);
         PaginationResponse<BookItemDto> paginationResponse = bookItemService.queryBookItemListByPagination(paginationRequest);
 
+        // 预约状态列表
+        BookStatusEnum[] enums = BookStatusEnum.values();
+        List<ParamDto> statusList = new ArrayList<>();
+        for (BookStatusEnum enumItem : enums) {
+            if (!enumItem.getKey().equals(BookStatusEnum.DELETE.getKey())) {
+                ParamDto paramDto = new ParamDto();
+                paramDto.setKey(enumItem.getKey());
+                paramDto.setName(enumItem.getValue());
+                paramDto.setValue(enumItem.getKey());
+                statusList.add(paramDto);
+            }
+        }
+
         Map<String, Object> result = new HashMap<>();
         result.put("content", paginationResponse.getContent());
         result.put("pageSize", paginationResponse.getPageSize());
         result.put("pageNumber", paginationResponse.getCurrentPage());
         result.put("totalRow", paginationResponse.getTotalElements());
         result.put("totalPage", paginationResponse.getTotalPages());
+        result.put("statusList", statusList);
 
         return getSuccessResult(result);
     }
