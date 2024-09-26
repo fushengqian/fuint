@@ -207,6 +207,7 @@ public class WeixinServiceImpl implements WeixinService {
         reqDto.setId(orderInfo.getId());
         reqDto.setPayAmount(payAmount1);
         reqDto.setPayType(orderInfo.getPayType());
+        reqDto.setOrderSn(orderInfo.getOrderSn());
         orderService.updateOrder(reqDto);
 
         Map<String, String> respData;

@@ -290,9 +290,13 @@ public class StoreServiceImpl extends ServiceImpl<MtStoreMapper, MtStore> implem
         BeanUtils.copyProperties(mtStore, mtStoreDto);
 
         if (StringUtil.isEmpty(mtStore.getQrCode())) {
-            String page = QrCodeEnum.STORE.getPage() + "?" + QrCodeEnum.STORE.getKey() + "Id = " + mtStore.getId();
-            String qr = weixinService.createQrCode(mtStore.getMerchantId(), QrCodeEnum.STORE.getKey(), mtStore.getId(), page, 320);
-            mtStoreDto.setQrCode(qr);
+            try {
+                String page = QrCodeEnum.STORE.getPage() + "?" + QrCodeEnum.STORE.getKey() + "Id = " + mtStore.getId();
+                String qr = weixinService.createQrCode(mtStore.getMerchantId(), QrCodeEnum.STORE.getKey(), mtStore.getId(), page, 320);
+                mtStoreDto.setQrCode(qr);
+            } catch (Exception e) {
+                logger.error(e.getMessage());
+            }
         }
 
         return mtStoreDto;

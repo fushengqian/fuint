@@ -187,7 +187,7 @@ public class PaymentServiceImpl implements PaymentService {
         orderInfo.setOrderSn(orderSn);
         orderInfo.setPayType(payType);
         orderInfo.setPlatform(platform);
-        orderService.updateOrder(orderInfo);
+        orderInfo = orderService.updateOrder(orderInfo);
 
         // 收银员操作
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
@@ -221,6 +221,7 @@ public class PaymentServiceImpl implements PaymentService {
         // 实付金额 = 总金额 - 优惠金额 - 积分金额
         BigDecimal realPayAmount = orderInfo.getAmount().subtract(new BigDecimal(orderInfo.getDiscount().toString())).subtract(new BigDecimal(orderInfo.getPointAmount().toString())).add(orderInfo.getDeliveryFee());
         Object payment = null;
+        Boolean isPaying = false;
         if (payType.equals(PayTypeEnum.BALANCE.getKey())) {
             if (orderInfo.getType().equals(OrderTypeEnum.PRESTORE.getKey()) || orderInfo.getType().equals(OrderTypeEnum.RECHARGE.getKey())) {
                 throw new BusinessCheckException("抱歉，不能使用余额支付");
@@ -267,7 +268,12 @@ public class PaymentServiceImpl implements PaymentService {
             orderInfo.setPayType(payType);
             ResponseObject paymentInfo = createPrepayOrder(mtUser, orderInfo, (pay.intValue()), authCode, 0, ip, platform, isWechat);
             if (paymentInfo.getData() == null) {
-                throw new BusinessCheckException("抱歉，支付失败");
+                if (paymentInfo.getCode() == 3000) {
+                    logger.info("需要用户输入密码..");
+                    isPaying = true;
+                } else {
+                    throw new BusinessCheckException("抱歉，支付失败");
+                }
             }
             payment = paymentInfo.getData();
         }
@@ -277,6 +283,7 @@ public class PaymentServiceImpl implements PaymentService {
         result.put("payType", payType);
         result.put("orderInfo", orderInfo);
         result.put("payment", payment);
+        result.put("isPaying", isPaying);
 
         return result;
     }
