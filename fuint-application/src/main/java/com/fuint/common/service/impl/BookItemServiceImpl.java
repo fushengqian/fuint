@@ -9,6 +9,7 @@ import com.fuint.common.param.BookableParam;
 import com.fuint.common.service.BookItemService;
 import com.fuint.common.service.BookService;
 import com.fuint.common.service.StoreService;
+import com.fuint.common.util.SeqUtil;
 import com.fuint.framework.annoation.OperationServiceLog;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.pagination.PaginationRequest;
@@ -16,6 +17,7 @@ import com.fuint.framework.pagination.PaginationResponse;
 import com.fuint.repository.mapper.MtBookItemMapper;
 import com.fuint.common.enums.StatusEnum;
 import com.fuint.repository.mapper.MtBookMapper;
+import com.fuint.repository.mapper.MtStoreMapper;
 import com.fuint.repository.model.MtBook;
 import com.fuint.repository.model.MtBookItem;
 import com.fuint.repository.model.MtStore;
@@ -48,6 +50,8 @@ public class BookItemServiceImpl extends ServiceImpl<MtBookItemMapper, MtBookIte
     private MtBookItemMapper mtBookItemMapper;
 
     private MtBookMapper mtBookMapper;
+
+    private MtStoreMapper mtStoreMapper;
 
     /**
      * 店铺接口
@@ -168,6 +172,7 @@ public class BookItemServiceImpl extends ServiceImpl<MtBookItemMapper, MtBookIte
         mtBookItem.setStatus(BookStatusEnum.CREATED.getKey());
         mtBookItem.setUpdateTime(new Date());
         mtBookItem.setCreateTime(new Date());
+        mtBookItem.setVerifyCode(SeqUtil.getRandomNumber(6));
         Integer id = mtBookItemMapper.insert(mtBookItem);
         if (id > 0) {
             return mtBookItem;
@@ -186,6 +191,38 @@ public class BookItemServiceImpl extends ServiceImpl<MtBookItemMapper, MtBookIte
     @Override
     public MtBookItem getBookItemById(Integer id) {
         return mtBookItemMapper.selectById(id);
+    }
+
+    /**
+     * 根据ID获取预约订单详情
+     *
+     * @param  id 预约订单ID
+     * @throws BusinessCheckException
+     * @return
+     */
+    @Override
+    public BookItemDto getBookDetail(Integer id) throws BusinessCheckException {
+        MtBookItem mtBookItem = mtBookItemMapper.selectById(id);
+        if (mtBookItem == null) {
+            throw new BusinessCheckException("预约不存在.");
+        }
+        BookItemDto bookItemDto = new BookItemDto();
+        BeanUtils.copyProperties(mtBookItem, bookItemDto);
+
+        MtBook mtBook = mtBookMapper.selectById(mtBookItem.getBookId());
+        if (mtBook != null) {
+            bookItemDto.setBookName(mtBook.getName());
+        }
+
+        if (mtBookItem.getStoreId() != null) {
+            MtStore mtStore = mtStoreMapper.selectById(mtBookItem.getStoreId());
+            if (mtStore != null) {
+                bookItemDto.setStoreInfo(mtStore);
+            }
+        }
+
+
+        return bookItemDto;
     }
 
     /**

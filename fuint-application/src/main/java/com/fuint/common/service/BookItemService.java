@@ -44,6 +44,15 @@ public interface BookItemService extends IService<MtBookItem> {
     MtBookItem getBookItemById(Integer id) throws BusinessCheckException;
 
     /**
+     * 根据ID获取预约订单详情
+     *
+     * @param  id 预约订单ID
+     * @throws BusinessCheckException
+     * @return
+     */
+    BookItemDto getBookDetail(Integer id) throws BusinessCheckException;
+
+    /**
      * 更新预约订单
      *
      * @param  mtBookItem

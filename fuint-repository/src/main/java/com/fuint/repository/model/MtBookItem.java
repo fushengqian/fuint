@@ -46,6 +46,9 @@ public class MtBookItem implements Serializable {
     @ApiModelProperty("商品ID")
     private Integer goodsId;
 
+    @ApiModelProperty("核销码")
+    private String verifyCode;
+
     @ApiModelProperty("预约联系人")
     private String contact;
 

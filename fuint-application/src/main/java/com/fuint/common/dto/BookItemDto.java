@@ -2,6 +2,8 @@ package com.fuint.common.dto;
 
 import java.io.Serializable;
 import java.util.Date;
+
+import com.fuint.repository.model.MtStore;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -25,6 +27,9 @@ public class BookItemDto implements Serializable {
     @ApiModelProperty("所属店铺ID")
     private Integer storeId;
 
+    @ApiModelProperty("所属店铺信息")
+    private MtStore storeInfo;
+
     @ApiModelProperty("预约分类ID")
     private Integer cateId;
 
@@ -39,6 +44,9 @@ public class BookItemDto implements Serializable {
 
     @ApiModelProperty("商品ID")
     private Integer goodsId;
+
+    @ApiModelProperty("核销码")
+    private String verifyCode;
 
     @ApiModelProperty("预约联系人")
     private String contact;

@@ -273,6 +273,7 @@ public class ClientBookController extends BaseController {
     @CrossOrigin
     public ResponseObject cancel(HttpServletRequest request) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
+        String bookId = request.getParameter("bookId");
         String remark = request.getParameter("remark") == null ? "会员取消" : request.getParameter("remark");
         UserInfo mtUser = TokenUtil.getUserInfoByToken(token);
 
@@ -280,17 +281,32 @@ public class ClientBookController extends BaseController {
             return getFailureResult(1001, "用户未登录");
         }
 
-        String orderId = request.getParameter("orderId");
-        if (StringUtil.isEmpty(orderId)) {
+        if (StringUtil.isEmpty(bookId)) {
             return getFailureResult(2000, "订单不能为空");
         }
 
-        MtBookItem bookItem = bookItemService.getBookItemById(Integer.parseInt(orderId));
+        MtBookItem bookItem = bookItemService.getBookItemById(Integer.parseInt(bookId));
         if (bookItem == null || !bookItem.getUserId().equals(mtUser.getId())) {
             return getFailureResult(2000, "预约信息有误");
         }
 
         Boolean result = bookItemService.cancelBook(bookItem.getId(), remark);
+        return getSuccessResult(result);
+    }
+
+    /**
+     * 获取我的预约详情
+     */
+    @ApiOperation(value="获取我的预约详情", notes="根据ID获取我的预约详情")
+    @RequestMapping(value = "/myBookDetail", method = RequestMethod.POST)
+    @CrossOrigin
+    public ResponseObject myBookDetail(@RequestBody BookDetailParam param) throws BusinessCheckException {
+        Integer bookId = param.getBookId() == null ? 0 : param.getBookId();
+
+        BookItemDto bookInfo = bookItemService.getBookDetail(bookId);
+        Map<String, Object> result = new HashMap<>();
+        result.put("bookInfo", bookInfo);
+
         return getSuccessResult(result);
     }
 }
