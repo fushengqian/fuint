@@ -180,13 +180,16 @@ public class BookServiceImpl extends ServiceImpl<MtBookMapper, MtBook> implement
             if (dates.size() > 0) {
                 for (String date : dates) {
                     Date currentDate = DateUtil.parseDate(date);
-                    SimpleDateFormat format = new SimpleDateFormat("EEEE", Locale.CHINA);
-                    String week = format.format(currentDate);
-                    DayDto day = new DayDto();
-                    day.setWeek(week);
-                    day.setDate(DateUtil.formatDate(currentDate, "MM-dd"));
-                    day.setEnable(true);
-                    dateList.add(day);
+                    Date now = new Date();
+                    if (now.before(currentDate)) {
+                        SimpleDateFormat format = new SimpleDateFormat("EEEE", Locale.CHINA);
+                        String week = format.format(currentDate);
+                        DayDto day = new DayDto();
+                        day.setWeek(week);
+                        day.setDate(DateUtil.formatDate(currentDate, "MM-dd"));
+                        day.setEnable(true);
+                        dateList.add(day);
+                    }
                 }
             }
         }
@@ -194,7 +197,7 @@ public class BookServiceImpl extends ServiceImpl<MtBookMapper, MtBook> implement
 
         List<TimeDto> timeList = new ArrayList<>();
         String serviceTimes = mtBook.getServiceTimes();
-        if (StringUtil.isNotEmpty(serviceTimes)) {
+        if (StringUtil.isNotEmpty(serviceTimes) && bookDto.getDateList().size() > 0) {
             List<String> times = Arrays.asList(serviceTimes.split(",").clone());
             if (times.size() > 0) {
                 for (String time : times) {

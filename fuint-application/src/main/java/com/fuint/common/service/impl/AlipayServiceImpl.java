@@ -80,6 +80,7 @@ public class AlipayServiceImpl implements AlipayService {
         reqDto.setId(orderInfo.getId());
         reqDto.setPayAmount(payAmount1);
         reqDto.setPayType(orderInfo.getPayType());
+        reqDto.setOrderSn(orderInfo.getOrderSn());
         orderService.updateOrder(reqDto);
 
         getApiConfig(orderInfo.getStoreId());
