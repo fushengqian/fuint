@@ -234,7 +234,9 @@ public class ClientGoodsController extends BaseController {
                  }
             }
             dto.setValueList(valueList);
-            specDtoList.add(dto);
+            if (!goodsDetailDto.getIsSingleSpec().equals(YesOrNoEnum.YES.getKey())) {
+                specDtoList.add(dto);
+            }
         }
 
         // sku列表
