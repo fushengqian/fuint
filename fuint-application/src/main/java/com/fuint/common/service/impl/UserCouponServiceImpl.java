@@ -168,11 +168,6 @@ public class UserCouponServiceImpl extends ServiceImpl<MtUserCouponMapper, MtUse
             }
         }
 
-        // 卡券类型检查
-        if (couponInfo.getType().equals(CouponTypeEnum.PRESTORE.getKey())) {
-            throw new BusinessCheckException(Message.COUPON_TYPE_ERROR);
-        }
-
         MtCouponGroup groupInfo = couponGroupService.queryCouponGroupById(couponInfo.getGroupId());
         MtUser userInfo = memberService.queryMemberById(userId);
         if (null == userInfo) {
@@ -240,7 +235,9 @@ public class UserCouponServiceImpl extends ServiceImpl<MtUserCouponMapper, MtUse
              userCoupon.setStoreId(couponInfo.getStoreId());
              userCoupon.setCouponId(couponInfo.getId());
              userCoupon.setType(couponInfo.getType());
-             userCoupon.setAmount(couponInfo.getAmount());
+             if (couponInfo.getAmount() != null && couponInfo.getAmount().compareTo(new BigDecimal("0")) > 0) {
+                 userCoupon.setAmount(couponInfo.getAmount());
+             }
              userCoupon.setGroupId(groupInfo.getId());
              userCoupon.setMobile(userInfo.getMobile());
              userCoupon.setUserId(userInfo.getId());

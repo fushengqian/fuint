@@ -237,12 +237,7 @@ public class CouponServiceImpl extends ServiceImpl<MtCouponMapper, MtCoupon> imp
             reqCouponDto.setSendNum(1);
         }
 
-        if (mtCoupon.getType().equals(CouponTypeEnum.PRESTORE.getKey())) {
-            mtCoupon.setSendWay(SendWayEnum.FRONT.getKey());
-        } else {
-            mtCoupon.setSendWay(reqCouponDto.getSendWay());
-        }
-
+        mtCoupon.setSendWay(reqCouponDto.getSendWay());
         mtCoupon.setSendNum(reqCouponDto.getSendNum());
 
         if (reqCouponDto.getTotal() == null) {
@@ -335,9 +330,12 @@ public class CouponServiceImpl extends ServiceImpl<MtCouponMapper, MtCoupon> imp
            }
         }
 
-        // 如果是优惠券，并且是线下发放，生成会员卡券
-        if (reqCouponDto.getId() == null && mtCoupon.getType().equals(CouponTypeEnum.COUPON.getKey()) && mtCoupon.getSendWay().equals(SendWayEnum.OFFLINE.getKey())) {
+        // 如果是优惠券或储值卡，并且是线下发放，生成会员卡券
+        if (reqCouponDto.getId() == null && !mtCoupon.getType().equals(CouponTypeEnum.TIMER.getKey()) && mtCoupon.getSendWay().equals(SendWayEnum.OFFLINE.getKey())) {
             Integer total = mtCoupon.getTotal() * mtCoupon.getSendNum();
+            if (mtCoupon.getSendNum() == null || mtCoupon.getSendNum() <= 0) {
+                total = mtCoupon.getTotal();
+            }
             if (total > 0) {
                 String uuid = UUID.randomUUID().toString().replaceAll("-", "");
                 for (int i = 1; i <= total; i++) {
@@ -364,7 +362,23 @@ public class CouponServiceImpl extends ServiceImpl<MtCouponMapper, MtCoupon> imp
                         userCoupon.setExpireTime(expireTime);
                     }
                     userCoupon.setUuid(uuid);
-                    userCoupon.setType(CouponTypeEnum.COUPON.getKey());
+                    userCoupon.setType(couponInfo.getType());
+
+                    // 储值卡金额
+                    if (couponInfo.getAmount() == null || couponInfo.getAmount().compareTo(new BigDecimal("0")) <= 0) {
+                        if (StringUtil.isNotEmpty(couponInfo.getInRule())) {
+                            String[] arr = couponInfo.getInRule().split(",");
+                            if (arr.length > 0) {
+                                String[] values = arr[0].split("_");
+                                if (values.length > 1 && (StringUtil.isNotEmpty(values[1]))) {
+                                    couponInfo.setAmount(new BigDecimal(values[1]));
+                                } else {
+                                    couponInfo.setAmount(new BigDecimal(values[0]));
+                                }
+                            }
+                        }
+                    }
+
                     userCoupon.setAmount(couponInfo.getAmount());
                     userCoupon.setBalance(couponInfo.getAmount());
                     userCoupon.setStoreId(0);
