@@ -167,6 +167,9 @@ public class UserCouponServiceImpl extends ServiceImpl<MtUserCouponMapper, MtUse
                 throw new BusinessCheckException(Message.COUPON_NOT_EXIST);
             }
         }
+        if (!couponInfo.getStatus().equals(StatusEnum.ENABLED.getKey())) {
+            throw new BusinessCheckException(Message.COUPON_NOT_EXIST);
+        }
 
         MtCouponGroup groupInfo = couponGroupService.queryCouponGroupById(couponInfo.getGroupId());
         MtUser userInfo = memberService.queryMemberById(userId);

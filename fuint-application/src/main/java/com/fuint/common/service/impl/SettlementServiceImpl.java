@@ -2,10 +2,12 @@ package com.fuint.common.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.fuint.common.Constants;
 import com.fuint.common.dto.SettlementDto;
 import com.fuint.common.dto.SettlementOrderDto;
 import com.fuint.common.dto.UserOrderDto;
 import com.fuint.common.enums.PayStatusEnum;
+import com.fuint.common.enums.PayTypeEnum;
 import com.fuint.common.enums.SettleStatusEnum;
 import com.fuint.common.enums.StatusEnum;
 import com.fuint.common.param.OrderListParam;
@@ -113,8 +115,15 @@ public class SettlementServiceImpl implements SettlementService {
         orderParam.setStartTime(requestParam.getStartTime());
         orderParam.setEndTime(requestParam.getEndTime());
         orderParam.setSettleStatus(SettleStatusEnum.WAIT.getKey());
-        orderParam.setPage(1);
-        orderParam.setPageSize(100000);
+
+        List<String> payType = new ArrayList<>();
+        payType.add(PayTypeEnum.JSAPI.getKey());
+        payType.add(PayTypeEnum.MICROPAY.getKey());
+        payType.add(PayTypeEnum.ALISCAN.getKey());
+        orderParam.setPayType(payType);
+
+        orderParam.setPage(Constants.PAGE_NUMBER);
+        orderParam.setPageSize(Constants.ALL_ROWS);
 
         PaginationResponse response = orderService.getUserOrderList(orderParam);
         List<UserOrderDto> orderList = response.getContent();

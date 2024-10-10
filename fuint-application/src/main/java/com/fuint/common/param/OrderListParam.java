@@ -3,6 +3,7 @@ package com.fuint.common.param;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * 订单列表请求参数
@@ -38,6 +39,9 @@ public class OrderListParam extends PageParam implements Serializable {
 
     @ApiModelProperty(value="数据类型，1）toPay：待支付；2）paid：已支付；3）cancel：已取消", name="dataType")
     private String dataType;
+
+    @ApiModelProperty(value="支付类型", name="payType")
+    private List<String> payType;
 
     @ApiModelProperty(value="订单类型", name="type")
     private String type;
