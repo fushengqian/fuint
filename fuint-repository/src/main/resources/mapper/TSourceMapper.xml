@@ -19,7 +19,10 @@
 
     <select id="findByStatus" resultType="com.fuint.repository.model.TSource">
         select * from t_source s
-        where s.status = #{status}
+        where s.status != 'D'
+        <if test="status != null and status != ''">
+            and s.status = #{status}
+        </if>
         <if test="merchantId != null and merchantId > 0">
             and (s.merchant_id = 0 OR s.merchant_id = #{merchantId})
         </if>

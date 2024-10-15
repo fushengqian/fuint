@@ -32,25 +32,27 @@ public class SourceServiceImpl extends ServiceImpl<TSourceMapper, TSource> imple
     private TSourceMapper tSourceMapper;
 
     /**
-     * 获取有效的角色集合
+     * 获取有效的菜单集合
      *
      * @param merchantId 商户ID
+     * @param status
      * @return
      */
     @Override
-    public List<TSource> getAvailableSources(Integer merchantId) {
-        return tSourceMapper.findByStatus(merchantId, StatusEnum.ENABLED.getKey());
+    public List<TSource> getAvailableSources(Integer merchantId, String status) {
+        return tSourceMapper.findByStatus(merchantId, status);
     }
 
     /**
      * 获取菜单的属性结构
      *
-     * @param merchantId 商户IF
+     * @param merchantId 商户ID
+     * @param status 状态
      * @return
      */
     @Override
-    public List<TreeNode> getSourceTree(Integer merchantId) {
-        List<TSource> tSources = getAvailableSources(merchantId);
+    public List<TreeNode> getSourceTree(Integer merchantId, String status) {
+        List<TSource> tSources = getAvailableSources(merchantId, status);
         List<TreeNode> trees = new ArrayList<>();
         if (tSources != null && tSources.size() > 0) {
             TreeNode sourceTreeNode;
@@ -210,11 +212,16 @@ public class SourceServiceImpl extends ServiceImpl<TSourceMapper, TSource> imple
     @Transactional(rollbackFor = Exception.class)
     @OperationServiceLog(description = "修改后台菜单")
     public void editSource(TSource source) {
-        tSourceMapper.updateById(source);
+        // 禁用或删除菜单处理
+        if (source.getStatus().equals(StatusEnum.FORBIDDEN.getKey()) || source.getStatus().equals(StatusEnum.DISABLE.getKey())) {
+            deleteSource(source, source.getStatus());
+        } else {
+            tSourceMapper.updateById(source);
+        }
     }
 
     /**
-     * 删除菜单
+     * 删除或禁用菜单
      *
      * @param source
      * @return
@@ -222,9 +229,12 @@ public class SourceServiceImpl extends ServiceImpl<TSourceMapper, TSource> imple
     @Override
     @Transactional(rollbackFor = Exception.class)
     @OperationServiceLog(description = "删除后台菜单")
-    public void deleteSource(TSource source) {
-        source.setStatus(StatusEnum.DISABLE.getKey());
-        editSource(source);
+    public void deleteSource(TSource source, String status) {
+        if (StringUtil.isEmpty(status)) {
+            status = StatusEnum.DISABLE.getKey();
+        }
+        source.setStatus(status);
+        tSourceMapper.updateById(source);
 
         Map<String, Object> param = new HashMap<>();
         param.put("STATUS", StatusEnum.ENABLED.getKey());
@@ -232,7 +242,7 @@ public class SourceServiceImpl extends ServiceImpl<TSourceMapper, TSource> imple
         List<TSource> dataList = tSourceMapper.selectByMap(param);
         if (dataList != null && dataList.size() > 0) {
             for (TSource tSource : dataList) {
-                 deleteSource(tSource);
+                 deleteSource(tSource, status);
             }
         }
     }

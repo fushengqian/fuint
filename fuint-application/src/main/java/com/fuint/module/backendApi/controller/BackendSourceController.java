@@ -4,6 +4,7 @@ import com.fuint.common.domain.TreeNode;
 import com.fuint.common.domain.TreeSelect;
 import com.fuint.common.dto.AccountInfo;
 import com.fuint.common.dto.SourceDto;
+import com.fuint.common.enums.StatusEnum;
 import com.fuint.common.service.SourceService;
 import com.fuint.common.util.CommonUtil;
 import com.fuint.common.util.TokenUtil;
@@ -54,7 +55,7 @@ public class BackendSourceController extends BaseController {
             return getFailureResult(1001, "请先登录");
         }
 
-        List<TreeNode> sources = sourceService.getSourceTree(accountInfo.getMerchantId());
+        List<TreeNode> sources = sourceService.getSourceTree(accountInfo.getMerchantId(), "");
         return getSuccessResult(sources);
     }
 
@@ -229,7 +230,7 @@ public class BackendSourceController extends BaseController {
         if (!tSource.getMerchantId().equals(accountInfo.getMerchantId()) && accountInfo.getMerchantId() > 0) {
             return getFailureResult(201, "抱歉，您没有删除的权限");
         }
-        sourceService.deleteSource(tSource);
+        sourceService.deleteSource(tSource, StatusEnum.DISABLE.getKey());
         return getSuccessResult(true);
     }
 
@@ -245,7 +246,7 @@ public class BackendSourceController extends BaseController {
             return getFailureResult(1001, "请先登录");
         }
 
-        List<TreeNode> sources = sourceService.getSourceTree(accountInfo.getMerchantId());
+        List<TreeNode> sources = sourceService.getSourceTree(accountInfo.getMerchantId(), "");
         List<TreeSelect> data = sourceService.buildMenuTreeSelect(sources);
 
         return getSuccessResult(data);

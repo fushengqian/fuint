@@ -20,17 +20,19 @@ public interface SourceService extends IService<TSource> {
      * 获取有效的菜单集合
      *
      * @param merchantId 商户ID
+     * @param status
      * @return
      */
-    List<TSource> getAvailableSources(Integer merchantId);
+    List<TSource> getAvailableSources(Integer merchantId, String status);
 
     /**
      * 获取菜单的属性结构
      *
      * @param merchantId 商户ID
+     * @param status 状态
      * @return
      */
-    List<TreeNode> getSourceTree(Integer merchantId);
+    List<TreeNode> getSourceTree(Integer merchantId, String status);
 
     /**
      * 根据菜单ID集合查询菜单列表信息
@@ -92,6 +94,8 @@ public interface SourceService extends IService<TSource> {
      * 删除菜单
      *
      * @param source
+     * @param status
+     * @return
      * */
-    void deleteSource(TSource source);
+    void deleteSource(TSource source, String status);
 }
