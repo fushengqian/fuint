@@ -219,49 +219,52 @@ public class CommissionLogServiceImpl extends ServiceImpl<MtCommissionLogMapper,
                              MtCommissionRule mtCommissionRule = mtCommissionRuleMapper.selectById(mtCommissionRuleItem.getRuleId());
                              // 规则状态正常
                              if (mtCommissionRule != null && mtCommissionRule.getStatus().equals(StatusEnum.ENABLED.getKey())) {
-                                 MtCommissionLog mtCommissionLog = new MtCommissionLog();
                                  // 分佣金额计算，散客和会员佣金比例不同
                                  BigDecimal rate = mtCommissionRuleItem.getMember();
                                  if (mtOrder.getStaffId() != null && mtOrder.getStaffId() > 0 && mtOrder.getIsVisitor().equals(YesOrNoEnum.YES.getKey())) {
                                      rate = mtCommissionRuleItem.getGuest();
                                  }
                                  BigDecimal amount = orderGoods.getPrice().multiply(rate.divide(new BigDecimal("100")));
-                                 mtCommissionLog.setType(mtOrder.getType());
-                                 mtCommissionLog.setTarget(mtCommissionRule.getTarget());
-                                 mtCommissionLog.setLevel(0);
-                                 mtCommissionLog.setUserId(0);
-                                 mtCommissionLog.setOrderId(orderId);
-                                 mtCommissionLog.setMerchantId(mtOrder.getMerchantId());
-                                 mtCommissionLog.setStoreId(mtOrder.getStoreId());
-                                 mtCommissionLog.setStaffId(mtOrder.getStaffId());
-                                 mtCommissionLog.setAmount(amount);
-                                 mtCommissionLog.setRuleId(mtCommissionRuleItem.getRuleId());
-                                 mtCommissionLog.setRuleItemId(mtCommissionRuleItem.getId());
-                                 mtCommissionLog.setCashId(0);
-                                 mtCommissionLog.setCashTime(null);
-                                 Date dateTime = new Date();
-                                 mtCommissionLog.setCreateTime(dateTime);
-                                 mtCommissionLog.setUpdateTime(dateTime);
-                                 mtCommissionLog.setStatus(StatusEnum.ENABLED.getKey());
-                                 mtCommissionLog.setOperator(null);
 
                                  // 员工提成计算，员工信息不能为空
                                  if (mtOrder.getStaffId() > 0 && mtCommissionRule.getTarget().equals(CommissionTargetEnum.STAFF.getKey())) {
-                                     if (mtCommissionLog.getStaffId() != null && mtCommissionLog.getStaffId() > 0) {
-                                         mtCommissionLogMapper.insert(mtCommissionLog);
+                                     if (mtOrder.getStaffId() != null && mtOrder.getStaffId() > 0) {
+                                         addCommissionLog(mtOrder, mtCommissionRule, amount, mtCommissionRuleItem, 0);
                                      }
                                  }
 
                                  // 会员分销计算，会员信息不能为空
                                  if (mtOrder.getCommissionUserId() > 0 && mtCommissionRule.getTarget().equals(CommissionTargetEnum.MEMBER.getKey())) {
-                                     mtCommissionLog.setUserId(mtOrder.getCommissionUserId());
-                                     mtCommissionLogMapper.insert(mtCommissionLog);
+                                     addCommissionLog(mtOrder, mtCommissionRule, amount, mtCommissionRuleItem, mtOrder.getCommissionUserId());
                                  }
                              }
                          }
                     }
                 }
             }
+
+            // 充值订单计算佣金
+            if (mtOrder != null && mtOrder.getType().equals(CommissionTypeEnum.RECHARGE.getKey())) {
+                LambdaQueryWrapper<MtCommissionRuleItem> lambdaQueryWrapper = Wrappers.lambdaQuery();
+                lambdaQueryWrapper.eq(MtCommissionRuleItem::getMerchantId, mtOrder.getMerchantId());
+                lambdaQueryWrapper.eq(MtCommissionRuleItem::getType, CommissionTypeEnum.RECHARGE.getKey());
+                lambdaQueryWrapper.eq(MtCommissionRuleItem::getStatus, StatusEnum.ENABLED.getKey());
+                lambdaQueryWrapper.orderByDesc(MtCommissionRuleItem::getId);
+                List<MtCommissionRuleItem> commissionRuleItemList = mtCommissionRuleItemMapper.selectList(lambdaQueryWrapper);
+                if (commissionRuleItemList != null && commissionRuleItemList.size() > 0) {
+                    MtCommissionRuleItem mtCommissionRuleItem = commissionRuleItemList.get(0);
+                    MtCommissionRule mtCommissionRule = mtCommissionRuleMapper.selectById(mtCommissionRuleItem.getRuleId());
+
+                    // 分佣金额计算，散客和会员佣金比例不同
+                    BigDecimal rate = mtCommissionRuleItem.getMember();
+                    if (mtOrder.getStaffId() != null && mtOrder.getStaffId() > 0 && mtOrder.getIsVisitor().equals(YesOrNoEnum.YES.getKey())) {
+                        rate = mtCommissionRuleItem.getGuest();
+                    }
+                    BigDecimal amount = mtOrder.getAmount().multiply(rate.divide(new BigDecimal("100")));
+                    addCommissionLog(mtOrder, mtCommissionRule, amount, mtCommissionRuleItem, 0);
+                }
+            }
+
             if (mtOrder != null) {
                 mtOrder.setCommissionStatus(CommissionStatusEnum.SETTLED.getKey());
                 orderService.updateOrder(mtOrder);
@@ -317,5 +320,40 @@ public class CommissionLogServiceImpl extends ServiceImpl<MtCommissionLogMapper,
         mtCommissionLog.setOperator(requestParam.getOperator());
         mtCommissionLog.setUpdateTime(new Date());
         mtCommissionLogMapper.updateById(mtCommissionLog);
+    }
+
+    /**
+     * 新增分佣记录
+     *
+     * @param mtOrder 订单信息
+     * @param mtCommissionRule 分佣方案
+     * @param amount 分佣金额
+     * @param mtCommissionRuleItem 分佣规则
+     * @param userId 会员ID
+     * @return
+     * */
+    @Transactional
+    @OperationServiceLog(description = "新增分销提成记录")
+    public void addCommissionLog(MtOrder mtOrder, MtCommissionRule mtCommissionRule, BigDecimal amount, MtCommissionRuleItem mtCommissionRuleItem, Integer userId) {
+        MtCommissionLog mtCommissionLog = new MtCommissionLog();
+        mtCommissionLog.setType(mtOrder.getType());
+        mtCommissionLog.setTarget(mtCommissionRule.getTarget());
+        mtCommissionLog.setLevel(0);
+        mtCommissionLog.setUserId(userId);
+        mtCommissionLog.setOrderId(mtOrder.getId());
+        mtCommissionLog.setMerchantId(mtOrder.getMerchantId());
+        mtCommissionLog.setStoreId(mtOrder.getStoreId());
+        mtCommissionLog.setStaffId(mtOrder.getStaffId());
+        mtCommissionLog.setAmount(amount);
+        mtCommissionLog.setRuleId(mtCommissionRuleItem.getRuleId());
+        mtCommissionLog.setRuleItemId(mtCommissionRuleItem.getId());
+        mtCommissionLog.setCashId(0);
+        mtCommissionLog.setCashTime(null);
+        Date dateTime = new Date();
+        mtCommissionLog.setCreateTime(dateTime);
+        mtCommissionLog.setUpdateTime(dateTime);
+        mtCommissionLog.setStatus(StatusEnum.ENABLED.getKey());
+        mtCommissionLog.setOperator(null);
+        mtCommissionLogMapper.insert(mtCommissionLog);
     }
 }
