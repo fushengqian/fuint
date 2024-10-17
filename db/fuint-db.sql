@@ -1,7 +1,3 @@
-CREATE DATABASE /*!32312 IF NOT EXISTS*/`fuint-db` /*!40100 DEFAULT CHARACTER SET utf8 */ /*!80016 DEFAULT ENCRYPTION='N' */;
-
-USE `fuint-db`;
-
 /*Table structure for table `mt_address` */
 
 DROP TABLE IF EXISTS `mt_address`;
@@ -20,7 +16,7 @@ CREATE TABLE `mt_address` (
   `UPDATE_TIME` datetime DEFAULT NULL COMMENT '更新时间',
   `STATUS` char(1) DEFAULT 'A' COMMENT '状态',
   PRIMARY KEY (`ID`)
-) ENGINE=InnoDB AUTO_INCREMENT=60 DEFAULT CHARSET=utf8 COMMENT='会员地址表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='会员地址表';
 
 /*Table structure for table `mt_article` */
 
@@ -30,19 +26,19 @@ CREATE TABLE `mt_article` (
   `ID` int NOT NULL AUTO_INCREMENT COMMENT '自增ID',
   `STORE_ID` int NOT NULL DEFAULT '0' COMMENT '目录ID',
   `MERCHANT_ID` int DEFAULT '0' COMMENT '商户ID',
-  `TITLE` varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT '' COMMENT '标题',
-  `BRIEF` varchar(500) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT '' COMMENT '简介',
-  `URL` varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT '' COMMENT '链接地址',
-  `IMAGE` varchar(200) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT '' COMMENT '图片地址',
-  `DESCRIPTION` text CHARACTER SET utf8 COLLATE utf8_general_ci COMMENT '描述',
+  `TITLE` varchar(100) DEFAULT '' COMMENT '标题',
+  `BRIEF` varchar(500) DEFAULT '' COMMENT '简介',
+  `URL` varchar(100) DEFAULT '' COMMENT '链接地址',
+  `IMAGE` varchar(200) DEFAULT '' COMMENT '图片地址',
+  `DESCRIPTION` text COMMENT '描述',
   `CLICK` int DEFAULT '0' COMMENT '点击次数',
   `CREATE_TIME` datetime DEFAULT NULL COMMENT '创建时间',
   `UPDATE_TIME` datetime DEFAULT NULL COMMENT '更新时间',
-  `OPERATOR` varchar(30) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL COMMENT '最后操作人',
+  `OPERATOR` varchar(30) DEFAULT NULL COMMENT '最后操作人',
   `SORT` int DEFAULT '0' COMMENT '排序',
-  `STATUS` char(1) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT 'A' COMMENT 'A：正常；N：禁用；D：删除',
-  PRIMARY KEY (`ID`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=73 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC COMMENT='文章表';
+  `STATUS` char(1) DEFAULT 'A' COMMENT 'A：正常；N：禁用；D：删除',
+  PRIMARY KEY (`ID`)
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8 COMMENT='文章表';
 
 /*Table structure for table `mt_balance` */
 
@@ -62,7 +58,7 @@ CREATE TABLE `mt_balance` (
   `OPERATOR` varchar(30) DEFAULT '' COMMENT '最后操作人',
   `STATUS` char(1) DEFAULT 'A' COMMENT '状态，A正常；D作废',
   PRIMARY KEY (`ID`)
-) ENGINE=InnoDB AUTO_INCREMENT=832 DEFAULT CHARSET=utf8 COMMENT='余额变化表';
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8 COMMENT='余额变化表';
 
 /*Table structure for table `mt_banner` */
 
@@ -82,7 +78,7 @@ CREATE TABLE `mt_banner` (
   `SORT` int DEFAULT '0' COMMENT '排序',
   `STATUS` char(1) DEFAULT 'A' COMMENT 'A：正常；D：删除',
   PRIMARY KEY (`ID`)
-) ENGINE=InnoDB AUTO_INCREMENT=307 DEFAULT CHARSET=utf8 COMMENT='会员端焦点图表';
+) ENGINE=InnoDB AUTO_INCREMENT=216 DEFAULT CHARSET=utf8 COMMENT='会员端焦点图表';
 
 /*Table structure for table `mt_book` */
 
@@ -90,19 +86,43 @@ DROP TABLE IF EXISTS `mt_book`;
 
 CREATE TABLE `mt_book` (
   `ID` int NOT NULL AUTO_INCREMENT COMMENT '自增ID',
+  `NAME` varchar(255) DEFAULT NULL COMMENT '预约名称',
   `MERCHANT_ID` int DEFAULT '0' COMMENT '所属商户ID',
   `STORE_ID` int DEFAULT '0' COMMENT '店铺ID',
+  `TYPE` varchar(30) DEFAULT 'time' COMMENT '预约方式，time：按时间预约；staff:按员工预约',
+  `LOGO` varchar(255) DEFAULT '' COMMENT 'LOGO图片',
   `GOODS_ID` int DEFAULT '0' COMMENT '预约服务ID',
+  `CATE_ID` int DEFAULT '0' COMMENT '预约分类',
   `SERVICE_DATES` varchar(1000) DEFAULT '' COMMENT '可预约日期',
   `SERVICE_TIMES` varchar(1000) DEFAULT '' COMMENT '可预约时间段',
-  `SERVICE_STAFF_IDS` varchar(1000) DEFAULT '' COMMENT '可预约员工',
-  `DESCRIPTION` varchar(1000) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT '' COMMENT '预约说明',
+  `SERVICE_STAFF_IDS` varchar(1000) DEFAULT '' COMMENT '可预约员工ID',
+  `DESCRIPTION` varchar(1000) DEFAULT '' COMMENT '预约说明',
   `CREATE_TIME` datetime DEFAULT NULL COMMENT '创建时间',
   `UPDATE_TIME` datetime DEFAULT NULL COMMENT '更新时间',
   `OPERATOR` varchar(30) DEFAULT '' COMMENT '最后操作人',
-  `STATUS` char(1) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT 'A' COMMENT '订单状态',
+  `SORT` int DEFAULT '0' COMMENT '排序',
+  `STATUS` char(1) DEFAULT 'A' COMMENT '订单状态',
   PRIMARY KEY (`ID`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COMMENT='预约表';
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 COMMENT='预约表';
+
+/*Table structure for table `mt_book_cate` */
+
+DROP TABLE IF EXISTS `mt_book_cate`;
+
+CREATE TABLE `mt_book_cate` (
+  `ID` int NOT NULL AUTO_INCREMENT COMMENT '自增ID',
+  `MERCHANT_ID` int NOT NULL COMMENT '所属商户',
+  `STORE_ID` int DEFAULT NULL COMMENT '所属店铺',
+  `NAME` varchar(50) NOT NULL COMMENT '分类名称',
+  `LOGO` varchar(255) DEFAULT NULL COMMENT '封面图片',
+  `DESCRIPTION` varchar(500) DEFAULT NULL COMMENT '说明',
+  `CREATE_TIME` datetime DEFAULT NULL COMMENT '创建时间',
+  `UPDATE_TIME` datetime DEFAULT NULL COMMENT '更新时间',
+  `SORT` int DEFAULT NULL COMMENT '排序',
+  `OPERATOR` varchar(30) DEFAULT NULL COMMENT '最后操作人',
+  `STATUS` char(1) DEFAULT NULL COMMENT '状态',
+  PRIMARY KEY (`ID`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 COMMENT='预约分类';
 
 /*Table structure for table `mt_book_item` */
 
@@ -112,17 +132,21 @@ CREATE TABLE `mt_book_item` (
   `ID` int NOT NULL AUTO_INCREMENT COMMENT '自增ID',
   `MERCHANT_ID` int DEFAULT '0' COMMENT '所属商户ID',
   `STORE_ID` int DEFAULT '0' COMMENT '店铺ID',
+  `CATE_ID` int DEFAULT '0' COMMENT '预约分类ID',
+  `BOOK_ID` int DEFAULT '0' COMMENT '预约ID',
+  `USER_ID` int DEFAULT '0' COMMENT '预约用户ID',
   `GOODS_ID` int DEFAULT '0' COMMENT '预约服务ID',
+  `VERIFY_CODE` varchar(10) DEFAULT '' COMMENT '核销码',
   `CONTACT` varchar(30) DEFAULT NULL COMMENT '预约联系人',
   `MOBILE` varchar(30) DEFAULT NULL COMMENT '预约手机号',
-  `SERVICE_START_TIME` datetime DEFAULT NULL COMMENT '预约开始日期',
-  `SERVICE_END_TIME` datetime DEFAULT NULL COMMENT '预约结束日期',
-  `SERVICE_STAFF_ID` varchar(1000) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT '' COMMENT '可预约员工',
-  `REMARK` varchar(1000) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT '' COMMENT '预约说明',
+  `SERVICE_DATE` varchar(100) DEFAULT NULL COMMENT '预约日期',
+  `SERVICE_TIME` varchar(100) DEFAULT NULL COMMENT '预约时间段',
+  `SERVICE_STAFF_ID` int DEFAULT NULL COMMENT '预约员工ID',
+  `REMARK` varchar(1000) DEFAULT '' COMMENT '预约说明',
   `CREATE_TIME` datetime DEFAULT NULL COMMENT '创建时间',
   `UPDATE_TIME` datetime DEFAULT NULL COMMENT '更新时间',
   `OPERATOR` varchar(30) DEFAULT '' COMMENT '最后操作人',
-  `STATUS` char(1) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT 'A' COMMENT '状态',
+  `STATUS` char(1) DEFAULT 'A' COMMENT '状态',
   PRIMARY KEY (`ID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='预约详情表';
 
@@ -144,7 +168,7 @@ CREATE TABLE `mt_cart` (
   `UPDATE_TIME` datetime DEFAULT NULL COMMENT '更新时间',
   `STATUS` char(1) DEFAULT 'A' COMMENT '状态',
   PRIMARY KEY (`ID`)
-) ENGINE=InnoDB AUTO_INCREMENT=2783 DEFAULT CHARSET=utf8 COMMENT='购物车';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='购物车';
 
 /*Table structure for table `mt_commission_cash` */
 
@@ -161,11 +185,11 @@ CREATE TABLE `mt_commission_cash` (
   `AMOUNT` decimal(10,2) DEFAULT NULL COMMENT '金额',
   `CREATE_TIME` datetime DEFAULT NULL COMMENT '创建时间',
   `UPDATE_TIME` datetime DEFAULT NULL COMMENT '更新时间',
-  `DESCRIPTION` varchar(500) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL COMMENT '备注信息',
-  `OPERATOR` varchar(30) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT '' COMMENT '最后操作人',
-  `STATUS` char(1) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT 'A' COMMENT '状态，A:待确认,B:已确认,C:已支付,D:已作废',
+  `DESCRIPTION` varchar(500) DEFAULT NULL COMMENT '备注信息',
+  `OPERATOR` varchar(30) DEFAULT '' COMMENT '最后操作人',
+  `STATUS` char(1) DEFAULT 'A' COMMENT '状态，A:待确认,B:已确认,C:已支付,D:已作废',
   PRIMARY KEY (`ID`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8 COMMENT='分佣提现记录表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='分佣提现记录表';
 
 /*Table structure for table `mt_commission_log` */
 
@@ -184,17 +208,17 @@ CREATE TABLE `mt_commission_log` (
   `AMOUNT` decimal(10,2) DEFAULT NULL COMMENT '分佣金额',
   `RULE_ID` int DEFAULT NULL COMMENT '分佣规则ID',
   `RULE_ITEM_ID` int DEFAULT NULL COMMENT '分佣规则项ID',
-  `DESCRIPTION` varchar(500) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL COMMENT '备注信息',
+  `DESCRIPTION` varchar(500) DEFAULT NULL COMMENT '备注信息',
   `SETTLE_UUID` varchar(32) DEFAULT NULL COMMENT '结算uuid',
   `CASH_ID` int DEFAULT NULL COMMENT '提现记录ID',
-  `IS_CASH` char(1) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT 'N' COMMENT '是否提现，Y：是；N：否',
+  `IS_CASH` char(1) DEFAULT 'N' COMMENT '是否提现，Y：是；N：否',
   `CASH_TIME` datetime DEFAULT NULL COMMENT '提现时间',
   `CREATE_TIME` datetime DEFAULT NULL COMMENT '创建时间',
   `UPDATE_TIME` datetime DEFAULT NULL COMMENT '更新时间',
-  `STATUS` char(1) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT 'A' COMMENT '状态，A：待结算；B：已结算；C：已作废',
+  `STATUS` char(1) DEFAULT 'A' COMMENT '状态，A：待结算；B：已结算；C：已作废',
   `OPERATOR` varchar(30) DEFAULT '' COMMENT '最后操作人',
   PRIMARY KEY (`ID`)
-) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8 COMMENT='佣金记录表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='佣金记录表';
 
 /*Table structure for table `mt_commission_relation` */
 
@@ -207,10 +231,10 @@ CREATE TABLE `mt_commission_relation` (
   `LEVEL` int DEFAULT '1' COMMENT '等级',
   `INVITE_CODE` varchar(32) DEFAULT '' COMMENT '邀请码',
   `SUB_USER_ID` int DEFAULT NULL COMMENT '被邀请会员ID',
-  `DESCRIPTION` varchar(500) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL COMMENT '说明',
+  `DESCRIPTION` varchar(500) DEFAULT NULL COMMENT '说明',
   `CREATE_TIME` datetime DEFAULT NULL COMMENT '创建时间',
   `UPDATE_TIME` datetime DEFAULT NULL COMMENT '更新时间',
-  `STATUS` char(1) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT 'A' COMMENT '状态，A：激活；D：删除',
+  `STATUS` char(1) DEFAULT 'A' COMMENT '状态，A：激活；D：删除',
   `OPERATOR` varchar(30) DEFAULT '' COMMENT '最后操作人',
   PRIMARY KEY (`ID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='会员分销关系表';
@@ -221,19 +245,19 @@ DROP TABLE IF EXISTS `mt_commission_rule`;
 
 CREATE TABLE `mt_commission_rule` (
   `ID` int NOT NULL AUTO_INCREMENT COMMENT '自增ID',
-  `NAME` varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT '' COMMENT '规则名称',
-  `TYPE` varchar(30) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL COMMENT '方案类型',
-  `TARGET` varchar(30) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT '' COMMENT '方案对象,member:会员分销；staff：员工提成',
+  `NAME` varchar(100) DEFAULT '' COMMENT '规则名称',
+  `TYPE` varchar(30) DEFAULT NULL COMMENT '方案类型',
+  `TARGET` varchar(30) DEFAULT '' COMMENT '方案对象,member:会员分销；staff：员工提成',
   `MERCHANT_ID` int NOT NULL COMMENT '商户ID',
   `STORE_ID` int DEFAULT '0' COMMENT '店铺ID',
   `STORE_IDS` varchar(500) DEFAULT '' COMMENT '适用店铺',
   `CREATE_TIME` datetime DEFAULT NULL COMMENT '创建时间',
   `UPDATE_TIME` datetime DEFAULT NULL COMMENT '更新时间',
   `DESCRIPTION` varchar(1000) DEFAULT NULL COMMENT '备注信息',
-  `OPERATOR` varchar(30) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT '' COMMENT '最后操作人',
+  `OPERATOR` varchar(30) DEFAULT '' COMMENT '最后操作人',
   `STATUS` char(1) DEFAULT 'A' COMMENT '状态，A：激活；N：禁用；D：删除',
   PRIMARY KEY (`ID`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COMMENT='方案规则表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='方案规则表';
 
 /*Table structure for table `mt_commission_rule_item` */
 
@@ -241,11 +265,11 @@ DROP TABLE IF EXISTS `mt_commission_rule_item`;
 
 CREATE TABLE `mt_commission_rule_item` (
   `ID` int NOT NULL AUTO_INCREMENT COMMENT '自增ID',
-  `TYPE` varchar(30) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL COMMENT '分佣类型',
+  `TYPE` varchar(30) DEFAULT NULL COMMENT '分佣类型',
   `RULE_ID` int NOT NULL DEFAULT '0' COMMENT '规则ID',
   `MERCHANT_ID` int NOT NULL COMMENT '商户ID',
   `STORE_ID` int DEFAULT '0' COMMENT '适用店铺',
-  `TARGET` varchar(30) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL COMMENT '分佣对象',
+  `TARGET` varchar(30) DEFAULT NULL COMMENT '分佣对象',
   `TARGET_ID` int NOT NULL DEFAULT '0' COMMENT '对象ID',
   `METHOD` varchar(30) DEFAULT NULL COMMENT '提成方式（按比例/固定金额）',
   `STORE_IDS` varchar(500) DEFAULT '' COMMENT '适用店铺',
@@ -255,10 +279,10 @@ CREATE TABLE `mt_commission_rule_item` (
   `SUB_MEMBER` decimal(10,2) DEFAULT NULL COMMENT '二级会员佣金',
   `CREATE_TIME` datetime DEFAULT NULL COMMENT '创建时间',
   `UPDATE_TIME` datetime DEFAULT NULL COMMENT '更新时间',
-  `OPERATOR` varchar(30) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT '' COMMENT '最后操作人',
+  `OPERATOR` varchar(30) DEFAULT '' COMMENT '最后操作人',
   `STATUS` char(1) DEFAULT 'A' COMMENT '状态，A：激活；N：禁用；D：删除',
   PRIMARY KEY (`ID`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8 COMMENT='分佣提成规则项目表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='分佣提成规则项目表';
 
 /*Table structure for table `mt_confirm_log` */
 
@@ -283,7 +307,7 @@ CREATE TABLE `mt_confirm_log` (
   `OPERATOR_FROM` varchar(30) DEFAULT 'mt_user' COMMENT '操作来源user_id对应表t_account 还是 mt_user',
   `REMARK` varchar(500) DEFAULT '' COMMENT '备注信息',
   PRIMARY KEY (`ID`)
-) ENGINE=InnoDB AUTO_INCREMENT=291 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='核销记录表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='核销记录表';
 
 /*Table structure for table `mt_coupon` */
 
@@ -323,7 +347,7 @@ CREATE TABLE `mt_coupon` (
   `OPERATOR` varchar(30) DEFAULT '' COMMENT '最后操作人',
   `STATUS` char(1) DEFAULT 'A' COMMENT 'A：正常；D：删除',
   PRIMARY KEY (`ID`)
-) ENGINE=InnoDB AUTO_INCREMENT=76 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='卡券信息表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='卡券信息表';
 
 /*Table structure for table `mt_coupon_goods` */
 
@@ -337,7 +361,7 @@ CREATE TABLE `mt_coupon_goods` (
   `UPDATE_TIME` datetime NOT NULL COMMENT '更新时间',
   `STATUS` char(1) NOT NULL DEFAULT 'A' COMMENT '状态',
   PRIMARY KEY (`ID`)
-) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8 COMMENT='卡券商品表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='卡券商品表';
 
 /*Table structure for table `mt_coupon_group` */
 
@@ -357,7 +381,7 @@ CREATE TABLE `mt_coupon_group` (
   `OPERATOR` varchar(30) DEFAULT '' COMMENT '最后操作人',
   `STATUS` char(1) NOT NULL DEFAULT 'A' COMMENT 'A：正常；D：删除',
   PRIMARY KEY (`ID`)
-) ENGINE=InnoDB AUTO_INCREMENT=24 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='优惠券组';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='优惠券组';
 
 /*Table structure for table `mt_freight` */
 
@@ -419,7 +443,7 @@ CREATE TABLE `mt_give` (
   PRIMARY KEY (`ID`),
   KEY `index_user_id` (`USER_ID`) USING BTREE,
   KEY `index_give_user_id` (`GIVE_USER_ID`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='转赠记录表';
+) ENGINE=InnoDB AUTO_INCREMENT=55 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='转赠记录表';
 
 /*Table structure for table `mt_give_item` */
 
@@ -434,7 +458,7 @@ CREATE TABLE `mt_give_item` (
   `STATUS` char(1) NOT NULL COMMENT '状态，A正常；D删除',
   PRIMARY KEY (`ID`),
   KEY `index_give_id` (`GIVE_ID`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='转赠明细表';
+) ENGINE=InnoDB AUTO_INCREMENT=55 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='转赠明细表';
 
 /*Table structure for table `mt_goods` */
 
@@ -468,7 +492,7 @@ CREATE TABLE `mt_goods` (
   `OPERATOR` varchar(30) DEFAULT NULL COMMENT '最后操作人',
   `STATUS` char(1) DEFAULT 'A' COMMENT 'A：正常；D：删除',
   PRIMARY KEY (`ID`)
-) ENGINE=InnoDB AUTO_INCREMENT=486 DEFAULT CHARSET=utf8 COMMENT='商品表';
+) ENGINE=InnoDB AUTO_INCREMENT=388 DEFAULT CHARSET=utf8 COMMENT='商品表';
 
 /*Table structure for table `mt_goods_cate` */
 
@@ -487,7 +511,7 @@ CREATE TABLE `mt_goods_cate` (
   `SORT` int DEFAULT '0' COMMENT '排序',
   `STATUS` char(1) DEFAULT 'A' COMMENT 'A：正常；D：删除',
   PRIMARY KEY (`ID`)
-) ENGINE=InnoDB AUTO_INCREMENT=226 DEFAULT CHARSET=utf8 COMMENT='商品分类表';
+) ENGINE=InnoDB AUTO_INCREMENT=193 DEFAULT CHARSET=utf8 COMMENT='商品分类表';
 
 /*Table structure for table `mt_goods_sku` */
 
@@ -505,7 +529,7 @@ CREATE TABLE `mt_goods_sku` (
   `WEIGHT` decimal(10,2) DEFAULT '0.00' COMMENT '重量',
   `STATUS` char(1) NOT NULL DEFAULT 'A' COMMENT '状态',
   PRIMARY KEY (`ID`)
-) ENGINE=InnoDB AUTO_INCREMENT=865 DEFAULT CHARSET=utf8 COMMENT='商品SKU表';
+) ENGINE=InnoDB AUTO_INCREMENT=745 DEFAULT CHARSET=utf8 COMMENT='商品SKU表';
 
 /*Table structure for table `mt_goods_spec` */
 
@@ -518,7 +542,7 @@ CREATE TABLE `mt_goods_spec` (
   `VALUE` varchar(100) NOT NULL DEFAULT '' COMMENT '规格值',
   `STATUS` char(1) DEFAULT 'A' COMMENT '状态',
   PRIMARY KEY (`ID`)
-) ENGINE=InnoDB AUTO_INCREMENT=584 DEFAULT CHARSET=utf8 COMMENT='规格表';
+) ENGINE=InnoDB AUTO_INCREMENT=433 DEFAULT CHARSET=utf8 COMMENT='规格表';
 
 /*Table structure for table `mt_merchant` */
 
@@ -527,7 +551,7 @@ DROP TABLE IF EXISTS `mt_merchant`;
 CREATE TABLE `mt_merchant` (
   `ID` int NOT NULL AUTO_INCREMENT COMMENT '自增ID',
   `TYPE` varchar(30) DEFAULT '' COMMENT '类型，restaurant：餐饮；retail：零售；service：服务；other：其他',
-  `LOGO` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT '' COMMENT 'logo',
+  `LOGO` varchar(255) DEFAULT '' COMMENT 'logo',
   `NO` varchar(20) NOT NULL DEFAULT '' COMMENT '商户号',
   `NAME` varchar(50) NOT NULL DEFAULT '' COMMENT '商户名称',
   `CONTACT` varchar(30) DEFAULT '' COMMENT '联系人姓名',
@@ -535,15 +559,15 @@ CREATE TABLE `mt_merchant` (
   `ADDRESS` varchar(100) DEFAULT '' COMMENT '联系地址',
   `WX_APP_ID` varchar(50) DEFAULT '' COMMENT '微信小程序appId',
   `WX_APP_SECRET` varchar(50) DEFAULT '' COMMENT '微信小程序秘钥',
-  `WX_OFFICIAL_APP_ID` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT '' COMMENT '微信公众号appId',
-  `WX_OFFICIAL_APP_SECRET` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT '' COMMENT '微信公众号秘钥',
+  `WX_OFFICIAL_APP_ID` varchar(50) DEFAULT '' COMMENT '微信公众号appId',
+  `WX_OFFICIAL_APP_SECRET` varchar(50) DEFAULT '' COMMENT '微信公众号秘钥',
   `DESCRIPTION` varchar(2000) DEFAULT '' COMMENT '备注信息',
   `CREATE_TIME` datetime DEFAULT NULL COMMENT '创建时间',
   `UPDATE_TIME` datetime DEFAULT NULL COMMENT '更新时间',
   `STATUS` char(1) DEFAULT 'A' COMMENT '状态，A：有效/启用；D：无效',
   `OPERATOR` varchar(30) DEFAULT '' COMMENT '最后操作人',
   PRIMARY KEY (`ID`)
-) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='商户表';
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='商户表';
 
 /*Table structure for table `mt_message` */
 
@@ -563,8 +587,9 @@ CREATE TABLE `mt_message` (
   `IS_SEND` char(1) DEFAULT 'N' COMMENT '是否已发送',
   `SEND_TIME` datetime DEFAULT NULL COMMENT '发送时间',
   `STATUS` char(1) DEFAULT 'A' COMMENT '状态',
-  PRIMARY KEY (`ID`)
-) ENGINE=InnoDB AUTO_INCREMENT=463952 DEFAULT CHARSET=utf8 COMMENT='系统消息表';
+  PRIMARY KEY (`ID`),
+  KEY `index_user_id` (`USER_ID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='系统消息表';
 
 /*Table structure for table `mt_open_gift` */
 
@@ -583,7 +608,7 @@ CREATE TABLE `mt_open_gift` (
   `STATUS` char(1) DEFAULT 'A' COMMENT '状态',
   `OPERATOR` varchar(30) DEFAULT '' COMMENT '最后操作人',
   PRIMARY KEY (`ID`)
-) ENGINE=InnoDB AUTO_INCREMENT=131 DEFAULT CHARSET=utf8 COMMENT='会员开卡赠礼';
+) ENGINE=InnoDB AUTO_INCREMENT=117 DEFAULT CHARSET=utf8 COMMENT='会员开卡赠礼';
 
 /*Table structure for table `mt_open_gift_item` */
 
@@ -607,6 +632,7 @@ CREATE TABLE `mt_order` (
   `TYPE` varchar(30) DEFAULT NULL COMMENT '订单类型',
   `PAY_TYPE` varchar(30) DEFAULT 'JSAPI' COMMENT '支付类型',
   `ORDER_MODE` varchar(30) DEFAULT 'express' COMMENT '订单模式',
+  `PLATFORM` varchar(30) DEFAULT '' COMMENT '平台',
   `ORDER_SN` varchar(32) NOT NULL DEFAULT '' COMMENT '订单号',
   `COUPON_ID` int DEFAULT '0' COMMENT '卡券ID',
   `MERCHANT_ID` int DEFAULT '0' COMMENT '所属商户ID',
@@ -631,9 +657,10 @@ CREATE TABLE `mt_order` (
   `SETTLE_STATUS` char(1) DEFAULT 'A' COMMENT '结算状态',
   `STAFF_ID` int DEFAULT '0' COMMENT '操作员工',
   `COMMISSION_STATUS` char(1) DEFAULT 'A' COMMENT '分佣提成计算状态',
+  `COMMISSION_USER_ID` int DEFAULT '0' COMMENT '分佣提成用户ID',
   `OPERATOR` varchar(30) DEFAULT '' COMMENT '最后操作人',
   PRIMARY KEY (`ID`)
-) ENGINE=InnoDB AUTO_INCREMENT=2160 DEFAULT CHARSET=utf8 COMMENT='订单表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='订单表';
 
 /*Table structure for table `mt_order_address` */
 
@@ -652,7 +679,7 @@ CREATE TABLE `mt_order_address` (
   `CREATE_TIME` datetime NOT NULL COMMENT '创建时间',
   PRIMARY KEY (`ID`) USING BTREE,
   KEY `ORDER_ID` (`ORDER_ID`)
-) ENGINE=InnoDB AUTO_INCREMENT=45 DEFAULT CHARSET=utf8 COMMENT='订单收货地址记录表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='订单收货地址记录表';
 
 /*Table structure for table `mt_order_goods` */
 
@@ -670,7 +697,7 @@ CREATE TABLE `mt_order_goods` (
   `UPDATE_TIME` datetime DEFAULT NULL COMMENT '更新时间',
   `STATUS` char(1) DEFAULT 'A' COMMENT 'A：正常；D：删除',
   PRIMARY KEY (`ID`)
-) ENGINE=InnoDB AUTO_INCREMENT=1929 DEFAULT CHARSET=utf8 COMMENT='订单商品表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='订单商品表';
 
 /*Table structure for table `mt_point` */
 
@@ -689,7 +716,26 @@ CREATE TABLE `mt_point` (
   `OPERATOR` varchar(30) DEFAULT '' COMMENT '最后操作人',
   `STATUS` char(1) DEFAULT 'A' COMMENT '状态，A正常；D作废',
   PRIMARY KEY (`ID`)
-) ENGINE=InnoDB AUTO_INCREMENT=2490 DEFAULT CHARSET=utf8 COMMENT='积分变化表';
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8 COMMENT='积分变化表';
+
+/*Table structure for table `mt_printer` */
+
+DROP TABLE IF EXISTS `mt_printer`;
+
+CREATE TABLE `mt_printer` (
+  `ID` int NOT NULL AUTO_INCREMENT COMMENT '自增ID',
+  `MERCHANT_ID` int DEFAULT '0' COMMENT '所属商户ID',
+  `STORE_ID` int DEFAULT '0' COMMENT '所属店铺ID',
+  `SN` varchar(64) DEFAULT NULL COMMENT '打印机编号',
+  `NAME` varchar(64) DEFAULT NULL COMMENT '打印机名称',
+  `AUTO_PRINT` char(1) DEFAULT 'N' COMMENT '是否自动打印',
+  `CREATE_TIME` datetime DEFAULT NULL COMMENT '创建时间',
+  `UPDATE_TIME` datetime DEFAULT NULL COMMENT '更新时间',
+  `DESCRIPTION` varchar(255) DEFAULT '' COMMENT '备注说明',
+  `OPERATOR` varchar(30) DEFAULT '' COMMENT '最后操作人',
+  `STATUS` char(1) DEFAULT 'A' COMMENT '状态，A正常；D作废',
+  PRIMARY KEY (`ID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='打印机表';
 
 /*Table structure for table `mt_refund` */
 
@@ -704,13 +750,14 @@ CREATE TABLE `mt_refund` (
   `AMOUNT` decimal(10,2) DEFAULT NULL COMMENT '退款金额',
   `TYPE` varchar(20) DEFAULT '' COMMENT '售后类型',
   `REMARK` varchar(500) DEFAULT '' COMMENT '退款备注',
+  `REJECT_REASON` varchar(1000) DEFAULT NULL COMMENT '拒绝原因',
   `CREATE_TIME` datetime DEFAULT NULL COMMENT '创建时间',
   `UPDATE_TIME` datetime DEFAULT NULL COMMENT '更新时间',
   `STATUS` char(1) DEFAULT 'A' COMMENT '状态',
   `IMAGES` varchar(1000) DEFAULT NULL COMMENT '图片',
   `OPERATOR` varchar(30) DEFAULT '' COMMENT '最后操作人',
   PRIMARY KEY (`ID`)
-) ENGINE=InnoDB AUTO_INCREMENT=72 DEFAULT CHARSET=utf8 COMMENT='售后表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='售后表';
 
 /*Table structure for table `mt_region` */
 
@@ -749,7 +796,7 @@ CREATE TABLE `mt_send_log` (
   `REMOVE_FAIL_NUM` int DEFAULT '0' COMMENT '作废失败张数',
   `STATUS` char(1) DEFAULT NULL COMMENT '状态，A正常；B：部分作废；D全部作废',
   PRIMARY KEY (`ID`)
-) ENGINE=InnoDB AUTO_INCREMENT=120124 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='卡券发放记录表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='卡券发放记录表';
 
 /*Table structure for table `mt_setting` */
 
@@ -768,7 +815,7 @@ CREATE TABLE `mt_setting` (
   `OPERATOR` varchar(30) DEFAULT '' COMMENT '最后操作人',
   `STATUS` char(1) DEFAULT 'A' COMMENT '状态 A启用；D禁用',
   PRIMARY KEY (`ID`)
-) ENGINE=InnoDB AUTO_INCREMENT=119 DEFAULT CHARSET=utf8 COMMENT='全局设置表';
+) ENGINE=InnoDB AUTO_INCREMENT=92 DEFAULT CHARSET=utf8 COMMENT='全局设置表';
 
 /*Table structure for table `mt_settlement` */
 
@@ -781,14 +828,14 @@ CREATE TABLE `mt_settlement` (
   `STORE_ID` int DEFAULT '0' COMMENT '店铺ID',
   `TOTAL_ORDER_AMOUNT` decimal(10,2) DEFAULT '0.00' COMMENT '订单总金额',
   `AMOUNT` decimal(10,2) DEFAULT '0.00' COMMENT '结算金额',
-  `DESCRIPTION` varchar(1000) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT '' COMMENT '备注说明',
+  `DESCRIPTION` varchar(1000) DEFAULT '' COMMENT '备注说明',
   `CREATE_TIME` datetime DEFAULT NULL COMMENT '创建时间',
   `UPDATE_TIME` datetime DEFAULT NULL COMMENT '更新时间',
   `OPERATOR` varchar(30) DEFAULT '' COMMENT '最后操作人',
   `PAY_STATUS` char(1) DEFAULT '' COMMENT '支付状态',
-  `STATUS` char(1) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT 'A' COMMENT '状态',
+  `STATUS` char(1) DEFAULT 'A' COMMENT '状态',
   PRIMARY KEY (`ID`)
-) ENGINE=InnoDB AUTO_INCREMENT=34 DEFAULT CHARSET=utf8 COMMENT='结算表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='结算表';
 
 /*Table structure for table `mt_settlement_order` */
 
@@ -798,13 +845,13 @@ CREATE TABLE `mt_settlement_order` (
   `ID` int NOT NULL AUTO_INCREMENT COMMENT '自增ID',
   `SETTLEMENT_ID` int NOT NULL DEFAULT '0' COMMENT '结算ID',
   `ORDER_ID` int DEFAULT '0' COMMENT '订单ID',
-  `DESCRIPTION` varchar(1000) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT '' COMMENT '备注说明',
+  `DESCRIPTION` varchar(1000) DEFAULT '' COMMENT '备注说明',
   `CREATE_TIME` datetime DEFAULT NULL COMMENT '创建时间',
   `UPDATE_TIME` datetime DEFAULT NULL COMMENT '更新时间',
   `OPERATOR` varchar(30) DEFAULT '' COMMENT '最后操作人',
-  `STATUS` char(1) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT 'A' COMMENT '状态',
+  `STATUS` char(1) DEFAULT 'A' COMMENT '状态',
   PRIMARY KEY (`ID`)
-) ENGINE=InnoDB AUTO_INCREMENT=1093 DEFAULT CHARSET=utf8 COMMENT='结算订单表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='结算订单表';
 
 /*Table structure for table `mt_sms_sended_log` */
 
@@ -840,7 +887,7 @@ CREATE TABLE `mt_sms_template` (
   `OPERATOR` varchar(30) DEFAULT '' COMMENT '最后操作人',
   `STATUS` char(1) NOT NULL DEFAULT 'A' COMMENT '状态：A激活；N禁用',
   PRIMARY KEY (`ID`)
-) ENGINE=InnoDB AUTO_INCREMENT=69 DEFAULT CHARSET=utf8 COMMENT='短信模板';
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8 COMMENT='短信模板';
 
 /*Table structure for table `mt_staff` */
 
@@ -861,7 +908,7 @@ CREATE TABLE `mt_staff` (
   `AUDITED_TIME` datetime DEFAULT NULL COMMENT '审核时间',
   `DESCRIPTION` varchar(255) DEFAULT NULL COMMENT '备注',
   PRIMARY KEY (`ID`)
-) ENGINE=InnoDB AUTO_INCREMENT=87 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='店铺员工表';
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='店铺员工表';
 
 /*Table structure for table `mt_stock` */
 
@@ -872,13 +919,13 @@ CREATE TABLE `mt_stock` (
   `MERCHANT_ID` int DEFAULT '0' COMMENT '商户ID',
   `STORE_ID` int NOT NULL DEFAULT '0' COMMENT '店铺ID',
   `TYPE` varchar(20) NOT NULL DEFAULT 'increase' COMMENT '类型，increase:入库，reduce:出库',
-  `DESCRIPTION` varchar(1000) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT '' COMMENT '备注说明',
+  `DESCRIPTION` varchar(1000) DEFAULT '' COMMENT '备注说明',
   `CREATE_TIME` datetime DEFAULT NULL COMMENT '创建时间',
   `UPDATE_TIME` datetime DEFAULT NULL COMMENT '更新时间',
-  `OPERATOR` varchar(30) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT '' COMMENT '最后操作人',
-  `STATUS` char(1) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT 'A' COMMENT '状态',
+  `OPERATOR` varchar(30) NOT NULL DEFAULT '' COMMENT '最后操作人',
+  `STATUS` char(1) NOT NULL DEFAULT 'A' COMMENT '状态',
   PRIMARY KEY (`ID`)
-) ENGINE=InnoDB AUTO_INCREMENT=92 DEFAULT CHARSET=utf8 COMMENT='库存管理记录表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='库存管理记录表';
 
 /*Table structure for table `mt_stock_item` */
 
@@ -890,13 +937,13 @@ CREATE TABLE `mt_stock_item` (
   `GOODS_ID` int NOT NULL DEFAULT '0' COMMENT '商品ID',
   `SKU_ID` int NOT NULL DEFAULT '0' COMMENT 'SKUID',
   `NUM` int NOT NULL DEFAULT '0' COMMENT '数量',
-  `DESCRIPTION` varchar(1000) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT '' COMMENT '说明备注',
+  `DESCRIPTION` varchar(1000) DEFAULT '' COMMENT '说明备注',
   `CREATE_TIME` datetime NOT NULL COMMENT '创建时间',
   `UPDATE_TIME` datetime NOT NULL COMMENT '更新时间',
-  `OPERATOR` varchar(30) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT '' COMMENT '最后操作人',
-  `STATUS` char(1) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT 'A' COMMENT '订单状态',
+  `OPERATOR` varchar(30) NOT NULL DEFAULT '' COMMENT '最后操作人',
+  `STATUS` char(1) NOT NULL DEFAULT 'A' COMMENT '订单状态',
   PRIMARY KEY (`ID`)
-) ENGINE=InnoDB AUTO_INCREMENT=147 DEFAULT CHARSET=utf8 COMMENT='库存管理明细表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='库存管理明细表';
 
 /*Table structure for table `mt_store` */
 
@@ -921,7 +968,7 @@ CREATE TABLE `mt_store` (
   `LATITUDE` varchar(30) DEFAULT '' COMMENT '经度',
   `LONGITUDE` varchar(30) DEFAULT '' COMMENT '维度',
   `DISTANCE` decimal(10,2) DEFAULT '0.00' COMMENT '距离',
-  `HOURS` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT '' COMMENT '营业时间',
+  `HOURS` varchar(255) DEFAULT '' COMMENT '营业时间',
   `LICENSE` varchar(255) DEFAULT '' COMMENT '营业执照',
   `CREDIT_CODE` varchar(50) DEFAULT '' COMMENT '统一社会信用码',
   `BANK_NAME` varchar(100) DEFAULT '' COMMENT '银行名称',
@@ -933,7 +980,7 @@ CREATE TABLE `mt_store` (
   `STATUS` char(1) DEFAULT 'A' COMMENT '状态，A：有效/启用；D：无效',
   `OPERATOR` varchar(30) DEFAULT '' COMMENT '最后操作人',
   PRIMARY KEY (`ID`)
-) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='店铺表';
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPRESSED COMMENT='店铺表';
 
 /*Table structure for table `mt_user` */
 
@@ -941,7 +988,7 @@ DROP TABLE IF EXISTS `mt_user`;
 
 CREATE TABLE `mt_user` (
   `ID` int NOT NULL AUTO_INCREMENT COMMENT '会员ID',
-  `MOBILE` varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT '' COMMENT '手机号码',
+  `MOBILE` varchar(20) DEFAULT '' COMMENT '手机号码',
   `GROUP_ID` int DEFAULT '0' COMMENT '分组ID',
   `USER_NO` varchar(30) DEFAULT '' COMMENT '会员号',
   `AVATAR` varchar(255) DEFAULT '' COMMENT '头像',
@@ -962,6 +1009,7 @@ CREATE TABLE `mt_user` (
   `ADDRESS` varchar(100) DEFAULT '' COMMENT '地址',
   `MERCHANT_ID` int DEFAULT '0' COMMENT '所属商户ID',
   `STORE_ID` int DEFAULT '0' COMMENT '所属店铺ID',
+  `IS_STAFF` char(1) DEFAULT 'N' COMMENT '是否员工',
   `CREATE_TIME` datetime DEFAULT NULL COMMENT '创建时间',
   `UPDATE_TIME` datetime DEFAULT NULL COMMENT '更新时间',
   `STATUS` char(1) DEFAULT 'A' COMMENT '状态，A：激活；N：禁用；D：删除',
@@ -969,7 +1017,7 @@ CREATE TABLE `mt_user` (
   `OPERATOR` varchar(30) DEFAULT '' COMMENT '最后操作人',
   PRIMARY KEY (`ID`),
   KEY `index_phone` (`MOBILE`)
-) ENGINE=InnoDB AUTO_INCREMENT=8125 DEFAULT CHARSET=utf8 COMMENT='会员个人信息';
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8 COMMENT='会员个人信息';
 
 /*Table structure for table `mt_user_action` */
 
@@ -981,7 +1029,7 @@ CREATE TABLE `mt_user_action` (
   `MERCHANT_ID` int DEFAULT '0' COMMENT '商户ID',
   `STORE_ID` int DEFAULT '0' COMMENT '店铺ID',
   `ACTION` varchar(30) DEFAULT '' COMMENT '行为类别',
-  `DESCRIPTION` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT '' COMMENT '备注信息',
+  `DESCRIPTION` varchar(255) DEFAULT '' COMMENT '备注信息',
   `PARAM` varchar(255) DEFAULT '' COMMENT '参数',
   `CREATE_TIME` datetime DEFAULT NULL COMMENT '创建时间',
   `UPDATE_TIME` datetime DEFAULT NULL COMMENT '更新时间',
@@ -989,7 +1037,7 @@ CREATE TABLE `mt_user_action` (
   `OPERATOR` varchar(30) DEFAULT '' COMMENT '最后操作人',
   PRIMARY KEY (`ID`),
   KEY `index_user_id` (`USER_ID`,`ACTION`,`PARAM`)
-) ENGINE=InnoDB AUTO_INCREMENT=26196 DEFAULT CHARSET=utf8 COMMENT='会员行为记录表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='会员行为记录表';
 
 /*Table structure for table `mt_user_coupon` */
 
@@ -1021,7 +1069,7 @@ CREATE TABLE `mt_user_coupon` (
   KEY `index_coupon_id` (`COUPON_ID`),
   KEY `index_group_id` (`GROUP_ID`) USING BTREE,
   KEY `index_code` (`CODE`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=418177 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='会员卡券表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='会员卡券表';
 
 /*Table structure for table `mt_user_grade` */
 
@@ -1041,7 +1089,7 @@ CREATE TABLE `mt_user_grade` (
   `SPEED_POINT` float(5,2) DEFAULT '1.00' COMMENT '积分加速',
   `STATUS` char(1) DEFAULT 'A' COMMENT '状态',
   PRIMARY KEY (`ID`)
-) ENGINE=InnoDB AUTO_INCREMENT=106 DEFAULT CHARSET=utf8 COMMENT='会员等级表';
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8 COMMENT='会员等级表';
 
 /*Table structure for table `mt_user_group` */
 
@@ -1059,7 +1107,7 @@ CREATE TABLE `mt_user_group` (
   `OPERATOR` varchar(30) DEFAULT '' COMMENT '最后操作人',
   `STATUS` char(1) NOT NULL DEFAULT 'A' COMMENT 'A：正常；D：删除',
   PRIMARY KEY (`ID`)
-) ENGINE=InnoDB AUTO_INCREMENT=26 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='会员分组';
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='会员分组';
 
 /*Table structure for table `mt_verify_code` */
 
@@ -1067,15 +1115,15 @@ DROP TABLE IF EXISTS `mt_verify_code`;
 
 CREATE TABLE `mt_verify_code` (
   `ID` bigint NOT NULL AUTO_INCREMENT COMMENT '自增id',
-  `MOBILE` varchar(16) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL COMMENT '手机号',
-  `VERIFY_CODE` char(6) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL COMMENT '验证码',
+  `MOBILE` varchar(16) DEFAULT NULL COMMENT '手机号',
+  `VERIFY_CODE` char(6) DEFAULT NULL COMMENT '验证码',
   `ADD_TIME` datetime DEFAULT NULL COMMENT '创建时间',
   `EXPIRE_TIME` datetime DEFAULT NULL COMMENT '过期时间',
   `USED_TIME` datetime DEFAULT NULL COMMENT '使用时间',
-  `VALID_FLAG` char(1) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL COMMENT '可用状态 0未用 1已用 2置为失效',
+  `VALID_FLAG` char(1) DEFAULT NULL COMMENT '可用状态 0未用 1已用 2置为失效',
   PRIMARY KEY (`ID`),
   KEY `ix_mobile_verifyCode` (`MOBILE`,`VERIFY_CODE`)
-) ENGINE=InnoDB AUTO_INCREMENT=124 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='短信验证码表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='短信验证码表';
 
 /*Table structure for table `t_account` */
 
@@ -1091,16 +1139,16 @@ CREATE TABLE `t_account` (
   `create_date` datetime NOT NULL COMMENT '创建时间',
   `modify_date` datetime NOT NULL COMMENT '修改时间',
   `salt` varchar(64) NOT NULL DEFAULT '' COMMENT '随机码',
-  `role_ids` varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL COMMENT '角色ID',
+  `role_ids` varchar(100) DEFAULT NULL COMMENT '角色ID',
   `locked` int NOT NULL DEFAULT '0' COMMENT '是否禁用',
   `owner_id` int DEFAULT NULL COMMENT '所属平台',
-  `real_name` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL COMMENT '姓名',
+  `real_name` varchar(255) DEFAULT NULL COMMENT '姓名',
   `merchant_id` int DEFAULT '0' COMMENT '所属商户ID',
   `store_id` int DEFAULT '0' COMMENT '所属店铺ID',
   `staff_id` int DEFAULT '0' COMMENT '关联员工ID',
   PRIMARY KEY (`acct_id`),
   KEY `FKmlsqc08c6khxhoed7abkl2s9l` (`owner_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=124 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
+) ENGINE=InnoDB AUTO_INCREMENT=93 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
 
 /*Table structure for table `t_account_duty` */
 
@@ -1113,7 +1161,7 @@ CREATE TABLE `t_account_duty` (
   PRIMARY KEY (`acc_duty_id`),
   KEY `FKcym10gcigo2c175iqqjj7xu5h` (`acct_id`),
   KEY `FKpfts0wq2y4xhq9vv2g7uo1kr0` (`duty_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=906 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
+) ENGINE=InnoDB AUTO_INCREMENT=760 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
 
 /*Table structure for table `t_action_log` */
 
@@ -1128,11 +1176,12 @@ CREATE TABLE `t_action_log` (
   `client_ip` varchar(50) DEFAULT NULL COMMENT '客户端IP',
   `module` varchar(255) DEFAULT NULL COMMENT '操作模块',
   `url` varchar(255) DEFAULT NULL COMMENT '请求URL',
-  `acct_name` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL COMMENT '操作用户账户',
+  `acct_name` varchar(255) DEFAULT NULL COMMENT '操作用户账户',
   `user_agent` varchar(255) DEFAULT NULL COMMENT '用户系统以及浏览器信息',
-  `client_port` int DEFAULT NULL,
+  `client_port` int DEFAULT NULL COMMENT '端口号',
+  `param` text COMMENT '参数',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=16503 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
+) ENGINE=InnoDB AUTO_INCREMENT=97 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
 
 /*Table structure for table `t_duty` */
 
@@ -1146,7 +1195,7 @@ CREATE TABLE `t_duty` (
   `description` varchar(400) DEFAULT NULL COMMENT '描述',
   `duty_type` varchar(50) NOT NULL COMMENT '角色类型',
   PRIMARY KEY (`duty_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=29 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='角色表';
+) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='角色表';
 
 /*Table structure for table `t_duty_source` */
 
@@ -1159,7 +1208,28 @@ CREATE TABLE `t_duty_source` (
   PRIMARY KEY (`duty_source_id`),
   KEY `FKlciudb88j4tptc36d43ghl5dg` (`duty_id`),
   KEY `FKp1c59mwxgjue4qdl86sd6dogf` (`source_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=14485 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
+) ENGINE=InnoDB AUTO_INCREMENT=13326 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
+
+/*Table structure for table `t_gen_code` */
+
+DROP TABLE IF EXISTS `t_gen_code`;
+
+CREATE TABLE `t_gen_code` (
+  `id` int NOT NULL AUTO_INCREMENT COMMENT '主键',
+  `service_name` varchar(64) DEFAULT NULL COMMENT '服务名称',
+  `module_name` varchar(64) DEFAULT NULL COMMENT '模块名称',
+  `table_name` varchar(64) DEFAULT NULL COMMENT '表名',
+  `table_prefix` varchar(64) DEFAULT NULL COMMENT '表前缀',
+  `pk_name` varchar(32) DEFAULT NULL COMMENT '主键名',
+  `package_name` varchar(500) DEFAULT NULL COMMENT '后端包名',
+  `backend_path` varchar(2000) DEFAULT NULL COMMENT '后端路径',
+  `front_path` varchar(2000) DEFAULT NULL COMMENT '前端路径',
+  `author` varchar(30) DEFAULT NULL COMMENT '作者',
+  `create_time` datetime DEFAULT NULL COMMENT '创建时间',
+  `update_time` datetime DEFAULT NULL COMMENT '更新时间',
+  `status` char(1) DEFAULT 'A' COMMENT '状态',
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COMMENT='代码生成表';
 
 /*Table structure for table `t_platform` */
 
@@ -1167,7 +1237,7 @@ DROP TABLE IF EXISTS `t_platform`;
 
 CREATE TABLE `t_platform` (
   `owner_id` int NOT NULL AUTO_INCREMENT COMMENT '主键',
-  `name` varchar(20) NOT NULL COMMENT '平台名称',
+  `name` varchar(100) NOT NULL COMMENT '平台名称',
   `status` int NOT NULL COMMENT '状态 0 无效 1 有效',
   `description` varchar(255) DEFAULT NULL COMMENT '描述',
   `platform_type` int NOT NULL COMMENT '平台类型',
@@ -1179,8 +1249,8 @@ CREATE TABLE `t_platform` (
 DROP TABLE IF EXISTS `t_source`;
 
 CREATE TABLE `t_source` (
-  `merchant_id` int DEFAULT '1' COMMENT '商户ID',
   `source_id` int NOT NULL AUTO_INCREMENT COMMENT '菜单Id',
+  `merchant_id` int DEFAULT '1' COMMENT '商户ID',
   `source_name` varchar(240) NOT NULL COMMENT '菜单名称',
   `source_code` varchar(200) NOT NULL COMMENT '菜单对应url',
   `path` varchar(255) DEFAULT '' COMMENT '路径',
@@ -1199,19 +1269,3 @@ CREATE TABLE `t_source` (
   KEY `index-parent-id` (`parent_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='菜单表';
 
-/*Table structure for table `t_gen_code` */
-
-DROP TABLE IF EXISTS `t_gen_code`;
-CREATE TABLE `t_gen_code` (
-  `id` int NOT NULL AUTO_INCREMENT COMMENT '主键',
-  `service_name` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '服务名称',
-  `module_name` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '模块名称',
-  `table_name` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '表名',
-  `table_prefix` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '表前缀',
-  `pk_name` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '主键名',
-  `package_name` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '后端包名',
-  `backend_path` varchar(2000) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '后端路径',
-  `front_path` varchar(2000) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '前端路径',
-  `status` char(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT 'A' COMMENT '状态',
-  PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='代码生成表';
