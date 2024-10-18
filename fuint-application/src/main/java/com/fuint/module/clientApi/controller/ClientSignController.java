@@ -152,6 +152,8 @@ public class ClientSignController extends BaseController {
             return getFailureResult(201, "微信公众号授权失败");
         }
 
+        logger.error("公众号授权登录, userInfo:{}，param:{}", userInfo, param);
+
         userInfo.put("storeId", storeId);
         userInfo.put("shareId", shareId);
         MtUser mtUser = memberService.queryMemberByOpenId(merchantId, userInfo.get("openid").toString(), userInfo);

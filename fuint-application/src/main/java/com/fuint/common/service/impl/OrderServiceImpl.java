@@ -1418,6 +1418,16 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
             }
             logger.info("PaymentService paymentCallback Point orderSn = {} , pointNum ={}", orderInfo.getOrderSn(), pointNum);
             if (pointNum > 0) {
+                // 充值是否加倍返积分
+                if (orderInfo.getType().equals(OrderTypeEnum.RECHARGE.getKey())) {
+                    MtSetting pointSpeedSetting = settingService.querySettingByName(mtOrder.getMerchantId(), SettingTypeEnum.POINT.getKey(), PointSettingEnum.RECHARGE_POINT_SPEED.getKey());
+                    if (pointSpeedSetting != null && StringUtil.isNotEmpty(pointSpeedSetting.getValue())) {
+                        BigDecimal pointSpeed = new BigDecimal(pointSpeedSetting.getValue());
+                        if (pointSpeed.compareTo(new BigDecimal("0")) > 0) {
+                            pointNum = pointNum * new Double(pointSpeedSetting.getValue());
+                        }
+                    }
+                }
                 MtUser userInfo = memberService.queryMemberById(orderInfo.getUserId());
                 MtUserGrade userGrade = userGradeService.queryUserGradeById(orderInfo.getMerchantId(), Integer.parseInt(userInfo.getGradeId()), orderInfo.getUserId());
                 // 是否会员积分加倍
