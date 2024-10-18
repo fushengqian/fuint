@@ -5,9 +5,7 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fuint.common.dto.OrderGoodsDto;
 import com.fuint.common.dto.UserOrderDto;
-import com.fuint.common.enums.PrinterSettingEnum;
-import com.fuint.common.enums.SettingTypeEnum;
-import com.fuint.common.enums.YesOrNoEnum;
+import com.fuint.common.enums.*;
 import com.fuint.common.service.SettingService;
 import com.fuint.common.util.HashSignUtil;
 import com.fuint.common.util.NoteFormatter;
@@ -19,7 +17,6 @@ import com.fuint.framework.pagination.PaginationRequest;
 import com.fuint.framework.pagination.PaginationResponse;
 import com.fuint.repository.model.MtPrinter;
 import com.fuint.common.service.PrinterService;
-import com.fuint.common.enums.StatusEnum;
 import com.fuint.repository.mapper.MtPrinterMapper;
 import com.fuint.repository.model.MtSetting;
 import com.fuint.repository.model.MtStore;
@@ -193,6 +190,16 @@ public class PrinterServiceImpl extends ServiceImpl<MtPrinterMapper, MtPrinter> 
                 }
             }
 
+            // 配送订单，打印配送信息
+            if (orderInfo.getOrderMode().equals(OrderModeEnum.EXPRESS.getKey())) {
+                // 分割线
+                printContent.append(org.apache.commons.lang3.StringUtils.repeat("-", 32)).append("<BR>");
+                printContent.append("<L>")
+                        .append("配送姓名：").append(orderInfo.getAddress().getName()).append("<BR>")
+                        .append("联系电话：").append(orderInfo.getAddress().getMobile()).append("<BR>")
+                        .append("详细地址：").append(orderInfo.getAddress().getProvinceName() + orderInfo.getAddress().getCityName() + orderInfo.getAddress().getRegionName() + orderInfo.getAddress().getDetail()).append("<BR>");
+            }
+
             // 分割线
             printContent.append(org.apache.commons.lang3.StringUtils.repeat("-", 32)).append("<BR>");
 
@@ -205,9 +212,8 @@ public class PrinterServiceImpl extends ServiceImpl<MtPrinterMapper, MtPrinter> 
                     .append("下单时间：").append(orderInfo.getCreateTime()).append("<BR>")
                     .append("订单备注：").append(orderInfo.getRemark()).append("<BR>");
 
-            printContent.append("<C>")
-                    .append("<QR>https://www.fuint.cn</QR>")
-                    .append("</C>");
+            // 二维码
+            printContent.append("<C>").append("<QR>https://www.fuint.cn</QR>").append("</C>");
 
             printRequest.setContent(printContent.toString());
             printRequest.setCopies(1);

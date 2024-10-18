@@ -858,6 +858,10 @@ public class WeixinServiceImpl implements WeixinService {
                     cardId = wxCardId;
                 }
             } else {
+                // token失效，刷新token
+                if (data.get("errcode").toString().equals("40014")) {
+                    getAccessToken(merchantId, false,false);
+                }
                 logger.error("开通微信卡券出错啦{}", data.get("errmsg").toString());
                 throw new BusinessCheckException("开通微信卡券出错啦：" + data.get("errmsg").toString());
             }
@@ -943,7 +947,8 @@ public class WeixinServiceImpl implements WeixinService {
             JSONObject data = (JSONObject) JSONObject.parse(response);
             if (data.get("errcode").toString().equals("0")) {
                 Object cards = data.get("card_list");
-                if (cards != null && StringUtil.isNotEmpty(cards.toString())) {
+                logger.info("微信卡券getCardList接口card_list：{}", cards.toString());
+                if (cards != null && cards.toString().length() > 6) {
                     return true;
                 }
                 return false;
