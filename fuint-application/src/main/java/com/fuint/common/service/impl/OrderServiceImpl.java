@@ -478,9 +478,9 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
             if (userInfo != null && userInfo.getGradeId() != null && orderDto.getIsVisitor().equals(YesOrNoEnum.NO.getKey())) {
                 if (percent.compareTo(new BigDecimal("0")) > 0) {
                     // 会员折扣
-                    BigDecimal payAmountDiscount = mtOrder.getPayAmount().multiply(percent);
+                    BigDecimal payAmountDiscount = mtOrder.getAmount().multiply(percent);
                     if (payAmountDiscount.compareTo(new BigDecimal("0")) > 0) {
-                        mtOrder.setDiscount(mtOrder.getDiscount().add(mtOrder.getPayAmount().subtract(payAmountDiscount)));
+                        mtOrder.setDiscount(mtOrder.getDiscount().add(mtOrder.getAmount().subtract(payAmountDiscount)));
                         mtOrder.setPayAmount(payAmountDiscount);
                     } else {
                         mtOrder.setPayAmount(new BigDecimal("0"));
@@ -807,6 +807,7 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
             orderDto.setAmount(new BigDecimal(payAmount));
             orderDto.setPayAmount(new BigDecimal(payAmount));
             orderDto.setDiscount(new BigDecimal("0"));
+            orderDto.setDeliveryFee(new BigDecimal("0"));
         }
 
         // 会员升级订单

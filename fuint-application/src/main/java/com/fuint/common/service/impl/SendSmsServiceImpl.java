@@ -86,7 +86,7 @@ public class SendSmsServiceImpl implements SendSmsService {
         Map<Boolean, List<String>> result = new HashMap<>();
         Integer mode = Integer.parseInt(env.getProperty("aliyun.sms.mode"));
         MtSetting mtSetting = settingService.querySettingByName(merchantId, SettingTypeEnum.SMS_CONFIG.getKey(), SmsSettingEnum.IS_CLOSE.getKey());
-        if (mtSetting != null && StringUtil.isNotEmpty(mtSetting.getValue())) {
+        if (mode.intValue() == 1 && mtSetting != null && StringUtil.isNotEmpty(mtSetting.getValue())) {
             mode = Integer.parseInt(mtSetting.getValue());
             logger.info("商户短信设置 mtSetting = {}", JSON.toJSONString(mtSetting));
         }
