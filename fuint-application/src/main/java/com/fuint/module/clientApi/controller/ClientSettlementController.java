@@ -1,6 +1,5 @@
 package com.fuint.module.clientApi.controller;
 
-import com.fuint.common.enums.YesOrNoEnum;
 import com.fuint.common.param.SettlementParam;
 import com.fuint.common.service.OrderService;
 import com.fuint.framework.exception.BusinessCheckException;
@@ -37,8 +36,6 @@ public class ClientSettlementController extends BaseController {
     @RequestMapping(value = "/submit", method = RequestMethod.POST)
     @CrossOrigin
     public ResponseObject submit(HttpServletRequest request, @RequestBody SettlementParam param) throws BusinessCheckException {
-        String isWechat = request.getHeader("isWechat") == null ? YesOrNoEnum.NO.getKey() : request.getHeader("isWechat");
-        param.setIsWechat(isWechat);
         Map<String, Object> result = orderService.doSettle(request, param);
         return getSuccessResult(result);
     }

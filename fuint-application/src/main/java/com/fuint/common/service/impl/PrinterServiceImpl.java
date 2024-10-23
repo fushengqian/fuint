@@ -175,6 +175,15 @@ public class PrinterServiceImpl extends ServiceImpl<MtPrinterMapper, MtPrinter> 
             printContent.append("<C>").append("<B>" + storeInfo.getName() + "</B>").append("<BR></C>");
             printContent.append("<BR>");
 
+            // 分割线
+            printContent.append(org.apache.commons.lang3.StringUtils.repeat("-", 32)).append("<BR>");
+
+            // 单号桌码
+            printContent.append("<L>订单号：").append(orderInfo.getOrderSn()).append("</L>");
+
+            // 分割线
+            printContent.append(org.apache.commons.lang3.StringUtils.repeat("-", 32)).append("<BR>");
+
             printContent.append("品名").append(org.apache.commons.lang3.StringUtils.repeat(" ", 16))
                         .append("数量").append(org.apache.commons.lang3.StringUtils.repeat(" ", 2))
                         .append("单价").append(org.apache.commons.lang3.StringUtils.repeat(" ", 2))

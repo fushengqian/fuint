@@ -627,10 +627,10 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
     @Transactional(rollbackFor = Exception.class)
     public Map<String, Object> doSettle(HttpServletRequest request, SettlementParam param) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
+        String isWechat = request.getHeader("isWechat") == null ? YesOrNoEnum.NO.getKey() : request.getHeader("isWechat");
         Integer storeId = request.getHeader("storeId") == null ? 0 : Integer.parseInt(request.getHeader("storeId"));
         String platform = request.getHeader("platform") == null ? "" : request.getHeader("platform");
         String merchantNo = request.getHeader("merchantNo") == null ? "" : request.getHeader("merchantNo");
-        String isWechat = param.getIsWechat() == null ? YesOrNoEnum.NO.getKey() : param.getIsWechat();
         String cartIds = param.getCartIds() == null ? "" : param.getCartIds();
         Integer targetId = param.getTargetId() == null ? 0 : Integer.parseInt(param.getTargetId()); // 储值卡、升级等级必填
         String selectNum = param.getSelectNum() == null ? "" : param.getSelectNum(); // 储值卡必填
