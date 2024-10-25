@@ -36,6 +36,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 /**
@@ -175,6 +177,20 @@ public class BookServiceImpl extends ServiceImpl<MtBookMapper, MtBook> implement
 
         List<DayDto> dateList = new ArrayList<>();
         String serviceDates = mtBook.getServiceDates();
+
+        // 未填写日期，则未来7天都可以预约
+        if (StringUtil.isEmpty(serviceDates)) {
+            List<String> dates = new ArrayList<>();
+            LocalDate today = LocalDate.now();
+            for (int i = 0; i < 7; i++) {
+                 LocalDate date = today.plusDays(i + 1);
+                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+                 String dateString = date.format(formatter);
+                 dates.add(dateString);
+            }
+            serviceDates = String.join(",", dates);
+        }
+
         if (StringUtil.isNotEmpty(serviceDates)) {
             List<String> dates = Arrays.asList(serviceDates.split(",").clone());
             if (dates.size() > 0) {
@@ -197,6 +213,12 @@ public class BookServiceImpl extends ServiceImpl<MtBookMapper, MtBook> implement
 
         List<TimeDto> timeList = new ArrayList<>();
         String serviceTimes = mtBook.getServiceTimes();
+
+        // 未填写时段，则未来
+        if (StringUtil.isEmpty(serviceTimes)) {
+            serviceTimes = "08:30-12:00-1,14:00-18:00-1";
+        }
+
         if (StringUtil.isNotEmpty(serviceTimes) && bookDto.getDateList().size() > 0) {
             List<String> times = Arrays.asList(serviceTimes.split(",").clone());
             if (times.size() > 0) {
@@ -285,11 +307,21 @@ public class BookServiceImpl extends ServiceImpl<MtBookMapper, MtBook> implement
        if (mtBook == null) {
            throw new BusinessCheckException("预约项目不存在");
        }
-       List<String> bookList = mtBookItemMapper.getBookList(param.getBookId(), param.getDate(), param.getTime());
+
+       List<String> bookList = new ArrayList<>();
+       if (StringUtil.isNotEmpty(param.getDate())) {
+           bookList = mtBookItemMapper.getBookList(param.getBookId(), param.getDate(), param.getTime());
+       }
        Integer bookNum = bookList.size();
 
        Integer limit = 0;
        String serviceTime = mtBook.getServiceTimes();
+
+       // 未填写时段，则未来
+       if (StringUtil.isEmpty(serviceTime)) {
+           serviceTime = "08:30-12:00-1,14:00-18:00-1";
+       }
+
        if (StringUtil.isNotEmpty(serviceTime)) {
            String[] times = serviceTime.split(",");
            if (times.length > 0) {
