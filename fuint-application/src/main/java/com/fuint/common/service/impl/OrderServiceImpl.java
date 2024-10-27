@@ -369,9 +369,9 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
         MtUser userInfo = memberService.queryMemberById(orderDto.getUserId());
         MtUserGrade userGrade = userGradeService.queryUserGradeById(orderDto.getMerchantId(), userInfo.getGradeId() != null ? Integer.parseInt(userInfo.getGradeId()) : 1, orderDto.getUserId());
         BigDecimal percent = new BigDecimal("0");
-        if (userGrade != null && userGrade.getDiscount() != null && userGrade.getDiscount() > 0) {
+        if (userGrade != null && userGrade.getDiscount() != null && userGrade.getDiscount() > 0 && !userInfo.getIsStaff().equals(YesOrNoEnum.YES.getKey())) {
             // 会员折扣
-            percent = new BigDecimal(userGrade.getDiscount()).divide(new BigDecimal("10"), BigDecimal.ROUND_CEILING, 3);
+            percent = new BigDecimal(userGrade.getDiscount()).divide(new BigDecimal("10"), BigDecimal.ROUND_CEILING, 4);
             if (percent.compareTo(new BigDecimal("0")) <= 0) {
                 percent = new BigDecimal("1");
             }
@@ -476,7 +476,7 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
         // 会员付款类订单
         if (orderDto.getType().equals(OrderTypeEnum.PAYMENT.getKey())) {
             if (userInfo != null && userInfo.getGradeId() != null && orderDto.getIsVisitor().equals(YesOrNoEnum.NO.getKey())) {
-                if (percent.compareTo(new BigDecimal("0")) > 0) {
+                if (percent.compareTo(new BigDecimal("0")) > 0 && !userInfo.getIsStaff().equals(YesOrNoEnum.YES.getKey())) {
                     // 会员折扣
                     BigDecimal payAmountDiscount = mtOrder.getAmount().multiply(percent);
                     if (payAmountDiscount.compareTo(new BigDecimal("0")) > 0) {
@@ -576,7 +576,7 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
             }
 
             // 会员折扣
-            if (memberDiscount.compareTo(new BigDecimal("0")) > 0) {
+            if (memberDiscount.compareTo(new BigDecimal("0")) > 0 && !userInfo.getIsStaff().equals(YesOrNoEnum.YES.getKey())) {
                 orderInfo.setDiscount(orderInfo.getDiscount().add(memberDiscount));
                 if (orderInfo.getPayAmount().subtract(memberDiscount).compareTo(new BigDecimal("0")) > 0) {
                     orderInfo.setPayAmount(orderInfo.getPayAmount().subtract(memberDiscount));
@@ -852,7 +852,7 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
             // 是否可以使用积分，并且积分数量足够
             if (canUsedAsMoney.equals(YesOrNoEnum.TRUE.getKey()) && Float.parseFloat(exchangeNeedPoint) > 0 && (userInfo.getPoint() >= usePoint)) {
                 orderDto.setUsePoint(usePoint);
-                orderDto.setPointAmount(new BigDecimal(usePoint).divide(new BigDecimal(exchangeNeedPoint), BigDecimal.ROUND_CEILING, 3));
+                orderDto.setPointAmount(new BigDecimal(usePoint).divide(new BigDecimal(exchangeNeedPoint), BigDecimal.ROUND_CEILING, 4));
                 if (orderDto.getPayAmount().compareTo(orderDto.getPointAmount()) > 0) {
                     orderDto.setPayAmount(orderDto.getPayAmount().subtract(orderDto.getPointAmount()));
                 } else {
@@ -1414,7 +1414,7 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
             Integer needPayAmountInt = Math.round(Integer.parseInt(needPayAmount));
             Double pointNum = 0d;
             if (needPayAmountInt > 0 && orderInfo.getPayAmount().compareTo(new BigDecimal(needPayAmountInt)) >= 0) {
-                BigDecimal point = orderInfo.getPayAmount().divide(new BigDecimal(needPayAmountInt), BigDecimal.ROUND_CEILING, 3);
+                BigDecimal point = orderInfo.getPayAmount().divide(new BigDecimal(needPayAmountInt), BigDecimal.ROUND_CEILING, 4);
                 pointNum = Math.ceil(point.doubleValue());
             }
             logger.info("PaymentService paymentCallback Point orderSn = {} , pointNum ={}", orderInfo.getOrderSn(), pointNum);
@@ -2093,7 +2093,7 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
         if (myPoint > 0 && setting != null && isUsePoint) {
             if (StringUtil.isNotEmpty(setting.getValue()) && !setting.getValue().equals("0")) {
                 BigDecimal usePoints = new BigDecimal(myPoint);
-                usePointAmount = usePoints.divide(new BigDecimal(setting.getValue()), BigDecimal.ROUND_CEILING, 3);
+                usePointAmount = usePoints.divide(new BigDecimal(setting.getValue()), BigDecimal.ROUND_CEILING, 4);
                 usePoint = myPoint;
                 if (usePointAmount.compareTo(totalCanUsePointAmount) >= 0) {
                     usePointAmount = totalCanUsePointAmount;
@@ -2125,9 +2125,9 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
         // 会员折扣
         BigDecimal payDiscount = new BigDecimal("1");
         MtUserGrade userGrade = userGradeService.queryUserGradeById(merchantId, Integer.parseInt(userInfo.getGradeId()), userInfo.getId());
-        if (userGrade != null) {
+        if (userGrade != null && !userInfo.getIsStaff().equals(YesOrNoEnum.YES.getKey())) {
             if (userGrade.getDiscount() > 0) {
-                payDiscount = new BigDecimal(userGrade.getDiscount()).divide(new BigDecimal("10"), BigDecimal.ROUND_CEILING, 3);
+                payDiscount = new BigDecimal(userGrade.getDiscount()).divide(new BigDecimal("10"), BigDecimal.ROUND_CEILING, 4);
                 if (payDiscount.compareTo(new BigDecimal("0")) <= 0) {
                     payDiscount = new BigDecimal("1");
                 }

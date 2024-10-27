@@ -189,6 +189,7 @@ public class BookServiceImpl extends ServiceImpl<MtBookMapper, MtBook> implement
                  dates.add(dateString);
             }
             serviceDates = String.join(",", dates);
+            bookDto.setServiceDates(serviceDates);
         }
 
         if (StringUtil.isNotEmpty(serviceDates)) {
