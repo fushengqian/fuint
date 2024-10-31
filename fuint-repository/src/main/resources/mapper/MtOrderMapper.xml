@@ -28,25 +28,25 @@
     </select>
 
     <select id="getPayMoney" resultType="java.math.BigDecimal">
-        SELECT sum(t.AMOUNT) as num FROM mt_order t where t.PAY_STATUS='B' and t.STATUS not in('C', 'G', 'H')
+        SELECT sum(t.PAY_AMOUNT) as num FROM mt_order t where t.PAY_STATUS='B' and t.STATUS not in('C', 'G', 'H')
         <if test="merchantId != null and merchantId > 0">
             AND t.MERCHANT_ID = #{merchantId}
         </if>
     </select>
 
     <select id="getPayMoneyByTime" resultType="java.math.BigDecimal">
-        SELECT sum(t.AMOUNT) as num FROM mt_order t where t.PAY_STATUS='B' and t.CREATE_TIME &lt; #{endTime} and t.CREATE_TIME &gt;= #{beginTime} and t.STATUS not in('C', 'G', 'H')
+        SELECT sum(t.PAY_AMOUNT) as num FROM mt_order t where t.PAY_STATUS='B' and t.CREATE_TIME &lt; #{endTime} and t.CREATE_TIME &gt;= #{beginTime} and t.STATUS not in('C', 'G', 'H')
         <if test="merchantId != null and merchantId > 0">
             AND t.MERCHANT_ID = #{merchantId}
         </if>
     </select>
 
     <select id="getStorePayMoneyByTime" resultType="java.math.BigDecimal">
-        SELECT sum(t.AMOUNT) as num FROM mt_order t where t.STORE_ID = #{storeId} and t.PAY_STATUS='B' and t.CREATE_TIME &lt; #{endTime} and t.CREATE_TIME &gt;= #{beginTime} and t.STATUS not in('C', 'G', 'H')
+        SELECT sum(t.PAY_AMOUNT) as num FROM mt_order t where t.STORE_ID = #{storeId} and t.PAY_STATUS='B' and t.CREATE_TIME &lt; #{endTime} and t.CREATE_TIME &gt;= #{beginTime} and t.STATUS not in('C', 'G', 'H')
     </select>
 
     <select id="getStorePayMoney" resultType="java.math.BigDecimal">
-        SELECT sum(t.AMOUNT) as num FROM mt_order t where t.STORE_ID = #{storeId} and t.PAY_STATUS='B' and t.STATUS not in('C', 'G', 'H')
+        SELECT sum(t.PAY_AMOUNT) as num FROM mt_order t where t.STORE_ID = #{storeId} and t.PAY_STATUS='B' and t.STATUS not in('C', 'G', 'H')
     </select>
 
     <select id="getPayUserCount" resultType="java.lang.Integer">

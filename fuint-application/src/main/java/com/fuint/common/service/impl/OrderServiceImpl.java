@@ -1803,7 +1803,7 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
      * */
     @Override
     public BigDecimal getOrderCount(Integer merchantId, Integer storeId) {
-        if (storeId > 0) {
+        if (storeId != null && storeId > 0) {
             return mtOrderMapper.getStoreOrderCount(storeId);
         } else {
             return mtOrderMapper.getOrderCount(merchantId);
@@ -1821,7 +1821,7 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
      * */
     @Override
     public BigDecimal getOrderCount(Integer merchantId, Integer storeId, Date beginTime, Date endTime) {
-        if (storeId > 0) {
+        if (storeId != null && storeId > 0) {
             return mtOrderMapper.getStoreOrderCountByTime(storeId, beginTime, endTime);
         } else {
             return mtOrderMapper.getOrderCountByTime(merchantId, beginTime, endTime);
@@ -1840,7 +1840,7 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
     @Override
     public BigDecimal getPayMoney(Integer merchantId, Integer storeId, Date beginTime, Date endTime) {
         BigDecimal payMoney;
-        if (storeId > 0) {
+        if (storeId != null && storeId > 0) {
             payMoney = mtOrderMapper.getStorePayMoneyByTime(storeId, beginTime, endTime);
         } else {
             payMoney = mtOrderMapper.getPayMoneyByTime(merchantId, beginTime, endTime);
@@ -1860,7 +1860,7 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
      * */
     @Override
     public Integer getPayUserCount(Integer merchantId, Integer storeId) {
-        if (storeId > 0) {
+        if (storeId != null && storeId > 0) {
             return mtOrderMapper.getStorePayUserCount(storeId);
         } else {
             return mtOrderMapper.getPayUserCount(merchantId);
@@ -1876,7 +1876,7 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
      * */
     @Override
     public BigDecimal getPayMoney(Integer merchantId, Integer storeId) {
-        if (storeId > 0) {
+        if (storeId != null && storeId > 0) {
             return mtOrderMapper.getStorePayMoney(storeId);
         } else {
             return mtOrderMapper.getPayMoney(merchantId);
