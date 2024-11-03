@@ -228,6 +228,8 @@ public class ClientCartController extends BaseController {
         result.put("useCouponInfo", null);
         result.put("deliveryFee", 0);
         result.put("payPrice", 0);
+        result.put("discount", 0);
+        result.put("memberDiscount", 0);
 
         Map<String, Object> param = new HashMap<>();
         UserInfo userInfo = TokenUtil.getUserInfoByToken(token);

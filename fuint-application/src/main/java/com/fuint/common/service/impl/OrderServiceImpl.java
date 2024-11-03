@@ -2123,17 +2123,18 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
         }
 
         // 会员折扣
-        BigDecimal payDiscount = new BigDecimal("1");
+        BigDecimal memberDiscount = new BigDecimal("1");
         MtUserGrade userGrade = userGradeService.queryUserGradeById(merchantId, Integer.parseInt(userInfo.getGradeId()), userInfo.getId());
         if (userGrade != null && !userInfo.getIsStaff().equals(YesOrNoEnum.YES.getKey())) {
             if (userGrade.getDiscount() > 0) {
-                payDiscount = new BigDecimal(userGrade.getDiscount()).divide(new BigDecimal("10"), BigDecimal.ROUND_CEILING, 4);
-                if (payDiscount.compareTo(new BigDecimal("0")) <= 0) {
-                    payDiscount = new BigDecimal("1");
+                memberDiscount = new BigDecimal(userGrade.getDiscount()).divide(new BigDecimal("10"), BigDecimal.ROUND_CEILING, 4);
+                if (memberDiscount.compareTo(new BigDecimal("0")) <= 0) {
+                    memberDiscount = new BigDecimal("1");
                 }
             }
         }
-        payPrice = payPrice.multiply(payDiscount).add(deliveryFee);
+        payPrice = payPrice.multiply(memberDiscount).add(deliveryFee);
+        BigDecimal discount = totalPrice.subtract(payPrice).divide(new BigDecimal("10"), BigDecimal.ROUND_CEILING, 2);
 
         result.put("list", cartDtoList);
         result.put("totalNum", totalNum);
@@ -2146,6 +2147,8 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
         result.put("couponAmount", couponAmount);
         result.put("usePointAmount", usePointAmount);
         result.put("deliveryFee", deliveryFee);
+        result.put("discount", discount);
+        result.put("memberDiscount", (new BigDecimal("10").multiply(memberDiscount)));
 
         return result;
     }
