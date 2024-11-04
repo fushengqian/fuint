@@ -473,8 +473,8 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
             }
         }
 
-        // 会员付款类订单
-        if (orderDto.getType().equals(OrderTypeEnum.PAYMENT.getKey())) {
+        // 会员付款类、购物类订单
+        if (orderDto.getType().equals(OrderTypeEnum.PAYMENT.getKey()) && orderDto.getType().equals(OrderTypeEnum.GOOGS.getKey())) {
             if (userInfo != null && userInfo.getGradeId() != null && orderDto.getIsVisitor().equals(YesOrNoEnum.NO.getKey())) {
                 if (percent.compareTo(new BigDecimal("0")) > 0 && !userInfo.getIsStaff().equals(YesOrNoEnum.YES.getKey())) {
                     // 会员折扣
