@@ -473,8 +473,8 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
             }
         }
 
-        // 会员付款类、购物类订单
-        if (orderDto.getType().equals(OrderTypeEnum.PAYMENT.getKey()) && orderDto.getType().equals(OrderTypeEnum.GOOGS.getKey())) {
+        // 会员付款类订单
+        if (orderDto.getType().equals(OrderTypeEnum.PAYMENT.getKey())) {
             if (userInfo != null && userInfo.getGradeId() != null && orderDto.getIsVisitor().equals(YesOrNoEnum.NO.getKey())) {
                 if (percent.compareTo(new BigDecimal("0")) > 0 && !userInfo.getIsStaff().equals(YesOrNoEnum.YES.getKey())) {
                     // 会员折扣
@@ -1910,15 +1910,29 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
         Integer totalNum = 0;
         BigDecimal totalPrice = new BigDecimal("0");
         BigDecimal totalCanUsePointAmount = new BigDecimal("0");
-
+        BigDecimal memberDiscount = new BigDecimal("0");
+        BigDecimal percent = new BigDecimal("0");
         if (cartList.size() > 0) {
+            // 会员折扣
+            MtUserGrade userGrade = userGradeService.queryUserGradeById(userInfo.getMerchantId(), userInfo.getGradeId() != null ? Integer.parseInt(userInfo.getGradeId()) : 1, userId);
+            if (userGrade != null && userGrade.getDiscount() != null && userGrade.getDiscount() > 0 && !userInfo.getIsStaff().equals(YesOrNoEnum.YES.getKey())) {
+                percent = new BigDecimal(userGrade.getDiscount()).divide(new BigDecimal("10"), BigDecimal.ROUND_CEILING, 4);
+                if (percent.compareTo(new BigDecimal("0")) <= 0) {
+                    percent = new BigDecimal("1");
+                }
+            }
             for (MtCart cart : cartList) {
                 // 购物车商品信息
                 MtGoods mtGoodsInfo = goodsService.queryGoodsById(cart.getGoodsId());
                 if (mtGoodsInfo == null || !mtGoodsInfo.getStatus().equals(StatusEnum.ENABLED.getKey())) {
                     continue;
                 }
-
+                // 会员支付折扣
+                boolean isDiscount = mtGoodsInfo.getIsMemberDiscount().equals(YesOrNoEnum.YES.getKey()) ? true : false;
+                if (percent.compareTo(new BigDecimal("0")) > 0 && isDiscount) {
+                    BigDecimal discount = mtGoodsInfo.getPrice().subtract(mtGoodsInfo.getPrice().multiply(percent)).multiply(new BigDecimal(cart.getNum()));
+                    memberDiscount = memberDiscount.add(discount);
+                }
                 totalNum = totalNum + cart.getNum();
                 ResCartDto cartDto = new ResCartDto();
                 cartDto.setId(cart.getId());
@@ -2122,18 +2136,7 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
             deliveryFee = new BigDecimal(mtSetting.getValue());
         }
 
-        // 会员折扣
-        BigDecimal memberDiscount = new BigDecimal("1");
-        MtUserGrade userGrade = userGradeService.queryUserGradeById(merchantId, Integer.parseInt(userInfo.getGradeId()), userInfo.getId());
-        if (userGrade != null && !userInfo.getIsStaff().equals(YesOrNoEnum.YES.getKey())) {
-            if (userGrade.getDiscount() > 0) {
-                memberDiscount = new BigDecimal(userGrade.getDiscount()).divide(new BigDecimal("10"), BigDecimal.ROUND_CEILING, 4);
-                if (memberDiscount.compareTo(new BigDecimal("0")) <= 0) {
-                    memberDiscount = new BigDecimal("1");
-                }
-            }
-        }
-        payPrice = payPrice.multiply(memberDiscount).add(deliveryFee);
+        payPrice = payPrice.add(deliveryFee).subtract(memberDiscount);
         BigDecimal discount = totalPrice.subtract(payPrice).divide(new BigDecimal("10"), BigDecimal.ROUND_CEILING, 2);
 
         result.put("list", cartDtoList);
@@ -2148,7 +2151,11 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
         result.put("usePointAmount", usePointAmount);
         result.put("deliveryFee", deliveryFee);
         result.put("discount", discount);
-        result.put("memberDiscount", (new BigDecimal("10").multiply(memberDiscount)));
+        if (memberDiscount.compareTo(new BigDecimal("0")) > 0) {
+            result.put("memberDiscount", (new BigDecimal("10").multiply(percent)));
+        } else {
+            result.put("memberDiscount", 0);
+        }
 
         return result;
     }

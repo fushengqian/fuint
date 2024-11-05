@@ -176,6 +176,8 @@ public class ClientCouponController extends BaseController {
         String effectiveDate = "";
         if (couponInfo.getExpireType().equals(CouponExpireTypeEnum.FIX.getKey())) {
             effectiveDate = DateUtil.formatDate(couponInfo.getBeginTime(), "yyyy.MM.dd HH:mm") + " - " + DateUtil.formatDate(couponInfo.getEndTime(), "yyyy.MM.dd");
+        } else if(couponInfo.getExpireType().equals(CouponExpireTypeEnum.FLEX.getKey())) {
+            effectiveDate = "领取后" + couponInfo.getExpireTime() + "天内有效";
         } else {
             effectiveDate = DateUtil.formatDate(couponInfo.getCreateTime(), "yyyy.MM.dd HH:mm") + " - 永久";
         }
