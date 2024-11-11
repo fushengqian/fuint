@@ -2125,9 +2125,6 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
 
         // 支付金额 = 商品总额 - 积分抵扣金额
         payPrice = payPrice.subtract(usePointAmount);
-        if (payPrice.compareTo(new BigDecimal("0")) < 0) {
-            payPrice = new BigDecimal("0");
-        }
 
         // 配送费用
         BigDecimal deliveryFee = new BigDecimal("0");
@@ -2138,6 +2135,10 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
 
         payPrice = payPrice.add(deliveryFee).subtract(memberDiscount);
         BigDecimal discount = totalPrice.subtract(payPrice).divide(new BigDecimal("10"), BigDecimal.ROUND_CEILING, 2);
+
+        if (payPrice.compareTo(new BigDecimal("0")) < 0) {
+            payPrice = new BigDecimal("0");
+        }
 
         result.put("list", cartDtoList);
         result.put("totalNum", totalNum);
