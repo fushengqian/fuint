@@ -53,29 +53,29 @@
     </update>
 
     <select id="getUserCount" resultType="java.lang.Long">
-        select count(*) from mt_user t where t.STATUS != 'D'
+        select count(*) from mt_user t where t.STATUS != 'D' and t.IS_STAFF = 'N'
         <if test="merchantId != null and merchantId > 0">
             AND t.MERCHANT_ID = #{merchantId}
         </if>
     </select>
 
     <select id="getStoreUserCount" resultType="java.lang.Long">
-        select count(*) from mt_user t where t.STORE_ID = #{storeId} and t.STATUS != 'D'
+        select count(*) from mt_user t where t.STORE_ID = #{storeId} and t.STATUS != 'D' and t.IS_STAFF = 'N'
     </select>
 
     <select id="getUserCountByTime" resultType="java.lang.Long">
-        select count(*) from mt_user t where t.CREATE_TIME &gt;= #{beginTime} and t.CREATE_TIME &lt; #{endTime} and t.STATUS != 'D'
+        select count(*) from mt_user t where t.CREATE_TIME &gt;= #{beginTime} and t.CREATE_TIME &lt; #{endTime} and t.STATUS != 'D' and t.IS_STAFF = 'N'
         <if test="merchantId != null and merchantId > 0">
             AND t.MERCHANT_ID = #{merchantId}
         </if>
     </select>
 
     <select id="getStoreUserCountByTime" resultType="java.lang.Long">
-        select count(*) from mt_user t where t.STORE_ID = #{storeId} and t.CREATE_TIME &lt; #{endTime} and t.CREATE_TIME &gt;= #{beginTime} and t.STATUS != 'D'
+        select count(*) from mt_user t where t.STORE_ID = #{storeId} and t.CREATE_TIME &lt; #{endTime} and t.CREATE_TIME &gt;= #{beginTime} and t.STATUS != 'D' and t.IS_STAFF = 'N'
     </select>
 
     <select id="getMemberConsumeTopList" resultType="com.fuint.repository.bean.MemberTopBean">
-        SELECT u.id AS ID,u.name AS NAME,u.`USER_NO`,SUM(o.`AMOUNT`) AS amount FROM `mt_user` u,`mt_order` o WHERE u.`ID` = o.`USER_ID` AND u.STATUS = 'A' AND o.STATUS != 'G' AND o.PAY_STATUS = 'B'
+        SELECT u.id AS ID,u.name AS NAME,u.`USER_NO`,SUM(o.`AMOUNT`) AS amount FROM `mt_user` u,`mt_order` o WHERE u.`ID` = o.`USER_ID` AND u.STATUS = 'A' AND u.IS_STAFF = 'N' AND o.STATUS != 'G' AND o.PAY_STATUS = 'B'
         <if test="merchantId != null and merchantId > 0">
             AND u.MERCHANT_ID = #{merchantId}
         </if>

@@ -216,8 +216,8 @@ public class PrinterServiceImpl extends ServiceImpl<MtPrinterMapper, MtPrinter> 
 
             printContent.append("<BR>");
             printContent.append("<L>")
-                    .append("店铺地址：").append((orderInfo.getStoreInfo().getAddress() == null) ? "" : orderInfo.getStoreInfo().getAddress()).append("<BR>")
-                    .append("联系电话：").append((orderInfo.getStoreInfo().getPhone() == null) ? "" : orderInfo.getStoreInfo().getPhone()).append("<BR>")
+                    .append("店铺地址：").append((orderInfo.getStoreInfo().getAddress() == null) ? "无" : orderInfo.getStoreInfo().getAddress()).append("<BR>")
+                    .append("联系电话：").append((orderInfo.getStoreInfo().getPhone() == null) ? "无" : orderInfo.getStoreInfo().getPhone()).append("<BR>")
                     .append("下单时间：").append(orderInfo.getCreateTime()).append("<BR>")
                     .append("订单备注：").append(StringUtil.isEmpty(orderInfo.getRemark()) ? "无" : orderInfo.getRemark()).append("<BR>");
 
