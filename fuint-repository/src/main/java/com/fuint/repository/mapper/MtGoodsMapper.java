@@ -23,10 +23,12 @@ public interface MtGoodsMapper extends BaseMapper<MtGoods> {
 
     MtGoods getByGoodsNo(@Param("merchantId") Integer merchantId, @Param("goodsNo") String goodsNo);
 
-    Boolean updateInitSale( @Param("goodsId") Integer goodsId);
+    Boolean updateInitSale(@Param("goodsId") Integer goodsId);
 
     List<GoodsBean> selectGoodsList(@Param("merchantId") Integer merchantId, @Param("storeId") Integer storeId, @Param("cateId") Integer cateId, @Param("keyword") String keyword);
 
     List<GoodsTopBean> getGoodsSaleTopList(@Param("merchantId") Integer merchantId, @Param("storeId") Integer storeId, @Param("startTime") Date startTime, @Param("endTime") Date endTime);
+
+    void removeMerchantGoods(@Param("merchantId") Integer merchantId);
 
 }

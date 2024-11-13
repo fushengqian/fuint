@@ -69,4 +69,8 @@
         </if>
         GROUP BY g.`ID` ORDER BY SUM(o.`NUM`) DESC LIMIT 10
     </select>
+
+    <update id="removeMerchantGoods">
+        update mt_goods t set t.STATUS = 'D' where t.MERCHANT_ID = #{merchantId}
+    </update>
 </mapper>

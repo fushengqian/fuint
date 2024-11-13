@@ -10,8 +10,10 @@ import com.fuint.framework.annoation.OperationServiceLog;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.pagination.PaginationRequest;
 import com.fuint.framework.pagination.PaginationResponse;
+import com.fuint.repository.mapper.MtGoodsMapper;
 import com.fuint.repository.mapper.MtMerchantMapper;
 import com.fuint.repository.mapper.MtStoreMapper;
+import com.fuint.repository.model.MtGoods;
 import com.fuint.repository.model.MtMerchant;
 import com.fuint.repository.model.MtStore;
 import com.fuint.utils.StringUtil;
@@ -40,6 +42,8 @@ public class MerchantServiceImpl extends ServiceImpl<MtMerchantMapper, MtMerchan
     private MtMerchantMapper mtMerchantMapper;
 
     private MtStoreMapper mtStoreMapper;
+
+    private MtGoodsMapper mtGoodsMapper;
 
     private static final Logger logger = LoggerFactory.getLogger(MerchantServiceImpl.class);
 
@@ -209,6 +213,18 @@ public class MerchantServiceImpl extends ServiceImpl<MtMerchantMapper, MtMerchan
         MtMerchant mtMerchant = queryMerchantById(id);
         if (null == mtMerchant) {
             throw new BusinessCheckException("该商户不存在.");
+        }
+
+        // 如果是删除，检查是否有商品等数据
+        if (status.equals(StatusEnum.DISABLE.getKey())) {
+            Map<String, Object> params = new HashMap<>();
+            params.put("status", StatusEnum.ENABLED.getKey());
+            params.put("merchant_id", id);
+            List<MtGoods> goodsList = mtGoodsMapper.selectByMap(params);
+            if (goodsList != null && goodsList.size() > 0) {
+                logger.info("删除商户，连同商品一起删除", mtMerchant.getId());
+                mtGoodsMapper.removeMerchantGoods(mtMerchant.getId());
+            }
         }
 
         mtMerchant.setStatus(status);
