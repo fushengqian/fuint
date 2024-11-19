@@ -38,9 +38,10 @@ public interface PrinterService extends IService<MtPrinter> {
      * 打印订单
      *
      * @param orderInfo 订单信息
+     * @param autoPrint 自动打印
      * @return
      * */
-    Boolean printOrder(UserOrderDto orderInfo) throws Exception;
+    Boolean printOrder(UserOrderDto orderInfo, boolean autoPrint) throws Exception;
 
     /**
      * 根据ID获取打印机信息

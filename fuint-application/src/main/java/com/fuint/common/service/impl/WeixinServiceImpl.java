@@ -1000,6 +1000,21 @@ public class WeixinServiceImpl implements WeixinService {
     }
 
     /**
+     * 上传发货信息
+     *
+     * @param orderSn 订单号
+     * @return
+     */
+    @Override
+    public void uploadShippingInfo(String orderSn) {
+        MtOrder order = orderService.getOrderInfoByOrderSn(orderSn);
+        // 是否是微信小程序订单 && 微信支付
+        if (!order.getPlatform().equals(PlatformTypeEnum.MP_WEIXIN.getCode()) || !order.getPayType().equals(PayTypeEnum.JSAPI.name())) {
+            return;
+        }
+    }
+
+    /**
      * 刷卡支付
      *
      * @param storeId 店铺ID

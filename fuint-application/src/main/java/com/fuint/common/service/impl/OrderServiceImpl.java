@@ -1489,7 +1489,7 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
 
         try {
             // 打印订单
-            printerService.printOrder(orderInfo);
+            printerService.printOrder(orderInfo, true);
 
             // 给商家发送通知短信
             MtStore mtStore = storeService.queryStoreById(mtOrder.getStoreId());
