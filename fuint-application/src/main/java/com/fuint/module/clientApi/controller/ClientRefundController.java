@@ -146,4 +146,40 @@ public class ClientRefundController extends BaseController {
 
         return getSuccessResult(refundInfo);
     }
+
+    /**
+     * 售后用户发货
+     */
+    @ApiOperation(value = "售后用户发货")
+    @RequestMapping(value = "/delivery", method = RequestMethod.POST)
+    @CrossOrigin
+    public ResponseObject delivery(HttpServletRequest request, @RequestBody Map<String, Object> param) throws BusinessCheckException {
+        String token = request.getHeader("Access-Token");
+        UserInfo mtUser = TokenUtil.getUserInfoByToken(token);
+        if (null == mtUser) {
+            return getFailureResult(1001);
+        }
+        param.put("userId", mtUser.getId());
+
+        String refundId = param.get("refundId") == null ? "" : param.get("refundId").toString();
+        String expressName = param.get("expressName") == null ? "" : param.get("expressName").toString();
+        String expressNo = param.get("expressNo") == null ? "" : param.get("expressNo").toString();
+
+        RefundDto refundInfo = refundService.getRefundById(Integer.parseInt(refundId));
+        if (refundInfo == null || (!refundInfo.getUserId().equals(mtUser.getId()))) {
+            return getFailureResult(2001);
+        }
+
+        if (StringUtil.isEmpty(expressName) || StringUtil.isEmpty(expressNo)) {
+            return getFailureResult(201, "物流信息不能为空");
+        }
+
+        RefundDto refundDto = new RefundDto();
+        refundDto.setId(Integer.parseInt(refundId));
+        refundDto.setExpressName(expressName);
+        refundDto.setExpressNo(expressNo);
+        refundService.updateRefund(refundDto);
+
+        return getSuccessResult(true);
+    }
 }

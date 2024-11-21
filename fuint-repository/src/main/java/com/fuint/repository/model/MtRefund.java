@@ -50,6 +50,12 @@ public class MtRefund implements Serializable {
     @ApiModelProperty("退款备注")
     private String remark;
 
+    @ApiModelProperty("物流公司名称")
+    private String expressName;
+
+    @ApiModelProperty("物流单号")
+    private String expressNo;
+
     @ApiModelProperty("拒绝原因")
     private String rejectReason;
 

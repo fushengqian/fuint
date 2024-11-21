@@ -11,7 +11,8 @@ public enum RefundStatusEnum {
     CREATED("A", "待审核"),
     APPROVED("B", "已同意"),
     REJECT("C", "已拒绝"),
-    CANCEL("D", "已取消");
+    CANCEL("D", "已取消"),
+    COMPLETE("E", "已完成");
 
     private String key;
 

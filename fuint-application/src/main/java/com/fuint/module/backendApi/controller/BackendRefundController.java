@@ -220,9 +220,13 @@ public class BackendRefundController extends BaseController {
             RefundDto dto = new RefundDto();
             dto.setId(refundId);
             dto.setOperator(operator);
-            dto.setStatus(RefundStatusEnum.APPROVED.getKey());
+            dto.setStatus(status);
             dto.setRemark(remark);
-            refundService.agreeRefund(dto);
+            if (status.equals(RefundStatusEnum.COMPLETE.getKey())) {
+                refundService.agreeRefund(dto);
+            } else {
+                refundService.updateRefund(dto);
+            }
         }
         return getSuccessResult(true);
     }
