@@ -14,8 +14,11 @@ import lombok.Setter;
 @Setter
 public class ExpressDto {
 
-    @ApiModelProperty("物流公司")
+    @ApiModelProperty("物流公司名称")
     private String expressCompany;
+
+    @ApiModelProperty("物流公司编码")
+    private String expressCode;
 
     @ApiModelProperty("物流单号")
     private String expressNo;

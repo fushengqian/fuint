@@ -1532,6 +1532,7 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
 
         userOrderDto.setId(orderInfo.getId());
         userOrderDto.setMerchantId(orderInfo.getMerchantId());
+        userOrderDto.setStoreId(orderInfo.getStoreId());
         userOrderDto.setUserId(orderInfo.getUserId());
         userOrderDto.setCouponId(orderInfo.getCouponId());
         userOrderDto.setOrderSn(orderInfo.getOrderSn());
@@ -1546,6 +1547,7 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
         userOrderDto.setStaffId(orderInfo.getStaffId());
         userOrderDto.setVerifyCode("");
         userOrderDto.setDeliveryFee(orderInfo.getDeliveryFee());
+        userOrderDto.setPlatform(orderInfo.getPlatform());
 
         // 核销码为空，说明已经核销
         if (orderInfo.getVerifyCode() == null || StringUtil.isEmpty(orderInfo.getVerifyCode())) {
@@ -1635,6 +1637,7 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
             userInfo.setMobile(user.getMobile());
             userInfo.setCardNo(user.getIdcard());
             userInfo.setAddress(user.getAddress());
+            userInfo.setOpenId(user.getOpenId());
             userOrderDto.setUserInfo(userInfo);
         }
 
@@ -1741,6 +1744,7 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
             expressInfo.setExpressNo(express.get("expressNo").toString());
             expressInfo.setExpressCompany(express.get("expressCompany").toString());
             expressInfo.setExpressTime(express.get("expressTime").toString());
+            expressInfo.setExpressCode(express.get("expressCode") == null ? "" : express.get("expressCode").toString());
             userOrderDto.setExpressInfo(expressInfo);
         }
 

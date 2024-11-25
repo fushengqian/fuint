@@ -161,12 +161,23 @@ public class BackendOrderController extends BaseController {
         // 支付方式列表
         PayTypeEnum[] payTypes = PayTypeEnum.values();
         List<ParamDto> payTypeList = new ArrayList<>();
-        for (PayTypeEnum catchTypeEnum : payTypes) {
-            ParamDto catchType = new ParamDto();
-            catchType.setKey(catchTypeEnum.getKey());
-            catchType.setName(catchTypeEnum.getValue());
-            catchType.setValue(catchTypeEnum.getKey());
-            payTypeList.add(catchType);
+        for (PayTypeEnum typeEnum : payTypes) {
+            ParamDto payType = new ParamDto();
+            payType.setKey(typeEnum.getKey());
+            payType.setName(typeEnum.getValue());
+            payType.setValue(typeEnum.getKey());
+            payTypeList.add(payType);
+        }
+
+        // 物流公司列表
+        ExpressCompanyEnum[] expressCompanyEnums = ExpressCompanyEnum.values();
+        List<ParamDto> expressCompanyList = new ArrayList<>();
+        for (ExpressCompanyEnum companyEnum : expressCompanyEnums) {
+            ParamDto company = new ParamDto();
+            company.setKey(companyEnum.getKey());
+            company.setName(companyEnum.getValue());
+            company.setValue(companyEnum.getValue());
+            expressCompanyList.add(company);
         }
 
         Map<String, Object> result = new HashMap<>();
@@ -176,6 +187,7 @@ public class BackendOrderController extends BaseController {
         result.put("orderModeList", orderModeList);
         result.put("storeList", storeList);
         result.put("payTypeList", payTypeList);
+        result.put("expressCompanyList", expressCompanyList);
         result.put("paginationResponse", response);
 
         return getSuccessResult(result);
@@ -266,6 +278,13 @@ public class BackendOrderController extends BaseController {
             expressInfo.setExpressTime(time);
             expressInfo.setExpressNo(expressNo);
             expressInfo.setExpressCompany(expressCompany);
+            ExpressCompanyEnum[] expressCompanyEnums = ExpressCompanyEnum.values();
+            for (ExpressCompanyEnum expressCompanyEnum : expressCompanyEnums) {
+                 if (expressCompanyEnum.getValue().equals(expressCompany)) {
+                     expressInfo.setExpressCode(expressCompanyEnum.getKey());
+                     break;
+                 }
+            }
             dto.setExpressInfo(expressInfo);
         }
 

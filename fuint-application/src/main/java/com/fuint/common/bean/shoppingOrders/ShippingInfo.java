@@ -57,4 +57,11 @@ public class ShippingInfo implements Serializable {
    */
   @SerializedName("upload_time")
   private String uploadTime;
+
+  /**
+   * 必填
+   * 支付者，支付者信息
+   */
+  @SerializedName("payer")
+  private PayerBean payer;
 }

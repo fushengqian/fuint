@@ -36,4 +36,7 @@ public class OrderUserDto implements Serializable {
     @ApiModelProperty("地址")
     private String address;
 
+    @ApiModelProperty("openId")
+    private String openId;
+
 }

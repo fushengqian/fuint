@@ -8,8 +8,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fuint.common.Constants;
 import com.fuint.common.bean.H5SceneInfo;
 import com.fuint.common.bean.WxPayBean;
-import com.fuint.common.bean.shoppingOrders.OrderKeyBean;
-import com.fuint.common.bean.shoppingOrders.ShippingInfo;
+import com.fuint.common.bean.shoppingOrders.*;
 import com.fuint.common.dto.OrderDto;
 import com.fuint.common.dto.UserOrderDto;
 import com.fuint.common.dto.WxCardDto;
@@ -1002,20 +1001,26 @@ public class WeixinServiceImpl implements WeixinService {
     }
 
     /**
-     * 上传发货信息
+     * 上传小程序发货信息
      *
      * @param orderSn 订单号
      * @return
      */
     @Override
     public void uploadShippingInfo(String orderSn) throws BusinessCheckException {
-        MtOrder order = orderService.getOrderInfoByOrderSn(orderSn);
+        UserOrderDto orderInfo = orderService.getOrderByOrderSn(orderSn);
+        if (orderInfo == null) {
+            return;
+        }
+        if (orderInfo.getExpressInfo() == null || StringUtil.isEmpty(orderInfo.getExpressInfo().getExpressNo())) {
+            throw new BusinessCheckException("上传发货信息失败，物流信息不能为空！");
+        }
         // 是否是微信小程序订单 && 微信支付
-        if (order != null && !order.getPlatform().equals(PlatformTypeEnum.MP_WEIXIN.getCode()) || !order.getPayType().equals(PayTypeEnum.JSAPI.name())) {
-            String url = "https://api.weixin.qq.com/wxa/sec/order/upload_shipping_info?access_token=" + getAccessToken(order.getMerchantId(), true, true);
+        if (orderInfo != null && !orderInfo.getPlatform().equals(PlatformTypeEnum.MP_WEIXIN.getCode()) || !orderInfo.getPayType().equals(PayTypeEnum.JSAPI.name())) {
+            String url = "https://api.weixin.qq.com/wxa/sec/order/upload_shipping_info?access_token=" + getAccessToken(orderInfo.getMerchantId(), true, true);
 
             // 获取微信支付配置
-            getApiConfig(order.getStoreId(), order.getPlatform());
+            getApiConfig(orderInfo.getStoreId(), orderInfo.getPlatform());
             WxPayApiConfig wxPayApiConfig = WxPayApiConfigKit.getWxPayApiConfig();
 
             // 组织上传参数
@@ -1033,6 +1038,24 @@ public class WeixinServiceImpl implements WeixinService {
 
             // 3、发货模式，发货模式枚举值：1、UNIFIED_DELIVERY（统一发货）2、SPLIT_DELIVERY（分拆发货） 示例值: UNIFIED_DELIVERY
             shippingInfo.setDeliveryMode(1);
+
+            // 4、物流信息列表，发货物流单列表，支持统一发货（单个物流单）和分拆发货（多个物流单）两种模式
+            List<ShippingListBean> shippingList = new ArrayList<>();
+            ShippingListBean shippingListBean = new ShippingListBean();
+            shippingListBean.setTrackingNo(orderInfo.getExpressInfo().getExpressNo());
+            shippingListBean.setExpressCompany(orderInfo.getExpressInfo().getExpressCode());
+            ContactBean contact = new ContactBean();
+            contact.setConsignorContact(orderInfo.getStoreInfo().getPhone());
+            contact.setReceiverContact(orderInfo.getAddress().getMobile());
+            shippingListBean.setContact(contact);
+
+            shippingList.add(shippingListBean);
+            shippingInfo.setShippingList(shippingList);
+
+            // 5、支付者信息
+            PayerBean payerBean = new PayerBean();
+            payerBean.setOpenid(orderInfo.getUserInfo().getOpenId());
+            shippingInfo.setPayer(payerBean);
 
             String reqJson = JsonUtil.toJSONString(shippingInfo);
             String response = HttpRESTDataClient.requestPostBody(url, reqJson);

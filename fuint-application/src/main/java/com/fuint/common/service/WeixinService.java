@@ -185,7 +185,7 @@ public interface WeixinService {
     String createMiniAppLink(Integer merchantId, String path);
 
     /**
-     * 上传发货信息
+     * 上传小程序发货信息
      *
      * @param orderSn 订单号
      * @return

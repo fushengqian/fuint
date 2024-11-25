@@ -27,6 +27,9 @@ public class UserOrderDto implements Serializable {
     @ApiModelProperty("商户ID")
     private Integer merchantId;
 
+    @ApiModelProperty("所属店铺ID")
+    private Integer storeId;
+
     @ApiModelProperty("订单号")
     private String orderSn;
 
@@ -41,6 +44,9 @@ public class UserOrderDto implements Serializable {
 
     @ApiModelProperty("订单模式")
     private String orderMode;
+
+    @ApiModelProperty("下单平台")
+    private String platform;
 
     @ApiModelProperty("是否核销")
     private Boolean isVerify;
