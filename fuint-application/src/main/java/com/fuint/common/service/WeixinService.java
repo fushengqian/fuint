@@ -190,6 +190,6 @@ public interface WeixinService {
      * @param orderSn 订单号
      * @return
      */
-    void uploadShippingInfo(String orderSn);
+    void uploadShippingInfo(String orderSn) throws BusinessCheckException;
 
 }

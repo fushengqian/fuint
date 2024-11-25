@@ -8,6 +8,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fuint.common.Constants;
 import com.fuint.common.bean.H5SceneInfo;
 import com.fuint.common.bean.WxPayBean;
+import com.fuint.common.bean.shoppingOrders.OrderKeyBean;
+import com.fuint.common.bean.shoppingOrders.ShippingInfo;
 import com.fuint.common.dto.OrderDto;
 import com.fuint.common.dto.UserOrderDto;
 import com.fuint.common.dto.WxCardDto;
@@ -1006,10 +1008,43 @@ public class WeixinServiceImpl implements WeixinService {
      * @return
      */
     @Override
-    public void uploadShippingInfo(String orderSn) {
+    public void uploadShippingInfo(String orderSn) throws BusinessCheckException {
         MtOrder order = orderService.getOrderInfoByOrderSn(orderSn);
         // 是否是微信小程序订单 && 微信支付
-        if (!order.getPlatform().equals(PlatformTypeEnum.MP_WEIXIN.getCode()) || !order.getPayType().equals(PayTypeEnum.JSAPI.name())) {
+        if (order != null && !order.getPlatform().equals(PlatformTypeEnum.MP_WEIXIN.getCode()) || !order.getPayType().equals(PayTypeEnum.JSAPI.name())) {
+            String url = "https://api.weixin.qq.com/wxa/sec/order/upload_shipping_info?access_token=" + getAccessToken(order.getMerchantId(), true, true);
+
+            // 获取微信支付配置
+            getApiConfig(order.getStoreId(), order.getPlatform());
+            WxPayApiConfig wxPayApiConfig = WxPayApiConfigKit.getWxPayApiConfig();
+
+            // 组织上传参数
+            ShippingInfo shippingInfo = new ShippingInfo();
+
+            // 1、订单参数
+            OrderKeyBean orderKeyBean = new OrderKeyBean();
+            orderKeyBean.setOrderNumberType(1);
+            orderKeyBean.setMchId(wxPayApiConfig.getMchId());
+            orderKeyBean.setOutTradeNo(orderSn);
+            shippingInfo.setOrderKey(orderKeyBean);
+
+            // 2、物流模式，发货方式枚举值：1、实体物流配送采用快递公司进行实体物流配送形式 2、同城配送 3、虚拟商品，虚拟商品，例如话费充值，点卡等，无实体配送形式 4、用户自提
+            shippingInfo.setLogisticsType(1);
+
+            // 3、发货模式，发货模式枚举值：1、UNIFIED_DELIVERY（统一发货）2、SPLIT_DELIVERY（分拆发货） 示例值: UNIFIED_DELIVERY
+            shippingInfo.setDeliveryMode(1);
+
+            String reqJson = JsonUtil.toJSONString(shippingInfo);
+            String response = HttpRESTDataClient.requestPostBody(url, reqJson);
+            logger.info("微信上传发货信息接口返回：{}", response);
+
+            JSONObject data = (JSONObject) JSONObject.parse(response);
+            if (data.get("errcode").toString().equals("0")) {
+                logger.info("微信上传发货信息接口成功：", orderSn);
+            } else {
+                logger.error("微信上传发货信息接口失败：", orderSn);
+            }
+
             return;
         }
     }
