@@ -136,6 +136,8 @@ public class ClientGoodsController extends BaseController {
         Integer pageSize = params.get("pageSize") == null ? Constants.PAGE_SIZE : Integer.parseInt(params.get("pageSize").toString());
         String name = params.get("name") == null ? "" : params.get("name").toString();
         Integer cateId = params.get("cateId") == null ? 0 : Integer.parseInt(params.get("cateId").toString());
+        String sortType = params.get("sortType") == null ? "all" : params.get("sortType").toString();
+        String sortPrice = params.get("sortPrice") == null ? "0" : params.get("sortPrice").toString();
 
         PaginationRequest paginationRequest = new PaginationRequest();
         paginationRequest.setCurrentPage(page);
@@ -156,6 +158,12 @@ public class ClientGoodsController extends BaseController {
         Integer merchantId = merchantService.getMerchantId(merchantNo);
         if (merchantId > 0 ) {
             searchParams.put("merchantId", merchantId);
+        }
+        if (StringUtil.isNotEmpty(sortType)) {
+            searchParams.put("sortType", sortType);
+        }
+        if (StringUtil.isNotEmpty(sortPrice)) {
+            searchParams.put("sortPrice", sortPrice);
         }
 
         paginationRequest.setSearchParams(searchParams);

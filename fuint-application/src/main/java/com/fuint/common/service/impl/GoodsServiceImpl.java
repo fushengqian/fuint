@@ -131,7 +131,23 @@ public class GoodsServiceImpl extends ServiceImpl<MtGoodsMapper, MtGoods> implem
                 lambdaQueryWrapper.gt(MtGoods::getPrice, 0);
             }
         }
-        lambdaQueryWrapper.orderByAsc(MtGoods::getSort);
+        String sortType = paginationRequest.getSearchParams().get("sortType") == null ? "" : paginationRequest.getSearchParams().get("sortType").toString();
+        String sortPrice = paginationRequest.getSearchParams().get("sortPrice") == null ? "0" : paginationRequest.getSearchParams().get("sortPrice").toString();
+        if (StringUtil.isNotEmpty(sortType)) {
+            if (sortType.equals("price")) {
+                if (sortPrice.equals("0")) {
+                    lambdaQueryWrapper.orderByDesc(MtGoods::getPrice);
+                } else {
+                    lambdaQueryWrapper.orderByAsc(MtGoods::getPrice);
+                }
+            } else if (sortType.equals("sales")) {
+                lambdaQueryWrapper.orderByDesc(MtGoods::getInitSale);
+            } else {
+                lambdaQueryWrapper.orderByAsc(MtGoods::getSort);
+            }
+        } else {
+            lambdaQueryWrapper.orderByAsc(MtGoods::getSort);
+        }
         List<MtGoods> goodsList = mtGoodsMapper.selectList(lambdaQueryWrapper);
         List<GoodsDto> dataList = new ArrayList<>();
         String basePath = settingService.getUploadBasePath();

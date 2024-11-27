@@ -7,6 +7,7 @@ package com.fuint.common.enums;
  * CopyRight https://www.fuint.cn
  */
 public enum ExpressCompanyEnum {
+    SELF("SELF", "商家自送"),
     YTO("YTO", "圆通速递"),
     ZTO("ZTO", "中通快递"),
     BEST("BEST", "百世快递"),

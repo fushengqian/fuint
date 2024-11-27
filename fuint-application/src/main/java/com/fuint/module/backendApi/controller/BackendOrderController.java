@@ -471,6 +471,7 @@ public class BackendOrderController extends BaseController {
         String deliveryFee = "";
         String isClose = "";
         String deliveryMinAmount = "";
+        String mpUploadShipping = "";
 
         for (MtSetting setting : settingList) {
             if (setting.getName().equals(OrderSettingEnum.DELIVERY_FEE.getKey())) {
@@ -479,12 +480,15 @@ public class BackendOrderController extends BaseController {
                 isClose = setting.getValue();
             } else if (setting.getName().equals(OrderSettingEnum.DELIVERY_MIN_AMOUNT.getKey())) {
                 deliveryMinAmount = setting.getValue();
+            } else if (setting.getName().equals(OrderSettingEnum.MP_UPLOAD_SHIPPING.getKey())) {
+                mpUploadShipping = setting.getValue();
             }
         }
 
         result.put("deliveryFee", deliveryFee);
         result.put("isClose", isClose);
         result.put("deliveryMinAmount", deliveryMinAmount);
+        result.put("mpUploadShipping", mpUploadShipping);
 
         return getSuccessResult(result);
     }
