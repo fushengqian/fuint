@@ -372,6 +372,7 @@ public class BookServiceImpl extends ServiceImpl<MtBookMapper, MtBook> implement
         String name = params.get("name") == null ? "" : params.get("name").toString();
 
         LambdaQueryWrapper<MtBook> lambdaQueryWrapper = Wrappers.lambdaQuery();
+        lambdaQueryWrapper.ne(MtBook::getStatus, StatusEnum.DISABLE.getKey());
         if (StringUtils.isNotBlank(name)) {
             lambdaQueryWrapper.like(MtBook::getName, name);
         }

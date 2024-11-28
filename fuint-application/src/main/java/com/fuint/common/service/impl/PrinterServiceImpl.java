@@ -338,6 +338,8 @@ public class PrinterServiceImpl extends ServiceImpl<MtPrinterMapper, MtPrinter> 
         String autoPrint = params.get("autoPrint") == null ? "" : params.get("autoPrint").toString();
 
         LambdaQueryWrapper<MtPrinter> lambdaQueryWrapper = Wrappers.lambdaQuery();
+        lambdaQueryWrapper.ne(MtPrinter::getStatus, StatusEnum.DISABLE.getKey());
+
         if (StringUtils.isNotBlank(status)) {
             lambdaQueryWrapper.eq(MtPrinter::getStatus, status);
         }

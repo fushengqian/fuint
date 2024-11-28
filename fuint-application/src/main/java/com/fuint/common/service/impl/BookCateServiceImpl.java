@@ -13,7 +13,6 @@ import com.fuint.repository.mapper.MtBookCateMapper;
 import com.fuint.common.service.SettingService;
 import com.fuint.common.enums.StatusEnum;
 import com.fuint.repository.model.MtBookCate;
-import com.fuint.repository.model.MtGoodsCate;
 import com.fuint.repository.model.MtStore;
 import com.fuint.utils.StringUtil;
 import com.github.pagehelper.PageHelper;
@@ -209,6 +208,7 @@ public class BookCateServiceImpl extends ServiceImpl<MtBookCateMapper, MtBookCat
         String name = params.get("name") == null ? "" : params.get("name").toString();
 
         LambdaQueryWrapper<MtBookCate> lambdaQueryWrapper = Wrappers.lambdaQuery();
+        lambdaQueryWrapper.ne(MtBookCate::getStatus, StatusEnum.DISABLE.getKey());
         if (StringUtils.isNotBlank(name)) {
             lambdaQueryWrapper.like(MtBookCate::getName, name);
         }

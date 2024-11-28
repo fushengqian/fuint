@@ -210,6 +210,7 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
 
         Page<MtOpenGift> pageHelper = PageHelper.startPage(pageNumber, pageSize);
         LambdaQueryWrapper<MtOrder> lambdaQueryWrapper = Wrappers.lambdaQuery();
+        lambdaQueryWrapper.ne(MtOrder::getStatus, OrderStatusEnum.DELETED.getKey());
 
         if (StringUtil.isNotEmpty(orderSn)) {
             lambdaQueryWrapper.eq(MtOrder::getOrderSn, orderSn);
@@ -1501,7 +1502,7 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
                 sendSmsService.sendSms(mtOrder.getMerchantId(), "new-order", mobileList, params);
             }
         } catch (Exception e) {
-            logger.error("给商家发送短信出错啦，message = {}", e.getMessage());
+            logger.info("打印订单或给商家发送短信出错啦，message = {}", e.getMessage());
         }
 
         return true;

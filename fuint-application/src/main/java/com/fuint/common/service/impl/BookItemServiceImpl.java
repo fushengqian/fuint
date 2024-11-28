@@ -283,6 +283,7 @@ public class BookItemServiceImpl extends ServiceImpl<MtBookItemMapper, MtBookIte
         String bookId = params.get("bookId") == null ? "" : params.get("bookId").toString();
 
         LambdaQueryWrapper<MtBookItem> lambdaQueryWrapper = Wrappers.lambdaQuery();
+        lambdaQueryWrapper.ne(MtBookItem::getStatus, StatusEnum.DISABLE.getKey());
         if (StringUtils.isNotBlank(mobile)) {
             lambdaQueryWrapper.eq(MtBookItem::getMobile, mobile);
         }
