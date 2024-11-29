@@ -224,6 +224,9 @@ public class CateServiceImpl extends ServiceImpl<MtGoodsCateMapper, MtGoodsCate>
         if (reqDto.getMerchantId() != null && reqDto.getMerchantId() > 0) {
             mtCate.setMerchantId(reqDto.getMerchantId());
         }
+        if (mtCate.getMerchantId() == null || mtCate.getMerchantId() < 1) {
+            throw new BusinessCheckException("平台方帐号无法执行该操作，请使用商户帐号操作");
+        }
         if (reqDto.getStoreId() != null) {
             mtCate.setStoreId(reqDto.getStoreId());
         }
