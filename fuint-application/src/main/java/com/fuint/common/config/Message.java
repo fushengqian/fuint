@@ -17,6 +17,6 @@ public class Message {
     public static final String NEED_CODE = "需要领取码";
     public static final String CODE_ERROR = "领取码错误";
     public static final String CODE_ERROR_1 = "核销码错误";
-    public static final String GRADE_ERROR = "该卡券不适于您的会员等级";
+    public static final String GRADE_ERROR = "该卡券不适用于您的会员等级";
     public static final String HAS_COUPON = "您已领取过该卡券";
 }

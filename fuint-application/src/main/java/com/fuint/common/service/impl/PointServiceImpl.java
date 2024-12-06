@@ -197,8 +197,6 @@ public class PointServiceImpl extends ServiceImpl<MtPointMapper, MtPoint> implem
         params.put("time", dateTime);
         params.put("remark", "您的积分发生了变动，请留意~");
         weixinService.sendSubscribeMessage(mtPoint.getMerchantId(), mtPoint.getUserId(), mtUser.getOpenId(), WxMessageEnum.POINT_CHANGE.getKey(), "pages/user/index", params, sendTime);
-
-        return;
     }
 
     /**
