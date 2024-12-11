@@ -19,7 +19,7 @@ public class PrinterUtil {
     private static String BASE_URL = "https://open.xpyun.net/api/openapi";
 
     private static final Logger logger = LoggerFactory.getLogger(PrinterUtil.class);
-    
+
     /**
      * 1.批量添加打印机
      * @param restRequest
@@ -32,8 +32,26 @@ public class PrinterUtil {
         ObjectRestResponse<PrinterResult> result = JSON.parseObject(resp, new TypeReference<ObjectRestResponse<PrinterResult>>(){});
         logger.info("添加打印机接口参数：{},返回：{}", JSON.toJSONString(restRequest), JSON.toJSONString(result));
         if (result == null || result.getCode() != 0 || result.getData().getSuccess() == null || result.getData().getSuccess().size() <= 0) {
+            // 判断打印机是否已经存在
+            String errorMsg = "添加打印机失败，发生未知错误！";
+            if (result != null && result.getData() != null && result.getData().getFailMsg() != null && result.getData().getFailMsg().size() > 0) {
+                String failMsg = result.getData().getFailMsg().get(0);
+                if (failMsg.contains("1011")) {
+                    return result;
+                } else if (failMsg.contains("1001")) {
+                    errorMsg = "添加打印机失败，打印机编号和用户不匹配！";
+                } else if (failMsg.contains("1002")) {
+                    errorMsg = "添加打印机失败，打印机未注册！";
+                } else if (failMsg.contains("1003")) {
+                    errorMsg = "添加打印机失败，打印机不在线！";
+                } else if (failMsg.contains("1010")) {
+                    errorMsg = "添加打印机失败，打印机设备编号无效！";
+                } else if (failMsg.contains("1012")) {
+                    errorMsg = "添加打印机失败，请稍后再试！";
+                }
+            }
             logger.error("云打印机新增失败，原因：", result.getMsg());
-            throw new BusinessCheckException("添加打印机失败，请检查设备编号是否正确！");
+            throw new BusinessCheckException(errorMsg);
         }
         return result;
     }
