@@ -3,17 +3,16 @@ package com.fuint.common.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.fuint.common.dto.StaffDto;
 import com.fuint.common.enums.StatusEnum;
 import com.fuint.common.enums.YesOrNoEnum;
-import com.fuint.common.service.MemberService;
-import com.fuint.common.service.SendSmsService;
-import com.fuint.common.service.StaffService;
-import com.fuint.common.service.StoreService;
+import com.fuint.common.service.*;
 import com.fuint.framework.annoation.OperationServiceLog;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.pagination.PaginationRequest;
 import com.fuint.framework.pagination.PaginationResponse;
 import com.fuint.repository.mapper.MtStaffMapper;
+import com.fuint.repository.model.MtMerchant;
 import com.fuint.repository.model.MtStaff;
 import com.fuint.repository.model.MtStore;
 import com.fuint.repository.model.MtUser;
@@ -22,6 +21,7 @@ import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import lombok.AllArgsConstructor;
 import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -53,6 +53,11 @@ public class StaffServiceImpl extends ServiceImpl<MtStaffMapper, MtStaff> implem
      * 店铺接口
      */
     private StoreService storeService;
+
+    /**
+     * 商户接口
+     */
+    private MerchantService merchantService;
 
     /**
      * 员工查询列表
@@ -264,5 +269,36 @@ public class StaffServiceImpl extends ServiceImpl<MtStaffMapper, MtStaff> implem
     @Override
     public MtStaff queryStaffByUserId(Integer userId) {
         return mtStaffMapper.queryStaffByUserId(userId);
+    }
+
+    /**
+     * 根据手机号获取员工信息
+     *
+     * @param mobile 手机号
+     * @throws BusinessCheckException
+     * @return
+     */
+    @Override
+    public StaffDto getStaffInfoByMobile(String mobile) throws BusinessCheckException {
+        MtStaff mtStaff =  mtStaffMapper.queryStaffByMobile(mobile);
+        StaffDto staffDto = new StaffDto();
+        if (mtStaff != null) {
+            BeanUtils.copyProperties(mtStaff, staffDto);
+            if (staffDto.getStoreId() != null && staffDto.getStoreId() > 0) {
+                MtStore mtStore = storeService.queryStoreById(staffDto.getStoreId());
+                if (mtStore != null) {
+                    staffDto.setStoreInfo(mtStore);
+                }
+            }
+            if (staffDto.getMerchantId() != null && staffDto.getMerchantId() > 0) {
+                MtMerchant mtMerchant = merchantService.getById(staffDto.getMerchantId());
+                if (mtMerchant != null) {
+                    staffDto.setMerchantInfo(mtMerchant);
+                }
+            }
+        } else {
+            return null;
+        }
+        return staffDto;
     }
 }

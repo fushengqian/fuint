@@ -710,19 +710,13 @@ public class CouponServiceImpl extends ServiceImpl<MtCouponMapper, MtCoupon> imp
         sendLogDto.setStoreId(couponInfo.getStoreId());
         sendLogService.addSendLog(sendLogDto);
 
-        if (sendMessage) {
+        if (sendMessage && couponInfo.getAmount() != null && couponInfo.getAmount().compareTo(new BigDecimal("0")) > 0) {
             try {
                 // 发送手机短信
                 if (StringUtil.isNotEmpty(mobile)) {
                     List<String> mobileList = new ArrayList<>();
                     mobileList.add(mobile);
-                    Integer totalNum = 0;
-                    BigDecimal totalMoney = new BigDecimal("0.0");
-                    List<MtCoupon> couponList = queryCouponListByGroupId(couponInfo.getGroupId());
-                    for (MtCoupon coupon : couponList) {
-                        totalNum = totalNum + (coupon.getSendNum() * num);
-                        totalMoney = totalMoney.add((coupon.getAmount().multiply(new BigDecimal(num).multiply(new BigDecimal(coupon.getSendNum())))));
-                    }
+                    BigDecimal totalMoney = (couponInfo.getAmount() == null) ? (new BigDecimal("0.00")) : couponInfo.getAmount();
                     Map<String, String> params = new HashMap<>();
                     params.put("totalNum", num.toString());
                     params.put("totalMoney", totalMoney.toString());

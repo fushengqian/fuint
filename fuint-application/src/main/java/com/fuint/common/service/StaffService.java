@@ -1,6 +1,7 @@
 package com.fuint.common.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.fuint.common.dto.StaffDto;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.pagination.PaginationRequest;
 import com.fuint.framework.pagination.PaginationResponse;
@@ -76,4 +77,13 @@ public interface StaffService extends IService<MtStaff> {
      * @return
      */
     MtStaff queryStaffByUserId(Integer userId) throws BusinessCheckException;
+
+    /**
+     * 根据手机号获取员工信息
+     *
+     * @param  mobile 手机
+     * @throws BusinessCheckException
+     * @return
+     */
+    StaffDto getStaffInfoByMobile(String mobile) throws BusinessCheckException;
 }
