@@ -112,6 +112,9 @@ public class PointServiceImpl extends ServiceImpl<MtPointMapper, MtPoint> implem
         List<PointDto> dataList = new ArrayList<>();
         for (MtPoint point : pointList) {
             MtUser userInfo = memberService.queryMemberById(point.getUserId());
+            if (userInfo != null && StringUtil.isNotEmpty(userInfo.getMobile())) {
+                userInfo.setMobile(userInfo.getMobile().substring(0, 3) + "****" + userInfo.getMobile().substring(7));
+            }
             PointDto item = new PointDto();
             item.setId(point.getId());
             item.setAmount(point.getAmount());

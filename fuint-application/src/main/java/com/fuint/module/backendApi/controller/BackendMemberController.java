@@ -284,7 +284,10 @@ public class BackendMemberController extends BaseController {
             memberInfo = memberService.queryMemberById(Integer.parseInt(id));
         }
 
-        memberInfo.setMerchantId(accountInfo.getMerchantId());
+        if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
+            memberInfo.setMerchantId(accountInfo.getMerchantId());
+        }
+
         memberInfo.setName(name);
         memberInfo.setStatus(status);
         if (StringUtil.isNotEmpty(groupId)) {
