@@ -1015,6 +1015,9 @@ public class WeixinServiceImpl implements WeixinService {
         if (orderInfo.getExpressInfo() == null || StringUtil.isEmpty(orderInfo.getExpressInfo().getExpressNo())) {
             throw new BusinessCheckException("上传发货信息失败，物流信息不能为空！");
         }
+        if (orderInfo.getUserInfo() == null || StringUtil.isEmpty(orderInfo.getUserInfo().getOpenId())) {
+            throw new BusinessCheckException("上传发货信息失败，会员的openId不能为空！");
+        }
         // 是否是微信小程序订单 && 微信支付
         if (orderInfo != null && !orderInfo.getPlatform().equals(PlatformTypeEnum.MP_WEIXIN.getCode()) || !orderInfo.getPayType().equals(PayTypeEnum.JSAPI.name())) {
             String url = "https://api.weixin.qq.com/wxa/sec/order/upload_shipping_info?access_token=" + getAccessToken(orderInfo.getMerchantId(), true, true);
@@ -1057,18 +1060,19 @@ public class WeixinServiceImpl implements WeixinService {
             payerBean.setOpenid(orderInfo.getUserInfo().getOpenId());
             shippingInfo.setPayer(payerBean);
 
-            String reqJson = JsonUtil.toJSONString(shippingInfo);
-            String response = HttpRESTDataClient.requestPostBody(url, reqJson);
-            logger.info("微信上传发货信息接口返回：{}", response);
-
-            JSONObject data = (JSONObject) JSONObject.parse(response);
-            if (data.get("errcode").toString().equals("0")) {
-                logger.info("微信上传发货信息接口成功：", orderSn);
-            } else {
-                logger.error("微信上传发货信息接口失败：", orderSn);
+            try {
+                String reqJson = JsonUtil.toJSONString(shippingInfo);
+                String response = HttpRESTDataClient.requestPostBody(url, reqJson);
+                logger.info("微信上传发货信息接口参数：{}，返回：{}", reqJson, response);
+                JSONObject data = (JSONObject) JSONObject.parse(response);
+                if (data.get("errcode").toString().equals("0")) {
+                    logger.info("微信上传发货信息接口成功，订单号：", orderSn);
+                } else {
+                    logger.error("微信上传发货信息接口失败，订单号：", orderSn);
+                }
+            } catch (Exception e) {
+                logger.error("微信上传发货信息接口失败：", e.getMessage());
             }
-
-            return;
         }
     }
 

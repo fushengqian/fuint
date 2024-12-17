@@ -1516,8 +1516,7 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
      * */
     @Override
     public List<MtOrder> getOrderListByParams(Map<String, Object> params) {
-        List<MtOrder> result = mtOrderMapper.selectByMap(params);
-        return result;
+        return mtOrderMapper.selectByMap(params);
     }
 
     /**
