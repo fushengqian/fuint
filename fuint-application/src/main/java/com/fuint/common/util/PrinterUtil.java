@@ -65,8 +65,7 @@ public class PrinterUtil {
         String url = BASE_URL + "/xprinter/setVoiceType";
         String jsonRequest = JSON.toJSONString(restRequest);
         String resp = HttpClientUtil.doPostJSON(url, jsonRequest);
-        ObjectRestResponse<Boolean> result = JSON.parseObject(resp, new TypeReference<ObjectRestResponse<Boolean>>(){});
-        return result;
+        return JSON.parseObject(resp, new TypeReference<ObjectRestResponse<Boolean>>(){});
     }
 
     /**
@@ -97,8 +96,7 @@ public class PrinterUtil {
         String url = BASE_URL + "/xprinter/printLabel";
         String jsonRequest = JSON.toJSONString(restRequest);
         String resp = HttpClientUtil.doPostJSON(url, jsonRequest);
-        ObjectRestResponse<String> result = JSON.parseObject(resp, new TypeReference<ObjectRestResponse<String>>(){});
-        return result;
+        return JSON.parseObject(resp, new TypeReference<ObjectRestResponse<String>>(){});
     }
 
     /**
@@ -150,8 +148,7 @@ public class PrinterUtil {
         String url = BASE_URL + "/xprinter/delPrinterQueue";
         String jsonRequest = JSON.toJSONString(restRequest);
         String resp = HttpClientUtil.doPostJSON(url, jsonRequest);
-        ObjectRestResponse<Boolean> result = JSON.parseObject(resp, new TypeReference<ObjectRestResponse<Boolean>>(){});
-        return result;
+        return JSON.parseObject(resp, new TypeReference<ObjectRestResponse<Boolean>>(){});
     }
 
     /**
@@ -164,8 +161,7 @@ public class PrinterUtil {
         String url = BASE_URL + "/xprinter/queryOrderState";
         String jsonRequest = JSON.toJSONString(restRequest);
         String resp = HttpClientUtil.doPostJSON(url, jsonRequest);
-        ObjectRestResponse<Boolean> result = JSON.parseObject(resp, new TypeReference<ObjectRestResponse<Boolean>>(){});
-        return result;
+        return JSON.parseObject(resp, new TypeReference<ObjectRestResponse<Boolean>>(){});
     }
 
     /**
@@ -178,8 +174,7 @@ public class PrinterUtil {
         String url = BASE_URL + "/xprinter/queryOrderStatis";
         String jsonRequest = JSON.toJSONString(restRequest);
         String resp = HttpClientUtil.doPostJSON(url, jsonRequest);
-        ObjectRestResponse<OrderStatisResult> result = JSON.parseObject(resp, new TypeReference<ObjectRestResponse<OrderStatisResult>>(){});
-        return result;
+        return JSON.parseObject(resp, new TypeReference<ObjectRestResponse<OrderStatisResult>>(){});
     }
 
     /**
@@ -194,8 +189,7 @@ public class PrinterUtil {
         String url = BASE_URL + "/xprinter/queryPrinterStatus";
         String jsonRequest = JSON.toJSONString(restRequest);
         String resp = HttpClientUtil.doPostJSON(url, jsonRequest);
-        ObjectRestResponse<Integer> result = JSON.parseObject(resp, new TypeReference<ObjectRestResponse<Integer>>(){});
-        return result;
+        return JSON.parseObject(resp, new TypeReference<ObjectRestResponse<Integer>>(){});
     }
 
     /**
@@ -210,8 +204,7 @@ public class PrinterUtil {
         String url = BASE_URL + "/xprinter/queryPrintersStatus";
         String jsonRequest = JSON.toJSONString(restRequest);
         String resp = HttpClientUtil.doPostJSON(url, jsonRequest);
-        ObjectRestResponse<List<Integer>> result = JSON.parseObject(resp, new TypeReference<ObjectRestResponse<List<Integer>>>(){});
-        return result;
+        return JSON.parseObject(resp, new TypeReference<ObjectRestResponse<List<Integer>>>(){});
     }
 
     /**
@@ -224,8 +217,7 @@ public class PrinterUtil {
         String url = BASE_URL + "/xprinter/playVoice";
         String jsonRequest = JSON.toJSONString(restRequest);
         String resp = HttpClientUtil.doPostJSON(url, jsonRequest);
-        ObjectRestResponse<String> result = JSON.parseObject(resp, new TypeReference<ObjectRestResponse<String>>(){});
-        return result;
+        return JSON.parseObject(resp, new TypeReference<ObjectRestResponse<String>>(){});
     }
 
     /**
@@ -238,8 +230,7 @@ public class PrinterUtil {
         String url = BASE_URL + "/xprinter/pos";
         String jsonRequest = JSON.toJSONString(restRequest);
         String resp = HttpClientUtil.doPostJSON(url, jsonRequest);
-        ObjectRestResponse<String> result = JSON.parseObject(resp, new TypeReference<ObjectRestResponse<String>>(){});
-        return result;
+        return JSON.parseObject(resp, new TypeReference<ObjectRestResponse<String>>(){});
     }
 
     /**
@@ -252,8 +243,7 @@ public class PrinterUtil {
         String url = BASE_URL + "/xprinter/controlBox";
         String jsonRequest = JSON.toJSONString(restRequest);
         String resp = HttpClientUtil.doPostJSON(url, jsonRequest);
-        ObjectRestResponse<String> result = JSON.parseObject(resp, new TypeReference<ObjectRestResponse<String>>(){});
-        return result;
+        return JSON.parseObject(resp, new TypeReference<ObjectRestResponse<String>>(){});
     }
 
 }

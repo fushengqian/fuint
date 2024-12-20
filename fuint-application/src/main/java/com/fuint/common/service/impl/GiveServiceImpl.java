@@ -291,8 +291,7 @@ public class GiveServiceImpl extends ServiceImpl<MtGiveMapper, MtGive> implement
             //empty
         }
 
-        ResponseObject result = new ResponseObject(200, "", giveInfo);
-        return result;
+        return new ResponseObject(200, "", giveInfo);
     }
 
     /**
@@ -318,7 +317,6 @@ public class GiveServiceImpl extends ServiceImpl<MtGiveMapper, MtGive> implement
         if (params == null) {
             params = new HashMap<>();
         }
-        List<MtGiveItem> result = mtGiveItemMapper.selectByMap(params);
-        return result;
+        return mtGiveItemMapper.selectByMap(params);
     }
 }

@@ -163,8 +163,7 @@ public class StockServiceImpl extends ServiceImpl<MtStockMapper, MtStock> implem
                 }
             }
         }
-        ResponseObject result = new ResponseObject(200, "", mtStock);
-        return result;
+        return new ResponseObject(200, "", mtStock);
     }
 
     /**
@@ -211,7 +210,6 @@ public class StockServiceImpl extends ServiceImpl<MtStockMapper, MtStock> implem
         if (params == null) {
             params = new HashMap<>();
         }
-        List<MtStockItem> result = mtStockItemMapper.selectByMap(params);
-        return result;
+        return mtStockItemMapper.selectByMap(params);
     }
 }

@@ -126,8 +126,7 @@ public class HttpRESTDataClient {
             HttpClient client = httpClientBuilder.build();
             HttpResponse response = client.execute(httpPost);
             if (response.getStatusLine() != null && response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
-                String result = EntityUtils.toString(response.getEntity(), "utf-8");
-                return result;
+                return EntityUtils.toString(response.getEntity(), "utf-8");
             }
             return "";
         }

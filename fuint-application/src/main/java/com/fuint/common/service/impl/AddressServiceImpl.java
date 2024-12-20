@@ -114,8 +114,6 @@ public class AddressServiceImpl extends ServiceImpl<MtAddressMapper, MtAddress> 
             param.put("is_default", YesOrNoEnum.YES.getKey());
         }
 
-        List<MtAddress> result = mtAddressMapper.selectByMap(param);
-
-        return result;
+        return mtAddressMapper.selectByMap(param);
     }
 }

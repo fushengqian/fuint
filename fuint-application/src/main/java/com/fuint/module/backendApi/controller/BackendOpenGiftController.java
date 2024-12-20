@@ -186,7 +186,9 @@ public class BackendOpenGiftController extends BaseController {
         } else {
             reqDto.setPoint(0);
         }
-        reqDto.setMerchantId(accountInfo.getMerchantId());
+        if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
+            reqDto.setMerchantId(accountInfo.getMerchantId());
+        }
         reqDto.setStoreId(0);
         reqDto.setStatus(status);
         String operator = accountInfo.getAccountName();

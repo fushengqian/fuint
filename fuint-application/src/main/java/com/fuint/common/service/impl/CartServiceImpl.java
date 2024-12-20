@@ -292,8 +292,7 @@ public class CartServiceImpl extends ServiceImpl<MtCartMapper, MtCart> implement
             lambdaQueryWrapper.eq(MtCart::getSkuId, skuId);
         }
 
-        List<MtCart> result = mtCartMapper.selectList(lambdaQueryWrapper);
-        return result;
+        return mtCartMapper.selectList(lambdaQueryWrapper);
     }
 
     /**

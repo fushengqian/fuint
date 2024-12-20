@@ -164,7 +164,6 @@ public class SmsTemplateServiceImpl extends ServiceImpl<MtSmsTemplateMapper, MtS
         if (params == null) {
             params = new HashMap<>();
         }
-        List<MtSmsTemplate> result = mtSmsTemplateMapper.selectByMap(params);
-        return result;
+        return mtSmsTemplateMapper.selectByMap(params);
     }
 }
