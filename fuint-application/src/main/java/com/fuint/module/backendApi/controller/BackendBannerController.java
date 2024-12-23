@@ -192,7 +192,9 @@ public class BackendBannerController extends BaseController {
         bannerDto.setStatus(status);
         bannerDto.setStoreId(Integer.parseInt(storeId));
         bannerDto.setSort(Integer.parseInt(sort));
-        bannerDto.setMerchantId(accountInfo.getMerchantId());
+        if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
+            bannerDto.setMerchantId(accountInfo.getMerchantId());
+        }
 
         if (StringUtil.isNotEmpty(id)) {
             bannerDto.setId(Integer.parseInt(id));

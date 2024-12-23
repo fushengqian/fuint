@@ -133,6 +133,11 @@ public class ArticleServiceImpl extends ServiceImpl<MtArticleMapper, MtArticle> 
             }
         }
         mtArticle.setMerchantId(articleDto.getMerchantId());
+
+        if (mtArticle.getMerchantId() == null || mtArticle.getMerchantId() < 1) {
+            throw new BusinessCheckException("平台方帐号无法执行该操作，请使用商户帐号操作");
+        }
+
         mtArticle.setStoreId(storeId);
         mtArticle.setUrl(articleDto.getUrl());
         mtArticle.setClick(0l);

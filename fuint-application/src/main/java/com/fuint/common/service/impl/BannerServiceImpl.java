@@ -179,9 +179,6 @@ public class BannerServiceImpl extends ServiceImpl<MtBannerMapper, MtBanner> imp
         if (mtBanner == null) {
             throw new BusinessCheckException("该Banner状态异常");
         }
-        if (bannerDto.getMerchantId() == null || bannerDto.getMerchantId() < 1) {
-            throw new BusinessCheckException("平台方帐号无法执行该操作，请使用商户帐号操作");
-        }
 
         mtBanner.setId(bannerDto.getId());
         if (bannerDto.getImage() != null) {
