@@ -477,7 +477,9 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
         String gradeId = mtUser.getGradeId();
         mtUser.setGradeId(oldUserInfo.getGradeId());
         mtUser.setMerchantId(oldUserInfo.getMerchantId());
-        mtUser.setStoreId(oldUserInfo.getStoreId());
+        if (mtUser.getStoreId() == null || mtUser.getStoreId() <= 0) {
+            mtUser.setStoreId(oldUserInfo.getStoreId());
+        }
         Boolean result = updateById(mtUser);
         if (result && mtUser.getGradeId() != null) {
             // 修改了会员等级，开卡赠礼
