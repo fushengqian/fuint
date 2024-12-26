@@ -494,7 +494,7 @@ public class CouponGroupServiceImpl extends ServiceImpl<MtCouponGroupMapper, MtC
                     params.put("totalMoney", totalMoney+"");
                     sendSmsService.sendSms(cellDto.getMerchantId(), "received-coupon", mobileList, params);
                 } catch (Exception e) {
-                    //empty
+                    log.error("发券发送短信出错：", e.getMessage());
                 }
             }
         } catch (BusinessCheckException e) {
@@ -529,7 +529,7 @@ public class CouponGroupServiceImpl extends ServiceImpl<MtCouponGroupMapper, MtC
             }
             CommonUtil.saveMultipartFile(file, pathRoot + path);
         } catch (Exception e) {
-            //empty
+            log.error("上传保存文件出错：", e.getMessage());
         }
 
         return path;

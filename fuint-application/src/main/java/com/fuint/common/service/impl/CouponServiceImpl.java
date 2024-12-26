@@ -980,7 +980,7 @@ public class CouponServiceImpl extends ServiceImpl<MtCouponMapper, MtCoupon> imp
             params.put("time", dateTime);
             weixinService.sendSubscribeMessage(userInfo.getMerchantId(), userInfo.getId(), userInfo.getOpenId(), WxMessageEnum.COUPON_CONFIRM.getKey(), "pages/user/index", param, sendTime);
         } catch (Exception e) {
-            //empty
+            logger.error("核销卡券发送通知消息出错：", e.getMessage());
         }
 
         return confirmLog.getCode();
