@@ -288,7 +288,7 @@ public class AccountServiceImpl extends ServiceImpl<TAccountMapper, TAccount> im
      * @return 角色ID集合
      */
     @Override
-    public List<Long> getDutyIdsByAccountId(long accountId) {
+    public List<Integer> getDutyIdsByAccountId(Integer accountId) {
         return tAccountDutyMapper.getDutyIdsByAccountId(accountId);
     }
 

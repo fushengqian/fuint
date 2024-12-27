@@ -80,8 +80,10 @@ public interface SourceService extends IService<TSource> {
      * 添加菜单
      *
      * @param tSource
+     * @param accountId
+     * @retur
      */
-    void addSource(TSource tSource);
+    void addSource(TSource tSource, Integer accountId);
 
     /**
      * 修改菜单

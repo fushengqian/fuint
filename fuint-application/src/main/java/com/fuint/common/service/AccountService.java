@@ -76,7 +76,7 @@ public interface AccountService extends IService<TAccount> {
      * @param accountId 账户
      * @return 角色ID集合
      */
-    List<Long> getDutyIdsByAccountId(long accountId);
+    List<Integer> getDutyIdsByAccountId(Integer accountId);
 
     /**
      * 更新账户信息

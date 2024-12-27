@@ -80,8 +80,7 @@ public class DutyServiceImpl extends ServiceImpl<TDutyMapper, TDuty> implements 
      */
     @Override
     public TDuty getRoleById(Long roleId) {
-        TDuty htDuty = tDutyMapper.selectById(roleId);
-        return htDuty;
+        return tDutyMapper.selectById(roleId);
     }
 
     /**

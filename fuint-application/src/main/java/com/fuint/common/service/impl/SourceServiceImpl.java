@@ -3,11 +3,14 @@ package com.fuint.common.service.impl;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fuint.common.domain.TreeSelect;
 import com.fuint.common.enums.StatusEnum;
+import com.fuint.common.service.AccountService;
 import com.fuint.common.service.SourceService;
 import com.fuint.common.vo.MetaVo;
 import com.fuint.common.vo.RouterVo;
 import com.fuint.framework.annoation.OperationServiceLog;
+import com.fuint.repository.mapper.TDutySourceMapper;
 import com.fuint.repository.mapper.TSourceMapper;
+import com.fuint.repository.model.TDutySource;
 import com.fuint.repository.model.TSource;
 import com.fuint.common.domain.TreeNode;
 import com.fuint.framework.exception.BusinessCheckException;
@@ -30,6 +33,13 @@ import java.util.stream.Collectors;
 public class SourceServiceImpl extends ServiceImpl<TSourceMapper, TSource> implements SourceService {
 
     private TSourceMapper tSourceMapper;
+
+    private TDutySourceMapper tDutySourceMapper;
+
+    /**
+     * 后台账户服务接口
+     */
+    private AccountService accountService;
 
     /**
      * 获取有效的菜单集合
@@ -192,19 +202,31 @@ public class SourceServiceImpl extends ServiceImpl<TSourceMapper, TSource> imple
     }
 
     /**
-     * 添加菜单
+     * 新增后台菜单
      *
      * @param tSource
+     * @param accountId
+     * @return
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
     @OperationServiceLog(description = "新增后台菜单")
-    public void addSource(TSource tSource) {
+    public void addSource(TSource tSource, Integer accountId) {
         this.save(tSource);
+        // 赋访问权限
+        List<Integer> dutyIds = accountService.getDutyIdsByAccountId(accountId);
+        if (dutyIds != null && dutyIds.size() > 0) {
+            for (Integer dutyId : dutyIds) {
+                 TDutySource dutySource = new TDutySource();
+                 dutySource.setDutyId(dutyId);
+                 dutySource.setSourceId(tSource.getSourceId());
+                 tDutySourceMapper.insert(dutySource);
+            }
+        }
     }
 
     /**
-     * 修改菜单
+     * 修改后台菜单
      *
      * @param source
      */

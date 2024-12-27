@@ -114,36 +114,36 @@ public class BackendSourceController extends BaseController {
         String sort = param.get("sort").toString();
         Integer isMenu = param.get("isMenu") == null ? 1 : Integer.parseInt(param.get("isMenu").toString());
 
-        TSource addSource = new TSource();
-        addSource.setSourceName(name);
-        addSource.setMerchantId(accountInfo.getMerchantId());
-        addSource.setStatus(status);
-        addSource.setNewIcon(icon);
-        addSource.setIsLog(1);
-        addSource.setPath(path);
-        addSource.setSourceStyle(sort);
-        addSource.setIsMenu(isMenu);
-        addSource.setSourceCode(path);
+        TSource tSource = new TSource();
+        tSource.setSourceName(name);
+        tSource.setMerchantId(accountInfo.getMerchantId());
+        tSource.setStatus(status);
+        tSource.setNewIcon(icon);
+        tSource.setIsLog(1);
+        tSource.setPath(path);
+        tSource.setSourceStyle(sort);
+        tSource.setIsMenu(isMenu);
+        tSource.setSourceCode(path);
 
         String eName = "";
         String[] paths = path.split("/");
         for (int i = 0; i < paths.length; i++) {
              eName = eName + CommonUtil.firstLetterToUpperCase(paths[i]);
         }
-        addSource.setEname(eName);
+        tSource.setEname(eName);
 
         if (StringUtil.isNotBlank(parentId)) {
             if (Integer.parseInt(parentId) > 0) {
                 TSource parentSource = sourceService.getById(parentId);
-                addSource.setParentId(parentSource.getSourceId());
-                addSource.setSourceLevel(parentSource.getSourceLevel() + 1);
+                tSource.setParentId(parentSource.getSourceId());
+                tSource.setSourceLevel(parentSource.getSourceLevel() + 1);
             } else {
-                addSource.setSourceLevel(1);
+                tSource.setSourceLevel(1);
             }
         } else {
-            addSource.setSourceLevel(1);
+            tSource.setSourceLevel(1);
         }
-        sourceService.addSource(addSource);
+        sourceService.addSource(tSource, accountInfo.getId());
         return getSuccessResult(true);
     }
 
