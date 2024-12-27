@@ -161,7 +161,7 @@ public class PrinterServiceImpl extends ServiceImpl<MtPrinterMapper, MtPrinter> 
         PrintRequest printRequest = new PrintRequest();
         createRequestHeader(orderInfo.getMerchantId(), printRequest);
         if (orderInfo.getStoreInfo() == null) {
-            return false;
+            throw new BusinessCheckException("打印失败：订单所属店铺信息为空！");
         }
 
         // 获取打印机列表
@@ -173,7 +173,7 @@ public class PrinterServiceImpl extends ServiceImpl<MtPrinterMapper, MtPrinter> 
         }
         List<MtPrinter> printers = queryPrinterListByParams(params);
         if (printers == null || printers.size() < 1) {
-            return false;
+            throw new BusinessCheckException("打印失败：该店铺还没有添加云打印机！");
         }
 
         MtStore storeInfo = orderInfo.getStoreInfo();
@@ -240,7 +240,10 @@ public class PrinterServiceImpl extends ServiceImpl<MtPrinterMapper, MtPrinter> 
             printRequest.setCopies(1);
             printRequest.setVoice(2);
             printRequest.setMode(0);
-            PrinterUtil.print(printRequest);
+            ObjectRestResponse<String> result = PrinterUtil.print(printRequest);
+            if (result != null && result.getCode() != 0) {
+                throw new BusinessCheckException("打印失败：" + result.getMsg());
+            }
         }
 
         return true;
