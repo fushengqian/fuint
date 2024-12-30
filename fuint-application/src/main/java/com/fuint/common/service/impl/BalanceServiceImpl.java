@@ -111,6 +111,8 @@ public class BalanceServiceImpl extends ServiceImpl<MtBalanceMapper, MtBalance> 
             MtUser userInfo = memberService.queryMemberByUserNo(Integer.parseInt(merchantId), userNo);
             if (userInfo != null) {
                 lambdaQueryWrapper.eq(MtBalance::getUserId, userInfo.getId());
+            } else {
+                lambdaQueryWrapper.eq(MtBalance::getUserId, -1);
             }
         }
         String storeId = paginationRequest.getSearchParams().get("storeId") == null ? "" : paginationRequest.getSearchParams().get("storeId").toString();

@@ -409,6 +409,8 @@ public class UserCouponServiceImpl extends ServiceImpl<MtUserCouponMapper, MtUse
             MtUser userInfo = memberService.queryMemberByUserNo(Integer.parseInt(merchantId), userNo);
             if (userInfo != null) {
                 lambdaQueryWrapper.eq(MtUserCoupon::getUserId, userInfo.getId());
+            } else {
+                lambdaQueryWrapper.eq(MtUserCoupon::getUserId, -1);
             }
         }
         if (StringUtil.isNotEmpty(mobile)) {

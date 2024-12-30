@@ -98,6 +98,8 @@ public class PointServiceImpl extends ServiceImpl<MtPointMapper, MtPoint> implem
             MtUser userInfo = memberService.queryMemberByUserNo(Integer.parseInt(merchantId), userNo);
             if (userInfo != null) {
                 lambdaQueryWrapper.eq(MtPoint::getUserId, userInfo.getId());
+            } else {
+                lambdaQueryWrapper.eq(MtPoint::getUserId, -1);
             }
         }
         String storeId = paginationRequest.getSearchParams().get("storeId") == null ? "" : paginationRequest.getSearchParams().get("storeId").toString();
