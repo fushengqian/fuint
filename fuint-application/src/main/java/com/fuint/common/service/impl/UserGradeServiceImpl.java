@@ -96,6 +96,9 @@ public class UserGradeServiceImpl extends ServiceImpl<MtUserGradeMapper, MtUserG
     @Transactional(rollbackFor = Exception.class)
     @OperationServiceLog(description = "新增会员等级")
     public MtUserGrade addUserGrade(MtUserGrade mtUserGrade) throws BusinessCheckException {
+        if (mtUserGrade.getMerchantId() == null || mtUserGrade.getMerchantId() < 1) {
+            throw new BusinessCheckException("平台方帐号无法执行该操作，请使用商户帐号操作");
+        }
         if (mtUserGrade.getGrade() != null && (mtUserGrade.getGrade() <= 0)) {
             throw new BusinessCheckException("会员等级需大于0");
         }

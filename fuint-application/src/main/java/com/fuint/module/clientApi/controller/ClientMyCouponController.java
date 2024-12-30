@@ -75,7 +75,7 @@ public class ClientMyCouponController extends BaseController {
     /**
      * 查询我的卡券是否已使用
      *
-     * @param param  Request对象
+     * @param param Request对象
      */
     @ApiOperation(value = "查询我的卡券是否已使用")
     @RequestMapping(value = "/isUsed", method = RequestMethod.GET)
@@ -96,6 +96,36 @@ public class ClientMyCouponController extends BaseController {
 
         MtUserCoupon userCoupon = couponService.queryUserCouponById(userCouponId);
         if (userCoupon.getStatus().equals(UserCouponStatusEnum.USED.getKey()) && mtUser.getId().equals(userCoupon.getUserId())) {
+            return getSuccessResult(true);
+        } else {
+            return getSuccessResult(false);
+        }
+    }
+
+    /**
+     * 删除我的卡券
+     *
+     * @param param Request对象
+     */
+    @ApiOperation(value = "删除我的卡券")
+    @RequestMapping(value = "/remove", method = RequestMethod.GET)
+    @CrossOrigin
+    public ResponseObject remove(HttpServletRequest request, @RequestParam Map<String, Object> param) throws BusinessCheckException {
+        String token = request.getHeader("Access-Token");
+        Integer userCouponId = param.get("userCouponId") == null ? 0 : Integer.parseInt(param.get("userCouponId").toString());
+
+        if (StringUtil.isEmpty(token)) {
+            return getFailureResult(1001);
+        }
+
+        UserInfo mtUser = TokenUtil.getUserInfoByToken(token);
+
+        if (null == mtUser) {
+            return getFailureResult(1001);
+        }
+
+        Boolean result = couponService.removeCoupon(userCouponId, mtUser.getId());
+        if (result) {
             return getSuccessResult(true);
         } else {
             return getSuccessResult(false);

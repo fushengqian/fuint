@@ -1103,8 +1103,7 @@ public class CouponServiceImpl extends ServiceImpl<MtCouponMapper, MtCoupon> imp
      * */
     @Override
     public MtUserCoupon queryUserCouponById(Integer userCouponId) {
-        MtUserCoupon userCoupon = mtUserCouponMapper.selectById(userCouponId);
-        return userCoupon;
+        return mtUserCouponMapper.selectById(userCouponId);
     }
 
     /**
@@ -1215,6 +1214,31 @@ public class CouponServiceImpl extends ServiceImpl<MtCouponMapper, MtCoupon> imp
         if (!coupon.getStatus().equals(StatusEnum.ENABLED.getKey())) {
             return false;
         }
+
+        return true;
+    }
+
+    /**
+     * 删除我的卡券
+     *
+     * @param userCouponId
+     * @param userId
+     * @return
+     * */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public boolean removeCoupon(Integer userCouponId, Integer userId) throws BusinessCheckException {
+        MtUserCoupon userCoupon = mtUserCouponMapper.selectById(userCouponId);
+        if (null == userCoupon) {
+            throw new BusinessCheckException("删除失败：该卡券不存在！");
+        }
+        if (!userId.equals(userCoupon.getUserId())) {
+            throw new BusinessCheckException("删除失败：无操作权限！");
+        }
+        userCoupon.setStatus(UserCouponStatusEnum.DISABLE.getKey());
+        userCoupon.setUpdateTime(new Date());
+        mtUserCouponMapper.updateById(userCoupon);
+        logger.info("删除卡券成功！");
 
         return true;
     }

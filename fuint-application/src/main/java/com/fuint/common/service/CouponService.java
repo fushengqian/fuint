@@ -166,4 +166,14 @@ public interface CouponService extends IService<MtCoupon> {
      * @return
      * */
     boolean isCouponEffective(MtCoupon coupon, MtUserCoupon userCoupon);
+
+    /**
+     * 删除我的卡券
+     *
+     * @param userCouponId
+     * @param userId
+     * @return
+     * */
+    boolean removeCoupon(Integer userCouponId, Integer userId) throws BusinessCheckException;
+
 }

@@ -203,10 +203,6 @@ public class BackendUserGradeController extends BaseController {
         String status = param.get("status") == null ? StatusEnum.ENABLED.getKey() : CommonUtil.replaceXSS(param.get("status").toString());
         String id = param.get("id") == null ? "" : param.get("id").toString();
 
-        if (accountInfo.getMerchantId() == null || accountInfo.getMerchantId() <= 0) {
-            return getFailureResult(201, "平台方帐号无法执行该操作，请使用商户帐号操作");
-        }
-
         if (StringUtil.isEmpty(grade) || StringUtil.isEmpty(name)) {
             return getFailureResult(201, "参数有误");
         }
@@ -228,7 +224,7 @@ public class BackendUserGradeController extends BaseController {
 
         mtUserGrade.setGrade(Integer.parseInt(grade));
         mtUserGrade.setName(name);
-        if (mtUserGrade.getMerchantId() == null) {
+        if (mtUserGrade.getMerchantId() == null && mtUserGrade.getMerchantId() > 0) {
             mtUserGrade.setMerchantId(accountInfo.getMerchantId());
         }
         if (StringUtil.isNotEmpty(catchType)) {
