@@ -224,7 +224,7 @@ public class BackendUserGradeController extends BaseController {
 
         mtUserGrade.setGrade(Integer.parseInt(grade));
         mtUserGrade.setName(name);
-        if (mtUserGrade.getMerchantId() == null && mtUserGrade.getMerchantId() > 0) {
+        if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
             mtUserGrade.setMerchantId(accountInfo.getMerchantId());
         }
         if (StringUtil.isNotEmpty(catchType)) {
