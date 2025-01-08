@@ -8,6 +8,7 @@ import com.fuint.common.util.TokenUtil;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.web.BaseController;
 import com.fuint.framework.web.ResponseObject;
+import com.fuint.module.clientApi.request.MyCouponRequest;
 import com.fuint.repository.model.MtUserCoupon;
 import com.fuint.utils.StringUtil;
 import io.swagger.annotations.Api;
@@ -75,14 +76,15 @@ public class ClientMyCouponController extends BaseController {
     /**
      * 查询我的卡券是否已使用
      *
-     * @param param Request对象
+     * @param requestParam Request对象
+     * @return
      */
     @ApiOperation(value = "查询我的卡券是否已使用")
     @RequestMapping(value = "/isUsed", method = RequestMethod.GET)
     @CrossOrigin
-    public ResponseObject isUsed(HttpServletRequest request, @RequestParam Map<String, Object> param) throws BusinessCheckException {
+    public ResponseObject isUsed(HttpServletRequest request, @RequestBody MyCouponRequest requestParam) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
-        Integer userCouponId = param.get("id") == null ? 0 : Integer.parseInt(param.get("id").toString());
+        Integer userCouponId = requestParam.getId() == null ? 0 : requestParam.getId();
 
         if (StringUtil.isEmpty(token)) {
             return getFailureResult(1001);
@@ -105,14 +107,15 @@ public class ClientMyCouponController extends BaseController {
     /**
      * 删除我的卡券
      *
-     * @param param Request对象
+     * @param requestParam Request对象
+     * @return
      */
     @ApiOperation(value = "删除我的卡券")
     @RequestMapping(value = "/remove", method = RequestMethod.GET)
     @CrossOrigin
-    public ResponseObject remove(HttpServletRequest request, @RequestParam Map<String, Object> param) throws BusinessCheckException {
+    public ResponseObject remove(HttpServletRequest request, @RequestBody MyCouponRequest requestParam) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
-        Integer userCouponId = param.get("userCouponId") == null ? 0 : Integer.parseInt(param.get("userCouponId").toString());
+        Integer userCouponId = requestParam.getUserCouponId() == null ? 0 : requestParam.getUserCouponId();
 
         if (StringUtil.isEmpty(token)) {
             return getFailureResult(1001);

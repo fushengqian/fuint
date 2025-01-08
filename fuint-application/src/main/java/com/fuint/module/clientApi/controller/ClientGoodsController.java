@@ -15,6 +15,7 @@ import com.fuint.framework.pagination.PaginationRequest;
 import com.fuint.framework.pagination.PaginationResponse;
 import com.fuint.framework.web.BaseController;
 import com.fuint.framework.web.ResponseObject;
+import com.fuint.module.clientApi.request.GoodsSearchRequest;
 import com.fuint.repository.model.MtGoods;
 import com.fuint.repository.model.MtGoodsCate;
 import com.fuint.repository.model.MtGoodsSku;
@@ -125,19 +126,19 @@ public class ClientGoodsController extends BaseController {
 
     /**
      * 搜索商品
-     * */
+     */
     @ApiOperation(value = "搜索商品")
     @RequestMapping(value = "/search", method = RequestMethod.POST)
     @CrossOrigin
-    public ResponseObject search(HttpServletRequest request, @RequestBody Map<String, Object> params) throws BusinessCheckException {
+    public ResponseObject search(HttpServletRequest request, @RequestBody GoodsSearchRequest params) throws BusinessCheckException {
         Integer storeId = request.getHeader("storeId") == null ? 0 : Integer.parseInt(request.getHeader("storeId"));
         String merchantNo = request.getHeader("merchantNo") == null ? "" : request.getHeader("merchantNo");
-        Integer page = params.get("page") == null ? 1 : Integer.parseInt(params.get("page").toString());
-        Integer pageSize = params.get("pageSize") == null ? Constants.PAGE_SIZE : Integer.parseInt(params.get("pageSize").toString());
-        String name = params.get("name") == null ? "" : params.get("name").toString();
-        Integer cateId = params.get("cateId") == null ? 0 : Integer.parseInt(params.get("cateId").toString());
-        String sortType = params.get("sortType") == null ? "all" : params.get("sortType").toString();
-        String sortPrice = params.get("sortPrice") == null ? "0" : params.get("sortPrice").toString();
+        Integer page = params.getPage() == null ? 1 : params.getPage();
+        Integer pageSize = params.getPageSize() == null ? Constants.PAGE_SIZE : params.getPageSize();
+        String name = params.getName() == null ? "" : params.getName();
+        Integer cateId = params.getCateId() == null ? 0 : params.getCateId();
+        String sortType = params.getSortType() == null ? "all" : params.getSortType();
+        String sortPrice = params.getSortPrice() == null ? "0" : params.getSortPrice();
 
         PaginationRequest paginationRequest = new PaginationRequest();
         paginationRequest.setCurrentPage(page);
