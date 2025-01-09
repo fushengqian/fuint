@@ -44,14 +44,16 @@ public class VelocityUtils {
         velocityContext.put("tablePrefix", genTable.getTablePrefix().replaceAll("_", ""));
         velocityContext.put("tableName", genTable.getTableName());
         velocityContext.put("moduleName", genTable.getModuleName());
-        String modelName = CommonUtil.firstLetterToUpperCase(genTable.getTablePrefix()).replaceAll("_", "") + CommonUtil.firstLetterToUpperCase(genTable.getTableName());
+        String modelName = CommonUtil.firstLetterToUpperCase(genTable.getTablePrefix()).replaceAll("_", "") + CommonUtil.firstLetterToUpperCase(CommonUtil.toCamelCase(genTable.getTableName()));
         velocityContext.put("modelName", modelName);
         velocityContext.put("basePackage", getPackagePrefix(genTable.getPackageName()));
         velocityContext.put("packageName", genTable.getPackageName());
         velocityContext.put("pkColumn", genTable.getPkName());
         velocityContext.put("author", genTable.getAuthor());
         velocityContext.put("table", genTable);
-        String tableClass = CommonUtil.firstLetterToUpperCase(genTable.getTableName());
+        String tableClass = CommonUtil.toCamelCase(genTable.getTableName());
+        velocityContext.put("serviceName", tableClass);
+        tableClass = CommonUtil.firstLetterToUpperCase(tableClass);
         String tablePrefix = CommonUtil.firstLetterToUpperCase(genTable.getTablePrefix()).replaceAll("_", "");
         velocityContext.put("className", tablePrefix + tableClass);
         velocityContext.put("tableClass", tableClass);
@@ -101,7 +103,7 @@ public class VelocityUtils {
         // 模块名
         String moduleName = genTable.getModuleName();
         // 表名称
-        String tableName = CommonUtil.firstLetterToUpperCase(genTable.getTableName());
+        String tableName = CommonUtil.firstLetterToUpperCase(CommonUtil.toCamelCase(genTable.getTableName()));
         // 表前缀
         String tablePrefix = CommonUtil.firstLetterToUpperCase(genTable.getTablePrefix()).replaceAll("_", "");
         String vuePath = "/src";

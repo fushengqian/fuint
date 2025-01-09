@@ -132,8 +132,9 @@ public class GenCodeServiceImpl implements GenCodeService {
 
     /**
      * 生成代码（自定义路径）
-     * 
+     *
      * @param tableName 表名称
+     * @return
      */
     @Override
     public void generatorCode(String tableName) throws BusinessRuntimeException {

@@ -49,7 +49,7 @@ public class ${tableClass}ServiceImpl extends ServiceImpl<${className}Mapper, ${
         LambdaQueryWrapper<${className}> lambdaQueryWrapper = Wrappers.lambdaQuery();
         lambdaQueryWrapper.ne(${className}::getStatus, StatusEnum.DISABLE.getKey());
 
-        lambdaQueryWrapper.orderByAsc(${className}::getSort);
+        lambdaQueryWrapper.orderByAsc(${className}::getId);
         List<${className}> dataList = ${tablePrefix}${tableClass}Mapper.selectList(lambdaQueryWrapper);
 
         PageRequest pageRequest = PageRequest.of(paginationRequest.getCurrentPage(), paginationRequest.getPageSize());
@@ -136,7 +136,7 @@ public class ${tableClass}ServiceImpl extends ServiceImpl<${className}Mapper, ${
    /**
     * 根据条件搜索${moduleName}
     *
-    * @param params 查询参数
+    * @param  params 查询参数
     * @throws BusinessCheckException
     * @return
     * */
@@ -160,7 +160,7 @@ public class ${tableClass}ServiceImpl extends ServiceImpl<${className}Mapper, ${
                     .eq(${className}::getStoreId, storeId));
         }
 
-        lambdaQueryWrapper.orderByAsc(${className}::getSort);
+        lambdaQueryWrapper.orderByAsc(${className}::getId);
         List<${className}> dataList = ${tablePrefix}${tableClass}Mapper.selectList(lambdaQueryWrapper);
         return dataList;
     }

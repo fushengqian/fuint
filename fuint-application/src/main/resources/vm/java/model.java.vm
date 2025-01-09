@@ -12,7 +12,7 @@ import lombok.Setter;
 
 /**
  * ${moduleName}实体
- * 
+ *
  * @Created by ${author}
  * CopyRight https://www.fuint.cn
  */

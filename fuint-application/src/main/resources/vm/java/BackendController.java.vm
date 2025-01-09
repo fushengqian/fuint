@@ -6,6 +6,7 @@ import com.fuint.framework.web.BaseController;
 import com.fuint.framework.web.ResponseObject;
 import com.fuint.common.Constants;
 import com.fuint.common.enums.StatusEnum;
+import com.fuint.common.service.${tableClass}Service;
 import com.fuint.framework.pagination.PaginationRequest;
 import com.fuint.framework.pagination.PaginationResponse;
 import com.fuint.framework.exception.BusinessCheckException;
@@ -35,7 +36,7 @@ public class Backend${tableClass}Controller extends BaseController {
     /**
      * ${moduleName}服务接口
      */
-    private ${tableClass}Service ${tableName}Service;
+    private ${tableClass}Service ${serviceName}Service;
 
     /**
      * ${moduleName}列表查询
@@ -84,7 +85,7 @@ public class Backend${tableClass}Controller extends BaseController {
             params.put("storeId", storeId);
         }
         paginationRequest.setSearchParams(params);
-        PaginationResponse<${className}> paginationResponse = ${tableName}Service.query${tableClass}ListByPagination(paginationRequest);
+        PaginationResponse<${className}> paginationResponse = ${serviceName}Service.query${tableClass}ListByPagination(paginationRequest);
 
         Map<String, Object> paramsStore = new HashMap<>();
         paramsStore.put("status", StatusEnum.ENABLED.getKey());
@@ -120,7 +121,7 @@ public class Backend${tableClass}Controller extends BaseController {
             return getFailureResult(1001, "请先登录");
         }
 
-        ${className} ${tablePrefix}${tableClass} = ${tableName}Service.query${tableClass}ById(id);
+        ${className} ${tablePrefix}${tableClass} = ${serviceName}Service.query${tableClass}ById(id);
         if (${tablePrefix}${tableClass} == null) {
             return getFailureResult(201);
         }
@@ -128,7 +129,7 @@ public class Backend${tableClass}Controller extends BaseController {
         String operator = accountInfo.getAccountName();
         ${tablePrefix}${tableClass}.setOperator(operator);
         ${tablePrefix}${tableClass}.setStatus(status);
-        ${tableName}Service.update${tableClass}(${tablePrefix}${tableClass});
+        ${serviceName}Service.update${tableClass}(${tablePrefix}${tableClass});
 
         return getSuccessResult(true);
     }
@@ -148,7 +149,6 @@ public class Backend${tableClass}Controller extends BaseController {
         String id = params.get("id") == null ? "" : params.get("id").toString();
         String status = params.get("status") == null ? "" : params.get("status").toString();
         String storeId = params.get("storeId") == null ? "0" : params.get("storeId").toString();
-        String sort = params.get("sort") == null ? "0" : params.get("sort").toString();
 
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
         if (accountInfo == null) {
@@ -159,13 +159,12 @@ public class Backend${tableClass}Controller extends BaseController {
         info.setOperator(accountInfo.getAccountName());
         info.setStatus(status);
         info.setStoreId(Integer.parseInt(storeId));
-        info.setSort(Integer.parseInt(sort));
         info.setMerchantId(accountInfo.getMerchantId());
         if (StringUtil.isNotEmpty(id)) {
             info.setId(Integer.parseInt(id));
-            ${tableName}Service.update${tableClass}(info);
+            ${serviceName}Service.update${tableClass}(info);
         } else {
-            ${tableName}Service.add${tableClass}(info);
+            ${serviceName}Service.add${tableClass}(info);
         }
 
         return getSuccessResult(true);
@@ -188,7 +187,7 @@ public class Backend${tableClass}Controller extends BaseController {
             return getFailureResult(1001, "请先登录");
         }
 
-        ${className} ${tableName}Info = ${tableName}Service.query${tableClass}ById(id);
+        ${className} ${tableName}Info = ${serviceName}Service.query${tableClass}ById(id);
 
         Map<String, Object> result = new HashMap<>();
         result.put("${tableName}Info", ${tableName}Info);
