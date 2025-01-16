@@ -1,5 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.fuint.repository.mapper.MtUploadShippingLogMapper}">
-
+<mapper namespace="com.fuint.repository.mapper.MtUploadShippingLogMapper">
+    <select id="getUploadShippingLogList" resultType="com.fuint.repository.bean.UploadShippingLogBean">
+        SELECT o.ID,o.ORDER_SN,u.`STATUS` FROM mt_order o LEFT JOIN mt_upload_shipping_log u ON o.ID = u.`ORDER_ID`
+        WHERE o.PAY_STATUS = 'B'
+        AND u.`STATUS` IS NULL
+        AND o.`PAY_TYPE` = 'JSAPI'
+        AND o.PLATFORM = 'MP-WEIXIN'
+        AND o.EXPRESS_INFO != ''
+        <if test="merchantId != null and merchantId != '' and merchantId > 0">
+            AND o.MERCHANT_ID = #{merchantId}
+        </if>
+        ORDER BY o.ID DESC
+        LIMIT 10
+    </select>
 </mapper>

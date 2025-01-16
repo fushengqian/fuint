@@ -1,10 +1,10 @@
 package com.fuint.module.schedule;
 
 import com.fuint.common.enums.PayStatusEnum;
-import com.fuint.common.service.OrderService;
 import com.fuint.common.service.WeixinService;
 import com.fuint.framework.exception.BusinessCheckException;
-import com.fuint.repository.model.MtOrder;
+import com.fuint.repository.bean.UploadShippingLogBean;
+import com.fuint.repository.mapper.MtUploadShippingLogMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -32,11 +32,8 @@ public class UploadShippingInfoJob {
     @Autowired
     private Environment environment;
 
-    /**
-     * 订单服务接口
-     */
     @Autowired(required = false)
-    private OrderService orderService;
+    private MtUploadShippingLogMapper uploadShippingLogMapper;
 
     /**
      * 微信服务接口
@@ -52,10 +49,10 @@ public class UploadShippingInfoJob {
             logger.info("uploadShippingInfoJobStart!!!");
             Map<String, Object> param = new HashMap<>();
             param.put("pay_status", PayStatusEnum.SUCCESS.getValue());
-            List<MtOrder> dataList = orderService.getOrderListByParams(param);
+            List<UploadShippingLogBean> dataList = uploadShippingLogMapper.getUploadShippingLogList(0);
             if (dataList.size() > 0) {
-                for (MtOrder mtOrder : dataList) {
-                     weixinService.uploadShippingInfo(mtOrder.getOrderSn());
+                for (UploadShippingLogBean bean : dataList) {
+                     weixinService.uploadShippingInfo(bean.getOrderSn());
                 }
             }
             logger.info("uploadShippingInfoJobEnd!!!");
