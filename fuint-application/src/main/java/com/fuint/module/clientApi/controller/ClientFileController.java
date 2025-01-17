@@ -132,7 +132,7 @@ public class ClientFileController extends BaseController {
                 filePath = domain + fileName;
                 url = filePath;
             }
-            
+
             resultMap.put("status", "success");
             resultMap.put("domain", baseImage);
             resultMap.put("filePath", filePath);
@@ -143,6 +143,8 @@ public class ClientFileController extends BaseController {
             resultMap.put("title", fileName);
             resultMap.put("type", file.getContentType());
             resultMap.put("url", url);
+            String ip = CommonUtil.getIPFromHttpRequest(request);
+            logger.info("用户ip:{},上传文件url:{}", ip, url);
         } catch (Exception e) {
             return getFailureResult(201, "上传失败，请检查上传配置及权限");
         }

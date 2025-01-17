@@ -1932,6 +1932,13 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
             for (MtCart cart : cartList) {
                 // 购物车商品信息
                 MtGoods mtGoodsInfo = goodsService.queryGoodsById(cart.getGoodsId());
+                // 取对应sku的价格
+                if (cart.getSkuId() != null && cart.getSkuId() > 0) {
+                    MtGoodsSku mtGoodsSku = mtGoodsSkuMapper.selectById(cart.getSkuId());
+                    if (mtGoodsSku != null && mtGoodsSku.getPrice().compareTo(new BigDecimal("0")) > 0) {
+                        mtGoodsInfo.setPrice(mtGoodsSku.getPrice());
+                    }
+                }
                 if (mtGoodsInfo == null || !mtGoodsInfo.getStatus().equals(StatusEnum.ENABLED.getKey())) {
                     continue;
                 }

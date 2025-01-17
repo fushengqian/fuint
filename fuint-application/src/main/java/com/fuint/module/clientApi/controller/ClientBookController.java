@@ -19,6 +19,7 @@ import com.fuint.framework.web.BaseController;
 import com.fuint.framework.web.ResponseObject;
 import com.fuint.repository.model.MtBookCate;
 import com.fuint.repository.model.MtBookItem;
+import com.fuint.repository.model.MtStore;
 import com.fuint.repository.model.MtUser;
 import com.fuint.utils.StringUtil;
 import io.swagger.annotations.Api;
@@ -71,17 +72,23 @@ public class ClientBookController extends BaseController {
     private MemberService memberService;
 
     /**
+     * 店铺服务接口
+     * */
+    private StoreService storeService;
+
+    /**
      * 获取预约项目列表
      */
     @ApiOperation(value="获取预约项目列表", notes="获取预约项目列表")
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @CrossOrigin
-    public ResponseObject list(HttpServletRequest request,  @RequestBody BookListParam param) throws BusinessCheckException, InvocationTargetException, IllegalAccessException {
+    public ResponseObject list(HttpServletRequest request, @RequestBody BookListParam param) throws BusinessCheckException, InvocationTargetException, IllegalAccessException {
+        String merchantNo = request.getHeader("merchantNo") == null ? "" : request.getHeader("merchantNo");
+        Integer storeId = request.getHeader("storeId") == null ? 0 : Integer.parseInt(request.getHeader("storeId"));
         String name = param.getName();
         Integer cateId = param.getCateId();
         Integer page = param.getPage() == null ? Constants.PAGE_NUMBER : param.getPage();
         Integer pageSize = param.getPageSize() == null ? Constants.PAGE_SIZE : param.getPageSize();
-        String merchantNo = request.getHeader("merchantNo") == null ? "" : request.getHeader("merchantNo");
 
         PaginationRequest paginationRequest = new PaginationRequest();
         paginationRequest.setCurrentPage(page);
@@ -92,8 +99,17 @@ public class ClientBookController extends BaseController {
         if (StringUtil.isNotEmpty(name)) {
             params.put("name", name);
         }
+        Integer merchantId = 0;
         if (StringUtil.isNotEmpty(merchantNo)) {
-            params.put("merchantNo", merchantNo);
+            merchantId = merchantService.getMerchantId(merchantNo);
+        } else if (storeId != null && storeId > 0) {
+            MtStore mtStore = storeService.queryStoreById(storeId);
+            if (mtStore != null && mtStore.getMerchantId() != null) {
+                merchantId = mtStore.getMerchantId();
+            }
+        }
+        if (merchantId > 0) {
+            params.put("merchantId", merchantId);
         }
         if (cateId != null && cateId > 0) {
             params.put("cateId", cateId);

@@ -16,6 +16,7 @@ import com.fuint.common.enums.*;
 import com.fuint.common.http.HttpRESTDataClient;
 import com.fuint.common.service.*;
 import com.fuint.common.util.*;
+import com.fuint.common.vo.printer.OrderStatusType;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.web.ResponseObject;
 import com.fuint.repository.mapper.MtUploadShippingLogMapper;
@@ -1068,19 +1069,22 @@ public class WeixinServiceImpl implements WeixinService {
                 String response = HttpRESTDataClient.requestPostBody(url, reqJson);
                 logger.info("微信上传发货信息接口参数：{}，返回：{}", reqJson, response);
                 JSONObject data = (JSONObject) JSONObject.parse(response);
-
+                MtUploadShippingLog mtUploadShippingLog = new MtUploadShippingLog();
+                mtUploadShippingLog.setMerchantId(orderInfo.getMerchantId());
+                mtUploadShippingLog.setStoreId(orderInfo.getStoreId());
+                mtUploadShippingLog.setOrderId(orderInfo.getId());
+                mtUploadShippingLog.setOrderSn(orderSn);
+                mtUploadShippingLog.setMobile(orderInfo.getAddress().getMobile());
+                Date time = new Date();
+                mtUploadShippingLog.setCreateTime(time);
+                mtUploadShippingLog.setUpdateTime(time);
                 if (data.get("errcode").toString().equals("0")) {
                     logger.info("微信上传发货信息接口成功，订单号：", orderSn);
-                    MtUploadShippingLog mtUploadShippingLog = new MtUploadShippingLog();
-                    mtUploadShippingLog.setMerchantId(orderInfo.getMerchantId());
-                    mtUploadShippingLog.setStoreId(orderInfo.getStoreId());
-                    mtUploadShippingLog.setOrderId(orderInfo.getId());
-                    mtUploadShippingLog.setOrderSn(orderSn);
-                    mtUploadShippingLog.setStatus(StatusEnum.ENABLED.getKey());
-                    uploadShippingLogMapper.insert(mtUploadShippingLog);
+                    mtUploadShippingLog.setStatus(OrderStatusType.Completed.getVal());
                 } else {
-                    logger.error("微信上传发货信息接口失败，订单号：", orderSn);
+                    mtUploadShippingLog.setStatus(OrderStatusType.Failed.getVal());
                 }
+                uploadShippingLogMapper.insert(mtUploadShippingLog);
             } catch (Exception e) {
                 logger.error("微信上传发货信息接口失败：", e.getMessage());
             }

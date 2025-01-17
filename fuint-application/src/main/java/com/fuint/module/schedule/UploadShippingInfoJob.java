@@ -43,7 +43,7 @@ public class UploadShippingInfoJob {
 
     @Scheduled(cron = "${uploadShippingInfoJob.job.time}")
     @Transactional(rollbackFor = Exception.class)
-    public void dealOrder() throws BusinessCheckException {
+    public void dealOrder() {
         String theSwitch = environment.getProperty("uploadShippingInfoJob.job.switch");
          if (theSwitch != null && theSwitch.equals("1")) {
             logger.info("uploadShippingInfoJobStart!!!");
@@ -52,7 +52,11 @@ public class UploadShippingInfoJob {
             List<UploadShippingLogBean> dataList = uploadShippingLogMapper.getUploadShippingLogList(0);
             if (dataList.size() > 0) {
                 for (UploadShippingLogBean bean : dataList) {
-                     weixinService.uploadShippingInfo(bean.getOrderSn());
+                    try {
+                        weixinService.uploadShippingInfo(bean.getOrderSn());
+                    } catch (BusinessCheckException e) {
+                        logger.error(e.getMessage());
+                    }
                 }
             }
             logger.info("uploadShippingInfoJobEnd!!!");

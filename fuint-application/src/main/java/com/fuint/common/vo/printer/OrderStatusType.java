@@ -9,35 +9,23 @@ package com.fuint.common.vo.printer;
 public enum OrderStatusType {
 
     /**
-     * 处理中
-     */
-    Processing(0),
-    /**
      * 完成
      */
-    Completed(1),
+    Completed("A"),
+
     /**
      * 失败
      */
-    Failed(2);
+    Failed("B");
 
-    private final int val;
+    private final String val;
 
-    public int getVal() {
+    public String getVal() {
         return val;
     }
 
-    OrderStatusType(int num) {
-        this.val = num;
-    }
-
-    public static OrderStatusType getOrderStatusType(int val) {
-        for (OrderStatusType type : OrderStatusType.values()) {
-            if (type.getVal() == val) {
-                return type;
-            }
-        }
-        return Processing;
+    OrderStatusType(String type) {
+        this.val = type;
     }
 
 }

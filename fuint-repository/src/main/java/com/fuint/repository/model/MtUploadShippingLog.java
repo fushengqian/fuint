@@ -19,7 +19,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @TableName("mt_upload_shipping_log")
-@ApiModel(value = "upload_shipping_log表对象", description = "upload_shipping_log表对象")
+@ApiModel(value = "upload_shipping_log表对象", description = "微信小程序上传发货信息对象")
 public class MtUploadShippingLog implements Serializable {
 
     private static final long serialVersionUID = 1L;
