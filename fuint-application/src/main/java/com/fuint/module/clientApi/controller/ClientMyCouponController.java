@@ -80,7 +80,7 @@ public class ClientMyCouponController extends BaseController {
      * @return
      */
     @ApiOperation(value = "查询我的卡券是否已使用")
-    @RequestMapping(value = "/isUsed", method = RequestMethod.GET)
+    @RequestMapping(value = "/isUsed", method = RequestMethod.POST)
     @CrossOrigin
     public ResponseObject isUsed(HttpServletRequest request, @RequestBody MyCouponRequest requestParam) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
@@ -111,7 +111,7 @@ public class ClientMyCouponController extends BaseController {
      * @return
      */
     @ApiOperation(value = "删除我的卡券")
-    @RequestMapping(value = "/remove", method = RequestMethod.GET)
+    @RequestMapping(value = "/remove", method = RequestMethod.POST)
     @CrossOrigin
     public ResponseObject remove(HttpServletRequest request, @RequestBody MyCouponRequest requestParam) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
