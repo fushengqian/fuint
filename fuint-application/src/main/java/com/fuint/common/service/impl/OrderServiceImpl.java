@@ -1920,6 +1920,7 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
         BigDecimal totalCanUsePointAmount = new BigDecimal("0");
         BigDecimal memberDiscount = new BigDecimal("0");
         BigDecimal percent = new BigDecimal("0");
+        Integer storeId = 0;
         if (cartList.size() > 0) {
             // 会员折扣
             MtUserGrade userGrade = userGradeService.queryUserGradeById(userInfo.getMerchantId(), userInfo.getGradeId() != null ? Integer.parseInt(userInfo.getGradeId()) : 1, userId);
@@ -1930,6 +1931,9 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
                 }
             }
             for (MtCart cart : cartList) {
+                if (storeId <= 0) {
+                    storeId = cart.getStoreId();
+                }
                 // 购物车商品信息
                 MtGoods mtGoodsInfo = goodsService.queryGoodsById(cart.getGoodsId());
                 // 取对应sku的价格
@@ -2025,6 +2029,13 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
                             if (!platform.equals(PlatformTypeEnum.PC.getCode())) {
                                 continue;
                             }
+                        }
+                    }
+                    // 判断在当前门店是否适用
+                    if (StringUtil.isNotEmpty(couponInfo.getStoreIds())) {
+                        String[] storeIds = couponInfo.getStoreIds().split(",");
+                        if (storeIds.length > 0 && !Arrays.asList(storeIds).contains(storeId.toString())) {
+                            continue;
                         }
                     }
                     boolean isEffective = couponService.isCouponEffective(couponInfo, userCoupon);
