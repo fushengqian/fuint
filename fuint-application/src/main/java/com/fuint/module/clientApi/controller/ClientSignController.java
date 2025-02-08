@@ -114,6 +114,7 @@ public class ClientSignController extends BaseController {
             }
         }
         userInfo.put("storeId", storeId);
+
         MtUser mtUser = memberService.queryMemberByOpenId(merchantId, loginInfo.get("openid").toString(), userInfo);
         if (mtUser == null) {
             return getFailureResult(0, "用户状态异常");
@@ -145,6 +146,7 @@ public class ClientSignController extends BaseController {
     public ResponseObject mpWxAuth(HttpServletRequest request, @RequestBody Map<String, Object> param) throws BusinessCheckException {
         String merchantNo = request.getHeader("merchantNo") == null ? "" : request.getHeader("merchantNo");
         String storeId = request.getHeader("storeId") == null ? "0" : request.getHeader("storeId");
+        String platform = request.getHeader("platform") == null ? "" : request.getHeader("platform");
         String shareId = param.get("shareId") == null ? "0" : param.get("shareId").toString();
         Integer merchantId = merchantService.getMerchantId(merchantNo);
         JSONObject userInfo = weixinService.getWxOpenId(merchantId, param.get("code").toString());
@@ -156,6 +158,8 @@ public class ClientSignController extends BaseController {
 
         userInfo.put("storeId", storeId);
         userInfo.put("shareId", shareId);
+        userInfo.put("platform", platform);
+
         MtUser mtUser = memberService.queryMemberByOpenId(merchantId, userInfo.get("openid").toString(), userInfo);
         if (mtUser == null) {
             return getFailureResult(201, "微信公众号授权失败");

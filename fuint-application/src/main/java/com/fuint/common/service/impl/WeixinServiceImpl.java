@@ -1209,6 +1209,7 @@ public class WeixinServiceImpl implements WeixinService {
                     .createSign(wxPayApiConfig.getPartnerKey(), SignType.MD5);
             String xmlResult = WxPayApi.pushOrder(false, params);
 
+            logger.info("调用微信支付回调地址：{}", wxPayApiConfig.getDomain() + CALL_BACK_URL);
             logger.info("调用微信支付下单接口返回xml：{}", xmlResult);
             Map<String, String> result = WxPayKit.xmlToMap(xmlResult);
 
