@@ -6,6 +6,7 @@ import java.io.Serializable;
 
 /**
  * 会员查询请求参数
+ *
  * Created by FSQ
  * CopyRight https://www.fuint.cn
  */

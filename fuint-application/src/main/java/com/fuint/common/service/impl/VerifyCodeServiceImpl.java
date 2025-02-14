@@ -105,8 +105,8 @@ public class VerifyCodeServiceImpl extends ServiceImpl<MtVerifyCodeMapper, MtVer
      * @throws BusinessCheckException
      * @return
      */
-    public MtVerifyCode checkVerifyCode(String mobile, String verifyCode) {
-        MtVerifyCode reVerifyCode;
+    public MtVerifyCode checkVerifyCode(String mobile, String verifyCode) throws BusinessCheckException {
+        MtVerifyCode mtVerifyCode;
         Date queryTime;
         try {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -115,7 +115,10 @@ public class VerifyCodeServiceImpl extends ServiceImpl<MtVerifyCodeMapper, MtVer
         } catch (ParseException e) {
             throw new BusinessRuntimeException("日期转换异常" + e.getMessage());
         }
-        reVerifyCode = mtVerifyCodeMapper.queryByMobileVerifyCode(mobile, verifyCode, queryTime);
-        return reVerifyCode;
+        mtVerifyCode = mtVerifyCodeMapper.queryByMobileVerifyCode(mobile, verifyCode, queryTime);
+        if (mtVerifyCode != null) {
+            updateValidFlag(mtVerifyCode.getId(), "1");
+        }
+        return mtVerifyCode;
     }
 }

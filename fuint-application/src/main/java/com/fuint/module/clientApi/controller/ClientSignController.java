@@ -303,8 +303,6 @@ public class ClientSignController extends BaseController {
                     return getFailureResult(201, "账号状态异常，登录失败");
                 }
 
-                // 更新验证码
-                verifyCodeService.updateValidFlag(mtVerifyCode.getId(), "1");
                 String userToken = TokenUtil.generateToken(userAgent, mtUser.getId());
                 UserInfo loginInfo = new UserInfo();
                 loginInfo.setId(mtUser.getId());

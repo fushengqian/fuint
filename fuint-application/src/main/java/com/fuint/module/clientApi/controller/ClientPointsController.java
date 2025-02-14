@@ -103,10 +103,10 @@ public class ClientPointsController extends BaseController {
             if (result) {
                 return getSuccessResult(true);
             } else {
-                return getFailureResult(3008, "转赠积分失败");
+                return getFailureResult(3008);
             }
         } catch (BusinessCheckException e) {
-            return getFailureResult(3008, e.getMessage());
+            return getFailureResult(3008);
         }
     }
 }

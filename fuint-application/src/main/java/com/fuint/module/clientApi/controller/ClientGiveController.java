@@ -70,22 +70,10 @@ public class ClientGiveController extends BaseController {
         giveParam.setMerchantId(mtUser.getMerchantId());
 
         try {
-            /*
-            String vcode = param.get("vcode") == null ? "" : param.get("vcode").toString();
-            if (StringUtil.isEmpty(vcode)) {
-                return getFailureResult(3001, "验证码不能为空");
-            }
-            MtVerifyCode mtVerifyCode = verifyCodeService.checkVerifyCode(mtUser.getMobile(), vcode);
-            if (null != mtVerifyCode) {
-                verifyCodeService.updateValidFlag(mtVerifyCode.getId(),"1");
-            } else {
-                return getFailureResult(3002, "验证码有误");
-            }*/
             ResponseObject result = giveService.addGive(giveParam);
-
             return getSuccessResult(result.getData());
         } catch (BusinessCheckException e) {
-            return getFailureResult(3008, e.getMessage());
+            return getFailureResult(3008);
         }
     }
 

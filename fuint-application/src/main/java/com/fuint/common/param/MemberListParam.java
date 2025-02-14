@@ -6,6 +6,7 @@ import java.io.Serializable;
 
 /**
  * 会员列表请求参数
+ *
  * Created by FSQ
  * CopyRight https://www.fuint.cn
  */
@@ -17,6 +18,9 @@ public class MemberListParam extends PageParam implements Serializable {
 
     @ApiModelProperty(value="手机号", name="mobile")
     private String mobile;
+
+    @ApiModelProperty(value="关键字", name="keyword")
+    private String keyword;
 
     @ApiModelProperty(value="会员名称", name="name")
     private String name;
