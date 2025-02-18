@@ -22,6 +22,23 @@ import java.util.regex.Matcher;
 public class CommonUtil {
 
     /**
+     * 隐藏手机号中间4位
+     *
+     * @param phone
+     * @return
+     * */
+    public static String hidePhone(String phone) {
+        if (StringUtil.isEmpty(phone)) {
+            return "";
+        }
+        if (phone.length() < 11) {
+            return phone;
+        }
+        return phone.substring(0, 3) + "****" + phone.substring(7);
+    }
+
+
+    /**
      * 功能：将输入字符串的首字母改成大写
      *
      * @param str

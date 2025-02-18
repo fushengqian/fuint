@@ -126,8 +126,8 @@ public class BalanceServiceImpl extends ServiceImpl<MtBalanceMapper, MtBalance> 
         List<BalanceDto> dataList = new ArrayList<>();
         for (MtBalance mtBalance : balanceList) {
             MtUser userInfo = memberService.queryMemberById(mtBalance.getUserId());
-            if (userInfo != null && StringUtil.isNotEmpty(userInfo.getMobile())) {
-                userInfo.setMobile(userInfo.getMobile().substring(0, 3) + "****" + userInfo.getMobile().substring(7));
+            if (userInfo != null) {
+                userInfo.setMobile(CommonUtil.hidePhone(userInfo.getMobile()));
             }
             BalanceDto item = new BalanceDto();
             item.setId(mtBalance.getId());

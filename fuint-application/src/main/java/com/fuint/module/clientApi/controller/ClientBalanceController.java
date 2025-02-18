@@ -131,10 +131,8 @@ public class ClientBalanceController extends BaseController {
     @RequestMapping(value = "/doRecharge", method = RequestMethod.POST)
     @CrossOrigin
     public ResponseObject doRecharge(HttpServletRequest request, @RequestBody RechargeParam rechargeParam) throws BusinessCheckException {
-        Integer storeId = request.getHeader("storeId") == null ? 0 : Integer.parseInt(request.getHeader("storeId"));
         String platform = request.getHeader("platform") == null ? "" : request.getHeader("platform");
         String isWechat = request.getHeader("isWechat") == null ? "" : request.getHeader("isWechat");
-        String merchantNo = request.getHeader("merchantNo") == null ? "" : request.getHeader("merchantNo");
 
         String token = request.getHeader("Access-Token");
         if (StringUtil.isEmpty(token)) {
@@ -145,70 +143,13 @@ public class ClientBalanceController extends BaseController {
         if (null == userInfo) {
             return getFailureResult(1001);
         }
-
-        String rechargeAmount = rechargeParam.getRechargeAmount() == null ? "" : rechargeParam.getRechargeAmount();
-        String customAmount = rechargeParam.getCustomAmount() == null ? "" : rechargeParam.getCustomAmount();
-        if (StringUtil.isEmpty(rechargeAmount) && StringUtil.isEmpty(customAmount)) {
-            return getFailureResult(2000, "请确认充值金额");
-        }
-
-        Integer merchantId = merchantService.getMerchantId(merchantNo);
-
-        // 充值赠送金额
-        String ruleParam = "";
-        MtSetting mtSetting = settingService.querySettingByName(merchantId, SettingTypeEnum.BALANCE.getKey(), BalanceSettingEnum.RECHARGE_RULE.getKey());
-        if (StringUtil.isNotEmpty(rechargeAmount) && mtSetting != null) {
-            if (mtSetting.getValue() != null && StringUtil.isNotEmpty(mtSetting.getValue())) {
-                String rules[] = mtSetting.getValue().split(",");
-                for (String rule : rules) {
-                     String amountArr[] = rule.split("_");
-                     if (amountArr.length == 2) {
-                         if (amountArr[0].equals(rechargeAmount)) {
-                             ruleParam = rule;
-                             break;
-                         }
-                     }
-                }
-            }
-        }
-
-        // 自定义充值没有赠送金额
-        if (StringUtil.isNotEmpty(customAmount) && Integer.parseInt(customAmount) > 0 && (StringUtil.isEmpty(rechargeAmount) || Integer.parseInt(rechargeAmount) <= 0)) {
-            rechargeAmount = customAmount;
-            ruleParam = customAmount + "_0";
-        }
-
-        if (StringUtil.isEmpty(ruleParam)) {
-            ruleParam = rechargeAmount + "_0";
-        }
-
-        BigDecimal amount = new BigDecimal(rechargeAmount);
-        if (amount.compareTo(new BigDecimal("0")) <= 0) {
-            return getFailureResult(201, "请确认充值金额");
-        }
-
-        OrderDto orderDto = new OrderDto();
-        orderDto.setType(OrderTypeEnum.RECHARGE.getKey());
-        orderDto.setUserId(userInfo.getId());
-        orderDto.setStoreId(storeId);
-        orderDto.setAmount(amount);
-        orderDto.setUsePoint(0);
-        orderDto.setRemark("会员充值");
-        orderDto.setParam(ruleParam);
-        orderDto.setStatus(OrderStatusEnum.CREATED.getKey());
-        orderDto.setPayStatus(PayStatusEnum.WAIT.getKey());
-        orderDto.setPointAmount(new BigDecimal("0"));
-        orderDto.setOrderMode("");
-        orderDto.setCouponId(0);
-        orderDto.setPlatform(platform);
-        orderDto.setMerchantId(merchantId);
-
-        MtOrder orderInfo = orderService.saveOrder(orderDto);
+        rechargeParam.setMemberId(userInfo.getId());
+        MtOrder orderInfo = orderService.doRecharge(request, rechargeParam);
 
         MtUser mtUser = memberService.queryMemberById(userInfo.getId());
 
         String ip = CommonUtil.getIPFromHttpRequest(request);
-        BigDecimal pay = amount.multiply(new BigDecimal("100"));
+        BigDecimal pay = orderInfo.getAmount().multiply(new BigDecimal("100"));
         orderInfo.setPayType(PayTypeEnum.JSAPI.getKey());
         ResponseObject paymentInfo = paymentService.createPrepayOrder(mtUser, orderInfo, (pay.intValue()), "", 0, ip, platform, isWechat);
         if (paymentInfo.getData() == null) {

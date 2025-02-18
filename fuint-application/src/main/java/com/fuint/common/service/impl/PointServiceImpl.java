@@ -10,6 +10,7 @@ import com.fuint.common.service.MemberService;
 import com.fuint.common.service.PointService;
 import com.fuint.common.service.SendSmsService;
 import com.fuint.common.service.WeixinService;
+import com.fuint.common.util.CommonUtil;
 import com.fuint.common.util.DateUtil;
 import com.fuint.framework.annoation.OperationServiceLog;
 import com.fuint.framework.exception.BusinessCheckException;
@@ -114,8 +115,8 @@ public class PointServiceImpl extends ServiceImpl<MtPointMapper, MtPoint> implem
         List<PointDto> dataList = new ArrayList<>();
         for (MtPoint point : pointList) {
             MtUser userInfo = memberService.queryMemberById(point.getUserId());
-            if (userInfo != null && StringUtil.isNotEmpty(userInfo.getMobile())) {
-                userInfo.setMobile(userInfo.getMobile().substring(0, 3) + "****" + userInfo.getMobile().substring(7));
+            if (userInfo != null) {
+                userInfo.setMobile(CommonUtil.hidePhone(userInfo.getMobile()));
             }
             PointDto item = new PointDto();
             item.setId(point.getId());

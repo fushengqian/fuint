@@ -5,6 +5,7 @@ import com.fuint.common.dto.UserDto;
 import com.fuint.common.dto.UserInfo;
 import com.fuint.common.enums.StatusEnum;
 import com.fuint.common.param.MemberDetailParam;
+import com.fuint.common.param.MemberInfoParam;
 import com.fuint.common.param.MemberListParam;
 import com.fuint.common.service.*;
 import com.fuint.common.util.DateUtil;
@@ -100,6 +101,9 @@ public class MerchantMemberController extends BaseController {
         paginationRequest.setPageSize(pageSize);
 
         Map<String, Object> params = new HashMap<>();
+        if (staffInfo.getMerchantId() != null && staffInfo.getMerchantId() > 0) {
+            params.put("merchantId", staffInfo.getMerchantId());
+        }
         if (staffInfo.getStoreId() != null && staffInfo.getStoreId() > 0) {
             params.put("storeId", staffInfo.getStoreId());
         }
@@ -195,5 +199,44 @@ public class MerchantMemberController extends BaseController {
         result.put("gradeInfo", gradeInfo);
 
         return getSuccessResult(result);
+    }
+
+    /**
+     * 保存会员信息
+     */
+    @ApiOperation(value = "保存会员信息")
+    @RequestMapping(value = "/save", method = RequestMethod.POST)
+    @CrossOrigin
+    public ResponseObject save(HttpServletRequest request, @RequestBody MemberInfoParam memberInfoParam) throws BusinessCheckException {
+        String token = request.getHeader("Access-Token");
+        UserInfo userInfo = TokenUtil.getUserInfoByToken(token);
+        if (userInfo == null) {
+            return getFailureResult(1001, "请先登录");
+        }
+
+        MtStaff staffInfo = null;
+        MtUser myUserInfo = memberService.queryMemberById(userInfo.getId());
+        if (myUserInfo != null && myUserInfo.getMobile() != null) {
+            staffInfo = staffService.queryStaffByMobile(myUserInfo.getMobile());
+        }
+        if (staffInfo == null) {
+            return getFailureResult(201, "该账号不是商户");
+        }
+
+        MtUser mtUser = new MtUser();
+        if (memberInfoParam.getId() != null) {
+            mtUser = memberService.queryMemberById(memberInfoParam.getId());
+        }
+        mtUser.setMerchantId(staffInfo.getMerchantId());
+        mtUser.setStoreId(staffInfo.getStoreId());
+        mtUser.setMobile(memberInfoParam.getMobile());
+        mtUser.setName(memberInfoParam.getName());
+        mtUser.setAvatar(memberInfoParam.getAvatar());
+        mtUser.setSex(memberInfoParam.getSex());
+        mtUser.setBirthday(memberInfoParam.getBirthday());
+        mtUser.setUserNo(memberInfoParam.getUserNo());
+
+        MtUser memberInfo = memberService.addMember(mtUser, null);
+        return getSuccessResult(memberInfo);
     }
 }

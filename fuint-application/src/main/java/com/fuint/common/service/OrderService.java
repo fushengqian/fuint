@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.fuint.common.dto.UserOrderDto;
 import com.fuint.common.dto.OrderDto;
 import com.fuint.common.param.OrderListParam;
+import com.fuint.common.param.RechargeParam;
 import com.fuint.common.param.SettlementParam;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.pagination.PaginationResponse;
@@ -247,4 +248,12 @@ public interface OrderService extends IService<MtOrder> {
      * @return
      * */
     List<MtOrder> getTobeCommissionOrderList(String dateTime) throws BusinessCheckException;
+
+    /**
+     * 提交充值订单
+     *
+     * @param rechargeParam 充值参数
+     * @return
+     * */
+    MtOrder doRecharge(HttpServletRequest request, RechargeParam rechargeParam) throws BusinessCheckException;
 }

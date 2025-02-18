@@ -219,11 +219,7 @@ public class BackendStaffController extends BaseController {
 
         MtStaff staffInfo = staffService.queryStaffById(id);
         if (staffInfo != null) {
-            // 隐藏手机号中间四位
-            String phone = staffInfo.getMobile();
-            if (phone != null && StringUtil.isNotEmpty(phone) && phone.length() == 11) {
-                staffInfo.setMobile(phone.substring(0, 3) + "****" + phone.substring(7));
-            }
+            staffInfo.setMobile(CommonUtil.hidePhone(staffInfo.getMobile()));
         }
         Map<String, Object> result = new HashMap<>();
         result.put("staffInfo", staffInfo);

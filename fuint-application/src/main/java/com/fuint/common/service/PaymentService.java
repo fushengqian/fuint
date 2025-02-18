@@ -32,7 +32,7 @@ public interface PaymentService {
     ResponseObject createPrepayOrder(MtUser userInfo, MtOrder orderInfo, Integer payAmount, String authCode, Integer giveAmount, String ip, String platform, String isWechat) throws BusinessCheckException;
 
     /**
-     * 支付回调
+     * 支付成功回调
      *
      * @param orderInfo 订单信息
      * @return

@@ -7,6 +7,7 @@ import com.fuint.common.dto.StaffDto;
 import com.fuint.common.enums.StatusEnum;
 import com.fuint.common.enums.YesOrNoEnum;
 import com.fuint.common.service.*;
+import com.fuint.common.util.CommonUtil;
 import com.fuint.framework.annoation.OperationServiceLog;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.pagination.PaginationRequest;
@@ -16,7 +17,6 @@ import com.fuint.repository.model.MtMerchant;
 import com.fuint.repository.model.MtStaff;
 import com.fuint.repository.model.MtStore;
 import com.fuint.repository.model.MtUser;
-import com.fuint.utils.StringUtil;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import lombok.AllArgsConstructor;
@@ -104,11 +104,7 @@ public class StaffServiceImpl extends ServiceImpl<MtStaffMapper, MtStaff> implem
         List<MtStaff> dataList = mtStaffMapper.selectList(lambdaQueryWrapper);
         if (dataList != null && dataList.size() > 0) {
             for (MtStaff mtStaff : dataList) {
-                // 隐藏手机号中间四位
-                String phone = mtStaff.getMobile();
-                if (phone != null && StringUtil.isNotEmpty(phone) && phone.length() == 11) {
-                    mtStaff.setMobile(phone.substring(0, 3) + "****" + phone.substring(7));
-                }
+                 mtStaff.setMobile(CommonUtil.hidePhone(mtStaff.getMobile()));
             }
         }
         PageRequest pageRequest = PageRequest.of(paginationRequest.getCurrentPage(), paginationRequest.getPageSize());

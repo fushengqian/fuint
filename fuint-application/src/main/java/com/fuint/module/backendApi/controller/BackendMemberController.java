@@ -7,6 +7,7 @@ import com.fuint.common.enums.StatusEnum;
 import com.fuint.common.enums.UserSettingEnum;
 import com.fuint.common.enums.YesOrNoEnum;
 import com.fuint.common.service.*;
+import com.fuint.common.util.CommonUtil;
 import com.fuint.common.util.DateUtil;
 import com.fuint.common.util.PhoneFormatCheckUtils;
 import com.fuint.common.util.TokenUtil;
@@ -353,13 +354,7 @@ public class BackendMemberController extends BaseController {
             BeanUtils.copyProperties(mtUserGroup, userGroupDto);
             memberInfo.setGroupInfo(userGroupDto);
         }
-
-        // 隐藏手机号中间四位
-        String phone = memberInfo.getMobile();
-        if (phone != null && StringUtil.isNotEmpty(phone) && phone.length() == 11) {
-            memberInfo.setMobile(phone.substring(0, 3) + "****" + phone.substring(7));
-        }
-
+        memberInfo.setMobile(CommonUtil.hidePhone(memberInfo.getMobile()));
         Map<String, Object> param = new HashMap<>();
         if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
             param.put("MERCHANT_ID", accountInfo.getMerchantId());

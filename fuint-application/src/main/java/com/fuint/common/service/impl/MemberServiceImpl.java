@@ -296,13 +296,9 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
         List<MtUser> userList = mtUserMapper.selectList(wrapper);
         List<UserDto> dataList = new ArrayList<>();
         for (MtUser mtUser : userList) {
-            String phone = mtUser.getMobile();
             UserDto userDto = new UserDto();
             BeanUtils.copyProperties(mtUser, userDto);
-            // 隐藏手机号中间四位
-            if (phone != null && StringUtil.isNotEmpty(phone) && phone.length() == 11) {
-                userDto.setMobile(phone.substring(0, 3) + "****" + phone.substring(7));
-            }
+            userDto.setMobile(CommonUtil.hidePhone(mtUser.getMobile()));
             if (userDto.getStoreId() != null && userDto.getStoreId() > 0) {
                 MtStore mtStore = storeService.queryStoreById(userDto.getStoreId());
                 if (mtStore != null) {
@@ -965,11 +961,7 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
                  memberDto.setId(mtUser.getId());
                  memberDto.setName(mtUser.getName());
                  memberDto.setUserNo(mtUser.getUserNo());
-                 // 隐藏手机号中间四位
-                 String phone = mtUser.getMobile();
-                 if (phone != null && StringUtil.isNotEmpty(phone) && phone.length() == 11) {
-                     memberDto.setMobile(phone.substring(0, 3) + "****" + phone.substring(7));
-                 }
+                 memberDto.setMobile(CommonUtil.hidePhone(mtUser.getMobile()));
                  dataList.add(memberDto);
             }
         }

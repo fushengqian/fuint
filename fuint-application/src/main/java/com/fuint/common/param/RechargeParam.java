@@ -6,6 +6,7 @@ import java.io.Serializable;
 
 /**
  * 充值请求参数
+ *
  * Created by FSQ
  * CopyRight https://www.fuint.cn
  */
@@ -17,5 +18,8 @@ public class RechargeParam implements Serializable {
 
     @ApiModelProperty(value="自定义充值金额", name="customAmount")
     private String customAmount;
+
+    @ApiModelProperty(value="会员ID", name="memberId")
+    private Integer memberId;
 
 }

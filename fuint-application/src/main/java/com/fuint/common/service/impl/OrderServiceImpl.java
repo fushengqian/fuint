@@ -8,6 +8,7 @@ import com.fuint.common.Constants;
 import com.fuint.common.dto.*;
 import com.fuint.common.enums.*;
 import com.fuint.common.param.OrderListParam;
+import com.fuint.common.param.RechargeParam;
 import com.fuint.common.param.SettlementParam;
 import com.fuint.common.service.*;
 import com.fuint.common.util.*;
@@ -2218,5 +2219,81 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
     @Override
     public List<MtOrder> getTobeCommissionOrderList(String dateTime) {
         return mtOrderMapper.getTobeCommissionOrderList(dateTime);
+    }
+
+    /**
+     * 提交充值订单
+     *
+     * @param request HttpServletRequest对象
+     * @param rechargeParam 充值参数
+     * @return
+     * */
+    @Override
+    public MtOrder doRecharge(HttpServletRequest request, RechargeParam rechargeParam) throws BusinessCheckException {
+        Integer storeId = request.getHeader("storeId") == null ? 0 : Integer.parseInt(request.getHeader("storeId"));
+        String platform = request.getHeader("platform") == null ? "" : request.getHeader("platform");
+        String merchantNo = request.getHeader("merchantNo") == null ? "" : request.getHeader("merchantNo");
+
+        String rechargeAmount = rechargeParam.getRechargeAmount() == null ? "" : rechargeParam.getRechargeAmount();
+        String customAmount = rechargeParam.getCustomAmount() == null ? "" : rechargeParam.getCustomAmount();
+        if (StringUtil.isEmpty(rechargeAmount) && StringUtil.isEmpty(customAmount)) {
+            throw new BusinessCheckException("请确认充值金额");
+        }
+        if (rechargeParam.getMemberId() == null || rechargeParam.getMemberId() < 1) {
+            throw new BusinessCheckException("请确认充值会员信息");
+        }
+
+        Integer merchantId = merchantService.getMerchantId(merchantNo);
+
+        // 充值赠送金额
+        String ruleParam = "";
+        MtSetting mtSetting = settingService.querySettingByName(merchantId, SettingTypeEnum.BALANCE.getKey(), BalanceSettingEnum.RECHARGE_RULE.getKey());
+        if (StringUtil.isNotEmpty(rechargeAmount) && mtSetting != null) {
+            if (mtSetting.getValue() != null && StringUtil.isNotEmpty(mtSetting.getValue())) {
+                String rules[] = mtSetting.getValue().split(",");
+                for (String rule : rules) {
+                    String amountArr[] = rule.split("_");
+                    if (amountArr.length == 2) {
+                        if (amountArr[0].equals(rechargeAmount)) {
+                            ruleParam = rule;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+        // 自定义充值没有赠送金额
+        if (StringUtil.isNotEmpty(customAmount) && Integer.parseInt(customAmount) > 0 && (StringUtil.isEmpty(rechargeAmount) || Integer.parseInt(rechargeAmount) <= 0)) {
+            rechargeAmount = customAmount;
+            ruleParam = customAmount + "_0";
+        }
+
+        if (StringUtil.isEmpty(ruleParam)) {
+            ruleParam = rechargeAmount + "_0";
+        }
+
+        BigDecimal amount = new BigDecimal(rechargeAmount);
+        if (amount.compareTo(new BigDecimal("0")) <= 0) {
+            throw new BusinessCheckException("请确认充值金额");
+        }
+
+        OrderDto orderDto = new OrderDto();
+        orderDto.setType(OrderTypeEnum.RECHARGE.getKey());
+        orderDto.setUserId(rechargeParam.getMemberId());
+        orderDto.setStoreId(storeId);
+        orderDto.setAmount(amount);
+        orderDto.setUsePoint(0);
+        orderDto.setRemark("会员充值");
+        orderDto.setParam(ruleParam);
+        orderDto.setStatus(OrderStatusEnum.CREATED.getKey());
+        orderDto.setPayStatus(PayStatusEnum.WAIT.getKey());
+        orderDto.setPointAmount(new BigDecimal("0"));
+        orderDto.setOrderMode("");
+        orderDto.setCouponId(0);
+        orderDto.setPlatform(platform);
+        orderDto.setMerchantId(merchantId);
+
+        return saveOrder(orderDto);
     }
 }
