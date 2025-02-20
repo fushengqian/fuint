@@ -222,7 +222,6 @@ public class MerchantMemberController extends BaseController {
         if (staffInfo == null) {
             return getFailureResult(201, "该账号不是商户");
         }
-
         MtUser mtUser = new MtUser();
         if (memberInfoParam.getId() != null) {
             mtUser = memberService.queryMemberById(memberInfoParam.getId());
@@ -235,8 +234,12 @@ public class MerchantMemberController extends BaseController {
         mtUser.setSex(memberInfoParam.getSex());
         mtUser.setBirthday(memberInfoParam.getBirthday());
         mtUser.setUserNo(memberInfoParam.getUserNo());
-
-        MtUser memberInfo = memberService.addMember(mtUser, null);
+        MtUser memberInfo;
+        if (memberInfoParam.getId() == null) {
+            memberInfo = memberService.addMember(mtUser, null);
+        } else {
+            memberInfo = memberService.updateMember(mtUser, false);
+        }
         return getSuccessResult(memberInfo);
     }
 }

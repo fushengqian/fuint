@@ -453,6 +453,8 @@ public class CouponServiceImpl extends ServiceImpl<MtCouponMapper, MtCoupon> imp
         Integer needPoint = couponListParam.getNeedPoint() == null ? 0 : couponListParam.getNeedPoint();
         String sendWay = couponListParam.getSendWay() == null ? "front" : couponListParam.getSendWay();
         Integer merchantId = couponListParam.getMerchantId() == null ? 0 : couponListParam.getMerchantId();
+        Integer storeId = couponListParam.getStoreId() == null ? 0 : couponListParam.getStoreId();
+        String keyword = couponListParam.getKeyword() == null ? "" : couponListParam.getKeyword();
 
         Page<MtCoupon> pageHelper = PageHelper.startPage(pageNumber, pageSize);
         LambdaQueryWrapper<MtCoupon> lambdaQueryWrapper = Wrappers.lambdaQuery();
@@ -463,6 +465,12 @@ public class CouponServiceImpl extends ServiceImpl<MtCouponMapper, MtCoupon> imp
         if (StringUtil.isNotEmpty(sendWay)) {
             lambdaQueryWrapper.eq(MtCoupon::getSendWay, sendWay);
         }
+        if (StringUtil.isNotEmpty(keyword)) {
+            lambdaQueryWrapper.and(wq -> wq
+                    .eq(MtCoupon::getId, keyword)
+                    .or()
+                    .like(MtCoupon::getName, keyword));
+        }
         if (StringUtil.isNotEmpty(type)) {
             lambdaQueryWrapper.eq(MtCoupon::getType, type);
         }
@@ -471,6 +479,9 @@ public class CouponServiceImpl extends ServiceImpl<MtCouponMapper, MtCoupon> imp
         }
         if (merchantId != null && merchantId > 0) {
             lambdaQueryWrapper.eq(MtCoupon::getMerchantId, merchantId);
+        }
+        if (storeId != null && storeId > 0) {
+            lambdaQueryWrapper.eq(MtCoupon::getStoreId, storeId);
         }
 
         lambdaQueryWrapper.orderByDesc(MtCoupon::getId);
@@ -599,6 +610,9 @@ public class CouponServiceImpl extends ServiceImpl<MtCouponMapper, MtCoupon> imp
     @Transactional(rollbackFor = Exception.class)
     @OperationServiceLog(description = "发放卡券")
     public void sendCoupon(Integer couponId, Integer userId, Integer num, Boolean sendMessage, String uuid, String operator) throws BusinessCheckException {
+        if (StringUtil.isEmpty(uuid)) {
+            uuid = UUID.randomUUID().toString().replaceAll("-", "");
+        }
         MtCoupon couponInfo = queryCouponById(couponId);
         MtUser userInfo = memberService.queryMemberById(userId);
 

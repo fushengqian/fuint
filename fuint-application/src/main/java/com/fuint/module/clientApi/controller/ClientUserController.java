@@ -181,8 +181,15 @@ public class ClientUserController extends BaseController {
     @CrossOrigin
     public ResponseObject asset(HttpServletRequest request) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
-        UserInfo mtUser = TokenUtil.getUserInfoByToken(token);
+        String userId = request.getParameter("userId");
 
+        UserInfo mtUser = TokenUtil.getUserInfoByToken(token);
+        if (StringUtil.isNotEmpty(userId)) {
+            MtUser userInfo = memberService.queryMemberById(Integer.parseInt(userId));
+            if (userInfo != null) {
+                mtUser.setId(userInfo.getId());
+            }
+        }
         Integer couponNum = 0;
         Integer preStoreNum = 0;
         Integer timerNum = 0;

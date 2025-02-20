@@ -112,7 +112,7 @@ public class ClientConfirmController extends BaseController {
                         }
                     }
                     if (!isSameStore) {
-                        return getFailureResult(1003, "员工对该卡券没有权限");
+                        return getFailureResult(1003, "抱歉，该卡券存在店铺使用范围限制，您所在店铺无法核销！");
                     }
                 }
             }
