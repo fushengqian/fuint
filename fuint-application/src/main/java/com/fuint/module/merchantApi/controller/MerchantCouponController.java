@@ -7,6 +7,7 @@ import com.fuint.common.util.TokenUtil;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.web.BaseController;
 import com.fuint.framework.web.ResponseObject;
+import com.fuint.repository.model.MtCoupon;
 import com.fuint.repository.model.MtStaff;
 import com.fuint.repository.model.MtUser;
 import com.fuint.utils.StringUtil;
@@ -65,19 +66,33 @@ public class MerchantCouponController extends BaseController {
             return getFailureResult(1001);
         }
 
-        MtStaff staffInfo = null;
+        MtStaff staff = null;
         MtUser mtUser = memberService.queryMemberById(userInfo.getId());
         if (mtUser != null && mtUser.getMobile() != null) {
-            staffInfo = staffService.queryStaffByMobile(mtUser.getMobile());
+            staff = staffService.queryStaffByMobile(mtUser.getMobile());
         }
-        if (staffInfo == null) {
+        if (staff == null) {
             return getFailureResult(201, "该账号不是商户");
         }
-        if (!merchantId.equals(staffInfo.getMerchantId())) {
+        if (!merchantId.equals(staff.getMerchantId())) {
             return getFailureResult(201, "您没有操作权限");
         }
-
-        couponService.sendCoupon(receiveParam.getCouponId(), receiveParam.getUserId(), receiveParam.getNum(), true, null, staffInfo.getRealName());
+        // 判断店铺权限
+        MtCoupon couponInfo = couponService.queryCouponById(receiveParam.getCouponId());
+        if (StringUtil.isNotEmpty(couponInfo.getStoreIds())) {
+            String[] storeIds = couponInfo.getStoreIds().split(",");
+            Boolean isSameStore = false;
+            for (String hid : storeIds) {
+                if (staff.getStoreId().toString().equals(hid)) {
+                    isSameStore = true;
+                    break;
+                }
+            }
+            if (!isSameStore) {
+                return getFailureResult(1003, "抱歉，该卡券存在店铺使用范围限制，您所在的店铺无发券权限！");
+            }
+        }
+        couponService.sendCoupon(receiveParam.getCouponId(), receiveParam.getUserId(), receiveParam.getNum(), true, null, staff.getRealName());
         return getSuccessResult(true);
     }
 }

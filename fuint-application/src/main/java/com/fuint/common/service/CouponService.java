@@ -123,10 +123,10 @@ public interface CouponService extends IService<MtCoupon> {
     void deleteUserCoupon(Integer id, String operator) throws BusinessCheckException;
 
     /**
-     * 根据券ID 撤销个人卡券消费流水
+     * 根据券ID撤销个人卡券消费流水
      *
-     * @param id       消费流水ID
-     * @param userCouponId       用户卡券ID
+     * @param id 消费流水ID
+     * @param userCouponId 用户卡券ID
      * @param operator 操作人
      * @throws BusinessCheckException
      * @return
