@@ -10,6 +10,7 @@ import com.fuint.common.service.CateService;
 import com.fuint.common.service.GoodsService;
 import com.fuint.common.service.MerchantService;
 import com.fuint.common.service.SettingService;
+import com.fuint.common.util.CommonUtil;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.pagination.PaginationRequest;
 import com.fuint.framework.pagination.PaginationResponse;
@@ -212,6 +213,9 @@ public class ClientGoodsController extends BaseController {
         goodsDetailDto.setStock(goodsDto.getStock());
         goodsDetailDto.setWeight(goodsDto.getWeight());
         goodsDetailDto.setDescription(goodsDto.getDescription());
+        if (StringUtil.isNotEmpty(goodsDetailDto.getDescription())) {
+            goodsDetailDto.setDescription(CommonUtil.fixVideo(goodsDetailDto.getDescription()));
+        }
         goodsDetailDto.setInitSale(goodsDto.getInitSale());
         goodsDetailDto.setStatus(goodsDto.getStatus());
 
