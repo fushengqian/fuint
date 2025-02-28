@@ -124,7 +124,7 @@ public class BackendFileController extends BaseController {
 
             // 上传阿里云oss
             String mode = env.getProperty("aliyun.oss.mode");
-            if (mode.equals("1") && fileType.indexOf("image") >= 0) { // 检查是否开启上传
+            if (mode.equals("1")) { // 检查是否开启上传
                 String endpoint = env.getProperty("aliyun.oss.endpoint");
                 String accessKeyId = env.getProperty("aliyun.oss.accessKeyId");
                 String accessKeySecret = env.getProperty("aliyun.oss.accessKeySecret");

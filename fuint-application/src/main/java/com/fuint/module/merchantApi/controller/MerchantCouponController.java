@@ -79,7 +79,7 @@ public class MerchantCouponController extends BaseController {
         }
         // 判断店铺权限
         MtCoupon couponInfo = couponService.queryCouponById(receiveParam.getCouponId());
-        if (StringUtil.isNotEmpty(couponInfo.getStoreIds())) {
+        if (StringUtil.isNotEmpty(couponInfo.getStoreIds()) && staff.getStoreId() != null && staff.getStoreId() > 0) {
             String[] storeIds = couponInfo.getStoreIds().split(",");
             Boolean isSameStore = false;
             for (String hid : storeIds) {

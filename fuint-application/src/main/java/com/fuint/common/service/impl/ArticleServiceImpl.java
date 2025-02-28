@@ -7,6 +7,7 @@ import com.fuint.common.dto.ArticleDto;
 import com.fuint.common.service.ArticleService;
 import com.fuint.common.service.MerchantService;
 import com.fuint.common.service.StoreService;
+import com.fuint.common.util.CommonUtil;
 import com.fuint.framework.annoation.OperationServiceLog;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.pagination.PaginationRequest;
@@ -181,6 +182,7 @@ public class ArticleServiceImpl extends ServiceImpl<MtArticleMapper, MtArticle> 
         BeanUtils.copyProperties(mtArticle, articleDto);
         String baseImage = settingService.getUploadBasePath();
         articleDto.setImage(baseImage + mtArticle.getImage());
+        articleDto.setDescription(CommonUtil.fixVideo(mtArticle.getDescription()));
         return articleDto;
     }
 

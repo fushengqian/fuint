@@ -102,7 +102,7 @@ public class ClientConfirmController extends BaseController {
                     storeId = staff.getStoreId();
                 }
                 String storeIdsStr = couponInfo.getStoreIds();
-                if (StringUtil.isNotEmpty(storeIdsStr)) {
+                if (StringUtil.isNotEmpty(storeIdsStr) && storeId > 0) {
                     String[] storeIds = couponInfo.getStoreIds().split(",");
                     Boolean isSameStore = false;
                     for (String hid : storeIds) {
