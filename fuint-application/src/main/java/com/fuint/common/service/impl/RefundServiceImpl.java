@@ -92,6 +92,11 @@ public class RefundServiceImpl extends ServiceImpl<MtRefundMapper, MtRefund> imp
     private StoreService storeService;
 
     /**
+     * 会员服务接口
+     * */
+    private MemberService memberService;
+
+    /**
      * 分页查询售后订单列表
      *
      * @param paginationRequest
@@ -465,6 +470,35 @@ public class RefundServiceImpl extends ServiceImpl<MtRefundMapper, MtRefund> imp
                 balanceReq.setUpdateTime(new Date());
                 balanceService.addBalance(balanceReq, true);
             }
+        }
+
+        // 充值订单退款
+        if (orderInfo.getType().equals(OrderTypeEnum.RECHARGE.getKey())) {
+            String param = orderInfo.getParam();
+            MtBalance mtBalance = new MtBalance();
+            mtBalance.setMerchantId(orderInfo.getMerchantId());
+            mtBalance.setUserId(orderInfo.getUserId());
+            mtBalance.setStoreId(orderInfo.getStoreId());
+            mtBalance.setMobile(orderInfo.getUserInfo().getMobile());
+            mtBalance.setOrderSn(orderInfo.getOrderSn());
+            mtBalance.setCreateTime(new Date());
+            mtBalance.setUpdateTime(new Date());
+            BigDecimal amount = new BigDecimal("0");
+            if (StringUtil.isNotEmpty(param)) {
+                String params[] = param.split("_");
+                if (params.length == 2) {
+                    amount = new BigDecimal(params[0]).add(new BigDecimal(params[1]));
+                }
+            } else {
+                amount = orderInfo.getPayAmount();
+            }
+            MtUser mtUser = memberService.queryMemberById(orderInfo.getUserId());
+            if (mtUser.getBalance().compareTo(amount) < 0) {
+                throw new BusinessCheckException("当前用户余额不足以退款");
+            }
+            mtBalance.setAmount(amount.negate());
+            mtBalance.setOperator(refundDto.getOperator());
+            balanceService.addBalance(mtBalance, true);
         }
 
         // 返还积分
