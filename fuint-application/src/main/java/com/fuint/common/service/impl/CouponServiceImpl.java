@@ -623,7 +623,13 @@ public class CouponServiceImpl extends ServiceImpl<MtCouponMapper, MtCoupon> imp
 
         // 判断券是否有效
         if (!couponInfo.getStatus().equals(StatusEnum.ENABLED.getKey())) {
-            throw new BusinessCheckException("卡券“"+couponInfo.getName()+"”已停用,不能发放");
+            throw new BusinessCheckException("卡券“"+couponInfo.getName()+"”已停用，不能发放");
+        }
+
+        // 判断是否过期
+        Date now = new Date();
+        if (couponInfo.getEndTime() != null && couponInfo.getEndTime().before(now)) {
+            throw new BusinessCheckException("卡券“"+ couponInfo.getName() +"”已过期，不能发放");
         }
 
         // 是否超过拥有数量

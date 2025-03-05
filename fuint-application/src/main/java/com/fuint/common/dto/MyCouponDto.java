@@ -50,7 +50,7 @@ public class MyCouponDto implements Serializable {
     @ApiModelProperty("余额")
     private BigDecimal balance;
 
-    @ApiModelProperty("剩余")
+    @ApiModelProperty("剩余次数")
     private Integer num;
 
     @ApiModelProperty("是否可用")

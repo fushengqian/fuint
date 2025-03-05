@@ -454,8 +454,7 @@ public class UserCouponServiceImpl extends ServiceImpl<MtUserCouponMapper, MtUse
                 dto.setName(couponInfo.getName());
                 dto.setCode(userCouponDto.getCode());
                 dto.setCouponId(couponInfo.getId());
-                dto.setUseRule(couponInfo.getDescription());
-
+                dto.setUseRule(couponInfo.getOutRule());
                 String image = couponInfo.getImage();
                 String baseImage = settingService.getUploadBasePath();
                 dto.setImage(baseImage + image);
@@ -468,6 +467,15 @@ public class UserCouponServiceImpl extends ServiceImpl<MtUserCouponMapper, MtUse
                 dto.setUserInfo(userInfo);
                 dto.setStoreInfo(storeInfo);
                 dto.setNum(0);
+
+                // 次卡核销情况
+                if (dto.getType().equals(CouponTypeEnum.TIMER.getKey())) {
+                    if (StringUtil.isNotEmpty(couponInfo.getOutRule())) {
+                        dto.setAmount(new BigDecimal(couponInfo.getOutRule()));
+                    }
+                    Long confirmCount = confirmLogService.getConfirmNum(dto.getId());
+                    dto.setBalance(new BigDecimal(confirmCount));
+                }
 
                 boolean canUse = couponService.isCouponEffective(couponInfo, userCouponDto);
                 if (!userCouponDto.getStatus().equals(UserCouponStatusEnum.UNUSED.getKey())) {

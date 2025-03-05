@@ -248,6 +248,9 @@ public class OpenGiftServiceImpl extends ServiceImpl<MtOpenGiftMapper, MtOpenGif
         if (user == null) {
             throw new BusinessCheckException("会员状态异常");
         }
+        if (user.getIsStaff().equals(YesOrNoEnum.YES.getKey())) {
+            return false;
+        }
         if (user.getGradeId() == null && StringUtil.isEmpty(user.getGradeId())) {
             user.setGradeId("0");
         }
