@@ -4,6 +4,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.Date;
 
 /**
@@ -57,6 +58,9 @@ public class StoreInfo implements Serializable {
 
     @ApiModelProperty("纬度")
     private String longitude;
+
+    @ApiModelProperty("距离")
+    private BigDecimal distance;
 
     @ApiModelProperty("备注信息")
     private String description;

@@ -1,7 +1,6 @@
 package com.fuint.module.clientApi.controller;
 
 import com.fuint.common.dto.ParamDto;
-import com.fuint.common.dto.StoreDto;
 import com.fuint.common.dto.StoreInfo;
 import com.fuint.common.dto.UserInfo;
 import com.fuint.common.enums.StatusEnum;
