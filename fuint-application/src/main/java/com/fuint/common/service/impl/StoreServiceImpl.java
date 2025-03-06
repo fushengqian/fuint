@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fuint.common.dto.StoreDto;
+import com.fuint.common.dto.StoreInfo;
 import com.fuint.common.enums.QrCodeEnum;
 import com.fuint.common.enums.StatusEnum;
 import com.fuint.common.enums.YesOrNoEnum;
@@ -372,8 +373,8 @@ public class StoreServiceImpl extends ServiceImpl<MtStoreMapper, MtStore> implem
      * @return
      * */
     @Override
-    public List<MtStore> queryByDistance(String merchantNo, String keyword, String latitude, String longitude) throws BusinessCheckException {
-        List<MtStore> dataList = new ArrayList<>();
+    public List<StoreInfo> queryByDistance(String merchantNo, String keyword, String latitude, String longitude) throws BusinessCheckException {
+        List<StoreInfo> dataList = new ArrayList<>();
 
         MtMerchant mtMerchant = merchantService.queryMerchantByNo(merchantNo);
         Integer merchantId = (mtMerchant == null) ? 0 : mtMerchant.getId();
@@ -392,7 +393,9 @@ public class StoreServiceImpl extends ServiceImpl<MtStoreMapper, MtStore> implem
                           } else {
                               mtStore.setDistance(new BigDecimal("0.0"));
                           }
-                          dataList.add(mtStore);
+                          StoreInfo storeInfo = new StoreInfo();
+                          BeanUtils.copyProperties(mtStore, storeInfo);
+                          dataList.add(storeInfo);
                       }
                  }
             }

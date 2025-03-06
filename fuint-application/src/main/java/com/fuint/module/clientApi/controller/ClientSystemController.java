@@ -2,6 +2,7 @@ package com.fuint.module.clientApi.controller;
 
 import com.fuint.common.dto.ParamDto;
 import com.fuint.common.dto.StoreDto;
+import com.fuint.common.dto.StoreInfo;
 import com.fuint.common.dto.UserInfo;
 import com.fuint.common.enums.StatusEnum;
 import com.fuint.common.service.MemberService;
@@ -79,7 +80,7 @@ public class ClientSystemController extends BaseController {
         Integer merchantId = merchantService.getMerchantId(merchantNo);
 
         // 默认店铺，取会员之前选择的店铺
-        MtStore storeInfo = null;
+        MtStore mtStore = null;
         MtUser mtUser = null;
         if (loginInfo != null) {
             mtUser = memberService.queryMemberById(loginInfo.getId());
@@ -97,51 +98,53 @@ public class ClientSystemController extends BaseController {
 
         // 之前选择的店铺
         if (StringUtil.isNotEmpty(storeId)) {
-            storeInfo = storeService.queryStoreById(Integer.parseInt(storeId));
+            mtStore = storeService.queryStoreById(Integer.parseInt(storeId));
             // 店铺是否已关闭
-            if (storeInfo != null) {
-                if (!storeInfo.getStatus().equals(StatusEnum.ENABLED.getKey())) {
-                    storeInfo = null;
+            if (mtStore != null) {
+                if (!mtStore.getStatus().equals(StatusEnum.ENABLED.getKey())) {
+                    mtStore = null;
                 }
             }
         }
 
         // 取距离最近的
-        if (storeInfo == null && StringUtil.isNotEmpty(latitude) && StringUtil.isNotEmpty(longitude)) {
-            List<MtStore> storeList = storeService.queryByDistance(merchantNo, "", latitude, longitude);
+        if (mtStore == null && StringUtil.isNotEmpty(latitude) && StringUtil.isNotEmpty(longitude)) {
+            List<StoreInfo> storeList = storeService.queryByDistance(merchantNo, "", latitude, longitude);
             if (storeList.size() > 0) {
-                storeInfo = storeList.get(0);
+                MtStore store = new MtStore();
+                BeanUtils.copyProperties(storeList.get(0), store);
+                mtStore = store;
             }
         }
 
         // 最后取系统默认的店铺
-        if (storeInfo == null) {
-            storeInfo = storeService.getDefaultStore(merchantNo);
+        if (mtStore == null) {
+            mtStore = storeService.getDefaultStore(merchantNo);
         }
 
         // 完善会员的店铺信息
         if (mtUser != null && (mtUser.getStoreId() == null || mtUser.getStoreId() < 1)) {
-            mtUser.setStoreId(storeInfo.getId());
+            mtUser.setStoreId(mtStore.getId());
             mtUser.setUpdateTime(new Date());
             memberService.updateMember(mtUser, false);
         }
 
-        StoreDto storeDto = new StoreDto();
-        if (storeInfo != null) {
-            BeanUtils.copyProperties(storeInfo, storeDto);
-            MtMerchant mtMerchant = merchantService.queryMerchantById(storeInfo.getMerchantId());
+        StoreInfo storeInfo = new StoreInfo();
+        if (mtStore != null) {
+            BeanUtils.copyProperties(mtStore, storeInfo);
+            MtMerchant mtMerchant = merchantService.queryMerchantById(mtStore.getMerchantId());
             if (mtMerchant != null) {
-                storeDto.setMerchantNo(mtMerchant.getNo());
+                storeInfo.setMerchantNo(mtMerchant.getNo());
             }
         } else {
-            storeDto = null;
+            storeInfo = null;
         }
 
         // 支付方式列表
         List<ParamDto> payTypeList = settingService.getPayTypeList(platform);
 
         Map<String, Object> result = new HashMap<>();
-        result.put("storeInfo", storeDto);
+        result.put("storeInfo", storeInfo);
         result.put("payTypeList", payTypeList);
 
         return getSuccessResult(result);

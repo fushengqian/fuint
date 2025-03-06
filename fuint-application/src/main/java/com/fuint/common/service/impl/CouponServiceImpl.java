@@ -1023,7 +1023,7 @@ public class CouponServiceImpl extends ServiceImpl<MtCouponMapper, MtCoupon> imp
 
         // 未使用状态才能作废删除
         if(!userCoupon.getStatus().equals(UserCouponStatusEnum.UNUSED.getKey())) {
-            throw new BusinessCheckException("不能作废，该劵状态异常");
+            throw new BusinessCheckException("未使用状态的卡券才能作废");
         }
         userCoupon.setStatus(UserCouponStatusEnum.DISABLE.getKey());
 
