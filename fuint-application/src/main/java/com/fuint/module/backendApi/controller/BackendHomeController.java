@@ -12,6 +12,7 @@ import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.web.BaseController;
 import com.fuint.framework.web.ResponseObject;
 import com.fuint.repository.model.TAccount;
+import com.fuint.utils.StringUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.AllArgsConstructor;
@@ -119,6 +120,7 @@ public class BackendHomeController extends BaseController {
     public ResponseObject statistic(HttpServletRequest request) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
         String tag = request.getParameter("tag") == null ? "order,user_active" : request.getParameter("tag");
+        Integer storeId = StringUtil.isEmpty(request.getParameter("storeId")) ? 0 : Integer.parseInt(request.getParameter("storeId"));
 
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
         if (accountInfo == null) {
@@ -127,7 +129,10 @@ public class BackendHomeController extends BaseController {
 
         TAccount account = accountService.getAccountInfoById(accountInfo.getId());
         Integer merchantId = account.getMerchantId() == null ? 0 : account.getMerchantId();
-        Integer storeId = account.getStoreId() == null ? 0 : account.getStoreId();
+
+        if (account.getStoreId() != null && account.getStoreId() > 0) {
+            storeId = account.getStoreId();
+        }
 
         ArrayList<String> days = TimeUtils.getDays(5);
         days.add("昨天");

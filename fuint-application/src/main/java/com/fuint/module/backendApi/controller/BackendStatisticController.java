@@ -3,14 +3,18 @@ package com.fuint.module.backendApi.controller;
 import com.fuint.common.dto.AccountInfo;
 import com.fuint.common.dto.GoodsTopDto;
 import com.fuint.common.dto.MemberTopDto;
+import com.fuint.common.enums.StatusEnum;
+import com.fuint.common.param.StatisticParam;
 import com.fuint.common.service.GoodsService;
 import com.fuint.common.service.MemberService;
 import com.fuint.common.service.OrderService;
+import com.fuint.common.service.StoreService;
 import com.fuint.common.util.DateUtil;
 import com.fuint.common.util.TokenUtil;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.web.BaseController;
 import com.fuint.framework.web.ResponseObject;
+import com.fuint.repository.model.MtStore;
 import com.fuint.utils.StringUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -49,6 +53,11 @@ public class BackendStatisticController extends BaseController {
     private GoodsService goodsService;
 
     /**
+     * 店铺服务接口
+     */
+    private StoreService storeService;
+
+    /**
      * 数据概况
      *
      * @return
@@ -56,10 +65,11 @@ public class BackendStatisticController extends BaseController {
     @ApiOperation(value = "数据概况")
     @RequestMapping(value = "/main", method = RequestMethod.POST)
     @CrossOrigin
-    public ResponseObject main(HttpServletRequest request, @RequestBody Map<String, Object> param) throws BusinessCheckException, ParseException {
+    public ResponseObject main(HttpServletRequest request, @RequestBody StatisticParam param) throws BusinessCheckException, ParseException {
         String token = request.getHeader("Access-Token");
-        String startTimeStr = param.get("startTime") == null ? "" : param.get("startTime").toString();
-        String endTimeStr = param.get("endTime") == null ? "" : param.get("endTime").toString();
+        String startTimeStr = param.getStartTime();
+        String endTimeStr = param.getEndTime();
+        Integer storeId = param.getStoreId();
 
         Date startTime = StringUtil.isNotEmpty(startTimeStr) ? DateUtil.parseDate(startTimeStr) : null;
         Date endTime = StringUtil.isNotEmpty(endTimeStr) ? DateUtil.parseDate(endTimeStr) : null;
@@ -70,7 +80,9 @@ public class BackendStatisticController extends BaseController {
         }
 
         Integer merchantId = accountInfo.getMerchantId();
-        Integer storeId = accountInfo.getStoreId();
+        if (accountInfo.getStoreId() != null && accountInfo.getStoreId() > 0) {
+            storeId = accountInfo.getStoreId();
+        }
 
         // 总会员数
         Long totalUserCount = memberService.getUserCount(merchantId, storeId);
@@ -93,8 +105,18 @@ public class BackendStatisticController extends BaseController {
         // 总支付人数
         Integer totalPayUserCount = orderService.getPayUserCount(merchantId, storeId);
 
-        Map<String, Object> result = new HashMap<>();
+        // 店铺列表
+        Map<String, Object> params = new HashMap<>();
+        params.put("status", StatusEnum.ENABLED.getKey());
+        if (accountInfo.getStoreId() != null && accountInfo.getStoreId() > 0) {
+            params.put("storeId", accountInfo.getStoreId().toString());
+        }
+        if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
+            params.put("merchantId", accountInfo.getMerchantId());
+        }
+        List<MtStore> storeList = storeService.queryStoresByParams(params);
 
+        Map<String, Object> result = new HashMap<>();
         result.put("userCount", userCount);
         result.put("totalUserCount", totalUserCount);
         result.put("orderCount", orderCount);
@@ -103,6 +125,7 @@ public class BackendStatisticController extends BaseController {
         result.put("totalPayAmount", totalPayAmount);
         result.put("activeUserCount", activeUserCount);
         result.put("totalPayUserCount", totalPayUserCount);
+        result.put("storeList", storeList);
 
         return getSuccessResult(result);
     }
@@ -115,10 +138,11 @@ public class BackendStatisticController extends BaseController {
     @ApiOperation(value = "排行榜数据")
     @RequestMapping(value = "/top", method = RequestMethod.POST)
     @CrossOrigin
-    public ResponseObject top(HttpServletRequest request, @RequestBody Map<String, Object> param) throws ParseException {
+    public ResponseObject top(HttpServletRequest request, @RequestBody StatisticParam param) throws ParseException {
         String token = request.getHeader("Access-Token");
-        String startTimeStr = param.get("startTime") == null ? "" : param.get("startTime").toString();
-        String endTimeStr = param.get("endTime") == null ? "" : param.get("endTime").toString();
+        String startTimeStr = param.getStartTime();
+        String endTimeStr = param.getEndTime();
+        Integer storeId = param.getStoreId();
 
         Date startTime = StringUtil.isNotEmpty(startTimeStr) ? DateUtil.parseDate(startTimeStr) : null;
         Date endTime = StringUtil.isNotEmpty(endTimeStr) ? DateUtil.parseDate(endTimeStr) : null;
@@ -129,13 +153,14 @@ public class BackendStatisticController extends BaseController {
         }
 
         Integer merchantId = accountInfo.getMerchantId();
-        Integer storeId = accountInfo.getStoreId();
-
-        Map<String, Object> result = new HashMap<>();
+        if (accountInfo.getStoreId() != null && accountInfo.getStoreId() > 0) {
+            storeId = accountInfo.getStoreId();
+        }
 
         List<GoodsTopDto> goodsList = goodsService.getGoodsSaleTopList(merchantId, storeId, startTime, endTime);
         List<MemberTopDto> memberList = memberService.getMemberConsumeTopList(merchantId, storeId, startTime, endTime);
 
+        Map<String, Object> result = new HashMap<>();
         result.put("goodsList", goodsList);
         result.put("memberList", memberList);
 
