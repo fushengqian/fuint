@@ -20,6 +20,7 @@ import com.fuint.repository.bean.GoodsTopBean;
 import com.fuint.repository.mapper.MtGoodsMapper;
 import com.fuint.repository.mapper.MtGoodsSkuMapper;
 import com.fuint.repository.mapper.MtGoodsSpecMapper;
+import com.fuint.repository.mapper.MtStoreGoodsMapper;
 import com.fuint.repository.model.*;
 import com.fuint.utils.StringUtil;
 import com.github.pagehelper.Page;
@@ -33,6 +34,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * 商品业务实现类
@@ -49,6 +51,8 @@ public class GoodsServiceImpl extends ServiceImpl<MtGoodsMapper, MtGoods> implem
     private MtGoodsSpecMapper mtGoodsSpecMapper;
 
     private MtGoodsSkuMapper mtGoodsSkuMapper;
+
+    private MtStoreGoodsMapper mtStoreGoodsMapper;
 
     /**
      * 系统设置服务接口
@@ -104,10 +108,9 @@ public class GoodsServiceImpl extends ServiceImpl<MtGoodsMapper, MtGoods> implem
         }
         String storeId = paginationRequest.getSearchParams().get("storeId") == null ? "" : paginationRequest.getSearchParams().get("storeId").toString();
         if (StringUtils.isNotBlank(storeId)) {
-            lambdaQueryWrapper.and(wq -> wq
-                    .eq(MtGoods::getStoreId, 0)
-                    .or()
-                    .eq(MtGoods::getStoreId, storeId));
+            lambdaQueryWrapper.eq(MtGoods::getStoreId, storeId)
+                               .or(qw -> qw.eq(MtGoods::getStoreId, 0)
+                               .inSql(MtGoods::getId, "SELECT s.goods_id FROM mt_store_goods s WHERE s.store_id = "+ storeId +""));
         }
         String type = paginationRequest.getSearchParams().get("type") == null ? "" : paginationRequest.getSearchParams().get("type").toString();
         if (StringUtils.isNotBlank(type)) {
@@ -199,13 +202,14 @@ public class GoodsServiceImpl extends ServiceImpl<MtGoodsMapper, MtGoods> implem
      * 保存商品信息
      *
      * @param  reqDto 商品参数
+     * @param  storeIds 分配店铺
      * @throws BusinessCheckException
      * @return
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
     @OperationServiceLog(description = "保存商品信息")
-    public MtGoods saveGoods(MtGoods reqDto) throws BusinessCheckException {
+    public MtGoods saveGoods(MtGoods reqDto, String storeIds) throws BusinessCheckException {
         MtGoods mtGoods = new MtGoods();
         if (reqDto.getId() > 0) {
             mtGoods = queryGoodsById(reqDto.getId());
@@ -322,14 +326,62 @@ public class GoodsServiceImpl extends ServiceImpl<MtGoodsMapper, MtGoods> implem
                 }
             }
         }
-        mtGoods.setUpdateTime(new Date());
+        Date dateTime = new Date();
+        mtGoods.setUpdateTime(dateTime);
         if (reqDto.getId() == null || reqDto.getId() <= 0) {
-            mtGoods.setCreateTime(new Date());
+            mtGoods.setCreateTime(dateTime);
             this.save(mtGoods);
         } else {
             this.updateById(mtGoods);
         }
 
+        // 维护分配的店铺
+        if (StringUtil.isNotEmpty(storeIds)) {
+            List<String> storeIdList = Arrays.asList(storeIds.split(",").clone());
+            Map<String, Object> param = new HashMap<>();
+            param.put("goods_id", mtGoods.getId());
+            param.put("status", StatusEnum.ENABLED.getKey());
+            List<MtStoreGoods> storeGoodsList = mtStoreGoodsMapper.selectByMap(param);
+            // 判断是否有删除
+            if (storeGoodsList != null && storeGoodsList.size() > 0) {
+                for (MtStoreGoods mtStoreGoods : storeGoodsList) {
+                    if (!storeIdList.contains(mtStoreGoods.getStoreId().toString())) {
+                        mtStoreGoods.setStatus(StatusEnum.DISABLE.getKey());
+                        mtStoreGoods.setUpdateTime(dateTime);
+                        mtStoreGoods.setOperator(mtGoods.getOperator());
+                        mtStoreGoodsMapper.updateById(mtStoreGoods);
+                    }
+                }
+            }
+            // 新增或更新
+            if (storeIdList != null && storeIdList.size() > 0) {
+                for (String id : storeIdList) {
+                    if (StringUtil.isNotEmpty(id) && Integer.parseInt(id) > 0) {
+                        MtStoreGoods mtStoreGoods = new MtStoreGoods();
+                        mtStoreGoods.setMerchantId(mtGoods.getMerchantId());
+                        mtStoreGoods.setStoreId(Integer.parseInt(id));
+                        mtStoreGoods.setGoodsId(mtGoods.getId());
+                        mtStoreGoods.setCreateTime(dateTime);
+                        mtStoreGoods.setUpdateTime(dateTime);
+                        mtStoreGoods.setStatus(StatusEnum.ENABLED.getKey());
+                        mtStoreGoods.setOperator(reqDto.getOperator());
+                        Map<String, Object> params = new HashMap<>();
+                        params.put("goods_id", mtGoods.getId());
+                        params.put("store_id", id);
+                        List<MtStoreGoods> goodsList = mtStoreGoodsMapper.selectByMap(params);
+                        if (goodsList != null && goodsList.size() > 0) {
+                            mtStoreGoods = goodsList.get(0);
+                            mtStoreGoods.setUpdateTime(dateTime);
+                            mtStoreGoods.setStatus(StatusEnum.ENABLED.getKey());
+                            mtStoreGoods.setOperator(reqDto.getOperator());
+                            mtStoreGoodsMapper.updateById(mtStoreGoods);
+                        } else {
+                            mtStoreGoodsMapper.insert(mtStoreGoods);
+                        }
+                    }
+                }
+            }
+        }
         return mtGoods;
     }
 
@@ -447,6 +499,10 @@ public class GoodsServiceImpl extends ServiceImpl<MtGoodsMapper, MtGoods> implem
         } else {
             goodsInfo.setSkuList(new ArrayList<>());
         }
+
+        // 获取分配的店铺
+        String storeIds = getStoreIds(mtGoods.getId());
+        goodsInfo.setStoreIds(storeIds);
 
         return goodsInfo;
     }
@@ -582,8 +638,7 @@ public class GoodsServiceImpl extends ServiceImpl<MtGoodsMapper, MtGoods> implem
      * */
     @Override
     public MtGoodsSpec getSpecDetail(Integer specId) {
-        MtGoodsSpec mtGoodsSpec = mtGoodsSpecMapper.selectById(specId);
-        return mtGoodsSpec;
+        return mtGoodsSpecMapper.selectById(specId);
     }
 
     /**
@@ -693,4 +748,33 @@ public class GoodsServiceImpl extends ServiceImpl<MtGoodsMapper, MtGoods> implem
         }
         return goodsList;
     }
+
+    /**
+     * 获取商品分配的店铺
+     *
+     * @param goodsId 商品ID
+     * @return
+     * */
+    @Override
+    public String getStoreIds(Integer goodsId) {
+        if (goodsId == null || goodsId <= 0) {
+            return "";
+        }
+        Map<String, Object> params = new HashMap<>();
+        params.put("goods_id", goodsId);
+        params.put("status", StatusEnum.ENABLED.getKey());
+        List<MtStoreGoods> goodsList = mtStoreGoodsMapper.selectByMap(params);
+        List<String> storeIds = new ArrayList<>();
+        if (goodsList != null && goodsList.size() > 0) {
+            for (MtStoreGoods mtStoreGoods : goodsList) {
+                if (!storeIds.contains(mtStoreGoods.getStoreId().toString())) {
+                    storeIds.add(mtStoreGoods.getStoreId().toString());
+                }
+            }
+        } else {
+            storeIds.add("0");
+        }
+        return storeIds.stream().collect(Collectors.joining(","));
+    }
+
 }

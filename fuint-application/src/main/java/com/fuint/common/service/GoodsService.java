@@ -10,9 +10,7 @@ import com.fuint.repository.model.MtGoods;
 import com.fuint.repository.model.MtGoodsSku;
 import com.fuint.repository.model.MtGoodsSpec;
 import java.lang.reflect.InvocationTargetException;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * 商品业务接口
@@ -33,11 +31,12 @@ public interface GoodsService {
     /**
      * 保存商品
      *
-     * @param  reqDto
+     * @param  reqDto 商品信息
+     * @param  storeIds 分配店铺
      * @throws BusinessCheckException
      * @return
      */
-    MtGoods saveGoods(MtGoods reqDto) throws BusinessCheckException;
+    MtGoods saveGoods(MtGoods reqDto, String storeIds) throws BusinessCheckException;
 
     /**
      * 根据ID获取商品信息
@@ -51,8 +50,8 @@ public interface GoodsService {
     /**
      * 根据编码获取商品信息
      *
-     * @param  merchantId
-     * @param  goodsNo
+     * @param  merchantId 商户ID
+     * @param  goodsNo 商品编码
      * @throws BusinessCheckException
      * @return
      */
@@ -70,7 +69,7 @@ public interface GoodsService {
     /**
      * 根据ID获取商品详情
      *
-     * @param  id
+     * @param  id 商品ID
      * @throws BusinessCheckException
      * @return
      */
@@ -79,7 +78,7 @@ public interface GoodsService {
     /**
      * 根据ID删除
      *
-     * @param  id       ID
+     * @param  id 商品ID
      * @param  operator 操作人
      * @throws BusinessCheckException
      * @return
@@ -89,11 +88,11 @@ public interface GoodsService {
     /**
      * 获取店铺的商品列表
      *
-     * @param storeId
-     * @param keyword
-     * @param cateId
-     * @param page
-     * @param pageSize
+     * @param storeId 店铺ID
+     * @param keyword 关键字
+     * @param cateId 分类ID
+     * @param page 当前页码
+     * @param pageSize 每页数量
      * @return
      * */
     Map<String, Object> getStoreGoodsList(Integer storeId, String keyword, Integer cateId, Integer page, Integer pageSize) throws BusinessCheckException;
@@ -109,7 +108,7 @@ public interface GoodsService {
     /**
      * 获取规格详情
      *
-     * @param specId
+     * @param specId 规格ID
      * @return
      * */
     MtGoodsSpec getSpecDetail(Integer specId);
@@ -140,4 +139,13 @@ public interface GoodsService {
      * @return
      * */
     List<GoodsTopDto> getGoodsSaleTopList(Integer merchantId, Integer storeId, Date startTime, Date endTime);
+
+    /**
+     * 获取商品分配的店铺
+     *
+     * @param goodsId 商品ID
+     * @return
+     * */
+    String getStoreIds(Integer goodsId);
+
 }

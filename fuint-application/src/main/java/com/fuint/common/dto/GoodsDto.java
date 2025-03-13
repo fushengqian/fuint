@@ -6,9 +6,7 @@ import com.fuint.repository.model.MtGoodsSku;
 import com.fuint.repository.model.MtGoodsSpec;
 import com.fuint.repository.model.MtStore;
 import io.swagger.annotations.ApiModelProperty;
-import lombok.Getter;
-import lombok.Setter;
-
+import lombok.Data;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
@@ -20,8 +18,7 @@ import java.util.List;
  * Created by FSQ
  * CopyRight https://www.fuint.cn
  */
-@Getter
-@Setter
+@Data
 public class GoodsDto implements Serializable {
 
     @ApiModelProperty("自增ID")
@@ -29,6 +26,9 @@ public class GoodsDto implements Serializable {
 
     @ApiModelProperty("所属店铺ID")
     private Integer storeId;
+
+    @ApiModelProperty("分配店铺ID集合")
+    private String storeIds;
 
     @ApiModelProperty("所属店铺信息")
     private MtStore storeInfo;

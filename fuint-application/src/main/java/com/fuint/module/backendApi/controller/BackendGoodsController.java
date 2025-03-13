@@ -235,7 +235,7 @@ public class BackendGoodsController extends BaseController {
         goodsInfo.setOperator(operator);
         goodsInfo.setId(id);
         goodsInfo.setStatus(status);
-        goodsService.saveGoods(goodsInfo);
+        goodsService.saveGoods(goodsInfo, null);
 
         return getSuccessResult(true);
     }
@@ -403,7 +403,7 @@ public class BackendGoodsController extends BaseController {
         String isMemberDiscount = param.get("isMemberDiscount") == null ? "" : param.get("isMemberDiscount").toString();
         String isSingleSpec = param.get("isSingleSpec") == null ? "" : param.get("isSingleSpec").toString();
         Integer cateId = (param.get("cateId") == null || StringUtil.isEmpty(param.get("cateId").toString())) ? 0 : Integer.parseInt(param.get("cateId").toString());
-        Integer storeId = (param.get("storeId") == null || StringUtil.isEmpty(param.get("storeId").toString())) ? 0 : Integer.parseInt(param.get("storeId").toString());
+        String storeIds = (param.get("storeId") == null) ? null : param.get("storeId").toString();
         String type = param.get("type") == null ? "" : param.get("type").toString();
         String couponIds = param.get("couponIds") == null ? "" : param.get("couponIds").toString();
         String serviceTime = param.get("serviceTime") == null ? "0" : param.get("serviceTime").toString();
@@ -438,6 +438,12 @@ public class BackendGoodsController extends BaseController {
             for (LinkedHashMap skuDto : skuList) {
                  specIdList.add(skuDto.get("specIds").toString());
             }
+        }
+
+        Integer storeId = 0;
+        Integer myStoreId = accountInfo.getStoreId();
+        if (myStoreId != null && myStoreId > 0) {
+            storeId = myStoreId;
         }
 
         // 保存新规格或或单规格商品，要先删除旧的sku数据
@@ -512,11 +518,6 @@ public class BackendGoodsController extends BaseController {
             stock = allStock.toString();
         }
 
-        Integer myStoreId = accountInfo.getStoreId();
-        if (myStoreId > 0) {
-            storeId = myStoreId;
-        }
-
         MtGoods mtGoods = new MtGoods();
         mtGoods.setId(Integer.parseInt(goodsId));
         if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
@@ -580,7 +581,7 @@ public class BackendGoodsController extends BaseController {
         }
         mtGoods.setOperator(accountInfo.getAccountName());
 
-        MtGoods goodsInfo = goodsService.saveGoods(mtGoods);
+        MtGoods goodsInfo = goodsService.saveGoods(mtGoods, storeIds);
 
         Map<String, Object> result = new HashMap();
         result.put("goodsInfo", goodsInfo);
