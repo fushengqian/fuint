@@ -77,7 +77,10 @@ public class BookCateServiceImpl extends ServiceImpl<MtBookCateMapper, MtBookCat
         }
         String storeId = paginationRequest.getSearchParams().get("storeId") == null ? "" : paginationRequest.getSearchParams().get("storeId").toString();
         if (StringUtils.isNotBlank(storeId)) {
-            lambdaQueryWrapper.eq(MtBookCate::getStoreId, storeId);
+            lambdaQueryWrapper.and(wq -> wq
+                    .eq(MtBookCate::getStoreId, 0)
+                    .or()
+                    .eq(MtBookCate::getStoreId, storeId));
         }
 
         lambdaQueryWrapper.orderByAsc(MtBookCate::getSort);

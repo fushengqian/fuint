@@ -96,7 +96,10 @@ public class BookServiceImpl extends ServiceImpl<MtBookMapper, MtBook> implement
         }
         String storeId = paginationRequest.getSearchParams().get("storeId") == null ? "" : paginationRequest.getSearchParams().get("storeId").toString();
         if (StringUtils.isNotBlank(storeId)) {
-            lambdaQueryWrapper.eq(MtBook::getStoreId, storeId);
+            lambdaQueryWrapper.and(wq -> wq
+                    .eq(MtBook::getStoreId, 0)
+                    .or()
+                    .eq(MtBook::getStoreId, storeId));
         }
 
         lambdaQueryWrapper.orderByAsc(MtBook::getSort);
