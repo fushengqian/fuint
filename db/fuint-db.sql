@@ -467,7 +467,7 @@ DROP TABLE IF EXISTS `mt_goods`;
 
 CREATE TABLE `mt_goods` (
   `ID` int NOT NULL AUTO_INCREMENT COMMENT '自增ID',
-  `TYPE` varchar(30) DEFAULT 'product' COMMENT '商品类别',
+  `TYPE` varchar(30) DEFAULT 'goods' COMMENT '商品类别',
   `MERCHANT_ID` int DEFAULT '0' COMMENT '所属商户ID',
   `STORE_ID` int DEFAULT '0' COMMENT '所属店铺ID',
   `NAME` varchar(100) DEFAULT '' COMMENT '商品名称',
