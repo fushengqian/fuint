@@ -711,6 +711,19 @@ public class UserCouponServiceImpl extends ServiceImpl<MtUserCouponMapper, MtUse
     }
 
     /**
+     * 通过卡券ID删除会员卡券
+     *
+     * @param couponId 卡券ID
+     * @return
+     * */
+    public void removeUserCouponByCouponId(Integer couponId) {
+        if (couponId == null || couponId <= 0) {
+            return;
+        }
+        mtUserCouponMapper.removeUserCouponByCouponId(couponId);
+    }
+
+    /**
      * 预存单张
      *
      * @param couponInfo 卡券信息

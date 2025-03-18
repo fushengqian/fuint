@@ -37,4 +37,6 @@ public interface MtUserCouponMapper extends BaseMapper<MtUserCoupon> {
 
     List<MtUserCoupon> getUserCouponListByExpireTime(@Param("userId") Integer userId, @Param("status") String status, @Param("startTime") String startTime, @Param("endTime") String endTime);
 
+    Boolean removeUserCouponByCouponId(@Param("couponId") Integer couponId);
+
 }

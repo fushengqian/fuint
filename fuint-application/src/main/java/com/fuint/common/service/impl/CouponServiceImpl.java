@@ -436,6 +436,9 @@ public class CouponServiceImpl extends ServiceImpl<MtCouponMapper, MtCoupon> imp
         couponInfo.setUpdateTime(new Date());
         // 操作人
         couponInfo.setOperator(operator);
+        // 删除会员关联的卡券
+        userCouponService.removeUserCouponByCouponId(couponInfo.getId());
+
         mtCouponMapper.updateById(couponInfo);
     }
 

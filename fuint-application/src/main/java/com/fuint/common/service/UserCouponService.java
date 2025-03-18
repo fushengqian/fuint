@@ -105,4 +105,12 @@ public interface UserCouponService extends IService<MtUserCoupon> {
      * @return
      * */
     boolean buyCouponItem(Integer orderId, Integer couponId, Integer userId, String mobile, Integer num) throws BusinessCheckException;
+
+    /**
+     * 通过卡券ID删除会员卡券
+     *
+     * @param couponId 卡券ID
+     * @return
+     * */
+    void removeUserCouponByCouponId(Integer couponId);
 }

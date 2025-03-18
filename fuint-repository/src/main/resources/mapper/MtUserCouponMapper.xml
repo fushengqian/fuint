@@ -63,6 +63,10 @@
     </select>
 
     <update id="updateExpireTime">
-        update mt_user_coupon t set t.EXPIRE_TIME = #{expireTime} where t.COUPON_ID = #{couponId}
+        update mt_user_coupon set EXPIRE_TIME = #{expireTime} where COUPON_ID = #{couponId}
+    </update>
+
+    <update id="removeUserCouponByCouponId">
+        update mt_user_coupon set STATUS = 'D' where COUPON_ID = #{couponId}
     </update>
 </mapper>
