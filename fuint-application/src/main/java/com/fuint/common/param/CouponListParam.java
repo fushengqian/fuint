@@ -34,6 +34,9 @@ public class CouponListParam extends PageParam implements Serializable {
     @ApiModelProperty(value="排序类型", name="sortType")
     private String sortType;
 
+    @ApiModelProperty(value="面额排序", name="sortPrice")
+    private String sortPrice;
+
     @ApiModelProperty(value="下单会员ID", name="userId")
     private Integer userId;
 

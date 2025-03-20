@@ -461,6 +461,8 @@ public class CouponServiceImpl extends ServiceImpl<MtCouponMapper, MtCoupon> imp
         Integer merchantId = couponListParam.getMerchantId() == null ? 0 : couponListParam.getMerchantId();
         Integer storeId = couponListParam.getStoreId() == null ? 0 : couponListParam.getStoreId();
         String keyword = couponListParam.getKeyword() == null ? "" : couponListParam.getKeyword();
+        String sortType = couponListParam.getSortType() == null ? "" : couponListParam.getSortType();
+        String sortPrice = couponListParam.getSortPrice() == null ? "0" : couponListParam.getSortPrice();
 
         Page<MtCoupon> pageHelper = PageHelper.startPage(pageNumber, pageSize);
         LambdaQueryWrapper<MtCoupon> lambdaQueryWrapper = Wrappers.lambdaQuery();
@@ -489,7 +491,17 @@ public class CouponServiceImpl extends ServiceImpl<MtCouponMapper, MtCoupon> imp
         if (storeId != null && storeId > 0) {
             lambdaQueryWrapper.eq(MtCoupon::getStoreId, storeId);
         }
-        lambdaQueryWrapper.orderByDesc(MtCoupon::getId);
+        if (StringUtil.isNotEmpty(sortType)) {
+            if (sortType.equals("price")) {
+                if (sortPrice.equals("0")) {
+                    lambdaQueryWrapper.orderByDesc(MtCoupon::getAmount);
+                } else {
+                    lambdaQueryWrapper.orderByAsc(MtCoupon::getAmount);
+                }
+            }
+        } else {
+            lambdaQueryWrapper.orderByAsc(MtCoupon::getId);
+        }
         List<MtCoupon> dataList = mtCouponMapper.selectList(lambdaQueryWrapper);
 
         // 处理已过期
