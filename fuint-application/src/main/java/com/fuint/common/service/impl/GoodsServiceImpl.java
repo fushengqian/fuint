@@ -110,7 +110,7 @@ public class GoodsServiceImpl extends ServiceImpl<MtGoodsMapper, MtGoods> implem
         if (StringUtils.isNotBlank(storeId)) {
             lambdaQueryWrapper.and(qw -> qw.eq(MtGoods::getStoreId, storeId)
                                         .or(qw2 -> qw2.eq(MtGoods::getStoreId, 0)
-                                        .inSql(MtGoods::getId, "SELECT s.GOODS_ID FROM mt_store_goods s WHERE s.STORE_ID = "+storeId+" AND s.status = 'A'")));
+                                        .inSql(MtGoods::getId, "SELECT s.GOODS_ID FROM mt_store_goods s WHERE s.STORE_ID = "+Integer.parseInt(storeId)+" AND s.status = 'A'")));
         }
         String type = paginationRequest.getSearchParams().get("type") == null ? "" : paginationRequest.getSearchParams().get("type").toString();
         if (StringUtils.isNotBlank(type)) {
