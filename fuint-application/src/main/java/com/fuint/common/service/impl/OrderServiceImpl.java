@@ -982,6 +982,8 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
             if (payType.equals(PayTypeEnum.CASH.getKey()) && StringUtil.isNotEmpty(operator)) {
                 // 收银台现金支付，更新为已支付
                 setOrderPayed(orderInfo.getId(), null);
+            } else  if (payType.equals(PayTypeEnum.STORE.getKey())) {
+                // 门店支付，不做任何操作
             } else if(payType.equals(PayTypeEnum.BALANCE.getKey())) {
                 // 余额支付
                 MtBalance balance = new MtBalance();
@@ -1018,13 +1020,12 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
         Map<String, Object> outParams = new HashMap();
         outParams.put("isCreated", true);
         outParams.put("orderInfo", orderInfo);
+        outParams.put("payType", payType);
 
         if (paymentInfo != null) {
             outParams.put("payment", paymentInfo.getData());
-            outParams.put("payType", payType);
         } else {
             outParams.put("payment", null);
-            outParams.put("payType", "BALANCE");
         }
 
         // 1分钟后发送小程序订阅消息

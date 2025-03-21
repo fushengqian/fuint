@@ -2,16 +2,15 @@ package com.fuint.common.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fuint.common.dto.ParamDto;
-import com.fuint.common.enums.PayTypeEnum;
-import com.fuint.common.enums.PlatformTypeEnum;
+import com.fuint.common.enums.*;
 import com.fuint.framework.annoation.OperationServiceLog;
 import com.fuint.repository.mapper.MtSettingMapper;
 import com.fuint.repository.model.MtSetting;
-import com.fuint.common.enums.StatusEnum;
 import com.fuint.common.service.SettingService;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.utils.StringUtil;
 import lombok.AllArgsConstructor;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,7 +25,7 @@ import java.util.List;
  * CopyRight https://www.fuint.cn
  */
 @Service
-@AllArgsConstructor
+@AllArgsConstructor(onConstructor_= {@Lazy})
 public class SettingServiceImpl extends ServiceImpl<MtSettingMapper, MtSetting> implements SettingService {
 
     /**
@@ -35,6 +34,11 @@ public class SettingServiceImpl extends ServiceImpl<MtSettingMapper, MtSetting> 
     private Environment env;
 
     private MtSettingMapper mtSettingMapper;
+
+    /**
+     * 系统设置服务接口
+     * */
+    private SettingService settingService;
 
     /**
      * 删除配置
@@ -52,7 +56,6 @@ public class SettingServiceImpl extends ServiceImpl<MtSettingMapper, MtSetting> 
         if (info != null) {
             mtSettingMapper.deleteById(info.getId());
         }
-        return;
     }
 
     /**
@@ -168,11 +171,13 @@ public class SettingServiceImpl extends ServiceImpl<MtSettingMapper, MtSetting> 
     /**
      * 获取支付方式列表
      *
+     * @param merchantId 商户ID
+     * @param storeId 店铺ID
      * @param platform 平台
      * @return
      * */
     @Override
-    public List<ParamDto> getPayTypeList(String platform) {
+    public List<ParamDto> getPayTypeList(Integer merchantId, Integer storeId, String platform) throws BusinessCheckException {
         List<ParamDto> payTypeList = new ArrayList<>();
 
         // 微信jsapi
@@ -180,6 +185,7 @@ public class SettingServiceImpl extends ServiceImpl<MtSettingMapper, MtSetting> 
         jsApi.setKey(PayTypeEnum.JSAPI.getKey());
         jsApi.setValue(PayTypeEnum.JSAPI.getKey());
         jsApi.setName(PayTypeEnum.JSAPI.getValue());
+        payTypeList.add(jsApi);
 
         // 余额支付
         ParamDto balance = new ParamDto();
@@ -188,15 +194,14 @@ public class SettingServiceImpl extends ServiceImpl<MtSettingMapper, MtSetting> 
         balance.setName(PayTypeEnum.BALANCE.getValue());
         payTypeList.add(balance);
 
-        // 扫码支付
-        ParamDto micro = new ParamDto();
-        micro.setKey(PayTypeEnum.MICROPAY.getKey());
-        micro.setValue(PayTypeEnum.MICROPAY.getKey());
-        micro.setValue(PayTypeEnum.MICROPAY.getValue());
-
-        // 微信公众号号
-        if (platform.equals(PlatformTypeEnum.MP_WEIXIN.getCode())) {
-            payTypeList.add(jsApi);
+        // 前台支付
+        MtSetting mtSetting = settingService.querySettingByName(merchantId, storeId,  SettingTypeEnum.ORDER.getKey(), OrderSettingEnum.PAY_OFF_LINE.getKey());
+        if (mtSetting != null && mtSetting.getValue().equals(YesOrNoEnum.YES.getKey())) {
+            ParamDto store = new ParamDto();
+            store.setKey(PayTypeEnum.STORE.getKey());
+            store.setValue(PayTypeEnum.STORE.getKey());
+            store.setName(PayTypeEnum.STORE.getValue());
+            payTypeList.add(store);
         }
 
         return payTypeList;

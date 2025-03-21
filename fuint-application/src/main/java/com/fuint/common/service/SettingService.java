@@ -72,9 +72,11 @@ public interface SettingService extends IService<MtSetting> {
     /**
      * 获取支付方式列表
      *
+     * @param merchantId 商户ID
+     * @param storeId 店铺ID
      * @param platform 平台
      * @return
      * */
-    List<ParamDto> getPayTypeList(String platform);
+    List<ParamDto> getPayTypeList(Integer merchantId, Integer storeId, String platform) throws BusinessCheckException;
 
 }

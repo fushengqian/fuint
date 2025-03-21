@@ -91,9 +91,6 @@ public class BackendOrderController extends BaseController {
     public ResponseObject list(HttpServletRequest request, @RequestBody OrderListParam orderListParam) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
-        if (accountInfo == null) {
-            return getFailureResult(1001, "请先登录");
-        }
         TAccount account = accountService.getAccountInfoById(accountInfo.getId());
         if (account.getMerchantId() != null && account.getMerchantId() > 0) {
             orderListParam.setMerchantId(account.getMerchantId());
@@ -203,14 +200,7 @@ public class BackendOrderController extends BaseController {
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('order:detail')")
     public ResponseObject info(HttpServletRequest request, @PathVariable("orderId") Integer orderId) throws BusinessCheckException {
-        String token = request.getHeader("Access-Token");
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
-        if (accountInfo == null) {
-            return getFailureResult(1001, "请先登录");
-        }
-
         UserOrderDto orderInfo = orderService.getOrderById(orderId);
-
         // 支付方式列表
         PayTypeEnum[] payTypes = PayTypeEnum.values();
         List<ParamDto> payTypeList = new ArrayList<>();
@@ -257,10 +247,6 @@ public class BackendOrderController extends BaseController {
         String expressNo = param.get("expressNo") == null ? "" : param.get("expressNo").toString();
 
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
-        if (accountInfo == null) {
-            return getFailureResult(1001, "请先登录");
-        }
-
         if (orderId < 0) {
             return getFailureResult(201, "系统出错啦，订单ID不能为空");
         }
@@ -271,7 +257,7 @@ public class BackendOrderController extends BaseController {
         OrderDto dto = new OrderDto();
         dto.setId(orderId);
         dto.setStatus(OrderStatusEnum.DELIVERED.getKey());
-
+        dto.setOperator(accountInfo.getAccountName());
         if (StringUtil.isNotEmpty(expressCompany) || StringUtil.isNotEmpty(expressNo)) {
             ExpressDto expressInfo = new ExpressDto();
             String time = TimeUtils.formatDate(new Date(), "yyyy-MM-dd HH:mm");
@@ -323,9 +309,6 @@ public class BackendOrderController extends BaseController {
         String remark = param.get("remark") == null ? "" : param.get("remark").toString();
         String orderMode = param.get("orderMode") == null ? "" : param.get("orderMode").toString();
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
-        if (accountInfo == null) {
-            return getFailureResult(1001, "请先登录");
-        }
         if (orderId < 0) {
             return getFailureResult(201, "系统出错啦，订单ID不能为空");
         }
@@ -369,10 +352,6 @@ public class BackendOrderController extends BaseController {
         String verifyCode = param.get("verifyCode") == null ? "" : param.get("verifyCode").toString();
 
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
-        if (accountInfo == null) {
-            return getFailureResult(1001, "请先登录");
-        }
-
         if (orderId < 0) {
             return getFailureResult(201, "系统出错啦，订单ID不能为空");
         }
@@ -402,9 +381,6 @@ public class BackendOrderController extends BaseController {
     public ResponseObject latest(HttpServletRequest request, @RequestBody OrderListParam orderListParam) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
-        if (accountInfo == null) {
-            return getFailureResult(1001, "请先登录");
-        }
 
         Map<String, Object> result = new HashMap<>();
         if (accountInfo == null) {
@@ -439,9 +415,6 @@ public class BackendOrderController extends BaseController {
     public ResponseObject delete(HttpServletRequest request, @PathVariable("id") Integer id) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
-        if (accountInfo == null) {
-            return getFailureResult(1001, "请先登录");
-        }
 
         String operator = accountInfo.getAccountName();
         orderService.deleteOrder(id, operator);
@@ -462,9 +435,6 @@ public class BackendOrderController extends BaseController {
     public ResponseObject setting(HttpServletRequest request) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
-        if (accountInfo == null) {
-            return getFailureResult(1001, "请先登录");
-        }
 
         List<MtSetting> settingList = settingService.getSettingList(accountInfo.getMerchantId(), SettingTypeEnum.ORDER.getKey());
         Map<String, Object> result = new HashMap();
@@ -472,6 +442,7 @@ public class BackendOrderController extends BaseController {
         String isClose = "";
         String deliveryMinAmount = "";
         String mpUploadShipping = "";
+        String payOffLine = "off";
 
         for (MtSetting setting : settingList) {
             if (setting.getName().equals(OrderSettingEnum.DELIVERY_FEE.getKey())) {
@@ -482,6 +453,8 @@ public class BackendOrderController extends BaseController {
                 deliveryMinAmount = setting.getValue();
             } else if (setting.getName().equals(OrderSettingEnum.MP_UPLOAD_SHIPPING.getKey())) {
                 mpUploadShipping = setting.getValue();
+            } else if (setting.getName().equals(OrderSettingEnum.PAY_OFF_LINE.getKey())) {
+                payOffLine = setting.getValue();
             }
         }
 
@@ -489,6 +462,7 @@ public class BackendOrderController extends BaseController {
         result.put("isClose", isClose);
         result.put("deliveryMinAmount", deliveryMinAmount);
         result.put("mpUploadShipping", mpUploadShipping);
+        result.put("payOffLine", payOffLine);
 
         return getSuccessResult(result);
     }
@@ -508,12 +482,9 @@ public class BackendOrderController extends BaseController {
         String deliveryFee = param.get("deliveryFee") != null ? param.get("deliveryFee").toString() : "0";
         String isClose = param.get("isClose") != null ? param.get("isClose").toString() : YesOrNoEnum.FALSE.getKey();
         String deliveryMinAmount = param.get("deliveryMinAmount") != null ? param.get("deliveryMinAmount").toString() : "0";
+        String payOffLine = param.get("payOffLine") != null ? param.get("payOffLine").toString() : "off";
 
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
-        if (accountInfo == null) {
-            return getFailureResult(1001, "请先登录");
-        }
-
         String operator = accountInfo.getAccountName();
 
         OrderSettingEnum[] settingList = OrderSettingEnum.values();
@@ -521,13 +492,14 @@ public class BackendOrderController extends BaseController {
             MtSetting info = new MtSetting();
             info.setType(SettingTypeEnum.ORDER.getKey());
             info.setName(setting.getKey());
-
             if (setting.getKey().equals(OrderSettingEnum.DELIVERY_FEE.getKey())) {
                 info.setValue(deliveryFee);
             } else if (setting.getKey().equals(OrderSettingEnum.IS_CLOSE.getKey())) {
                 info.setValue(isClose);
             } else if (setting.getKey().equals(OrderSettingEnum.DELIVERY_MIN_AMOUNT.getKey())) {
                 info.setValue(deliveryMinAmount);
+            } else if (setting.getKey().equals(OrderSettingEnum.PAY_OFF_LINE.getKey())) {
+                info.setValue(payOffLine);
             }
             info.setMerchantId(accountInfo.getMerchantId());
             info.setStoreId(accountInfo.getStoreId());
@@ -562,11 +534,6 @@ public class BackendOrderController extends BaseController {
         String endTime = request.getParameter("endTime") == null ? "" : request.getParameter("endTime");
 
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
-        if (accountInfo == null) {
-            logger.error("导出订单失败：token = {}", token);
-            return;
-        }
-
         OrderListParam params = new OrderListParam();
         params.setPage(1);
         params.setPageSize(Constants.MAX_ROWS);

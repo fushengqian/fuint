@@ -140,7 +140,7 @@ public class ClientSystemController extends BaseController {
         }
 
         // 支付方式列表
-        List<ParamDto> payTypeList = settingService.getPayTypeList(platform);
+        List<ParamDto> payTypeList = settingService.getPayTypeList(merchantId, storeInfo.getId(), platform);
 
         Map<String, Object> result = new HashMap<>();
         result.put("storeInfo", storeInfo);

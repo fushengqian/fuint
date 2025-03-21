@@ -11,7 +11,8 @@ public enum PayTypeEnum {
     JSAPI("JSAPI", "微信支付"),
     MICROPAY("MICROPAY", "微信扫码支付"),
     BALANCE("BALANCE", "余额支付"),
-    ALISCAN("ALISCAN", "支付宝扫码");
+    ALISCAN("ALISCAN", "支付宝扫码"),
+    STORE("STORE", "门店支付");
 
     private String key;
 
