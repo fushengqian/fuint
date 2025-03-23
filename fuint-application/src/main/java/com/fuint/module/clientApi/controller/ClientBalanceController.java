@@ -178,14 +178,7 @@ public class ClientBalanceController extends BaseController {
         String token = request.getHeader("Access-Token");
         Integer page = balanceListParam.getPage() == null ? Constants.PAGE_NUMBER : balanceListParam.getPage();
         Integer pageSize = balanceListParam.getPageSize() == null ? Constants.PAGE_SIZE : balanceListParam.getPageSize();
-        if (StringUtil.isEmpty(token)) {
-            return getFailureResult(1001);
-        }
-
         UserInfo mtUser = TokenUtil.getUserInfoByToken(token);
-        if (null == mtUser) {
-            return getFailureResult(1001);
-        }
 
         PaginationRequest paginationRequest = new PaginationRequest();
         paginationRequest.setCurrentPage(page);

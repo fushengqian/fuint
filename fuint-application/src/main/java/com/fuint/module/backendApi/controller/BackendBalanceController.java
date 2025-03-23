@@ -133,11 +133,7 @@ public class BackendBalanceController extends BaseController {
         String remark = param.get("remark") == null ? "后台充值" : param.get("remark").toString();
         Integer userId = param.get("userId") == null ? 0 : Integer.parseInt(param.get("userId").toString());
         Integer type = param.get("type") == null ? 1 : Integer.parseInt(param.get("type").toString());// 1 增加，2 扣减
-
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
-        if (accountInfo == null) {
-            return getFailureResult(1001, "请先登录");
-        }
 
         if (!CommonUtil.isNumeric(amount)) {
             return getFailureResult(201, "充值金额必须是数字");
