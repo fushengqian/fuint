@@ -81,11 +81,9 @@ public class BackendAccountController extends BaseController {
         String accountName = request.getParameter("accountName") == null ? "" : request.getParameter("accountName");
         String realName = request.getParameter("realName") == null ? "" : request.getParameter("realName");
         String accountStatus = request.getParameter("accountStatus") == null ? "" : request.getParameter("accountStatus");
-
+        String merchantId = request.getParameter("merchantId") == null ? "" : request.getParameter("merchantId");
+        String storeId = request.getParameter("storeId") == null ? "" : request.getParameter("storeId");
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
-        if (accountInfo == null) {
-            return getFailureResult(1001, "请先登录");
-        }
 
         PaginationRequest paginationRequest = new PaginationRequest();
         paginationRequest.setCurrentPage(page);
@@ -106,9 +104,17 @@ public class BackendAccountController extends BaseController {
         }
         if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
             searchParams.put("merchantId", accountInfo.getMerchantId());
+        } else {
+            if (StringUtil.isNotEmpty(merchantId)) {
+                searchParams.put("merchantId", merchantId);
+            }
         }
         if (accountInfo.getStoreId() != null && accountInfo.getStoreId() > 0) {
             searchParams.put("storeId", accountInfo.getStoreId());
+        } else {
+            if (StringUtil.isNotEmpty(storeId)) {
+                searchParams.put("storeId", storeId);
+            }
         }
 
         paginationRequest.setSearchParams(searchParams);

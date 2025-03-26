@@ -1013,8 +1013,8 @@ public class CouponServiceImpl extends ServiceImpl<MtCouponMapper, MtCoupon> imp
             Date sendTime = new Date(nowTime.getTime());
             Map<String, Object> param = new HashMap<>();
             String dateTime = DateUtil.formatDate(Calendar.getInstance().getTime(), "yyyy-MM-dd HH:mm");
-            params.put("name", couponInfo.getName());
-            params.put("time", dateTime);
+            param.put("name", couponInfo.getName());
+            param.put("time", dateTime);
             weixinService.sendSubscribeMessage(userInfo.getMerchantId(), userInfo.getId(), userInfo.getOpenId(), WxMessageEnum.COUPON_CONFIRM.getKey(), "pages/user/index", param, sendTime);
         } catch (Exception e) {
             logger.error("核销卡券发送通知消息出错：", e.getMessage());
