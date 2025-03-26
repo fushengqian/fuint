@@ -83,6 +83,7 @@ public class BackendAccountController extends BaseController {
         String accountStatus = request.getParameter("accountStatus") == null ? "" : request.getParameter("accountStatus");
         String merchantId = request.getParameter("merchantId") == null ? "" : request.getParameter("merchantId");
         String storeId = request.getParameter("storeId") == null ? "" : request.getParameter("storeId");
+        String staffId = request.getParameter("staffId") == null ? "" : request.getParameter("staffId");
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
 
         PaginationRequest paginationRequest = new PaginationRequest();
@@ -115,6 +116,9 @@ public class BackendAccountController extends BaseController {
             if (StringUtil.isNotEmpty(storeId)) {
                 searchParams.put("storeId", storeId);
             }
+        }
+        if (StringUtil.isNotEmpty(staffId)) {
+            searchParams.put("staffId", staffId);
         }
 
         paginationRequest.setSearchParams(searchParams);

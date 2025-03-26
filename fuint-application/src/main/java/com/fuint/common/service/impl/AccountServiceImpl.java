@@ -101,6 +101,10 @@ public class AccountServiceImpl extends ServiceImpl<TAccountMapper, TAccount> im
         if (StringUtils.isNotEmpty(storeId)) {
             lambdaQueryWrapper.eq(TAccount::getStoreId, storeId);
         }
+        String staffId = paginationRequest.getSearchParams().get("staffId") == null ? "" : paginationRequest.getSearchParams().get("staffId").toString();
+        if (StringUtils.isNotEmpty(staffId)) {
+            lambdaQueryWrapper.eq(TAccount::getStaffId, staffId);
+        }
 
         lambdaQueryWrapper.orderByDesc(TAccount::getAcctId);
         List<TAccount> accountList = tAccountMapper.selectList(lambdaQueryWrapper);

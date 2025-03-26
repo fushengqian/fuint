@@ -46,11 +46,13 @@ public interface StaffService extends IService<MtStaff> {
     /**
      * 审核更改状态(禁用，审核通过)
      *
-     * @param  id
+     * @param  staffId 员工ID
+     * @param status 状态
+     * @param operator 操作人
      * @throws BusinessCheckException
      * @return
      */
-    Integer updateAuditedStatus(Integer id, String statusEnum) throws BusinessCheckException;
+    Integer updateAuditedStatus(Integer staffId, String status, String operator) throws BusinessCheckException;
 
     /**
      * 根据条件搜索员工

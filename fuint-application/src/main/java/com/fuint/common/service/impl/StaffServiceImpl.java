@@ -196,12 +196,14 @@ public class StaffServiceImpl extends ServiceImpl<MtStaffMapper, MtStaff> implem
      * 修改店铺员工状态
      *
      * @param  staffId 员工ID
+     * @param status 状态
+     * @param operator 操作人
      * @throws BusinessCheckException
      * @return
      */
     @Override
     @OperationServiceLog(description = "修改店铺员工状态")
-    public Integer updateAuditedStatus(Integer staffId, String status) throws BusinessCheckException {
+    public Integer updateAuditedStatus(Integer staffId, String status, String operator) throws BusinessCheckException {
         MtStaff mtStaff = mtStaffMapper.selectById(staffId);
         if (mtStaff != null) {
             mtStaff.setAuditedStatus(status);
