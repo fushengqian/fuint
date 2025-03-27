@@ -81,12 +81,7 @@ public class BackendBookController extends BaseController {
         String searchStoreId = request.getParameter("storeId");
 
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
-        Integer storeId;
-        if (accountInfo == null) {
-            return getFailureResult(1001, "请先登录");
-        } else {
-            storeId = accountInfo.getStoreId();
-        }
+        Integer storeId = accountInfo.getStoreId();
 
         PaginationRequest paginationRequest = new PaginationRequest();
         paginationRequest.setCurrentPage(page);
@@ -151,9 +146,6 @@ public class BackendBookController extends BaseController {
         Integer id = params.get("id") == null ? 0 : Integer.parseInt(params.get("id").toString());
 
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
-        if (accountInfo == null) {
-            return getFailureResult(1001, "请先登录");
-        }
 
         BookDto bookDto = bookService.getBookById(id);
         if (bookDto == null) {
@@ -195,9 +187,6 @@ public class BackendBookController extends BaseController {
         List<LinkedHashMap> times = params.get("times") == null ? new ArrayList<>() : (List) params.get("times");
 
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
-        if (accountInfo == null) {
-            return getFailureResult(1001, "请先登录");
-        }
 
         if (accountInfo.getMerchantId() == null || accountInfo.getMerchantId() < 1) {
             throw new BusinessCheckException("平台方帐号无法执行该操作，请使用商户帐号操作");
@@ -259,11 +248,14 @@ public class BackendBookController extends BaseController {
     public ResponseObject info(HttpServletRequest request, @PathVariable("id") Integer id) throws BusinessCheckException, ParseException {
         String token = request.getHeader("Access-Token");
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
-        if (accountInfo == null) {
-            return getFailureResult(1001, "请先登录");
-        }
 
         BookDto bookDto = bookService.getBookById(id);
+
+        if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
+            if (!bookDto.getMerchantId().equals(accountInfo.getMerchantId())) {
+                return getFailureResult(1004);
+            }
+        }
 
         Map<String, Object> result = new HashMap<>();
         result.put("bookInfo", bookDto);

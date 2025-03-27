@@ -78,9 +78,7 @@ public class BackendBalanceController extends BaseController {
         String status = request.getParameter("status") == null ? StatusEnum.ENABLED.getKey() : request.getParameter("status");
 
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
-        if (accountInfo == null) {
-            return getFailureResult(1001, "请先登录");
-        }
+
         Map<String, Object> searchParams = new HashMap<>();
         if (StringUtil.isNotEmpty(mobile)) {
             searchParams.put("mobile", mobile);
@@ -184,9 +182,6 @@ public class BackendBalanceController extends BaseController {
         String object = param.get("object") == null ? "" : param.get("object").toString();
 
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
-        if (accountInfo == null) {
-            return getFailureResult(1001, "请先登录");
-        }
 
         balanceService.distribute(accountInfo, object, userIds, amount, remark);
         return getSuccessResult(true);
@@ -205,9 +200,6 @@ public class BackendBalanceController extends BaseController {
     public ResponseObject setting(HttpServletRequest request) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
-        if (accountInfo == null) {
-            return getFailureResult(1001, "请先登录");
-        }
 
         List<MtSetting> settingList = settingService.getSettingList(accountInfo.getMerchantId(), SettingTypeEnum.BALANCE.getKey());
 
@@ -261,9 +253,6 @@ public class BackendBalanceController extends BaseController {
         List<LinkedHashMap> rechargeItems = (List) param.get("rechargeItem");
 
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
-        if (accountInfo == null) {
-            return getFailureResult(1001, "请先登录");
-        }
 
         if (rechargeItems.size() < 0) {
             return getFailureResult(201, "充值规则设置不能为空");

@@ -55,9 +55,6 @@ public class BackendActionLogController extends BaseController {
         String endTime = request.getParameter("params[endTime]") == null ? "" : request.getParameter("params[endTime]");
 
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
-        if (accountInfo == null) {
-            return getFailureResult(1001, "请先登录");
-        }
 
         PaginationRequest paginationRequest = new PaginationRequest();
         paginationRequest.setCurrentPage(page);

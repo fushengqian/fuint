@@ -72,12 +72,7 @@ public class BackendBannerController extends BaseController {
         String searchStoreId = request.getParameter("storeId");
 
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
-        Integer storeId;
-        if (accountInfo == null) {
-            return getFailureResult(1001, "请先登录");
-        } else {
-            storeId = accountInfo.getStoreId();
-        }
+        Integer storeId = accountInfo.getStoreId();
 
         PaginationRequest paginationRequest = new PaginationRequest();
         paginationRequest.setCurrentPage(page);
@@ -137,9 +132,6 @@ public class BackendBannerController extends BaseController {
         Integer id = params.get("id") == null ? 0 : Integer.parseInt(params.get("id").toString());
 
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
-        if (accountInfo == null) {
-            return getFailureResult(1001, "请先登录");
-        }
 
         MtBanner mtBanner = bannerService.queryBannerById(id);
         if (mtBanner == null) {
@@ -179,9 +171,6 @@ public class BackendBannerController extends BaseController {
         String sort = params.get("sort") == null ? "0" : params.get("sort").toString();
 
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
-        if (accountInfo == null) {
-            return getFailureResult(1001, "请先登录");
-        }
 
         BannerDto bannerDto = new BannerDto();
         bannerDto.setTitle(title);
@@ -219,12 +208,15 @@ public class BackendBannerController extends BaseController {
     public ResponseObject info(HttpServletRequest request, @PathVariable("id") Integer id) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
-        if (accountInfo == null) {
-            return getFailureResult(1001, "请先登录");
-        }
 
         MtBanner bannerInfo = bannerService.queryBannerById(id);
         String imagePath = settingService.getUploadBasePath();
+
+        if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
+            if (!bannerInfo.getMerchantId().equals(accountInfo.getMerchantId())) {
+                return getFailureResult(1004);
+            }
+        }
 
         Map<String, Object> result = new HashMap<>();
         result.put("bannerInfo", bannerInfo);
