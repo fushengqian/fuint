@@ -103,9 +103,6 @@ public class BackendCashierController extends BaseController {
         Integer cateId = request.getParameter("cateId") == null ? 0 : Integer.parseInt(request.getParameter("cateId"));
 
         AccountInfo accountDto = TokenUtil.getAccountInfoByToken(token);
-        if (accountDto == null) {
-            return getFailureResult(1001, "请先登录");
-        }
 
         TAccount accountInfo = accountService.getAccountInfoById(accountDto.getId());
         Integer storeId = (accountInfo.getStoreId() == null || accountInfo.getStoreId() < 1) ? 0 : accountInfo.getStoreId();
@@ -172,9 +169,6 @@ public class BackendCashierController extends BaseController {
         String keyword =  param.get("keyword") == null ? "" : param.get("keyword").toString();
 
         AccountInfo accountDto = TokenUtil.getAccountInfoByToken(token);
-        if (accountDto == null) {
-            return getFailureResult(1001, "请先登录");
-        }
 
         TAccount accountInfo = accountService.getAccountInfoById(accountDto.getId());
         Integer storeId = accountInfo.getStoreId();
@@ -196,21 +190,14 @@ public class BackendCashierController extends BaseController {
     /**
      * 获取商品详情
      *
-     * @param request
-     * @param goodsId
+     * @param goodsId 商品ID
      * @return
      */
     @ApiOperation(value = "获取商品详情")
     @RequestMapping(value = "/getGoodsInfo/{id}", method = RequestMethod.GET)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('cashier:index')")
-    public ResponseObject getGoodsInfo(HttpServletRequest request, @PathVariable("id") Integer goodsId) throws InvocationTargetException, IllegalAccessException {
-        String token = request.getHeader("Access-Token");
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
-        if (accountInfo == null) {
-            return getFailureResult(1001, "请先登录");
-        }
-
+    public ResponseObject getGoodsInfo(@PathVariable("id") Integer goodsId) throws InvocationTargetException, IllegalAccessException {
         GoodsDto goodsInfo = goodsService.getGoodsDetail(goodsId, false);
 
         Map<String, Object> result = new HashMap<>();
@@ -287,9 +274,6 @@ public class BackendCashierController extends BaseController {
         String keyword = param.get("keyword") == null ? "" : param.get("keyword").toString();
 
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
-        if (accountInfo == null) {
-            return getFailureResult(1001, "请先登录");
-        }
 
         if (StringUtil.isEmpty(keyword)) {
             return getFailureResult(201);
@@ -327,15 +311,15 @@ public class BackendCashierController extends BaseController {
     public ResponseObject getMemberInfoById(HttpServletRequest request, @PathVariable("userId") String userId) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
-        if (accountInfo == null) {
-            return getFailureResult(1001, "请先登录");
-        }
 
         if (StringUtil.isEmpty(userId)) {
             return getFailureResult(201);
         }
 
         MtUser userInfo = memberService.queryMemberById(Integer.parseInt(userId));
+        if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0 && !accountInfo.getMerchantId().equals(userInfo.getMerchantId())) {
+            return getFailureResult(1004);
+        }
 
         Map<String, Object> result = new HashMap<>();
         result.put("memberInfo", userInfo);
@@ -356,9 +340,6 @@ public class BackendCashierController extends BaseController {
         String userId = param.get("userId") == null ? "" : param.get("userId").toString();
 
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
-        if (accountInfo == null) {
-            return getFailureResult(1001, "请先登录");
-        }
 
         if (accountInfo.getMerchantId() == null || accountInfo.getMerchantId() <= 0) {
             return getFailureResult(201, "平台账号不能执行该操作");
@@ -392,9 +373,6 @@ public class BackendCashierController extends BaseController {
         String token = request.getHeader("Access-Token");
 
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
-        if (accountInfo == null) {
-            return getFailureResult(1001, "请先登录");
-        }
 
         List<HangUpDto> dataList = new ArrayList<>();
 

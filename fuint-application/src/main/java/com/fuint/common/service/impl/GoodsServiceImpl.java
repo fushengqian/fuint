@@ -525,6 +525,7 @@ public class GoodsServiceImpl extends ServiceImpl<MtGoodsMapper, MtGoods> implem
         }
         cateInfo.setStatus(StatusEnum.DISABLE.getKey());
         cateInfo.setUpdateTime(new Date());
+        cateInfo.setOperator(operator);
         mtGoodsMapper.updateById(cateInfo);
     }
 

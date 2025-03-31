@@ -82,9 +82,6 @@ public class BackendCateController extends BaseController {
         String searchStoreId = request.getParameter("storeId");
 
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
-        if (accountInfo == null) {
-            return getFailureResult(1001, "请先登录");
-        }
 
         TAccount account = accountService.getAccountInfoById(accountInfo.getId());
         Integer storeId = account.getStoreId() == null ? 0 : account.getStoreId();
@@ -147,9 +144,6 @@ public class BackendCateController extends BaseController {
         Integer id = params.get("id") == null ? 0 : Integer.parseInt(params.get("id").toString());
 
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
-        if (accountInfo == null) {
-            return getFailureResult(1001, "请先登录");
-        }
 
         MtGoodsCate mtCate = cateService.queryCateById(id);
         if (mtCate == null) {
@@ -192,9 +186,6 @@ public class BackendCateController extends BaseController {
         Integer storeId = (params.get("storeId") == null || StringUtil.isEmpty(params.get("storeId").toString())) ? 0 : Integer.parseInt(params.get("storeId").toString());
 
         AccountInfo accountDto = TokenUtil.getAccountInfoByToken(token);
-        if (accountDto == null) {
-            return getFailureResult(1001, "请先登录");
-        }
 
         Integer myStoreId = accountDto.getStoreId();
         if (myStoreId > 0) {
@@ -234,13 +225,14 @@ public class BackendCateController extends BaseController {
     @PreAuthorize("@pms.hasPermission('goods:cate:index')")
     public ResponseObject info(HttpServletRequest request, @PathVariable("id") Integer id) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
-        AccountInfo accountDto = TokenUtil.getAccountInfoByToken(token);
-        if (accountDto == null) {
-            return getFailureResult(1001, "请先登录");
-        }
+        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
 
         MtGoodsCate mtCate = cateService.queryCateById(id);
         String imagePath = settingService.getUploadBasePath();
+
+        if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0 && !accountInfo.getMerchantId().equals(mtCate.getMerchantId())) {
+            return getFailureResult(1004);
+        }
 
         Map<String, Object> result = new HashMap<>();
         result.put("cateInfo", mtCate);

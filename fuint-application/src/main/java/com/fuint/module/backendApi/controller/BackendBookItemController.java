@@ -84,12 +84,7 @@ public class BackendBookItemController extends BaseController {
         String cateId = request.getParameter("cateId");
 
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
-        Integer storeId;
-        if (accountInfo == null) {
-            return getFailureResult(1001, "请先登录");
-        } else {
-            storeId = accountInfo.getStoreId();
-        }
+        Integer storeId = accountInfo.getStoreId();
 
         PaginationRequest paginationRequest = new PaginationRequest();
         paginationRequest.setCurrentPage(page);
@@ -178,9 +173,6 @@ public class BackendBookItemController extends BaseController {
         Integer id = params.get("id") == null ? 0 : Integer.parseInt(params.get("id").toString());
 
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
-        if (accountInfo == null) {
-            return getFailureResult(1001, "请先登录");
-        }
 
         MtBookItem mtBookItem = bookItemService.getBookItemById(id);
         if (mtBookItem == null) {
@@ -215,9 +207,6 @@ public class BackendBookItemController extends BaseController {
         String storeId = params.get("storeId") == null ? "0" : params.get("storeId").toString();
 
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
-        if (accountInfo == null) {
-            return getFailureResult(1001, "请先登录");
-        }
 
         MtBookItem mtBookItem = new MtBookItem();
         mtBookItem.setMobile(mobile);
@@ -249,11 +238,11 @@ public class BackendBookItemController extends BaseController {
     public ResponseObject info(HttpServletRequest request, @PathVariable("id") Integer id) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
-        if (accountInfo == null) {
-            return getFailureResult(1001, "请先登录");
-        }
 
         MtBookItem mtBookItem = bookItemService.getBookItemById(id);
+        if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0 && !mtBookItem.getMerchantId().equals(accountInfo.getMerchantId())) {
+            return getFailureResult(1004);
+        }
 
         Map<String, Object> result = new HashMap<>();
         result.put("mtBookItem", mtBookItem);

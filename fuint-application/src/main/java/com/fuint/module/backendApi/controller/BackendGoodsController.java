@@ -96,9 +96,6 @@ public class BackendGoodsController extends BaseController {
         String cateId = request.getParameter("cateId");
 
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
-        if (accountInfo == null) {
-            return getFailureResult(1001, "请先登录");
-        }
 
         TAccount account = accountService.getAccountInfoById(accountInfo.getId());
         Integer storeId = account.getStoreId() == null ? 0 : account.getStoreId();
@@ -197,11 +194,15 @@ public class BackendGoodsController extends BaseController {
         String token = request.getHeader("Access-Token");
 
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
-        if (accountInfo == null) {
-            return getFailureResult(1001, "请先登录");
+
+        MtGoods mtGoods = goodsService.queryGoodsById(goodsId);
+        if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0 && !mtGoods.getMerchantId().equals(accountInfo.getMerchantId())) {
+            return getFailureResult(1004);
         }
+
         String operator = accountInfo.getAccountName();
         goodsService.deleteGoods(goodsId, operator);
+
         return getSuccessResult(true);
     }
 
@@ -220,13 +221,14 @@ public class BackendGoodsController extends BaseController {
         Integer id = params.get("id") == null ? 0 : Integer.parseInt(params.get("id").toString());
 
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
-        if (accountInfo == null) {
-            return getFailureResult(1001, "请先登录");
-        }
 
         MtGoods mtGoods = goodsService.queryGoodsById(id);
         if (mtGoods == null) {
             return getFailureResult(201, "该商品不存在");
+        }
+
+        if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0 && !mtGoods.getMerchantId().equals(accountInfo.getMerchantId())) {
+            return getFailureResult(1004);
         }
 
         String operator = accountInfo.getAccountName();
@@ -255,9 +257,7 @@ public class BackendGoodsController extends BaseController {
         String token = request.getHeader("Access-Token");
 
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
-        if (accountInfo == null) {
-            return getFailureResult(1001, "请先登录");
-        }
+
         Integer storeId = accountInfo.getStoreId();
         GoodsDto goods = goodsService.getGoodsDetail(goodsId, false);
 
@@ -378,9 +378,6 @@ public class BackendGoodsController extends BaseController {
     public ResponseObject saveHandler(HttpServletRequest request, @RequestBody Map<String, Object> param) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
-        if (accountInfo == null) {
-            return getFailureResult(1001, "请先登录");
-        }
 
         String goodsId = param.get("goodsId") == null ? "0" : param.get("goodsId").toString();
         if (StringUtil.isEmpty(goodsId)) {
@@ -598,15 +595,9 @@ public class BackendGoodsController extends BaseController {
     @RequestMapping(value = "/saveSpecName", method = RequestMethod.POST)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('goods:goods:add')")
-    public ResponseObject saveSpecName(HttpServletRequest request, @RequestBody Map<String, Object> param) {
-        String token = request.getHeader("Access-Token");
+    public ResponseObject saveSpecName(@RequestBody Map<String, Object> param) {
         String goodsId = param.get("goodsId") == null ? "0" : param.get("goodsId").toString();
         String name = param.get("name") == null ? "" : param.get("name").toString();
-
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
-        if (accountInfo == null) {
-            return getFailureResult(1001, "请先登录");
-        }
 
         if (StringUtil.isEmpty(goodsId)) {
             return getFailureResult(201, "请先保存商品基础信息");
@@ -652,16 +643,10 @@ public class BackendGoodsController extends BaseController {
     @RequestMapping(value = "/saveSpecValue", method = RequestMethod.POST)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('goods:goods:add')")
-    public ResponseObject saveSpecValue(HttpServletRequest request, @RequestBody Map<String, Object> param) {
-        String token = request.getHeader("Access-Token");
+    public ResponseObject saveSpecValue(@RequestBody Map<String, Object> param) {
         String specName = param.get("specName") == null ? "" : param.get("specName").toString();
         String goodsId = param.get("goodsId") == null ? "" : param.get("goodsId").toString();
         String value = param.get("value") == null ? "" : param.get("value").toString();
-
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
-        if (accountInfo == null) {
-            return getFailureResult(1001, "请先登录");
-        }
 
         if (StringUtil.isEmpty(goodsId)) {
             return getFailureResult(201, "请先保存商品基础信息");
@@ -815,9 +800,7 @@ public class BackendGoodsController extends BaseController {
     public ResponseObject selectGoods(HttpServletRequest request, @RequestBody Map<String, Object> params) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
-        if (accountInfo == null) {
-            return getFailureResult(1001, "请先登录");
-        }
+        
         if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
             params.put("merchantId", accountInfo.getMerchantId());
         }
