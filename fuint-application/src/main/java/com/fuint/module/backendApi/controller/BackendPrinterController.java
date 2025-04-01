@@ -81,12 +81,7 @@ public class BackendPrinterController extends BaseController {
         String searchStoreId = request.getParameter("storeId");
 
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
-        Integer storeId;
-        if (accountInfo == null) {
-            return getFailureResult(1001, "请先登录");
-        } else {
-            storeId = accountInfo.getStoreId();
-        }
+        Integer storeId = accountInfo.getStoreId();
 
         PaginationRequest paginationRequest = new PaginationRequest();
         paginationRequest.setCurrentPage(page);
@@ -146,9 +141,6 @@ public class BackendPrinterController extends BaseController {
         Integer id = params.get("id") == null ? 0 : Integer.parseInt(params.get("id").toString());
 
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
-        if (accountInfo == null) {
-            return getFailureResult(1001, "请先登录");
-        }
 
         MtPrinter mtPrinter = printerService.queryPrinterById(id);
         if (mtPrinter == null) {
@@ -184,9 +176,6 @@ public class BackendPrinterController extends BaseController {
         String autoPrint = params.get("autoPrint") == null ? YesOrNoEnum.NO.getKey() : params.get("autoPrint").toString();
 
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
-        if (accountInfo == null) {
-            return getFailureResult(1001, "请先登录");
-        }
 
         MtPrinter mtPrinter = new MtPrinter();
         mtPrinter.setOperator(accountInfo.getAccountName());
@@ -220,11 +209,11 @@ public class BackendPrinterController extends BaseController {
     public ResponseObject info(HttpServletRequest request, @PathVariable("id") Integer id) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
-        if (accountInfo == null) {
-            return getFailureResult(1001, "请先登录");
-        }
 
         MtPrinter printerInfo = printerService.queryPrinterById(id);
+        if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0 && !accountInfo.getMerchantId().equals(printerInfo.getMerchantId())) {
+            return getFailureResult(1004);
+        }
 
         Map<String, Object> result = new HashMap<>();
         result.put("printerInfo", printerInfo);
@@ -245,9 +234,6 @@ public class BackendPrinterController extends BaseController {
     public ResponseObject setting(HttpServletRequest request) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
-        if (accountInfo == null) {
-            return getFailureResult(1001, "请先登录");
-        }
 
         List<MtSetting> settingList = settingService.getSettingList(accountInfo.getMerchantId(), SettingTypeEnum.PRINTER.getKey());
 
@@ -291,9 +277,6 @@ public class BackendPrinterController extends BaseController {
         String enable = param.get("enable") != null ? param.get("enable").toString() : null;
 
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
-        if (accountInfo == null) {
-            return getFailureResult(1001, "请先登录");
-        }
 
         PrinterSettingEnum[] settingList = PrinterSettingEnum.values();
         for (PrinterSettingEnum setting : settingList) {
@@ -331,13 +314,13 @@ public class BackendPrinterController extends BaseController {
     public ResponseObject doPrint(HttpServletRequest request, @PathVariable("orderId") Integer orderId) throws Exception {
         String token = request.getHeader("Access-Token");
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
-        if (accountInfo == null) {
-            return getFailureResult(1001, "请先登录");
-        }
 
         UserOrderDto orderInfo = orderService.getOrderById(orderId);
         if (orderInfo == null) {
             return getFailureResult(201, "该订单不存在");
+        }
+        if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0 && !accountInfo.getMerchantId().equals(orderInfo.getMerchantId())) {
+            return getFailureResult(1004);
         }
 
         // 打印订单

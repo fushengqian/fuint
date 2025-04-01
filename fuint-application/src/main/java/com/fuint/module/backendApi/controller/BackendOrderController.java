@@ -360,11 +360,13 @@ public class BackendOrderController extends BaseController {
         orderDto.setId(orderId);
         orderDto.setOperator(accountInfo.getAccountName());
         if (StringUtil.isNotEmpty(remark)) {
-            orderDto.setRemark(remark);
+            orderDto.setConfirmRemark(remark);
         }
         if (StringUtil.isNotEmpty(verifyCode)) {
             orderDto.setVerifyCode(verifyCode);
         }
+        orderDto.setConfirmStatus(YesOrNoEnum.YES.getKey());
+        orderDto.setConfirmTime(new Date());
 
         orderService.updateOrder(orderDto);
         return getSuccessResult(true);

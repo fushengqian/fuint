@@ -198,7 +198,11 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
         String storeIds = orderListParam.getStoreIds() == null ? "" : orderListParam.getStoreIds();
         String startTime = orderListParam.getStartTime() == null ? "" : orderListParam.getStartTime();
         String endTime = orderListParam.getEndTime() == null ? "" : orderListParam.getEndTime();
+        String keyword = orderListParam.getKeyword() == null ? "" : orderListParam.getKeyword();
         List<String> payType = orderListParam.getPayType();
+
+        LambdaQueryWrapper<MtOrder> lambdaQueryWrapper = Wrappers.lambdaQuery();
+        lambdaQueryWrapper.ne(MtOrder::getStatus, OrderStatusEnum.DELETED.getKey());
 
         if (dataType.equals("toPay")) {
             status = OrderStatusEnum.CREATED.getKey(); // 待支付
@@ -207,11 +211,19 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
             payStatus = PayStatusEnum.SUCCESS.getKey(); // 已支付
         } else if(dataType.equals("cancel")) {
             status = OrderStatusEnum.CANCEL.getKey();  // 已取消
+        } else if(dataType.equals("todo")) {
+            // 待核销
+            payStatus = PayStatusEnum.SUCCESS.getKey();
+            lambdaQueryWrapper.eq(MtOrder::getConfirmStatus, YesOrNoEnum.NO.getKey());
+            lambdaQueryWrapper.eq(MtOrder::getType, OrderTypeEnum.GOOGS.getKey());
+            lambdaQueryWrapper.eq(MtOrder::getOrderMode, OrderModeEnum.ONESELF.getKey());
+        } else if(dataType.equals("confirm")) {
+            // 已核销
+            payStatus = PayStatusEnum.SUCCESS.getKey();
+            lambdaQueryWrapper.eq(MtOrder::getType, OrderTypeEnum.GOOGS.getKey());
+            lambdaQueryWrapper.eq(MtOrder::getConfirmStatus, YesOrNoEnum.YES.getKey());
+            lambdaQueryWrapper.eq(MtOrder::getOrderMode, OrderModeEnum.ONESELF.getKey());
         }
-
-        Page<MtOpenGift> pageHelper = PageHelper.startPage(pageNumber, pageSize);
-        LambdaQueryWrapper<MtOrder> lambdaQueryWrapper = Wrappers.lambdaQuery();
-        lambdaQueryWrapper.ne(MtOrder::getStatus, OrderStatusEnum.DELETED.getKey());
 
         if (StringUtil.isNotEmpty(orderSn)) {
             lambdaQueryWrapper.eq(MtOrder::getOrderSn, orderSn);
@@ -225,10 +237,21 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
         if (StringUtil.isNotEmpty(settleStatus)) {
             lambdaQueryWrapper.eq(MtOrder::getSettleStatus, settleStatus);
         }
+        if (StringUtil.isNotEmpty(keyword)) {
+            MtUser userInfo = memberService.queryMemberByMobile(merchantId, keyword);
+            if (userInfo != null) {
+                lambdaQueryWrapper.and(wq -> wq
+                        .like(MtOrder::getOrderSn, keyword)
+                        .or()
+                        .eq(MtOrder::getUserId, userInfo.getId().toString()));
+            } else {
+                lambdaQueryWrapper.like(MtOrder::getOrderSn, keyword);
+            }
+        }
         if (StringUtil.isNotEmpty(mobile)) {
             MtUser userInfo = memberService.queryMemberByMobile(merchantId, mobile);
             if (userInfo != null) {
-                userId = userInfo.getId() + "";
+                userId = userInfo.getId().toString();
             } else {
                 userId = "0";
             }
@@ -270,6 +293,7 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
             lambdaQueryWrapper.in(MtOrder::getPayType, payType);
         }
         lambdaQueryWrapper.orderByDesc(MtOrder::getId);
+        Page<MtOpenGift> pageHelper = PageHelper.startPage(pageNumber, pageSize);
         List<MtOrder> orderList = mtOrderMapper.selectList(lambdaQueryWrapper);
 
         List<UserOrderDto> dataList = new ArrayList<>();
@@ -350,6 +374,7 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
         mtOrder.setUpdateTime(new Date());
         mtOrder.setDeliveryFee(orderDto.getDeliveryFee() == null ? new BigDecimal(0) : orderDto.getDeliveryFee());
         mtOrder.setSettleStatus(SettleStatusEnum.WAIT.getKey());
+        mtOrder.setConfirmStatus(YesOrNoEnum.NO.getKey());
 
         if (mtOrder.getId() == null || mtOrder.getId() <= 0) {
             mtOrder.setCreateTime(new Date());
@@ -1324,6 +1349,18 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
 
         if (null != orderDto.getRemark()) {
             mtOrder.setRemark(orderDto.getRemark());
+        }
+
+        if (null != orderDto.getConfirmStatus()) {
+            mtOrder.setConfirmStatus(orderDto.getConfirmStatus());
+        }
+
+        if (null != orderDto.getConfirmRemark()) {
+            mtOrder.setConfirmRemark(orderDto.getConfirmRemark());
+        }
+
+        if (null != orderDto.getConfirmTime()) {
+            mtOrder.setConfirmTime(orderDto.getConfirmTime());
         }
 
         mtOrderMapper.updateById(mtOrder);

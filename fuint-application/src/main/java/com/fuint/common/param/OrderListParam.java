@@ -16,6 +16,9 @@ public class OrderListParam extends PageParam implements Serializable {
     @ApiModelProperty(value="ID", name="id")
     private String id;
 
+    @ApiModelProperty(value="关键字", name="keyword")
+    private String keyword;
+
     @ApiModelProperty(value="会员ID", name="userId")
     private String userId;
 
