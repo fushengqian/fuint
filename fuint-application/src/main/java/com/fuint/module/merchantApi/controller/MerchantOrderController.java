@@ -1,7 +1,10 @@
 package com.fuint.module.merchantApi.controller;
 
+import com.fuint.common.dto.OrderDto;
 import com.fuint.common.dto.UserInfo;
 import com.fuint.common.dto.UserOrderDto;
+import com.fuint.common.enums.YesOrNoEnum;
+import com.fuint.common.param.OrderConfirmParam;
 import com.fuint.common.param.OrderDetailParam;
 import com.fuint.common.param.OrderListParam;
 import com.fuint.common.service.MemberService;
@@ -21,6 +24,7 @@ import io.swagger.annotations.ApiOperation;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
+import java.util.Date;
 
 /**
  * 订单类controller
@@ -120,12 +124,49 @@ public class MerchantOrderController extends BaseController {
             return getFailureResult(201, "订单已不存在");
         }
 
-        MtStaff staffInfo = staffService.queryStaffByUserId(mtUser.getId());
-        if (staffInfo == null || orderDto.getStoreInfo() == null || !staffInfo.getStoreId().equals(orderDto.getStoreInfo().getId())) {
-            return getFailureResult(201, "没有操作权限");
+        MtUser userInfo = memberService.queryMemberById(mtUser.getId());
+        MtStaff staffInfo = staffService.queryStaffByMobile(userInfo.getMobile());
+
+        if (staffInfo == null || (staffInfo.getStoreId() != null && staffInfo.getStoreId() > 0 && !staffInfo.getStoreId().equals(orderDto.getStoreInfo().getId()))) {
+            return getFailureResult(1004);
         }
 
         MtOrder orderInfo = orderService.cancelOrder(orderDto.getId(), "店员取消");
         return getSuccessResult(orderInfo);
+    }
+
+    /**
+     * 核销订单
+     */
+    @ApiOperation(value = "核销订单")
+    @RequestMapping(value = "/confirm", method = RequestMethod.POST)
+    @CrossOrigin
+    public ResponseObject confirm(HttpServletRequest request, @RequestBody OrderConfirmParam param) throws BusinessCheckException {
+        String token = request.getHeader("Access-Token");
+        UserInfo mtUser = TokenUtil.getUserInfoByToken(token);
+
+        Integer orderId = param.getOrderId();
+
+        UserOrderDto orderInfo = orderService.getOrderById(orderId);
+        if (orderInfo == null) {
+            return getFailureResult(201, "订单已不存在");
+        }
+
+        MtUser userInfo = memberService.queryMemberById(mtUser.getId());
+        MtStaff staffInfo = staffService.queryStaffByMobile(userInfo.getMobile());
+        if (staffInfo == null || (staffInfo.getStoreId() != null && staffInfo.getStoreId() > 0 && !staffInfo.getStoreId().equals(orderInfo.getStoreInfo().getId()))) {
+            return getFailureResult(1004);
+        }
+
+        OrderDto orderDto = new OrderDto();
+        orderDto.setId(orderInfo.getId());
+        orderDto.setConfirmRemark(param.getRemark());
+        orderDto.setVerifyCode(param.getCode());
+        orderDto.setConfirmStatus(YesOrNoEnum.YES.getKey());
+        orderDto.setConfirmTime(new Date());
+
+        orderService.updateOrder(orderDto);
+
+        return getSuccessResult(true);
     }
 }
