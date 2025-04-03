@@ -3,7 +3,6 @@ package com.fuint.module.merchantApi.controller;
 import com.fuint.common.dto.OrderDto;
 import com.fuint.common.dto.UserInfo;
 import com.fuint.common.dto.UserOrderDto;
-import com.fuint.common.enums.YesOrNoEnum;
 import com.fuint.common.param.OrderConfirmParam;
 import com.fuint.common.param.OrderDetailParam;
 import com.fuint.common.param.OrderListParam;
@@ -24,7 +23,6 @@ import io.swagger.annotations.ApiOperation;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
-import java.util.Date;
 
 /**
  * 订单类controller
@@ -165,8 +163,7 @@ public class MerchantOrderController extends BaseController {
         orderDto.setId(orderInfo.getId());
         orderDto.setConfirmRemark(param.getRemark());
         orderDto.setVerifyCode(param.getCode());
-        orderDto.setConfirmStatus(YesOrNoEnum.YES.getKey());
-        orderDto.setConfirmTime(new Date());
+        orderDto.setOperator(staffInfo.getRealName());
 
         orderService.updateOrder(orderDto);
 

@@ -302,8 +302,6 @@ public class BackendOrderController extends BaseController {
         if (StringUtil.isNotEmpty(verifyCode)) {
             orderDto.setVerifyCode(verifyCode);
         }
-        orderDto.setConfirmStatus(YesOrNoEnum.YES.getKey());
-        orderDto.setConfirmTime(new Date());
 
         orderService.updateOrder(orderDto);
         return getSuccessResult(true);

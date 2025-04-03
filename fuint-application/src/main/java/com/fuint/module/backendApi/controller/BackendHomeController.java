@@ -66,9 +66,6 @@ public class BackendHomeController extends BaseController {
         Date endTime = DateUtil.getDayEnd();
 
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
-        if (accountInfo == null) {
-            return getFailureResult(1001, "请先登录");
-        }
 
         Integer merchantId = accountInfo.getMerchantId();
         Integer storeId = accountInfo.getStoreId();
@@ -123,9 +120,6 @@ public class BackendHomeController extends BaseController {
         Integer storeId = StringUtil.isEmpty(request.getParameter("storeId")) ? 0 : Integer.parseInt(request.getParameter("storeId"));
 
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
-        if (accountInfo == null) {
-            return getFailureResult(1001, "请先登录");
-        }
 
         TAccount account = accountService.getAccountInfoById(accountInfo.getId());
         Integer merchantId = account.getMerchantId() == null ? 0 : account.getMerchantId();

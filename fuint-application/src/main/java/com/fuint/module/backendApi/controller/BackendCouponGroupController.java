@@ -81,9 +81,6 @@ public class BackendCouponGroupController extends BaseController {
         String status = request.getParameter("status") == null ? StatusEnum.ENABLED.getKey() : request.getParameter("status");
 
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
-        if (accountInfo == null) {
-            return getFailureResult(1001, "请先登录");
-        }
 
         PaginationRequest paginationRequest = new PaginationRequest();
         paginationRequest.setCurrentPage(page);
@@ -187,9 +184,6 @@ public class BackendCouponGroupController extends BaseController {
     public ResponseObject delete(HttpServletRequest request, @PathVariable("id") Integer id) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
-        if (accountInfo == null) {
-            return getFailureResult(1001, "请先登录");
-        }
 
         // 该分组已有数据，不允许删除
         Map<String, Object> searchParams = new HashMap<>();
@@ -220,9 +214,6 @@ public class BackendCouponGroupController extends BaseController {
         Integer id = params.get("id") == null ? 0 : Integer.parseInt(params.get("id").toString());
 
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
-        if (accountInfo == null) {
-            return getFailureResult(1001, "请先登录");
-        }
 
         String operator = accountInfo.getAccountName();
         ReqCouponGroupDto groupDto = new ReqCouponGroupDto();
@@ -237,21 +228,15 @@ public class BackendCouponGroupController extends BaseController {
     /**
      * 获取分组详情
      *
-     * @param request
+     * @param groupId
      * @return
      */
     @ApiOperation(value = "获取分组详情")
     @RequestMapping(value = "/info/{id}", method = RequestMethod.GET)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('coupon:group:index')")
-    public ResponseObject info(HttpServletRequest request, @PathVariable("id") Integer id) throws BusinessCheckException {
-        String token = request.getHeader("Access-Token");
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
-        if (accountInfo == null) {
-            return getFailureResult(1001, "请先登录");
-        }
-
-        MtCouponGroup mtCouponGroup = couponGroupService.queryCouponGroupById(id);
+    public ResponseObject info(@PathVariable("id") Integer groupId) throws BusinessCheckException {
+        MtCouponGroup mtCouponGroup = couponGroupService.queryCouponGroupById(groupId);
 
         Map<String, Object> resultMap = new HashMap<>();
         resultMap.put("groupInfo", mtCouponGroup);
@@ -302,9 +287,6 @@ public class BackendCouponGroupController extends BaseController {
     public ResponseObject uploadFile(HttpServletRequest request, @RequestParam("fileInput") MultipartFile file) throws Exception {
         String token = request.getHeader("Access-Token");
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
-        if (accountInfo == null) {
-            return getFailureResult(1001, "请先登录");
-        }
 
         String filePath = couponGroupService.saveExcelFile(file, request);
         String uuid = couponGroupService.importSendCoupon(file, accountInfo.getAccountName(), filePath);
@@ -320,9 +302,6 @@ public class BackendCouponGroupController extends BaseController {
     public ResponseObject quickSearch(HttpServletRequest request) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
-        if (accountInfo == null) {
-            return getFailureResult(1001, "请先登录");
-        }
 
         PaginationRequest paginationRequest = new PaginationRequest();
         paginationRequest.setCurrentPage(Constants.PAGE_NUMBER);

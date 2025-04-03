@@ -82,9 +82,6 @@ public class BackendGiveLogController extends BaseController {
         String couponId = request.getParameter("couponId") == null ? "" : request.getParameter("couponId");
 
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
-        if (accountInfo == null) {
-            return getFailureResult(1001, "请先登录");
-        }
 
         PaginationRequest paginationRequest = new PaginationRequest();
         paginationRequest.setCurrentPage(page);
@@ -124,13 +121,7 @@ public class BackendGiveLogController extends BaseController {
     @RequestMapping(value = "/giveItem", method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject giveItem(HttpServletRequest request) throws BusinessCheckException {
-        String token = request.getHeader("Access-Token");
         String giveId = request.getParameter("giveId");
-
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
-        if (accountInfo == null) {
-            return getFailureResult(1001, "请先登录");
-        }
 
         if (StringUtil.isEmpty(giveId)) {
             return getFailureResult(201, "参数有误");

@@ -131,10 +131,6 @@ public class BackendMemberController extends BaseController {
             params.put("groupIds", groupIds);
         }
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
-        if (accountInfo == null) {
-            return getFailureResult(1001, "请先登录");
-        }
-        TAccount account = accountService.getAccountInfoById(accountInfo.getId());
         if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
             params.put("merchantId", accountInfo.getMerchantId());
         }
@@ -150,8 +146,8 @@ public class BackendMemberController extends BaseController {
         // 会员等级列表
         Map<String, Object> param = new HashMap<>();
         param.put("STATUS", StatusEnum.ENABLED.getKey());
-        if (account.getMerchantId() != null && account.getMerchantId() > 0) {
-            param.put("MERCHANT_ID", account.getMerchantId());
+        if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
+            param.put("MERCHANT_ID", accountInfo.getMerchantId());
         }
         List<MtUserGrade> userGradeList = memberService.queryMemberGradeByParams(param);
 
@@ -201,8 +197,14 @@ public class BackendMemberController extends BaseController {
         String token = request.getHeader("Access-Token");
         Integer userId = param.get("userId") == null ? 0 : Integer.parseInt(param.get("userId").toString());
         String status = param.get("status") == null ? StatusEnum.ENABLED.getKey() : param.get("status").toString();
-
+        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
         MtUser userInfo = memberService.queryMemberById(userId);
+        if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
+            if (!accountInfo.getMerchantId().equals(userInfo.getMerchantId())) {
+                return getFailureResult(1004);
+            }
+        }
+
         if (userInfo == null) {
             return getFailureResult(201, "会员不存在");
         }

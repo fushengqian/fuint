@@ -100,9 +100,6 @@ public class BackendCouponController extends BaseController {
         String status = request.getParameter("status") == null ? "" : request.getParameter("status");
 
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
-        if (accountInfo == null) {
-            return getFailureResult(1001, "请先登录");
-        }
 
         PaginationRequest paginationRequest = new PaginationRequest();
         paginationRequest.setCurrentPage(page);
@@ -227,12 +224,6 @@ public class BackendCouponController extends BaseController {
     public ResponseObject delete(HttpServletRequest request, @PathVariable("id") Long id) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
-        if (accountInfo == null) {
-            return getFailureResult(1001, "请先登录");
-        }
-
-        List<Long> ids = new ArrayList<>();
-        ids.add(id);
 
         String operator = accountInfo.getAccountName();
         couponService.deleteCoupon(id, operator);
@@ -254,9 +245,6 @@ public class BackendCouponController extends BaseController {
         String token = request.getHeader("Access-Token");
 
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
-        if (accountInfo == null) {
-            return getFailureResult(1001, "请先登录");
-        }
         reqCouponDto.setOperator(accountInfo.getAccountName());
 
         // 同一分组内卡券名称不能重复
@@ -287,21 +275,15 @@ public class BackendCouponController extends BaseController {
     /**
      * 卡券详情
      *
-     * @param request
+     * @param couponId
      * @return
      */
     @ApiOperation(value = "卡券详情")
     @RequestMapping(value = "/info/{id}", method = RequestMethod.GET)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('coupon:coupon:index')")
-    public ResponseObject info(HttpServletRequest request, @PathVariable("id") Integer id) throws BusinessCheckException {
-        String token = request.getHeader("Access-Token");
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
-        if (accountInfo == null) {
-            return getFailureResult(1001, "请先登录");
-        }
-
-        MtCoupon mtCouponInfo = couponService.queryCouponById(id);
+    public ResponseObject info(@PathVariable("id") Integer couponId) throws BusinessCheckException {
+        MtCoupon mtCouponInfo = couponService.queryCouponById(couponId);
 
         String baseImage = settingService.getUploadBasePath();
 
@@ -323,7 +305,7 @@ public class BackendCouponController extends BaseController {
         }
 
         // 卡券适用商品
-        List<MtCouponGoods> couponGoodsList = mtCouponGoodsMapper.getCouponGoods(id);
+        List<MtCouponGoods> couponGoodsList = mtCouponGoodsMapper.getCouponGoods(couponId);
         String goodsIds = "";
         List<MtGoods> goodsList = new ArrayList<>();
         if (couponGoodsList.size() > 0) {
@@ -402,9 +384,6 @@ public class BackendCouponController extends BaseController {
         String userIds = request.getParameter("userIds");
         String object = request.getParameter("object");
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
-        if (accountInfo == null) {
-            return getFailureResult(1001, "请先登录");
-        }
 
         if (couponId == null) {
             return getFailureResult(201, "系统参数有误");

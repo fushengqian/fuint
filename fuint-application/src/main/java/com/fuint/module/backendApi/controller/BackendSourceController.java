@@ -102,9 +102,6 @@ public class BackendSourceController extends BaseController {
     public ResponseObject addSource(HttpServletRequest request, @RequestBody Map<String, Object> param) {
         String token = request.getHeader("Access-Token");
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
-        if (accountInfo == null) {
-            return getFailureResult(1001, "请先登录");
-        }
 
         String name = param.get("name").toString();
         String status = param.get("status").toString();
@@ -159,9 +156,6 @@ public class BackendSourceController extends BaseController {
     public ResponseObject update(HttpServletRequest request, @RequestBody Map<String, Object> param) {
         String token = request.getHeader("Access-Token");
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
-        if (accountInfo == null) {
-            return getFailureResult(1001, "请先登录");
-        }
 
         String name = param.get("name").toString();
         String status = param.get("status").toString();
@@ -223,9 +217,6 @@ public class BackendSourceController extends BaseController {
     public ResponseObject delete(HttpServletRequest request, @PathVariable("sourceId") Long sourceId) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
-        if (accountInfo == null) {
-            return getFailureResult(1001, "请先登录");
-        }
         TSource tSource = sourceService.getById(sourceId);
         if (!tSource.getMerchantId().equals(accountInfo.getMerchantId()) && accountInfo.getMerchantId() > 0) {
             return getFailureResult(201, "抱歉，您没有删除的权限");
@@ -242,9 +233,6 @@ public class BackendSourceController extends BaseController {
     public ResponseObject treeselect(HttpServletRequest request) {
         String token = request.getHeader("Access-Token");
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
-        if (accountInfo == null) {
-            return getFailureResult(1001, "请先登录");
-        }
 
         List<TreeNode> sources = sourceService.getSourceTree(accountInfo.getMerchantId(), "");
         List<TreeSelect> data = sourceService.buildMenuTreeSelect(sources);

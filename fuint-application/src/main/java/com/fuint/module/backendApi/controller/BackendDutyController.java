@@ -72,9 +72,6 @@ public class BackendDutyController extends BaseController {
         String status = request.getParameter("status") == null ? "" : request.getParameter("status");
 
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
-        if (accountInfo == null) {
-            return getFailureResult(1001, "请先登录");
-        }
 
         PaginationRequest paginationRequest = new PaginationRequest();
         paginationRequest.setCurrentPage(page);
@@ -136,9 +133,6 @@ public class BackendDutyController extends BaseController {
         String description = param.get("description").toString();
 
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
-        if (accountInfo == null) {
-            return getFailureResult(1001, "请先登录");
-        }
 
         // 获取角色所分配的菜单
         List<TSource> sources = null;
@@ -173,12 +167,7 @@ public class BackendDutyController extends BaseController {
     @RequestMapping(value = "/info/{roleId}", method = RequestMethod.GET)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('system:role:index')")
-    public ResponseObject info(HttpServletRequest request, @PathVariable("roleId") Long roleId) {
-        String token = request.getHeader("Access-Token");
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
-        if (accountInfo == null) {
-            return getFailureResult(1001, "请先登录");
-        }
+    public ResponseObject info(@PathVariable("roleId") Long roleId) {
         TDuty htDuty = tDutyService.getRoleById(roleId);
 
         Map<String, Object> result = new HashMap<>();
@@ -220,9 +209,6 @@ public class BackendDutyController extends BaseController {
         String description = param.get("description").toString();
 
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
-        if (accountInfo == null) {
-            return getFailureResult(1001, "请先登录");
-        }
 
         if (StringUtil.isEmpty(id)) {
             return getFailureResult(201, "信息提交有误");
@@ -265,9 +251,6 @@ public class BackendDutyController extends BaseController {
     public ResponseObject deleteRole(HttpServletRequest request, @PathVariable("roleId") Long roleId) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
-        if (accountInfo == null) {
-            return getFailureResult(1001, "请先登录");
-        }
         tDutyService.deleteDuty(accountInfo.getMerchantId(), roleId);
         return getSuccessResult(true);
     }
@@ -285,9 +268,6 @@ public class BackendDutyController extends BaseController {
     public ResponseObject changeStatus(HttpServletRequest request, @RequestBody DutyStatusRequest dutyStatusRequest) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
-        if (accountInfo == null) {
-            return getFailureResult(1001, "请先登录");
-        }
         tDutyService.updateStatus(accountInfo.getMerchantId(), dutyStatusRequest);
         return getSuccessResult(true);
     }

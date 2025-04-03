@@ -93,9 +93,6 @@ public class BackendUserCouponController extends BaseController {
         Integer pageSize = request.getParameter("pageSize") == null ? Constants.PAGE_SIZE : Integer.parseInt(request.getParameter("pageSize"));
 
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
-        if (accountInfo == null) {
-            return getFailureResult(1001, "请先登录");
-        }
 
         Map<String, Object> param = new HashMap<>();
         param.put("pageNumber", page);
@@ -160,9 +157,6 @@ public class BackendUserCouponController extends BaseController {
         }
 
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
-        if (accountInfo == null) {
-            return getFailureResult(1001, "请先登录");
-        }
 
         TAccount account = accountService.getAccountInfoById(accountInfo.getId());
         Integer storeId = account.getStoreId();
@@ -190,9 +184,6 @@ public class BackendUserCouponController extends BaseController {
         String token = request.getHeader("Access-Token");
 
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
-        if (accountInfo == null) {
-            return getFailureResult(1001, "请先登录");
-        }
 
         // 删除会员的卡券
         couponService.deleteUserCoupon(id, accountInfo.getAccountName());

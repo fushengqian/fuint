@@ -1324,6 +1324,9 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
             if (orderDto.getVerifyCode().equals(mtOrder.getVerifyCode()) || StringUtil.isEmpty(mtOrder.getVerifyCode())) {
                 mtOrder.setStatus(OrderStatusEnum.DELIVERED.getKey());
                 mtOrder.setVerifyCode("");
+                mtOrder.setConfirmStatus(YesOrNoEnum.YES.getKey());
+                mtOrder.setConfirmTime(new Date());
+                mtOrder.setConfirmRemark(orderDto.getConfirmRemark());
             } else {
                 throw new BusinessCheckException("核销码错误，请确认！");
             }
@@ -1355,18 +1358,6 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
 
         if (null != orderDto.getRemark()) {
             mtOrder.setRemark(orderDto.getRemark());
-        }
-
-        if (null != orderDto.getConfirmStatus()) {
-            mtOrder.setConfirmStatus(orderDto.getConfirmStatus());
-        }
-
-        if (null != orderDto.getConfirmRemark()) {
-            mtOrder.setConfirmRemark(orderDto.getConfirmRemark());
-        }
-
-        if (null != orderDto.getConfirmTime()) {
-            mtOrder.setConfirmTime(orderDto.getConfirmTime());
         }
 
         mtOrderMapper.updateById(mtOrder);

@@ -134,7 +134,7 @@ public class BackendDoConfirmController extends BaseController {
     /**
      * 确认核销
      *
-     * @param request  HttpServletRequest对象
+     * @param request HttpServletRequest对象
      * @return
      */
     @ApiOperation(value = "确认核销")

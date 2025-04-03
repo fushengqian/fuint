@@ -50,16 +50,10 @@ public class BackendGenCodeController extends BaseController {
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('system:genCode:index')")
     public ResponseObject list(HttpServletRequest request) throws BusinessCheckException {
-        String token = request.getHeader("Access-Token");
         Integer page = request.getParameter("page") == null ? Constants.PAGE_NUMBER : Integer.parseInt(request.getParameter("page"));
         Integer pageSize = request.getParameter("pageSize") == null ? Constants.PAGE_SIZE : Integer.parseInt(request.getParameter("pageSize"));
         String tableName = request.getParameter("tableName");
         String status = request.getParameter("status");
-
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
-        if (accountInfo == null) {
-            return getFailureResult(1001, "请先登录");
-        }
 
         PaginationRequest paginationRequest = new PaginationRequest();
         paginationRequest.setCurrentPage(page);
@@ -90,15 +84,9 @@ public class BackendGenCodeController extends BaseController {
     @RequestMapping(value = "/updateStatus", method = RequestMethod.POST)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('system:genCode:add')")
-    public ResponseObject updateStatus(HttpServletRequest request, @RequestBody Map<String, Object> params) throws BusinessCheckException {
-        String token = request.getHeader("Access-Token");
+    public ResponseObject updateStatus(@RequestBody Map<String, Object> params) throws BusinessCheckException {
         String status = params.get("status") != null ? params.get("status").toString() : StatusEnum.ENABLED.getKey();
         Integer id = params.get("id") == null ? 0 : Integer.parseInt(params.get("id").toString());
-
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
-        if (accountInfo == null) {
-            return getFailureResult(1001, "请先登录");
-        }
 
         TGenCode tGenCode = genCodeService.queryGenCodeById(id);
         if (tGenCode == null) {
@@ -132,8 +120,8 @@ public class BackendGenCodeController extends BaseController {
         String backendPath = params.get("backendPath") == null ? "" : params.get("backendPath").toString();
 
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
-        if (accountInfo == null) {
-            return getFailureResult(1001, "请先登录");
+        if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
+            return getFailureResult(1004, "平台超管帐号才有操作权限");
         }
 
         TGenCode tGenCode = new TGenCode();
@@ -166,13 +154,7 @@ public class BackendGenCodeController extends BaseController {
     @RequestMapping(value = "/info/{id}", method = RequestMethod.GET)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('system:genCode:index')")
-    public ResponseObject info(HttpServletRequest request, @PathVariable("id") Integer id) throws BusinessCheckException {
-        String token = request.getHeader("Access-Token");
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
-        if (accountInfo == null) {
-            return getFailureResult(1001, "请先登录");
-        }
-
+    public ResponseObject info(@PathVariable("id") Integer id) throws BusinessCheckException {
         TGenCode tGenCode = genCodeService.queryGenCodeById(id);
 
         Map<String, Object> result = new HashMap<>();
@@ -194,10 +176,9 @@ public class BackendGenCodeController extends BaseController {
     public ResponseObject gen(HttpServletRequest request, @PathVariable("id") Integer id) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
-        if (accountInfo == null) {
-            return getFailureResult(1001, "请先登录");
+        if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
+            return getFailureResult(1004, "平台超管帐号才有操作权限");
         }
-
         TGenCode tGenCode = genCodeService.queryGenCodeById(id);
         if (tGenCode == null) {
             return getFailureResult(201, "生成代码不存在");

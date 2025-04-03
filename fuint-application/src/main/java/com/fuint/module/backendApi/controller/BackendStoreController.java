@@ -127,9 +127,6 @@ public class BackendStoreController extends BaseController {
         String storeName = request.getParameter("name") == null ? "" : request.getParameter("name");
 
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
-        if (accountInfo == null) {
-            return getFailureResult(1001, "请先登录");
-        }
 
         if (accountInfo.getStoreId() != null && accountInfo.getStoreId() > 0) {
             storeId = accountInfo.getStoreId().toString();
@@ -173,9 +170,6 @@ public class BackendStoreController extends BaseController {
         Integer storeId = params.get("storeId") == null ? 0 : Integer.parseInt(params.get("storeId").toString());
 
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
-        if (accountInfo == null) {
-            return getFailureResult(1001, "请先登录");
-        }
 
         String operator = accountInfo.getAccountName();
         storeService.updateStatus(storeId, operator, status);
@@ -196,9 +190,6 @@ public class BackendStoreController extends BaseController {
     public ResponseObject saveHandler(HttpServletRequest request, @RequestBody Map<String, Object> params) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
-        if (accountInfo == null) {
-            return getFailureResult(1001, "请先登录");
-        }
 
         StoreDto storeInfo = new StoreDto();
         String storeId = params.get("id").toString();
@@ -303,11 +294,13 @@ public class BackendStoreController extends BaseController {
     public ResponseObject getStoreInfo(HttpServletRequest request, @PathVariable("id") Integer id) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
-        if (accountInfo == null) {
-            return getFailureResult(1001, "请先登录");
-        }
 
         StoreDto storeInfo = storeService.queryStoreDtoById(id);
+        if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
+            if (!accountInfo.getMerchantId().equals(storeInfo.getMerchantId())) {
+                return getFailureResult(1004);
+            }
+        }
 
         Map<String, Object> result = new HashMap<>();
         result.put("storeInfo", storeInfo);

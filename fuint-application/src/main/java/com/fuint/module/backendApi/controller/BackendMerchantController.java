@@ -68,9 +68,6 @@ public class BackendMerchantController extends BaseController {
         String status = request.getParameter("status");
 
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
-        if (accountInfo == null) {
-            return getFailureResult(1001, "请先登录");
-        }
         if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
             merchantId = accountInfo.getMerchantId().toString();
         }
@@ -231,21 +228,21 @@ public class BackendMerchantController extends BaseController {
     /**
      * 获取商户详情
      *
-     * @param id
+     * @param merchantId
      * @return
      */
     @ApiOperation(value = "获取商户详情")
     @RequestMapping(value = "/info/{id}", method = RequestMethod.GET)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('merchant:index')")
-    public ResponseObject getMerchantInfo(HttpServletRequest request, @PathVariable("id") Integer id) throws BusinessCheckException {
+    public ResponseObject getMerchantInfo(HttpServletRequest request, @PathVariable("id") Integer merchantId) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
         if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
-            id = accountInfo.getMerchantId();
+            merchantId = accountInfo.getMerchantId();
         }
 
-        MtMerchant merchantInfo = merchantService.queryMerchantById(id);
+        MtMerchant merchantInfo = merchantService.queryMerchantById(merchantId);
 
         Map<String, Object> result = new HashMap<>();
         result.put("merchantInfo", merchantInfo);

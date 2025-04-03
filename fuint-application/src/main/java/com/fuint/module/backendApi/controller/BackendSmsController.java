@@ -4,7 +4,6 @@ import com.fuint.common.Constants;
 import com.fuint.common.dto.AccountInfo;
 import com.fuint.common.enums.SettingTypeEnum;
 import com.fuint.common.enums.SmsSettingEnum;
-import com.fuint.common.enums.YesOrNoEnum;
 import com.fuint.common.service.SendSmsService;
 import com.fuint.common.service.SettingService;
 import com.fuint.common.util.TokenUtil;

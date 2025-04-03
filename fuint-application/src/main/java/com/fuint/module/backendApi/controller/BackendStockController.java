@@ -179,9 +179,6 @@ public class BackendStockController extends BaseController {
         List<LinkedHashMap> goodsList = (List) params.get("goodsList");
 
         AccountInfo accountDto = TokenUtil.getAccountInfoByToken(token);
-        if (accountDto == null) {
-            return getFailureResult(1001, "请先登录");
-        }
 
         Integer myStoreId = accountDto.getStoreId();
         if (myStoreId != null && myStoreId > 0) {
@@ -204,20 +201,14 @@ public class BackendStockController extends BaseController {
     /**
      * 获取库存管理记录详情
      *
-     * @param request
+     * @param id
      * @return
      */
     @ApiOperation(value = "获取库存管理记录详情")
     @RequestMapping(value = "/info/{id}", method = RequestMethod.GET)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('stock:index')")
-    public ResponseObject info(HttpServletRequest request, @PathVariable("id") Integer id) throws BusinessCheckException {
-        String token = request.getHeader("Access-Token");
-        AccountInfo accountDto = TokenUtil.getAccountInfoByToken(token);
-        if (accountDto == null) {
-            return getFailureResult(1001, "请先登录");
-        }
-
+    public ResponseObject info(@PathVariable("id") Integer id) throws BusinessCheckException {
         MtStock mtStock = stockService.queryStockById(id.longValue());
         Map<String, Object> param = new HashMap<>();
         param.put("STOCK_ID", mtStock.getId());
