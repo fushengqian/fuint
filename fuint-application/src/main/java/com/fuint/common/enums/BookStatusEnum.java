@@ -1,5 +1,11 @@
 package com.fuint.common.enums;
 
+import com.fuint.common.dto.ParamDto;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
 /**
  * 预约订单状态枚举
  *
@@ -37,5 +43,11 @@ public enum BookStatusEnum {
 
     public void setValue(String value) {
         this.value = value;
+    }
+
+    public static List<ParamDto> getBookStatusList() {
+        return Arrays.stream(BookStatusEnum.values())
+                .map(status -> new ParamDto(status.getKey(), status.getValue(), status.getValue()))
+                .collect(Collectors.toList());
     }
 }

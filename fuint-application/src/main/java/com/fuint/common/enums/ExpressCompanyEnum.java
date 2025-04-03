@@ -1,5 +1,11 @@
 package com.fuint.common.enums;
 
+import com.fuint.common.dto.ParamDto;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
 /**
  * 物流公司枚举
  *
@@ -7,6 +13,7 @@ package com.fuint.common.enums;
  * CopyRight https://www.fuint.cn
  */
 public enum ExpressCompanyEnum {
+
     SELF("SELF", "商家自送"),
     YTO("YTO", "圆通速递"),
     ZTO("ZTO", "中通快递"),
@@ -43,5 +50,11 @@ public enum ExpressCompanyEnum {
 
     public void setValue(String value) {
         this.value = value;
+    }
+
+    public static List<ParamDto> getExpressCompanyList() {
+        return Arrays.stream(ExpressCompanyEnum.values())
+                .map(status -> new ParamDto(status.getKey(), status.getValue(), status.getValue()))
+                .collect(Collectors.toList());
     }
 }

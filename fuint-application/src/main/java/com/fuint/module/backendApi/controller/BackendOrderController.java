@@ -101,48 +101,16 @@ public class BackendOrderController extends BaseController {
         }
         PaginationResponse response = orderService.getUserOrderList(orderListParam);
         // 订单类型列表
-        OrderTypeEnum[] typeListEnum = OrderTypeEnum.values();
-        List<ParamDto> typeList = new ArrayList<>();
-        for (OrderTypeEnum enumItem : typeListEnum) {
-            ParamDto paramDto = new ParamDto();
-            paramDto.setKey(enumItem.getKey());
-            paramDto.setName(enumItem.getValue());
-            paramDto.setValue(enumItem.getKey());
-            typeList.add(paramDto);
-        }
+        List<ParamDto> typeList = OrderTypeEnum.getOrderTypeList();
 
         // 订单状态列表
-        OrderStatusEnum[] statusListEnum = OrderStatusEnum.values();
-        List<ParamDto> statusList = new ArrayList<>();
-        for (OrderStatusEnum enumItem : statusListEnum) {
-            ParamDto paramDto = new ParamDto();
-            paramDto.setKey(enumItem.getKey());
-            paramDto.setName(enumItem.getValue());
-            paramDto.setValue(enumItem.getKey());
-            statusList.add(paramDto);
-        }
+        List<ParamDto> statusList = OrderStatusEnum.getOrderStatusList();
 
         // 支付状态列表
-        PayStatusEnum[] payStatusListEnum = PayStatusEnum.values();
-        List<ParamDto> payStatusList = new ArrayList<>();
-        for (PayStatusEnum enumItem : payStatusListEnum) {
-            ParamDto paramDto = new ParamDto();
-            paramDto.setKey(enumItem.getKey());
-            paramDto.setName(enumItem.getValue());
-            paramDto.setValue(enumItem.getKey());
-            payStatusList.add(paramDto);
-        }
+        List<ParamDto> payStatusList = PayStatusEnum.getPayStatusList();
 
         // 配送类型列表
-        OrderModeEnum[] orderModeEnums = OrderModeEnum.values();
-        List<ParamDto> orderModeList = new ArrayList<>();
-        for (OrderModeEnum enumItem : orderModeEnums) {
-            ParamDto paramDto = new ParamDto();
-            paramDto.setKey(enumItem.getKey());
-            paramDto.setName(enumItem.getValue());
-            paramDto.setValue(enumItem.getKey());
-            orderModeList.add(paramDto);
-        }
+        List<ParamDto> orderModeList = OrderModeEnum.getOrderModeList();
 
         // 店铺列表
         Map<String, Object> paramsStore = new HashMap<>();
@@ -156,26 +124,10 @@ public class BackendOrderController extends BaseController {
         List<MtStore> storeList = storeService.queryStoresByParams(paramsStore);
 
         // 支付方式列表
-        PayTypeEnum[] payTypes = PayTypeEnum.values();
-        List<ParamDto> payTypeList = new ArrayList<>();
-        for (PayTypeEnum typeEnum : payTypes) {
-            ParamDto payType = new ParamDto();
-            payType.setKey(typeEnum.getKey());
-            payType.setName(typeEnum.getValue());
-            payType.setValue(typeEnum.getKey());
-            payTypeList.add(payType);
-        }
+        List<ParamDto> payTypeList = PayTypeEnum.getPayTypeList();
 
         // 物流公司列表
-        ExpressCompanyEnum[] expressCompanyEnums = ExpressCompanyEnum.values();
-        List<ParamDto> expressCompanyList = new ArrayList<>();
-        for (ExpressCompanyEnum companyEnum : expressCompanyEnums) {
-            ParamDto company = new ParamDto();
-            company.setKey(companyEnum.getKey());
-            company.setName(companyEnum.getValue());
-            company.setValue(companyEnum.getValue());
-            expressCompanyList.add(company);
-        }
+        List<ParamDto> expressCompanyList = ExpressCompanyEnum.getExpressCompanyList();
 
         Map<String, Object> result = new HashMap<>();
         result.put("typeList", typeList);
@@ -192,36 +144,21 @@ public class BackendOrderController extends BaseController {
 
     /**
      * 获取订单详情
-     * @param request HttpServletRequest对象
+     *
+     * @param orderId 订单ID
      * @return
      * */
     @ApiOperation(value = "获取订单详情")
     @RequestMapping(value = "/info/{orderId}", method = RequestMethod.GET)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('order:detail')")
-    public ResponseObject info(HttpServletRequest request, @PathVariable("orderId") Integer orderId) throws BusinessCheckException {
+    public ResponseObject info(@PathVariable("orderId") Integer orderId) throws BusinessCheckException {
         UserOrderDto orderInfo = orderService.getOrderById(orderId);
         // 支付方式列表
-        PayTypeEnum[] payTypes = PayTypeEnum.values();
-        List<ParamDto> payTypeList = new ArrayList<>();
-        for (PayTypeEnum catchTypeEnum : payTypes) {
-            ParamDto catchType = new ParamDto();
-            catchType.setKey(catchTypeEnum.getKey());
-            catchType.setName(catchTypeEnum.getValue());
-            catchType.setValue(catchTypeEnum.getKey());
-            payTypeList.add(catchType);
-        }
+        List<ParamDto> payTypeList = PayTypeEnum.getPayTypeList();
 
         // 支付状态列表
-        PayStatusEnum[] payStatusListEnum = PayStatusEnum.values();
-        List<ParamDto> payStatusList = new ArrayList<>();
-        for (PayStatusEnum enumItem : payStatusListEnum) {
-            ParamDto paramDto = new ParamDto();
-            paramDto.setKey(enumItem.getKey());
-            paramDto.setName(enumItem.getValue());
-            paramDto.setValue(enumItem.getKey());
-            payStatusList.add(paramDto);
-        }
+        List<ParamDto> payStatusList = PayStatusEnum.getPayStatusList();
 
         Map<String, Object> result = new HashMap<>();
         result.put("orderInfo", orderInfo);

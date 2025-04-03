@@ -1,5 +1,11 @@
 package com.fuint.common.enums;
 
+import com.fuint.common.dto.ParamDto;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
 /**
  * 支付类型
  *
@@ -7,6 +13,7 @@ package com.fuint.common.enums;
  * CopyRight https://www.fuint.cn
  */
 public enum PayTypeEnum {
+
     CASH("CASH", "现金支付"),
     JSAPI("JSAPI", "微信支付"),
     MICROPAY("MICROPAY", "微信扫码支付"),
@@ -37,5 +44,11 @@ public enum PayTypeEnum {
 
     public void setValue(String value) {
         this.value = value;
+    }
+
+    public static List<ParamDto> getPayTypeList() {
+        return Arrays.stream(PayTypeEnum.values())
+                .map(status -> new ParamDto(status.getKey(), status.getValue(), status.getValue()))
+                .collect(Collectors.toList());
     }
 }

@@ -182,37 +182,13 @@ public class BackendCouponController extends BaseController {
         }
 
         // 卡券类型列表
-        CouponTypeEnum[] typeListEnum = CouponTypeEnum.values();
-        List<ParamDto> typeList = new ArrayList<>();
-        for (CouponTypeEnum enumItem : typeListEnum) {
-            ParamDto paramDto = new ParamDto();
-            paramDto.setKey(enumItem.getKey());
-            paramDto.setName(enumItem.getValue());
-            paramDto.setValue(enumItem.getKey());
-            typeList.add(paramDto);
-        }
+        List<ParamDto> typeList = CouponTypeEnum.getCouponTypeList();
 
         // 状态列表
-        StatusEnum[] statusListEnum = StatusEnum.values();
-        List<ParamDto> statusList = new ArrayList<>();
-        for (StatusEnum enumItem : statusListEnum) {
-            ParamDto paramDto = new ParamDto();
-            paramDto.setKey(enumItem.getKey());
-            paramDto.setName(enumItem.getValue());
-            paramDto.setValue(enumItem.getKey());
-            statusList.add(paramDto);
-        }
+        List<ParamDto> statusList = StatusEnum.getStatusList();
 
         // 卡券使用专项列表
-        CouponUseForEnum[] couponUseForEnum = CouponUseForEnum.values();
-        List<ParamDto> couponUseForList = new ArrayList<>();
-        for (CouponUseForEnum enumItem : couponUseForEnum) {
-            ParamDto paramDto = new ParamDto();
-            paramDto.setKey(enumItem.getKey());
-            paramDto.setName(enumItem.getValue());
-            paramDto.setValue(enumItem.getKey());
-            couponUseForList.add(paramDto);
-        }
+        List<ParamDto> couponUseForList = CouponUseForEnum.getCouponUseForList();
 
         // 会员等级列表
         Map<String, Object> param = new HashMap<>();

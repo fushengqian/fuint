@@ -1,5 +1,11 @@
 package com.fuint.common.enums;
 
+import com.fuint.common.dto.ParamDto;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
 /**
  * 分佣结算状态
  *
@@ -35,5 +41,11 @@ public enum CommissionCashStatusEnum {
 
     public void setValue(String value) {
         this.value = value;
+    }
+
+    public static List<ParamDto> getCommissionCashStatusList() {
+        return Arrays.stream(CommissionCashStatusEnum.values())
+                .map(status -> new ParamDto(status.getKey(), status.getValue(), status.getValue()))
+                .collect(Collectors.toList());
     }
 }

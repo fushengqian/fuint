@@ -99,15 +99,7 @@ public class BackendStaffController extends BaseController {
         PaginationResponse<MtStaff> paginationResponse = staffService.queryStaffListByPagination(paginationRequest);
 
         // 员工类别列表
-        StaffCategoryEnum[] categoryListEnum = StaffCategoryEnum.values();
-        List<ParamDto> categoryList = new ArrayList<>();
-        for (StaffCategoryEnum enumItem : categoryListEnum) {
-            ParamDto paramDto = new ParamDto();
-            paramDto.setKey(enumItem.getKey());
-            paramDto.setName(enumItem.getName());
-            paramDto.setValue(enumItem.getKey());
-            categoryList.add(paramDto);
-        }
+        List<ParamDto> categoryList = StaffCategoryEnum.getStaffCategoryList();
 
         Map<String, Object> result = new HashMap<>();
         result.put("paginationResponse", paginationResponse);

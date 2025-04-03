@@ -129,26 +129,10 @@ public class BackendUserCouponController extends BaseController {
         List<MtStore> storeList = storeService.queryStoresByParams(paramsStore);
 
         // 卡券类型列表
-        CouponTypeEnum[] typeListEnum = CouponTypeEnum.values();
-        List<ParamDto> typeList = new ArrayList<>();
-        for (CouponTypeEnum enumItem : typeListEnum) {
-            ParamDto paramDto = new ParamDto();
-            paramDto.setKey(enumItem.getKey());
-            paramDto.setName(enumItem.getValue());
-            paramDto.setValue(enumItem.getKey());
-            typeList.add(paramDto);
-        }
+        List<ParamDto> typeList = CouponTypeEnum.getCouponTypeList();
 
         // 卡券状态列表
-        UserCouponStatusEnum[] statusListEnum = UserCouponStatusEnum.values();
-        List<ParamDto> statusList = new ArrayList<>();
-        for (UserCouponStatusEnum enumItem : statusListEnum) {
-            ParamDto paramDto = new ParamDto();
-            paramDto.setKey(enumItem.getKey());
-            paramDto.setName(enumItem.getValue());
-            paramDto.setValue(enumItem.getKey());
-            statusList.add(paramDto);
-        }
+        List<ParamDto> statusList = UserCouponStatusEnum.getUserCouponStatusList();
 
         Map<String, Object> data = new HashMap<>();
         data.put("paginationResponse", result.getData());

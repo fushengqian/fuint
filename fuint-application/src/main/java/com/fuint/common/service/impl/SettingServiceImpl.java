@@ -181,26 +181,17 @@ public class SettingServiceImpl extends ServiceImpl<MtSettingMapper, MtSetting> 
         List<ParamDto> payTypeList = new ArrayList<>();
 
         // 微信jsapi
-        ParamDto jsApi = new ParamDto();
-        jsApi.setKey(PayTypeEnum.JSAPI.getKey());
-        jsApi.setValue(PayTypeEnum.JSAPI.getKey());
-        jsApi.setName(PayTypeEnum.JSAPI.getValue());
+        ParamDto jsApi = new ParamDto(PayTypeEnum.JSAPI.getKey(), PayTypeEnum.JSAPI.getValue(), PayTypeEnum.JSAPI.getKey());
         payTypeList.add(jsApi);
 
         // 余额支付
-        ParamDto balance = new ParamDto();
-        balance.setKey(PayTypeEnum.BALANCE.getKey());
-        balance.setValue(PayTypeEnum.BALANCE.getKey());
-        balance.setName(PayTypeEnum.BALANCE.getValue());
+        ParamDto balance = new ParamDto(PayTypeEnum.BALANCE.getKey(), PayTypeEnum.BALANCE.getValue(), PayTypeEnum.BALANCE.getKey());
         payTypeList.add(balance);
 
         // 前台支付
         MtSetting mtSetting = settingService.querySettingByName(merchantId, storeId,  SettingTypeEnum.ORDER.getKey(), OrderSettingEnum.PAY_OFF_LINE.getKey());
         if (mtSetting != null && mtSetting.getValue().equals(YesOrNoEnum.YES.getKey())) {
-            ParamDto store = new ParamDto();
-            store.setKey(PayTypeEnum.STORE.getKey());
-            store.setValue(PayTypeEnum.STORE.getKey());
-            store.setName(PayTypeEnum.STORE.getValue());
+            ParamDto store = new ParamDto(PayTypeEnum.STORE.getKey(), PayTypeEnum.STORE.getValue(), PayTypeEnum.STORE.getKey());
             payTypeList.add(store);
         }
 

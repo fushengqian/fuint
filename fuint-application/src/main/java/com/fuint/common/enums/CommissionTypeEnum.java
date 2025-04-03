@@ -1,5 +1,11 @@
 package com.fuint.common.enums;
 
+import com.fuint.common.dto.ParamDto;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
 /**
  * 分佣提成类型
  *
@@ -7,7 +13,7 @@ package com.fuint.common.enums;
  * CopyRight https://www.fuint.cn
  */
 public enum CommissionTypeEnum {
-    GOOGS("goods", "商品订单"),
+    GOODS("goods", "商品订单"),
     PAYMENT("payment", "付款订单"),
     RECHARGE("recharge", "充值订单");
 
@@ -50,5 +56,11 @@ public enum CommissionTypeEnum {
             }
         }
         return null;
+    }
+
+    public static List<ParamDto> getCommissionTypeList() {
+        return Arrays.stream(CommissionTypeEnum.values())
+                .map(status -> new ParamDto(status.getKey(), status.getValue(), status.getValue()))
+                .collect(Collectors.toList());
     }
 }

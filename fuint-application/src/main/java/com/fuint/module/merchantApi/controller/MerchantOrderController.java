@@ -151,6 +151,9 @@ public class MerchantOrderController extends BaseController {
         if (orderInfo == null) {
             return getFailureResult(201, "订单已不存在");
         }
+        if (StringUtil.isEmpty(param.getCode())) {
+            return getFailureResult(201, "核销码不能为空");
+        }
 
         MtUser userInfo = memberService.queryMemberById(mtUser.getId());
         MtStaff staffInfo = staffService.queryStaffByMobile(userInfo.getMobile());

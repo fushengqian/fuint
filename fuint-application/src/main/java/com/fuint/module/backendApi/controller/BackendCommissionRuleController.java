@@ -23,7 +23,6 @@ import lombok.AllArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -70,12 +69,7 @@ public class BackendCommissionRuleController extends BaseController {
         String type = request.getParameter("type");
 
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
-        Integer storeId;
-        if (accountInfo == null) {
-            return getFailureResult(1001, "请先登录");
-        } else {
-            storeId = accountInfo.getStoreId();
-        }
+        Integer storeId = accountInfo.getStoreId();
 
         PaginationRequest paginationRequest = new PaginationRequest();
         paginationRequest.setCurrentPage(page);
@@ -104,15 +98,7 @@ public class BackendCommissionRuleController extends BaseController {
         PaginationResponse<MtCommissionRule> paginationResponse = commissionRuleService.queryDataByPagination(paginationRequest);
 
         // 分佣提成类型列表
-        CommissionTypeEnum[] typeListEnum = CommissionTypeEnum.values();
-        List<ParamDto> typeList = new ArrayList<>();
-        for (CommissionTypeEnum enumItem : typeListEnum) {
-            ParamDto paramDto = new ParamDto();
-            paramDto.setKey(enumItem.getKey());
-            paramDto.setName(enumItem.getValue());
-            paramDto.setValue(enumItem.getKey());
-            typeList.add(paramDto);
-        }
+        List<ParamDto> typeList = CommissionTypeEnum.getCommissionTypeList();
 
         Map<String, Object> result = new HashMap<>();
         result.put("paginationResponse", paginationResponse);
@@ -136,9 +122,6 @@ public class BackendCommissionRuleController extends BaseController {
         Integer id = params.get("id") == null ? 0 : Integer.parseInt(params.get("id").toString());
 
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
-        if (accountInfo == null) {
-            return getFailureResult(1001, "请先登录");
-        }
 
         CommissionRuleDto commissionRuleDto = commissionRuleService.queryCommissionRuleById(id);
         if (commissionRuleDto == null) {
@@ -171,9 +154,7 @@ public class BackendCommissionRuleController extends BaseController {
         String id = params.getId() == null ? "" : params.getId().toString();
 
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
-        if (accountInfo == null) {
-            return getFailureResult(1001, "请先登录");
-        }
+
         if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
             params.setMerchantId(accountInfo.getMerchantId());
         }
@@ -198,17 +179,10 @@ public class BackendCommissionRuleController extends BaseController {
     @RequestMapping(value = "/info/{id}", method = RequestMethod.GET)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('commission:rule:index')")
-    public ResponseObject info(HttpServletRequest request, @PathVariable("id") Integer id) throws BusinessCheckException {
-        String token = request.getHeader("Access-Token");
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
-        if (accountInfo == null) {
-            return getFailureResult(1001, "请先登录");
-        }
-
+    public ResponseObject info(@PathVariable("id") Integer id) throws BusinessCheckException {
         CommissionRuleDto commissionRule = commissionRuleService.queryCommissionRuleById(id);
         Map<String, Object> result = new HashMap<>();
         result.put("commissionRule", commissionRule);
-
         return getSuccessResult(result);
     }
 }

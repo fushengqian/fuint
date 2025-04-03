@@ -1,5 +1,11 @@
 package com.fuint.common.enums;
 
+import com.fuint.common.dto.ParamDto;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
 /**
  * 员工类别枚举
  *
@@ -74,5 +80,11 @@ public enum StaffCategoryEnum {
             }
         }
         return null;
+    }
+
+    public static List<ParamDto> getStaffCategoryList() {
+        return Arrays.stream(StaffCategoryEnum.values())
+                .map(status -> new ParamDto(status.getKey(), status.getValue(), status.getValue()))
+                .collect(Collectors.toList());
     }
 }

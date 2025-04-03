@@ -140,15 +140,7 @@ public class BackendGoodsController extends BaseController {
         PaginationResponse<GoodsDto> paginationResponse = goodsService.queryGoodsListByPagination(paginationRequest);
 
         // 商品类型列表
-        GoodsTypeEnum[] typeListEnum = GoodsTypeEnum.values();
-        List<ParamDto> typeList = new ArrayList<>();
-        for (GoodsTypeEnum enumItem : typeListEnum) {
-            ParamDto paramDto = new ParamDto();
-            paramDto.setKey(enumItem.getKey());
-            paramDto.setName(enumItem.getValue());
-            paramDto.setValue(enumItem.getKey());
-            typeList.add(paramDto);
-        }
+        List<ParamDto> typeList = GoodsTypeEnum.getGoodsTypeList();
 
         Map<String, Object> paramsStore = new HashMap<>();
         paramsStore.put("status", StatusEnum.ENABLED.getKey());
@@ -348,15 +340,7 @@ public class BackendGoodsController extends BaseController {
         List<MtStore> storeList = storeService.queryStoresByParams(paramsStore);
 
         // 商品类型列表
-        GoodsTypeEnum[] typeListEnum = GoodsTypeEnum.values();
-        List<ParamDto> typeList = new ArrayList<>();
-        for (GoodsTypeEnum enumItem : typeListEnum) {
-             ParamDto paramDto = new ParamDto();
-             paramDto.setKey(enumItem.getKey());
-             paramDto.setName(enumItem.getValue());
-             paramDto.setValue(enumItem.getKey());
-             typeList.add(paramDto);
-        }
+        List<ParamDto> typeList = GoodsTypeEnum.getGoodsTypeList();
 
         result.put("typeList", typeList);
         result.put("storeId", storeId);
@@ -589,7 +573,7 @@ public class BackendGoodsController extends BaseController {
     /**
      * 保存商品规格
      *
-     * @param request HttpServletRequest对象
+     * @param param 规格参数
      */
     @ApiOperation(value = "保存商品规格")
     @RequestMapping(value = "/saveSpecName", method = RequestMethod.POST)
@@ -636,7 +620,7 @@ public class BackendGoodsController extends BaseController {
     /**
      * 保存商品规格值
      *
-     * @param request HttpServletRequest对象
+     * @param param 规格值
      * @return
      */
     @ApiOperation(value = "保存商品规格值")
@@ -800,7 +784,7 @@ public class BackendGoodsController extends BaseController {
     public ResponseObject selectGoods(HttpServletRequest request, @RequestBody Map<String, Object> params) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
-        
+
         if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
             params.put("merchantId", accountInfo.getMerchantId());
         }

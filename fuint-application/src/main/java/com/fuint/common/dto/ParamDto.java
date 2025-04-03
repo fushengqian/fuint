@@ -1,9 +1,7 @@
 package com.fuint.common.dto;
 
 import io.swagger.annotations.ApiModelProperty;
-import lombok.Getter;
-import lombok.Setter;
-
+import lombok.Data;
 import java.io.Serializable;
 
 /**
@@ -12,8 +10,7 @@ import java.io.Serializable;
  * Created by FSQ
  * CopyRight https://www.fuint.cn
  */
-@Getter
-@Setter
+@Data
 public class ParamDto implements Serializable {
 
     @ApiModelProperty("参数键值")
@@ -25,4 +22,9 @@ public class ParamDto implements Serializable {
     @ApiModelProperty("参数值")
     private String value;
 
+    public ParamDto(String key, String name, String value) {
+       this.key = key;
+       this.name = name;
+       this.value = value;
+    }
 }

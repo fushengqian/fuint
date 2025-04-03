@@ -1,5 +1,11 @@
 package com.fuint.common.enums;
 
+import com.fuint.common.dto.ParamDto;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
 /**
  * 订单类型
  *
@@ -7,7 +13,8 @@ package com.fuint.common.enums;
  * CopyRight https://www.fuint.cn
  */
 public enum OrderTypeEnum {
-    GOOGS("goods", "商品订单"),
+
+    GOODS("goods", "商品订单"),
     PAYMENT("payment", "付款订单"),
     RECHARGE("recharge", "充值订单"),
     PRESTORE("prestore", "储值卡订单"),
@@ -52,5 +59,11 @@ public enum OrderTypeEnum {
             }
         }
         return null;
+    }
+
+    public static List<ParamDto> getOrderTypeList() {
+        return Arrays.stream(OrderTypeEnum.values())
+                .map(status -> new ParamDto(status.getKey(), status.getValue(), status.getKey()))
+                .collect(Collectors.toList());
     }
 }

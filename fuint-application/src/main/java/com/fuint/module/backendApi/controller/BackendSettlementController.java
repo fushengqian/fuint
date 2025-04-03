@@ -75,9 +75,6 @@ public class BackendSettlementController extends BaseController {
         String status = request.getParameter("status") == null ? StatusEnum.ENABLED.getKey() : request.getParameter("status");
 
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
-        if (accountInfo == null) {
-            return getFailureResult(1001, "请先登录");
-        }
         Map<String, Object> searchParams = new HashMap<>();
         if (StringUtil.isNotEmpty(mobile)) {
             searchParams.put("mobile", mobile);
@@ -115,15 +112,7 @@ public class BackendSettlementController extends BaseController {
         PaginationResponse<MtSettlement> paginationResponse = settlementService.querySettlementListByPagination(paginationRequest);
 
         // 结算状态
-        SettleStatusEnum[] statusListEnum = SettleStatusEnum.values();
-        List<ParamDto> statusList = new ArrayList<>();
-        for (SettleStatusEnum enumItem : statusListEnum) {
-            ParamDto paramDto = new ParamDto();
-            paramDto.setKey(enumItem.getKey());
-            paramDto.setName(enumItem.getValue());
-            paramDto.setValue(enumItem.getKey());
-            statusList.add(paramDto);
-        }
+        List<ParamDto> statusList = SettleStatusEnum.getSettleStatusList();
 
         Map<String, Object> result = new HashMap<>();
         result.put("merchantList", merchantList);
@@ -149,21 +138,15 @@ public class BackendSettlementController extends BaseController {
         Integer pageSize = request.getParameter("pageSize") == null ? Constants.PAGE_SIZE : Integer.parseInt(request.getParameter("pageSize"));
         Integer settlementId = request.getParameter("settlementId") == null ? 0 : Integer.parseInt(request.getParameter("settlementId"));
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
-        if (accountInfo == null) {
-            return getFailureResult(1001, "请先登录");
-        }
 
         SettlementDto settlementInfo = settlementService.getSettlementInfo(settlementId, page, pageSize);
-
-        OrderStatusEnum[] statusListEnum = OrderStatusEnum.values();
-        List<ParamDto> statusList = new ArrayList<>();
-        for (OrderStatusEnum enumItem : statusListEnum) {
-            ParamDto paramDto = new ParamDto();
-            paramDto.setKey(enumItem.getKey());
-            paramDto.setName(enumItem.getValue());
-            paramDto.setValue(enumItem.getKey());
-            statusList.add(paramDto);
+        if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
+            if (!accountInfo.getMerchantId().equals(settlementInfo.getMerchantId())) {
+                return getFailureResult(1004);
+            }
         }
+
+        List<ParamDto> statusList = OrderStatusEnum.getOrderStatusList();
 
         Map<String, Object> result = new HashMap<>();
         result.put("settlementInfo", settlementInfo);
@@ -185,15 +168,14 @@ public class BackendSettlementController extends BaseController {
     public ResponseObject doSubmit(HttpServletRequest request, @RequestBody SettlementRequest requestParam) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
-        if (accountInfo == null) {
-            return getFailureResult(1001, "请先登录");
-        }
+
         String operator = accountInfo.getAccountName();
         if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
             requestParam.setMerchantId(accountInfo.getMerchantId());
         }
         requestParam.setOperator(operator);
         settlementService.submitSettlement(requestParam);
+
         return getSuccessResult(true);
     }
 
@@ -211,9 +193,7 @@ public class BackendSettlementController extends BaseController {
         String token = request.getHeader("Access-Token");
         String settlementId = StringUtil.isEmpty(param.get("settlementId").toString())? "" : param.get("settlementId").toString();
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
-        if (accountInfo == null) {
-            return getFailureResult(1001, "请先登录");
-        }
+
         if (StringUtil.isEmpty(settlementId)) {
             return getFailureResult(201, "参数有误");
         }

@@ -1,5 +1,11 @@
 package com.fuint.common.enums;
 
+import com.fuint.common.dto.ParamDto;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
 /**
  * 用户卡券状态
  *
@@ -56,5 +62,11 @@ public enum UserCouponStatusEnum {
             }
         }
         return null;
+    }
+
+    public static List<ParamDto> getUserCouponStatusList() {
+        return Arrays.stream(UserCouponStatusEnum.values())
+                .map(status -> new ParamDto(status.getKey(), status.getValue(), status.getValue()))
+                .collect(Collectors.toList());
     }
 }

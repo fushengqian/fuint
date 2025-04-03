@@ -1,5 +1,11 @@
 package com.fuint.common.enums;
 
+import com.fuint.common.dto.ParamDto;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
 /**
  * 订单状态枚举
  *
@@ -7,6 +13,7 @@ package com.fuint.common.enums;
  * CopyRight https://www.fuint.cn
  */
 public enum OrderStatusEnum {
+
     CREATED("A", "待支付"),
     PAID("B", "已支付"),
     CANCEL("C", "已取消"),
@@ -39,5 +46,11 @@ public enum OrderStatusEnum {
 
     public void setValue(String value) {
         this.value = value;
+    }
+
+    public static List<ParamDto> getOrderStatusList() {
+        return Arrays.stream(OrderStatusEnum.values())
+                .map(status -> new ParamDto(status.getKey(), status.getValue(), status.getValue()))
+                .collect(Collectors.toList());
     }
 }

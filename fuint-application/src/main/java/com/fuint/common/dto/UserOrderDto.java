@@ -9,6 +9,7 @@ import lombok.Setter;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -137,6 +138,15 @@ public class UserOrderDto implements Serializable {
 
     @ApiModelProperty("所属员工")
     private MtStaff staffInfo;
+
+    @ApiModelProperty("核销状态")
+    private String confirmStatus;
+
+    @ApiModelProperty("核销时间")
+    private String confirmTime;
+
+    @ApiModelProperty("核销备注")
+    private String confirmRemark;
 
 }
 

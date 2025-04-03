@@ -40,6 +40,9 @@ public class OrderListParam extends PageParam implements Serializable {
     @ApiModelProperty(value="结算状态", name="settleStatus")
     private String settleStatus;
 
+    @ApiModelProperty(value="核销状态", name="confirmStatus")
+    private String confirmStatus;
+
     @ApiModelProperty(value="数据类型，1）toPay：待支付；2）paid：已支付；3）cancel：已取消", name="dataType")
     private String dataType;
 

@@ -193,7 +193,7 @@ public class CommissionLogServiceImpl extends ServiceImpl<MtCommissionLogMapper,
         if (orderId != null && orderId > 0) {
             MtOrder mtOrder = orderService.getById(orderId);
             // 商品订单佣金计算
-            if (mtOrder != null && mtOrder.getType().equals(CommissionTypeEnum.GOOGS.getKey())) {
+            if (mtOrder != null && mtOrder.getType().equals(CommissionTypeEnum.GOODS.getKey())) {
                 // 获取分销关系
                 Integer commissionUserId = mtCommissionRelationMapper.getCommissionUserId(mtOrder.getMerchantId(), mtOrder.getUserId());
                 if (commissionUserId != null && commissionUserId > 0) {
@@ -210,7 +210,7 @@ public class CommissionLogServiceImpl extends ServiceImpl<MtCommissionLogMapper,
                          LambdaQueryWrapper<MtCommissionRuleItem> lambdaQueryWrapper = Wrappers.lambdaQuery();
                          lambdaQueryWrapper.eq(MtCommissionRuleItem::getMerchantId, mtOrder.getMerchantId());
                          lambdaQueryWrapper.eq(MtCommissionRuleItem::getTargetId, goodsId);
-                         lambdaQueryWrapper.eq(MtCommissionRuleItem::getType, CommissionTypeEnum.GOOGS.getKey());
+                         lambdaQueryWrapper.eq(MtCommissionRuleItem::getType, CommissionTypeEnum.GOODS.getKey());
                          lambdaQueryWrapper.eq(MtCommissionRuleItem::getStatus, StatusEnum.ENABLED.getKey());
                          lambdaQueryWrapper.orderByDesc(MtCommissionRuleItem::getId);
                          List<MtCommissionRuleItem> commissionRuleItemList = mtCommissionRuleItemMapper.selectList(lambdaQueryWrapper);

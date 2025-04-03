@@ -27,7 +27,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -69,22 +68,16 @@ public class BackendDoConfirmController extends BaseController {
     /**
      * 核销详情
      *
-     * @param request  HttpServletRequest对象
+     * @param param 详情参数
      * @return
      */
     @ApiOperation(value = "核销详情")
     @RequestMapping(value = "/info", method = RequestMethod.POST)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('coupon:confirm:index')")
-    public ResponseObject info(HttpServletRequest request, @RequestBody Map<String, Object> param) throws BusinessCheckException {
-        String token = request.getHeader("Access-Token");
+    public ResponseObject info(@RequestBody Map<String, Object> param) throws BusinessCheckException {
         String userCouponId = param.get("id") == null ? "" : param.get("id").toString();
         String userCouponCode = param.get("code") == null ? "" : param.get("code").toString();
-
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
-        if (accountInfo == null) {
-            return getFailureResult(1001, "请先登录");
-        }
 
         if (StringUtil.isEmpty(userCouponCode) && StringUtil.isEmpty(userCouponId)) {
             return getFailureResult(201, "核销券码不能为空");
@@ -128,15 +121,7 @@ public class BackendDoConfirmController extends BaseController {
         userCouponInfo.setConfirmCount(confirmCount.intValue());
 
         // 卡券类型列表
-        CouponTypeEnum[] typeListEnum = CouponTypeEnum.values();
-        List<ParamDto> typeList = new ArrayList<>();
-        for (CouponTypeEnum enumItem : typeListEnum) {
-            ParamDto paramDto = new ParamDto();
-            paramDto.setKey(enumItem.getKey());
-            paramDto.setName(enumItem.getValue());
-            paramDto.setValue(enumItem.getKey());
-            typeList.add(paramDto);
-        }
+        List<ParamDto> typeList = CouponTypeEnum.getCouponTypeList();
 
         Map<String, Object> result = new HashMap<>();
         result.put("couponInfo", userCouponInfo);
@@ -163,9 +148,6 @@ public class BackendDoConfirmController extends BaseController {
         String remark = (param.get("remark") == null || StringUtil.isEmpty(param.get("remark").toString())) ? "后台核销" : param.get("remark").toString();
 
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
-        if (accountInfo == null) {
-            return getFailureResult(1001, "请先登录");
-        }
         if (StringUtil.isEmpty(userCouponId)) {
             return getFailureResult(201, "系统参数有误");
         }

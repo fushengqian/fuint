@@ -63,9 +63,6 @@ public class BackendSubMessageController extends BaseController {
         String title = request.getParameter("title") == null ? "" : request.getParameter("title");
 
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
-        if (accountInfo == null) {
-            return getFailureResult(1001, "请先登录");
-        }
 
         List<SubMessageDto> dataList = new ArrayList<>();
         for (WxMessageEnum wxMessageEnum : WxMessageEnum.values()) {
@@ -154,26 +151,21 @@ public class BackendSubMessageController extends BaseController {
                     JSONArray jsonArray = (JSONArray)JSONObject.parse(tplConfigJson);
                     for (int i = 0; i < jsonArray.size(); i++) {
                         JSONObject obj = jsonArray.getJSONObject(i);
-                        ParamDto dto = new ParamDto();
-                        dto.setKey(obj.get("key").toString());
                         // 解决中文乱码
                         String pName = obj.get("name").toString();
                         if (!CommonUtil.isUtf8(pName) || CommonUtil.isErrCode(pName)) {
                             pName = new String(obj.get("name").toString().getBytes("ISO8859-1"), "UTF-8");
                         }
-                        dto.setName(pName);
+                        String value = "";
                         if (paramArray != null) {
-                            dto.setValue("");
                             for (int j = 0; j < paramArray.size(); j++) {
                                  JSONObject paraObj = paramArray.getJSONObject(j);
                                  if (paraObj.get("key").toString().equals(obj.get("key").toString())) {
-                                     dto.setValue(paraObj.get("value") == null ? "" : paraObj.get("value").toString());
+                                     value = paraObj.get("value") == null ? "" : paraObj.get("value").toString();
                                  }
                             }
-                        } else {
-                            dto.setValue("");
                         }
-                        params.add(dto);
+                        params.add(new ParamDto(obj.get("key").toString(), pName, value));
                     }
                 }
 
@@ -237,16 +229,11 @@ public class BackendSubMessageController extends BaseController {
                          break;
                      }
                 }
-
-                ParamDto para = new ParamDto();
                 String name = obj.get("name").toString();
                 if (!CommonUtil.isUtf8(name) || CommonUtil.isErrCode(name)) {
                     name = new String(name.getBytes("ISO8859-1"), "UTF-8");
                 }
-                para.setName(name);
-                para.setKey(obj.get("key").toString());
-                para.setValue(value);
-                params.add(para);
+                params.add(new ParamDto(obj.get("key").toString(), name, value));
             }
 
             subMessageDto.setParams(params);

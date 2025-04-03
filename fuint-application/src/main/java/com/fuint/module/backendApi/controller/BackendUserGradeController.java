@@ -63,9 +63,6 @@ public class BackendUserGradeController extends BaseController {
         Integer pageSize = request.getParameter("pageSize") == null ? Constants.PAGE_SIZE : Integer.parseInt(request.getParameter("pageSize"));
 
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
-        if (accountInfo == null) {
-            return getFailureResult(1001, "请先登录");
-        }
 
         PaginationRequest paginationRequest = new PaginationRequest();
         paginationRequest.setCurrentPage(page);
@@ -101,14 +98,7 @@ public class BackendUserGradeController extends BaseController {
         }
         paginationResponse.setContent(content);
 
-        List<ParamDto> catchTypes = new ArrayList<>();
-        for (UserGradeCatchTypeEnum catchTypeEnum : catchTypeList) {
-             ParamDto catchType = new ParamDto();
-             catchType.setKey(catchTypeEnum.getKey());
-             catchType.setName(catchTypeEnum.getValue());
-             catchType.setValue(catchTypeEnum.getKey());
-             catchTypes.add(catchType);
-        }
+        List<ParamDto> catchTypes = UserGradeCatchTypeEnum.getUserGradeCatchTypeList();
 
         Map<String, Object> result = new HashMap<>();
         result.put("paginationResponse", paginationResponse);

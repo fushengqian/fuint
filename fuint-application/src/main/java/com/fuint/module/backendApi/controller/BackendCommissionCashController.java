@@ -24,7 +24,6 @@ import lombok.AllArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -124,15 +123,7 @@ public class BackendCommissionCashController extends BaseController {
         List<MtStore> storeList = storeService.queryStoresByParams(paramsStore);
 
         // 状态列表
-        CommissionCashStatusEnum[] statusListEnum = CommissionCashStatusEnum.values();
-        List<ParamDto> statusList = new ArrayList<>();
-        for (CommissionCashStatusEnum enumItem : statusListEnum) {
-            ParamDto paramDto = new ParamDto();
-            paramDto.setKey(enumItem.getKey());
-            paramDto.setName(enumItem.getValue());
-            paramDto.setValue(enumItem.getKey());
-            statusList.add(paramDto);
-        }
+        List<ParamDto> statusList = CommissionCashStatusEnum.getCommissionCashStatusList();
 
         Map<String, Object> result = new HashMap<>();
         result.put("dataList", paginationResponse);

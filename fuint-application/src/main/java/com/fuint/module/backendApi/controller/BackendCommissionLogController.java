@@ -26,7 +26,6 @@ import lombok.AllArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -138,26 +137,10 @@ public class BackendCommissionLogController extends BaseController {
         List<MtStore> storeList = storeService.queryStoresByParams(paramsStore);
 
         // 状态列表
-        CommissionStatusEnum[] statusListEnum = CommissionStatusEnum.values();
-        List<ParamDto> statusList = new ArrayList<>();
-        for (CommissionStatusEnum enumItem : statusListEnum) {
-            ParamDto paramDto = new ParamDto();
-            paramDto.setKey(enumItem.getKey());
-            paramDto.setName(enumItem.getValue());
-            paramDto.setValue(enumItem.getKey());
-            statusList.add(paramDto);
-        }
+        List<ParamDto> statusList = CommissionStatusEnum.getCommissionStatusList();
 
         // 分佣对象列表
-        CommissionTargetEnum[] targetListEnum = CommissionTargetEnum.values();
-        List<ParamDto> targetList = new ArrayList<>();
-        for (CommissionTargetEnum enumItem : targetListEnum) {
-            ParamDto paramDto = new ParamDto();
-            paramDto.setKey(enumItem.getKey());
-            paramDto.setName(enumItem.getValue());
-            paramDto.setValue(enumItem.getKey());
-            targetList.add(paramDto);
-        }
+        List<ParamDto> targetList = CommissionTargetEnum.getCommissionTargetList();
 
         Map<String, Object> result = new HashMap<>();
         result.put("dataList", paginationResponse);

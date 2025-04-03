@@ -1,5 +1,11 @@
 package com.fuint.common.enums;
 
+import com.fuint.common.dto.ParamDto;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
 /**
  * 卡券使用专项枚举
  *
@@ -53,5 +59,11 @@ public enum CouponUseForEnum {
             }
         }
         return null;
+    }
+
+    public static List<ParamDto> getCouponUseForList() {
+        return Arrays.stream(CouponUseForEnum.values())
+                .map(status -> new ParamDto(status.getKey(), status.getValue(), status.getValue()))
+                .collect(Collectors.toList());
     }
 }
