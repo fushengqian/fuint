@@ -12,6 +12,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
+import java.lang.reflect.Field;
 
 /**
  * 通用工具
@@ -20,6 +21,24 @@ import java.util.regex.Matcher;
  * CopyRight https://www.fuint.cn
  */
 public class CommonUtil {
+
+    /**
+     * 对象转化成map
+     *
+     * @param obj 对象
+     * @return
+     * */
+    public static Map<String, Object> convert(Object obj) throws IllegalAccessException {
+        Map<String, Object> map = new HashMap<>();
+        Class<?> clazz = obj.getClass();
+
+        for (Field field : clazz.getDeclaredFields()) {
+             field.setAccessible(true);
+             map.put(field.getName(), field.get(obj));
+        }
+
+        return map;
+    }
 
     /**
      * 隐藏手机号中间4位

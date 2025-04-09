@@ -2,11 +2,11 @@ package com.fuint.module.backendApi.controller;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.fuint.common.Constants;
 import com.fuint.common.dto.*;
 import com.fuint.common.enums.GoodsTypeEnum;
 import com.fuint.common.enums.StatusEnum;
 import com.fuint.common.enums.YesOrNoEnum;
+import com.fuint.common.param.GoodsListParam;
 import com.fuint.common.service.*;
 import com.fuint.common.util.CommonUtil;
 import com.fuint.common.util.TokenUtil;
@@ -79,22 +79,11 @@ public class BackendGoodsController extends BaseController {
      * @return
      */
     @ApiOperation(value = "分页查询商品列表")
-    @RequestMapping(value = "/list", method = RequestMethod.GET)
+    @RequestMapping(value = "/list", method = RequestMethod.POST)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('goods:goods:index')")
-    public ResponseObject list(HttpServletRequest request) throws BusinessCheckException {
+    public ResponseObject list(HttpServletRequest request, @RequestBody GoodsListParam param) throws BusinessCheckException, IllegalAccessException {
         String token = request.getHeader("Access-Token");
-        Integer page = request.getParameter("page") == null ? Constants.PAGE_NUMBER : Integer.parseInt(request.getParameter("page"));
-        Integer pageSize = request.getParameter("pageSize") == null ? Constants.PAGE_SIZE : Integer.parseInt(request.getParameter("pageSize"));
-        String name = request.getParameter("name");
-        String goodsNo = request.getParameter("goodsNo");
-        String isSingleSpec = request.getParameter("isSingleSpec");
-        String type = request.getParameter("type");
-        String status = request.getParameter("status");
-        String searchStoreId = request.getParameter("storeId");
-        String stock = request.getParameter("stock");
-        String cateId = request.getParameter("cateId");
-
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
 
         TAccount account = accountService.getAccountInfoById(accountInfo.getId());
@@ -102,41 +91,17 @@ public class BackendGoodsController extends BaseController {
         Integer merchantId = account.getMerchantId() == null ? 0 : account.getMerchantId();
 
         PaginationRequest paginationRequest = new PaginationRequest();
-        paginationRequest.setCurrentPage(page);
-        paginationRequest.setPageSize(pageSize);
+        paginationRequest.setCurrentPage(param.getPage());
+        paginationRequest.setPageSize(param.getPageSize());
 
-        Map<String, Object> params = new HashMap<>();
-        if (StringUtil.isNotEmpty(searchStoreId)) {
-            params.put("storeId", searchStoreId);
-        }
         if (merchantId > 0) {
-            params.put("merchantId", merchantId);
+            param.setMerchantId(merchantId);
         }
         if (storeId > 0) {
-            params.put("storeId", storeId);
+            param.setStoreId(storeId);
         }
-        if (StringUtil.isNotEmpty(name)) {
-            params.put("name", name);
-        }
-        if (StringUtil.isNotEmpty(type)) {
-            params.put("type", type);
-        }
-        if (StringUtil.isNotEmpty(cateId)) {
-            params.put("cateId", cateId);
-        }
-        if (StringUtil.isNotEmpty(goodsNo)) {
-            params.put("goodsNo", goodsNo);
-        }
-        if (StringUtil.isNotEmpty(isSingleSpec)) {
-            params.put("isSingleSpec", isSingleSpec);
-        }
-        if (StringUtil.isNotEmpty(status)) {
-            params.put("status", status);
-        }
-        if (StringUtil.isNotEmpty(stock)) {
-            params.put("stock", stock);
-        }
-        paginationRequest.setSearchParams(params);
+
+        paginationRequest.setSearchParams(CommonUtil.convert(param));
         PaginationResponse<GoodsDto> paginationResponse = goodsService.queryGoodsListByPagination(paginationRequest);
 
         // 商品类型列表
@@ -144,20 +109,20 @@ public class BackendGoodsController extends BaseController {
 
         Map<String, Object> paramsStore = new HashMap<>();
         paramsStore.put("status", StatusEnum.ENABLED.getKey());
-        if (storeId != null && storeId > 0) {
-            paramsStore.put("storeId", storeId.toString());
+        if (storeId > 0) {
+            paramsStore.put("storeId", storeId);
         }
-        if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
+        if (merchantId > 0) {
             paramsStore.put("merchantId", accountInfo.getMerchantId());
         }
         List<MtStore> storeList = storeService.queryStoresByParams(paramsStore);
 
         Map<String, Object> cateParam = new HashMap<>();
         cateParam.put("status", StatusEnum.ENABLED.getKey());
-        if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
+        if (merchantId > 0) {
             cateParam.put("merchantId", accountInfo.getMerchantId());
         }
-        if (storeId != null && storeId > 0) {
+        if (storeId > 0) {
             cateParam.put("storeId", storeId.toString());
         }
         List<MtGoodsCate> cateList = cateService.queryCateListByParams(cateParam);
