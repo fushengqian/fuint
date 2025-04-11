@@ -117,9 +117,10 @@ public interface GoodsService {
      * 更新已售数量
      *
      * @param goodsId 商品ID
+     * @param saleNum 销售数量
      * @return
      * */
-    Boolean updateInitSale(Integer goodsId);
+    Boolean updateInitSale(Integer goodsId, Integer saleNum);
 
     /**
      * 获取选择商品列表

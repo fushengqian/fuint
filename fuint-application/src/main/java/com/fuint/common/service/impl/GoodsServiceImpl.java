@@ -646,12 +646,13 @@ public class GoodsServiceImpl extends ServiceImpl<MtGoodsMapper, MtGoods> implem
      * 更新已售数量
      *
      * @param goodsId 商品ID
+     * @param saleNum 销售数量
      * @return
      * */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public Boolean updateInitSale(Integer goodsId) {
-        return mtGoodsMapper.updateInitSale(goodsId);
+    public Boolean updateInitSale(Integer goodsId, Integer saleNum) {
+        return mtGoodsMapper.updateInitSale(goodsId, saleNum);
     }
 
     /**

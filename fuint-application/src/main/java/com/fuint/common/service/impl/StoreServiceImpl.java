@@ -373,7 +373,7 @@ public class StoreServiceImpl extends ServiceImpl<MtStoreMapper, MtStore> implem
      * @return
      * */
     @Override
-    public List<StoreInfo> queryByDistance(String merchantNo, String keyword, String latitude, String longitude) throws BusinessCheckException {
+    public List<StoreInfo> queryByDistance(String merchantNo, String keyword, String latitude, String longitude) {
         List<StoreInfo> dataList = new ArrayList<>();
 
         MtMerchant mtMerchant = merchantService.queryMerchantByNo(merchantNo);

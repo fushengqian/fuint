@@ -32,7 +32,7 @@
     </select>
 
     <update id="updateInitSale">
-        update mt_goods t set t.INIT_SALE = t.INIT_SALE + 1 where t.ID = #{goodsId}
+        update mt_goods t set t.INIT_SALE = t.INIT_SALE + #{saleNum} where t.ID = #{goodsId}
     </update>
 
     <select id="selectGoodsList" resultType="com.fuint.repository.bean.GoodsBean">

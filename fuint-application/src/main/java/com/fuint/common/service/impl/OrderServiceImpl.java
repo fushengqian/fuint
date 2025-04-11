@@ -1435,7 +1435,7 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
                                 }
                             }
                             // 将已销售数量+1
-                            goodsService.updateInitSale(mtGoods.getId());
+                            goodsService.updateInitSale(mtGoods.getId(), goodsDto.getNum());
                         }
                     }
                 }

@@ -84,7 +84,7 @@ public enum StaffCategoryEnum {
 
     public static List<ParamDto> getStaffCategoryList() {
         return Arrays.stream(StaffCategoryEnum.values())
-                .map(status -> new ParamDto(status.getKey(), status.getValue(), status.getValue()))
+                .map(status -> new ParamDto(status.getKey(), status.getName(), status.getValue()))
                 .collect(Collectors.toList());
     }
 }
