@@ -8,6 +8,7 @@ import com.fuint.common.param.MemberDetailParam;
 import com.fuint.common.param.MemberInfoParam;
 import com.fuint.common.param.MemberListParam;
 import com.fuint.common.service.*;
+import com.fuint.common.util.CommonUtil;
 import com.fuint.common.util.DateUtil;
 import com.fuint.common.util.TokenUtil;
 import com.fuint.framework.exception.BusinessCheckException;
@@ -16,7 +17,6 @@ import com.fuint.framework.pagination.PaginationResponse;
 import com.fuint.framework.web.BaseController;
 import com.fuint.framework.web.ResponseObject;
 import com.fuint.repository.model.*;
-import com.fuint.utils.StringUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.AllArgsConstructor;
@@ -58,28 +58,19 @@ public class MerchantMemberController extends BaseController {
     @ApiOperation(value = "查询会员列表")
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @CrossOrigin
-    public ResponseObject list(HttpServletRequest request, @RequestBody MemberListParam memberListParam) throws BusinessCheckException {
+    public ResponseObject list(HttpServletRequest request, @RequestBody MemberListParam memberListParam) throws BusinessCheckException, IllegalAccessException {
         String token = request.getHeader("Access-Token");
-        String mobile = memberListParam.getMobile();
-        String userId = memberListParam.getId();
-        String name = memberListParam.getName();
-        String birthday = memberListParam.getBirthday();
-        String userNo = memberListParam.getUserNo();
-        String gradeId = memberListParam.getGradeId();
-        String regTime = memberListParam.getRegTime() == null ? "" : memberListParam.getRegTime();
-        String activeTime = memberListParam.getActiveTime() == null ? "" : memberListParam.getActiveTime();
-        String memberTime = memberListParam.getMemberTime() == null ? "" : memberListParam.getMemberTime();
-        String status = memberListParam.getStatus();
         String dataType = memberListParam.getDataType();
         Integer page = memberListParam.getPage() == null ? Constants.PAGE_NUMBER : memberListParam.getPage();
         Integer pageSize = memberListParam.getPageSize() == null ? Constants.PAGE_SIZE : memberListParam.getPageSize();
-        String keyword = memberListParam.getKeyword() == null ? "" : memberListParam.getKeyword();
 
         // 今日注册、今日活跃
         if (dataType.equals("todayRegister")) {
-            regTime = DateUtil.formatDate(new Date(), "yyyy-MM-dd") + " 00:00:00~" + DateUtil.formatDate(new Date(), "yyyy-MM-dd HH:mm:ss");
+            String regTime = DateUtil.formatDate(new Date(), "yyyy-MM-dd") + " 00:00:00~" + DateUtil.formatDate(new Date(), "yyyy-MM-dd HH:mm:ss");
+            memberListParam.setRegTime(regTime);
         } else if (dataType.equals("todayActive")) {
-            activeTime = DateUtil.formatDate(new Date(), "yyyy-MM-dd") + " 00:00:00~" + DateUtil.formatDate(new Date(), "yyyy-MM-dd HH:mm:ss");
+            String activeTime = DateUtil.formatDate(new Date(), "yyyy-MM-dd") + " 00:00:00~" + DateUtil.formatDate(new Date(), "yyyy-MM-dd HH:mm:ss");
+            memberListParam.setActiveTime(activeTime);
         }
 
         UserInfo userInfo = TokenUtil.getUserInfoByToken(token);
@@ -97,56 +88,14 @@ public class MerchantMemberController extends BaseController {
         paginationRequest.setCurrentPage(page);
         paginationRequest.setPageSize(pageSize);
 
-        Map<String, Object> params = new HashMap<>();
         if (staffInfo.getMerchantId() != null && staffInfo.getMerchantId() > 0) {
-            params.put("merchantId", staffInfo.getMerchantId());
+            memberListParam.setMerchantId(staffInfo.getMerchantId());
         }
         if (staffInfo.getStoreId() != null && staffInfo.getStoreId() > 0) {
-            params.put("storeId", staffInfo.getStoreId());
-        }
-        if (StringUtil.isNotEmpty(userId)) {
-            params.put("id", userId);
-        }
-        if (StringUtil.isNotEmpty(name)) {
-            params.put("name", name);
-        }
-        if (StringUtil.isNotEmpty(mobile)) {
-            params.put("mobile", mobile);
-        }
-        if (StringUtil.isNotEmpty(birthday)) {
-            params.put("birthday", birthday);
-        }
-        if (StringUtil.isNotEmpty(userNo)) {
-            params.put("userNo", userNo);
-        }
-        if (StringUtil.isNotEmpty(gradeId)) {
-            params.put("gradeId", gradeId);
-        }
-        if (StringUtil.isNotEmpty(status)) {
-            params.put("status", status);
+            memberListParam.setStoreId(staffInfo.getStoreId());
         }
 
-        // 注册时间比对
-        if (StringUtil.isNotEmpty(regTime)) {
-            params.put("regTime", regTime);
-        }
-
-        // 活跃时间比对
-        if (StringUtil.isNotEmpty(activeTime)) {
-            params.put("activeTime", activeTime);
-        }
-
-        // 会员有效期比对
-        if (StringUtil.isNotEmpty(memberTime)) {
-            params.put("memberTime", memberTime);
-        }
-
-        // 搜索关键字
-        if (StringUtil.isNotEmpty(keyword)) {
-            params.put("keyword", keyword);
-        }
-
-        paginationRequest.setSearchParams(params);
+        paginationRequest.setSearchParams(CommonUtil.convert(memberListParam));
         PaginationResponse<UserDto> paginationResponse = memberService.queryMemberListByPagination(paginationRequest);
 
         // 会员等级列表
