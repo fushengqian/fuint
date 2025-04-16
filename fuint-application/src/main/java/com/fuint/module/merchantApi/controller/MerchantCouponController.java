@@ -57,26 +57,19 @@ public class MerchantCouponController extends BaseController {
         String token = request.getHeader("Access-Token");
         String merchantNo = request.getHeader("merchantNo") == null ? "" : request.getHeader("merchantNo");
         Integer merchantId = merchantService.getMerchantId(merchantNo);
-        if (StringUtil.isEmpty(token)) {
-            return getFailureResult(1001);
-        }
 
         UserInfo userInfo = TokenUtil.getUserInfoByToken(token);
-        if (null == userInfo) {
-            return getFailureResult(1001);
-        }
-
-        MtStaff staff = null;
         MtUser mtUser = memberService.queryMemberById(userInfo.getId());
-        if (mtUser != null && mtUser.getMobile() != null) {
-            staff = staffService.queryStaffByMobile(mtUser.getMobile());
-        }
-        if (staff == null) {
+
+        if (mtUser == null || mtUser.getMobile() == null) {
             return getFailureResult(201, "该账号不是商户");
         }
-        if (!merchantId.equals(staff.getMerchantId())) {
+
+        MtStaff staff = staffService.queryStaffByMobile(mtUser.getMobile());
+        if (staff == null || !merchantId.equals(staff.getMerchantId())) {
             return getFailureResult(201, "您没有操作权限");
         }
+
         // 判断店铺权限
         MtCoupon couponInfo = couponService.queryCouponById(receiveParam.getCouponId());
         if (StringUtil.isNotEmpty(couponInfo.getStoreIds()) && staff.getStoreId() != null && staff.getStoreId() > 0) {

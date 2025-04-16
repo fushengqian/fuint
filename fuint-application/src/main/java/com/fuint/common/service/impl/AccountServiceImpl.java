@@ -158,7 +158,8 @@ public class AccountServiceImpl extends ServiceImpl<TAccountMapper, TAccount> im
             accountInfo.setRoleIds(account.getRoleIds());
             accountInfo.setStaffId(account.getStaffId());
             accountInfo.setStoreId(account.getStoreId());
-            accountInfo.setMerchantId(account.getMerchantId());
+            Integer merchantId = account.getMerchantId() == null ? 0 : account.getMerchantId();
+            accountInfo.setMerchantId(merchantId);
             if (account.getMerchantId() != null && account.getMerchantId() > 0) {
                 MtMerchant mtMerchant = mtMerchantMapper.selectById(account.getMerchantId());
                 if (mtMerchant != null) {

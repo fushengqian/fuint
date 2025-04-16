@@ -66,9 +66,6 @@ public class BackendStaffController extends BaseController {
         String category = request.getParameter("category");
 
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
-        if (accountInfo == null) {
-            return getFailureResult(1001, "请先登录");
-        }
         if (accountInfo.getStoreId() != null && accountInfo.getStoreId() > 0) {
             storeId = accountInfo.getStoreId().toString();
         }
@@ -199,11 +196,11 @@ public class BackendStaffController extends BaseController {
         String token = request.getHeader("Access-Token");
 
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
-        if (accountInfo == null) {
-            return getFailureResult(1001, "请先登录");
+        MtStaff staffInfo = staffService.queryStaffById(id);
+        if (accountInfo.getMerchantId() > 0 && !accountInfo.getMerchantId().equals(staffInfo.getMerchantId())) {
+            return getFailureResult(1004);
         }
 
-        MtStaff staffInfo = staffService.queryStaffById(id);
         if (staffInfo != null) {
             staffInfo.setMobile(CommonUtil.hidePhone(staffInfo.getMobile()));
         }
