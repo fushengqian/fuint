@@ -5,6 +5,7 @@ import com.fuint.common.dto.AccountInfo;
 import com.fuint.common.dto.ParamDto;
 import com.fuint.common.enums.StaffCategoryEnum;
 import com.fuint.common.enums.StatusEnum;
+import com.fuint.common.param.StaffParam;
 import com.fuint.common.service.StaffService;
 import com.fuint.common.util.CommonUtil;
 import com.fuint.common.util.PhoneFormatCheckUtils;
@@ -21,9 +22,7 @@ import io.swagger.annotations.ApiOperation;
 import lombok.AllArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-
 import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -134,15 +133,8 @@ public class BackendStaffController extends BaseController {
     @RequestMapping(value = "/save", method = RequestMethod.POST)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('staff:list')")
-    public ResponseObject saveHandler(HttpServletRequest request, @RequestBody Map<String, Object> params) throws BusinessCheckException {
+    public ResponseObject saveHandler(HttpServletRequest request, @RequestBody StaffParam staffParam) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
-        String id = params.get("id") == null ? "0" : params.get("id").toString();
-        String storeId = params.get("storeId") == null ? "0" : params.get("storeId").toString();
-        String category = params.get("category") == null ? "0" : params.get("category").toString();
-        String mobile = params.get("mobile") == null ? "" : CommonUtil.replaceXSS(params.get("mobile").toString());
-        String realName = params.get("realName") == null ? "" : CommonUtil.replaceXSS(params.get("realName").toString());
-        String description = params.get("description") == null ? "" : CommonUtil.replaceXSS(params.get("description").toString());
-        String status = params.get("auditedStatus") == null ? StatusEnum.FORBIDDEN.getKey() : CommonUtil.replaceXSS(params.get("auditedStatus").toString());
 
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
 
@@ -151,24 +143,24 @@ public class BackendStaffController extends BaseController {
         }
 
         MtStaff mtStaff = new MtStaff();
-        if (StringUtil.isNotEmpty(id)) {
-            mtStaff = staffService.queryStaffById(Integer.parseInt(id));
+        if (staffParam.getId() != null) {
+            mtStaff = staffService.queryStaffById(staffParam.getId());
         }
 
-        if (mtStaff == null && StringUtil.isNotEmpty(id)) {
+        if (mtStaff == null && staffParam.getId() == null) {
             return getFailureResult(201, "员工信息不存在");
         }
         if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
             mtStaff.setMerchantId(accountInfo.getMerchantId());
         }
-        mtStaff.setStoreId(Integer.parseInt(storeId));
-        mtStaff.setRealName(realName);
-        if (PhoneFormatCheckUtils.isChinaPhoneLegal(mobile)) {
-            mtStaff.setMobile(mobile);
+        mtStaff.setStoreId(staffParam.getStoreId());
+        mtStaff.setRealName(staffParam.getRealName());
+        if (PhoneFormatCheckUtils.isChinaPhoneLegal(staffParam.getMobile())) {
+            mtStaff.setMobile(staffParam.getMobile());
         }
-        mtStaff.setAuditedStatus(status);
-        mtStaff.setDescription(description);
-        mtStaff.setCategory(Integer.parseInt(category));
+        mtStaff.setAuditedStatus(staffParam.getAuditedStatus() == null ? StatusEnum.FORBIDDEN.getKey() : staffParam.getAuditedStatus());
+        mtStaff.setDescription(staffParam.getDescription());
+        mtStaff.setCategory(staffParam.getCategory());
 
         if (StringUtil.isEmpty(mtStaff.getMobile())) {
             return getFailureResult(201, "手机号码不能为空");
