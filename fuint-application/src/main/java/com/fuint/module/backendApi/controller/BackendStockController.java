@@ -145,9 +145,6 @@ public class BackendStockController extends BaseController {
         Integer id = params.get("id") == null ? 0 : Integer.parseInt(params.get("id").toString());
 
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
-        if (accountInfo == null) {
-            return getFailureResult(1001, "请先登录");
-        }
 
         MtStock mtStock = stockService.queryStockById(id.longValue());
         if (mtStock == null) {

@@ -135,25 +135,26 @@ public class BackendStaffController extends BaseController {
     @PreAuthorize("@pms.hasPermission('staff:list')")
     public ResponseObject saveHandler(HttpServletRequest request, @RequestBody StaffParam staffParam) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
-
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
-
         if (accountInfo.getMerchantId() == null || accountInfo.getMerchantId() <= 0) {
             return getFailureResult(201, "平台方帐号无法执行该操作，请使用商户帐号操作");
         }
 
         MtStaff mtStaff = new MtStaff();
+        Integer storeId = staffParam.getStoreId();
         if (staffParam.getId() != null) {
             mtStaff = staffService.queryStaffById(staffParam.getId());
         }
-
-        if (mtStaff == null && staffParam.getId() == null) {
+        if (staffParam.getId() != null && mtStaff == null) {
             return getFailureResult(201, "员工信息不存在");
         }
         if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
             mtStaff.setMerchantId(accountInfo.getMerchantId());
         }
-        mtStaff.setStoreId(staffParam.getStoreId());
+        if (accountInfo.getStoreId() != null && accountInfo.getStoreId() > 0) {
+            storeId = accountInfo.getStoreId();
+        }
+        mtStaff.setStoreId(storeId);
         mtStaff.setRealName(staffParam.getRealName());
         if (PhoneFormatCheckUtils.isChinaPhoneLegal(staffParam.getMobile())) {
             mtStaff.setMobile(staffParam.getMobile());
@@ -165,8 +166,8 @@ public class BackendStaffController extends BaseController {
         if (StringUtil.isEmpty(mtStaff.getMobile())) {
             return getFailureResult(201, "手机号码不能为空");
         } else {
-            MtStaff tempUser = staffService.queryStaffByMobile(mtStaff.getMobile());
-            if (tempUser != null && !tempUser.getId().equals(mtStaff.getId())) {
+            MtStaff staff = staffService.queryStaffByMobile(mtStaff.getMobile());
+            if (staff != null && !staff.getId().equals(mtStaff.getId())) {
                 return getFailureResult(201, "该手机号码已经存在");
             }
         }

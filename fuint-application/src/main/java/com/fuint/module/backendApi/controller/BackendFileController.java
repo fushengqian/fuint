@@ -68,9 +68,6 @@ public class BackendFileController extends BaseController {
         String action = request.getParameter("action") == null ? "" : request.getParameter("action");
 
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
-        if (accountInfo == null) {
-            return getFailureResult(1001, "请先登录");
-        }
 
         if (action.equals("config")) {
             Map<String, Object> outParams = new HashMap();
@@ -153,7 +150,7 @@ public class BackendFileController extends BaseController {
             resultMap.put("type", file.getContentType());
             resultMap.put("url", url);
             String ip = CommonUtil.getIPFromHttpRequest(request);
-            logger.info("用户ip:{},上传文件url:{}", ip, url);
+            logger.info("用户ip:{},上传文件url:{},account:{}", ip, url, accountInfo.getAccountName());
         } catch (Exception e) {
             return getFailureResult(201, "上传失败，请检查上传配置及权限");
         }

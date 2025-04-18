@@ -73,12 +73,7 @@ public class BackendCommissionCashController extends BaseController {
         String endTime = request.getParameter("endTime") == null ? "" : request.getParameter("endTime");
 
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
-        Integer storeId;
-        if (accountInfo == null) {
-            return getFailureResult(1001, "请先登录");
-        } else {
-            storeId = accountInfo.getStoreId();
-        }
+        Integer storeId = accountInfo.getStoreId();
 
         PaginationRequest paginationRequest = new PaginationRequest();
         paginationRequest.setCurrentPage(page);
@@ -146,11 +141,14 @@ public class BackendCommissionCashController extends BaseController {
     public ResponseObject info(HttpServletRequest request, @PathVariable("id") Integer id) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
-        if (accountInfo == null) {
-            return getFailureResult(1001, "请先登录");
-        }
 
         CommissionCashDto commissionCash = commissionCashService.queryCommissionCashById(id);
+        if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
+            if (!accountInfo.getMerchantId().equals(commissionCash.getMerchantId())) {
+                return getFailureResult(1004);
+            }
+        }
+
         Map<String, Object> result = new HashMap<>();
         result.put("commissionCash", commissionCash);
 
@@ -170,9 +168,6 @@ public class BackendCommissionCashController extends BaseController {
         String token = request.getHeader("Access-Token");
 
         AccountInfo accountDto = TokenUtil.getAccountInfoByToken(token);
-        if (accountDto == null) {
-            return getFailureResult(1001, "请先登录");
-        }
 
         commissionCashRequest.setOperator(accountDto.getAccountName());
         commissionCashService.updateCommissionCash(commissionCashRequest);
@@ -193,9 +188,6 @@ public class BackendCommissionCashController extends BaseController {
         String token = request.getHeader("Access-Token");
 
         AccountInfo accountDto = TokenUtil.getAccountInfoByToken(token);
-        if (accountDto == null) {
-            return getFailureResult(1001, "请先登录");
-        }
 
         requestParam.setOperator(accountDto.getAccountName());
         if (accountDto.getMerchantId() != null && accountDto.getMerchantId() > 0) {
@@ -219,9 +211,6 @@ public class BackendCommissionCashController extends BaseController {
         String token = request.getHeader("Access-Token");
 
         AccountInfo accountDto = TokenUtil.getAccountInfoByToken(token);
-        if (accountDto == null) {
-            return getFailureResult(1001, "请先登录");
-        }
         if (accountDto.getMerchantId() != null && accountDto.getMerchantId() > 0) {
             requestParam.setMerchantId(accountDto.getMerchantId());
         }

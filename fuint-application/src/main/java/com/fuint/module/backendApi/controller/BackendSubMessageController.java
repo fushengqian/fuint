@@ -121,9 +121,6 @@ public class BackendSubMessageController extends BaseController {
     public ResponseObject info(HttpServletRequest request, @PathVariable("key") String key) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
-        if (accountInfo == null) {
-            return getFailureResult(1001, "请先登录");
-        }
 
         Map<String, Object> result = new HashMap();
 
@@ -201,9 +198,6 @@ public class BackendSubMessageController extends BaseController {
         List<LinkedHashMap> paramData = (List) param.get("params");
 
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
-        if (accountInfo == null) {
-            return getFailureResult(1001, "请先登录");
-        }
         if (accountInfo.getMerchantId() == null || accountInfo.getMerchantId() <= 0) {
             return getFailureResult(201, "请使用商户账号操作");
         }

@@ -57,12 +57,7 @@ public class Backend${tableClass}Controller extends BaseController {
         String searchStoreId = request.getParameter("storeId");
 
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
-        Integer storeId;
-        if (accountInfo == null) {
-            return getFailureResult(1001, "请先登录");
-        } else {
-            storeId = accountInfo.getStoreId();
-        }
+        Integer storeId = accountInfo.getStoreId();
 
         PaginationRequest paginationRequest = new PaginationRequest();
         paginationRequest.setCurrentPage(page);
@@ -117,9 +112,6 @@ public class Backend${tableClass}Controller extends BaseController {
         Integer id = params.get("id") == null ? 0 : Integer.parseInt(params.get("id").toString());
 
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
-        if (accountInfo == null) {
-            return getFailureResult(1001, "请先登录");
-        }
 
         ${className} ${tablePrefix}${tableClass} = ${serviceName}Service.query${tableClass}ById(id);
         if (${tablePrefix}${tableClass} == null) {
@@ -151,9 +143,6 @@ public class Backend${tableClass}Controller extends BaseController {
         String storeId = params.get("storeId") == null ? "0" : params.get("storeId").toString();
 
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
-        if (accountInfo == null) {
-            return getFailureResult(1001, "请先登录");
-        }
 
         ${className} info = new ${className}();
         info.setOperator(accountInfo.getAccountName());

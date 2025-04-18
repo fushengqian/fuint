@@ -58,9 +58,6 @@ public class BackendSmsTemplateController extends BaseController {
         String code = request.getParameter("code") == null ? "" : request.getParameter("code");
 
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
-        if (accountInfo == null) {
-            return getFailureResult(1001, "请先登录");
-        }
 
         Map<String, Object> searchParams = new HashMap<>();
         if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
@@ -97,9 +94,6 @@ public class BackendSmsTemplateController extends BaseController {
     public ResponseObject saveHandler(HttpServletRequest request, @RequestBody SmsTemplateDto smsTemplateDto) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
-        if (accountInfo == null) {
-            return getFailureResult(1001, "请先登录");
-        }
         smsTemplateDto.setMerchantId(accountInfo.getMerchantId());
         smsTemplateService.saveSmsTemplate(smsTemplateDto);
         return getSuccessResult(true);
@@ -118,11 +112,13 @@ public class BackendSmsTemplateController extends BaseController {
     public ResponseObject info(HttpServletRequest request, @PathVariable("id") Long id) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
-        if (accountInfo == null) {
-            return getFailureResult(1001, "请先登录");
-        }
 
         MtSmsTemplate mtSmsTemplate = smsTemplateService.querySmsTemplateById(id.intValue());
+        if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
+            if (!accountInfo.getMerchantId().equals(mtSmsTemplate.getMerchantId())) {
+                return getFailureResult(1004);
+            }
+        }
 
         Map<String, Object> result = new HashMap();
         result.put("smsTemplate", mtSmsTemplate);
@@ -143,9 +139,6 @@ public class BackendSmsTemplateController extends BaseController {
     public ResponseObject delete(HttpServletRequest request, @PathVariable("id") Integer id) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
-        if (accountInfo == null) {
-            return getFailureResult(1001, "请先登录");
-        }
 
         String operator = accountInfo.getAccountName();
         smsTemplateService.deleteTemplate(id, operator);

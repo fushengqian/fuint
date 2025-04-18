@@ -77,12 +77,7 @@ public class ClientBalanceController extends BaseController {
     @RequestMapping(value = "/setting", method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject setting(HttpServletRequest request) throws BusinessCheckException {
-        String token = request.getHeader("Access-Token");
         String merchantNo = request.getHeader("merchantNo");
-        UserInfo userInfo = TokenUtil.getUserInfoByToken(token);
-        if (userInfo == null) {
-            return getFailureResult(1001, "请先登录");
-        }
 
         Map<String, Object> outParams = new HashMap<>();
         Integer merchantId = merchantService.getMerchantId(merchantNo);

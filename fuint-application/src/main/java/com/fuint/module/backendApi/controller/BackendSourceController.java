@@ -51,9 +51,6 @@ public class BackendSourceController extends BaseController {
     public ResponseObject list(HttpServletRequest request) {
         String token = request.getHeader("Access-Token");
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
-        if (accountInfo == null) {
-            return getFailureResult(1001, "请先登录");
-        }
 
         List<TreeNode> sources = sourceService.getSourceTree(accountInfo.getMerchantId(), "");
         return getSuccessResult(sources);
