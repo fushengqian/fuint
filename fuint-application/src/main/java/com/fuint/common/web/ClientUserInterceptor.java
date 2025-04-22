@@ -3,6 +3,7 @@ package com.fuint.common.web;
 import com.fuint.common.Constants;
 import com.fuint.common.dto.UserInfo;
 import com.fuint.common.service.MemberService;
+import com.fuint.common.util.CommonUtil;
 import com.fuint.common.util.TokenUtil;
 import com.fuint.utils.PropertiesUtil;
 import org.slf4j.Logger;
@@ -53,7 +54,8 @@ public class ClientUserInterceptor implements AsyncHandlerInterceptor {
         if (loginInfo != null) {
             if (!StringUtils.isEmpty(loginInfo.getToken()) && loginInfo.getToken().equals(accessToken)) {
                 // 更新活跃时间
-                boolean isActive = memberService.updateActiveTime(loginInfo.getId());
+                String ip = CommonUtil.getIPFromHttpRequest(request);
+                boolean isActive = memberService.updateActiveTime(loginInfo.getId(), ip);
                 if (!isActive && requestURI.indexOf("/system/config") < 0) {
                     return false;
                 }

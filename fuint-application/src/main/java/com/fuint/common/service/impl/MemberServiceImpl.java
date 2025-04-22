@@ -103,15 +103,20 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
     /**
      * 更新活跃时间
      * @param userId 会员ID
+     * @param ip IP地址
      * @return
      * */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public Boolean updateActiveTime(Integer userId) throws BusinessCheckException {
+    public Boolean updateActiveTime(Integer userId, String ip) throws BusinessCheckException {
         MtUser mtUser = queryMemberById(userId);
         if (mtUser != null) {
             if (!mtUser.getStatus().equals(StatusEnum.ENABLED.getKey())) {
                 return false;
+            }
+            if (StringUtil.isEmpty(mtUser.getIp())) {
+                mtUser.setIp(ip);
+                mtUserMapper.updateById(mtUser);
             }
             Date lastUpdateTime = mtUser.getUpdateTime();
             Date registerTime = mtUser.getCreateTime();
@@ -502,13 +507,14 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
      * @param merchantId 商户ID
      * @param  mobile 手机号
      * @param  shareId 分享用户ID
+     * @param ip IP地址
      * @throws BusinessCheckException
      * @return
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
     @OperationServiceLog(description = "通过手机号新增会员")
-    public MtUser addMemberByMobile(Integer merchantId, String mobile, String shareId) throws BusinessCheckException {
+    public MtUser addMemberByMobile(Integer merchantId, String mobile, String shareId, String ip) throws BusinessCheckException {
         MtUser mtUser = new MtUser();
         mtUser.setUserNo(CommonUtil.createUserNo());
         String nickName = mobile.replaceAll("(\\d{3})\\d{4}(\\d{4})","$1****$2");
@@ -529,6 +535,7 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
         mtUser.setMerchantId(merchantId);
         mtUser.setStoreId(0);
         mtUser.setSource(MemberSourceEnum.MOBILE_LOGIN.getKey());
+        mtUser.setIp(ip);
         mtUserMapper.insert(mtUser);
         mtUser = queryMemberByMobile(merchantId, mobile);
 
@@ -671,6 +678,7 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
         String shareId = StringUtil.isNotEmpty(userInfo.getString("shareId")) ? userInfo.getString("shareId") : "0";
         String source = StringUtil.isNotEmpty(userInfo.getString("source")) ? userInfo.getString("source") : MemberSourceEnum.WECHAT_LOGIN.getKey();
         String platform = StringUtil.isNotEmpty(userInfo.getString("platform")) ? userInfo.getString("platform") : "";
+        String ip = StringUtil.isNotEmpty(userInfo.getString("ip")) ? userInfo.getString("ip") : "";
 
         // 需要手机号登录
         if (StringUtil.isEmpty(mobile) && user == null && !platform.equals(PlatformTypeEnum.H5.getCode())) {
@@ -725,7 +733,6 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
                 mtUser.setGradeId(grade.getId() + "");
             }
             Date time = new Date();
-            mtUser.setCreateTime(time);
             mtUser.setUpdateTime(time);
             mtUser.setBalance(new BigDecimal(0));
             mtUser.setPoint(0);
@@ -747,6 +754,8 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
             }
             mtUser.setSource(source);
             if (mtUser.getId() == null || mtUser.getId() <= 0) {
+                mtUser.setCreateTime(time);
+                mtUser.setIp(ip);
                 save(mtUser);
             } else {
                 updateById(mtUser);

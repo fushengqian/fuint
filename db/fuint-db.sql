@@ -1054,6 +1054,7 @@ CREATE TABLE `mt_user` (
   `UPDATE_TIME` datetime DEFAULT NULL COMMENT '更新时间',
   `STATUS` char(1) DEFAULT 'A' COMMENT '状态，A：激活；N：禁用；D：删除',
   `DESCRIPTION` varchar(255) DEFAULT '' COMMENT '备注信息',
+  `IP` varchar(20) DEFAULT '' COMMENT '注册IP',
   `OPERATOR` varchar(30) DEFAULT '' COMMENT '最后操作人',
   PRIMARY KEY (`ID`),
   KEY `index_phone` (`MOBILE`)

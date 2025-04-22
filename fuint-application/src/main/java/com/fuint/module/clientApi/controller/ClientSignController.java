@@ -8,6 +8,7 @@ import com.fuint.common.enums.MemberSourceEnum;
 import com.fuint.common.enums.StatusEnum;
 import com.fuint.common.enums.YesOrNoEnum;
 import com.fuint.common.service.*;
+import com.fuint.common.util.CommonUtil;
 import com.fuint.common.util.TokenUtil;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.web.BaseController;
@@ -150,6 +151,7 @@ public class ClientSignController extends BaseController {
         String shareId = param.get("shareId") == null ? "0" : param.get("shareId").toString();
         Integer merchantId = merchantService.getMerchantId(merchantNo);
         JSONObject userInfo = weixinService.getWxOpenId(merchantId, param.get("code").toString());
+        String ip = CommonUtil.getIPFromHttpRequest(request);
         if (userInfo == null) {
             return getFailureResult(201, "微信公众号授权失败");
         }
@@ -159,6 +161,7 @@ public class ClientSignController extends BaseController {
         userInfo.put("storeId", storeId);
         userInfo.put("shareId", shareId);
         userInfo.put("platform", platform);
+        userInfo.put("ip", ip);
 
         MtUser mtUser = memberService.queryMemberByOpenId(merchantId, userInfo.get("openid").toString(), userInfo);
         if (mtUser == null) {
@@ -196,7 +199,7 @@ public class ClientSignController extends BaseController {
         String shareId = param.get("shareId") == null ? "0" : param.get("shareId").toString();
         Integer storeId = request.getHeader("storeId") == null ? 0 : Integer.parseInt(request.getHeader("storeId"));
         String userAgent = request.getHeader("user-agent") == null ? "" : request.getHeader("user-agent");
-
+        String ip = CommonUtil.getIPFromHttpRequest(request);
         if (StringUtil.isEmpty(account)) {
             return getFailureResult(201,"用户名不能为空");
         }
@@ -225,6 +228,7 @@ public class ClientSignController extends BaseController {
         mtUser.setMobile("");
         mtUser.setDescription("会员自行注册新账号");
         mtUser.setIsStaff(YesOrNoEnum.NO.getKey());
+        mtUser.setIp(ip);
         MtUser userInfo = memberService.addMember(mtUser, shareId);
 
         if (userInfo != null) {
@@ -271,6 +275,7 @@ public class ClientSignController extends BaseController {
         String captchaCode = param.get("captchaCode") == null ? "" : param.get("captchaCode").toString();
         String uuid = param.get("uuid") == null ? "" : param.get("uuid").toString();
         String shareId = param.get("shareId") == null ? "0" : param.get("shareId").toString();
+        String ip = CommonUtil.getIPFromHttpRequest(request);
         TokenDto dto = new TokenDto();
         MtUser mtUser = null;
         Integer merchantId = merchantService.getMerchantId(merchantNo);
@@ -295,7 +300,7 @@ public class ClientSignController extends BaseController {
             // 2、写入token redis session
             if (mtVerifyCode != null) {
                 if (null == mtUser) {
-                    memberService.addMemberByMobile(merchantId, mobile, shareId);
+                    memberService.addMemberByMobile(merchantId, mobile, shareId, ip);
                     mtUser = memberService.queryMemberByMobile(merchantId, mobile);
                 }
 

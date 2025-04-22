@@ -664,6 +664,7 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
         Integer storeId = request.getHeader("storeId") == null ? 0 : Integer.parseInt(request.getHeader("storeId"));
         String platform = request.getHeader("platform") == null ? "" : request.getHeader("platform");
         String merchantNo = request.getHeader("merchantNo") == null ? "" : request.getHeader("merchantNo");
+        String ip = CommonUtil.getIPFromHttpRequest(request);
         String cartIds = param.getCartIds() == null ? "" : param.getCartIds();
         Integer targetId = param.getTargetId() == null ? 0 : Integer.parseInt(param.getTargetId()); // 储值卡、升级等级必填
         String selectNum = param.getSelectNum() == null ? "" : param.getSelectNum(); // 储值卡必填
@@ -745,7 +746,7 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
                 userInfo = memberService.queryMemberByMobile(merchantId, mobile);
                 // 自动注册会员
                 if (userInfo == null) {
-                    userInfo = memberService.addMemberByMobile(merchantId, mobile, "0");
+                    userInfo = memberService.addMemberByMobile(merchantId, mobile, "0", ip);
                 }
             }
         }
@@ -982,7 +983,6 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
 
         // 生成支付订单
         orderInfo = getOrderInfo(orderInfo.getId());
-        String ip = CommonUtil.getIPFromHttpRequest(request);
         BigDecimal realPayAmount = orderInfo.getAmount().subtract(new BigDecimal(orderInfo.getDiscount().toString())).subtract(new BigDecimal(orderInfo.getPointAmount().toString())).add(orderInfo.getDeliveryFee());
 
         // 支付类的订单，检查余额是否充足

@@ -112,6 +112,9 @@ public class MtUser implements Serializable {
     @ApiModelProperty("备注信息")
     private String description;
 
+    @ApiModelProperty("注册IP")
+    private String ip;
+
     @ApiModelProperty("最后操作人")
     private String operator;
 }

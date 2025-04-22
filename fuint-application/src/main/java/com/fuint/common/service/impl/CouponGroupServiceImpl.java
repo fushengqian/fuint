@@ -383,7 +383,7 @@ public class CouponGroupServiceImpl extends ServiceImpl<MtCouponGroupMapper, MtC
         for (CouponCellDto dto : rows) {
             MtUser userInfo = memberService.queryMemberByMobile(dto.getMerchantId(), dto.getMobile());
             if (userInfo == null) {
-                userInfo = memberService.addMemberByMobile(dto.getMerchantId(), dto.getMobile(), "0");
+                userInfo = memberService.addMemberByMobile(dto.getMerchantId(), dto.getMobile(), "0", "");
             }
 
             if (null == userInfo || !userInfo.getStatus().equals(StatusEnum.ENABLED.getKey())) {

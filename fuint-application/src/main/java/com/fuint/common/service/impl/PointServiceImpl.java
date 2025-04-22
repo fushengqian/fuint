@@ -226,7 +226,7 @@ public class PointServiceImpl extends ServiceImpl<MtPointMapper, MtPoint> implem
         MtUser fUserInfo = memberService.queryMemberByMobile(userInfo.getMerchantId(), mobile);
         // 自动注册会员
         if (fUserInfo == null) {
-            fUserInfo = memberService.addMemberByMobile(userInfo.getMerchantId(), mobile, userId.toString());
+            fUserInfo = memberService.addMemberByMobile(userInfo.getMerchantId(), mobile, userId.toString(), "");
         }
 
         if (fUserInfo == null) {

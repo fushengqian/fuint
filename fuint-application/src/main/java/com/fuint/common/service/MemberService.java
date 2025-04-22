@@ -27,9 +27,10 @@ public interface MemberService extends IService<MtUser> {
      * 更新活跃时间
      *
      * @param userId 会员ID
+     * @param ip IP地址
      * @return
      * */
-    Boolean updateActiveTime(Integer userId) throws BusinessCheckException;
+    Boolean updateActiveTime(Integer userId, String ip) throws BusinessCheckException;
 
     /**
      * 获取当前操作会员信息
@@ -74,10 +75,11 @@ public interface MemberService extends IService<MtUser> {
      * @param  merchantId 商户ID
      * @param  mobile 手机号
      * @param  shareId 分享用户ID
+     * @param ip IP地址
      * @throws BusinessCheckException
      * @return
      */
-    MtUser addMemberByMobile(Integer merchantId, String mobile, String shareId) throws BusinessCheckException;
+    MtUser addMemberByMobile(Integer merchantId, String mobile, String shareId, String ip) throws BusinessCheckException;
 
     /**
      * 根据会员ID获取会员信息
