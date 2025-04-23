@@ -277,6 +277,10 @@ public class SendSmsServiceImpl implements SendSmsService {
         if (StringUtils.isNotBlank(merchantId)) {
             lambdaQueryWrapper.eq(MtSmsSendedLog::getMerchantId, merchantId);
         }
+        String storeId = paginationRequest.getSearchParams().get("storeId") == null ? "" : paginationRequest.getSearchParams().get("storeId").toString();
+        if (StringUtils.isNotBlank(storeId)) {
+            lambdaQueryWrapper.eq(MtSmsSendedLog::getStoreId, storeId);
+        }
         String content = paginationRequest.getSearchParams().get("content") == null ? "" : paginationRequest.getSearchParams().get("content").toString();
         if (StringUtils.isNotBlank(content)) {
             lambdaQueryWrapper.like(MtSmsSendedLog::getContent, content);

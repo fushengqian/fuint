@@ -299,7 +299,7 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
             lambdaQueryWrapper.eq(MtOrder::getType, OrderTypeEnum.GOODS.getKey());
         }
         lambdaQueryWrapper.orderByDesc(MtOrder::getId);
-        Page<MtOpenGift> pageHelper = PageHelper.startPage(pageNumber, pageSize);
+        Page<MtOrder> pageHelper = PageHelper.startPage(pageNumber, pageSize);
         List<MtOrder> orderList = mtOrderMapper.selectList(lambdaQueryWrapper);
 
         List<UserOrderDto> dataList = new ArrayList<>();
