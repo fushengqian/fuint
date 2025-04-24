@@ -11,6 +11,9 @@ import com.fuint.common.enums.GoodsTypeEnum;
 import com.fuint.common.enums.StatusEnum;
 import com.fuint.common.enums.YesOrNoEnum;
 import com.fuint.common.service.*;
+import com.fuint.common.util.CommonUtil;
+import com.fuint.common.util.DateUtil;
+import com.fuint.common.util.XlsUtil;
 import com.fuint.framework.annoation.OperationServiceLog;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.pagination.PaginationRequest;
@@ -27,11 +30,20 @@ import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import lombok.AllArgsConstructor;
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
+import org.springframework.core.env.Environment;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.ResourceUtils;
+import org.springframework.web.multipart.MultipartFile;
+
+import javax.servlet.http.HttpServletRequest;
+import java.io.File;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -45,6 +57,8 @@ import java.util.stream.Collectors;
 @Service
 @AllArgsConstructor
 public class GoodsServiceImpl extends ServiceImpl<MtGoodsMapper, MtGoods> implements GoodsService {
+
+    private static final Logger logger = LoggerFactory.getLogger(GoodsServiceImpl.class);
 
     private MtGoodsMapper mtGoodsMapper;
 
@@ -73,6 +87,11 @@ public class GoodsServiceImpl extends ServiceImpl<MtGoodsMapper, MtGoods> implem
      * 卡券服务接口
      * */
     private CouponService couponService;
+
+    /**
+     * 系统环境变量
+     * */
+    private Environment env;
 
     /**
      * 分页查询商品列表
@@ -777,6 +796,76 @@ public class GoodsServiceImpl extends ServiceImpl<MtGoodsMapper, MtGoods> implem
             storeIds.add("0");
         }
         return storeIds.stream().collect(Collectors.joining(","));
+    }
+
+    /**
+     * 保存文件
+     *
+     * @param file excel文件
+     * @param request
+     * */
+    public String saveGoodsFile(HttpServletRequest request, MultipartFile file) throws Exception {
+        if (file == null) {
+            throw new BusinessCheckException("上传文件出错！");
+        }
+        String fileName = file.getOriginalFilename();
+        String uploadPath = fileName.substring(fileName.lastIndexOf("."));
+        String pathRoot = env.getProperty("images.root");
+        if (pathRoot == null || StringUtil.isEmpty(pathRoot)) {
+            pathRoot = ResourceUtils.getURL("classpath:").getPath();
+        }
+        String uuid = UUID.randomUUID().toString().replaceAll("-", "");
+
+        String filePath = "/static/uploadFiles/"+ DateUtil.formatDate(new Date(), "yyyyMMdd")+"/";
+        String path = filePath + uuid + uploadPath;
+
+        try {
+            File tempFile = new File(pathRoot + path);
+            if (!tempFile.getParentFile().exists()) {
+                tempFile.getParentFile().mkdirs();
+            }
+            CommonUtil.saveMultipartFile(file, pathRoot + path);
+        } catch (Exception e) {
+            logger.error("上传商品保存文件出错：", e.getMessage());
+        }
+
+        return path;
+    }
+
+    /**
+     * 导入商品
+     *
+     * @param file excel文件
+     * @param operator 操作者
+     * */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    @OperationServiceLog(description = "导入发券列表")
+    public String importGoods(MultipartFile file, String operator, String filePath) throws BusinessCheckException {
+        String originalFileName = file.getOriginalFilename();
+        boolean isExcel2003 = XlsUtil.isExcel2003(originalFileName);
+        boolean isExcel2007 = XlsUtil.isExcel2007(originalFileName);
+
+        if (!isExcel2003 && !isExcel2007) {
+            logger.error("importGoods->uploadFile：{}", "文件类型不正确");
+            throw new BusinessCheckException("文件类型不正确");
+        }
+
+        List<List<String>> content = new ArrayList<>();
+        try {
+            content = XlsUtil.readExcelContent(file.getInputStream(), isExcel2003, 1, null, null, null);
+        } catch (IOException e) {
+            logger.error("GoodsServiceImpl->parseExcelContent{}", e);
+            throw new BusinessCheckException("导入失败" + e.getMessage());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        if (content != null && content.size() > 0) {
+            // empty
+        }
+
+        return "";
     }
 
 }

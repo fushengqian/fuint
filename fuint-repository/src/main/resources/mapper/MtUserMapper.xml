@@ -32,7 +32,7 @@
     </select>
 
     <update id="updateActiveTime">
-        update mt_user t set t.UPDATE_TIME = #{updateTime}s where t.ID = #{userId}
+        update mt_user t set t.UPDATE_TIME = #{updateTime} where t.ID = #{userId}
     </update>
 
     <update id="updateUserBalance">

@@ -1,7 +1,6 @@
 package com.fuint.common.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.fuint.common.dto.GroupDataDto;
 import com.fuint.common.dto.ReqCouponGroupDto;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.pagination.PaginationRequest;
@@ -9,7 +8,6 @@ import com.fuint.framework.pagination.PaginationResponse;
 import com.fuint.repository.model.MtCouponGroup;
 import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletRequest;
-import org.springframework.ui.Model;
 import java.math.BigDecimal;
 
 /**
@@ -101,10 +99,4 @@ public interface CouponGroupService extends IService<MtCouponGroup> {
      * */
      String saveExcelFile(MultipartFile file, HttpServletRequest request) throws Exception;
 
-    /**
-     * 获取分组统计数据
-     *
-     * @param groupId 分组ID
-     * */
-    GroupDataDto getGroupData(Integer groupId, HttpServletRequest request, Model model) throws BusinessCheckException;
 }

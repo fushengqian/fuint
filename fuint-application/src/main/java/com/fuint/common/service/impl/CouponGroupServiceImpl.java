@@ -4,11 +4,9 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fuint.common.dto.CouponCellDto;
-import com.fuint.common.dto.GroupDataDto;
 import com.fuint.common.dto.ReqCouponGroupDto;
 import com.fuint.common.dto.ReqSendLogDto;
 import com.fuint.common.enums.StatusEnum;
-import com.fuint.common.enums.UserCouponStatusEnum;
 import com.fuint.common.service.*;
 import com.fuint.common.util.CommonUtil;
 import com.fuint.common.util.DateUtil;
@@ -33,7 +31,6 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.ui.Model;
 import org.springframework.util.ResourceUtils;
 import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletRequest;
@@ -66,11 +63,6 @@ public class CouponGroupServiceImpl extends ServiceImpl<MtCouponGroupMapper, MtC
      * 卡券服务接口
      * */
     private CouponService couponService;
-
-    /**
-     * 会员卡券服务接口
-     * */
-    private UserCouponService userCouponService;
 
     /**
      * 会员服务接口
@@ -533,66 +525,5 @@ public class CouponGroupServiceImpl extends ServiceImpl<MtCouponGroupMapper, MtC
         }
 
         return path;
-    }
-
-    /**
-     * 获取分组统计数据
-     *
-     * @param groupId 分组ID
-     * */
-    public GroupDataDto getGroupData(Integer groupId, HttpServletRequest request, Model model) throws BusinessCheckException {
-        MtCouponGroup groupInfo = queryCouponGroupById(groupId);
-
-        // 已发放套数
-        Integer sendNum = 0;
-
-        // 未发放套数
-        Integer unSendNum = groupInfo.getTotal() - sendNum;
-
-        // 已使用张数
-        PaginationRequest requestUserCouponUse = new PaginationRequest();
-        requestUserCouponUse.getSearchParams().put("groupId", groupId.toString());
-        requestUserCouponUse.getSearchParams().put("status", UserCouponStatusEnum.USED.getKey());
-        PaginationResponse<MtUserCoupon> dataUserCoupon = userCouponService.queryUserCouponListByPagination(requestUserCouponUse);
-        Long useNum = dataUserCoupon.getTotalElements();
-
-        // 已过期张数
-        Date nowDate = new Date();
-        Integer expireNum = 0;
-        List<MtCoupon> couponList = couponService.queryCouponListByGroupId(groupId);
-        List<MtUserCoupon> userCouponList = mtUserCouponMapper.queryExpireNumByGroupId(groupId);
-        if (null != userCouponList) {
-            for (MtUserCoupon userCoupon: userCouponList) {
-                MtCoupon couponInfo = null;
-                for (MtCoupon coupon: couponList) {
-                    if (userCoupon.getCouponId().toString().equals(coupon.getId().toString())) {
-                        couponInfo = coupon;
-                        break;
-                    }
-                }
-                if (null == couponInfo) {
-                    continue;
-                }
-                if (nowDate.after(couponInfo.getEndTime())) {
-                    expireNum++;
-                }
-            }
-        }
-
-        // 已作废张数
-        PaginationRequest requestUserCouponCancel = new PaginationRequest();
-        requestUserCouponCancel.getSearchParams().put("groupId", groupId.toString());
-        requestUserCouponCancel.getSearchParams().put("status", UserCouponStatusEnum.DISABLE.getKey());
-        PaginationResponse<MtUserCoupon> dataUserCouponCancel = userCouponService.queryUserCouponListByPagination(requestUserCouponCancel);
-        Long cancelNum = dataUserCouponCancel.getTotalElements();
-
-        GroupDataDto data = new GroupDataDto();
-        data.setSendNum(sendNum);
-        data.setUnSendNum(unSendNum);
-        data.setUseNum(useNum.intValue());
-        data.setExpireNum(expireNum.intValue());
-        data.setCancelNum(cancelNum.intValue());
-
-        return data;
     }
 }

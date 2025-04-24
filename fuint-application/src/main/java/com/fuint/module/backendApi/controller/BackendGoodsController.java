@@ -25,6 +25,9 @@ import lombok.AllArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
+
 import javax.servlet.http.HttpServletRequest;
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
@@ -764,5 +767,27 @@ public class BackendGoodsController extends BaseController {
         result.put("imagePath", imagePath);
 
         return getSuccessResult(result);
+    }
+
+    /**
+     * 上传商品导入文件
+     *
+     * @param request
+     * @throws
+     */
+    @ApiOperation(value = "上传文件")
+    @RequestMapping(value = "/uploadGoodsFile", method = RequestMethod.POST)
+    @CrossOrigin
+    public ResponseObject uploadGoodsFile(HttpServletRequest request) throws Exception {
+        String token = request.getHeader("Access-Token");
+        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
+
+        MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
+        MultipartFile file = multipartRequest.getFile("file");
+
+        String filePath = goodsService.saveGoodsFile(request, file);
+        String uuid = goodsService.importGoods(file, accountInfo.getAccountName(), filePath);
+
+        return getSuccessResult(uuid);
     }
 }

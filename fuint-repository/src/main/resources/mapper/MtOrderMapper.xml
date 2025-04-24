@@ -51,6 +51,9 @@
 
     <select id="getPayUserCount" resultType="java.lang.Integer">
         SELECT COUNT(DISTINCT t.USER_ID) as num FROM mt_order t where t.PAY_STATUS='B' and t.STATUS not in('C', 'G', 'H')
+        <if test="merchantId != null and merchantId > 0">
+            and t.MERCHANT_ID = #{merchantId}
+        </if>
     </select>
 
     <select id="getStorePayUserCount" resultType="java.lang.Integer">
