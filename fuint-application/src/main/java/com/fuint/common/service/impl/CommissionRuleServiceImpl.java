@@ -256,8 +256,11 @@ public class CommissionRuleServiceImpl extends ServiceImpl<MtCommissionRuleMappe
                 mtCommissionRuleItemMapper.deleteByRuleId(commissionRule.getId(), new Date());
             }
         }
-        String storeIds = StringUtil.join(commissionRule.getStoreIdList().toArray(), ",");
-        mtCommissionRule.setStoreIds(storeIds);
+        String storeIds = "";
+        if (commissionRule.getStoreIdList() != null && commissionRule.getStoreIdList().size() > 0) {
+            storeIds = StringUtil.join(commissionRule.getStoreIdList().toArray(), ",");
+            mtCommissionRule.setStoreIds(storeIds);
+        }
 
         // 更新或插入
         Date date = new Date();

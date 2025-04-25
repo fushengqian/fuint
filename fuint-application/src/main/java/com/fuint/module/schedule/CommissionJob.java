@@ -54,7 +54,7 @@ public class CommissionJob {
     /**
      * 订单完成后n天可产生佣金
      * */
-    private int OVER_DAY = 7;
+    private int OVER_DAY = 0;
 
     @Scheduled(cron = "${commission.job.time}")
     @Transactional(rollbackFor = Exception.class)
