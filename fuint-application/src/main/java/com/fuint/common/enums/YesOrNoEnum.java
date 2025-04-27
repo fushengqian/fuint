@@ -36,4 +36,22 @@ public enum YesOrNoEnum {
     public void setValue(String value) {
         this.value = value;
     }
+
+    public static String getKey(String v) {
+        for (YesOrNoEnum c : YesOrNoEnum.values()) {
+            if (c.getValue().equals(v)) {
+                return c.getKey();
+            }
+        }
+        return null;
+    }
+
+    public static String getValue(String k) {
+        for (YesOrNoEnum c : YesOrNoEnum.values()) {
+            if (c.getKey().equals(k)) {
+                return c.getValue();
+            }
+        }
+        return null;
+    }
 }

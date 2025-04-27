@@ -67,4 +67,15 @@ public interface CateService extends IService<MtGoodsCate> {
      * @return
      * */
     List<MtGoodsCate> queryCateListByParams(Map<String, Object> params) throws BusinessCheckException;
+
+    /**
+     * 获取分类ID
+     *
+     * @param merchantId 商户ID
+     * @param storeId 店铺ID
+     * @param name 分类名称
+     * @return
+     * */
+    Integer getGoodsCateId(Integer merchantId, Integer storeId, String name);
+
 }

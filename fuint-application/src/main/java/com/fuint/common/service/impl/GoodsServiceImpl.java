@@ -1,9 +1,11 @@
 package com.fuint.common.service.impl;
 
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fuint.common.Constants;
+import com.fuint.common.dto.AccountInfo;
 import com.fuint.common.dto.GoodsDto;
 import com.fuint.common.dto.GoodsSpecValueDto;
 import com.fuint.common.dto.GoodsTopDto;
@@ -230,7 +232,7 @@ public class GoodsServiceImpl extends ServiceImpl<MtGoodsMapper, MtGoods> implem
     @OperationServiceLog(description = "保存商品信息")
     public MtGoods saveGoods(MtGoods reqDto, String storeIds) throws BusinessCheckException {
         MtGoods mtGoods = new MtGoods();
-        if (reqDto.getId() > 0) {
+        if (reqDto.getId() != null && reqDto.getId() > 0) {
             mtGoods = queryGoodsById(reqDto.getId());
             reqDto.setMerchantId(mtGoods.getMerchantId());
         }
@@ -836,12 +838,13 @@ public class GoodsServiceImpl extends ServiceImpl<MtGoodsMapper, MtGoods> implem
      * 导入商品
      *
      * @param file excel文件
-     * @param operator 操作者
+     * @param accountInfo 操作者
+     * @return
      * */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    @OperationServiceLog(description = "导入发券列表")
-    public String importGoods(MultipartFile file, String operator, String filePath) throws BusinessCheckException {
+    @OperationServiceLog(description = "导入商品列表")
+    public Boolean importGoods(MultipartFile file, AccountInfo accountInfo, String filePath) throws BusinessCheckException {
         String originalFileName = file.getOriginalFilename();
         boolean isExcel2003 = XlsUtil.isExcel2003(originalFileName);
         boolean isExcel2007 = XlsUtil.isExcel2007(originalFileName);
@@ -851,21 +854,141 @@ public class GoodsServiceImpl extends ServiceImpl<MtGoodsMapper, MtGoods> implem
             throw new BusinessCheckException("文件类型不正确");
         }
 
+        if (accountInfo == null || accountInfo.getMerchantId() == null || accountInfo.getMerchantId() <= 0) {
+            throw new BusinessCheckException("没有操作权限");
+        }
+
+        // 1、录入商品信息
         List<List<String>> goodsList = new ArrayList<>();
+        List<List<String>> skuList = new ArrayList<>();
         try {
             goodsList = XlsUtil.readExcelContent(file.getInputStream(), isExcel2003, 0, 1, null, null, null);
+            skuList = XlsUtil.readExcelContent(file.getInputStream(), isExcel2003, 1, 1, null, null, null);
         } catch (IOException e) {
             logger.error("GoodsServiceImpl->parseExcelContent{}", e);
-            throw new BusinessCheckException("导入失败" + e.getMessage());
+            throw new BusinessCheckException("商品导入失败" + e.getMessage());
         } catch (Exception e) {
             e.printStackTrace();
         }
 
         if (goodsList != null && goodsList.size() > 0) {
-            // empty
+            if (goodsList.size() > 1000) {
+                throw new BusinessCheckException("商品导入失败，单次导入商品数量不能大于1000");
+            }
+            for (int i = 0; i < goodsList.size(); i++) {
+                 List<String> goods = goodsList.get(0);
+                 MtGoods mtGoods = new MtGoods();
+                 mtGoods.setId(0);
+                 mtGoods.setName(goods.get(0));
+                 mtGoods.setType(GoodsTypeEnum.getKey(goods.get(1)));
+                 mtGoods.setGoodsNo(goods.get(2));
+                 mtGoods.setMerchantId(accountInfo.getMerchantId());
+                 mtGoods.setStoreId(accountInfo.getStoreId());
+                 Integer cateId = cateService.getGoodsCateId(accountInfo.getMerchantId(), accountInfo.getStoreId(), goods.get(3));
+                 mtGoods.setCateId(cateId);
+                 mtGoods.setOperator(accountInfo.getAccountName());
+                 String storeIds = storeService.getStoreIds(accountInfo.getMerchantId(), goods.get(4));
+                 String images = goods.get(5);
+                 if (StringUtil.isNotEmpty(images)) {
+                     String[] imgArr = images.split(",");
+                     if (imgArr.length > 0) {
+                         mtGoods.setLogo(imgArr[0]);
+                         String imagesJson = JSONObject.toJSONString(images.split(","));
+                         mtGoods.setImages(imagesJson);
+                     }
+                 }
+                 mtGoods.setSort(Integer.parseInt(goods.get(6)));
+                 mtGoods.setCanUsePoint(YesOrNoEnum.getKey(goods.get(7)));
+                 mtGoods.setIsMemberDiscount(YesOrNoEnum.getKey(goods.get(8)));
+                 if (goods.get(9).equals(YesOrNoEnum.YES.getKey())) {
+                     mtGoods.setIsSingleSpec(YesOrNoEnum.YES.getKey());
+                 } else {
+                     mtGoods.setIsSingleSpec(YesOrNoEnum.NO.getKey());
+                 }
+                 mtGoods.setInitSale(Integer.parseInt(goods.get(10)));
+                 mtGoods.setSalePoint(goods.get(11));
+                 mtGoods.setDescription(goods.get(12));
+                 mtGoods.setPrice(new BigDecimal("0"));
+                 mtGoods.setStock(0);
+                 mtGoods.setStatus(StatusEnum.ENABLED.getKey());
+                 saveGoods(mtGoods, storeIds);
+            }
         }
 
-        return "";
+        // 2、录入规格信息
+        if (skuList != null && skuList.size() > 0) {
+            for (int j = 0; j < skuList.size(); j++) {
+                 List<String> sku = skuList.get(j);
+                 MtGoods mtGoods = mtGoodsMapper.getByGoodsName(accountInfo.getMerchantId(), sku.get(0));
+                 if (mtGoods != null) {
+                     // 单规格
+                     if (mtGoods.getIsSingleSpec().equals(YesOrNoEnum.YES.getKey())) {
+                         mtGoods.setPrice(new BigDecimal(sku.get(4)));
+                         mtGoods.setLinePrice(new BigDecimal(sku.get(5)));
+                         mtGoods.setStock(Integer.parseInt(sku.get(6)));
+                         mtGoods.setWeight(new BigDecimal(sku.get(7)));
+                         mtGoodsMapper.updateById(mtGoods);
+                     }
+                     // 多规格
+                     if (mtGoods.getIsSingleSpec().equals(YesOrNoEnum.NO.getKey())) {
+                         List<String> specIds = new ArrayList<>();
+                         if (StringUtil.isNotEmpty(sku.get(2)) && StringUtil.isNotEmpty(sku.get(3))) {
+                             String[] specNameList = sku.get(2).split(",");
+                             String[] specValueList = sku.get(3).split(",");
+                             if (specNameList.length == specValueList.length) {
+                                 for (int y = 0; y < specNameList.length; y++) {
+                                      Integer specId = getSpecId(mtGoods.getId(), specNameList[y], specValueList[y]);
+                                      specIds.add(specId.toString());
+                                 }
+                             }
+                         }
+                         if (StringUtil.isNotEmpty(sku.get(1))) {
+                             MtGoodsSku mtGoodsSku = new MtGoodsSku();
+                             mtGoodsSku.setSkuNo(sku.get(1));
+                             mtGoodsSku.setGoodsId(mtGoods.getId());
+                             mtGoodsSku.setSpecIds(String.join("-", specIds));
+                             mtGoodsSku.setPrice(new BigDecimal(sku.get(4)));
+                             mtGoodsSku.setLinePrice(new BigDecimal(sku.get(5)));
+                             mtGoodsSku.setStock(Integer.parseInt(sku.get(6)));
+                             mtGoodsSku.setWeight(new BigDecimal(sku.get(7)));
+                             mtGoodsSku.setStatus(StatusEnum.ENABLED.getKey());
+                             mtGoodsSkuMapper.insert(mtGoodsSku);
+                         }
+                     }
+                 }
+            }
+        }
+        return true;
+    }
+
+    /**
+     * 获取规格ID
+     *
+     * @param goodsId 商品ID
+     * @param specName 规格名称
+     * @param specValue 规格值
+     * */
+    @Override
+    public Integer getSpecId(Integer goodsId, String specName, String specValue) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("goods_id", goodsId);
+        params.put("name", specName);
+        params.put("value", specValue);
+        params.put("status", StatusEnum.ENABLED.getKey());
+        Integer specId;
+        List<MtGoodsSpec> specList = mtGoodsSpecMapper.selectByMap(params);
+        if (specList != null && specList.size() > 0) {
+            specId = specList.get(0).getId();
+        } else {
+            MtGoodsSpec mtGoodsSpec = new MtGoodsSpec();
+            mtGoodsSpec.setGoodsId(goodsId);
+            mtGoodsSpec.setName(specName);
+            mtGoodsSpec.setValue(specValue);
+            mtGoodsSpec.setStatus(StatusEnum.ENABLED.getKey());
+            mtGoodsSpecMapper.insert(mtGoodsSpec);
+            specId = mtGoodsSpec.getId();
+        }
+        return specId;
     }
 
 }

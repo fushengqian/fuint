@@ -31,6 +31,13 @@
         </if>
     </select>
 
+    <select id="getByGoodsName" resultType="com.fuint.repository.model.MtGoods">
+        select * from mt_goods t where t.NAME = #{goodsName} and t.STATUS = 'A'
+        <if test="merchantId != null and merchantId > 0">
+            AND t.MERCHANT_ID = #{merchantId}
+        </if>
+    </select>
+
     <update id="updateInitSale">
         update mt_goods t set t.INIT_SALE = t.INIT_SALE + #{saleNum} where t.ID = #{goodsId}
     </update>

@@ -105,4 +105,13 @@ public interface StoreService extends IService<MtStore> {
      * */
     String getStoreNames(String storeIds);
 
+    /**
+     * 获取店铺ID
+     *
+     * @param merchantId 商户ID
+     * @param storeNames 店铺名称
+     * @return
+     * */
+    String getStoreIds(Integer merchantId, String storeNames);
+
 }

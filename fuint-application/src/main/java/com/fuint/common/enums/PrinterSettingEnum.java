@@ -50,7 +50,7 @@ public enum PrinterSettingEnum {
     // 普通方法，通过Value获取key
     public static String getKey(String v) {
         for (PrinterSettingEnum c : PrinterSettingEnum.values()) {
-            if (c.getValue() == v) {
+            if (c.getValue().equals(v)) {
                 return c.getKey();
             }
         }

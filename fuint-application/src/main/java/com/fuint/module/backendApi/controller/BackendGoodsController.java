@@ -786,8 +786,8 @@ public class BackendGoodsController extends BaseController {
         MultipartFile file = multipartRequest.getFile("file");
 
         String filePath = goodsService.saveGoodsFile(request, file);
-        String uuid = goodsService.importGoods(file, accountInfo.getAccountName(), filePath);
+        Boolean result = goodsService.importGoods(file, accountInfo, filePath);
 
-        return getSuccessResult(uuid);
+        return getSuccessResult(result);
     }
 }

@@ -1,5 +1,6 @@
 package com.fuint.common.service;
 
+import com.fuint.common.dto.AccountInfo;
 import com.fuint.common.dto.GoodsDto;
 import com.fuint.common.dto.GoodsSpecValueDto;
 import com.fuint.common.dto.GoodsTopDto;
@@ -164,9 +165,18 @@ public interface GoodsService {
      * 导入商品
      *
      * @param file excel文件
-     * @param operator 操作者
+     * @param accountInfo 操作者
      * @param filePath 文件地址
      * */
-    String importGoods(MultipartFile file, String operator, String filePath) throws BusinessCheckException;
+    Boolean importGoods(MultipartFile file, AccountInfo accountInfo, String filePath) throws BusinessCheckException;
+
+    /**
+     * 获取规格ID
+     *
+     * @param goodsId 商品ID
+     * @param specName 规格名称
+     * @param specValue 规格值
+     * */
+    Integer getSpecId(Integer goodsId, String specName, String specValue);
 
 }
