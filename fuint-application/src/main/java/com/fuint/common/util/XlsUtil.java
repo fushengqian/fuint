@@ -52,13 +52,14 @@ public class XlsUtil {
      *
      * @param is           文件流
      * @param isExcel2003  是否是2003的excel
+     * @param sheetIndex   工作表序号
      * @param firstRowNum  开始读取的行号（从0开始）为NULL时从第一行开始
      * @param lastRowNum   结束读取的行号（从0开始）为NULL时最后一行结束
      * @param firstCellNum 结束读取的列号（从0开始）为NULL时第一列开始
      * @param lastCellNum  结束读取的列号（从0开始）为NULL时最后一列结束
      * @return List 包含单元格数据内容的List对象
      */
-    public static List<List<String>> readExcelContent(InputStream is, boolean isExcel2003, Integer firstRowNum, Integer lastRowNum, Integer firstCellNum, Integer lastCellNum) throws Exception {
+    public static List<List<String>> readExcelContent(InputStream is, boolean isExcel2003, Integer sheetIndex, Integer firstRowNum, Integer lastRowNum, Integer firstCellNum, Integer lastCellNum) throws Exception {
         List<List<String>> content = new ArrayList<>();
         Workbook wb;
         Sheet sheet;
@@ -73,7 +74,7 @@ public class XlsUtil {
             logger.error("XlsUtil—>readExcelContent：{}", e);
             throw new Exception("导入失败");
         }
-        sheet = wb.getSheetAt(0);
+        sheet = wb.getSheetAt(sheetIndex);
         int startRowNum = 0;
         if (null != firstRowNum) {
             startRowNum = firstRowNum;

@@ -145,11 +145,14 @@ public class CommissionCashServiceImpl extends ServiceImpl<MtCommissionCashMappe
                          userDto.setName(userInfo.getName());
                          userDto.setCardNo(userInfo.getIdcard());
                          userDto.setAddress(userInfo.getAddress());
-                         userDto.setMobile(userInfo.getMobile());
+                         userDto.setMobile(CommonUtil.hidePhone(userInfo.getMobile()));
                          commissionCashDto.setUserInfo(userDto);
                      }
                  }
-                 commissionCashDto.setStaffInfo(mtStaff);
+                 if (mtStaff != null) {
+                     mtStaff.setMobile(CommonUtil.hidePhone(mtStaff.getMobile()));
+                     commissionCashDto.setStaffInfo(mtStaff);
+                 }
                  dataList.add(commissionCashDto);
             }
         }

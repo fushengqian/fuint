@@ -7,6 +7,7 @@ import com.fuint.common.dto.CommissionLogDto;
 import com.fuint.common.dto.OrderUserDto;
 import com.fuint.common.enums.*;
 import com.fuint.common.service.*;
+import com.fuint.common.util.CommonUtil;
 import com.fuint.framework.annoation.OperationServiceLog;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.pagination.PaginationRequest;
@@ -151,7 +152,10 @@ public class CommissionLogServiceImpl extends ServiceImpl<MtCommissionLogMapper,
                  MtStore mtStore = storeService.getById(mtCommissionLog.getStoreId());
                  commissionLogDto.setStoreInfo(mtStore);
                  MtStaff mtStaff = staffService.getById(mtCommissionLog.getStaffId());
-                 commissionLogDto.setStaffInfo(mtStaff);
+                 if (mtStaff != null) {
+                     mtStaff.setMobile(CommonUtil.hidePhone(mtStaff.getMobile()));
+                     commissionLogDto.setStaffInfo(mtStaff);
+                 }
                  MtCommissionRule mtCommissionRule = commissionRuleService.getById(mtCommissionLog.getRuleId());
                  commissionLogDto.setRuleInfo(mtCommissionRule);
                  if (mtCommissionLog.getUserId() != null && mtCommissionLog.getUserId() > 0) {
@@ -163,7 +167,7 @@ public class CommissionLogServiceImpl extends ServiceImpl<MtCommissionLogMapper,
                          userDto.setName(userInfo.getName());
                          userDto.setCardNo(userInfo.getIdcard());
                          userDto.setAddress(userInfo.getAddress());
-                         userDto.setMobile(userInfo.getMobile());
+                         userDto.setMobile(CommonUtil.hidePhone(userInfo.getMobile()));
                          commissionLogDto.setUserInfo(userDto);
                      }
                  }
@@ -212,7 +216,7 @@ public class CommissionLogServiceImpl extends ServiceImpl<MtCommissionLogMapper,
                          lambdaQueryWrapper.eq(MtCommissionRuleItem::getTargetId, goodsId);
                          lambdaQueryWrapper.eq(MtCommissionRuleItem::getType, CommissionTypeEnum.GOODS.getKey());
                          lambdaQueryWrapper.eq(MtCommissionRuleItem::getStatus, StatusEnum.ENABLED.getKey());
-                         lambdaQueryWrapper.groupBy(MtCommissionRuleItem::getTarget);
+                         lambdaQueryWrapper.groupBy(MtCommissionRuleItem::getTarget, MtCommissionRuleItem::getId);
                          lambdaQueryWrapper.orderByDesc(MtCommissionRuleItem::getId);
                          List<MtCommissionRuleItem> commissionRuleItemList = mtCommissionRuleItemMapper.selectList(lambdaQueryWrapper);
                          if (commissionRuleItemList != null && commissionRuleItemList.size() > 0) {
@@ -249,7 +253,7 @@ public class CommissionLogServiceImpl extends ServiceImpl<MtCommissionLogMapper,
                 lambdaQueryWrapper.eq(MtCommissionRuleItem::getMerchantId, mtOrder.getMerchantId());
                 lambdaQueryWrapper.eq(MtCommissionRuleItem::getType, CommissionTypeEnum.RECHARGE.getKey());
                 lambdaQueryWrapper.eq(MtCommissionRuleItem::getStatus, StatusEnum.ENABLED.getKey());
-                lambdaQueryWrapper.groupBy(MtCommissionRuleItem::getTarget);
+                lambdaQueryWrapper.groupBy(MtCommissionRuleItem::getTarget, MtCommissionRuleItem::getId);
                 lambdaQueryWrapper.orderByDesc(MtCommissionRuleItem::getId);
                 List<MtCommissionRuleItem> commissionRuleItemList = mtCommissionRuleItemMapper.selectList(lambdaQueryWrapper);
                 if (commissionRuleItemList != null && commissionRuleItemList.size() > 0) {

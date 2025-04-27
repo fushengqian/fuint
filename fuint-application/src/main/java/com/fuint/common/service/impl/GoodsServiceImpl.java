@@ -851,9 +851,9 @@ public class GoodsServiceImpl extends ServiceImpl<MtGoodsMapper, MtGoods> implem
             throw new BusinessCheckException("文件类型不正确");
         }
 
-        List<List<String>> content = new ArrayList<>();
+        List<List<String>> goodsList = new ArrayList<>();
         try {
-            content = XlsUtil.readExcelContent(file.getInputStream(), isExcel2003, 1, null, null, null);
+            goodsList = XlsUtil.readExcelContent(file.getInputStream(), isExcel2003, 0, 1, null, null, null);
         } catch (IOException e) {
             logger.error("GoodsServiceImpl->parseExcelContent{}", e);
             throw new BusinessCheckException("导入失败" + e.getMessage());
@@ -861,7 +861,7 @@ public class GoodsServiceImpl extends ServiceImpl<MtGoodsMapper, MtGoods> implem
             e.printStackTrace();
         }
 
-        if (content != null && content.size() > 0) {
+        if (goodsList != null && goodsList.size() > 0) {
             // empty
         }
 

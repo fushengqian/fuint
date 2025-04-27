@@ -289,7 +289,7 @@ public class CouponGroupServiceImpl extends ServiceImpl<MtCouponGroupMapper, MtC
 
         List<List<String>> content = new ArrayList<>();
         try {
-            content = XlsUtil.readExcelContent(file.getInputStream(), isExcel2003, 1, null, null, null);
+            content = XlsUtil.readExcelContent(file.getInputStream(), isExcel2003, 0,1, null, null, null);
         } catch (IOException e) {
             log.error("CouponGroupServiceImpl->parseExcelContent{}", e);
             throw new BusinessCheckException("导入失败"+e.getMessage());
