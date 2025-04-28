@@ -68,6 +68,7 @@ public class WebConfig extends WebMvcConfigurationSupport {
                 .excludePathPatterns("/backendApi/captcha/**")
                 .excludePathPatterns("/backendApi/userCoupon/exportList")
                 .excludePathPatterns("/backendApi/order/export")
+                .excludePathPatterns("/backendApi/file/download")
                 .excludePathPatterns("/backendApi/login/**");
 
         // 客户端拦截

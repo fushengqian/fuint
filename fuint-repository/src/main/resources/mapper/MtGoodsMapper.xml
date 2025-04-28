@@ -32,7 +32,7 @@
     </select>
 
     <select id="getByGoodsName" resultType="com.fuint.repository.model.MtGoods">
-        select * from mt_goods t where t.NAME = #{goodsName} and t.STATUS = 'A'
+        select * from mt_goods t where t.NAME = #{goodsName} and t.STATUS != 'D'
         <if test="merchantId != null and merchantId > 0">
             AND t.MERCHANT_ID = #{merchantId}
         </if>

@@ -407,6 +407,51 @@ public class GoodsServiceImpl extends ServiceImpl<MtGoodsMapper, MtGoods> implem
     }
 
     /**
+     * 更新商品状态
+     *
+     * @param  goodsId 商品ID
+     * @param  status 状态
+     * @param  operator 操作人
+     * @throws BusinessCheckException
+     * @return
+     */
+    @Override
+    public Boolean updateStatus(Integer goodsId, String status, String operator) throws BusinessCheckException {
+        MtGoods mtGoods = queryGoodsById(goodsId);
+        if (null == mtGoods) {
+            throw new BusinessCheckException("该商品不存在");
+        }
+        mtGoods.setStatus(status);
+        mtGoods.setUpdateTime(new Date());
+        mtGoods.setOperator(operator);
+        mtGoodsMapper.updateById(mtGoods);
+        // 删除商品
+        if (status.equals(StatusEnum.DISABLE.getKey())) {
+            Map<String, Object> param = new HashMap<>();
+            param.put("goods_id", goodsId);
+            param.put("status", StatusEnum.ENABLED.getKey());
+            List<MtGoodsSpec> goodsSpecList = mtGoodsSpecMapper.selectByMap(param);
+            if (goodsSpecList != null && goodsSpecList.size() > 0) {
+                for (MtGoodsSpec mtGoodsSpec : goodsSpecList) {
+                     mtGoodsSpec.setStatus(StatusEnum.DISABLE.getKey());
+                     mtGoodsSpecMapper.updateById(mtGoodsSpec);
+                }
+            }
+            Map<String, Object> param1 = new HashMap<>();
+            param1.put("goods_id", goodsId);
+            param1.put("status", StatusEnum.ENABLED.getKey());
+            List<MtGoodsSku> goodsSkuList = mtGoodsSkuMapper.selectByMap(param1);
+            if (goodsSkuList != null && goodsSkuList.size() > 0) {
+                for (MtGoodsSku mtGoodsSku : goodsSkuList) {
+                     mtGoodsSku.setStatus(StatusEnum.DISABLE.getKey());
+                     mtGoodsSkuMapper.updateById(mtGoodsSku);
+                }
+            }
+        }
+        return true;
+    }
+
+    /**
      * 根据ID获取商品信息
      *
      * @param  id 商品ID
@@ -526,28 +571,6 @@ public class GoodsServiceImpl extends ServiceImpl<MtGoodsMapper, MtGoods> implem
         goodsInfo.setStoreIds(storeIds);
 
         return goodsInfo;
-    }
-
-    /**
-     * 根据ID删除商品信息
-     *
-     * @param  id ID
-     * @param  operator 操作人
-     * @throws BusinessCheckException
-     * @return
-     */
-    @Override
-    @OperationServiceLog(description = "删除商品信息")
-    @Transactional(rollbackFor = Exception.class)
-    public void deleteGoods(Integer id, String operator) throws BusinessCheckException {
-        MtGoods cateInfo = queryGoodsById(id);
-        if (null == cateInfo) {
-            throw new BusinessCheckException("该商品不存在");
-        }
-        cateInfo.setStatus(StatusEnum.DISABLE.getKey());
-        cateInfo.setUpdateTime(new Date());
-        cateInfo.setOperator(operator);
-        mtGoodsMapper.updateById(cateInfo);
     }
 
     /**
@@ -909,8 +932,9 @@ public class GoodsServiceImpl extends ServiceImpl<MtGoodsMapper, MtGoods> implem
                  mtGoods.setSalePoint(goods.get(11));
                  mtGoods.setDescription(goods.get(12));
                  mtGoods.setPrice(new BigDecimal("0"));
+                 mtGoods.setLinePrice(new BigDecimal("0"));
                  mtGoods.setStock(0);
-                 mtGoods.setStatus(StatusEnum.ENABLED.getKey());
+                 mtGoods.setStatus(StatusEnum.FORBIDDEN.getKey());
                  saveGoods(mtGoods, storeIds);
             }
         }
@@ -919,7 +943,13 @@ public class GoodsServiceImpl extends ServiceImpl<MtGoodsMapper, MtGoods> implem
         if (skuList != null && skuList.size() > 0) {
             for (int j = 0; j < skuList.size(); j++) {
                  List<String> sku = skuList.get(j);
-                 MtGoods mtGoods = mtGoodsMapper.getByGoodsName(accountInfo.getMerchantId(), sku.get(0));
+                 List<MtGoods> goodsList1 = mtGoodsMapper.getByGoodsName(accountInfo.getMerchantId(), sku.get(0));
+                 MtGoods mtGoods = null;
+                 if (goodsList1.size() == 1) {
+                     mtGoods = goodsList1.get(0);
+                 } else if (goodsList1.size() > 1) {
+                     throw new BusinessCheckException("商品导入失败，存在重复商品名称：" + sku.get(0));
+                 }
                  if (mtGoods != null) {
                      // 单规格
                      if (mtGoods.getIsSingleSpec().equals(YesOrNoEnum.YES.getKey())) {

@@ -43,6 +43,17 @@ public interface GoodsService {
     MtGoods saveGoods(MtGoods reqDto, String storeIds) throws BusinessCheckException;
 
     /**
+     * 更新商品状态
+     *
+     * @param  goodsId 商品ID
+     * @param  status 状态
+     * @param  operator 操作人
+     * @throws BusinessCheckException
+     * @return
+     */
+    Boolean updateStatus(Integer goodsId, String status, String operator) throws BusinessCheckException;
+
+    /**
      * 根据ID获取商品信息
      *
      * @param  id 商品ID
@@ -78,16 +89,6 @@ public interface GoodsService {
      * @return
      */
     GoodsDto getGoodsDetail(Integer id, boolean getDeleteSpec) throws InvocationTargetException, IllegalAccessException;
-
-    /**
-     * 根据ID删除
-     *
-     * @param  id 商品ID
-     * @param  operator 操作人
-     * @throws BusinessCheckException
-     * @return
-     */
-    void deleteGoods(Integer id, String operator) throws BusinessCheckException;
 
     /**
      * 获取店铺的商品列表

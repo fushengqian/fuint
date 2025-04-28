@@ -23,7 +23,7 @@ public interface MtGoodsMapper extends BaseMapper<MtGoods> {
 
     MtGoods getByGoodsNo(@Param("merchantId") Integer merchantId, @Param("goodsNo") String goodsNo);
 
-    MtGoods getByGoodsName(@Param("merchantId") Integer merchantId, @Param("goodsName") String goodsName);
+    List<MtGoods> getByGoodsName(@Param("merchantId") Integer merchantId, @Param("goodsName") String goodsName);
 
     Boolean updateInitSale(@Param("goodsId") Integer goodsId, @Param("saleNum") Integer saleNum);
 

@@ -140,33 +140,6 @@ public class BackendGoodsController extends BaseController {
     }
 
     /**
-     * 删除商品
-     *
-     * @param request
-     * @param goodsId 商品ID
-     * @return
-     */
-    @ApiOperation(value = "删除商品")
-    @RequestMapping(value = "/delete/{id}", method = RequestMethod.GET)
-    @CrossOrigin
-    @PreAuthorize("@pms.hasPermission('goods:goods:edit')")
-    public ResponseObject delete(HttpServletRequest request, @PathVariable("id") Integer goodsId) throws BusinessCheckException {
-        String token = request.getHeader("Access-Token");
-
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
-
-        MtGoods mtGoods = goodsService.queryGoodsById(goodsId);
-        if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0 && !mtGoods.getMerchantId().equals(accountInfo.getMerchantId())) {
-            return getFailureResult(1004);
-        }
-
-        String operator = accountInfo.getAccountName();
-        goodsService.deleteGoods(goodsId, operator);
-
-        return getSuccessResult(true);
-    }
-
-    /**
      * 更新商品状态
      *
      * @return
@@ -178,11 +151,11 @@ public class BackendGoodsController extends BaseController {
     public ResponseObject updateStatus(HttpServletRequest request, @RequestBody Map<String, Object> params) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
         String status = params.get("status") != null ? params.get("status").toString() : StatusEnum.ENABLED.getKey();
-        Integer id = params.get("id") == null ? 0 : Integer.parseInt(params.get("id").toString());
+        Integer goodsId = params.get("id") == null ? 0 : Integer.parseInt(params.get("id").toString());
 
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
 
-        MtGoods mtGoods = goodsService.queryGoodsById(id);
+        MtGoods mtGoods = goodsService.queryGoodsById(goodsId);
         if (mtGoods == null) {
             return getFailureResult(201, "该商品不存在");
         }
@@ -192,12 +165,7 @@ public class BackendGoodsController extends BaseController {
         }
 
         String operator = accountInfo.getAccountName();
-
-        MtGoods goodsInfo = new MtGoods();
-        goodsInfo.setOperator(operator);
-        goodsInfo.setId(id);
-        goodsInfo.setStatus(status);
-        goodsService.saveGoods(goodsInfo, null);
+        goodsService.updateStatus(goodsId, status, operator);
 
         return getSuccessResult(true);
     }
@@ -462,7 +430,9 @@ public class BackendGoodsController extends BaseController {
             // 库存等于所有sku库存相加
             Integer allStock = 0;
             for (LinkedHashMap item : skuList) {
-                 allStock = allStock + Integer.parseInt(item.get("stock").toString());
+                 if (StringUtil.isNotEmpty(item.get("stock").toString())) {
+                     allStock = allStock + Integer.parseInt(item.get("stock").toString());
+                 }
             }
             stock = allStock.toString();
         }

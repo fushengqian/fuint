@@ -2090,7 +2090,7 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
                         } else {
                             couponDto.setDescription("满" + couponInfo.getOutRule() + "元可用");
                             BigDecimal conditionAmount = new BigDecimal(couponInfo.getOutRule());
-                            if (totalPrice.compareTo(conditionAmount) > 0 && isEffective) {
+                            if (totalPrice.compareTo(conditionAmount) >= 0 && isEffective) {
                                 couponDto.setStatus(UserCouponStatusEnum.UNUSED.getKey());
                             }
                         }
