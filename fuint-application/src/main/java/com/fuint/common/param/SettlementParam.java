@@ -61,7 +61,7 @@ public class SettlementParam implements Serializable {
     private Integer skuId;
 
     @ApiModelProperty(value="购买数量", name="buyNum")
-    private Integer buyNum;
+    private Double buyNum;
 
     @ApiModelProperty(value="订单模式，配送（express）或自提（oneself）", name="orderMode")
     private String orderMode;

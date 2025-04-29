@@ -167,7 +167,7 @@ public class NoteFormatter {
      * @param price    价格
      * @throws Exception
      */
-    public static String formatPrintOrderItemForNewLine80(String foodName, Integer quantity, Double price) throws Exception {
+    public static String formatPrintOrderItemForNewLine80(String foodName, Double quantity, Double price) throws Exception {
         StringBuilder builder = new StringBuilder();
         byte[] itemNames = foodName.getBytes("GBK");
         Integer mod = itemNames.length % ROW_MAX_CHAR_LEN80;
@@ -211,7 +211,7 @@ public class NoteFormatter {
         }
     }
 
-    private static void getFoodNameSplit80(String foodName, StringBuilder builder, Integer quantity, Double price) throws UnsupportedEncodingException {
+    private static void getFoodNameSplit80(String foodName, StringBuilder builder, Double quantity, Double price) throws UnsupportedEncodingException {
         String[] foodNames = string2StringArray(foodName, LAST_ROW_MAX_NAME_CHAR_LEN80);
         String quanityStr = quantity.toString();
         byte[] itemQuans = quanityStr.getBytes("GBK");

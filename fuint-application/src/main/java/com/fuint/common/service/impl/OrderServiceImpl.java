@@ -577,7 +577,7 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
                  MtGoods goodsInfo = mtGoodsMapper.selectById(cart.getGoodsId());
                  if (goodsInfo.getIsSingleSpec().equals(YesOrNoEnum.YES.getKey())) {
                      // 单规格减去库存
-                     Integer stock = goodsInfo.getStock() - cart.getNum();
+                     Double stock = goodsInfo.getStock() - cart.getNum();
                      if (stock < 0) {
                          throw new BusinessCheckException("商品“" + goodsInfo.getName() + "”库存不足，订单提交失败");
                      }
@@ -587,7 +587,7 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
                      // 多规格减去库存
                      MtGoodsSku mtGoodsSku = mtGoodsSkuMapper.selectById(cart.getSkuId());
                      if (mtGoodsSku != null) {
-                         Integer stock = mtGoodsSku.getStock() - cart.getNum();
+                         Double stock = mtGoodsSku.getStock() - cart.getNum();
                          if (stock < 0) {
                              throw new BusinessCheckException("商品sku编码“" + mtGoodsSku.getSkuNo() +"”库存不足，订单提交失败");
                          }
@@ -595,7 +595,7 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
                          mtGoodsSkuMapper.updateById(mtGoodsSku);
 
                          if (goodsInfo.getStock() != null && goodsInfo.getStock() > 0) {
-                             Integer goodsStock = goodsInfo.getStock() - cart.getNum();
+                             Double goodsStock = goodsInfo.getStock() - cart.getNum();
                              if (goodsStock >= 0) {
                                  goodsInfo.setStock(goodsStock);
                                  mtGoodsMapper.updateById(goodsInfo);
@@ -680,7 +680,7 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
         String cashierDiscountAmount = param.getCashierDiscountAmount() == null ? "" : param.getCashierDiscountAmount(); // 收银台优惠金额
         Integer goodsId = param.getGoodsId() == null ? 0 : param.getGoodsId(); // 立即购买商品ID
         Integer skuId = param.getSkuId() == null ? 0 : param.getSkuId(); // 立即购买商品skuId
-        Integer buyNum = param.getBuyNum() == null ? 1 : param.getBuyNum(); // 立即购买商品数量
+        Double buyNum = param.getBuyNum() == null ? 1.0 : param.getBuyNum(); // 立即购买商品数量
         String orderMode = StringUtil.isEmpty(param.getOrderMode()) ? OrderModeEnum.ONESELF.getKey() : param.getOrderMode(); // 订单模式(配送or自取)
         Integer orderId = param.getOrderId() == null ? null : param.getOrderId(); // 订单ID
         Integer merchantId = merchantService.getMerchantId(merchantNo);
@@ -1698,7 +1698,7 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
                         goodsDto.setId(coupon.getId());
                         goodsDto.setType(OrderTypeEnum.PRESTORE.getKey());
                         goodsDto.setName("预存￥" + item[0] + "到账￥" + item[1]);
-                        goodsDto.setNum(Integer.parseInt(item[2]));
+                        goodsDto.setNum(Double.parseDouble(item[2]));
                         goodsDto.setPrice(item[0]);
                         goodsDto.setDiscount("0");
                         if (coupon.getImage().indexOf(baseImage) == -1) {
@@ -1955,7 +1955,7 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
 
         List<ResCartDto> cartDtoList = new ArrayList<>();
         String basePath = settingService.getUploadBasePath();
-        Integer totalNum = 0;
+        Double totalNum = 0.0;
         BigDecimal totalPrice = new BigDecimal("0");
         BigDecimal totalCanUsePointAmount = new BigDecimal("0");
         BigDecimal memberDiscount = new BigDecimal("0");

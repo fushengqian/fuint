@@ -38,7 +38,7 @@ public class GoodsSkuDto implements Serializable {
     private List<MtGoodsSpec> specList;
 
     @ApiModelProperty("库存")
-    private Integer stock;
+    private Double stock;
 
     @ApiModelProperty("价格")
     private BigDecimal price;

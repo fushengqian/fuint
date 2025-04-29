@@ -42,7 +42,7 @@ public class GoodsBean implements Serializable {
     private BigDecimal price;
 
     @ApiModelProperty("商品库存")
-    private Integer stock;
+    private Double stock;
 
     @ApiModelProperty("商品规格")
     private String specIds;

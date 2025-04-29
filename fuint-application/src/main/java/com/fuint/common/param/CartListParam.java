@@ -31,7 +31,7 @@ public class CartListParam extends PageParam implements Serializable {
     private String point;
 
     @ApiModelProperty(value="购买数量", name="buyNum")
-    private Integer buyNum;
+    private Double buyNum;
 
     @ApiModelProperty(value="挂单编码", name="hangNo")
     private String hangNo;

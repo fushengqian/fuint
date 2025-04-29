@@ -31,7 +31,7 @@ public class ResCartDto implements Serializable {
     private Integer skuId;
 
     @ApiModelProperty("数量")
-    private Integer num;
+    private Double num;
 
     @ApiModelProperty("是否有效")
     private Boolean isEffect;

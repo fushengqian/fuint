@@ -12,9 +12,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * <p>
  * 订单商品表
- * </p>
  *
  * Created by FSQ
  * CopyRight https://www.fuint.cn
@@ -47,7 +45,7 @@ public class MtOrderGoods implements Serializable {
     private BigDecimal discount;
 
     @ApiModelProperty("商品数量")
-    private Integer num;
+    private Double num;
 
     @ApiModelProperty("创建时间")
     private Date createTime;

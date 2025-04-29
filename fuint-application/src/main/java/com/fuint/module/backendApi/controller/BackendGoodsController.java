@@ -314,7 +314,7 @@ public class BackendGoodsController extends BaseController {
         String price = param.get("price") == null ? "" : param.get("price").toString();
         String linePrice = param.get("linePrice") == null ? "" : param.get("linePrice").toString();
         String weight = param.get("weight") == null ? "" : param.get("weight").toString();
-        Integer initSale = param.get("initSale") == null ? 0 : Integer.parseInt(param.get("initSale").toString());
+        Double initSale = param.get("initSale") == null ? 0 : Double.parseDouble(param.get("initSale").toString());
         String salePoint = param.get("salePoint") == null ? "" : param.get("salePoint").toString();
         String canUsePoint = param.get("canUsePoint") == null ? "" : param.get("canUsePoint").toString();
         String isMemberDiscount = param.get("isMemberDiscount") == null ? "" : param.get("isMemberDiscount").toString();
@@ -395,7 +395,7 @@ public class BackendGoodsController extends BaseController {
             if (StringUtil.isEmpty(skuStock)) {
                 skuStock = "0";
             }
-            sku.setStock(Integer.parseInt(skuStock));
+            sku.setStock(Double.parseDouble(skuStock));
 
             BigDecimal skuPrice = new BigDecimal("0");
             if (skuDto.get("price") != null && StringUtil.isNotEmpty(skuDto.get("price").toString())) {
@@ -456,7 +456,7 @@ public class BackendGoodsController extends BaseController {
         }
         mtGoods.setIsSingleSpec(isSingleSpec);
         if (StringUtil.isNotEmpty(stock)) {
-            mtGoods.setStock(Integer.parseInt(stock));
+            mtGoods.setStock(Double.parseDouble(stock));
         }
         if (StringUtil.isNotEmpty(description)) {
             mtGoods.setDescription(description);

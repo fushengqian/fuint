@@ -36,7 +36,7 @@ public class OrderGoodsDto implements Serializable {
     private String discount;
 
     @ApiModelProperty("购买数量")
-    private Integer num;
+    private Double num;
 
     @ApiModelProperty("图片")
     private String image;

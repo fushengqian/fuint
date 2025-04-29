@@ -25,7 +25,7 @@ public class CartSaveParam implements Serializable {
     private String skuNo;
 
     @ApiModelProperty(value="购买数量", name="buyNum")
-    private Integer buyNum;
+    private Double buyNum;
 
     @ApiModelProperty(value="操作类型，+：增加，-：减少", name="action")
     private String action;

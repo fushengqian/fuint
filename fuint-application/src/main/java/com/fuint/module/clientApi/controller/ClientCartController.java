@@ -81,7 +81,7 @@ public class ClientCartController extends BaseController {
         Integer goodsId = saveParam.getGoodsId() == null ? 0 : saveParam.getGoodsId();
         Integer skuId = saveParam.getSkuId() == null ? 0 : saveParam.getSkuId();
         String skuNo = saveParam.getSkuNo() == null ? "" : saveParam.getSkuNo();
-        Integer buyNum = saveParam.getBuyNum() == null ? 1 : saveParam.getBuyNum();
+        Double buyNum = saveParam.getBuyNum() == null ? 1 : saveParam.getBuyNum();
         String action = saveParam.getAction() == null ? "+" : saveParam.getAction();
         String hangNo = saveParam.getHangNo() == null ? "" : saveParam.getHangNo();
         Integer userId = saveParam.getUserId() == null ? 0 : saveParam.getUserId(); // 指定会员ID
@@ -207,7 +207,7 @@ public class ClientCartController extends BaseController {
         String platform = request.getHeader("platform") == null ? "" : request.getHeader("platform");
         Integer goodsId = params.getGoodsId() == null ? 0 : params.getGoodsId();
         Integer skuId = params.getSkuId() == null ? 0 : params.getSkuId();
-        Integer buyNum = params.getBuyNum() == null ? 1 : params.getBuyNum();
+        Double buyNum = params.getBuyNum() == null ? 1 : params.getBuyNum();
         String cartIds = params.getCartIds() == null ? "" : params.getCartIds();
         Integer userCouponId = params.getCouponId() == null ? 0 : params.getCouponId();// 会员卡券ID
         Integer userId = params.getUserId() == null ? 0 : params.getUserId(); // 会员ID

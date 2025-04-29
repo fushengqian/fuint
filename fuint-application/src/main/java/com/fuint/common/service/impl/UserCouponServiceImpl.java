@@ -642,9 +642,9 @@ public class UserCouponServiceImpl extends ServiceImpl<MtUserCouponMapper, MtUse
      * */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public boolean buyCouponItem(Integer orderId, Integer couponId, Integer userId, String mobile, Integer num) throws BusinessCheckException {
+    public boolean buyCouponItem(Integer orderId, Integer couponId, Integer userId, String mobile, Double num) throws BusinessCheckException {
         if (num == null || num <= 0) {
-            num = 1;
+            num = 1.0;
         }
         for (int j = 0; j < num; j++) {
             MtCoupon couponInfo = couponService.queryCouponById(couponId);

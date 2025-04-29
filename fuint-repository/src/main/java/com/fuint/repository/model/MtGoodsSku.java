@@ -41,7 +41,7 @@ public class MtGoodsSku implements Serializable {
     private String specIds;
 
     @ApiModelProperty("库存")
-    private Integer stock;
+    private Double stock;
 
     @ApiModelProperty("价格")
     private BigDecimal price;

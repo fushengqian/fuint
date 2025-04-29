@@ -98,12 +98,12 @@ public class CartServiceImpl extends ServiceImpl<MtCartMapper, MtCart> implement
                 param.put("SKU_ID", reqDto.getSkuId());
             }
             List<MtCart> cartList = mtCartMapper.selectByMap(param);
-            Integer cartNum = 0;
+            Double cartNum = 0.0;
             if (cartList != null && cartList.size() > 0) {
                 cartNum = cartList.get(0).getNum();
             }
             // 剩余库存数量
-            Integer totalStock = 0;
+            Double totalStock = 0.0;
             if (reqDto.getSkuId() != null && reqDto.getSkuId() > 0) {
                 MtGoodsSku mtGoodsSku = mtGoodsSkuMapper.selectById(reqDto.getSkuId());
                 if (mtGoodsSku != null && mtGoodsSku.getStock() != null) {
@@ -179,7 +179,7 @@ public class CartServiceImpl extends ServiceImpl<MtCartMapper, MtCart> implement
             } else if (action.equals("=")) {
                 mtCart.setNum(reqDto.getNum());
             } else {
-                Integer num = mtCart.getNum() - 1;
+                Double num = mtCart.getNum() - 1;
                 if (num <= 0) {
                     this.removeCart(mtCart.getId()+"");
                     return mtCart.getId();

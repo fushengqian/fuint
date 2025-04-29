@@ -554,13 +554,13 @@ public class GoodsServiceImpl extends ServiceImpl<MtGoodsMapper, MtGoods> implem
             if (goodsSkuList.size() > 0) {
                 goodsInfo.setPrice(goodsSkuList.get(0).getPrice());
                 goodsInfo.setLinePrice(goodsSkuList.get(0).getLinePrice());
-                Integer stock = 0;
+                Double stock = 0.0;
                 for (MtGoodsSku mtGoodsSku : goodsSkuList) {
                      stock = stock + mtGoodsSku.getStock();
                 }
                 goodsInfo.setStock(stock);
             } else {
-                goodsInfo.setStock(0);
+                goodsInfo.setStock(0.0);
             }
         } else {
             goodsInfo.setSkuList(new ArrayList<>());
@@ -623,13 +623,13 @@ public class GoodsServiceImpl extends ServiceImpl<MtGoodsMapper, MtGoods> implem
                     if (goodsSkuList.size() > 0) {
                         mtGoods.setPrice(goodsSkuList.get(0).getPrice());
                         mtGoods.setLinePrice(goodsSkuList.get(0).getLinePrice());
-                        Integer stock = 0;
+                        Double stock = 0.0;
                         for (MtGoodsSku mtGoodsSku : goodsSkuList) {
                              stock = stock + mtGoodsSku.getStock();
                         }
                         mtGoods.setStock(stock);
                     } else {
-                        mtGoods.setStock(0);
+                        mtGoods.setStock(0.0);
                     }
                 }
                 dataList.add(mtGoods);
@@ -695,7 +695,7 @@ public class GoodsServiceImpl extends ServiceImpl<MtGoodsMapper, MtGoods> implem
      * */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public Boolean updateInitSale(Integer goodsId, Integer saleNum) {
+    public Boolean updateInitSale(Integer goodsId, Double saleNum) {
         return mtGoodsMapper.updateInitSale(goodsId, saleNum);
     }
 
@@ -928,12 +928,12 @@ public class GoodsServiceImpl extends ServiceImpl<MtGoodsMapper, MtGoods> implem
                  } else {
                      mtGoods.setIsSingleSpec(YesOrNoEnum.NO.getKey());
                  }
-                 mtGoods.setInitSale(Integer.parseInt(goods.get(10)));
+                 mtGoods.setInitSale(Double.parseDouble(goods.get(10)));
                  mtGoods.setSalePoint(goods.get(11));
                  mtGoods.setDescription(goods.get(12));
                  mtGoods.setPrice(new BigDecimal("0"));
                  mtGoods.setLinePrice(new BigDecimal("0"));
-                 mtGoods.setStock(0);
+                 mtGoods.setStock(0.0);
                  mtGoods.setStatus(StatusEnum.FORBIDDEN.getKey());
                  saveGoods(mtGoods, storeIds);
             }
@@ -955,7 +955,7 @@ public class GoodsServiceImpl extends ServiceImpl<MtGoodsMapper, MtGoods> implem
                      if (mtGoods.getIsSingleSpec().equals(YesOrNoEnum.YES.getKey())) {
                          mtGoods.setPrice(new BigDecimal(sku.get(4)));
                          mtGoods.setLinePrice(new BigDecimal(sku.get(5)));
-                         mtGoods.setStock(Integer.parseInt(sku.get(6)));
+                         mtGoods.setStock(Double.parseDouble(sku.get(6)));
                          mtGoods.setWeight(new BigDecimal(sku.get(7)));
                          mtGoodsMapper.updateById(mtGoods);
                      }
@@ -979,7 +979,7 @@ public class GoodsServiceImpl extends ServiceImpl<MtGoodsMapper, MtGoods> implem
                              mtGoodsSku.setSpecIds(String.join("-", specIds));
                              mtGoodsSku.setPrice(new BigDecimal(sku.get(4)));
                              mtGoodsSku.setLinePrice(new BigDecimal(sku.get(5)));
-                             mtGoodsSku.setStock(Integer.parseInt(sku.get(6)));
+                             mtGoodsSku.setStock(Double.parseDouble(sku.get(6)));
                              mtGoodsSku.setWeight(new BigDecimal(sku.get(7)));
                              mtGoodsSku.setStatus(StatusEnum.ENABLED.getKey());
                              mtGoodsSkuMapper.insert(mtGoodsSku);

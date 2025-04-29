@@ -134,7 +134,7 @@ public class StockServiceImpl extends ServiceImpl<MtStockMapper, MtStock> implem
             MtGoods goodsInfo = mtGoodsMapper.selectById(goodsId);
             if (goodsInfo.getIsSingleSpec().equals(YesOrNoEnum.YES.getKey())) {
                 // 单规格库存
-                Integer stock;
+                Double stock;
                 if (mtStock.getType().equals("increase")) {
                     stock = goodsInfo.getStock() + num;
                 } else {
@@ -149,7 +149,7 @@ public class StockServiceImpl extends ServiceImpl<MtStockMapper, MtStock> implem
                 // 多规格库存
                 MtGoodsSku mtGoodsSku = mtGoodsSkuMapper.selectById(skuId);
                 if (mtGoodsSku != null) {
-                    Integer stock;
+                    Double stock;
                     if (mtStock.getType().equals("increase")) {
                         stock = mtGoodsSku.getStock() + num;
                     } else {

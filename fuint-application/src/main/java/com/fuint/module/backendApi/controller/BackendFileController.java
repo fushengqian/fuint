@@ -171,8 +171,9 @@ public class BackendFileController extends BaseController {
         String token = request.getParameter("token");
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
         try {
-            URL resourceUrl = getClass().getClassLoader().getResource("goodsTemplate.xlsx");
+            URL resourceUrl = getClass().getClassLoader().getResource("GoodsTemplate.xlsx");
             String path = resourceUrl.getPath();
+            logger.info("下载文件路径：path = {}", path);
             File file = new File(path);
             String filename = file.getName();
             InputStream fis = new BufferedInputStream(new FileInputStream(path));
@@ -189,7 +190,7 @@ public class BackendFileController extends BaseController {
             toClient.close();
         } catch (IOException ex) {
             ex.printStackTrace();
-            logger.error("下载文件出错：account = {}", accountInfo.getAccountName());
+            logger.error("下载文件出错：account = {}，message = {}", accountInfo.getAccountName(), ex.getMessage());
         }
     }
 

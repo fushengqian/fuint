@@ -25,7 +25,7 @@ public interface MtGoodsMapper extends BaseMapper<MtGoods> {
 
     List<MtGoods> getByGoodsName(@Param("merchantId") Integer merchantId, @Param("goodsName") String goodsName);
 
-    Boolean updateInitSale(@Param("goodsId") Integer goodsId, @Param("saleNum") Integer saleNum);
+    Boolean updateInitSale(@Param("goodsId") Integer goodsId, @Param("saleNum") Double saleNum);
 
     List<GoodsBean> selectGoodsList(@Param("merchantId") Integer merchantId, @Param("storeId") Integer storeId, @Param("cateId") Integer cateId, @Param("keyword") String keyword);
 
