@@ -30,4 +30,8 @@
         </if>
         ORDER BY distance LIMIT 0,1000
     </select>
+
+    <update id="deleteStoreByMerchant">
+        update mt_store set STATUS = 'D' where MERCHANT_ID = #{merchantId}
+    </update>
 </mapper>

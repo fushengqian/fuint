@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fuint.common.enums.StatusEnum;
 import com.fuint.common.service.MerchantService;
+import com.fuint.common.service.StoreService;
 import com.fuint.common.util.CommonUtil;
 import com.fuint.framework.annoation.OperationServiceLog;
 import com.fuint.framework.exception.BusinessCheckException;
@@ -39,13 +40,18 @@ import java.util.*;
 @AllArgsConstructor
 public class MerchantServiceImpl extends ServiceImpl<MtMerchantMapper, MtMerchant> implements MerchantService {
 
+    private static final Logger logger = LoggerFactory.getLogger(MerchantServiceImpl.class);
+
     private MtMerchantMapper mtMerchantMapper;
 
     private MtStoreMapper mtStoreMapper;
 
     private MtGoodsMapper mtGoodsMapper;
 
-    private static final Logger logger = LoggerFactory.getLogger(MerchantServiceImpl.class);
+    /**
+     * 店铺服务接口
+     * */
+    private StoreService storeService;
 
     /**
      * 分页查询商户列表
@@ -217,6 +223,10 @@ public class MerchantServiceImpl extends ServiceImpl<MtMerchantMapper, MtMerchan
 
         // 如果是删除，检查是否有商品等数据
         if (status.equals(StatusEnum.DISABLE.getKey())) {
+            // 删除店铺
+            storeService.deleteStoreByMerchant(id);
+
+            // 删除商品
             Map<String, Object> params = new HashMap<>();
             params.put("status", StatusEnum.ENABLED.getKey());
             params.put("merchant_id", id);

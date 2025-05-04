@@ -30,7 +30,7 @@ import java.util.Map;
 @Api(tags="管理端-${moduleName}相关接口")
 @RestController
 @AllArgsConstructor
-@RequestMapping(value = "/backendApi/${tableName}")
+@RequestMapping(value = "/backendApi/${serviceName}")
 public class Backend${tableClass}Controller extends BaseController {
 
     /**
@@ -47,7 +47,7 @@ public class Backend${tableClass}Controller extends BaseController {
     @ApiOperation(value = "${moduleName}列表查询")
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     @CrossOrigin
-    @PreAuthorize("@pms.hasPermission('${tableName}:list')")
+    @PreAuthorize("@pms.hasPermission('${serviceName}:list')")
     public ResponseObject list(HttpServletRequest request) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
         Integer page = request.getParameter("page") == null ? Constants.PAGE_NUMBER : Integer.parseInt(request.getParameter("page"));
@@ -105,7 +105,7 @@ public class Backend${tableClass}Controller extends BaseController {
     @ApiOperation(value = "更新${moduleName}状态")
     @RequestMapping(value = "/updateStatus", method = RequestMethod.POST)
     @CrossOrigin
-    @PreAuthorize("@pms.hasPermission('${tableName}:edit')")
+    @PreAuthorize("@pms.hasPermission('${serviceName}:edit')")
     public ResponseObject updateStatus(HttpServletRequest request, @RequestBody Map<String, Object> params) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
         String status = params.get("status") != null ? params.get("status").toString() : StatusEnum.ENABLED.getKey();
@@ -135,7 +135,7 @@ public class Backend${tableClass}Controller extends BaseController {
     @ApiOperation(value = "保存${moduleName}")
     @RequestMapping(value = "/save", method = RequestMethod.POST)
     @CrossOrigin
-    @PreAuthorize("@pms.hasPermission('${tableName}:add')")
+    @PreAuthorize("@pms.hasPermission('${serviceName}:add')")
     public ResponseObject saveHandler(HttpServletRequest request, @RequestBody Map<String, Object> params) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
         String id = params.get("id") == null ? "" : params.get("id").toString();
@@ -168,18 +168,12 @@ public class Backend${tableClass}Controller extends BaseController {
     @ApiOperation(value = "获取${moduleName}详情")
     @RequestMapping(value = "/info/{id}", method = RequestMethod.GET)
     @CrossOrigin
-    @PreAuthorize("@pms.hasPermission('${tableName}:list')")
-    public ResponseObject info(HttpServletRequest request, @PathVariable("id") Integer id) throws BusinessCheckException {
-        String token = request.getHeader("Access-Token");
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
-        if (accountInfo == null) {
-            return getFailureResult(1001, "请先登录");
-        }
-
-        ${className} ${tableName}Info = ${serviceName}Service.query${tableClass}ById(id);
+    @PreAuthorize("@pms.hasPermission('${serviceName}:list')")
+    public ResponseObject info(@PathVariable("id") Integer id) throws BusinessCheckException {
+        ${className} ${serviceName}Info = ${serviceName}Service.query${tableClass}ById(id);
 
         Map<String, Object> result = new HashMap<>();
-        result.put("${tableName}Info", ${tableName}Info);
+        result.put("${serviceName}Info", ${serviceName}Info);
 
         return getSuccessResult(result);
     }

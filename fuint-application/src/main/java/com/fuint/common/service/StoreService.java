@@ -114,4 +114,12 @@ public interface StoreService extends IService<MtStore> {
      * */
     String getStoreIds(Integer merchantId, String storeNames);
 
+    /**
+     * 根据商户ID删除店铺信息
+     *
+     * @param merchantId 商户ID
+     * @return
+     * */
+    void deleteStoreByMerchant(Integer merchantId);
+
 }
