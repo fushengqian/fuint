@@ -50,6 +50,9 @@
 
     <update id="resetMobile">
         update mt_user t set t.MOBILE = '' where t.MOBILE = #{mobile} and t.ID != #{userId}
+        <if test="merchantId != null and merchantId > 0">
+            AND t.MERCHANT_ID = #{merchantId}
+        </if>
     </update>
 
     <select id="getUserCount" resultType="java.lang.Long">

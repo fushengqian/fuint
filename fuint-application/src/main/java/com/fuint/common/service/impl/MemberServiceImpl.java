@@ -464,7 +464,7 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
         }
         String mobile = mtUser.getMobile();
         if (PhoneFormatCheckUtils.isChinaPhoneLegal(mobile)) {
-            mtUserMapper.resetMobile(mobile, mtUser.getId());
+            mtUserMapper.resetMobile(mtUser.getMerchantId(), mobile, mtUser.getId());
             mtUser.setMobile(mobile);
         }
 
@@ -904,7 +904,10 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
         if (mobile == null || StringUtil.isEmpty(mobile)) {
             return;
         }
-        mtUserMapper.resetMobile(mobile, userId);
+        MtUser mtUser = mtUserMapper.selectById(userId);
+        if (mtUser != null) {
+            mtUserMapper.resetMobile(mtUser.getMerchantId(), mobile, userId);
+        }
     }
 
     /**

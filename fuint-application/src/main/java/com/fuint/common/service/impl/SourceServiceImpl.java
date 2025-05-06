@@ -17,6 +17,7 @@ import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.utils.ArrayUtil;
 import com.fuint.utils.StringUtil;
 import lombok.AllArgsConstructor;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.*;
@@ -29,7 +30,7 @@ import java.util.stream.Collectors;
  * CopyRight https://www.fuint.cn
  */
 @Service
-@AllArgsConstructor
+@AllArgsConstructor(onConstructor_= {@Lazy})
 public class SourceServiceImpl extends ServiceImpl<TSourceMapper, TSource> implements SourceService {
 
     private TSourceMapper tSourceMapper;

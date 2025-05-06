@@ -29,7 +29,7 @@ public interface MtUserMapper extends BaseMapper<MtUser> {
 
     void updateUserBalance(@Param("merchantId") Integer merchantId, @Param("userIds") List<Integer> userIds, @Param("amount") BigDecimal amount);
 
-    void resetMobile(@Param("mobile") String mobile, @Param("userId") Integer userId);
+    void resetMobile(@Param("merchantId") Integer merchantId, @Param("mobile") String mobile, @Param("userId") Integer userId);
 
     Long getUserCount(@Param("merchantId") Integer merchantId);
 
