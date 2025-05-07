@@ -2288,6 +2288,9 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
         String ruleParam = "";
         MtSetting mtSetting = settingService.querySettingByName(merchantId, SettingTypeEnum.BALANCE.getKey(), BalanceSettingEnum.RECHARGE_RULE.getKey());
         if (StringUtil.isNotEmpty(rechargeAmount) && mtSetting != null) {
+            if (!mtSetting.getStatus().equals(StatusEnum.ENABLED.getKey())) {
+                throw new BusinessCheckException("当前未开启充值功能");
+            }
             if (mtSetting.getValue() != null && StringUtil.isNotEmpty(mtSetting.getValue())) {
                 String rules[] = mtSetting.getValue().split(",");
                 for (String rule : rules) {
