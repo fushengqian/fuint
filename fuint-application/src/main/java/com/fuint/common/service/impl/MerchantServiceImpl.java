@@ -170,8 +170,7 @@ public class MerchantServiceImpl extends ServiceImpl<MtMerchantMapper, MtMerchan
      */
     @Override
     public MtMerchant queryMerchantByName(String name) {
-        MtMerchant mtMerchant = mtMerchantMapper.queryMerchantByName(name);
-        return mtMerchant;
+        return mtMerchantMapper.queryMerchantByName(name);
     }
 
     /**
@@ -277,8 +276,6 @@ public class MerchantServiceImpl extends ServiceImpl<MtMerchantMapper, MtMerchan
         }
 
         lambdaQueryWrapper.orderByAsc(MtMerchant::getStatus).orderByDesc(MtMerchant::getId);
-        List<MtMerchant> dataList = mtMerchantMapper.selectList(lambdaQueryWrapper);
-
-        return dataList;
+        return mtMerchantMapper.selectList(lambdaQueryWrapper);
     }
 }

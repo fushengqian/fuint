@@ -154,6 +154,9 @@ public class BackendAccountController extends BaseController {
         }
         result.put("roles", roles);
 
+        List<MtStore> stores = storeService.getMyStoreList(accountInfo.getMerchantId(),accountInfo.getStoreId(), StatusEnum.ENABLED.getKey());
+        result.put("stores", stores);
+
         Map<String, Object> params = new HashMap<>();
         params.put("status", StatusEnum.ENABLED.getKey());
         if (accountInfo.getStoreId() != null && accountInfo.getStoreId() > 0) {
@@ -162,9 +165,6 @@ public class BackendAccountController extends BaseController {
         if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
             params.put("merchantId", accountInfo.getMerchantId());
         }
-        List<MtStore> stores = storeService.queryStoresByParams(params);
-        result.put("stores", stores);
-
         List<MtMerchant> merchants = merchantService.queryMerchantByParams(params);
         result.put("merchants", merchants);
 

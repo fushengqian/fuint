@@ -114,17 +114,7 @@ public class BackendBookItemController extends BaseController {
         paginationRequest.setSearchParams(params);
         PaginationResponse<BookItemDto> paginationResponse = bookItemService.queryBookItemListByPagination(paginationRequest);
 
-        Map<String, Object> paramsStore = new HashMap<>();
-        paramsStore.put("status", StatusEnum.ENABLED.getKey());
-        if (accountInfo.getStoreId() != null && accountInfo.getStoreId() > 0) {
-            paramsStore.put("storeId", accountInfo.getStoreId().toString());
-        }
-        if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
-            paramsStore.put("merchantId", accountInfo.getMerchantId());
-        }
-
-        List<MtStore> storeList = storeService.queryStoresByParams(paramsStore);
-        String imagePath = settingService.getUploadBasePath();
+        List<MtStore> storeList = storeService.getMyStoreList(accountInfo.getMerchantId(), accountInfo.getStoreId(), StatusEnum.ENABLED.getKey());
 
         // 预约状态列表
         List<ParamDto> bookStatusList = BookStatusEnum.getBookStatusList();
@@ -141,7 +131,7 @@ public class BackendBookItemController extends BaseController {
 
         Map<String, Object> result = new HashMap<>();
         result.put("dataList", paginationResponse);
-        result.put("imagePath", imagePath);
+        result.put("imagePath", settingService.getUploadBasePath());
         result.put("storeList", storeList);
         result.put("bookStatusList", bookStatusList);
         result.put("cateList", cateList);

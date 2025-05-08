@@ -110,19 +110,10 @@ public class BackendCateController extends BaseController {
         paginationRequest.setSearchParams(params);
         PaginationResponse<GoodsCateDto> paginationResponse = cateService.queryCateListByPagination(paginationRequest);
 
-        Map<String, Object> paramsStore = new HashMap<>();
-        paramsStore.put("status", StatusEnum.ENABLED.getKey());
-        if (storeId != null && storeId > 0) {
-            paramsStore.put("storeId", storeId.toString());
-        }
-        if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
-            paramsStore.put("merchantId", accountInfo.getMerchantId());
-        }
-        List<MtStore> storeList = storeService.queryStoresByParams(paramsStore);
-        String imagePath = settingService.getUploadBasePath();
+        List<MtStore> storeList = storeService.getMyStoreList(accountInfo.getMerchantId(), storeId, StatusEnum.ENABLED.getKey());
 
         Map<String, Object> result = new HashMap<>();
-        result.put("imagePath", imagePath);
+        result.put("imagePath", settingService.getUploadBasePath());
         result.put("storeList", storeList);
         result.put("paginationResponse", paginationResponse);
 
@@ -156,12 +147,7 @@ public class BackendCateController extends BaseController {
         cate.setOperator(operator);
         cate.setId(id);
         cate.setStatus(status);
-
-        try {
-            cateService.updateCate(cate);
-        } catch (BusinessCheckException e) {
-            return getFailureResult(201, e.getMessage() == null ? "操作失败" : e.getMessage());
-        }
+        cateService.updateCate(cate);
 
         return getSuccessResult(true);
     }

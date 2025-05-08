@@ -34,4 +34,17 @@
     <update id="deleteStoreByMerchant">
         update mt_store set STATUS = 'D' where MERCHANT_ID = #{merchantId}
     </update>
+
+    <select id="getMyStoreList" resultType="com.fuint.repository.model.MtStore">
+        select * from mt_store t where t.SATTUS != 'D'
+        <if test="merchantId != null and merchantId != ''">
+            AND t.MERCHANT_ID = #{merchantId}
+        </if>
+        <if test="storeId != null and storeId != ''">
+            AND t.ID = #{storeId}
+        </if>
+        <if test="status != null and status != ''">
+            AND t.SATTUS = #{status}
+        </if>
+    </select>
 </mapper>

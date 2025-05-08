@@ -363,6 +363,19 @@ public class StoreServiceImpl extends ServiceImpl<MtStoreMapper, MtStore> implem
     }
 
     /**
+     * 获取我的店铺列表
+     *
+     * @param merchantId 商户ID
+     * @param storeId 店铺ID
+     * @param status 状态
+     * @return
+     * */
+    @Override
+    public List<MtStore> getMyStoreList(Integer merchantId, Integer storeId, String status) {
+        return mtStoreMapper.getMyStoreList(merchantId, storeId, status);
+    }
+
+    /**
      * 根据距离远近获取店铺列表
      *
      * @param merchantNo 商户号

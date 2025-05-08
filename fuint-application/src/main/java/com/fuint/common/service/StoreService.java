@@ -87,6 +87,16 @@ public interface StoreService extends IService<MtStore> {
     List<MtStore> queryStoresByParams(Map<String, Object> params) throws BusinessCheckException;
 
     /**
+     * 获取我的店铺列表
+     *
+     * @param merchantId 商户ID
+     * @param storeId 店铺ID
+     * @param status 状态
+     * @return
+     * */
+    List<MtStore> getMyStoreList(Integer merchantId, Integer storeId, String status) throws BusinessCheckException;
+
+    /**
      * 根据距离远近查找店铺
      *
      * @param merchantNo 商户号
