@@ -10,6 +10,7 @@ import com.fuint.common.dto.MyCouponDto;
 import com.fuint.common.enums.*;
 import com.fuint.common.param.CouponReceiveParam;
 import com.fuint.common.service.*;
+import com.fuint.common.util.CommonUtil;
 import com.fuint.common.util.DateUtil;
 import com.fuint.common.util.SeqUtil;
 import com.fuint.framework.exception.BusinessCheckException;
@@ -448,7 +449,9 @@ public class UserCouponServiceImpl extends ServiceImpl<MtUserCouponMapper, MtUse
                 if (couponInfo == null) {
                     continue;
                 }
-
+                if (userInfo != null) {
+                    userInfo.setMobile(CommonUtil.hidePhone(userInfo.getMobile()));
+                }
                 MyCouponDto dto = new MyCouponDto();
                 dto.setId(userCouponDto.getId());
                 dto.setName(couponInfo.getName());
