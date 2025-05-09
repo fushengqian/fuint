@@ -112,15 +112,8 @@ public class BackendStockController extends BaseController {
         paginationRequest.setSearchParams(params);
         PaginationResponse<MtStock> paginationResponse = stockService.queryStockListByPagination(paginationRequest);
 
-        Map<String, Object> paramsStore = new HashMap<>();
-        paramsStore.put("status", StatusEnum.ENABLED.getKey());
-        if (storeId != null && storeId > 0) {
-            paramsStore.put("storeId", storeId.toString());
-        }
-        if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
-            paramsStore.put("merchantId", accountInfo.getMerchantId());
-        }
-        List<MtStore> storeList = storeService.queryStoresByParams(paramsStore);
+        // 店铺列表
+        List<MtStore> storeList = storeService.getMyStoreList(accountInfo.getMerchantId(), accountInfo.getStoreId(), StatusEnum.ENABLED.getKey());
         String imagePath = settingService.getUploadBasePath();
 
         Map<String, Object> result = new HashMap<>();

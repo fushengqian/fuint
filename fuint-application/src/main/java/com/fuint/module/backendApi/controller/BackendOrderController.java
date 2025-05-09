@@ -113,15 +113,7 @@ public class BackendOrderController extends BaseController {
         List<ParamDto> orderModeList = OrderModeEnum.getOrderModeList();
 
         // 店铺列表
-        Map<String, Object> paramsStore = new HashMap<>();
-        paramsStore.put("status", StatusEnum.ENABLED.getKey());
-        if (storeId != null && storeId > 0) {
-            paramsStore.put("storeId", storeId.toString());
-        }
-        if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
-            paramsStore.put("merchantId", accountInfo.getMerchantId());
-        }
-        List<MtStore> storeList = storeService.queryStoresByParams(paramsStore);
+        List<MtStore> storeList = storeService.getMyStoreList(accountInfo.getMerchantId(), accountInfo.getStoreId(), StatusEnum.ENABLED.getKey());
 
         // 支付方式列表
         List<ParamDto> payTypeList = PayTypeEnum.getPayTypeList();

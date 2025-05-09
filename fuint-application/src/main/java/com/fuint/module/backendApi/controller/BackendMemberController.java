@@ -152,12 +152,7 @@ public class BackendMemberController extends BaseController {
         List<MtUserGrade> userGradeList = memberService.queryMemberGradeByParams(param);
 
         // 店铺列表
-        Map<String, Object> paramsStore = new HashMap<>();
-        paramsStore.put("status", StatusEnum.ENABLED.getKey());
-        if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
-            paramsStore.put("merchantId", accountInfo.getMerchantId());
-        }
-        List<MtStore> storeList = storeService.queryStoresByParams(paramsStore);
+        List<MtStore> storeList = storeService.getMyStoreList(accountInfo.getMerchantId(), 0, StatusEnum.ENABLED.getKey());
 
         // 会员分组
         List<UserGroupDto> groupList = new ArrayList<>();

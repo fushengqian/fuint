@@ -118,7 +118,7 @@ public class BackendBookController extends BaseController {
             param.put("merchantId", accountInfo.getMerchantId());
         }
 
-        List<MtStore> storeList = storeService.queryStoresByParams(param);
+        List<MtStore> storeList = storeService.getMyStoreList(accountInfo.getMerchantId(), accountInfo.getStoreId(), StatusEnum.ENABLED.getKey());
         String imagePath = settingService.getUploadBasePath();
         List<MtBookCate> cateList = bookCateService.queryBookCateListByParams(param);
 

@@ -121,15 +121,8 @@ public class BackendCommissionLogController extends BaseController {
         paginationRequest.setSearchParams(params);
         PaginationResponse<CommissionLogDto> paginationResponse = commissionLogService.queryCommissionLogByPagination(paginationRequest);
 
-        Map<String, Object> paramsStore = new HashMap<>();
-        paramsStore.put("status", StatusEnum.ENABLED.getKey());
-        if (accountInfo.getStoreId() != null && accountInfo.getStoreId() > 0) {
-            paramsStore.put("storeId", accountInfo.getStoreId().toString());
-        }
-        if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
-            paramsStore.put("merchantId", accountInfo.getMerchantId());
-        }
-        List<MtStore> storeList = storeService.queryStoresByParams(paramsStore);
+        // 店铺列表
+        List<MtStore> storeList = storeService.getMyStoreList(accountInfo.getMerchantId(), accountInfo.getStoreId(), StatusEnum.ENABLED.getKey());
 
         // 状态列表
         List<ParamDto> statusList = CommissionStatusEnum.getCommissionStatusList();
