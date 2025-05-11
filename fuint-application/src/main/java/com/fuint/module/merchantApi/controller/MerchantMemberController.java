@@ -176,6 +176,7 @@ public class MerchantMemberController extends BaseController {
         mtUser.setUserNo(memberInfoParam.getUserNo());
         MtUser memberInfo;
         if (memberInfoParam.getId() == null) {
+            mtUser.setDescription("商户登记添加");
             memberInfo = memberService.addMember(mtUser, null);
         } else {
             memberInfo = memberService.updateMember(mtUser, false);

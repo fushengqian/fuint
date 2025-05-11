@@ -7,6 +7,7 @@ import com.fuint.common.dto.GiveDto;
 import com.fuint.common.enums.StatusEnum;
 import com.fuint.common.param.GiveParam;
 import com.fuint.common.service.*;
+import com.fuint.common.util.CommonUtil;
 import com.fuint.common.util.DateUtil;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.pagination.PaginationRequest;
@@ -127,6 +128,8 @@ public class GiveServiceImpl extends ServiceImpl<MtGiveMapper, MtGive> implement
              BeanUtils.copyProperties(mtGive, giveDto);
              giveDto.setCreateTime(DateUtil.formatDate(mtGive.getCreateTime(), "yyyy-MM-dd HH:mm:ss"));
              giveDto.setUpdateTime(DateUtil.formatDate(mtGive.getUpdateTime(), "yyyy-MM-dd HH:mm:ss"));
+             giveDto.setMobile(CommonUtil.hidePhone(giveDto.getMobile()));
+             giveDto.setUserMobile(CommonUtil.hidePhone(giveDto.getUserMobile()));
              dataList.add(giveDto);
         }
 

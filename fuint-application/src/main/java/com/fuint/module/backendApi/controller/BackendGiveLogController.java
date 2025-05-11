@@ -7,6 +7,7 @@ import com.fuint.common.dto.GiveItemDto;
 import com.fuint.common.enums.StatusEnum;
 import com.fuint.common.service.AccountService;
 import com.fuint.common.service.GiveService;
+import com.fuint.common.util.CommonUtil;
 import com.fuint.common.util.ExcelUtil;
 import com.fuint.common.util.TokenUtil;
 import com.fuint.common.util.XlsUtil;
@@ -147,8 +148,8 @@ public class BackendGiveLogController extends BaseController {
                 if (groupInfo != null && couponInfo != null) {
                     GiveItemDto dto = new GiveItemDto();
                     dto.setId(item.getId());
-                    dto.setMobile(giveInfo.getUserMobile());
-                    dto.setUserMobile(giveInfo.getMobile());
+                    dto.setMobile(CommonUtil.hidePhone(giveInfo.getUserMobile()));
+                    dto.setUserMobile(CommonUtil.hidePhone(giveInfo.getUserMobile()));
                     dto.setGroupId(userCouponInfo.getGroupId());
                     dto.setGroupName(groupInfo.getName());
                     dto.setCouponId(userCouponInfo.getCouponId());

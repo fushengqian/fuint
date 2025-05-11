@@ -394,6 +394,9 @@ public class StoreServiceImpl extends ServiceImpl<MtStoreMapper, MtStore> implem
         List<StoreDistanceBean> distanceList = mtStoreMapper.queryByDistance(merchantId, keyword, latitude, longitude);
         Map<String, Object> param = new HashMap<>();
         param.put("status", StatusEnum.ENABLED.getKey());
+        if (merchantId != null && merchantId > 0) {
+            param.put("merchant_id", merchantId);
+        }
         List<MtStore> storeList = mtStoreMapper.selectByMap(param);
 
         if (distanceList != null) {
