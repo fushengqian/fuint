@@ -63,6 +63,9 @@ public class GoodsDto implements Serializable {
     @ApiModelProperty("划线价格")
     private BigDecimal linePrice;
 
+    @ApiModelProperty("成本价格")
+    private BigDecimal costPrice;
+
     @ApiModelProperty("库存")
     private Double stock;
 

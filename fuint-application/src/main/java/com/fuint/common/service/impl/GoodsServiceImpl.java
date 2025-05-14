@@ -307,6 +307,12 @@ public class GoodsServiceImpl extends ServiceImpl<MtGoodsMapper, MtGoods> implem
         if (reqDto.getLinePrice() == null && reqDto.getId() <= 0) {
             mtGoods.setLinePrice(new BigDecimal("0.00"));
         }
+        if (reqDto.getCostPrice() != null) {
+            mtGoods.setCostPrice(reqDto.getCostPrice());
+        }
+        if (reqDto.getCostPrice() == null && reqDto.getId() <= 0) {
+            mtGoods.setCostPrice(new BigDecimal("0.00"));
+        }
         if (StringUtil.isNotEmpty(reqDto.getCouponIds())) {
             mtGoods.setCouponIds(reqDto.getCouponIds());
         }

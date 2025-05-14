@@ -46,6 +46,9 @@ public class GoodsSkuDto implements Serializable {
     @ApiModelProperty("划线价格")
     private BigDecimal linePrice;
 
+    @ApiModelProperty("成本价格")
+    private BigDecimal costPrice;
+
     @ApiModelProperty("重量")
     private BigDecimal weight;
 

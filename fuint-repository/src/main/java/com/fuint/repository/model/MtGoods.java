@@ -56,11 +56,14 @@ public class MtGoods implements Serializable {
     @ApiModelProperty("图片地址")
     private String images;
 
-    @ApiModelProperty("价格")
+    @ApiModelProperty("销售价格")
     private BigDecimal price;
 
     @ApiModelProperty("划线价格")
     private BigDecimal linePrice;
+
+    @ApiModelProperty("成本价格")
+    private BigDecimal costPrice;
 
     @ApiModelProperty("库存")
     private Double stock;
@@ -103,6 +106,5 @@ public class MtGoods implements Serializable {
 
     @ApiModelProperty("A：正常；D：删除")
     private String status;
-
 
 }
