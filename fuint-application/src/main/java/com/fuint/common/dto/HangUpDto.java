@@ -27,7 +27,7 @@ public class HangUpDto {
     private MtUser memberInfo;
 
     @ApiModelProperty("件数")
-    private Integer num;
+    private Float num;
 
     @ApiModelProperty("金额")
     private BigDecimal amount;
