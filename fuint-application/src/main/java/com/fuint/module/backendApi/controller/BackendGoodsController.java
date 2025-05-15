@@ -75,6 +75,11 @@ public class BackendGoodsController extends BaseController {
     private SettingService settingService;
 
     /**
+     * 上传文件服务接口
+     * */
+    private UploadService uploadService;
+
+    /**
      * 分页查询商品列表
      *
      * @param request
@@ -742,7 +747,7 @@ public class BackendGoodsController extends BaseController {
      * @param request
      * @throws
      */
-    @ApiOperation(value = "上传文件")
+    @ApiOperation(value = "上传商品导入文件")
     @RequestMapping(value = "/uploadGoodsFile", method = RequestMethod.POST)
     @CrossOrigin
     public ResponseObject uploadGoodsFile(HttpServletRequest request) throws Exception {
@@ -752,7 +757,7 @@ public class BackendGoodsController extends BaseController {
         MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
         MultipartFile file = multipartRequest.getFile("file");
 
-        String filePath = goodsService.saveGoodsFile(request, file);
+        String filePath = uploadService.saveUploadFile(request, file);
         Boolean result = goodsService.importGoods(file, accountInfo, filePath);
 
         return getSuccessResult(result);

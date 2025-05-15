@@ -388,7 +388,7 @@ public class BackendCashierController extends BaseController {
                  Integer userId = cartList.get(0).getUserId();
                  String isVisitor = cartList.get(0).getIsVisitor();
                  Map<String, Object> cartInfo = orderService.calculateCartGoods(accountInfo.getMerchantId(), userId, cartList, 0, false, PlatformTypeEnum.PC.getCode(), OrderModeEnum.ONESELF.getKey());
-                 dto.setNum(Float.parseFloat(cartInfo.get("totalNum").toString()));
+                 dto.setNum(Double.parseDouble(cartInfo.get("totalNum").toString()));
                  dto.setAmount(new BigDecimal(cartInfo.get("totalPrice").toString()));
                  if (isVisitor.equals(YesOrNoEnum.NO.getKey())) {
                      MtUser userInfo = memberService.queryMemberById(userId);

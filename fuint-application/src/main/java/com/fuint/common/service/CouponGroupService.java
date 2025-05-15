@@ -91,12 +91,4 @@ public interface CouponGroupService extends IService<MtCouponGroup> {
      * */
     String importSendCoupon(MultipartFile file, String operator, String filePath) throws BusinessCheckException;
 
-    /**
-     * 保存文件
-     *
-     * @param file excel文件
-     * @param request 操作者
-     * */
-     String saveExcelFile(MultipartFile file, HttpServletRequest request) throws Exception;
-
 }

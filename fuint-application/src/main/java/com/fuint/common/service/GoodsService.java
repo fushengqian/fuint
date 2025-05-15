@@ -11,8 +11,6 @@ import com.fuint.repository.model.MtGoods;
 import com.fuint.repository.model.MtGoodsSku;
 import com.fuint.repository.model.MtGoodsSpec;
 import org.springframework.web.multipart.MultipartFile;
-
-import javax.servlet.http.HttpServletRequest;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
@@ -153,14 +151,6 @@ public interface GoodsService {
      * @return
      * */
     String getStoreIds(Integer goodsId);
-
-    /**
-     * 保存文件
-     *
-     * @param request
-     * @param file excel文件
-     * */
-    String saveGoodsFile(HttpServletRequest request, MultipartFile file) throws Exception;
 
     /**
      * 导入商品

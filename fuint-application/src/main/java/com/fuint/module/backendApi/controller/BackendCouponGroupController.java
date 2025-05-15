@@ -4,6 +4,7 @@ import com.fuint.common.Constants;
 import com.fuint.common.dto.*;
 import com.fuint.common.enums.StatusEnum;
 import com.fuint.common.service.CouponGroupService;
+import com.fuint.common.service.UploadService;
 import com.fuint.common.util.TokenUtil;
 import com.fuint.common.util.XlsUtil;
 import com.fuint.framework.dto.ExcelExportDto;
@@ -60,6 +61,11 @@ public class BackendCouponGroupController extends BaseController {
      * 导出服务接口
      * */
     private ExportService exportService;
+
+    /**
+     * 上传文件服务接口
+     * */
+    private UploadService uploadService;
 
     /**
      * 查询卡券分组列表
@@ -285,7 +291,7 @@ public class BackendCouponGroupController extends BaseController {
         String token = request.getHeader("Access-Token");
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
 
-        String filePath = couponGroupService.saveExcelFile(file, request);
+        String filePath = uploadService.saveUploadFile(request, file);
         String uuid = couponGroupService.importSendCoupon(file, accountInfo.getAccountName(), filePath);
         return getSuccessResult(uuid);
     }

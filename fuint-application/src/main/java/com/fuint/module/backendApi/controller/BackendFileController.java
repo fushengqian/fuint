@@ -3,6 +3,7 @@ package com.fuint.module.backendApi.controller;
 import com.aliyun.oss.OSS;
 import com.fuint.common.dto.AccountInfo;
 import com.fuint.common.service.SettingService;
+import com.fuint.common.service.UploadService;
 import com.fuint.common.util.AliyunOssUtil;
 import com.fuint.common.util.CommonUtil;
 import com.fuint.common.util.DateUtil;
@@ -56,6 +57,11 @@ public class BackendFileController extends BaseController {
      * 系统设置服务接口
      * */
     private SettingService settingService;
+
+    /**
+     * 上传文件服务接口
+     * */
+    private UploadService uploadService;
 
     /**
      * 后台上传文件
@@ -115,7 +121,7 @@ public class BackendFileController extends BaseController {
 
         // 保存文件
         try {
-            String fileName = saveFile(file);
+            String fileName = uploadService.saveUploadFile(request, file);
             String baseImage = settingService.getUploadBasePath();
             String filePath = baseImage + fileName;
             String url = filePath;
@@ -192,34 +198,5 @@ public class BackendFileController extends BaseController {
             ex.printStackTrace();
             logger.error("下载文件出错：account = {}，message = {}", accountInfo.getAccountName(), ex.getMessage());
         }
-    }
-
-    public String saveFile(MultipartFile file) throws Exception {
-        String fileName = file.getOriginalFilename();
-
-        String imageName = fileName.substring(fileName.lastIndexOf("."));
-
-        String pathRoot = env.getProperty("images.root");
-        if (pathRoot == null || StringUtil.isEmpty(pathRoot)) {
-            pathRoot = ResourceUtils.getURL("classpath:").getPath();
-        }
-        String uuid = UUID.randomUUID().toString().replaceAll("-", "");
-
-        String baseImage = env.getProperty("images.path");
-        String filePath = baseImage + DateUtil.formatDate(new Date(), "yyyyMMdd")+"/";
-
-        String path = filePath + uuid + imageName;
-
-        try {
-            File tempFile = new File(pathRoot + path);
-            if (!tempFile.getParentFile().exists()) {
-                tempFile.getParentFile().mkdirs();
-            }
-            CommonUtil.saveMultipartFile(file, pathRoot + path);
-        } catch (Exception e) {
-            throw new Exception("上传失败，请检查目录是否可写");
-        }
-
-        return path;
     }
 }

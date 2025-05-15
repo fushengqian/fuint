@@ -494,36 +494,4 @@ public class CouponGroupServiceImpl extends ServiceImpl<MtCouponGroupMapper, MtC
         }
         return uuid;
     }
-
-    /**
-     * 保存文件
-     *
-     * @param file excel文件
-     * @param request
-     * */
-    public String saveExcelFile(MultipartFile file, HttpServletRequest request) throws Exception {
-        String fileName = file.getOriginalFilename();
-
-        String imageName = fileName.substring(fileName.lastIndexOf("."));
-        String pathRoot = env.getProperty("images.root");
-        if (pathRoot == null || StringUtil.isEmpty(pathRoot)) {
-            pathRoot = ResourceUtils.getURL("classpath:").getPath();
-        }
-        String uuid = UUID.randomUUID().toString().replaceAll("-", "");
-
-        String filePath = "/static/uploadFiles/"+ DateUtil.formatDate(new Date(), "yyyyMMdd")+"/";
-        String path = filePath + uuid + imageName;
-
-        try {
-            File tempFile = new File(pathRoot + path);
-            if (!tempFile.getParentFile().exists()) {
-                tempFile.getParentFile().mkdirs();
-            }
-            CommonUtil.saveMultipartFile(file, pathRoot + path);
-        } catch (Exception e) {
-            log.error("上传保存文件出错：", e.getMessage());
-        }
-
-        return path;
-    }
 }
