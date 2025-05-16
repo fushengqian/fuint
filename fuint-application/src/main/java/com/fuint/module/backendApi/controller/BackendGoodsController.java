@@ -22,13 +22,17 @@ import com.fuint.utils.StringUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.AllArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
-
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.*;
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.util.*;
@@ -44,6 +48,8 @@ import java.util.*;
 @AllArgsConstructor
 @RequestMapping(value = "/backendApi/goods/goods")
 public class BackendGoodsController extends BaseController {
+
+    private static final Logger logger = LoggerFactory.getLogger(BackendGoodsController.class);
 
     private MtGoodsSpecMapper mtGoodsSpecMapper;
 
@@ -739,6 +745,40 @@ public class BackendGoodsController extends BaseController {
         result.put("imagePath", imagePath);
 
         return getSuccessResult(result);
+    }
+
+    /**
+     * 下载商品导入模板
+     *
+     * @return
+     */
+    @ApiOperation(value = "下载商品导入模板")
+    @RequestMapping(value = "/downloadTemplate", method = RequestMethod.GET)
+    @CrossOrigin
+    public void downloadTemplate(HttpServletRequest request, HttpServletResponse response) {
+        String token = request.getParameter("token");
+        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
+        try {
+            String filename = "GoodsTemplate.xlsx";
+            ClassPathResource classPathResource = new ClassPathResource("template/" + filename);
+            InputStream inputStream = classPathResource.getInputStream();
+            response.setContentType("application/vnd.ms-excel;charset=utf-8");
+            response.addHeader("Pargam", "no-cache");
+            response.addHeader("Cache-Control", "no-cache");
+            OutputStream out = response.getOutputStream();
+            response.setHeader("Content-Disposition", "attachment; filename=" + filename);
+            int b = 0;
+            byte[] buffer = new byte[1024*1024];
+            while (b != -1) {
+                b = inputStream.read(buffer);
+                if(b!=-1) out.write(buffer, 0, b);
+            }
+            inputStream.close();
+            out.close();
+            out.flush();
+        } catch (IOException e) {
+            logger.error("下载文件出错：account = {}，message = {}", accountInfo.getAccountName(), e.getMessage());
+        }
     }
 
     /**

@@ -9,7 +9,6 @@ import com.fuint.common.dto.ReqSendLogDto;
 import com.fuint.common.enums.StatusEnum;
 import com.fuint.common.service.*;
 import com.fuint.common.util.CommonUtil;
-import com.fuint.common.util.DateUtil;
 import com.fuint.common.util.XlsUtil;
 import com.fuint.framework.annoation.OperationServiceLog;
 import com.fuint.framework.exception.BusinessCheckException;
@@ -26,15 +25,13 @@ import lombok.AllArgsConstructor;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.core.env.Environment;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.ResourceUtils;
 import org.springframework.web.multipart.MultipartFile;
-import javax.servlet.http.HttpServletRequest;
-import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.lang.String;
@@ -48,7 +45,7 @@ import java.util.regex.Pattern;
  * CopyRight https://www.fuint.cn
  */
 @Service
-@AllArgsConstructor
+@AllArgsConstructor(onConstructor_= {@Lazy})
 public class CouponGroupServiceImpl extends ServiceImpl<MtCouponGroupMapper, MtCouponGroup> implements CouponGroupService {
 
     private static final Logger log = LoggerFactory.getLogger(CouponGroupServiceImpl.class);
@@ -78,11 +75,6 @@ public class CouponGroupServiceImpl extends ServiceImpl<MtCouponGroupMapper, MtC
      * 短信发送服务接口
      * */
     private SendSmsService sendSmsService;
-
-    /**
-     * 系统环境变量
-     * */
-    private Environment env;
 
     /**
      * 分页查询卡券分组列表

@@ -24,6 +24,8 @@ import lombok.AllArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 import weixin.popular.util.JsonUtil;
 
 import javax.servlet.http.HttpServletRequest;
@@ -71,6 +73,11 @@ public class BackendMemberController extends BaseController {
      * 微信相关接口
      * */
     private WeixinService weixinService;
+
+    /**
+     * 上传文件服务接口
+     * */
+    private UploadService uploadService;
 
     /**
      * 查询会员列表
@@ -554,5 +561,27 @@ public class BackendMemberController extends BaseController {
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
         List<GroupMemberDto> memberList = memberService.searchMembers(accountInfo.getMerchantId(), keyword, groupIds,1, Constants.MAX_ROWS);
         return getSuccessResult(memberList);
+    }
+
+    /**
+     * 上传会员导入文件
+     *
+     * @param request
+     * @throws
+     */
+    @ApiOperation(value = "上传会员导入文件")
+    @RequestMapping(value = "/uploadMemberFile", method = RequestMethod.POST)
+    @CrossOrigin
+    public ResponseObject uploadMemberFile(HttpServletRequest request) throws Exception {
+        String token = request.getHeader("Access-Token");
+        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
+
+        MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
+        MultipartFile file = multipartRequest.getFile("file");
+        String filePath = uploadService.saveUploadFile(request, file);
+
+        Boolean result = memberService.importMember(file, accountInfo, filePath);
+
+        return getSuccessResult(result);
     }
 }

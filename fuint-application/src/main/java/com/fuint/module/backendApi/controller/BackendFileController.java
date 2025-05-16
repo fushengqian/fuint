@@ -6,7 +6,6 @@ import com.fuint.common.service.SettingService;
 import com.fuint.common.service.UploadService;
 import com.fuint.common.util.AliyunOssUtil;
 import com.fuint.common.util.CommonUtil;
-import com.fuint.common.util.DateUtil;
 import com.fuint.common.util.TokenUtil;
 import com.fuint.framework.web.BaseController;
 import com.fuint.framework.web.ResponseObject;
@@ -14,7 +13,6 @@ import com.fuint.utils.StringUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.AllArgsConstructor;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.util.ResourceUtils;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,13 +24,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.env.Environment;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.*;
-import java.net.URL;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
 /**
  * 文件上传管理控制类
@@ -163,40 +157,5 @@ public class BackendFileController extends BaseController {
         }
 
         return getSuccessResult(resultMap);
-    }
-
-    /**
-     * 下载文件
-     *
-     * @return
-     */
-    @ApiOperation(value = "下载文件")
-    @RequestMapping(value = "/download", method = RequestMethod.GET)
-    @CrossOrigin
-    public void download(HttpServletRequest request, HttpServletResponse response) {
-        String token = request.getParameter("token");
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
-        try {
-            URL resourceUrl = getClass().getClassLoader().getResource("GoodsTemplate.xlsx");
-            String path = resourceUrl.getPath();
-            logger.info("下载文件路径：path = {}", path);
-            File file = new File(path);
-            String filename = file.getName();
-            InputStream fis = new BufferedInputStream(new FileInputStream(path));
-            byte[] buffer = new byte[fis.available()];
-            fis.read(buffer);
-            fis.close();
-            response.reset();
-            response.addHeader("Content-Disposition", "attachment;filename=" + new String(filename.getBytes()));
-            response.addHeader("Content-Length", "" + file.length());
-            OutputStream toClient = new BufferedOutputStream(response.getOutputStream());
-            response.setContentType("application/octet-stream");
-            toClient.write(buffer);
-            toClient.flush();
-            toClient.close();
-        } catch (IOException ex) {
-            ex.printStackTrace();
-            logger.error("下载文件出错：account = {}，message = {}", accountInfo.getAccountName(), ex.getMessage());
-        }
     }
 }

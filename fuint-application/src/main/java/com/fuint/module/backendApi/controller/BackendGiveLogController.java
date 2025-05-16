@@ -184,9 +184,8 @@ public class BackendGiveLogController extends BaseController {
         List<GiveDto> list = paginationResponse.getContent();
 
         // excel标题
-        String[] title = {"记录ID", "用户手机号", "转赠数量", "转赠总金额", "赠予对象手机号", "赠予时间"};
-        String fileName;
-        fileName = "转赠记录" + System.currentTimeMillis() + ".xls";
+        String[] title = { "记录ID", "用户手机号", "转赠数量", "转赠总金额", "赠予对象手机号", "赠予时间" };
+        String fileName = "转赠记录" + System.currentTimeMillis() + ".xls";
 
         String[][] content = null;
         if (list.size() > 0) {
@@ -203,11 +202,8 @@ public class BackendGiveLogController extends BaseController {
              content[i][5] = objectConvertToString(obj.getCreateTime());
         }
 
-        // 创建HSSFWorkbook
-        HSSFWorkbook wb = ExcelUtil.getHSSFWorkbook("转赠记录", title, content, null);
-
-        // 响应到客户端
         try {
+            HSSFWorkbook wb = ExcelUtil.getHSSFWorkbook("转赠记录", title, content, null);
             XlsUtil.setXlsHeader(request, response, fileName);
             OutputStream os = response.getOutputStream();
             wb.write(os);
