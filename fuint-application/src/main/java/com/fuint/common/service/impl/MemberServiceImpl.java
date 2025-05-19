@@ -36,6 +36,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.*;
 
@@ -1035,6 +1036,7 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
      *
      * @param file excel文件
      * @param accountInfo 操作者
+     * @param filePath 文件路径
      * @return
      * */
     @Override
@@ -1052,6 +1054,25 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
 
         if (accountInfo == null || accountInfo.getMerchantId() == null || accountInfo.getMerchantId() <= 0) {
             throw new BusinessCheckException("没有操作权限");
+        }
+
+        List<List<String>> memberList = new ArrayList<>();
+        try {
+            memberList = XlsUtil.readExcelContent(file.getInputStream(), isExcel2003, 0, 1, null, null, null);
+        } catch (IOException e) {
+            logger.error("MemberServiceImpl->parseExcelContent{}", e);
+            throw new BusinessCheckException("会员导入失败" + e.getMessage());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        if (memberList != null && memberList.size() > 0) {
+            if (memberList.size() > 5000) {
+                throw new BusinessCheckException("会员导入失败，单次导入会员数量不能大于5000");
+            }
+            for (int i = 0; i < memberList.size(); i++) {
+
+            }
         }
 
         return true;

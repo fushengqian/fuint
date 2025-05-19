@@ -7,10 +7,7 @@ import com.fuint.common.enums.StatusEnum;
 import com.fuint.common.enums.UserSettingEnum;
 import com.fuint.common.enums.YesOrNoEnum;
 import com.fuint.common.service.*;
-import com.fuint.common.util.CommonUtil;
-import com.fuint.common.util.DateUtil;
-import com.fuint.common.util.PhoneFormatCheckUtils;
-import com.fuint.common.util.TokenUtil;
+import com.fuint.common.util.*;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.pagination.PaginationRequest;
 import com.fuint.framework.pagination.PaginationResponse;
@@ -29,6 +26,8 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 import weixin.popular.util.JsonUtil;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.text.ParseException;
 import java.util.*;
 
@@ -561,6 +560,18 @@ public class BackendMemberController extends BaseController {
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
         List<GroupMemberDto> memberList = memberService.searchMembers(accountInfo.getMerchantId(), keyword, groupIds,1, Constants.MAX_ROWS);
         return getSuccessResult(memberList);
+    }
+
+    /**
+     * 下载会员导入模板
+     *
+     * @return
+     */
+    @ApiOperation(value = "下载会员导入模板")
+    @RequestMapping(value = "/downloadTemplate", method = RequestMethod.GET)
+    @CrossOrigin
+    public void downloadTemplate(HttpServletResponse response) throws IOException {
+        ExcelUtil.downLoadTemplate(response, "MemberTemplate.xlsx");
     }
 
     /**

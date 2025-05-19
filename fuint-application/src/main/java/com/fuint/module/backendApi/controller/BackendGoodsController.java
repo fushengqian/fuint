@@ -9,6 +9,7 @@ import com.fuint.common.enums.YesOrNoEnum;
 import com.fuint.common.param.GoodsListParam;
 import com.fuint.common.service.*;
 import com.fuint.common.util.CommonUtil;
+import com.fuint.common.util.ExcelUtil;
 import com.fuint.common.util.TokenUtil;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.pagination.PaginationRequest;
@@ -25,7 +26,6 @@ import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -170,6 +170,7 @@ public class BackendGoodsController extends BaseController {
 
         String operator = accountInfo.getAccountName();
         goodsService.updateStatus(goodsId, status, operator);
+        logger.info("更新商品状态, goodsId = {},account = {}", goodsId, accountInfo.getAccountName());
 
         return getSuccessResult(true);
     }
@@ -513,6 +514,8 @@ public class BackendGoodsController extends BaseController {
         Map<String, Object> result = new HashMap();
         result.put("goodsInfo", goodsInfo);
 
+        logger.info("保存商品信息, goodsId = {},account = {}", goodsInfo.getId(), accountInfo.getAccountName());
+
         return getSuccessResult(result);
     }
 
@@ -755,30 +758,8 @@ public class BackendGoodsController extends BaseController {
     @ApiOperation(value = "下载商品导入模板")
     @RequestMapping(value = "/downloadTemplate", method = RequestMethod.GET)
     @CrossOrigin
-    public void downloadTemplate(HttpServletRequest request, HttpServletResponse response) {
-        String token = request.getParameter("token");
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
-        try {
-            String filename = "GoodsTemplate.xlsx";
-            ClassPathResource classPathResource = new ClassPathResource("template/" + filename);
-            InputStream inputStream = classPathResource.getInputStream();
-            response.setContentType("application/vnd.ms-excel;charset=utf-8");
-            response.addHeader("Pargam", "no-cache");
-            response.addHeader("Cache-Control", "no-cache");
-            OutputStream out = response.getOutputStream();
-            response.setHeader("Content-Disposition", "attachment; filename=" + filename);
-            int b = 0;
-            byte[] buffer = new byte[1024*1024];
-            while (b != -1) {
-                b = inputStream.read(buffer);
-                if(b!=-1) out.write(buffer, 0, b);
-            }
-            inputStream.close();
-            out.close();
-            out.flush();
-        } catch (IOException e) {
-            logger.error("下载文件出错：account = {}，message = {}", accountInfo.getAccountName(), e.getMessage());
-        }
+    public void downloadTemplate(HttpServletResponse response) throws IOException {
+        ExcelUtil.downLoadTemplate(response, "GoodsTemplate.xlsx");
     }
 
     /**

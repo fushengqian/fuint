@@ -5,7 +5,11 @@ import org.apache.poi.hssf.usermodel.HSSFCellStyle;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.springframework.core.io.ClassPathResource;
+
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 
@@ -25,7 +29,7 @@ public class ExcelUtil {
      * @param wb HSSFWorkbook对象
      * @return
      */
-    public static HSSFWorkbook getHSSFWorkbook(String sheetName,String []title,String [][]values, HSSFWorkbook wb){
+    public static HSSFWorkbook getHSSFWorkbook(String sheetName,String []title,String [][]values, HSSFWorkbook wb) {
 
         // 第一步，创建一个HSSFWorkbook，对应一个Excel文件
         if(wb == null){
@@ -96,5 +100,31 @@ public class ExcelUtil {
         }
 
         return;
+    }
+
+    /**
+     * 下载Excel模板文件
+     *
+     * @param response
+     * @param templateName
+     * @return
+     * */
+    public static void downLoadTemplate(HttpServletResponse response, String templateName) throws IOException {
+        ClassPathResource classPathResource = new ClassPathResource("template/" + templateName);
+        InputStream inputStream = classPathResource.getInputStream();
+        response.setContentType("application/vnd.ms-excel;charset=utf-8");
+        response.addHeader("Pargam", "no-cache");
+        response.addHeader("Cache-Control", "no-cache");
+        OutputStream out = response.getOutputStream();
+        response.setHeader("Content-Disposition", "attachment; filename=" + templateName);
+        int b = 0;
+        byte[] buffer = new byte[1024*1024];
+        while (b != -1) {
+            b = inputStream.read(buffer);
+            if(b!=-1) out.write(buffer, 0, b);
+        }
+        inputStream.close();
+        out.close();
+        out.flush();
     }
 }
