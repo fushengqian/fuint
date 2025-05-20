@@ -248,4 +248,16 @@ public class UserGradeServiceImpl extends ServiceImpl<MtUserGradeMapper, MtUserG
 
         return dataList;
     }
+
+    /**
+     * 获取商户会员等级列表
+     *
+     * @param  merchantId
+     * @throws BusinessCheckException
+     * @return
+     * */
+    @Override
+    public List<MtUserGrade> getMerchantGradeList(Integer merchantId) {
+        return mtUserGradeMapper.getMerchantGradeList(merchantId);
+    }
 }

@@ -2,6 +2,9 @@ package com.fuint.repository.mapper;
 
 import com.fuint.repository.model.MtUserGrade;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 /**
  *  Mapper 接口
@@ -10,5 +13,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  * CopyRight https://www.fuint.cn
  */
 public interface MtUserGradeMapper extends BaseMapper<MtUserGrade> {
-   // empty
+
+    List<MtUserGrade> getMerchantGradeList(@Param("merchantId") Integer merchantId);
+
 }

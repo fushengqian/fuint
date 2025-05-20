@@ -14,6 +14,7 @@ import com.fuint.repository.model.MtUserGrade;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
+import java.text.ParseException;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -270,6 +271,6 @@ public interface MemberService extends IService<MtUser> {
      * @param accountInfo 操作者
      * @param filePath 文件地址
      * */
-    Boolean importMember(MultipartFile file, AccountInfo accountInfo, String filePath) throws BusinessCheckException;
+    Boolean importMember(MultipartFile file, AccountInfo accountInfo, String filePath) throws BusinessCheckException, ParseException;
 
 }

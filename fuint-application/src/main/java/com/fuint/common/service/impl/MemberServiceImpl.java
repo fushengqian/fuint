@@ -38,6 +38,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.text.ParseException;
 import java.util.*;
 
 /**
@@ -1042,7 +1043,7 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
     @Override
     @Transactional(rollbackFor = Exception.class)
     @OperationServiceLog(description = "导入会员列表")
-    public Boolean importMember(MultipartFile file, AccountInfo accountInfo, String filePath) throws BusinessCheckException {
+    public Boolean importMember(MultipartFile file, AccountInfo accountInfo, String filePath) throws BusinessCheckException, ParseException {
         String originalFileName = file.getOriginalFilename();
         boolean isExcel2003 = XlsUtil.isExcel2003(originalFileName);
         boolean isExcel2007 = XlsUtil.isExcel2007(originalFileName);
@@ -1070,8 +1071,47 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
             if (memberList.size() > 5000) {
                 throw new BusinessCheckException("会员导入失败，单次导入会员数量不能大于5000");
             }
+            // 先校验，是否已存在，是否为空，是否重复
+            List<MtUser> userList = new ArrayList<>();
+            List<MtUserGrade> userGrades = userGradeService.getMerchantGradeList(accountInfo.getMerchantId());
             for (int i = 0; i < memberList.size(); i++) {
+                 List<String> userInfo = memberList.get(0);
+                 String username = userInfo.get(0);
+                 String userNo = userInfo.get(1);
+                 Integer sex = userInfo.get(3).equals("男") ? 1 : 0;
+                 MtUser mtUser = new MtUser();
+                 mtUser.setName(username);
+                 mtUser.setUserNo(userNo);
+                 mtUser.setIdcard(userInfo.get(2));
+                 mtUser.setSex(sex);
+                 mtUser.setMobile(userInfo.get(4));
+                 mtUser.setBirthday(userInfo.get(5));
+                 mtUser.setDescription(userInfo.get(6));
+                 mtUser.setCarNo(userInfo.get(7));
+                 String gradeName = userInfo.get(8);
+                 String gradeId = "0";
+                 if (StringUtil.isNotEmpty(gradeName)) {
+                     for (MtUserGrade userGrade : userGrades) {
+                          if (userGrade.getName().equals(gradeName)) {
+                              gradeId = userGrade.getId().toString();
+                          }
+                     }
+                 }
+                 mtUser.setGradeId(gradeId);
+                 mtUser.setStartTime(new Date());
+                 String gradeDate = userInfo.get(9);
+                 if (StringUtil.isNotEmpty(gradeDate)) {
+                    mtUser.setEndTime(DateUtil.parseDate(userInfo.get(9)));
+                 }
+                 mtUser.setPoint(Integer.parseInt(userInfo.get(10)));
+                 mtUser.setBalance(new BigDecimal(userInfo.get(11)));
+                 String status = userInfo.get(12).equals("正常") ? StatusEnum.ENABLED.getKey() : StatusEnum.FORBIDDEN.getKey();
+                 mtUser.setStatus(status);
+                 userList.add(mtUser);
+            }
 
+            for (MtUser mtUser : userList) {
+                 addMember(mtUser, null);
             }
         }
 
