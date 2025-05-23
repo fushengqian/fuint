@@ -17,6 +17,7 @@ import com.fuint.framework.pagination.PaginationRequest;
 import com.fuint.framework.pagination.PaginationResponse;
 import com.fuint.repository.bean.StoreDistanceBean;
 import com.fuint.repository.mapper.MtMerchantMapper;
+import com.fuint.repository.mapper.MtStoreGoodsMapper;
 import com.fuint.repository.mapper.MtStoreMapper;
 import com.fuint.repository.model.MtMerchant;
 import com.fuint.repository.model.MtStore;
@@ -51,6 +52,8 @@ public class StoreServiceImpl extends ServiceImpl<MtStoreMapper, MtStore> implem
     private MtStoreMapper mtStoreMapper;
 
     private MtMerchantMapper mtMerchantMapper;
+
+    private MtStoreGoodsMapper mtStoreGoodsMapper;
 
     /**
      * 商户接口
@@ -325,6 +328,11 @@ public class StoreServiceImpl extends ServiceImpl<MtStoreMapper, MtStore> implem
         mtStore.setStatus(status);
         mtStore.setUpdateTime(new Date());
         mtStore.setOperator(operator);
+
+        // 删除店铺
+        if (status.equals(StatusEnum.DISABLE.getKey())) {
+            mtStoreGoodsMapper.removeStoreGoods(id);
+        }
 
         mtStoreMapper.updateById(mtStore);
     }

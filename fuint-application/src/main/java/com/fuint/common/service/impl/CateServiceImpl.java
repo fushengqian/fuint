@@ -258,8 +258,7 @@ public class CateServiceImpl extends ServiceImpl<MtGoodsCateMapper, MtGoodsCate>
                     .eq(MtGoodsCate::getStoreId, storeId));
         }
         lambdaQueryWrapper.orderByAsc(MtGoodsCate::getSort);
-        List<MtGoodsCate> dataList = cateMapper.selectList(lambdaQueryWrapper);
-        return dataList;
+        return cateMapper.selectList(lambdaQueryWrapper);
     }
 
     /**
