@@ -278,4 +278,27 @@ public class MerchantServiceImpl extends ServiceImpl<MtMerchantMapper, MtMerchan
         lambdaQueryWrapper.orderByAsc(MtMerchant::getStatus).orderByDesc(MtMerchant::getId);
         return mtMerchantMapper.selectList(lambdaQueryWrapper);
     }
+
+    /**
+     * 查询我的商户列表
+     *
+     * @param merchantId 商户ID
+     * @param storeId 店铺ID
+     * @param status 状态
+     * @return
+     * */
+    @Override
+    public List<MtMerchant> getMyMerchantList(Integer merchantId, Integer storeId, String status) {
+        Map<String, Object> param = new HashMap<>();
+        if (merchantId != null && merchantId > 0) {
+            param.put("merchantId", merchantId);
+        }
+        if (storeId != null && storeId > 0) {
+            param.put("storeId", storeId);
+        }
+        if (StringUtils.isNotBlank(status)) {
+            param.put("status", status);
+        }
+        return queryMerchantByParams(param);
+    }
 }

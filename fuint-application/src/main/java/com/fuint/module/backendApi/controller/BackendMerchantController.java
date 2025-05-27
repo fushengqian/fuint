@@ -89,14 +89,12 @@ public class BackendMerchantController extends BaseController {
         paginationRequest.setSearchParams(params);
         PaginationResponse<MtMerchant> paginationResponse = merchantService.queryMerchantListByPagination(paginationRequest);
 
-        String imagePath = settingService.getUploadBasePath();
-
         // 商户类型列表
         List<ParamDto> typeList = MerchantTypeEnum.getMerchantTypeList();
 
         Map<String, Object> result = new HashMap<>();
         result.put("dataList", paginationResponse);
-        result.put("imagePath", imagePath);
+        result.put("imagePath", settingService.getUploadBasePath());
         result.put("typeList", typeList);
 
         return getSuccessResult(result);
@@ -119,7 +117,6 @@ public class BackendMerchantController extends BaseController {
         if (StringUtil.isNotEmpty(name)) {
             params.put("name", name);
         }
-
         params.put("status", StatusEnum.ENABLED.getKey());
         List<MtMerchant> merchantList = merchantService.queryMerchantByParams(params);
         Map<String, Object> result = new HashMap<>();
@@ -147,10 +144,7 @@ public class BackendMerchantController extends BaseController {
         if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
             merchantId = accountInfo.getMerchantId();
         }
-
-        String operator = accountInfo.getAccountName();
-        merchantService.updateStatus(merchantId, operator, status);
-
+        merchantService.updateStatus(merchantId, accountInfo.getAccountName(), status);
         return getSuccessResult(true);
     }
 
@@ -218,9 +212,7 @@ public class BackendMerchantController extends BaseController {
             merchantInfo.setId(merchantId);
         }
 
-        String operator = accountInfo.getAccountName();
-        merchantInfo.setOperator(operator);
-
+        merchantInfo.setOperator(accountInfo.getAccountName());
         merchantService.saveMerchant(merchantInfo);
         return getSuccessResult(true);
     }

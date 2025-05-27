@@ -86,4 +86,14 @@ public interface MerchantService extends IService<MtMerchant> {
      * */
     List<MtMerchant> queryMerchantByParams(Map<String, Object> params) throws BusinessCheckException;
 
+    /**
+     * 查询我的商户列表
+     *
+     * @param merchantId 商户ID
+     * @param storeId 店铺ID
+     * @param status 状态
+     * @return
+     * */
+    List<MtMerchant> getMyMerchantList(Integer merchantId, Integer storeId, String status) throws BusinessCheckException;
+
 }
