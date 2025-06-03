@@ -10,6 +10,7 @@ import com.fuint.common.dto.GoodsDto;
 import com.fuint.common.dto.GoodsSpecValueDto;
 import com.fuint.common.dto.GoodsTopDto;
 import com.fuint.common.enums.GoodsTypeEnum;
+import com.fuint.common.enums.PlatformTypeEnum;
 import com.fuint.common.enums.StatusEnum;
 import com.fuint.common.enums.YesOrNoEnum;
 import com.fuint.common.service.*;
@@ -143,6 +144,14 @@ public class GoodsServiceImpl extends ServiceImpl<MtGoodsMapper, MtGoods> implem
                 lambdaQueryWrapper.gt(MtGoods::getPrice, 0);
             }
         }
+        String platform = paginationRequest.getSearchParams().get("platform") == null ? "" : paginationRequest.getSearchParams().get("platform").toString();
+        if (StringUtils.isNotBlank(platform)) {
+            if (platform.equals(PlatformTypeEnum.H5.getCode()) || platform.equals(PlatformTypeEnum.MP_WEIXIN.getCode()) || platform.equals("1")) {
+                lambdaQueryWrapper.in(MtGoods::getPlatform, new ArrayList<>(Arrays.asList("0", "1")));
+            } else if(platform.equals(PlatformTypeEnum.PC.getCode()) || platform.equals("2")) {
+                lambdaQueryWrapper.in(MtGoods::getPlatform, new ArrayList<>(Arrays.asList("0", "2")));
+            }
+        }
         String sortType = paginationRequest.getSearchParams().get("sortType") == null ? "" : paginationRequest.getSearchParams().get("sortType").toString();
         String sortPrice = paginationRequest.getSearchParams().get("sortPrice") == null ? "0" : paginationRequest.getSearchParams().get("sortPrice").toString();
         if (StringUtil.isNotEmpty(sortType)) {
@@ -267,6 +276,9 @@ public class GoodsServiceImpl extends ServiceImpl<MtGoodsMapper, MtGoods> implem
         }
         if (StringUtil.isNotEmpty(reqDto.getType())) {
             mtGoods.setType(reqDto.getType());
+        }
+        if (reqDto.getPlatform() != null) {
+            mtGoods.setPlatform(reqDto.getPlatform());
         }
         if (reqDto.getCateId() != null && reqDto.getCateId() > 0) {
             mtGoods.setCateId(reqDto.getCateId());
@@ -573,6 +585,7 @@ public class GoodsServiceImpl extends ServiceImpl<MtGoodsMapper, MtGoods> implem
      *
      * @param storeId 店铺ID
      * @param keyword 关键字
+     * @param platform 平台
      * @param cateId 分类ID
      * @param page 当前页码
      * @param pageSize 每页页数
@@ -580,7 +593,7 @@ public class GoodsServiceImpl extends ServiceImpl<MtGoodsMapper, MtGoods> implem
      * @return
      * */
     @Override
-    public Map<String, Object> getStoreGoodsList(Integer storeId, String keyword, Integer cateId, Integer page, Integer pageSize) throws BusinessCheckException {
+    public Map<String, Object> getStoreGoodsList(Integer storeId, String keyword, String platform, Integer cateId, Integer page, Integer pageSize) throws BusinessCheckException {
         MtStore mtStore = storeService.queryStoreById(storeId);
         if (mtStore == null) {
             Map<String, Object> result = new HashMap<>();
@@ -589,6 +602,7 @@ public class GoodsServiceImpl extends ServiceImpl<MtGoodsMapper, MtGoods> implem
             return result;
         }
         Integer merchantId = mtStore.getMerchantId() == null ? 0 : mtStore.getMerchantId();
+
         Page<MtGoods> pageHelper = PageHelper.startPage(page, pageSize);
         List<MtGoods> goodsList = new ArrayList<>();
         List<MtGoodsSku> skuList = new ArrayList<>();
@@ -601,9 +615,9 @@ public class GoodsServiceImpl extends ServiceImpl<MtGoodsMapper, MtGoods> implem
         } else {
             pageHelper = PageHelper.startPage(page, pageSize);
             if (keyword != null && StringUtil.isNotEmpty(keyword)) {
-                goodsList = mtGoodsMapper.searchStoreGoodsList(merchantId, storeId, keyword);
+                goodsList = mtGoodsMapper.searchStoreGoodsList(merchantId, storeId, keyword, platform);
             } else {
-                goodsList = mtGoodsMapper.getStoreGoodsList(merchantId, storeId, cateId);
+                goodsList = mtGoodsMapper.getStoreGoodsList(merchantId, storeId, cateId, platform);
             }
         }
         List<MtGoods> dataList = new ArrayList<>();

@@ -6,6 +6,12 @@
         <if test="cateId != null and cateId > 0">
             AND t.CATE_ID = #{cateId}
         </if>
+        <if test="platform != null and (platform == 'H5' or platform == 'MP-WEIXIN')">
+            AND t.platform IN(0, 1)
+        </if>
+        <if test="platform != null and platform == 'PC'">
+            AND t.platform IN(0, 2)
+        </if>
         and t.MERCHANT_ID = #{merchantId}
         and t.PRICE > 0
         and t.STATUS = 'A' order by t.sort asc
@@ -18,6 +24,12 @@
         </if>
         <if test="storeId != null and storeId > 0">
             and (t.STORE_ID = #{storeId} or (t.STORE_ID = 0 AND t.id IN( SELECT s.GOODS_ID FROM mt_store_goods s WHERE s.STORE_ID = #{storeId} AND s.STATUS = 'A' )))
+        </if>
+        <if test="platform != null and (platform == 'H5' or platform == 'MP-WEIXIN')">
+            AND t.platform IN(0, 1)
+        </if>
+        <if test="platform != null and platform == 'PC'">
+            AND t.platform IN(0, 2)
         </if>
         and t.PRICE > 0
         and (t.name like concat('%',#{keyword},'%') or t.goods_no = #{keyword} or t.ID = #{keyword} or t.description like concat('%',#{keyword},'%'))

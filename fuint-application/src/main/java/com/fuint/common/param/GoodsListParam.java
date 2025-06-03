@@ -25,6 +25,9 @@ public class GoodsListParam extends PageParam implements Serializable {
     @ApiModelProperty(value="商品类型", name="type")
     private String type;
 
+    @ApiModelProperty(value="可用平台", name="platform")
+    private String platform;
+
     @ApiModelProperty(value="商品状态", name="status")
     private String status;
 

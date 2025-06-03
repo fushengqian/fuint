@@ -317,6 +317,7 @@ public class BackendGoodsController extends BaseController {
         String salePoint = param.get("salePoint") == null ? "" : param.get("salePoint").toString();
         String canUsePoint = param.get("canUsePoint") == null ? "" : param.get("canUsePoint").toString();
         String isMemberDiscount = param.get("isMemberDiscount") == null ? "" : param.get("isMemberDiscount").toString();
+        String platform = param.get("platform") == null ? "" : param.get("platform").toString();
         String isSingleSpec = param.get("isSingleSpec") == null ? "" : param.get("isSingleSpec").toString();
         Integer cateId = (param.get("cateId") == null || StringUtil.isEmpty(param.get("cateId").toString())) ? 0 : Integer.parseInt(param.get("cateId").toString());
         String storeIds = (param.get("storeId") == null) ? null : param.get("storeId").toString();
@@ -475,6 +476,9 @@ public class BackendGoodsController extends BaseController {
         }
         if (StringUtil.isNotEmpty(sort)) {
             mtGoods.setSort(Integer.parseInt(sort));
+        }
+        if (StringUtil.isNotEmpty(platform)) {
+            mtGoods.setPlatform(Integer.parseInt(platform));
         }
         if (StringUtil.isNotEmpty(status)) {
             mtGoods.setStatus(status);

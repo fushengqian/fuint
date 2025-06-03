@@ -8,8 +8,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
 /**
  * 商品表
@@ -17,8 +16,7 @@ import lombok.Setter;
  * Created by FSQ
  * CopyRight https://www.fuint.cn
  */
-@Getter
-@Setter
+@Data
 @TableName("mt_goods")
 @ApiModel(value = "MtGoods对象", description = "MtGoods对象")
 public class MtGoods implements Serializable {
@@ -46,6 +44,9 @@ public class MtGoods implements Serializable {
 
     @ApiModelProperty("商品编码")
     private String goodsNo;
+
+    @ApiModelProperty("可用平台，0：不限，1：仅会员端（小程序和h5）；2：仅收银端")
+    private Integer platform;
 
     @ApiModelProperty("是否单规格")
     private String isSingleSpec;

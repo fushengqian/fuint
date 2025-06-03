@@ -48,6 +48,9 @@ public class GoodsDto implements Serializable {
     @ApiModelProperty("商品条码")
     private String goodsNo;
 
+    @ApiModelProperty("可用平台，0：不限，1：仅会员端（小程序和h5）；2：仅收银端")
+    private Integer platform;
+
     @ApiModelProperty("可否单规格")
     private String isSingleSpec;
 
