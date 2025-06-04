@@ -9,32 +9,35 @@ package com.fuint.common.enums;
 public enum PlatformTypeEnum {
 
     /**
+     * 微信小程序
+     */
+    MP_WEIXIN("MP-WEIXIN", "微信小程序", 1),
+
+    /**
      * PC
      */
-    PC("PC", "PC端"),
+    PC("PC", "PC端", 2),
 
     /**
      * H5
      */
-    H5("H5", "H5端"),
-
-    /**
-     * 微信小程序
-     */
-    MP_WEIXIN("MP-WEIXIN", "微信小程序"),
+    H5("H5", "H5端", 3),
 
     /**
      * App客户端
      */
-    APP("APP", "App客户端");
+    APP("APP", "App客户端", 4);
 
     private String code;
 
     private String value;
 
-    PlatformTypeEnum(String code, String value) {
+    private Integer num;
+
+    PlatformTypeEnum(String code, String value, Integer num) {
         this.code = code;
         this.value = value;
+        this.num = num;
     }
 
     public String getCode() {

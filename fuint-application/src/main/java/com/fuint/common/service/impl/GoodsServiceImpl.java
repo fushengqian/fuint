@@ -146,10 +146,21 @@ public class GoodsServiceImpl extends ServiceImpl<MtGoodsMapper, MtGoods> implem
         }
         String platform = paginationRequest.getSearchParams().get("platform") == null ? "" : paginationRequest.getSearchParams().get("platform").toString();
         if (StringUtils.isNotBlank(platform)) {
-            if (platform.equals(PlatformTypeEnum.H5.getCode()) || platform.equals(PlatformTypeEnum.MP_WEIXIN.getCode()) || platform.equals("1")) {
+            if (platform.equals(PlatformTypeEnum.H5.getCode()) || platform.equals(PlatformTypeEnum.MP_WEIXIN.getCode())) {
+                // 会员端
                 lambdaQueryWrapper.in(MtGoods::getPlatform, new ArrayList<>(Arrays.asList("0", "1")));
-            } else if(platform.equals(PlatformTypeEnum.PC.getCode()) || platform.equals("2")) {
+            } else if(platform.equals(PlatformTypeEnum.PC.getCode())) {
+                // PC端
                 lambdaQueryWrapper.in(MtGoods::getPlatform, new ArrayList<>(Arrays.asList("0", "2")));
+            } else if(platform.equals("0")) {
+                // 不限制
+                lambdaQueryWrapper.eq(MtGoods::getPlatform, 0);
+            } else if(platform.equals("1")) {
+                // 仅会员端
+                lambdaQueryWrapper.eq(MtGoods::getPlatform, 1);
+            } else if (platform.equals("2")) {
+                // 仅PC端
+                lambdaQueryWrapper.eq(MtGoods::getPlatform, 2);
             }
         }
         String sortType = paginationRequest.getSearchParams().get("sortType") == null ? "" : paginationRequest.getSearchParams().get("sortType").toString();
