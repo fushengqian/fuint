@@ -195,7 +195,10 @@ public class BackendUserGradeController extends BaseController {
             return getFailureResult(201, "有效天数必须为正整数");
         }
         if (!CommonUtil.isNumeric(speedPoint) || Integer.parseInt(speedPoint) < 0) {
-            return getFailureResult(201, "积分加速必须为正整数");
+            return getFailureResult(201, "积分加速必须是数字");
+        }
+        if (!CommonUtil.isNumeric(catchValue)) {
+            return getFailureResult(201, "升级条件值必须是数字");
         }
         MtUserGrade mtUserGrade;
         if (StringUtil.isEmpty(id)) {
