@@ -11,8 +11,8 @@ import java.util.Map;
  */
 public class PaginationRequest implements Serializable {
 
-    /**  */
     private static final long serialVersionUID = -344484321130132260L;
+
     /**
      * 当前页码
      */

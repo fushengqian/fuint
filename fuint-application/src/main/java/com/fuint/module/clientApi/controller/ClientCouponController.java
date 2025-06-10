@@ -96,7 +96,7 @@ public class ClientCouponController extends BaseController {
     @ApiOperation(value = "领取卡券")
     @RequestMapping(value = "/receive", method = RequestMethod.POST)
     @CrossOrigin
-    public ResponseObject receive(HttpServletRequest request, @RequestBody CouponReceiveParam couponReceiveParam) {
+    public ResponseObject receive(HttpServletRequest request, @RequestBody CouponReceiveParam couponReceiveParam) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
         UserInfo mtUser = TokenUtil.getUserInfoByToken(token);
 
@@ -106,11 +106,7 @@ public class ClientCouponController extends BaseController {
             return getFailureResult(1001);
         }
 
-        try {
-            userCouponService.receiveCoupon(couponReceiveParam);
-        } catch (BusinessCheckException e) {
-            return getFailureResult(1006, e.getMessage());
-        }
+        userCouponService.receiveCoupon(couponReceiveParam);
 
         // 组织返回参数
         Map<String, Object> result = new HashMap<>();

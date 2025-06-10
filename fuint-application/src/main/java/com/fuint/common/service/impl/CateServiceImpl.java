@@ -234,24 +234,29 @@ public class CateServiceImpl extends ServiceImpl<MtGoodsCateMapper, MtGoodsCate>
         return mtCate;
     }
 
+    /**
+     * 获取分类列表
+     *
+     * @param merchantId 商户
+     * @param storeId 店铺ID
+     * @param name 店铺名称
+     * @param status 状态
+     * @return
+     * */
     @Override
-    public List<MtGoodsCate> queryCateListByParams(Map<String, Object> params) {
+    public List<MtGoodsCate> getCateList(Integer merchantId, Integer storeId, String name, String status) {
         LambdaQueryWrapper<MtGoodsCate> lambdaQueryWrapper = Wrappers.lambdaQuery();
         lambdaQueryWrapper.ne(MtGoodsCate::getStatus, StatusEnum.DISABLE.getKey());
-        String storeId =  params.get("storeId") == null ? "" : params.get("storeId").toString();
-        String merchantId =  params.get("merchantId") == null ? "" : params.get("merchantId").toString();
-        if (StringUtils.isNotBlank(merchantId)) {
+        if (merchantId != null && merchantId > 0) {
             lambdaQueryWrapper.eq(MtGoodsCate::getMerchantId, merchantId);
         }
-        String name =  params.get("name") == null ? "" : params.get("name").toString();
         if (StringUtils.isNotBlank(name)) {
             lambdaQueryWrapper.like(MtGoodsCate::getName, name);
         }
-        String status =  params.get("status") == null ? StatusEnum.ENABLED.getKey(): params.get("status").toString();
         if (StringUtils.isNotBlank(status)) {
             lambdaQueryWrapper.eq(MtGoodsCate::getStatus, status);
         }
-        if (StringUtils.isNotBlank(storeId)) {
+        if (storeId != null && storeId > 0) {
             lambdaQueryWrapper.and(wq -> wq
                     .eq(MtGoodsCate::getStoreId, 0)
                     .or()
@@ -271,20 +276,11 @@ public class CateServiceImpl extends ServiceImpl<MtGoodsCateMapper, MtGoodsCate>
      * */
     @Override
     public Integer getGoodsCateId(Integer merchantId, Integer storeId, String name) {
-        Integer cate = 0;
-        Map<String, Object> param = new HashMap<>();
-        param.put("status", StatusEnum.ENABLED.getKey());
-        param.put("name", name);
-        if (storeId != null && storeId > 0) {
-            param.put("storeId", storeId);
-        }
-        if (merchantId != null && merchantId > 0) {
-            param.put("merchantId", merchantId);
-        }
-        List<MtGoodsCate> cateList = queryCateListByParams(param);
+        Integer cateId = 0;
+        List<MtGoodsCate> cateList = getCateList(merchantId, storeId, name, StatusEnum.ENABLED.getKey());
         if (cateList != null && cateList.size() > 0) {
-            cate = cateList.get(0).getId();
+            cateId = cateList.get(0).getId();
         }
-        return cate;
+        return cateId;
     }
 }

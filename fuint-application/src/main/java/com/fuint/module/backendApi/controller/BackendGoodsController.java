@@ -132,7 +132,7 @@ public class BackendGoodsController extends BaseController {
         if (storeId > 0) {
             cateParam.put("storeId", storeId.toString());
         }
-        List<MtGoodsCate> cateList = cateService.queryCateListByParams(cateParam);
+        List<MtGoodsCate> cateList = cateService.getCateList(accountInfo.getMerchantId(), storeId, null, StatusEnum.ENABLED.getKey());
 
         Map<String, Object> result = new HashMap<>();
         result.put("paginationResponse", paginationResponse);
@@ -264,7 +264,7 @@ public class BackendGoodsController extends BaseController {
         if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
             param.put("merchantId", accountInfo.getMerchantId());
         }
-        List<MtGoodsCate> cateList = cateService.queryCateListByParams(param);
+        List<MtGoodsCate> cateList = cateService.getCateList(accountInfo.getMerchantId(), null, null, StatusEnum.ENABLED.getKey());
         result.put("cateList", cateList);
 
         String imagePath = settingService.getUploadBasePath();
