@@ -97,7 +97,7 @@ public class ClientPayController extends BaseController {
     @CrossOrigin
     public ResponseObject prePay(HttpServletRequest request) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
-        Integer storeId = request.getHeader("storeId") == null ? 0 : Integer.parseInt(request.getHeader("storeId"));
+        Integer storeId = StringUtil.isEmpty(request.getHeader("storeId")) ? 0 : Integer.parseInt(request.getHeader("storeId"));
         String useFor = request.getParameter("type") == null ? "" : request.getParameter("type");
         String merchantNo = request.getHeader("merchantNo");
         UserInfo userInfo = TokenUtil.getUserInfoByToken(token);

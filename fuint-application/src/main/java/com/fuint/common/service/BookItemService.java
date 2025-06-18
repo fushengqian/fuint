@@ -6,6 +6,8 @@ import com.fuint.framework.pagination.PaginationRequest;
 import com.fuint.framework.pagination.PaginationResponse;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.repository.model.MtBookItem;
+
+import java.text.ParseException;
 import java.util.List;
 import java.util.Map;
 
@@ -32,7 +34,7 @@ public interface BookItemService extends IService<MtBookItem> {
      * @throws BusinessCheckException
      * @return
      */
-    MtBookItem addBookItem(MtBookItem mtBookItem) throws BusinessCheckException;
+    MtBookItem addBookItem(MtBookItem mtBookItem) throws BusinessCheckException, ParseException;
 
     /**
      * 根据ID获取预约订单信息

@@ -37,6 +37,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
@@ -167,10 +168,11 @@ public class BookServiceImpl extends ServiceImpl<MtBookMapper, MtBook> implement
      * 根据ID获取预约项目信息
      *
      * @param id 预约项目ID
+     * @param fillDate 填充日期
      * @return
      */
     @Override
-    public BookDto getBookById(Integer id) throws ParseException {
+    public BookDto getBookById(Integer id, boolean fillDate) throws ParseException {
         BookDto bookDto = new BookDto();
         MtBook mtBook = mtBookMapper.selectById(id);
         if (mtBook == null) {
@@ -192,24 +194,28 @@ public class BookServiceImpl extends ServiceImpl<MtBookMapper, MtBook> implement
                  dates.add(dateString);
             }
             serviceDates = String.join(",", dates);
-            bookDto.setServiceDates(serviceDates);
+            if (fillDate) {
+                bookDto.setServiceDates(serviceDates);
+            }
         }
 
         if (StringUtil.isNotEmpty(serviceDates)) {
             List<String> dates = Arrays.asList(serviceDates.split(",").clone());
             if (dates.size() > 0) {
                 for (String date : dates) {
-                    Date currentDate = DateUtil.parseDate(date);
+                    Date currentDate = DateUtil.parseDate(date + " 23:59:59");
                     Date now = new Date();
-                    if (now.before(currentDate)) {
-                        SimpleDateFormat format = new SimpleDateFormat("EEEE", Locale.CHINA);
-                        String week = format.format(currentDate);
-                        DayDto day = new DayDto();
-                        day.setWeek(week);
-                        day.setDate(DateUtil.formatDate(currentDate, "MM-dd"));
+                    SimpleDateFormat format = new SimpleDateFormat("EEEE", Locale.CHINA);
+                    String week = format.format(currentDate);
+                    DayDto day = new DayDto();
+                    day.setWeek(week);
+                    day.setDate(DateUtil.formatDate(currentDate, "MM-dd"));
+                    if (now.compareTo(currentDate) <= 0) {
                         day.setEnable(true);
-                        dateList.add(day);
+                    } else {
+                        day.setEnable(false);
                     }
+                    dateList.add(day);
                 }
             }
         }
@@ -255,7 +261,6 @@ public class BookServiceImpl extends ServiceImpl<MtBookMapper, MtBook> implement
         if (book == null) {
             throw new BusinessCheckException("该预约项目状态异常");
         }
-        book.setId(book.getId());
         if (mtBook.getLogo() != null) {
             book.setLogo(mtBook.getLogo());
         }
@@ -305,7 +310,7 @@ public class BookServiceImpl extends ServiceImpl<MtBookMapper, MtBook> implement
      * @return
      * */
     @Override
-    public List<String> isBookable(BookableParam param) throws BusinessCheckException {
+    public List<String> isBookable(BookableParam param) throws BusinessCheckException,ParseException {
        MtBook mtBook = mtBookMapper.selectById(param.getBookId());
        List<String> result = new ArrayList<>();
        if (mtBook == null) {
@@ -339,9 +344,15 @@ public class BookServiceImpl extends ServiceImpl<MtBookMapper, MtBook> implement
                }
            }
        }
+       Date now = new Date();
        if (bookNum < limit) {
            if (StringUtil.isNotEmpty(param.getTime())) {
-               result.add(param.getTime());
+               String[] arr = param.getTime().split("-");
+               String dateTime = param.getDate() + " " + arr[1]+":00";
+               Date currentDate = DateUtil.parseDate(dateTime);
+               if (now.compareTo(currentDate) < 0) {
+                   result.add(param.getTime());
+               }
            } else {
                String[] times = mtBook.getServiceTimes().split(",");
                if (times.length > 0) {
@@ -349,7 +360,9 @@ public class BookServiceImpl extends ServiceImpl<MtBookMapper, MtBook> implement
                         String[] arr = str.split("-");
                         if (arr.length > 2) {
                             String item = arr[0] + "-" + arr[1];
-                            if (!bookList.contains(item)) {
+                            String dateTime = param.getDate() + " " + arr[1]+":00";
+                            Date currentDate = DateUtil.parseDate(dateTime);
+                            if (!bookList.contains(item) && now.compareTo(currentDate) < 0) {
                                 result.add(item);
                             }
                         }

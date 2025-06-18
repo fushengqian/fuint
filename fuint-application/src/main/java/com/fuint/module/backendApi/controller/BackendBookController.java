@@ -147,7 +147,7 @@ public class BackendBookController extends BaseController {
 
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
 
-        BookDto bookDto = bookService.getBookById(id);
+        BookDto bookDto = bookService.getBookById(id, false);
         if (bookDto == null) {
             return getFailureResult(201);
         }
@@ -187,7 +187,6 @@ public class BackendBookController extends BaseController {
         List<LinkedHashMap> times = params.get("times") == null ? new ArrayList<>() : (List) params.get("times");
 
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
-
         if (accountInfo.getMerchantId() == null || accountInfo.getMerchantId() < 1) {
             throw new BusinessCheckException("平台方帐号无法执行该操作，请使用商户帐号操作");
         }
@@ -249,7 +248,7 @@ public class BackendBookController extends BaseController {
         String token = request.getHeader("Access-Token");
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
 
-        BookDto bookDto = bookService.getBookById(id);
+        BookDto bookDto = bookService.getBookById(id, false);
 
         if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
             if (!bookDto.getMerchantId().equals(accountInfo.getMerchantId())) {

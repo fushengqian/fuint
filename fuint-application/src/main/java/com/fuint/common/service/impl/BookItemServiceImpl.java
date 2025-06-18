@@ -33,6 +33,8 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.text.ParseException;
 import java.util.*;
 
 /**
@@ -137,7 +139,7 @@ public class BookItemServiceImpl extends ServiceImpl<MtBookItemMapper, MtBookIte
      */
     @Override
     @OperationServiceLog(description = "新增预约订单")
-    public MtBookItem addBookItem(MtBookItem mtBookItem) throws BusinessCheckException {
+    public MtBookItem addBookItem(MtBookItem mtBookItem) throws BusinessCheckException, ParseException {
         Integer storeId = mtBookItem.getStoreId() == null ? 0 : mtBookItem.getStoreId();
         if (mtBookItem.getMerchantId() == null || mtBookItem.getMerchantId() <= 0) {
             throw new BusinessCheckException("新增预约订单失败：所属商户不能为空！");

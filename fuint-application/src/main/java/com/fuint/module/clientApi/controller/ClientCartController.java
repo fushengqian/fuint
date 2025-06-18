@@ -76,7 +76,7 @@ public class ClientCartController extends BaseController {
     public ResponseObject save(HttpServletRequest request, @RequestBody CartSaveParam saveParam) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
         String merchantNo = request.getHeader("merchantNo") == null ? "" : request.getHeader("merchantNo");
-        Integer storeId = request.getHeader("storeId") == null ? 0 : Integer.parseInt(request.getHeader("storeId"));
+        Integer storeId = StringUtil.isEmpty(request.getHeader("storeId")) ? 0 : Integer.parseInt(request.getHeader("storeId"));
         Integer cartId = saveParam.getCartId() == null ? 0 : saveParam.getCartId();
         Integer goodsId = saveParam.getGoodsId() == null ? 0 : saveParam.getGoodsId();
         Integer skuId = saveParam.getSkuId() == null ? 0 : saveParam.getSkuId();
@@ -203,7 +203,7 @@ public class ClientCartController extends BaseController {
     public ResponseObject list(HttpServletRequest request, @RequestBody CartListParam params) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
         String merchantNo = request.getHeader("merchantNo") == null ? "" : request.getHeader("merchantNo");
-        Integer storeId = request.getHeader("storeId") == null ? 0 : Integer.parseInt(request.getHeader("storeId"));
+        Integer storeId = StringUtil.isEmpty(request.getHeader("storeId")) ? 0 : Integer.parseInt(request.getHeader("storeId"));
         String platform = request.getHeader("platform") == null ? "" : request.getHeader("platform");
         Integer goodsId = params.getGoodsId() == null ? 0 : params.getGoodsId();
         Integer skuId = params.getSkuId() == null ? 0 : params.getSkuId();
