@@ -30,4 +30,7 @@ public class ResCateDto implements Serializable {
     @ApiModelProperty("商品列表")
     private List<MtGoods> goodsList;
 
+    @ApiModelProperty("排序")
+    private Integer sort;
+
 }

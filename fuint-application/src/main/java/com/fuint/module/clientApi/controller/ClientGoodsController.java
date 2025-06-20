@@ -28,10 +28,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * 商品类controller
@@ -89,20 +86,24 @@ public class ClientGoodsController extends BaseController {
 
         List<ResCateDto> result = new ArrayList<>();
         for (MtGoodsCate cate : cateList) {
-            ResCateDto dto = new ResCateDto();
-            dto.setCateId(cate.getId());
-            dto.setName(cate.getName());
-            dto.setLogo(baseImage + cate.getLogo());
-            List<MtGoods> goodsArr = new ArrayList<>();
-            for (MtGoods goods : goodsList) {
-                if (goods.getCateId().compareTo(cate.getId()) == 0) {
-                    goodsArr.add(goods);
-                }
-            }
-            dto.setGoodsList(goodsArr);
-            result.add(dto);
+             ResCateDto dto = new ResCateDto();
+             dto.setCateId(cate.getId());
+             dto.setName(cate.getName());
+             if (StringUtil.isNotEmpty(cate.getLogo())) {
+                 dto.setLogo(baseImage + cate.getLogo());
+             }
+             List<MtGoods> goodsArr = new ArrayList<>();
+             for (MtGoods goods : goodsList) {
+                  if (goods.getCateId().compareTo(cate.getId()) == 0) {
+                      goodsArr.add(goods);
+                  }
+             }
+             dto.setGoodsList(goodsArr);
+             dto.setSort((goodsArr.size() > 0) ? 1 : 0);
+             result.add(dto);
         }
-
+        // 商品数量为0就排在后面
+        Collections.sort(result, (p1, p2) -> Integer.compare(p2.getSort(), p1.getSort()));
         return getSuccessResult(result);
     }
 
