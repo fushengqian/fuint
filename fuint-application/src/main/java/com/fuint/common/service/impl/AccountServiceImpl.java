@@ -247,8 +247,7 @@ public class AccountServiceImpl extends ServiceImpl<TAccountMapper, TAccount> im
      * */
     @Override
     public List<Long> getRoleIdsByAccountId(Integer accountId) {
-        List<Long> roleIds = tDutyMapper.getRoleIdsByAccountId(accountId);
-        return roleIds;
+        return tDutyMapper.getRoleIdsByAccountId(accountId);
     }
 
     /**

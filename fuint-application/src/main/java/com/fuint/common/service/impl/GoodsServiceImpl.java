@@ -886,7 +886,7 @@ public class GoodsServiceImpl extends ServiceImpl<MtGoodsMapper, MtGoods> implem
                 throw new BusinessCheckException("商品导入失败，单次导入商品数量不能大于1000");
             }
             for (int i = 0; i < goodsList.size(); i++) {
-                 List<String> goods = goodsList.get(0);
+                 List<String> goods = goodsList.get(i);
                  MtGoods mtGoods = new MtGoods();
                  mtGoods.setId(0);
                  mtGoods.setName(goods.get(0));
