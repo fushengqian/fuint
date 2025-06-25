@@ -153,7 +153,7 @@ public class BackendSmsController extends BaseController {
 
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
         if (accountInfo.getMerchantId() == null || accountInfo.getMerchantId() <= 0) {
-            return getFailureResult(201, "平台方帐号无法执行该操作，请使用商户帐号操作");
+            return getFailureResult(5002);
         }
         SmsSettingEnum[] settingList = SmsSettingEnum.values();
         for (SmsSettingEnum setting : settingList) {

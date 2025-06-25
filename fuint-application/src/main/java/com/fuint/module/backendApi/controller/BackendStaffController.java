@@ -118,7 +118,6 @@ public class BackendStaffController extends BaseController {
         Integer id = params.get("id") == null ? 0 : Integer.parseInt(params.get("id").toString());
 
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
-
         staffService.updateAuditedStatus(id, status, accountInfo.getAccountName());
         return getSuccessResult(true);
     }
@@ -137,7 +136,7 @@ public class BackendStaffController extends BaseController {
         String token = request.getHeader("Access-Token");
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
         if (accountInfo.getMerchantId() == null || accountInfo.getMerchantId() <= 0) {
-            return getFailureResult(201, "平台方帐号无法执行该操作，请使用商户帐号操作");
+            return getFailureResult(5002);
         }
 
         MtStaff mtStaff = new MtStaff();

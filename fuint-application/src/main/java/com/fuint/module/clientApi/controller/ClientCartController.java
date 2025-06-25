@@ -131,7 +131,7 @@ public class ClientCartController extends BaseController {
             if (accountInfo != null) {
                 merchantId = accountInfo.getMerchantId();
                 if (merchantId == null || merchantId <= 0) {
-                    return getFailureResult(201, "平台方账户无操作权限");
+                    return getFailureResult(5002);
                 }
             }
         }
