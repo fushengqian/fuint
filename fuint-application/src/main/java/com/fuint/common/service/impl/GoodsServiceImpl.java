@@ -355,7 +355,8 @@ public class GoodsServiceImpl extends ServiceImpl<MtGoodsMapper, MtGoods> implem
             mtGoods.setCouponIds("");
         }
         if (mtGoods.getCouponIds() != null && StringUtil.isNotEmpty(mtGoods.getCouponIds())) {
-            String couponIds[] = mtGoods.getCouponIds().split(",");
+            String str = mtGoods.getCouponIds().replace("，", ",").trim();
+            String couponIds[] = str.split(",");
             if (couponIds.length > 0) {
                 for (int i = 0; i < couponIds.length; i++) {
                      MtCoupon mtCoupon = couponService.queryCouponById(Integer.parseInt(couponIds[i]));

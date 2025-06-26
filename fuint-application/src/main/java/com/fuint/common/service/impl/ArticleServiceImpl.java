@@ -178,6 +178,9 @@ public class ArticleServiceImpl extends ServiceImpl<MtArticleMapper, MtArticle> 
     @Override
     public ArticleDto getArticleDetail(Integer articleId) {
         MtArticle mtArticle = mtArticleMapper.selectById(articleId);
+        if (mtArticle == null) {
+            return null;
+        }
         ArticleDto articleDto = new ArticleDto();
         BeanUtils.copyProperties(mtArticle, articleDto);
         String baseImage = settingService.getUploadBasePath();
