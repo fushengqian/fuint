@@ -140,9 +140,7 @@ public class BackendBalanceController extends BaseController {
             return getFailureResult(201, "充值会员信息不能为空");
         }
 
-        String operator = accountInfo.getAccountName();
         MtBalance mtBalance = new MtBalance();
-
         MtUser userInfo = memberService.queryMemberById(userId);
 
         // 扣减余额
@@ -157,7 +155,7 @@ public class BackendBalanceController extends BaseController {
         mtBalance.setMerchantId(accountInfo.getMerchantId());
         mtBalance.setDescription(remark);
         mtBalance.setUserId(userId);
-        mtBalance.setOperator(operator);
+        mtBalance.setOperator(accountInfo.getAccountName());
         mtBalance.setOrderSn("");
 
         balanceService.addBalance(mtBalance, true);

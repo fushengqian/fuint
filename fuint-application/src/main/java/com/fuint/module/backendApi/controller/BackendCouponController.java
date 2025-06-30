@@ -217,10 +217,7 @@ public class BackendCouponController extends BaseController {
     public ResponseObject delete(HttpServletRequest request, @PathVariable("id") Long id) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
-
-        String operator = accountInfo.getAccountName();
-        couponService.deleteCoupon(id, operator);
-
+        couponService.deleteCoupon(id, accountInfo.getAccountName());
         return getSuccessResult(true);
     }
 

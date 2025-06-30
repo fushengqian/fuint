@@ -128,10 +128,8 @@ public class BackendArticleController extends BaseController {
             return getFailureResult(201);
         }
 
-        String operator = accountInfo.getAccountName();
-
         ArticleDto article = new ArticleDto();
-        article.setOperator(operator);
+        article.setOperator(accountInfo.getAccountName());
         article.setId(id);
         article.setStatus(status);
         articleService.updateArticle(article);

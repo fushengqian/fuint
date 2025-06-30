@@ -187,11 +187,10 @@ public class BackendRefundController extends BaseController {
         String rejectReason = param.get("rejectReason") == null ? "" : param.get("rejectReason").toString();
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
 
-        String operator = accountInfo.getAccountName();
         if (status.equals(RefundStatusEnum.REJECT.getKey())) {
             RefundDto dto = new RefundDto();
             dto.setId(refundId);
-            dto.setOperator(operator);
+            dto.setOperator(accountInfo.getAccountName());
             dto.setStatus(RefundStatusEnum.REJECT.getKey());
             dto.setRemark(remark);
             dto.setRejectReason(rejectReason);
@@ -199,7 +198,7 @@ public class BackendRefundController extends BaseController {
         } else {
             RefundDto dto = new RefundDto();
             dto.setId(refundId);
-            dto.setOperator(operator);
+            dto.setOperator(accountInfo.getAccountName());
             dto.setStatus(status);
             dto.setRemark(remark);
             if (status.equals(RefundStatusEnum.COMPLETE.getKey())) {

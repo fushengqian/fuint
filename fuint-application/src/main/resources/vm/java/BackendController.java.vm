@@ -109,8 +109,7 @@ public class Backend${tableClass}Controller extends BaseController {
             return getFailureResult(201);
         }
 
-        String operator = accountInfo.getAccountName();
-        ${tablePrefix}${tableClass}.setOperator(operator);
+        ${tablePrefix}${tableClass}.setOperator(accountInfo.getAccountName());
         ${tablePrefix}${tableClass}.setStatus(status);
         ${serviceName}Service.update${tableClass}(${tablePrefix}${tableClass});
 

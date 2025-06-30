@@ -138,15 +138,12 @@ public class BackendStockController extends BaseController {
         Integer id = params.get("id") == null ? 0 : Integer.parseInt(params.get("id").toString());
 
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
-
         MtStock mtStock = stockService.queryStockById(id.longValue());
         if (mtStock == null) {
             return getFailureResult(201, "该数据不存在");
         }
 
-        String operator = accountInfo.getAccountName();
-        stockService.delete(id, operator);
-
+        stockService.delete(id, accountInfo.getAccountName());
         return getSuccessResult(true);
     }
 

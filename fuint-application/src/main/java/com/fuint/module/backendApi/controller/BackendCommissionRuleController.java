@@ -128,10 +128,8 @@ public class BackendCommissionRuleController extends BaseController {
             return getFailureResult(201);
         }
 
-        String operator = accountInfo.getAccountName();
-
         CommissionRuleParam commissionRule = new CommissionRuleParam();
-        commissionRule.setOperator(operator);
+        commissionRule.setOperator(accountInfo.getAccountName());
         commissionRule.setId(id);
         commissionRule.setStatus(status);
         commissionRuleService.updateCommissionRule(commissionRule);

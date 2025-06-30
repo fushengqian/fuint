@@ -148,14 +148,12 @@ public class BackendUserGradeController extends BaseController {
         String token = request.getHeader("Access-Token");
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
 
-        String operator = accountInfo.getAccountName();
-
         MtUserGrade mtUserGrade = userGradeService.queryUserGradeById(0, id, 0);
         if (mtUserGrade == null || !mtUserGrade.getMerchantId().equals(accountInfo.getMerchantId())) {
             return getFailureResult(201, "您没有删除权限");
         }
 
-        userGradeService.deleteUserGrade(id, operator);
+        userGradeService.deleteUserGrade(id, accountInfo.getAccountName());
         return getSuccessResult(true);
     }
 

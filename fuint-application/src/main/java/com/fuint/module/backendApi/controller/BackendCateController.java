@@ -141,10 +141,8 @@ public class BackendCateController extends BaseController {
             return getFailureResult(201, "该类别不存在");
         }
 
-        String operator = accountInfo.getAccountName();
-
         MtGoodsCate cate = new MtGoodsCate();
-        cate.setOperator(operator);
+        cate.setOperator(accountInfo.getAccountName());
         cate.setId(id);
         cate.setStatus(status);
         cateService.updateCate(cate);

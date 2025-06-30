@@ -127,9 +127,7 @@ public class BackendBookCateController extends BaseController {
             return getFailureResult(201);
         }
 
-        String operator = accountInfo.getAccountName();
-
-        mtBookCate.setOperator(operator);
+        mtBookCate.setOperator(accountInfo.getAccountName());
         mtBookCate.setStatus(status);
         bookCateService.updateBookCate(mtBookCate);
 
@@ -171,6 +169,7 @@ public class BackendBookCateController extends BaseController {
         mtBookCate.setMerchantId(accountInfo.getMerchantId());
         mtBookCate.setSort(Integer.parseInt(sort));
         mtBookCate.setStatus(status);
+        mtBookCate.setOperator(accountInfo.getAccountName());
 
         if (StringUtil.isNotEmpty(id)) {
             mtBookCate.setId(Integer.parseInt(id));

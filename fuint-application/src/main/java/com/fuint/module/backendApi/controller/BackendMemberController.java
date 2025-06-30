@@ -227,12 +227,14 @@ public class BackendMemberController extends BaseController {
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('member:index')")
     public ResponseObject delete(HttpServletRequest request, @PathVariable("id") Integer id) throws BusinessCheckException {
-        String token = request.getHeader("Access-Token");
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
-
-        String operator = accountInfo.getAccountName();
-        memberService.deleteMember(id, operator);
-
+        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
+        MtUser mtUser = memberService.queryMemberById(id);
+        if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
+            if (!mtUser.getMerchantId().equals(accountInfo.getMerchantId())) {
+                return getFailureResult(1004);
+            }
+        }
+        memberService.deleteMember(id, accountInfo.getAccountName());
         return getSuccessResult(true);
     }
 

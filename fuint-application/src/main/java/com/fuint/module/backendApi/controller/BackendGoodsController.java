@@ -168,8 +168,7 @@ public class BackendGoodsController extends BaseController {
             return getFailureResult(1004);
         }
 
-        String operator = accountInfo.getAccountName();
-        goodsService.updateStatus(goodsId, status, operator);
+        goodsService.updateStatus(goodsId, status, accountInfo.getAccountName());
         logger.info("更新商品状态, goodsId = {},account = {}", goodsId, accountInfo.getAccountName());
 
         return getSuccessResult(true);

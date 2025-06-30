@@ -139,10 +139,7 @@ public class BackendSmsTemplateController extends BaseController {
     public ResponseObject delete(HttpServletRequest request, @PathVariable("id") Integer id) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
-
-        String operator = accountInfo.getAccountName();
-        smsTemplateService.deleteTemplate(id, operator);
-
+        smsTemplateService.deleteTemplate(id, accountInfo.getAccountName());
         return getSuccessResult(true);
     }
 }

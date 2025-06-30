@@ -161,11 +161,10 @@ public class BackendSettlementController extends BaseController {
         String token = request.getHeader("Access-Token");
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
 
-        String operator = accountInfo.getAccountName();
         if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
             requestParam.setMerchantId(accountInfo.getMerchantId());
         }
-        requestParam.setOperator(operator);
+        requestParam.setOperator(accountInfo.getAccountName());
         settlementService.submitSettlement(requestParam);
 
         return getSuccessResult(true);
@@ -189,8 +188,7 @@ public class BackendSettlementController extends BaseController {
         if (StringUtil.isEmpty(settlementId)) {
             return getFailureResult(201, "参数有误");
         }
-        String operator = accountInfo.getAccountName();
-        settlementService.doConfirm(Integer.parseInt(settlementId), operator);
+        settlementService.doConfirm(Integer.parseInt(settlementId), accountInfo.getAccountName());
         return getSuccessResult(true);
     }
 }

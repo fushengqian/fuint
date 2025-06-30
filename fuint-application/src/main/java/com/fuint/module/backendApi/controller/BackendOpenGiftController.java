@@ -181,9 +181,7 @@ public class BackendOpenGiftController extends BaseController {
         }
         reqDto.setStoreId(0);
         reqDto.setStatus(status);
-        String operator = accountInfo.getAccountName();
-        reqDto.setOperator(operator);
-
+        reqDto.setOperator(accountInfo.getAccountName());
         if (StringUtil.isNotEmpty(id)) {
             reqDto.setId(Integer.parseInt(id));
             openGiftService.updateOpenGift(reqDto);
@@ -233,10 +231,7 @@ public class BackendOpenGiftController extends BaseController {
     public ResponseObject delete(HttpServletRequest request, @PathVariable("id") Integer id) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
-
-        String operator = accountInfo.getAccountName();
-        openGiftService.deleteOpenGift(id, operator);
-
+        openGiftService.deleteOpenGift(id, accountInfo.getAccountName());
         return getSuccessResult(true);
     }
 }

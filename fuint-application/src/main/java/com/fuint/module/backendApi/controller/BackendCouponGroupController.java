@@ -218,9 +218,8 @@ public class BackendCouponGroupController extends BaseController {
 
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
 
-        String operator = accountInfo.getAccountName();
         ReqCouponGroupDto groupDto = new ReqCouponGroupDto();
-        groupDto.setOperator(operator);
+        groupDto.setOperator(accountInfo.getAccountName());
         groupDto.setId(id);
         groupDto.setStatus(status);
         couponGroupService.updateCouponGroup(groupDto);

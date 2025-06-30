@@ -189,7 +189,6 @@ public class BackendPointController extends BaseController {
             return getFailureResult(5002);
         }
 
-        String operator = accountInfo.getAccountName();
         PointSettingEnum[] settingList = PointSettingEnum.values();
         for (PointSettingEnum setting : settingList) {
             MtSetting info = new MtSetting();
@@ -210,7 +209,7 @@ public class BackendPointController extends BaseController {
 
             info.setDescription(setting.getValue());
             info.setStatus(status);
-            info.setOperator(operator);
+            info.setOperator(accountInfo.getAccountName());
             info.setUpdateTime(new Date());
 
             settingService.saveSetting(info);
