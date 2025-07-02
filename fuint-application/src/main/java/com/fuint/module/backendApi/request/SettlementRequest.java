@@ -16,6 +16,9 @@ public class SettlementRequest implements Serializable {
     @ApiModelProperty(value="商户ID", name="merchantId")
     private Integer merchantId;
 
+    @ApiModelProperty(value="结算ID", name="settlementId")
+    private Integer settlementId;
+
     @ApiModelProperty(value="店铺ID", name="storeId")
     private Integer storeId;
 

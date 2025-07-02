@@ -180,15 +180,13 @@ public class BackendSettlementController extends BaseController {
     @RequestMapping(value = "/doConfirm", method = RequestMethod.POST)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('settlement:doConfirm')")
-    public ResponseObject doConfirm(HttpServletRequest request, @RequestBody Map<String, Object> param) throws BusinessCheckException {
-        String token = request.getHeader("Access-Token");
-        String settlementId = StringUtil.isEmpty(param.get("settlementId").toString())? "" : param.get("settlementId").toString();
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
-
-        if (StringUtil.isEmpty(settlementId)) {
+    public ResponseObject doConfirm(HttpServletRequest request, @RequestBody SettlementRequest param) throws BusinessCheckException {
+        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
+        Integer settlementId = param.getSettlementId();
+        if (settlementId == null) {
             return getFailureResult(201, "参数有误");
         }
-        settlementService.doConfirm(Integer.parseInt(settlementId), accountInfo.getAccountName());
+        settlementService.doConfirm(settlementId, accountInfo.getAccountName());
         return getSuccessResult(true);
     }
 }

@@ -10,6 +10,8 @@ import com.fuint.common.util.TokenUtil;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.web.BaseController;
 import com.fuint.framework.web.ResponseObject;
+import com.fuint.module.clientApi.request.RefundListRequest;
+import com.fuint.module.clientApi.request.RefundSubmitRequest;
 import com.fuint.repository.model.MtRefund;
 import com.fuint.utils.StringUtil;
 import io.swagger.annotations.Api;
@@ -48,7 +50,7 @@ public class ClientRefundController extends BaseController {
     @ApiOperation(value = "获取售后订单列表")
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     @CrossOrigin
-    public ResponseObject list(HttpServletRequest request, @RequestParam Map<String, Object> param) throws BusinessCheckException {
+    public ResponseObject list(HttpServletRequest request, @RequestParam RefundListRequest param) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
         UserInfo userInfo = TokenUtil.getUserInfoByToken(token);
 
@@ -56,9 +58,9 @@ public class ClientRefundController extends BaseController {
             return getFailureResult(1001, "用户未登录");
         }
 
-        param.put("userId", userInfo.getId());
+        param.setUserId(userInfo.getId());
 
-        String status = param.get("status") != null ? param.get("status").toString() : "";
+        String status = param.getStatus() != null ? param.getStatus() : "";
         if (status.equals("1")) {
             status = RefundStatusEnum.CREATED.getKey();
         } else {
@@ -69,7 +71,7 @@ public class ClientRefundController extends BaseController {
         if (StringUtil.isNotEmpty(status)) {
             params.put("status", status);
         }
-        params.put("pageNumber", param.get("page").toString());
+        params.put("pageNumber", param.getPage());
 
         ResponseObject orderData = refundService.getUserRefundList(params);
         return getSuccessResult(orderData.getData());
@@ -81,20 +83,20 @@ public class ClientRefundController extends BaseController {
     @ApiOperation(value = "售后订单提交")
     @RequestMapping(value = "/submit", method = RequestMethod.POST)
     @CrossOrigin
-    public ResponseObject submit(HttpServletRequest request, @RequestBody Map<String, Object> param) throws BusinessCheckException {
+    public ResponseObject submit(HttpServletRequest request, @RequestBody RefundSubmitRequest param) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
         UserInfo mtUser = TokenUtil.getUserInfoByToken(token);
         if (null == mtUser) {
             return getFailureResult(1001);
         }
-        param.put("userId", mtUser.getId());
+        param.setUserId(mtUser.getId());
 
-        String orderId = param.get("orderId") == null ? "" : param.get("orderId").toString();
-        String remark = param.get("remark") == null ? "" : param.get("remark").toString();
-        String type = param.get("type") == null ? "" : param.get("type").toString();
-        String images = param.get("images") == null ? "" : param.get("images").toString();
+        Integer orderId = param.getOrderId() == null ? 0 : param.getOrderId();
+        String remark = param.getRemark() == null ? "" : param.getRemark();
+        String type = param.getType() == null ? "" : param.getType();
+        String images = param.getImages() == null ? "" : param.getImages();
 
-        UserOrderDto order = orderService.getOrderById(Integer.parseInt(orderId));
+        UserOrderDto order = orderService.getOrderById(orderId);
         if (order == null || (!order.getUserId().equals(mtUser.getId()))) {
             return getFailureResult(2001);
         }
