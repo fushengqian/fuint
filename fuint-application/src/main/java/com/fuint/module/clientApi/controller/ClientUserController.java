@@ -10,6 +10,7 @@ import com.fuint.common.util.*;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.web.BaseController;
 import com.fuint.framework.web.ResponseObject;
+import com.fuint.module.clientApi.request.MemberInfoRequest;
 import com.fuint.repository.model.*;
 import com.fuint.utils.StringUtil;
 import io.swagger.annotations.Api;
@@ -258,18 +259,19 @@ public class ClientUserController extends BaseController {
     @ApiOperation(value = "保存会员信息")
     @RequestMapping(value = "/saveInfo", method = RequestMethod.POST)
     @CrossOrigin
-    public ResponseObject saveInfo(HttpServletRequest request, @RequestBody Map<String, Object> param) throws BusinessCheckException {
+    public ResponseObject saveInfo(HttpServletRequest request, @RequestBody MemberInfoRequest memberInfo) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
         String merchantNo = request.getHeader("merchantNo") == null ? "" : request.getHeader("merchantNo");
-        String name = param.get("name") == null ? "" : param.get("name").toString();
-        String birthday = param.get("birthday") == null ? "" : param.get("birthday").toString();
-        String avatar = param.get("avatar") == null ? "" : param.get("avatar").toString();
-        Integer sex = param.get("sex") == null ? 1 : Integer.parseInt(param.get("sex").toString());
-        String code = param.get("code") == null ? "" : param.get("code").toString();
-        String password = param.get("password") == null ? "" : param.get("password").toString();
-        String passwordOld = param.get("passwordOld") == null ? "" : param.get("passwordOld").toString();
-        String phone = param.get("mobile") == null ? "" : param.get("mobile").toString();
-        String verifyCode = param.get("verifyCode") == null ? "" : param.get("verifyCode").toString();
+        String name = memberInfo.getName();
+        String birthday = memberInfo.getBirthday();
+        String avatar = memberInfo.getAvatar();
+        Integer sex = memberInfo.getSex();
+        String code = memberInfo.getCode();
+        String password = memberInfo.getPassword();
+        String passwordOld = memberInfo.getPasswordOld();
+        String phone = memberInfo.getMobile();
+        String verifyCode = memberInfo.getVerifyCode();
+
         String mobile = "";
         Integer merchantId = merchantService.getMerchantId(merchantNo);
         UserInfo userInfo = TokenUtil.getUserInfoByToken(token);
@@ -292,7 +294,7 @@ public class ClientUserController extends BaseController {
         if (StringUtil.isNotEmpty(code)) {
             JSONObject loginInfo = weixinService.getWxProfile(merchantId, code);
             if (loginInfo != null) {
-                mobile = weixinService.getPhoneNumber(param.get("encryptedData").toString(), loginInfo.get("session_key").toString(), param.get("iv").toString());
+                mobile = weixinService.getPhoneNumber(memberInfo.getEncryptedData(), loginInfo.get("session_key").toString(), memberInfo.getIv());
             }
         }
 
