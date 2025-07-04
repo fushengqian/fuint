@@ -13,6 +13,7 @@ import com.fuint.framework.pagination.PaginationRequest;
 import com.fuint.framework.pagination.PaginationResponse;
 import com.fuint.framework.web.BaseController;
 import com.fuint.framework.web.ResponseObject;
+import com.fuint.module.backendApi.request.MemberSubmitRequest;
 import com.fuint.repository.model.*;
 import com.fuint.utils.StringUtil;
 import io.swagger.annotations.Api;
@@ -247,72 +248,35 @@ public class BackendMemberController extends BaseController {
     @RequestMapping(value = "/save", method = RequestMethod.POST)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('member:add')")
-    public ResponseObject save(HttpServletRequest request, @RequestBody Map<String, Object> param) throws BusinessCheckException, ParseException {
-        String token = request.getHeader("Access-Token");
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
-
-        String id = param.get("id").toString();
-        String name = param.get("name") == null ? "" : param.get("name").toString();
-        String gradeId = param.get("gradeId") == null ? "0" :param.get("gradeId").toString();
-        String groupId = param.get("groupId") == null ? "0" :param.get("groupId").toString();
-        String storeId = param.get("storeId") == null ? "0" :param.get("storeId").toString();
-        String userNo = param.get("userNo") == null ? "" : param.get("userNo").toString();
-        String mobile = param.get("mobile") == null ? "" : param.get("mobile").toString();
-        String sex = param.get("sex") == null ? "0" : param.get("sex").toString();
-        String idCard = param.get("idcard") == null ? "" : param.get("idcard").toString();
-        String birthday = param.get("birthday") == null ? "" : param.get("birthday").toString();
-        String address = param.get("address") == null ? "" : param.get("address").toString();
-        String description = param.get("description") == null ? "" : param.get("description").toString();
-        String status = param.get("status") == null ? StatusEnum.ENABLED.getKey() : param.get("status").toString();
-        String startTime = param.get("startTime") == null ? "" : param.get("startTime").toString();
-        String endTime = param.get("endTime") == null ? "" : param.get("endTime").toString();
-
-        if (PhoneFormatCheckUtils.isChinaPhoneLegal(mobile)) {
+    public ResponseObject save(HttpServletRequest request, @RequestBody MemberSubmitRequest memberInfo) throws BusinessCheckException, ParseException {
+        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
+        if (PhoneFormatCheckUtils.isChinaPhoneLegal(memberInfo.getMobile())) {
             // 重置该手机号
-            memberService.resetMobile(mobile, StringUtil.isEmpty(id) ? 0 : Integer.parseInt(id));
+            memberService.resetMobile(memberInfo.getMobile(), memberInfo.getId());
         }
 
-        MtUser memberInfo;
-        if (StringUtil.isEmpty(id)) {
-            memberInfo = new MtUser();
+        MtUser mtUser;
+        if (memberInfo.getId() == null || memberInfo.getId() <= 0) {
+            mtUser = new MtUser();
         } else {
-            memberInfo = memberService.queryMemberById(Integer.parseInt(id));
+            mtUser = memberService.queryMemberById(memberInfo.getId());
         }
 
         if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
-            memberInfo.setMerchantId(accountInfo.getMerchantId());
+            mtUser.setMerchantId(accountInfo.getMerchantId());
         }
-
-        memberInfo.setName(name);
-        memberInfo.setStatus(status);
-        if (StringUtil.isNotEmpty(groupId)) {
-            memberInfo.setGroupId(Integer.parseInt(groupId));
-        }
-        memberInfo.setGradeId(gradeId);
-        memberInfo.setUserNo(userNo);
-        if (PhoneFormatCheckUtils.isChinaPhoneLegal(mobile)) {
-            memberInfo.setMobile(mobile);
-        }
-        memberInfo.setSex(Integer.parseInt(sex));
-        memberInfo.setIdcard(idCard);
-        memberInfo.setBirthday(birthday);
-        memberInfo.setAddress(address);
-        memberInfo.setDescription(description);
-        memberInfo.setStartTime(DateUtil.parseDate(startTime));
-        memberInfo.setEndTime(DateUtil.parseDate(endTime));
-        memberInfo.setIsStaff(YesOrNoEnum.NO.getKey());
-        if (StringUtil.isNotEmpty(storeId)) {
-            memberInfo.setStoreId(Integer.parseInt(storeId));
-        }
-        TAccount account = accountService.getAccountInfoById(accountInfo.getId());
-        Integer myStoreId = account.getStoreId();
+        BeanUtils.copyProperties(memberInfo, mtUser);
+        mtUser.setStartTime(DateUtil.parseDate(memberInfo.getStartTime()));
+        mtUser.setEndTime(DateUtil.parseDate(memberInfo.getEndTime()));
+        mtUser.setIsStaff(YesOrNoEnum.NO.getKey());
+        Integer myStoreId = accountInfo.getStoreId();
         if (myStoreId != null && myStoreId > 0) {
-            memberInfo.setStoreId(myStoreId);
+            mtUser.setStoreId(myStoreId);
         }
-        if (StringUtil.isEmpty(id)) {
-            memberService.addMember(memberInfo, "0");
+        if (mtUser.getId() == null) {
+            memberService.addMember(mtUser, null);
         } else {
-            memberService.updateMember(memberInfo, false);
+            memberService.updateMember(mtUser, false);
         }
         return getSuccessResult(true);
     }

@@ -7,18 +7,19 @@ import com.fuint.common.enums.MerchantTypeEnum;
 import com.fuint.common.enums.StatusEnum;
 import com.fuint.common.service.MerchantService;
 import com.fuint.common.service.SettingService;
-import com.fuint.common.util.CommonUtil;
 import com.fuint.common.util.TokenUtil;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.pagination.PaginationRequest;
 import com.fuint.framework.pagination.PaginationResponse;
 import com.fuint.framework.web.BaseController;
 import com.fuint.framework.web.ResponseObject;
+import com.fuint.module.backendApi.request.MerchantSubmitRequest;
 import com.fuint.repository.model.MtMerchant;
 import com.fuint.utils.StringUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.AllArgsConstructor;
+import org.springframework.beans.BeanUtils;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
@@ -158,62 +159,33 @@ public class BackendMerchantController extends BaseController {
     @RequestMapping(value = "/save", method = RequestMethod.POST)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('merchant:index')")
-    public ResponseObject saveHandler(HttpServletRequest request, @RequestBody Map<String, Object> params) throws BusinessCheckException {
+    public ResponseObject saveHandler(HttpServletRequest request, @RequestBody MerchantSubmitRequest merchantInfo) throws BusinessCheckException {
         String token = request.getHeader("Access-Token");
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
+        Integer merchantId = accountInfo.getMerchantId();
 
-        Integer merchantId = StringUtil.isEmpty(params.get("id").toString()) ? Integer.parseInt("0") : Integer.parseInt(params.get("id").toString());
-        String name = CommonUtil.replaceXSS(params.get("name").toString());
-        String merchantNo = CommonUtil.replaceXSS(params.get("no").toString());
-        String contact = params.get("contact") == null ? "" : CommonUtil.replaceXSS(params.get("contact").toString());
-        String phone = params.get("phone") == null ? "" : CommonUtil.replaceXSS(params.get("phone").toString());
-        String description = params.get("description") == null ? "" : CommonUtil.replaceXSS(params.get("description").toString());
-        String address = params.get("address") == null ? "" : CommonUtil.replaceXSS(params.get("address").toString());
-        String status = params.get("status") == null ? "" : CommonUtil.replaceXSS(params.get("status").toString());
-        String logo = params.get("logo") == null ? "" : CommonUtil.replaceXSS(params.get("logo").toString());
-        String type = params.get("type") == null ? MerchantTypeEnum.RETAIL.getKey() : CommonUtil.replaceXSS(params.get("type").toString());
-        String wxAppId = params.get("wxAppId") == null ? "" : CommonUtil.replaceXSS(params.get("wxAppId").toString());
-        String wxAppSecret = params.get("wxAppSecret") == null ? "" : CommonUtil.replaceXSS(params.get("wxAppSecret").toString());
-        String wxOfficialAppId = params.get("wxOfficialAppId") == null ? "" : CommonUtil.replaceXSS(params.get("wxOfficialAppId").toString());
-        String wxOfficialAppSecret = params.get("wxOfficialAppSecret") == null ? "" : CommonUtil.replaceXSS(params.get("wxOfficialAppSecret").toString());
-
-        MtMerchant merchantInfo = new MtMerchant();
-        merchantInfo.setType(type);
-        merchantInfo.setName(name);
-        merchantInfo.setNo(merchantNo);
-        merchantInfo.setContact(contact);
-        merchantInfo.setPhone(phone);
-        merchantInfo.setDescription(description);
-        merchantInfo.setAddress(address);
-        merchantInfo.setLogo(logo);
-        merchantInfo.setWxAppId(wxAppId);
-        merchantInfo.setWxAppSecret(wxAppSecret);
-        merchantInfo.setWxOfficialAppId(wxOfficialAppId);
-        merchantInfo.setWxOfficialAppSecret(wxOfficialAppSecret);
-        merchantInfo.setStatus(status);
-        if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
-            merchantInfo.setId(accountInfo.getMerchantId());
+        MtMerchant mtMerchant = new MtMerchant();
+        BeanUtils.copyProperties(merchantInfo, mtMerchant);
+        if (merchantId != null && merchantId > 0) {
+            mtMerchant.setId(merchantId);
         }
 
-        if (StringUtil.isEmpty(name)) {
+        if (StringUtil.isEmpty(mtMerchant.getName())) {
             return getFailureResult(201, "商户名称不能为空");
         } else {
-            MtMerchant merchant = merchantService.queryMerchantByName(name);
-            if (null != merchant && !merchant.getId().equals(merchantId)) {
+            MtMerchant merchant = merchantService.queryMerchantByName(mtMerchant.getName());
+            if (merchant != null && !merchant.getId().equals(mtMerchant.getId())) {
                 return getFailureResult(201, "该商户名称已经存在");
             }
         }
-        if (merchantId <= 0 && accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
+
+        if (mtMerchant.getId() == null && merchantId != null && merchantId > 0) {
             return getFailureResult(201, "抱歉，您没有添加商户的权限");
         }
 
-        // 修改商户信息
-        if (merchantId > 0) {
-            merchantInfo.setId(merchantId);
-        }
+        mtMerchant.setOperator(accountInfo.getAccountName());
+        merchantService.saveMerchant(mtMerchant);
 
-        merchantInfo.setOperator(accountInfo.getAccountName());
-        merchantService.saveMerchant(merchantInfo);
         return getSuccessResult(true);
     }
 

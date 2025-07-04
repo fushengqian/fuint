@@ -27,6 +27,7 @@ import org.apache.commons.lang.StringUtils;
 import com.github.pagehelper.Page;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -115,22 +116,14 @@ public class PointServiceImpl extends ServiceImpl<MtPointMapper, MtPoint> implem
 
         List<PointDto> dataList = new ArrayList<>();
         for (MtPoint point : pointList) {
-            MtUser userInfo = memberService.queryMemberById(point.getUserId());
-            if (userInfo != null) {
+             MtUser userInfo = memberService.queryMemberById(point.getUserId());
+             if (userInfo != null) {
                 userInfo.setMobile(CommonUtil.hidePhone(userInfo.getMobile()));
-            }
-            PointDto item = new PointDto();
-            item.setId(point.getId());
-            item.setAmount(point.getAmount());
-            item.setDescription(point.getDescription());
-            item.setCreateTime(point.getCreateTime());
-            item.setUpdateTime(point.getUpdateTime());
-            item.setUserId(point.getUserId());
-            item.setUserInfo(userInfo);
-            item.setOrderSn(point.getOrderSn());
-            item.setOperator(point.getOperator());
-            item.setStatus(point.getStatus());
-            dataList.add(item);
+             }
+             PointDto item = new PointDto();
+             BeanUtils.copyProperties(point, item);
+             item.setUserInfo(userInfo);
+             dataList.add(item);
         }
         PageRequest pageRequest = PageRequest.of(paginationRequest.getCurrentPage(), paginationRequest.getPageSize());
         PageImpl pageImpl = new PageImpl(dataList, pageRequest, pageHelper.getTotal());
