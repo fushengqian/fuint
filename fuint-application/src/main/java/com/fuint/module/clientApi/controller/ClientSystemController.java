@@ -4,6 +4,7 @@ import com.fuint.common.dto.ParamDto;
 import com.fuint.common.dto.StoreInfo;
 import com.fuint.common.dto.UserInfo;
 import com.fuint.common.enums.StatusEnum;
+import com.fuint.common.enums.YesOrNoEnum;
 import com.fuint.common.service.MemberService;
 import com.fuint.common.service.MerchantService;
 import com.fuint.common.service.SettingService;
@@ -139,8 +140,17 @@ public class ClientSystemController extends BaseController {
             storeInfo = null;
         }
 
+        // 是否单店铺
+        storeInfo.setSingle(YesOrNoEnum.YES.getKey());
+        if (storeInfo != null) {
+            List<MtStore> stores = storeService.getMyStoreList(storeInfo.getMerchantId(), 0, StatusEnum.ENABLED.getKey());
+            if (stores != null && stores.size() > 1) {
+                storeInfo.setSingle(YesOrNoEnum.NO.getKey());
+            }
+        }
+
         // 支付方式列表
-        List<ParamDto> payTypeList = settingService.getPayTypeList(merchantId, storeInfo.getId(), platform);
+        List<ParamDto> payTypeList = settingService.getPayTypeList(merchantId, (storeInfo == null) ? 0 :storeInfo.getId(), platform);
 
         Map<String, Object> result = new HashMap<>();
         result.put("storeInfo", storeInfo);

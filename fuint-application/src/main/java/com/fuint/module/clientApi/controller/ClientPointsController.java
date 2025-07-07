@@ -4,6 +4,7 @@ import com.fuint.common.Constants;
 import com.fuint.common.dto.PointDto;
 import com.fuint.common.dto.UserInfo;
 import com.fuint.common.enums.StatusEnum;
+import com.fuint.common.param.GivePointParam;
 import com.fuint.common.service.PointService;
 import com.fuint.common.util.TokenUtil;
 import com.fuint.framework.exception.BusinessCheckException;
@@ -11,7 +12,6 @@ import com.fuint.framework.pagination.PaginationRequest;
 import com.fuint.framework.pagination.PaginationResponse;
 import com.fuint.framework.web.BaseController;
 import com.fuint.framework.web.ResponseObject;
-import com.fuint.utils.StringUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.AllArgsConstructor;
@@ -39,8 +39,6 @@ public class ClientPointsController extends BaseController {
 
     /**
      * 查询我的积分明细
-     *
-     * @param request Request对象
      */
     @ApiOperation(value = "查询我的积分明细")
     @RequestMapping(value = "/list", method = RequestMethod.GET)
@@ -50,15 +48,7 @@ public class ClientPointsController extends BaseController {
         Integer page = request.getParameter("page") == null ? Constants.PAGE_NUMBER : Integer.parseInt(request.getParameter("page"));
         Integer pageSize = request.getParameter("pageSize") == null ? Constants.PAGE_SIZE : Integer.parseInt(request.getParameter("pageSize"));
 
-        if (StringUtil.isEmpty(token)) {
-            return getFailureResult(1001);
-        }
-
         UserInfo mtUser = TokenUtil.getUserInfoByToken(token);
-        if (null == mtUser) {
-            return getFailureResult(1001);
-        }
-
         Map<String, Object> param = new HashMap<>();
 
         param.put("userId", mtUser.getId());
@@ -75,37 +65,21 @@ public class ClientPointsController extends BaseController {
 
     /**
      * 转赠积分
-     *
-     * @param param Request对象
      */
     @ApiOperation(value = "转赠积分")
     @RequestMapping(value = "/doGive", method = RequestMethod.POST)
     @CrossOrigin
-    public ResponseObject doGive(HttpServletRequest request, @RequestBody Map<String, Object> param) {
-        String token = request.getHeader("Access-Token");
+    public ResponseObject doGive(HttpServletRequest request, @RequestBody GivePointParam param) throws BusinessCheckException {
+        UserInfo mtUser = TokenUtil.getUserInfoByToken(request.getHeader("Access-Token"));
 
-        if (StringUtil.isEmpty(token)) {
-            return getFailureResult(1001);
-        }
+        String mobile = param.getMobile();
+        String remark = param.getRemark();
+        Integer amount = param.getAmount();
 
-        UserInfo mtUser = TokenUtil.getUserInfoByToken(token);
-
-        if (null == mtUser) {
-            return getFailureResult(1001);
-        }
-
-        String mobile = param.get("mobile") == null ? "" : param.get("mobile").toString();
-        String remark = param.get("remark") == null ? "" : param.get("remark").toString();
-        Integer amount = param.get("amount") == null ? 0 : Integer.parseInt(param.get("amount").toString());
-
-        try {
-            boolean result = pointService.doGift(mtUser.getId(), mobile, amount, remark);
-            if (result) {
-                return getSuccessResult(true);
-            } else {
-                return getFailureResult(3008);
-            }
-        } catch (BusinessCheckException e) {
+        boolean result = pointService.doGift(mtUser.getId(), mobile, amount, remark);
+        if (result) {
+            return getSuccessResult(true);
+        } else {
             return getFailureResult(3008);
         }
     }

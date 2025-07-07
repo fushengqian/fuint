@@ -84,6 +84,7 @@ public class WebConfig extends WebMvcConfigurationSupport {
                 .excludePathPatterns("/clientApi/cart/**")
                 .excludePathPatterns("/clientApi/user/**")
                 .excludePathPatterns("/clientApi/settlement/submit")
+                .excludePathPatterns("/clientApi/pay/doPay")
                 .excludePathPatterns("/clientApi/pay/weixinCallback")
                 .excludePathPatterns("/clientApi/pay/weixinRefundNotify")
                 .excludePathPatterns("/clientApi/pay/aliPayCallback")

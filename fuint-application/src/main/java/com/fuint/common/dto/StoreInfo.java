@@ -32,6 +32,9 @@ public class StoreInfo implements Serializable {
     @ApiModelProperty("店铺名称")
     private String name;
 
+    @ApiModelProperty("是否单店铺")
+    private String single;
+
     @ApiModelProperty("店铺二维码")
     private String qrCode;
 
