@@ -132,4 +132,12 @@ public interface StoreService extends IService<MtStore> {
      * */
     void deleteStoreByMerchant(Integer merchantId);
 
+    /**
+     * 根据地址获取经纬度
+     *
+     * @param addr 地址
+     * @return
+     * */
+    Map<String, Object> getLatAndLngByAddress(String addr);
+
 }

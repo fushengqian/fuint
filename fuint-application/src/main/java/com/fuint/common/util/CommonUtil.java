@@ -1,8 +1,5 @@
 package com.fuint.common.util;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
-import com.alibaba.fastjson.JSONArray;
 import com.fuint.utils.StringUtil;
 import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletRequest;
@@ -321,74 +318,6 @@ public class CommonUtil {
         if (StringUtil.isEmpty(formatStr)) formatStr = "yyyy-MM-dd";
         SimpleDateFormat dateFormater = new SimpleDateFormat(formatStr);
         return dateFormater.format(date);
-    }
-
-    /**
-     * 根据地址获取经纬度
-     *
-     * @param addr 地址
-     * @return
-     * */
-    public static Map<String, Object> getLatAndLngByAddress(String addr) {
-        String address = "";
-        try {
-            address = java.net.URLEncoder.encode(addr,"UTF-8");
-        } catch (UnsupportedEncodingException e1) {
-            e1.printStackTrace();
-        }
-
-        // key如果失效了就去高德地图官网申请
-        String url =  "https://restapi.amap.com/v3/geocode/geo?address="+address+"&output=JSON&key="+"4d57813b7b9157d66899cc4c1f22dc04";
-
-        URL myURL = null;
-        URLConnection httpsConn;
-        // 进行转码
-        try {
-            myURL = new URL(url);
-        } catch (MalformedURLException e) {
-            // empty
-        }
-        StringBuffer sb = new StringBuffer();
-        try {
-            httpsConn = myURL.openConnection();
-            if (httpsConn != null) {
-                InputStreamReader insr = new InputStreamReader(httpsConn.getInputStream(), "UTF-8");
-                BufferedReader br = new BufferedReader(insr);
-                String data = null;
-                while ((data = br.readLine()) != null) {
-                    sb.append(data);
-                }
-                insr.close();
-            }
-        } catch (IOException e) {
-
-        }
-
-        Map<String, Object> map = new HashMap<>();
-        JSONObject resultJson = JSON.parseObject(sb.toString());
-        JSONArray geocodes = resultJson.getJSONArray("geocodes");
-
-
-        String lat = "";
-        String lng = "";
-
-        if (geocodes != null) {
-            JSONObject jsonObject = geocodes.getJSONObject(0);
-            String location = jsonObject.getString("location");
-
-            if (org.apache.commons.lang.StringUtils.isNotEmpty(location)) {
-                String latAndLng[] = location.split(",");
-                if (latAndLng.length == 2) {
-                    lat = latAndLng[1];
-                    lng = latAndLng[0];
-                }
-            }
-        }
-
-        map.put("lat", lat);
-        map.put("lng", lng);
-
-        return map;
     }
 
     /**

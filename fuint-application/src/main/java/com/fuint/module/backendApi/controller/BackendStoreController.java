@@ -15,12 +15,14 @@ import com.fuint.framework.pagination.PaginationRequest;
 import com.fuint.framework.pagination.PaginationResponse;
 import com.fuint.framework.web.BaseController;
 import com.fuint.framework.web.ResponseObject;
+import com.fuint.module.backendApi.request.StoreSubmitRequest;
 import com.fuint.repository.model.MtMerchant;
 import com.fuint.repository.model.MtStore;
 import com.fuint.utils.StringUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.AllArgsConstructor;
+import org.springframework.beans.BeanUtils;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
@@ -176,95 +178,40 @@ public class BackendStoreController extends BaseController {
     @RequestMapping(value = "/save", method = RequestMethod.POST)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('store:add')")
-    public ResponseObject saveHandler(HttpServletRequest request, @RequestBody Map<String, Object> params) throws BusinessCheckException {
-        String token = request.getHeader("Access-Token");
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
+    public ResponseObject saveHandler(HttpServletRequest request, @RequestBody StoreSubmitRequest storeParam) throws BusinessCheckException {
+        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
+        StoreDto storeDto = new StoreDto();
 
-        StoreDto storeInfo = new StoreDto();
-        String storeId = params.get("id").toString();
-        String storeName = CommonUtil.replaceXSS(params.get("name").toString());
-        String contact = CommonUtil.replaceXSS(params.get("contact").toString());
-        String phone = CommonUtil.replaceXSS(params.get("phone").toString());
-        String description = params.get("description") == null ? "" : CommonUtil.replaceXSS(params.get("description").toString());
-        String isDefault = params.get("isDefault") == null ? YesOrNoEnum.NO.getKey() : CommonUtil.replaceXSS(params.get("isDefault").toString());
-        String address = params.get("address") == null ? "" : CommonUtil.replaceXSS(params.get("address").toString());
-        String hours = params.get("hours") == null ? "" : CommonUtil.replaceXSS(params.get("hours").toString());
-        String latitude = params.get("latitude") == null ? "" : CommonUtil.replaceXSS(params.get("latitude").toString());
-        String longitude = params.get("longitude") == null ? "" : CommonUtil.replaceXSS(params.get("longitude").toString());
-        String wxMchId = params.get("wxMchId") == null ? null : CommonUtil.replaceXSS(params.get("wxMchId").toString());
-        String wxApiV2 = params.get("wxApiV2") == null ? null : CommonUtil.replaceXSS(params.get("wxApiV2").toString());
-        String wxCertPath = params.get("wxCertPath") == null ? null : CommonUtil.replaceXSS(params.get("wxCertPath").toString());
-        String alipayAppId = params.get("alipayAppId") == null ? null : CommonUtil.replaceXSS(params.get("alipayAppId").toString());
-        String alipayPrivateKey = params.get("alipayPrivateKey") == null ? null : CommonUtil.replaceXSS(params.get("alipayPrivateKey").toString());
-        String alipayPublicKey = params.get("alipayPublicKey") == null ? null : CommonUtil.replaceXSS(params.get("alipayPublicKey").toString());
-        String logo = params.get("logo") == null ? "" : CommonUtil.replaceXSS(params.get("logo").toString());
-        String license = params.get("license") == null ? "" : CommonUtil.replaceXSS(params.get("license").toString());
-        String creditCode = params.get("creditCode") == null ? "" : CommonUtil.replaceXSS(params.get("creditCode").toString());
-        String bankName = params.get("bankName") == null ? "" : CommonUtil.replaceXSS(params.get("bankName").toString());
-        String bankCardName = params.get("bankCardName") == null ? "" : CommonUtil.replaceXSS(params.get("bankCardName").toString());
-        String bankCardNo = params.get("bankCardNo") == null ? "" : CommonUtil.replaceXSS(params.get("bankCardNo").toString());
-        String status = params.get("status") != null ? params.get("status").toString() : StatusEnum.ENABLED.getKey();
-        String merchantId = params.get("merchantId").toString();
-
-        if ((StringUtil.isEmpty(latitude) || StringUtil.isEmpty(longitude)) && StringUtil.isNotEmpty(address)) {
-            Map<String, Object> latAndLng = CommonUtil.getLatAndLngByAddress(address);
-            latitude = latAndLng.get("lat").toString();
-            longitude = latAndLng.get("lng").toString();
+        if ((StringUtil.isEmpty(storeParam.getLatitude()) || StringUtil.isEmpty(storeParam.getLongitude())) && StringUtil.isNotEmpty(storeParam.getAddress())) {
+            Map<String, Object> latAndLng = storeService.getLatAndLngByAddress(storeParam.getAddress());
+            storeParam.setLatitude(latAndLng.get("lat").toString());
+            storeParam.setLongitude(latAndLng.get("lng").toString());
         }
 
         if (accountInfo.getStoreId() != null && accountInfo.getStoreId() > 0) {
-            if (StringUtil.isEmpty(storeId)) {
+            if (storeParam.getId() == null) {
                 return getFailureResult(201, "店铺帐号不能新增店铺，请使用商户帐号添加！");
             }
-            storeId = accountInfo.getStoreId().toString();
+            storeParam.setId(accountInfo.getStoreId());
         }
         if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
-            merchantId = accountInfo.getMerchantId().toString();
+            storeParam.setMerchantId(accountInfo.getMerchantId());
         }
 
-        storeInfo.setName(storeName);
-        storeInfo.setLogo(logo);
-        storeInfo.setContact(contact);
-        storeInfo.setPhone(phone);
-        storeInfo.setDescription(description);
-        storeInfo.setIsDefault(isDefault);
-        storeInfo.setAddress(address);
-        storeInfo.setHours(hours);
-        storeInfo.setLatitude(latitude);
-        storeInfo.setLongitude(longitude);
-        storeInfo.setStatus(status);
-        storeInfo.setWxMchId(wxMchId);
-        storeInfo.setWxApiV2(wxApiV2);
-        storeInfo.setWxCertPath(wxCertPath);
-        storeInfo.setLicense(license);
-        storeInfo.setCreditCode(creditCode);
-        storeInfo.setBankName(bankName);
-        storeInfo.setBankCardName(bankCardName);
-        storeInfo.setBankCardNo(bankCardNo);
-        storeInfo.setAlipayAppId(alipayAppId);
-        storeInfo.setAlipayPrivateKey(alipayPrivateKey);
-        storeInfo.setAlipayPublicKey(alipayPublicKey);
-        if (StringUtil.isNotEmpty(merchantId)) {
-            storeInfo.setMerchantId(Integer.parseInt(merchantId));
-        }
-        if (StringUtil.isEmpty(storeName)) {
+        BeanUtils.copyProperties(storeParam, storeDto);
+        if (StringUtil.isEmpty(storeParam.getName())) {
             return getFailureResult(201, "店铺名称不能为空");
         } else {
-            if (!StringUtil.isNotEmpty(storeName)) {
-                StoreDto storeDto = storeService.queryStoreByName(storeName);
-                if (storeDto != null && storeDto.getName().equals(storeName) && !storeDto.getId().equals(storeId)) {
+            if (!StringUtil.isNotEmpty(storeParam.getName())) {
+                StoreDto store = storeService.queryStoreByName(storeParam.getName());
+                if (store != null && store.getName().equals(storeParam.getName()) && !store.getId().equals(storeParam.getId())) {
                     return getFailureResult(201, "该店铺名称已经存在");
                 }
             }
         }
 
-        // 修改店铺
-        if (StringUtil.isNotEmpty(storeId)) {
-            storeInfo.setId(Integer.parseInt(storeId));
-        }
-
-        storeInfo.setOperator(accountInfo.getAccountName());
-        storeService.saveStore(storeInfo);
+        storeDto.setOperator(accountInfo.getAccountName());
+        storeService.saveStore(storeDto);
 
         return getSuccessResult(true);
     }
