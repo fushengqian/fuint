@@ -632,6 +632,44 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
                 } else {
                     throw new BusinessCheckException("配送地址出错了，请重新选择配送地址");
                 }
+
+                // 是否超出起送范围
+                MtSetting deliveryRange = settingService.querySettingByName(orderInfo.getMerchantId(), SettingTypeEnum.ORDER.getKey(), OrderSettingEnum.DELIVERY_RANGE.getKey());
+                if (deliveryRange != null && StringUtil.isNotEmpty(deliveryRange.getValue()) && (Double.parseDouble(deliveryRange.getValue()) > 0)) {
+                    MtStore mtStore = storeService.queryStoreById(orderInfo.getStoreId());
+                    if (mtStore != null && StringUtil.isNotEmpty(mtStore.getLatitude()) && StringUtil.isNotEmpty(mtStore.getLongitude())) {
+                        String address = "";
+                        if (mtAddress.getProvinceId() != null && mtAddress.getProvinceId() > 0) {
+                            MtRegion mtProvince = mtRegionMapper.selectById(mtAddress.getProvinceId());
+                            if (mtProvince != null) {
+                                address = mtProvince.getName();
+                            }
+                        }
+                        if (mtAddress.getCityId() != null && mtAddress.getCityId() > 0) {
+                            MtRegion mtCity = mtRegionMapper.selectById(mtAddress.getCityId());
+                            if (mtCity != null) {
+                                address = address + mtCity.getName();
+                            }
+                        }
+                        if (mtAddress.getRegionId() != null && mtAddress.getRegionId() > 0) {
+                            MtRegion mtRegion = mtRegionMapper.selectById(mtAddress.getRegionId());
+                            if (mtRegion != null) {
+                                address = address + mtRegion.getName();
+                            }
+                        }
+                        address = address + mtAddress.getDetail();
+                        Map<String, Object> latAndLng = storeService.getLatAndLngByAddress(address);
+                        if (StringUtil.isNotEmpty(latAndLng.get("lat").toString()) && StringUtil.isNotEmpty(latAndLng.get("lng").toString())) {
+                            Double distance = storeService.getDistance(mtStore.getLongitude() + "," + mtStore.getLatitude(), latAndLng.get("lng").toString() + "," + latAndLng.get("lat").toString());
+                            Double limitDistance = Double.parseDouble(deliveryRange.getValue());
+                            logger.info("订单地址：{},配送距离为：{}", address, distance);
+                            if (distance > limitDistance) {
+                                throw new BusinessCheckException("抱歉，配送距离超过了" + limitDistance + "公里，请重新选择配送地址！");
+                            }
+                        }
+                    }
+                }
+
                 MtOrderAddress orderAddress = new MtOrderAddress();
                 orderAddress.setOrderId(orderInfo.getId());
                 orderAddress.setUserId(orderDto.getUserId());

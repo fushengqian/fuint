@@ -24,6 +24,7 @@ import com.fuint.repository.mapper.MtStoreGoodsMapper;
 import com.fuint.repository.mapper.MtStoreMapper;
 import com.fuint.repository.model.MtMerchant;
 import com.fuint.repository.model.MtStore;
+import com.fuint.utils.HttpUtil;
 import com.fuint.utils.StringUtil;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
@@ -516,7 +517,7 @@ public class StoreServiceImpl extends ServiceImpl<MtStoreMapper, MtStore> implem
     public Map<String, Object> getLatAndLngByAddress(String addr) {
         String key = env.getProperty("amap.key");
         Map<String, Object> map = new HashMap<>();
-        if (key == null) {
+        if (key == null || key.length() < 10) {
             map.put("lat", "");
             map.put("lng", "");
             return map;
@@ -578,6 +579,41 @@ public class StoreServiceImpl extends ServiceImpl<MtStoreMapper, MtStore> implem
         map.put("lng", lng);
 
         return map;
+    }
+
+    /**
+     * 测量步行距离
+     *
+     * @param origin 起点经纬度 格式如：116.434446,39.90816
+     * @param destination 终点经纬度 格式如：116.434307,39.90909
+     * @return
+     * */
+    public Double getDistance(String origin, String destination) {
+        String key = env.getProperty("amap.key");
+        if (StringUtil.isEmpty(key)) {
+            return 0d;
+        }
+        String url = "https://restapi.amap.com/v3/direction/walking?origin="+origin+"&destination="+destination+"&key="+key;
+        String response = HttpUtil.sendRequest(url);
+        if (StringUtil.isEmpty(response)) {
+            return 0d;
+        }
+        JSONObject resultJson = JSON.parseObject(response);
+        if (resultJson != null && "1".equals(resultJson.getString("status"))) {
+            JSONObject route = resultJson.getJSONObject("route");
+            if (route != null) {
+                JSONArray paths = route.getJSONArray("paths");
+                if (paths != null && paths.size() > 0) {
+                    JSONObject path = paths.getJSONObject(0);
+                    String distance = path.getString("distance");
+                    if (distance != null) {
+                        return Double.parseDouble(distance)/1000;
+                    }
+                }
+            }
+
+        }
+        return 0d;
     }
 
 }

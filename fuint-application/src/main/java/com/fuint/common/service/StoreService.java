@@ -140,4 +140,13 @@ public interface StoreService extends IService<MtStore> {
      * */
     Map<String, Object> getLatAndLngByAddress(String addr);
 
+    /**
+     * 获取步行距离
+     *
+     * @param origin 起点经纬度 格式如：116.434446,39.90816
+     * @param destination 终点经纬度 格式如：116.434307,39.90909
+     * @return
+     * */
+    Double getDistance(String origin, String destination);
+
 }

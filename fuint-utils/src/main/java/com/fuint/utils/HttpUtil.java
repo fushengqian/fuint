@@ -1,9 +1,10 @@
 package com.fuint.utils;
 
-import org.apache.commons.lang.StringUtils;
 import java.io.*;
-import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLConnection;
+import java.net.HttpURLConnection;
 import java.nio.charset.Charset;
 import java.util.Iterator;
 import java.util.Map;
@@ -40,42 +41,35 @@ public class HttpUtil {
      * 发送http请求
      *
      * @param url
-     * @param data
-     * @param method
      * @return
      * @throws IOException
      */
-    public static String sendRequest(URL url, String data, Method method) throws IOException {
-        HttpURLConnection client = (HttpURLConnection) url.openConnection();
-        client.setConnectTimeout(CONNECT_TIMEOUT);
-        client.setReadTimeout(READ_TIMEOUT);
-        client.setRequestMethod(method.value);
-        if (!StringUtils.isEmpty(data)) {
-            client.setRequestProperty("Content-length", "" + data.length());
+    public static String sendRequest(String url) {
+        URL myURL = null;
+        URLConnection httpsConn;
+        // 进行转码
+        try {
+            myURL = new URL(url);
+        } catch (MalformedURLException e) {
+            // empty
         }
-        if (Method.POST.equals(method)) {
-            // 发送数据
-            if (data != null) {
-                client.setDoOutput(true);
-                OutputStreamWriter osw = new OutputStreamWriter(client.getOutputStream(), "UTF-8");
-                osw.write(data);
-                osw.flush();
-                osw.close();
+        StringBuffer sb = new StringBuffer();
+        try {
+            httpsConn = myURL.openConnection();
+            if (httpsConn != null) {
+                InputStreamReader insr = new InputStreamReader(httpsConn.getInputStream(), "UTF-8");
+                BufferedReader br = new BufferedReader(insr);
+                String data = null;
+                while ((data = br.readLine()) != null) {
+                    sb.append(data);
+                }
+                insr.close();
             }
-        }
-        // 发送请求
-        client.connect();
-        if (client.getResponseCode() >= 300) {
-            throw new ServerUnavailable(url, client.getResponseCode(), client.getResponseMessage());
+        } catch (IOException e) {
+            return "";
         }
 
-        // 获取响应
-        BufferedReader in = new BufferedReader(new InputStreamReader(client.getInputStream(), UTF8));
-        StringBuilder response = new StringBuilder();
-        for (String line = in.readLine(); line != null; line = in.readLine()) {
-            response.append(line);
-        }
-        return response.toString();
+        return sb.toString();
     }
 
     public static String sendRequest(URL url, String data, Method method, Map<String, String> headers) throws IOException {
