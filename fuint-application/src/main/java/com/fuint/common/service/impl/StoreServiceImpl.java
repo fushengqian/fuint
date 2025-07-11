@@ -517,7 +517,7 @@ public class StoreServiceImpl extends ServiceImpl<MtStoreMapper, MtStore> implem
     public Map<String, Object> getLatAndLngByAddress(String addr) {
         String key = env.getProperty("amap.key");
         Map<String, Object> map = new HashMap<>();
-        if (key == null || key.length() < 10) {
+        if (StringUtil.isEmpty(key) || key.length() < 10) {
             map.put("lat", "");
             map.put("lng", "");
             return map;
