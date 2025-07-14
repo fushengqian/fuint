@@ -55,9 +55,6 @@ public class BackendArticleController extends BaseController {
 
     /**
      * 文章列表查询
-     *
-     * @param request HttpServletRequest对象
-     * @return 文章列表
      */
     @ApiOperation(value = "文章列表查询")
     @RequestMapping(value = "/list", method = RequestMethod.GET)
@@ -109,8 +106,6 @@ public class BackendArticleController extends BaseController {
 
     /**
      * 更新文章状态
-     *
-     * @return
      */
     @ApiOperation(value = "更新文章状态")
     @RequestMapping(value = "/updateStatus", method = RequestMethod.POST)
@@ -139,9 +134,6 @@ public class BackendArticleController extends BaseController {
 
     /**
      * 保存文章
-     *
-     * @param request  HttpServletRequest对象
-     * @return
      */
     @ApiOperation(value = "保存文章")
     @RequestMapping(value = "/save", method = RequestMethod.POST)
@@ -192,9 +184,6 @@ public class BackendArticleController extends BaseController {
 
     /**
      * 获取文章详情
-     *
-     * @param id
-     * @return
      */
     @ApiOperation(value = "获取文章详情")
     @RequestMapping(value = "/info/{id}", method = RequestMethod.GET)

@@ -39,8 +39,6 @@ public class BackendActionLogController extends BaseController {
 
     /**
      * 操作日志列表
-     *
-     * @return
      */
     @ApiOperation(value = "操作日志列表")
     @RequestMapping(value = "/list", method = RequestMethod.GET)

@@ -64,10 +64,6 @@ public class BackendCateController extends BaseController {
 
     /**
      * 获取商品分类列表
-     *
-     * @param request
-     * @return
-     * @throws BusinessCheckException
      */
     @ApiOperation(value = "获取商品分类列表")
     @RequestMapping(value = "/list", method = RequestMethod.GET)
@@ -122,8 +118,6 @@ public class BackendCateController extends BaseController {
 
     /**
      * 更新商品分类状态
-     *
-     * @return
      */
     @ApiOperation(value = "更新商品分类状态")
     @RequestMapping(value = "/updateStatus", method = RequestMethod.POST)
@@ -152,9 +146,6 @@ public class BackendCateController extends BaseController {
 
     /**
      * 保存商品分类
-     *
-     * @param request HttpServletRequest对象
-     * @return
      */
     @ApiOperation(value = "保存商品分类")
     @RequestMapping(value = "/save", method = RequestMethod.POST)
@@ -199,9 +190,6 @@ public class BackendCateController extends BaseController {
 
     /**
      * 商品分类详情
-     *
-     * @param request
-     * @return
      */
     @ApiOperation(value = "商品分类详情")
     @RequestMapping(value = "/info/{id}", method = RequestMethod.GET)

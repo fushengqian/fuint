@@ -88,9 +88,6 @@ public class BackendCashierController extends BaseController {
 
     /**
      * 收银台初始化
-     *
-     * @param request HttpServletRequest对象
-     * @return
      */
     @ApiOperation(value = "收银台初始化")
     @RequestMapping(value = "/init/{userId}", method = RequestMethod.GET)
@@ -140,10 +137,6 @@ public class BackendCashierController extends BaseController {
 
     /**
      * 查询商品列表
-     *
-     * @param request
-     * @param param
-     * @return
      */
     @ApiOperation(value = "查询商品列表")
     @RequestMapping(value = "/searchGoods", method = RequestMethod.POST)
@@ -174,9 +167,6 @@ public class BackendCashierController extends BaseController {
 
     /**
      * 获取商品详情
-     *
-     * @param goodsId 商品ID
-     * @return
      */
     @ApiOperation(value = "获取商品详情")
     @RequestMapping(value = "/getGoodsInfo/{id}", method = RequestMethod.GET)

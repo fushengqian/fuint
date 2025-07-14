@@ -51,9 +51,6 @@ public class BackendCommissionRuleController extends BaseController {
 
     /**
      * 规则列表查询
-     *
-     * @param request HttpServletRequest对象
-     * @return 规则列表
      */
     @ApiOperation(value = "规则列表查询")
     @RequestMapping(value = "/list", method = RequestMethod.GET)
@@ -109,8 +106,6 @@ public class BackendCommissionRuleController extends BaseController {
 
     /**
      * 更新分销提成规则状态
-     *
-     * @return
      */
     @ApiOperation(value = "更新分销提成规则状态")
     @RequestMapping(value = "/updateStatus", method = RequestMethod.POST)
@@ -139,9 +134,6 @@ public class BackendCommissionRuleController extends BaseController {
 
     /**
      * 保存分销提成规则
-     *
-     * @param request HttpServletRequest对象
-     * @return
      */
     @ApiOperation(value = "保存分销提成规则")
     @RequestMapping(value = "/save", method = RequestMethod.POST)
@@ -169,9 +161,6 @@ public class BackendCommissionRuleController extends BaseController {
 
     /**
      * 获取分销提成规则详情
-     *
-     * @param  id
-     * @return
      */
     @ApiOperation(value = "获取分销提成规则详情")
     @RequestMapping(value = "/info/{id}", method = RequestMethod.GET)

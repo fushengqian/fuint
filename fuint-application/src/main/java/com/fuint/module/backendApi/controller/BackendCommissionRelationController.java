@@ -49,9 +49,6 @@ public class BackendCommissionRelationController extends BaseController {
 
     /**
      * 分销提成邀请记录列表查询
-     *
-     * @param request HttpServletRequest对象
-     * @return 分销提成邀请记录
      */
     @ApiOperation(value = "分销提成邀请记录查询")
     @RequestMapping(value = "/list", method = RequestMethod.GET)
@@ -113,8 +110,6 @@ public class BackendCommissionRelationController extends BaseController {
 
     /**
      * 更新邀请记录状态
-     *
-     * @return
      */
     @ApiOperation(value = "更新邀请记录状态")
     @RequestMapping(value = "/updateStatus", method = RequestMethod.POST)
@@ -141,9 +136,6 @@ public class BackendCommissionRelationController extends BaseController {
 
     /**
      * 删除分销提成邀请记录
-     *
-     * @param  id 邀请记录ID
-     * @return
      */
     @ApiOperation(value = "删除分销提成邀请记录")
     @RequestMapping(value = "/delete/{id}", method = RequestMethod.GET)

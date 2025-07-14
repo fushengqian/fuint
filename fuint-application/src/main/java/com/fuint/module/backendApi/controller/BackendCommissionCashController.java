@@ -52,9 +52,6 @@ public class BackendCommissionCashController extends BaseController {
 
     /**
      * 分销提成提现记录列表
-     *
-     * @param request HttpServletRequest对象
-     * @return 分销提成记录
      */
     @ApiOperation(value = "分销提成提现记录列表")
     @RequestMapping(value = "/list", method = RequestMethod.GET)
@@ -122,9 +119,6 @@ public class BackendCommissionCashController extends BaseController {
 
     /**
      * 获取分销提成记录详情
-     *
-     * @param  id
-     * @return
      */
     @ApiOperation(value = "获取分销提成提现详情")
     @RequestMapping(value = "/info/{id}", method = RequestMethod.GET)
@@ -149,9 +143,6 @@ public class BackendCommissionCashController extends BaseController {
 
     /**
      * 修改分销提成提现
-     *
-     * @param request HttpServletRequest对象
-     * @return
      */
     @ApiOperation(value = "修改分销提成提现")
     @RequestMapping(value = "/save", method = RequestMethod.POST)
@@ -169,9 +160,6 @@ public class BackendCommissionCashController extends BaseController {
 
     /**
      * 结算确认
-     *
-     * @param request HttpServletRequest对象
-     * @return
      */
     @ApiOperation(value = "结算确认")
     @RequestMapping(value = "/confirm", method = RequestMethod.POST)
@@ -192,9 +180,6 @@ public class BackendCommissionCashController extends BaseController {
 
     /**
      * 取消结算
-     *
-     * @param request HttpServletRequest对象
-     * @return
      */
     @ApiOperation(value = "取消结算")
     @RequestMapping(value = "/cancel", method = RequestMethod.POST)

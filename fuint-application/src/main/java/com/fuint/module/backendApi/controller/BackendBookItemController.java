@@ -65,9 +65,6 @@ public class BackendBookItemController extends BaseController {
 
     /**
      * 预约订单列表查询
-     *
-     * @param  request HttpServletRequest对象
-     * @return 预约订单列表
      */
     @ApiOperation(value = "预约订单列表查询")
     @RequestMapping(value = "/list", method = RequestMethod.GET)
@@ -142,8 +139,6 @@ public class BackendBookItemController extends BaseController {
 
     /**
      * 更新预约订单状态
-     *
-     * @return
      */
     @ApiOperation(value = "更新预约订单状态")
     @RequestMapping(value = "/updateStatus", method = RequestMethod.POST)
@@ -170,9 +165,6 @@ public class BackendBookItemController extends BaseController {
 
     /**
      * 保存预约订单
-     *
-     * @param request HttpServletRequest对象
-     * @return
      */
     @ApiOperation(value = "保存预约订单")
     @RequestMapping(value = "/save", method = RequestMethod.POST)
@@ -207,9 +199,6 @@ public class BackendBookItemController extends BaseController {
 
     /**
      * 获取预约订单详情
-     *
-     * @param id
-     * @return
      */
     @ApiOperation(value = "获取预约订单详情")
     @RequestMapping(value = "/info/{id}", method = RequestMethod.GET)
