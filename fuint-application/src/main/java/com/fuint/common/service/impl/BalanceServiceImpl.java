@@ -5,12 +5,9 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fuint.common.dto.AccountInfo;
 import com.fuint.common.dto.BalanceDto;
-import com.fuint.common.enums.StatusEnum;
-import com.fuint.common.enums.WxMessageEnum;
-import com.fuint.common.service.BalanceService;
-import com.fuint.common.service.MemberService;
-import com.fuint.common.service.SendSmsService;
-import com.fuint.common.service.WeixinService;
+import com.fuint.common.dto.OrderDto;
+import com.fuint.common.enums.*;
+import com.fuint.common.service.*;
 import com.fuint.common.util.CommonUtil;
 import com.fuint.common.util.DateUtil;
 import com.fuint.common.util.PhoneFormatCheckUtils;
@@ -67,6 +64,11 @@ public class BalanceServiceImpl extends ServiceImpl<MtBalanceMapper, MtBalance> 
      * 短信发送服务接口
      * */
     private SendSmsService sendSmsService;
+
+    /**
+     * 订单服务接口
+     * */
+    private OrderService orderService;
 
     /**
      * 分页查询余额列表
@@ -181,14 +183,29 @@ public class BalanceServiceImpl extends ServiceImpl<MtBalanceMapper, MtBalance> 
         }
         mtBalance.setMerchantId(mtUser.getMerchantId());
         if (updateBalance) {
-            mtUser.setBalance(newAmount);
-            mtUserMapper.updateById(mtUser);
+            mtUserMapper.updateUserBalance(mtUser.getMerchantId(), Arrays.asList(mtUser.getId()), mtBalance.getAmount());
         }
 
         if (PhoneFormatCheckUtils.isChinaPhoneLegal(mtUser.getMobile())) {
             mtBalance.setMobile(mtUser.getMobile());
         }
         mtBalanceMapper.insert(mtBalance);
+
+        // 生成充值订单
+        if (StringUtil.isEmpty(mtBalance.getOrderSn()) && mtBalance.getAmount().compareTo(new BigDecimal("0")) > 0) {
+            OrderDto orderDto = new OrderDto();
+            orderDto.setMerchantId(mtBalance.getMerchantId());
+            orderDto.setStoreId(mtBalance.getStoreId());
+            orderDto.setUserId(mtBalance.getUserId());
+            orderDto.setType(OrderTypeEnum.RECHARGE.getKey());
+            orderDto.setPlatform(PlatformTypeEnum.PC.getCode());
+            orderDto.setOrderMode(OrderModeEnum.ONESELF.getKey());
+            orderDto.setAmount(mtBalance.getAmount());
+            orderDto.setPayType(PayTypeEnum.CASH.getKey());
+            orderDto.setPayStatus(PayStatusEnum.SUCCESS.getValue());
+            orderDto.setOperator(mtBalance.getOperator());
+            orderService.saveOrder(orderDto);
+        }
 
         try {
             List<String> mobileList = new ArrayList<>();
@@ -263,13 +280,14 @@ public class BalanceServiceImpl extends ServiceImpl<MtBalanceMapper, MtBalance> 
 
         if (userIdArr.size() > 0) {
             for (Integer userId : userIdArr) {
-                MtBalance mtBalance = new MtBalance();
-                mtBalance.setAmount(new BigDecimal(amount));
-                mtBalance.setUserId(userId);
-                mtBalance.setMerchantId(accountInfo.getMerchantId());
-                mtBalance.setDescription(remark);
-                mtBalance.setOperator(accountInfo.getAccountName());
-                addBalance(mtBalance, false);
+                 MtBalance mtBalance = new MtBalance();
+                 mtBalance.setAmount(new BigDecimal(amount));
+                 mtBalance.setUserId(userId);
+                 mtBalance.setStoreId(accountInfo.getStoreId());
+                 mtBalance.setMerchantId(accountInfo.getMerchantId());
+                 mtBalance.setDescription(remark);
+                 mtBalance.setOperator(accountInfo.getAccountName());
+                 addBalance(mtBalance, false);
             }
         } else {
             MtBalance mtBalance = new MtBalance();

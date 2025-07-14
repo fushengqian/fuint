@@ -230,6 +230,7 @@ public class PaymentServiceImpl implements PaymentService {
             MtBalance balance = new MtBalance();
             balance.setMobile(mtUser.getMobile());
             balance.setOrderSn(orderInfo.getOrderSn());
+            balance.setStoreId(orderInfo.getStoreId());
             balance.setUserId(mtUser.getId());
             BigDecimal balanceAmount = realPayAmount.subtract(realPayAmount).subtract(realPayAmount);
             balance.setAmount(balanceAmount);
