@@ -49,6 +49,15 @@ public enum OrderStatusEnum {
         this.value = value;
     }
 
+    public static String getValue(String k) {
+        for (OrderStatusEnum c : OrderStatusEnum.values()) {
+            if (c.getKey().equals(k)) {
+                return c.getValue();
+            }
+        }
+        return null;
+    }
+
     public static List<ParamDto> getOrderStatusList() {
         return Arrays.stream(OrderStatusEnum.values())
                 .map(status -> new ParamDto(status.getKey(), status.getValue(), status.getValue()))

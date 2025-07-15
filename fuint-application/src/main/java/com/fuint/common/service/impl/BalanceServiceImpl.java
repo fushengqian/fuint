@@ -202,8 +202,10 @@ public class BalanceServiceImpl extends ServiceImpl<MtBalanceMapper, MtBalance> 
             orderDto.setOrderMode(OrderModeEnum.ONESELF.getKey());
             orderDto.setAmount(mtBalance.getAmount());
             orderDto.setPayType(PayTypeEnum.CASH.getKey());
-            orderDto.setPayStatus(PayStatusEnum.SUCCESS.getValue());
+            orderDto.setStatus(OrderStatusEnum.COMPLETE.getKey());
+            orderDto.setPayStatus(PayStatusEnum.SUCCESS.getKey());
             orderDto.setOperator(mtBalance.getOperator());
+            orderDto.setUsePoint(0);
             orderService.saveOrder(orderDto);
         }
 

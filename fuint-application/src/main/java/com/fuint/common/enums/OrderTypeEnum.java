@@ -51,7 +51,7 @@ public enum OrderTypeEnum {
      * @param key
      * @return
      */
-    public static String getName(String key) {
+    public static String getValue(String key) {
         final OrderTypeEnum[] values = OrderTypeEnum.values();
         for (OrderTypeEnum value : values) {
             if (key.equals(value.getKey())) {

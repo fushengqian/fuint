@@ -363,12 +363,20 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
         mtOrder.setCouponId(orderDto.getCouponId());
         mtOrder.setParam(orderDto.getParam());
         mtOrder.setRemark(orderDto.getRemark());
-        mtOrder.setStatus(OrderStatusEnum.CREATED.getKey());
+        if (orderDto.getStatus() != null) {
+            mtOrder.setStatus(orderDto.getStatus());
+        } else {
+            mtOrder.setStatus(OrderStatusEnum.CREATED.getKey());
+        }
         mtOrder.setType(orderDto.getType());
         mtOrder.setAmount(orderDto.getAmount());
         mtOrder.setPayAmount(orderDto.getPayAmount());
         mtOrder.setDiscount(orderDto.getDiscount());
-        mtOrder.setPayStatus(PayStatusEnum.WAIT.getKey());
+        if (orderDto.getPayStatus() != null) {
+            mtOrder.setPayStatus(orderDto.getPayStatus());
+        } else {
+            mtOrder.setPayStatus(PayStatusEnum.WAIT.getKey());
+        }
         mtOrder.setPlatform(orderDto.getPlatform());
         mtOrder.setPointAmount(orderDto.getPointAmount());
         mtOrder.setUsePoint(orderDto.getUsePoint());
@@ -531,7 +539,7 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
         }
 
         // 扣减积分
-        if (orderDto.getUsePoint() > 0) {
+        if (orderDto.getUsePoint() != null && orderDto.getUsePoint() > 0) {
             try {
                 MtPoint reqPointDto = new MtPoint();
                 reqPointDto.setUserId(orderDto.getUserId());
@@ -1666,35 +1674,8 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
             userOrderDto.setPayTime(DateUtil.formatDate(orderInfo.getPayTime(), "yyyy.MM.dd HH:mm"));
         }
 
-        if (userOrderDto.getType().equals(OrderTypeEnum.PRESTORE.getKey())) {
-            userOrderDto.setTypeName(OrderTypeEnum.PRESTORE.getValue());
-        } else if(userOrderDto.getType().equals(OrderTypeEnum.PAYMENT.getKey())) {
-            userOrderDto.setTypeName(OrderTypeEnum.PAYMENT.getValue());
-        } else if(userOrderDto.getType().equals(OrderTypeEnum.GOODS.getKey())) {
-            userOrderDto.setTypeName(OrderTypeEnum.GOODS.getValue());
-        } else if(userOrderDto.getType().equals(OrderTypeEnum.MEMBER.getKey())) {
-            userOrderDto.setTypeName(OrderTypeEnum.MEMBER.getValue());
-        } else if(userOrderDto.getType().equals(OrderTypeEnum.RECHARGE.getKey())) {
-            userOrderDto.setTypeName(OrderTypeEnum.RECHARGE.getValue());
-        }
-
-        if (userOrderDto.getStatus().equals(OrderStatusEnum.CREATED.getKey())) {
-            userOrderDto.setStatusText(OrderStatusEnum.CREATED.getValue());
-        } else if(userOrderDto.getStatus().equals(OrderStatusEnum.CANCEL.getKey())) {
-            userOrderDto.setStatusText(OrderStatusEnum.CANCEL.getValue());
-        } else if(userOrderDto.getStatus().equals(OrderStatusEnum.PAID.getKey())) {
-            userOrderDto.setStatusText(OrderStatusEnum.PAID.getValue());
-        } else if(userOrderDto.getStatus().equals(OrderStatusEnum.DELIVERY.getKey())) {
-            userOrderDto.setStatusText(OrderStatusEnum.DELIVERY.getValue());
-        } else if(userOrderDto.getStatus().equals(OrderStatusEnum.DELIVERED.getKey())) {
-            userOrderDto.setStatusText(OrderStatusEnum.DELIVERED.getValue());
-        } else if(userOrderDto.getStatus().equals(OrderStatusEnum.RECEIVED.getKey())) {
-            userOrderDto.setStatusText(OrderStatusEnum.RECEIVED.getValue());
-        } else if(userOrderDto.getStatus().equals(OrderStatusEnum.DELETED.getKey())) {
-            userOrderDto.setStatusText(OrderStatusEnum.DELETED.getValue());
-        } else if(userOrderDto.getStatus().equals(OrderStatusEnum.REFUND.getKey())) {
-            userOrderDto.setStatusText(OrderStatusEnum.REFUND.getValue());
-        }
+        userOrderDto.setTypeName(OrderTypeEnum.getValue(userOrderDto.getType()));
+        userOrderDto.setStatusText(OrderStatusEnum.getValue(userOrderDto.getStatus()));
 
         // 订单所属店铺
         MtStore storeInfo = storeService.queryStoreById(orderInfo.getStoreId());
