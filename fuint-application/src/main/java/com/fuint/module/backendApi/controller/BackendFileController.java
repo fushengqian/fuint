@@ -59,9 +59,6 @@ public class BackendFileController extends BaseController {
 
     /**
      * 后台上传文件
-     *
-     * @param request
-     * @throws
      */
     @ApiOperation(value = "后台上传文件")
     @RequestMapping(value = "/upload", method = RequestMethod.POST)

@@ -62,9 +62,6 @@ public class BackendPointController extends BaseController {
 
     /**
      * 积分明细列表查询
-     *
-     * @param request HttpServletRequest对象
-     * @return 积分明细列表
      */
     @ApiOperation(value = "积分明细列表查询")
     @RequestMapping(value = "/list", method = RequestMethod.GET)
@@ -120,9 +117,6 @@ public class BackendPointController extends BaseController {
 
     /**
      * 积分设置详情
-     *
-     * @param request
-     * @return
      */
     @ApiOperation(value = "积分设置详情")
     @RequestMapping(value = "/setting", method = RequestMethod.GET)
@@ -164,9 +158,6 @@ public class BackendPointController extends BaseController {
 
     /**
      * 提交积分设置
-     *
-     * @param request HttpServletRequest对象
-     * @return
      */
     @ApiOperation(value = "提交积分设置")
     @RequestMapping(value = "/saveSetting", method = RequestMethod.POST)
@@ -220,9 +211,6 @@ public class BackendPointController extends BaseController {
 
     /**
      * 提交积分充值
-     *
-     * @param request HttpServletRequest对象
-     * @return
      */
     @ApiOperation(value = "提交积分充值")
     @RequestMapping(value = "/doRecharge", method = RequestMethod.POST)

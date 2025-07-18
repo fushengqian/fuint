@@ -46,9 +46,6 @@ public class BackendUserGradeController extends BaseController {
 
     /**
      * 会员等级列表查询
-     *
-     * @param request HttpServletRequest对象
-     * @return 会员等级列表
      */
     @ApiOperation(value = "会员等级列表查询")
     @RequestMapping(value = "/list", method = RequestMethod.GET)
@@ -109,8 +106,6 @@ public class BackendUserGradeController extends BaseController {
 
     /**
      * 更新会员等级状态
-     *
-     * @return
      */
     @ApiOperation(value = "更新会员等级状态")
     @RequestMapping(value = "/updateStatus", method = RequestMethod.POST)
@@ -136,9 +131,6 @@ public class BackendUserGradeController extends BaseController {
 
     /**
      * 删除会员等级
-     *
-     * @param request
-     * @return
      */
     @ApiOperation(value = "删除会员等级")
     @RequestMapping(value = "/delete/{id}", method = RequestMethod.GET)
@@ -159,9 +151,6 @@ public class BackendUserGradeController extends BaseController {
 
     /**
      * 保存会员等级
-     *
-     * @param request HttpServletRequest对象
-     * @return
      */
     @ApiOperation(value = "保存会员等级")
     @RequestMapping(value = "/save", method = RequestMethod.POST)
@@ -243,9 +232,6 @@ public class BackendUserGradeController extends BaseController {
 
     /**
      * 获取会员等级信息
-     *
-     * @param request
-     * @return
      */
     @ApiOperation(value = "获取会员等级信息")
     @RequestMapping(value = "/info/{id}", method = RequestMethod.GET)

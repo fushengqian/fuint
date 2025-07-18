@@ -50,10 +50,6 @@ public class BackendSmsController extends BaseController {
 
     /**
      * 查询已发短信列表
-     *
-     * @param request
-     * @return
-     * @throws BusinessCheckException
      */
     @ApiOperation(value = "查询已发短信列表")
     @RequestMapping(value = "/list", method = RequestMethod.GET)
@@ -93,9 +89,6 @@ public class BackendSmsController extends BaseController {
 
     /**
      * 获取短信设置
-     *
-     * @param request
-     * @return
      */
     @ApiOperation(value = "获取短信设置")
     @RequestMapping(value = "/setting", method = RequestMethod.GET)
@@ -136,9 +129,6 @@ public class BackendSmsController extends BaseController {
 
     /**
      * 保存短信设置
-     *
-     * @param request HttpServletRequest对象
-     * @return
      */
     @ApiOperation(value = "保存短信设置")
     @RequestMapping(value = "/saveSetting", method = RequestMethod.POST)

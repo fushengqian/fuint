@@ -48,9 +48,6 @@ public class BackendOpenGiftController extends BaseController {
 
     /**
      * 开卡赠礼列表查询
-     *
-     * @param request HttpServletRequest对象
-     * @return
      */
     @ApiOperation(value = "开卡赠礼列表查询")
     @RequestMapping(value = "/list", method = RequestMethod.GET)
@@ -100,8 +97,6 @@ public class BackendOpenGiftController extends BaseController {
 
     /**
      * 开卡赠礼详情
-     * @param request HttpServletRequest对象
-     * @return
      * */
     @ApiOperation(value = "开卡赠礼详情")
     @RequestMapping(value = "/info/{id}", method = RequestMethod.GET)
@@ -128,9 +123,6 @@ public class BackendOpenGiftController extends BaseController {
 
     /**
      * 提交开卡赠礼
-     *
-     * @param request HttpServletRequest对象
-     * @return
      */
     @ApiOperation(value = "提交开卡赠礼")
     @RequestMapping(value = "/save", method = RequestMethod.POST)
@@ -194,8 +186,6 @@ public class BackendOpenGiftController extends BaseController {
 
     /**
      * 更新开卡赠礼
-     *
-     * @return
      */
     @ApiOperation(value = "更新开卡赠礼")
     @RequestMapping(value = "/updateStatus", method = RequestMethod.POST)
@@ -220,9 +210,6 @@ public class BackendOpenGiftController extends BaseController {
 
     /**
      * 删除开卡赠礼
-     *
-     * @param request
-     * @return
      */
     @ApiOperation(value = "删除开卡赠礼")
     @RequestMapping(value = "/delete/{id}", method = RequestMethod.GET)

@@ -67,9 +67,6 @@ public class BackendDoConfirmController extends BaseController {
 
     /**
      * 核销详情
-     *
-     * @param param 详情参数
-     * @return
      */
     @ApiOperation(value = "核销详情")
     @RequestMapping(value = "/info", method = RequestMethod.POST)
@@ -133,9 +130,6 @@ public class BackendDoConfirmController extends BaseController {
 
     /**
      * 确认核销
-     *
-     * @param request HttpServletRequest对象
-     * @return
      */
     @ApiOperation(value = "确认核销")
     @RequestMapping(value = "/doConfirm", method = RequestMethod.POST)

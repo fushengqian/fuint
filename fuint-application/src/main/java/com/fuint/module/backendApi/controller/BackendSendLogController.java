@@ -52,10 +52,6 @@ public class BackendSendLogController extends BaseController {
 
     /**
      * 查询发券记录列表
-     *
-     * @param request
-     * @return
-     * @throws BusinessCheckException
      */
     @ApiOperation(value = "查询发券记录列表")
     @RequestMapping(value = "/list", method = RequestMethod.GET)
@@ -116,10 +112,6 @@ public class BackendSendLogController extends BaseController {
 
     /**
      * 废除用户卡券
-     *
-     * @param request
-     * @param id 日志ID
-     * @return
      */
     @ApiOperation(value = "废除用户卡券")
     @RequestMapping(value = "/removeUserCoupon/{id}", method = RequestMethod.GET)

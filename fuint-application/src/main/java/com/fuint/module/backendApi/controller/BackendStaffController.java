@@ -46,9 +46,6 @@ public class BackendStaffController extends BaseController {
 
     /**
      * 获取员工列表
-     *
-     * @param  request HttpServletRequest对象
-     * @return 员工列表页面
      */
     @ApiOperation(value = "获取员工列表")
     @RequestMapping(value = "/list", method = RequestMethod.GET)
@@ -106,7 +103,6 @@ public class BackendStaffController extends BaseController {
 
     /**
      * 更新员工状态
-     * @return
      */
     @ApiOperation(value = "更新员工状态")
     @RequestMapping(value = "/updateStatus", method = RequestMethod.POST)
@@ -124,9 +120,6 @@ public class BackendStaffController extends BaseController {
 
     /**
      * 保存员工信息
-     *
-     * @param request
-     * @return
      */
     @ApiOperation(value = "保存员工信息")
     @RequestMapping(value = "/save", method = RequestMethod.POST)
@@ -176,9 +169,6 @@ public class BackendStaffController extends BaseController {
 
     /**
      * 查询员工详情
-     *
-     * @param id
-     * @return
      */
     @ApiOperation(value = "查询员工详情")
     @RequestMapping(value = "/info/{id}", method = RequestMethod.GET)
@@ -204,9 +194,6 @@ public class BackendStaffController extends BaseController {
 
     /**
      * 店铺员工列表
-     *
-     * @param storeId
-     * @return
      */
     @ApiOperation(value = "店铺员工列表")
     @RequestMapping(value = "/storeStaffList/{storeId}", method = RequestMethod.GET)
@@ -237,9 +224,6 @@ public class BackendStaffController extends BaseController {
 
     /**
      * 删除员工
-     *
-     * @param id
-     * @return
      */
     @ApiOperation(value = "删除员工")
     @RequestMapping(value = "/delete/{id}", method = RequestMethod.GET)

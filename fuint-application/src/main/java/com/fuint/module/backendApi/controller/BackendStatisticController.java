@@ -59,8 +59,6 @@ public class BackendStatisticController extends BaseController {
 
     /**
      * 数据概况
-     *
-     * @return
      */
     @ApiOperation(value = "数据概况")
     @RequestMapping(value = "/main", method = RequestMethod.POST)
@@ -129,8 +127,6 @@ public class BackendStatisticController extends BaseController {
 
     /**
      * 排行榜数据
-     *
-     * @return
      */
     @ApiOperation(value = "排行榜数据")
     @RequestMapping(value = "/top", method = RequestMethod.POST)
@@ -163,8 +159,6 @@ public class BackendStatisticController extends BaseController {
 
     /**
      * 获取会员数量
-     *
-     * @return
      */
     @ApiOperation(value = "获取会员数量")
     @RequestMapping(value = "/totalMember", method = RequestMethod.GET)

@@ -56,9 +56,6 @@ public class BackendDutyController extends BaseController {
 
     /**
      * 角色列表
-     *
-     * @param request HttpServletRequest对象
-     * @return 角色信息列表
      */
     @ApiOperation(value = "获取角色列表")
     @RequestMapping(value = "/list")
@@ -115,10 +112,6 @@ public class BackendDutyController extends BaseController {
 
     /**
      * 新增角色
-     *
-     * @param  request  HttpServletRequest对象
-     * @return 角色列表页面
-     * @throws BusinessCheckException
      */
     @ApiOperation(value = "新增角色")
     @RequestMapping(value = "/add", method = RequestMethod.POST)
@@ -159,9 +152,6 @@ public class BackendDutyController extends BaseController {
 
     /**
      * 获取角色详情
-     *
-     * @param  roleId
-     * @return 账户信息
      */
     @ApiOperation(value = "获取角色详情")
     @RequestMapping(value = "/info/{roleId}", method = RequestMethod.GET)
@@ -191,9 +181,6 @@ public class BackendDutyController extends BaseController {
 
     /**
      * 修改角色
-     *
-     * @param request
-     * @return
      */
     @ApiOperation(value = "修改角色")
     @RequestMapping(value = "/update", method = RequestMethod.POST)
@@ -240,9 +227,6 @@ public class BackendDutyController extends BaseController {
 
     /**
      * 删除角色信息
-     *
-     * @return
-     * @throws BusinessCheckException
      */
     @ApiOperation(value = "删除角色信息")
     @RequestMapping(value = "/delete/{roleId}", method = RequestMethod.POST)
@@ -257,9 +241,6 @@ public class BackendDutyController extends BaseController {
 
     /**
      * 修改角色状态
-     *
-     * @return
-     * @throws BusinessCheckException
      */
     @ApiOperation(value = "修改角色状态")
     @RequestMapping(value = "/changeStatus", method = RequestMethod.POST)

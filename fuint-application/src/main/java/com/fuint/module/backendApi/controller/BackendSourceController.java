@@ -42,8 +42,6 @@ public class BackendSourceController extends BaseController {
 
     /**
      * 获取菜单列表
-     *
-     * @return 账户信息列表展现页面
      */
     @ApiOperation(value = "获取菜单列表")
     @RequestMapping(value = "/list", method = RequestMethod.GET)
@@ -58,9 +56,6 @@ public class BackendSourceController extends BaseController {
 
     /**
      * 获取菜单详情
-     *
-     * @param  sourceId 菜单ID
-     * @return 菜单信息
      */
     @ApiOperation(value = "获取菜单详情")
     @RequestMapping(value = "/info/{sourceId}", method = RequestMethod.GET)
@@ -89,9 +84,6 @@ public class BackendSourceController extends BaseController {
 
     /**
      * 新增菜单
-     *
-     * @return
-     * @throws BusinessCheckException
      */
     @ApiOperation(value = "新增菜单")
     @RequestMapping(value = "/add", method = RequestMethod.POST)
@@ -143,9 +135,6 @@ public class BackendSourceController extends BaseController {
 
     /**
      * 修改菜单
-     *
-     * @param param
-     * @return
      */
     @ApiOperation(value = "修改菜单")
     @RequestMapping(value = "/update", method = RequestMethod.POST)
@@ -204,9 +193,6 @@ public class BackendSourceController extends BaseController {
 
     /**
      * 删除菜单
-     *
-     * @return
-     * @throws BusinessCheckException
      */
     @ApiOperation(value = "删除菜单")
     @RequestMapping(value = "/delete/{sourceId}", method = RequestMethod.GET)

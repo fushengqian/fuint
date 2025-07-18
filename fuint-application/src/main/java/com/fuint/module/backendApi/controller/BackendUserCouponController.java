@@ -78,10 +78,6 @@ public class BackendUserCouponController extends BaseController {
 
     /**
      * 查询会员卡券列表
-     *
-     * @param request
-     * @return
-     * @throws BusinessCheckException
      */
     @ApiOperation(value = "查询会员卡券列表")
     @RequestMapping(value = "/list", method = RequestMethod.GET)
@@ -135,7 +131,7 @@ public class BackendUserCouponController extends BaseController {
 
     /**
      * 核销用户卡券
-     * */
+     */
     @ApiOperation(value = "核销用户卡券")
     @RequestMapping(value = "/doConfirm", method = RequestMethod.GET)
     @CrossOrigin
@@ -165,9 +161,6 @@ public class BackendUserCouponController extends BaseController {
 
     /**
      * 删除会员卡券
-     *
-     * @param request
-     * @return
      */
     @ApiOperation(value = "删除会员卡券")
     @RequestMapping(value = "/delete/{id}", method = RequestMethod.GET)
@@ -208,8 +201,6 @@ public class BackendUserCouponController extends BaseController {
 
     /**
      * 导出会员卡券
-     *
-     * @return
      */
     @ApiOperation(value = "导出会员卡券")
     @RequestMapping(value = "/exportList", method = RequestMethod.GET)

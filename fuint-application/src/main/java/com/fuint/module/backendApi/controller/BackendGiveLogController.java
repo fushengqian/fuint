@@ -66,10 +66,6 @@ public class BackendGiveLogController extends BaseController {
 
     /**
      * 查询转赠列表
-     *
-     * @param request
-     * @return
-     * @throws BusinessCheckException
      */
     @ApiOperation(value = "查询转赠列表")
     @RequestMapping(value = "/list", method = RequestMethod.GET)
@@ -169,8 +165,6 @@ public class BackendGiveLogController extends BaseController {
 
     /**
      * 导出转赠记录
-     *
-     * @return
      */
     @ApiOperation(value = "导出转赠记录")
     @RequestMapping(value = "/export", method = RequestMethod.GET)

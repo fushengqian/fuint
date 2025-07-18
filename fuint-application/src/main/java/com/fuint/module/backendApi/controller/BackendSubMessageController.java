@@ -49,9 +49,6 @@ public class BackendSubMessageController extends BaseController {
 
     /**
      * 订阅消息模板列表
-     *
-     * @param request HttpServletRequest对象
-     * @return
      */
     @ApiOperation(value = "订阅消息模板列表")
     @RequestMapping(value = "/list", method = RequestMethod.GET)
@@ -110,9 +107,6 @@ public class BackendSubMessageController extends BaseController {
 
     /**
      * 订阅消息模板详情
-     *
-     * @param key 消息键值
-     * @return
      */
     @ApiOperation(value = "订阅消息模板详情")
     @RequestMapping(value = "/info/{key}", method = RequestMethod.GET)
@@ -182,9 +176,6 @@ public class BackendSubMessageController extends BaseController {
 
     /**
      * 保存订阅消息模板
-     *
-     * @param request HttpServletRequest对象
-     * @return
      */
     @ApiOperation(value = "保存订阅消息模板")
     @RequestMapping(value = "/save", method = RequestMethod.POST)

@@ -41,10 +41,6 @@ public class BackendSmsTemplateController extends BaseController {
 
     /**
      * 查询短信模板列表
-     *
-     * @param request
-     * @return
-     * @throws BusinessCheckException
      */
     @ApiOperation(value = "查询短信模板列表")
     @RequestMapping(value = "/list", method = RequestMethod.GET)
@@ -83,9 +79,6 @@ public class BackendSmsTemplateController extends BaseController {
 
     /**
      * 保存短信模板
-     *
-     * @param request HttpServletRequest对象
-     * @return
      */
     @ApiOperation(value = "保存短信模板")
     @RequestMapping(value = "/save", method = RequestMethod.POST)
@@ -101,9 +94,6 @@ public class BackendSmsTemplateController extends BaseController {
 
     /**
      * 模板详情
-     *
-     * @param request
-     * @return
      */
     @ApiOperation(value = "模板详情")
     @RequestMapping(value = "/info/{id}", method = RequestMethod.GET)
@@ -128,9 +118,6 @@ public class BackendSmsTemplateController extends BaseController {
 
     /**
      * 删除短信模板
-     *
-     * @param request
-     * @return
      */
     @ApiOperation(value = "删除短信模板")
     @RequestMapping(value = "/delete/{id}", method = RequestMethod.GET)

@@ -41,9 +41,6 @@ public class BackendGenCodeController extends BaseController {
 
     /**
      * 代码生成列表
-     *
-     * @param request HttpServletRequest对象
-     * @return 代码生成列表
      */
     @ApiOperation(value = "代码生成列表查询")
     @RequestMapping(value = "/list", method = RequestMethod.GET)
@@ -77,8 +74,6 @@ public class BackendGenCodeController extends BaseController {
 
     /**
      * 更新代码生成状态
-     *
-     * @return
      */
     @ApiOperation(value = "更新代码状态")
     @RequestMapping(value = "/updateStatus", method = RequestMethod.POST)
@@ -101,9 +96,6 @@ public class BackendGenCodeController extends BaseController {
 
     /**
      * 保存代码生成
-     *
-     * @param request HttpServletRequest对象
-     * @return
      */
     @ApiOperation(value = "保存代码生成")
     @RequestMapping(value = "/save", method = RequestMethod.POST)
@@ -146,9 +138,6 @@ public class BackendGenCodeController extends BaseController {
 
     /**
      * 获取代码生成详情
-     *
-     * @param id
-     * @return
      */
     @ApiOperation(value = "获取代码生成详情")
     @RequestMapping(value = "/info/{id}", method = RequestMethod.GET)
@@ -165,9 +154,6 @@ public class BackendGenCodeController extends BaseController {
 
     /**
      * 生成代码
-     *
-     * @param request
-     * @return
      */
     @ApiOperation(value = "生成代码")
     @RequestMapping(value = "/gen/{id}", method = RequestMethod.GET)

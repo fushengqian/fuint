@@ -114,8 +114,6 @@ public class BackendLoginController extends BaseController {
 
     /**
      * 获取登录路由菜单接口
-     *
-     * @return
      */
     @ApiOperation(value = "获取登录路由菜单接口")
     @RequestMapping(value = "/getRouters", method = RequestMethod.GET)

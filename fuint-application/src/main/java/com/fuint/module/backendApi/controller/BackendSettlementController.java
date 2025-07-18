@@ -58,9 +58,6 @@ public class BackendSettlementController extends BaseController {
 
     /**
      * 结算列表查询
-     *
-     * @param  request HttpServletRequest对象
-     * @return 余额明细列表
      */
     @ApiOperation(value = "结算列表查询")
     @RequestMapping(value = "/list", method = RequestMethod.GET)
@@ -117,8 +114,6 @@ public class BackendSettlementController extends BaseController {
 
     /**
      * 获取结算单详情
-     * @param request HttpServletRequest对象
-     * @return
      * */
     @ApiOperation(value = "获取结算单详情")
     @RequestMapping(value = "/info", method = RequestMethod.GET)
@@ -149,9 +144,6 @@ public class BackendSettlementController extends BaseController {
 
     /**
      * 提交结算
-     *
-     * @param request HttpServletRequest对象
-     * @return
      */
     @ApiOperation(value = "提交结算")
     @RequestMapping(value = "/doSubmit", method = RequestMethod.POST)
@@ -172,9 +164,6 @@ public class BackendSettlementController extends BaseController {
 
     /**
      * 确认结算
-     *
-     * @param request HttpServletRequest对象
-     * @return
      */
     @ApiOperation(value = "确认结算")
     @RequestMapping(value = "/doConfirm", method = RequestMethod.POST)

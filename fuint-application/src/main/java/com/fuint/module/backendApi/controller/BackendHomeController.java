@@ -53,8 +53,6 @@ public class BackendHomeController extends BaseController {
 
     /**
      * 首页统计数据
-     *
-     * @return
      */
     @ApiOperation(value = "首页统计数据")
     @RequestMapping(value = "/index", method = RequestMethod.GET)
@@ -107,9 +105,6 @@ public class BackendHomeController extends BaseController {
 
     /**
      * 首页图表统计数据
-     *
-     * @param request
-     * @return
      */
     @ApiOperation(value = "首页图表统计数据")
     @RequestMapping(value = "/statistic", method = RequestMethod.GET)
@@ -165,9 +160,6 @@ public class BackendHomeController extends BaseController {
 
     /**
      * 获取收款结果
-     *
-     * @param request
-     * @return
      */
     @ApiOperation(value = "获取收款结果")
     @RequestMapping(value = "/cashierResult", method = RequestMethod.GET)

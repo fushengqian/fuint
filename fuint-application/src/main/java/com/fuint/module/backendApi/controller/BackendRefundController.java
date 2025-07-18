@@ -61,9 +61,6 @@ public class BackendRefundController extends BaseController {
 
     /**
      * 售后列表查询
-     *
-     * @param request HttpServletRequest对象
-     * @return
      */
     @ApiOperation(value = "售后列表查询")
     @RequestMapping(value = "/list", method = RequestMethod.GET)
@@ -142,9 +139,7 @@ public class BackendRefundController extends BaseController {
     }
 
     /**
-     * 查询退款详情
-     * @param request HttpServletRequest对象
-     * @return
+     * 查询售后详情
      * */
     @ApiOperation(value = "查询售后详情")
     @RequestMapping(value = "/info/{refundId}", method = RequestMethod.GET)
@@ -212,7 +207,6 @@ public class BackendRefundController extends BaseController {
 
     /**
      * 发起退款
-     * @return
      */
     @ApiOperation(value = "发起退款")
     @RequestMapping(value = "doRefund", method = RequestMethod.POST)
