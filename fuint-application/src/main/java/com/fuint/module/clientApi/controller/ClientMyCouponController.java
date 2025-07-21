@@ -43,8 +43,6 @@ public class ClientMyCouponController extends BaseController {
 
     /**
      * 查询我的卡券
-     *
-     * @param request Request对象
      */
     @ApiOperation(value = "查询我的卡券")
     @RequestMapping(value = "/list", method = RequestMethod.GET)
@@ -79,9 +77,6 @@ public class ClientMyCouponController extends BaseController {
 
     /**
      * 查询我的卡券是否已使用
-     *
-     * @param requestParam Request对象
-     * @return
      */
     @ApiOperation(value = "查询我的卡券是否已使用")
     @RequestMapping(value = "/isUsed", method = RequestMethod.POST)
@@ -110,9 +105,6 @@ public class ClientMyCouponController extends BaseController {
 
     /**
      * 删除我的卡券
-     *
-     * @param requestParam Request对象
-     * @return
      */
     @ApiOperation(value = "删除我的卡券")
     @RequestMapping(value = "/remove", method = RequestMethod.POST)

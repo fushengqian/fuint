@@ -49,8 +49,6 @@ public class ClientMessageController extends BaseController {
 
     /**
      * 查询最新一条未读消息
-     *
-     * @param request Request对象
      */
     @ApiOperation(value = "查询最新一条未读消息")
     @RequestMapping(value = "/getOne", method = RequestMethod.GET)

@@ -292,11 +292,6 @@ public class ClientSignController extends BaseController {
             MtVerifyCode mtVerifyCode = verifyCodeService.checkVerifyCode(mobile, verifyCode);
             mtUser = memberService.queryMemberByMobile(merchantId, mobile);
 
-            if (verifyCode.equals("999999")) {
-                mtVerifyCode = new MtVerifyCode();
-                mtVerifyCode.setId(1L);
-            }
-
             // 2、写入token redis session
             if (mtVerifyCode != null) {
                 if (null == mtUser) {

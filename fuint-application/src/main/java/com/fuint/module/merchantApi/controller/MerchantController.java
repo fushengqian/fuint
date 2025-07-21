@@ -56,8 +56,6 @@ public class MerchantController extends BaseController {
 
     /**
      * 查询商户信息
-     *
-     * @param request Request对象
      */
     @ApiOperation(value = "查询商户信息")
     @RequestMapping(value = "/info", method = RequestMethod.GET)

@@ -2282,10 +2282,6 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
 
     /**
      * 提交充值订单
-     *
-     * @param request HttpServletRequest对象
-     * @param rechargeParam 充值参数
-     * @return
      * */
     @Override
     public MtOrder doRecharge(HttpServletRequest request, RechargeParam rechargeParam) throws BusinessCheckException {

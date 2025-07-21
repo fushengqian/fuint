@@ -117,8 +117,6 @@ public class ClientCouponController extends BaseController {
 
     /**
      * 查询卡券详情
-     *
-     * @param params Request对象
      */
     @ApiOperation(value = "查询卡券详情")
     @RequestMapping(value = "/detail", method = RequestMethod.POST)

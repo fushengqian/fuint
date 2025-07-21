@@ -40,9 +40,6 @@ public class Backend${tableClass}Controller extends BaseController {
 
     /**
      * ${moduleName}列表查询
-     *
-     * @param  request HttpServletRequest对象
-     * @return ${moduleName}列表
      */
     @ApiOperation(value = "${moduleName}列表查询")
     @RequestMapping(value = "/list", method = RequestMethod.GET)
@@ -118,9 +115,6 @@ public class Backend${tableClass}Controller extends BaseController {
 
     /**
      * 保存${moduleName}
-     *
-     * @param request HttpServletRequest对象
-     * @return
      */
     @ApiOperation(value = "保存${moduleName}")
     @RequestMapping(value = "/save", method = RequestMethod.POST)

@@ -25,8 +25,6 @@ public class ClientHelpController extends BaseController {
 
     /**
      * 查询帮助内容列表
-     *
-     * @param request Request对象
      */
     @ApiOperation(value = "查询帮助列表")
     @RequestMapping(value = "/list", method = RequestMethod.GET)

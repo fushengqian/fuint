@@ -62,8 +62,6 @@ public class ClientSystemController extends BaseController {
 
     /**
      * 获取系统配置
-     *
-     * @param request Request对象
      */
     @ApiOperation(value = "获取系统配置")
     @RequestMapping(value = "/config", method = RequestMethod.GET)

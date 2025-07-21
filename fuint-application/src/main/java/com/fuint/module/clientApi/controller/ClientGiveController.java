@@ -47,8 +47,6 @@ public class ClientGiveController extends BaseController {
 
     /**
      * 转赠卡券
-     *
-     * @param giveParam Request对象
      */
     @ApiOperation(value = "转赠卡券")
     @RequestMapping(value = "/doGive", method = RequestMethod.POST)
@@ -79,8 +77,6 @@ public class ClientGiveController extends BaseController {
 
     /**
      * 查询转赠记录
-     *
-     * @param request Request对象
      */
     @ApiOperation(value = "查询转赠记录")
     @RequestMapping(value = "/giveLog", method = RequestMethod.POST)

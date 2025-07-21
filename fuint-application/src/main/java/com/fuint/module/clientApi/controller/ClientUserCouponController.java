@@ -80,8 +80,6 @@ public class ClientUserCouponController extends BaseController {
 
     /**
      * 查询会员卡券详情
-     *
-     * @param param Request对象
      */
     @ApiOperation(value = "查询会员卡券详情")
     @RequestMapping(value = "/detail", method = RequestMethod.GET)

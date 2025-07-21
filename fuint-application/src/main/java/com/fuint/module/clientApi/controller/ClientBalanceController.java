@@ -71,8 +71,6 @@ public class ClientBalanceController extends BaseController {
 
     /**
      * 充值配置
-     *
-     * @param request Request对象
      */
     @RequestMapping(value = "/setting", method = RequestMethod.GET)
     @CrossOrigin
@@ -162,10 +160,6 @@ public class ClientBalanceController extends BaseController {
 
     /**
      * 余额明细
-     *
-     * @param request Request对象
-     * @param balanceListParam
-     * @return
      */
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @CrossOrigin

@@ -57,8 +57,6 @@ public class ClientConfirmController extends BaseController {
 
     /**
      * 核销卡券
-     *
-     * @param confirmParam Request对象
      */
     @ApiOperation(value = "核销卡券")
     @RequestMapping(value = "/doConfirm", method = RequestMethod.POST)

@@ -51,9 +51,6 @@ public class MerchantMemberController extends BaseController {
 
     /**
      * 会员列表查询
-     *
-     * @param request HttpServletRequest对象
-     * @return 会员列表
      */
     @ApiOperation(value = "查询会员列表")
     @RequestMapping(value = "/list", method = RequestMethod.POST)
@@ -115,9 +112,6 @@ public class MerchantMemberController extends BaseController {
 
     /**
      * 会员详情
-     *
-     * @param request
-     * @return
      */
     @ApiOperation(value = "查询会员详情")
     @RequestMapping(value = "/info", method = RequestMethod.POST)
