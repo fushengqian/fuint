@@ -73,7 +73,6 @@ public class BackendAccountController extends BaseController {
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('system:account:index')")
     public ResponseObject list(HttpServletRequest request) throws BusinessCheckException {
-        String token = request.getHeader("Access-Token");
         Integer page = request.getParameter("page") == null ? Constants.PAGE_NUMBER : Integer.parseInt(request.getParameter("page"));
         Integer pageSize = request.getParameter("pageSize") == null ? Constants.PAGE_SIZE : Integer.parseInt(request.getParameter("pageSize"));
         String accountName = request.getParameter("accountName") == null ? "" : request.getParameter("accountName");
@@ -82,7 +81,7 @@ public class BackendAccountController extends BaseController {
         String merchantId = request.getParameter("merchantId") == null ? "" : request.getParameter("merchantId");
         String storeId = request.getParameter("storeId") == null ? "" : request.getParameter("storeId");
         String staffId = request.getParameter("staffId") == null ? "" : request.getParameter("staffId");
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
+        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
 
         PaginationRequest paginationRequest = new PaginationRequest();
         paginationRequest.setCurrentPage(page);

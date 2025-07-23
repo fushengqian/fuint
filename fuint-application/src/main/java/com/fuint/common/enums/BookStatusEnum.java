@@ -45,8 +45,10 @@ public enum BookStatusEnum {
         this.value = value;
     }
 
-    public static List<ParamDto> getBookStatusList() {
+    public static List<ParamDto> getBookStatusList(String... excludedKeys) {
+        List<String> excludedKeySet = Arrays.asList(excludedKeys);
         return Arrays.stream(BookStatusEnum.values())
+                .filter(status -> !excludedKeySet.contains(status.getKey()))
                 .map(status -> new ParamDto(status.getKey(), status.getValue(), status.getValue()))
                 .collect(Collectors.toList());
     }

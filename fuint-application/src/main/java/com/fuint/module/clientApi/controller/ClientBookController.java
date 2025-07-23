@@ -256,16 +256,13 @@ public class ClientBookController extends BaseController {
         paginationRequest.setSearchParams(param);
         PaginationResponse<BookItemDto> paginationResponse = bookItemService.queryBookItemListByPagination(paginationRequest);
 
-        // 预约状态列表
-        List<ParamDto> statusList = BookStatusEnum.getBookStatusList();
-
         Map<String, Object> result = new HashMap<>();
         result.put("content", paginationResponse.getContent());
         result.put("pageSize", paginationResponse.getPageSize());
         result.put("pageNumber", paginationResponse.getCurrentPage());
         result.put("totalRow", paginationResponse.getTotalElements());
         result.put("totalPage", paginationResponse.getTotalPages());
-        result.put("statusList", statusList);
+        result.put("statusList", BookStatusEnum.getBookStatusList(BookStatusEnum.DELETE.getKey()));
 
         return getSuccessResult(result);
     }

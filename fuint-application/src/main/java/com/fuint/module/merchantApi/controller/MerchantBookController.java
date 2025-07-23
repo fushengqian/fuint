@@ -1,6 +1,8 @@
 package com.fuint.module.merchantApi.controller;
 
+import com.fuint.common.dto.ParamDto;
 import com.fuint.common.dto.UserInfo;
+import com.fuint.common.enums.BookStatusEnum;
 import com.fuint.common.service.BookItemService;
 import com.fuint.common.service.MemberService;
 import com.fuint.common.service.StaffService;
@@ -22,6 +24,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -68,7 +71,9 @@ public class MerchantBookController extends BaseController {
             return getFailureResult(1004);
         } else {
             params.put("merchantId", staffInfo.getMerchantId());
-            params.put("storeId", staffInfo.getStoreId());
+            if (staffInfo.getStoreId() > 0) {
+                params.put("storeId", staffInfo.getStoreId());
+            }
         }
         if (StringUtil.isNotEmpty(requestParams.getStatus())) {
             params.put("status", requestParams.getStatus());
@@ -79,8 +84,17 @@ public class MerchantBookController extends BaseController {
         paginationRequest.setPageSize(requestParams.getPageSize());
         paginationRequest.setSearchParams(params);
 
-        PaginationResponse bookList = bookItemService.queryBookItemListByPagination(paginationRequest);
-        return getSuccessResult(bookList);
+        PaginationResponse paginationResponse = bookItemService.queryBookItemListByPagination(paginationRequest);
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("content", paginationResponse.getContent());
+        result.put("pageSize", paginationResponse.getPageSize());
+        result.put("pageNumber", paginationResponse.getCurrentPage());
+        result.put("totalRow", paginationResponse.getTotalElements());
+        result.put("totalPage", paginationResponse.getTotalPages());
+        result.put("statusList", BookStatusEnum.getBookStatusList(BookStatusEnum.DELETE.getKey()));
+
+        return getSuccessResult(result);
     }
 
     /**
@@ -158,7 +172,8 @@ public class MerchantBookController extends BaseController {
         if (staffInfo == null || (staffInfo.getStoreId() != null && staffInfo.getStoreId() > 0 && !staffInfo.getStoreId().equals(bookItem.getStoreId()))) {
             return getFailureResult(1004);
         }
-
+        bookItem.setStatus(BookStatusEnum.CONFIRM.getKey());
+        bookItem.setOperator(staffInfo.getRealName());
         bookItemService.updateBookItem(bookItem);
         return getSuccessResult(true);
     }
