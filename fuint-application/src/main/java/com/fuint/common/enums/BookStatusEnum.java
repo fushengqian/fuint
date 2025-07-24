@@ -45,6 +45,22 @@ public enum BookStatusEnum {
         this.value = value;
     }
 
+    /**
+     * 根据key获取value
+     *
+     * @param key
+     * @return
+     */
+    public static String getValue(String key) {
+        final BookStatusEnum[] values = BookStatusEnum.values();
+        for (BookStatusEnum value : values) {
+            if (key.equals(value.getKey())) {
+                return value.getValue();
+            }
+        }
+        return null;
+    }
+
     public static List<ParamDto> getBookStatusList(String... excludedKeys) {
         List<String> excludedKeySet = Arrays.asList(excludedKeys);
         return Arrays.stream(BookStatusEnum.values())

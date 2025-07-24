@@ -78,4 +78,7 @@ public class BookItemDto implements Serializable {
     @ApiModelProperty("A：已提交；B：审核通过；C：审核未通过；D：删除；E：已完成")
     private String status;
 
+    @ApiModelProperty("状态")
+    private String statusName;
+
 }

@@ -12,6 +12,7 @@ import com.fuint.framework.pagination.PaginationRequest;
 import com.fuint.framework.pagination.PaginationResponse;
 import com.fuint.framework.web.BaseController;
 import com.fuint.framework.web.ResponseObject;
+import com.fuint.module.merchantApi.request.BookConfirmParam;
 import com.fuint.module.merchantApi.request.BookDetailParam;
 import com.fuint.module.merchantApi.request.BookListRequest;
 import com.fuint.repository.model.MtBookItem;
@@ -158,7 +159,7 @@ public class MerchantBookController extends BaseController {
     @ApiOperation(value = "确定预约")
     @RequestMapping(value = "/confirm", method = RequestMethod.POST)
     @CrossOrigin
-    public ResponseObject confirm(HttpServletRequest request, @RequestBody BookDetailParam param) throws BusinessCheckException {
+    public ResponseObject confirm(HttpServletRequest request, @RequestBody BookConfirmParam param) throws BusinessCheckException {
         UserInfo mtUser = TokenUtil.getUserInfoByToken(request.getHeader("Access-Token"));
 
         Integer bookId = param.getBookId();
@@ -172,7 +173,7 @@ public class MerchantBookController extends BaseController {
         if (staffInfo == null || (staffInfo.getStoreId() != null && staffInfo.getStoreId() > 0 && !staffInfo.getStoreId().equals(bookItem.getStoreId()))) {
             return getFailureResult(1004);
         }
-        bookItem.setStatus(BookStatusEnum.CONFIRM.getKey());
+        bookItem.setStatus(param.getStatus() == null ? BookStatusEnum.CONFIRM.getKey() : param.getStatus());
         bookItem.setOperator(staffInfo.getRealName());
         bookItemService.updateBookItem(bookItem);
         return getSuccessResult(true);

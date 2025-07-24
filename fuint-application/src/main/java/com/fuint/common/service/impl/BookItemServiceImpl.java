@@ -117,6 +117,7 @@ public class BookItemServiceImpl extends ServiceImpl<MtBookItemMapper, MtBookIte
                  if (mtBook != null) {
                      bookItemDto.setBookName(mtBook.getName());
                  }
+                 bookItemDto.setStatusName(BookStatusEnum.getValue(bookItemDto.getStatus()));
                  dataList.add(bookItemDto);
             }
         }
