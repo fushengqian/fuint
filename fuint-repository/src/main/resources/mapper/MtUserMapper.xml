@@ -9,10 +9,11 @@
     </select>
 
     <select id="queryMemberByName" resultType="com.fuint.repository.model.MtUser">
-        select * from mt_user t where t.NAME = #{name} and t.STATUS = 'A'
+        select * from mt_user t where (t.NAME = #{name} or t.mobile = #{name}) and t.STATUS = 'A'
         <if test="merchantId != null and merchantId > 0">
             AND t.MERCHANT_ID = #{merchantId}
         </if>
+        order by id asc
     </select>
 
     <select id="queryMemberByOpenId" resultType="com.fuint.repository.model.MtUser">

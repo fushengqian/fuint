@@ -3,6 +3,7 @@ package com.fuint.module.clientApi.request;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * 售后列表请求参数
@@ -26,6 +27,6 @@ public class RefundSubmitRequest implements Serializable {
     private String type;
 
     @ApiModelProperty(value="售后图片", name="images")
-    private String images;
+    private List<String> images;
 
 }

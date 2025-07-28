@@ -19,7 +19,9 @@ import io.swagger.annotations.ApiOperation;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -94,7 +96,7 @@ public class ClientRefundController extends BaseController {
         Integer orderId = param.getOrderId() == null ? 0 : param.getOrderId();
         String remark = param.getRemark() == null ? "" : param.getRemark();
         String type = param.getType() == null ? "" : param.getType();
-        String images = param.getImages() == null ? "" : param.getImages();
+        List<String> images = param.getImages() == null ? new ArrayList<>() : param.getImages();
 
         UserOrderDto order = orderService.getOrderById(orderId);
         if (order == null || (!order.getUserId().equals(mtUser.getId()))) {
@@ -114,7 +116,9 @@ public class ClientRefundController extends BaseController {
             refundDto.setStoreId(order.getStoreInfo().getId());
         }
         refundDto.setAmount(order.getPayAmount());
-        refundDto.setImages(images);
+        if (images.size() > 0) {
+            refundDto.setImages(String.join(",", images));
+        }
         MtRefund refundInfo = refundService.createRefund(refundDto);
 
         Map<String, Object> outParams = new HashMap();
