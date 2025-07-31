@@ -237,6 +237,10 @@ public class BackendOrderController extends BaseController {
         orderDto.setOperator(accountInfo.getAccountName());
         if (StringUtil.isNotEmpty(status)) {
             orderDto.setStatus(status);
+            if (status.equals(OrderStatusEnum.PAID.getKey())) {
+                orderDto.setPayType(PayTypeEnum.CASH.getKey());
+                orderDto.setRemark("后台修改订单状态为已支付");
+            }
         }
         if (StringUtil.isNotEmpty(amount)) {
             orderDto.setAmount(new BigDecimal(amount));

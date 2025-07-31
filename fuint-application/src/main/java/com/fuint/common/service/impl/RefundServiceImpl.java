@@ -616,8 +616,8 @@ public class RefundServiceImpl extends ServiceImpl<MtRefundMapper, MtRefund> imp
             throw new BusinessCheckException("该售后订单已存在，请查询售后订单列表！");
         }
 
-        if (new BigDecimal(refundAmount).compareTo(orderInfo.getPayAmount()) > 0) {
-            throw new BusinessCheckException("退款金额不能大于实际支付金额！");
+        if (new BigDecimal(refundAmount).compareTo(orderInfo.getAmount()) > 0) {
+            throw new BusinessCheckException("退款金额不能大于订单总金额！");
         }
 
         // 创建售后订单
