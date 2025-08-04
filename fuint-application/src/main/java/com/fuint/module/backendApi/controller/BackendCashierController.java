@@ -94,13 +94,11 @@ public class BackendCashierController extends BaseController {
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('cashier:index')")
     public ResponseObject init(HttpServletRequest request, @PathVariable("userId") Integer userId) throws BusinessCheckException {
-        String token = request.getHeader("Access-Token");
         Integer page = request.getParameter("page") == null ? Constants.PAGE_NUMBER : Integer.parseInt(request.getParameter("page"));
         Integer pageSize = request.getParameter("pageSize") == null ? Constants.PAGE_SIZE : Integer.parseInt(request.getParameter("pageSize"));
         Integer cateId = request.getParameter("cateId") == null ? 0 : Integer.parseInt(request.getParameter("cateId"));
 
-        AccountInfo accountDto = TokenUtil.getAccountInfoByToken(token);
-
+        AccountInfo accountDto = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
         TAccount accountInfo = accountService.getAccountInfoById(accountDto.getId());
         Integer storeId = (accountInfo.getStoreId() == null || accountInfo.getStoreId() < 1) ? 0 : accountInfo.getStoreId();
         MtStore storeInfo = null;

@@ -96,11 +96,10 @@ public class ClientPayController extends BaseController {
     @RequestMapping(value = "/prePay", method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject prePay(HttpServletRequest request) throws BusinessCheckException {
-        String token = request.getHeader("Access-Token");
         Integer storeId = StringUtil.isEmpty(request.getHeader("storeId")) ? 0 : Integer.parseInt(request.getHeader("storeId"));
         String useFor = request.getParameter("type") == null ? "" : request.getParameter("type");
         String merchantNo = request.getHeader("merchantNo");
-        UserInfo userInfo = TokenUtil.getUserInfoByToken(token);
+        UserInfo userInfo = TokenUtil.getUserInfoByToken(request.getHeader("Access-Token"));
 
         MtUser mtUser = memberService.queryMemberById(userInfo.getId());
         Map<String, Object> outParams = new HashMap<>();
@@ -163,8 +162,7 @@ public class ClientPayController extends BaseController {
     @RequestMapping(value = "/doPay", method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject doPay(HttpServletRequest request) throws BusinessCheckException {
-       Map<String, Object> result = paymentService.doPay(request);
-       return getSuccessResult(result);
+       return getSuccessResult(paymentService.doPay(request));
     }
 
     /**

@@ -145,12 +145,10 @@ public class BackendBookItemController extends BaseController {
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('book:index')")
     public ResponseObject updateStatus(HttpServletRequest request, @RequestBody Map<String, Object> params) throws BusinessCheckException {
-        String token = request.getHeader("Access-Token");
         String status = params.get("status") != null ? params.get("status").toString() : StatusEnum.ENABLED.getKey();
         Integer id = params.get("id") == null ? 0 : Integer.parseInt(params.get("id").toString());
 
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
-
+        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
         MtBookItem mtBookItem = bookItemService.getBookItemById(id);
         if (mtBookItem == null) {
             return getFailureResult(201);
@@ -171,14 +169,13 @@ public class BackendBookItemController extends BaseController {
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('book:index')")
     public ResponseObject saveHandler(HttpServletRequest request, @RequestBody Map<String, Object> params) throws BusinessCheckException, ParseException {
-        String token = request.getHeader("Access-Token");
         String id = params.get("id") == null ? "" : params.get("id").toString();
         String mobile = params.get("name") == null ? "" : params.get("name").toString();
         String remark = params.get("remark") == null ? "" : params.get("remark").toString();
         String status = params.get("status") == null ? "" : params.get("status").toString();
         String storeId = params.get("storeId") == null ? "0" : params.get("storeId").toString();
 
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
+        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
 
         MtBookItem mtBookItem = new MtBookItem();
         mtBookItem.setMobile(mobile);
@@ -205,17 +202,13 @@ public class BackendBookItemController extends BaseController {
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('book:index')")
     public ResponseObject info(HttpServletRequest request, @PathVariable("id") Integer id) throws BusinessCheckException {
-        String token = request.getHeader("Access-Token");
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
-
+        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
         MtBookItem mtBookItem = bookItemService.getBookItemById(id);
         if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0 && !mtBookItem.getMerchantId().equals(accountInfo.getMerchantId())) {
             return getFailureResult(1004);
         }
-
         Map<String, Object> result = new HashMap<>();
         result.put("mtBookItem", mtBookItem);
-
         return getSuccessResult(result);
     }
 }

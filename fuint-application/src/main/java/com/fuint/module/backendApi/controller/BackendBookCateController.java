@@ -137,7 +137,6 @@ public class BackendBookCateController extends BaseController {
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('book:index')")
     public ResponseObject saveHandler(HttpServletRequest request, @RequestBody Map<String, Object> params) throws BusinessCheckException {
-        String token = request.getHeader("Access-Token");
         String id = params.get("id") == null ? "" : params.get("id").toString();
         String name = params.get("name") == null ? "" : params.get("name").toString();
         String description = params.get("description") == null ? "" : params.get("description").toString();
@@ -146,8 +145,7 @@ public class BackendBookCateController extends BaseController {
         String storeId = (params.get("storeId") == null || StringUtil.isEmpty(params.get("storeId").toString())) ? "0" : params.get("storeId").toString();
         String sort = (params.get("sort") == null || StringUtil.isEmpty(params.get("sort").toString())) ? "0" : params.get("sort").toString();
 
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
-
+        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
         if (accountInfo.getMerchantId() == null || accountInfo.getMerchantId() < 1) {
             return getFailureResult(5002);
         }
@@ -181,11 +179,8 @@ public class BackendBookCateController extends BaseController {
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('book:index')")
     public ResponseObject info(HttpServletRequest request, @PathVariable("id") Integer id) throws BusinessCheckException {
-        String token = request.getHeader("Access-Token");
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
-
+        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
         MtBookCate bookCateInfo = bookCateService.getBookCateById(id);
-        String imagePath = settingService.getUploadBasePath();
 
         if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
             if (!bookCateInfo.getMerchantId().equals(accountInfo.getMerchantId())) {
@@ -195,7 +190,7 @@ public class BackendBookCateController extends BaseController {
 
         Map<String, Object> result = new HashMap<>();
         result.put("bookCateInfo", bookCateInfo);
-        result.put("imagePath", imagePath);
+        result.put("imagePath", settingService.getUploadBasePath());
 
         return getSuccessResult(result);
     }
