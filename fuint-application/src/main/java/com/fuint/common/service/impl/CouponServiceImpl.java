@@ -915,12 +915,12 @@ public class CouponServiceImpl extends ServiceImpl<MtCouponMapper, MtCoupon> imp
         // 判断适用会员等级
         if (userCoupon.getUserId() != null && userCoupon.getUserId() > 0 && StringUtil.isNotEmpty(couponInfo.getGradeIds())) {
             MtUser mtUser = memberService.queryMemberById(userCoupon.getUserId());
-            if (StringUtil.isEmpty(mtUser.getGradeId())) {
+            if (mtUser.getGradeId() == null) {
                 MtUserGrade defaultGrade = userGradeService.getInitUserGrade(mtUser.getMerchantId());
                 if (defaultGrade != null) {
-                    mtUser.setGradeId(defaultGrade.getId().toString());
+                    mtUser.setGradeId(defaultGrade.getId());
                 } else {
-                    mtUser.setGradeId("0");
+                    mtUser.setGradeId(0);
                 }
             }
             String[] gradeIds = couponInfo.getGradeIds().split(",");

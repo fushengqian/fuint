@@ -316,7 +316,7 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
             }
             if (userDto.getGradeId() != null) {
                 Integer mchId = StringUtil.isNotEmpty(merchantId) ? Integer.parseInt(merchantId) : 0;
-                MtUserGrade mtGrade = userGradeService.queryUserGradeById(mchId, Integer.parseInt(userDto.getGradeId()), mtUser.getId());
+                MtUserGrade mtGrade = userGradeService.queryUserGradeById(mchId, userDto.getGradeId(), mtUser.getId());
                 if (mtGrade != null) {
                     userDto.setGradeName(mtGrade.getName());
                 }
@@ -375,10 +375,10 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
             mtUser.setName(userNo);
         }
         // 默认会员等级
-        if (StringUtil.isEmpty(mtUser.getGradeId())) {
+        if (mtUser.getGradeId() == null) {
             MtUserGrade grade = userGradeService.getInitUserGrade(mtUser.getMerchantId());
             if (grade != null) {
-                mtUser.setGradeId(grade.getId().toString());
+                mtUser.setGradeId(grade.getId());
             }
         }
         mtUser.setUserNo(userNo);
@@ -424,7 +424,7 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
         mtUser = queryMemberById(mtUser.getId());
 
         // 开卡赠礼
-        openGiftService.openGift(mtUser.getId(), Integer.parseInt(mtUser.getGradeId()), true);
+        openGiftService.openGift(mtUser.getId(), mtUser.getGradeId(), true);
 
         // 分佣关系
         commissionRelationService.setCommissionRelation(mtUser, shareId);
@@ -461,11 +461,6 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
         mtUser.setUpdateTime(new Date());
 
         MtUser oldUserInfo = mtUserMapper.selectById(mtUser.getId());
-        if (mtUser.getGradeId() != null && StringUtil.isNotEmpty(mtUser.getGradeId())) {
-            if (!CommonUtil.isNumeric(mtUser.getGradeId())) {
-                throw new BusinessCheckException("该会员等级有误");
-            }
-        }
         String mobile = mtUser.getMobile();
         if (PhoneFormatCheckUtils.isChinaPhoneLegal(mobile)) {
             mtUserMapper.resetMobile(mtUser.getMerchantId(), mobile, mtUser.getId());
@@ -489,7 +484,7 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
             mtUser.setSalt(salt);
             mtUser.setPassword(enCodePassword(mtUser.getPassword(), salt));
         }
-        String gradeId = mtUser.getGradeId();
+        Integer gradeId = mtUser.getGradeId();
         mtUser.setGradeId(oldUserInfo.getGradeId());
         mtUser.setMerchantId(oldUserInfo.getMerchantId());
         if (mtUser.getStoreId() == null || mtUser.getStoreId() <= 0) {
@@ -499,7 +494,7 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
         if (result && mtUser.getGradeId() != null) {
             // 修改了会员等级，开卡赠礼
             if (!gradeId.equals(oldUserInfo.getGradeId())) {
-                openGiftService.openGift(mtUser.getId(), Integer.parseInt(gradeId), false);
+                openGiftService.openGift(mtUser.getId(), gradeId, false);
             }
         }
         return mtUser;
@@ -526,7 +521,7 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
         mtUser.setMobile(mobile);
         MtUserGrade grade = userGradeService.getInitUserGrade(merchantId);
         if (grade != null) {
-            mtUser.setGradeId(grade.getId() + "");
+            mtUser.setGradeId(grade.getId());
         }
         Date time = new Date();
         mtUser.setCreateTime(time);
@@ -544,7 +539,7 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
         mtUser = queryMemberByMobile(merchantId, mobile);
 
         // 开卡赠礼
-        openGiftService.openGift(mtUser.getId(), Integer.parseInt(mtUser.getGradeId()), true);
+        openGiftService.openGift(mtUser.getId(), mtUser.getGradeId(), true);
 
         // 分佣关系
         commissionRelationService.setCommissionRelation(mtUser, shareId);
@@ -613,22 +608,22 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
                     Date now = new Date();
                     if (endTime.before(now)) {
                         if (!mtUser.getGradeId().equals(initGrade.getId())) {
-                            mtUser.setGradeId(initGrade.getId().toString());
+                            mtUser.setGradeId(initGrade.getId());
                             updateById(mtUser);
                         }
                     }
                 }
                 // 会员等级为空，就把会员等级置为初始等级
-                String userGradeId = mtUser.getGradeId();
+                Integer userGradeId = mtUser.getGradeId();
                 if (userGradeId == null && initGrade != null) {
-                    mtUser.setGradeId(initGrade.getId().toString());
+                    mtUser.setGradeId(initGrade.getId());
                     updateById(mtUser);
                     openGiftService.openGift(mtUser.getId(), initGrade.getId(), false);
                 } else {
                     // 会员等级不存在或已禁用、删除，就把会员等级置为初始等级
-                    MtUserGrade myGrade = userGradeService.queryUserGradeById(mtUser.getMerchantId(), Integer.parseInt(userGradeId), id);
+                    MtUserGrade myGrade = userGradeService.queryUserGradeById(mtUser.getMerchantId(), userGradeId, id);
                     if (myGrade == null || !myGrade.getStatus().equals(StatusEnum.ENABLED.getKey())) {
-                        mtUser.setGradeId(initGrade.getId().toString());
+                        mtUser.setGradeId(initGrade.getId());
                         updateById(mtUser);
                     }
                 }
@@ -734,7 +729,7 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
             mtUser.setOpenId(openId);
             MtUserGrade grade = userGradeService.getInitUserGrade(merchantId);
             if (grade != null) {
-                mtUser.setGradeId(grade.getId() + "");
+                mtUser.setGradeId(grade.getId());
             }
             Date time = new Date();
             mtUser.setUpdateTime(time);
@@ -767,7 +762,7 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
             user = mtUserMapper.queryMemberByOpenId(merchantId, openId);
 
             // 开卡赠礼
-            openGiftService.openGift(user.getId(), Integer.parseInt(user.getGradeId()), true);
+            openGiftService.openGift(user.getId(), user.getGradeId(), true);
 
             // 分佣关系
             commissionRelationService.setCommissionRelation(mtUser, shareId);
@@ -1089,11 +1084,11 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
                  mtUser.setDescription(userInfo.get(6));
                  mtUser.setCarNo(userInfo.get(7));
                  String gradeName = userInfo.get(8);
-                 String gradeId = "0";
+                 Integer gradeId = 0;
                  if (StringUtil.isNotEmpty(gradeName)) {
                      for (MtUserGrade userGrade : userGrades) {
                           if (userGrade.getName().equals(gradeName)) {
-                              gradeId = userGrade.getId().toString();
+                              gradeId = userGrade.getId();
                           }
                      }
                  }

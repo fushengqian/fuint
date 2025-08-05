@@ -223,9 +223,9 @@ public class UserGradeServiceImpl extends ServiceImpl<MtUserGradeMapper, MtUserG
         List<MtUserGrade> userGrades = mtUserGradeMapper.selectList(lambdaQueryWrapper);
         List<MtUserGrade> dataList = new ArrayList<>();
 
-        String userGradeId = "0";
+        Integer userGradeId = 0;
         if (userInfo != null) {
-            if (StringUtil.isNotEmpty(userInfo.getGradeId())) {
+            if (userInfo.getGradeId() != null && userInfo.getGradeId() > 0) {
                 userGradeId = userInfo.getGradeId();
             }
         }

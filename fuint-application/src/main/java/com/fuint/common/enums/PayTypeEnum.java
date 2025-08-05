@@ -19,7 +19,8 @@ public enum PayTypeEnum {
     MICROPAY("MICROPAY", "微信扫码支付"),
     BALANCE("BALANCE", "余额支付"),
     ALISCAN("ALISCAN", "支付宝扫码"),
-    STORE("STORE", "门店支付");
+    STORE("STORE", "门店支付"),
+    UNIONPAY("UNIONPAY", "云闪付支付");
 
     private String key;
 

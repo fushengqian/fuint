@@ -186,6 +186,7 @@ public class BackendBookItemController extends BaseController {
         mtBookItem.setMerchantId(accountInfo.getMerchantId());
 
         if (StringUtil.isNotEmpty(id)) {
+            mtBookItem.setId(Integer.parseInt(id));
             bookItemService.updateBookItem(mtBookItem);
         } else {
             bookItemService.addBookItem(mtBookItem);

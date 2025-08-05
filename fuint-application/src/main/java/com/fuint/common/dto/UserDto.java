@@ -50,7 +50,7 @@ public class UserDto implements Serializable {
     private String idcard;
 
     @ApiModelProperty("等级ID")
-    private String gradeId;
+    private Integer gradeId;
 
     @ApiModelProperty("等级名称")
     private String gradeName;

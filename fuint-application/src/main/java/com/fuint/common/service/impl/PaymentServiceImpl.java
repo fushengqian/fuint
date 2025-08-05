@@ -47,6 +47,11 @@ public class PaymentServiceImpl implements PaymentService {
     private AlipayService alipayService;
 
     /**
+     * 云闪付服务接口
+     * */
+    private UnionPayService unionPayService;
+
+    /**
      * 会员服务接口
      * */
     private MemberService memberService;
@@ -87,6 +92,9 @@ public class PaymentServiceImpl implements PaymentService {
         if (orderInfo.getPayType().equals(PayTypeEnum.ALISCAN.getKey())) {
             // 支付宝支付
             responseObject = alipayService.createPrepayOrder(userInfo, orderInfo, payAmount, authCode, giveAmount, ip, platform);
+        } else if (orderInfo.getPayType().equals(PayTypeEnum.UNIONPAY.getKey())) {
+            // 云闪付支付
+            responseObject = unionPayService.createPrepayOrder(userInfo, orderInfo, payAmount, authCode, giveAmount, ip, platform);
         } else {
             // 微信支付
             responseObject = weixinService.createPrepayOrder(userInfo, orderInfo, payAmount, authCode, giveAmount, ip, platform, isWechat);

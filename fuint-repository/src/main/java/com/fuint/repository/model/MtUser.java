@@ -52,7 +52,7 @@ public class MtUser implements Serializable {
     private String idcard;
 
     @ApiModelProperty("等级ID")
-    private String gradeId;
+    private Integer gradeId;
 
     @ApiModelProperty("会员开始时间")
     @TableField(strategy = FieldStrategy.IGNORED)

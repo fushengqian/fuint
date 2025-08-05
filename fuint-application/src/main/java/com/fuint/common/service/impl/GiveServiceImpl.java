@@ -184,7 +184,9 @@ public class GiveServiceImpl extends ServiceImpl<MtGiveMapper, MtGive> implement
             userInfo.setName(mobile);
             userInfo.setMobile(mobile);
             MtUserGrade grade = userGradeService.getInitUserGrade(merchantId);
-            userInfo.setGradeId(grade.getId()+"");
+            if (grade != null) {
+                userInfo.setGradeId(grade.getId());
+            }
             userInfo.setBalance(new BigDecimal(0));
             userInfo.setStatus(StatusEnum.ENABLED.getKey());
             user = memberService.addMember(userInfo, "0");

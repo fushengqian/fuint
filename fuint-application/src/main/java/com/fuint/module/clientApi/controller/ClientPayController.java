@@ -128,7 +128,7 @@ public class ClientPayController extends BaseController {
         BigDecimal payDiscount = new BigDecimal("1");
         Integer merchantId = merchantService.getMerchantId(merchantNo);
         if (mtUser != null && !mtUser.getIsStaff().equals(YesOrNoEnum.YES.getKey())) {
-            MtUserGrade userGrade = userGradeService.queryUserGradeById(merchantId, Integer.parseInt(mtUser.getGradeId()), mtUser.getId());
+            MtUserGrade userGrade = userGradeService.queryUserGradeById(merchantId, mtUser.getGradeId(), mtUser.getId());
             if (userGrade != null) {
                 if (userGrade.getDiscount() > 0) {
                     payDiscount = new BigDecimal(userGrade.getDiscount()).divide(new BigDecimal("10"), BigDecimal.ROUND_CEILING, 4);

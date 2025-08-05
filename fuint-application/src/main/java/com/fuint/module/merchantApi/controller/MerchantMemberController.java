@@ -129,7 +129,7 @@ public class MerchantMemberController extends BaseController {
             return getFailureResult(201, "该账号不是商户");
         }
         MtUser memberInfo = memberService.queryMemberById(memberParam.getMemberId());
-        MtUserGrade gradeInfo = memberService.queryMemberGradeByGradeId(Integer.parseInt(memberInfo.getGradeId()));
+        MtUserGrade gradeInfo = memberService.queryMemberGradeByGradeId(memberInfo.getGradeId());
 
         Map<String, Object> result = new HashMap<>();
         result.put("userInfo", memberInfo);

@@ -111,7 +111,7 @@ public class ClientUserController extends BaseController {
         }
         MtUserGrade gradeInfo = null;
         if (mtUser != null) {
-            gradeInfo = memberService.queryMemberGradeByGradeId(Integer.parseInt(mtUser.getGradeId()));
+            gradeInfo = memberService.queryMemberGradeByGradeId(mtUser.getGradeId());
         }
 
         List<MtUserGrade> memberGrade = userGradeService.getPayUserGradeList(merchantId, mtUser);

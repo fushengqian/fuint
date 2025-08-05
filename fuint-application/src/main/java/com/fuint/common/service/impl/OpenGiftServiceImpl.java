@@ -252,10 +252,10 @@ public class OpenGiftServiceImpl extends ServiceImpl<MtOpenGiftMapper, MtOpenGif
         if (user.getIsStaff().equals(YesOrNoEnum.YES.getKey())) {
             return false;
         }
-        if (user.getGradeId() == null && StringUtil.isEmpty(user.getGradeId())) {
-            user.setGradeId("0");
+        if (user.getGradeId() == null) {
+            user.setGradeId(0);
         }
-        MtUserGrade oldGrade = userGradeService.queryUserGradeById(user.getMerchantId(), Integer.parseInt(user.getGradeId()), user.getId());
+        MtUserGrade oldGrade = userGradeService.queryUserGradeById(user.getMerchantId(), user.getGradeId(), user.getId());
         MtUserGrade gradeInfo = userGradeService.queryUserGradeById(user.getMerchantId(), gradeId, user.getId());
         // 设置有效期
         if (gradeInfo.getValidDay() >= 0) {
@@ -271,7 +271,7 @@ public class OpenGiftServiceImpl extends ServiceImpl<MtOpenGiftMapper, MtOpenGif
                 user.setEndTime(null);
             }
         }
-        user.setGradeId(gradeId.toString());
+        user.setGradeId(gradeId);
         user.setUpdateTime(new Date());
         mtUserMapper.updateById(user);
         // 会员往低了改变，没有开卡赠礼

@@ -408,7 +408,7 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
 
         // 会员相关信息
         MtUser userInfo = memberService.queryMemberById(orderDto.getUserId());
-        MtUserGrade userGrade = userGradeService.queryUserGradeById(orderDto.getMerchantId(), userInfo.getGradeId() != null ? Integer.parseInt(userInfo.getGradeId()) : 1, orderDto.getUserId());
+        MtUserGrade userGrade = userGradeService.queryUserGradeById(orderDto.getMerchantId(), userInfo.getGradeId() != null ? userInfo.getGradeId() : 1, orderDto.getUserId());
         BigDecimal percent = new BigDecimal("0");
         if (userGrade != null && userGrade.getDiscount() != null && userGrade.getDiscount() > 0 && !userInfo.getIsStaff().equals(YesOrNoEnum.YES.getKey())) {
             // 会员折扣
@@ -1514,7 +1514,7 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
                     }
                 }
                 MtUser userInfo = memberService.queryMemberById(orderInfo.getUserId());
-                MtUserGrade userGrade = userGradeService.queryUserGradeById(orderInfo.getMerchantId(), Integer.parseInt(userInfo.getGradeId()), orderInfo.getUserId());
+                MtUserGrade userGrade = userGradeService.queryUserGradeById(orderInfo.getMerchantId(), userInfo.getGradeId(), orderInfo.getUserId());
                 // 是否会员积分加倍
                 if (userGrade != null && userGrade.getSpeedPoint() > 1) {
                     pointNum = pointNum * userGrade.getSpeedPoint();
@@ -1983,7 +1983,7 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
         Integer storeId = 0;
         if (cartList.size() > 0) {
             // 会员折扣
-            MtUserGrade userGrade = userGradeService.queryUserGradeById(userInfo.getMerchantId(), userInfo.getGradeId() != null ? Integer.parseInt(userInfo.getGradeId()) : 1, userId);
+            MtUserGrade userGrade = userGradeService.queryUserGradeById(userInfo.getMerchantId(), userInfo.getGradeId() != null ? userInfo.getGradeId() : 1, userId);
             if (userGrade != null && userGrade.getDiscount() != null && userGrade.getDiscount() > 0 && !userInfo.getIsStaff().equals(YesOrNoEnum.YES.getKey())) {
                 percent = new BigDecimal(userGrade.getDiscount()).divide(new BigDecimal("10"), BigDecimal.ROUND_CEILING, 4);
                 if (percent.compareTo(new BigDecimal("0")) <= 0) {
