@@ -1,14 +1,13 @@
 package com.fuint.common.service.impl;
 
 import com.alipay.api.AlipayApiException;
-import com.alipay.api.domain.AlipayTradePayModel;
 import com.alipay.api.domain.AlipayTradeQueryModel;
 import com.alipay.api.domain.AlipayTradeRefundModel;
 import com.alipay.api.internal.util.AlipaySignature;
-import com.alipay.api.response.AlipayTradePayResponse;
 import com.alipay.api.response.AlipayTradeQueryResponse;
 import com.alipay.api.response.AlipayTradeRefundResponse;
-import com.fuint.common.bean.AliPayBean;
+import com.ijpay.unionpay.UnionPayApi;
+import com.fuint.common.bean.UnionPayBean;
 import com.fuint.common.dto.OrderDto;
 import com.fuint.common.dto.UserOrderDto;
 import com.fuint.common.enums.*;
@@ -20,6 +19,10 @@ import com.fuint.utils.StringUtil;
 import com.ijpay.alipay.AliPayApi;
 import com.ijpay.alipay.AliPayApiConfig;
 import com.ijpay.alipay.AliPayApiConfigKit;
+import com.ijpay.core.enums.SignType;
+import com.ijpay.core.kit.WxPayKit;
+import com.ijpay.unionpay.enums.ServiceEnum;
+import com.ijpay.unionpay.model.MicroPayModel;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,7 +43,7 @@ public class UnionPayServiceImpl implements UnionPayService {
 
     private static final Logger logger = LoggerFactory.getLogger(UnionPayServiceImpl.class);
 
-    private AliPayBean aliPayBean;
+    private UnionPayBean unionPayBean;
 
     /**
      * 订单服务接口
@@ -84,46 +87,53 @@ public class UnionPayServiceImpl implements UnionPayService {
         orderService.updateOrder(reqDto);
 
         getApiConfig(orderInfo.getStoreId());
-        String notifyUrl = aliPayBean.getDomain();
-        AlipayTradePayModel model = new AlipayTradePayModel();
-        model.setAuthCode(authCode);
-        model.setSubject(goodsInfo);
-        model.setTotalAmount(payAmount1.toString());
-        model.setOutTradeNo(orderInfo.getOrderSn());
-        model.setStoreId(orderInfo.getStoreId().toString());
-        model.setScene("bar_code");
-
-        String code = "";
+        Map<String, String> params = MicroPayModel.builder()
+                .service(ServiceEnum.MICRO_PAY.toString())
+                .mch_id(unionPayBean.getMachId())
+                .out_trade_no(WxPayKit.generateStr())
+                .body(goodsInfo)
+                .attach("云闪付支付")
+                .total_fee(payAmount1.toString())
+                .mch_create_ip(ip)
+                .auth_code(authCode)
+                .nonce_str(WxPayKit.generateStr())
+                .build()
+                .createSign(unionPayBean.getKey(), SignType.MD5);
+        String returnCode = "0";
         try {
-            AlipayTradePayResponse response = AliPayApi.tradePayToResponse(model, notifyUrl);
-            code = response.getCode();
-            String msg = response.getMsg();
-            logger.info("UnionPayService createPrepayOrder return code: {}, msg ", code, msg);
-            if (!code.equals("10000") || !msg.equalsIgnoreCase("Success")) {
-                if (code.equals("10003")) {
+            String xmlResult = UnionPayApi.execution(unionPayBean.getServerUrl(), params);
+            Map<String, String> result = WxPayKit.xmlToMap(xmlResult);
+            returnCode = result.get("status");
+            String resultCode = result.get("result_code");
+            String errMsg = result.get("err_msg");
+            String errCode = result.get("err_code");
+
+            logger.info("UnionPayService createPrepayOrder xmlResult: {} ", xmlResult);
+            if (!"0".equals(returnCode) || !"0".equals(resultCode)) {
+                if (returnCode.equals("10003")) {
                     // 需要会员输入支付密码，等待10秒后查询订单
                     try {
                         Thread.sleep(10000);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
-                    Map<String, String> payResult = queryPaidOrder(orderInfo.getStoreId(), response.getTradeNo(), orderInfo.getOrderSn());
+                    Map<String, String> payResult = queryPaidOrder(orderInfo.getStoreId(), "云闪付单号", orderInfo.getOrderSn());
                     if (payResult == null) {
-                        throw new BusinessCheckException("支付宝支付失败");
+                        throw new BusinessCheckException("云闪付支付失败");
                     }
                 } else {
-                    throw new BusinessCheckException("支付宝支付出错：" + msg);
+                    throw new BusinessCheckException("云闪付支付出错：" + errCode + errMsg);
                 }
             }
         } catch (Exception e) {
             logger.error("UnionPayService createPrepayOrder exception {}", e.getMessage());
-            throw new BusinessCheckException("支付宝支付出错，请检查配置项");
+            throw new BusinessCheckException("云闪付支付出错，请检查配置项");
         }
 
         Map<String, String> respData = new HashMap<>();
-        respData.put("result", code);
+        respData.put("result", returnCode);
 
-        ResponseObject responseObject = new ResponseObject(200, "支付宝支付接口返回成功", respData);
+        ResponseObject responseObject = new ResponseObject(200, "云闪付支付接口返回成功", respData);
         logger.info("UnionPayService createPrepayOrder outParams {}", responseObject.toString());
 
         return responseObject;
@@ -144,7 +154,7 @@ public class UnionPayServiceImpl implements UnionPayService {
             storeId = orderDto.getStoreInfo().getId();
         }
         getApiConfig(storeId);
-        return AlipaySignature.rsaCheckV1(params, aliPayBean.getPublicKey(), "UTF-8", "RSA2");
+        return AlipaySignature.rsaCheckV1(params, unionPayBean.getKey(), "UTF-8", "RSA2");
     }
 
     /**
@@ -155,9 +165,9 @@ public class UnionPayServiceImpl implements UnionPayService {
      * */
     public AliPayApiConfig getApiConfig(Integer storeId) throws BusinessCheckException {
         AliPayApiConfig aliPayApiConfig;
-        String appId = aliPayBean.getAppId();
-        String privateKey = aliPayBean.getPrivateKey();
-        String publicKey = aliPayBean.getPublicKey();
+        String appId = unionPayBean.getMachId();
+        String privateKey = unionPayBean.getMachId();
+        String publicKey = unionPayBean.getKey();
 
         // 优先读取店铺的支付账号
         MtStore mtStore = storeService.queryStoreById(storeId);
@@ -172,7 +182,7 @@ public class UnionPayServiceImpl implements UnionPayService {
                 .setAliPayPublicKey(publicKey)
                 .setCharset("UTF-8")
                 .setPrivateKey(privateKey)
-                .setServiceUrl(aliPayBean.getServerUrl())
+                .setServiceUrl(unionPayBean.getServerUrl())
                 .setSignType("RSA2")
                 .build();
 
@@ -213,7 +223,7 @@ public class UnionPayServiceImpl implements UnionPayService {
                 }
             }
         } catch (AlipayApiException e) {
-            logger.info("AlipayService queryPaidOrder response", e.getMessage());
+            logger.info("UnionPayService queryPaidOrder response", e.getMessage());
         }
 
         return null;
@@ -231,7 +241,7 @@ public class UnionPayServiceImpl implements UnionPayService {
      * */
     public Boolean doRefund(Integer storeId, String orderSn, BigDecimal totalAmount, BigDecimal refundAmount, String platform) throws BusinessCheckException {
         try {
-            logger.info("AlipayService.doRefund orderSn = {}, totalFee = {}, refundFee = {}", orderSn, totalAmount, refundAmount);
+            logger.info("UnionPayService.doRefund orderSn = {}, totalFee = {}, refundFee = {}", orderSn, totalAmount, refundAmount);
             if (StringUtil.isEmpty(orderSn)) {
                 throw new BusinessCheckException("退款订单号不能为空...");
             }
@@ -247,12 +257,12 @@ public class UnionPayServiceImpl implements UnionPayService {
             String code = refundResponse.getCode();
             String msg = refundResponse.getMsg();
             String subMsg = refundResponse.getSubMsg() == null ? msg : refundResponse.getSubMsg();
-            logger.info("AlipayService refundResult response Body = {}", refundResponse.getBody());
+            logger.info("UnionPayService refundResult response Body = {}", refundResponse.getBody());
             if (!code.equals("10000") || !msg.equalsIgnoreCase("Success")) {
-                throw new BusinessCheckException("支付宝退款失败，" + subMsg);
+                throw new BusinessCheckException("云闪付退款失败，" + subMsg);
             }
         } catch (AlipayApiException e) {
-            logger.error("AlipayService.doRefund error = {}", e.getMessage());
+            logger.error("UnionPayService.doRefund error = {}", e.getMessage());
             e.printStackTrace();
         }
         return true;

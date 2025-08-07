@@ -465,6 +465,8 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
         if (PhoneFormatCheckUtils.isChinaPhoneLegal(mobile)) {
             mtUserMapper.resetMobile(mtUser.getMerchantId(), mobile, mtUser.getId());
             mtUser.setMobile(mobile);
+        } else {
+            mtUser.setMobile(oldUserInfo.getMobile());
         }
 
         // 检查会员号是否重复

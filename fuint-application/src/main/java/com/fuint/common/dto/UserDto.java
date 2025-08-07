@@ -105,7 +105,6 @@ public class UserDto implements Serializable {
     @ApiModelProperty("备注信息")
     private String description;
 
-
     @ApiModelProperty("注册IP")
     private String ip;
 

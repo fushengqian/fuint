@@ -37,8 +37,8 @@
             <artifactId>spring-boot-starter-security</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.aspectj</groupId>  
-            <artifactId>aspectjweaver</artifactId>  
+            <groupId>org.aspectj</groupId>
+            <artifactId>aspectjweaver</artifactId>
         </dependency>
         <dependency>
             <groupId>commons-httpclient</groupId>
@@ -133,12 +133,17 @@
         <dependency>
             <groupId>com.github.javen205</groupId>
             <artifactId>IJPay-WxPay</artifactId>
-            <version>2.9.6</version>
+            <version>2.9.12.1</version>
         </dependency>
         <dependency>
             <groupId>com.github.javen205</groupId>
             <artifactId>IJPay-AliPay</artifactId>
-            <version>2.9.6</version>
+            <version>2.9.12.1</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.javen205</groupId>
+            <artifactId>IJPay-UnionPay</artifactId>
+            <version>2.9.12.1</version>
         </dependency>
         <dependency>
             <groupId>org.apache.velocity</groupId>
