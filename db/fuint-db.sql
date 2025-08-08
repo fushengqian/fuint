@@ -142,11 +142,11 @@ CREATE TABLE `mt_book_item` (
     `SERVICE_DATE` varchar(100) DEFAULT NULL COMMENT '预约日期',
     `SERVICE_TIME` varchar(100) DEFAULT NULL COMMENT '预约时间段',
     `SERVICE_STAFF_ID` int DEFAULT NULL COMMENT '预约员工ID',
-    `REMARK` varchar(1000) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT '' COMMENT '预约说明',
+    `REMARK` varchar(1000) DEFAULT '' COMMENT '预约说明',
     `CREATE_TIME` datetime DEFAULT NULL COMMENT '创建时间',
     `UPDATE_TIME` datetime DEFAULT NULL COMMENT '更新时间',
     `OPERATOR` varchar(30) DEFAULT '' COMMENT '最后操作人',
-    `STATUS` char(1) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT 'A' COMMENT '状态',
+    `STATUS` char(1) DEFAULT 'A' COMMENT '状态',
     PRIMARY KEY (`ID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='预约详情表';
 
@@ -467,12 +467,13 @@ DROP TABLE IF EXISTS `mt_goods`;
 
 CREATE TABLE `mt_goods` (
   `ID` int NOT NULL AUTO_INCREMENT COMMENT '自增ID',
-  `TYPE` varchar(30) DEFAULT 'goods' COMMENT '商品类别',
+  `TYPE` varchar(30) NOT NULL DEFAULT 'goods' COMMENT '商品类别',
   `MERCHANT_ID` int DEFAULT '0' COMMENT '所属商户ID',
   `STORE_ID` int DEFAULT '0' COMMENT '所属店铺ID',
   `NAME` varchar(100) DEFAULT '' COMMENT '商品名称',
   `CATE_ID` int DEFAULT '0' COMMENT '分类ID',
   `GOODS_NO` varchar(100) DEFAULT '' COMMENT '商品编码',
+  `PLATFORM` int DEFAULT '0' COMMENT '可用平台，0：不限，1：仅会员端（小程序和h5）；2：仅收银端',
   `IS_SINGLE_SPEC` char(1) NOT NULL DEFAULT 'Y' COMMENT '是否单规格',
   `LOGO` varchar(200) DEFAULT '' COMMENT '主图地址',
   `IMAGES` varchar(1000) DEFAULT '' COMMENT '图片地址',
@@ -494,7 +495,8 @@ CREATE TABLE `mt_goods` (
   `OPERATOR` varchar(30) DEFAULT NULL COMMENT '最后操作人',
   `STATUS` char(1) DEFAULT 'A' COMMENT 'A：正常；D：删除',
   PRIMARY KEY (`ID`)
-) ENGINE=InnoDB AUTO_INCREMENT=386 DEFAULT CHARSET=utf8 COMMENT='商品表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='商品表';
+
 
 /*Table structure for table `mt_goods_cate` */
 
@@ -532,7 +534,7 @@ CREATE TABLE `mt_goods_sku` (
   `WEIGHT` decimal(10,2) DEFAULT '0.00' COMMENT '重量',
   `STATUS` char(1) NOT NULL DEFAULT 'A' COMMENT '状态',
   PRIMARY KEY (`ID`)
-) ENGINE=InnoDB AUTO_INCREMENT=745 DEFAULT CHARSET=utf8 COMMENT='商品SKU表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='商品SKU表';
 
 /*Table structure for table `mt_goods_spec` */
 
@@ -1030,7 +1032,7 @@ DROP TABLE IF EXISTS `mt_user`;
 
 CREATE TABLE `mt_user` (
   `ID` int NOT NULL AUTO_INCREMENT COMMENT '会员ID',
-  `MOBILE` varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT '' COMMENT '手机号码',
+  `MOBILE` varchar(20) DEFAULT '' COMMENT '手机号码',
   `GROUP_ID` int DEFAULT '0' COMMENT '分组ID',
   `USER_NO` varchar(30) DEFAULT '' COMMENT '会员号',
   `AVATAR` varchar(255) DEFAULT '' COMMENT '头像',
