@@ -2,6 +2,7 @@ package com.fuint.module.backendApi.controller;
 
 import com.fuint.common.Constants;
 import com.fuint.common.dto.AccountInfo;
+import com.fuint.common.dto.MerchantDto;
 import com.fuint.common.dto.ParamDto;
 import com.fuint.common.enums.MerchantTypeEnum;
 import com.fuint.common.enums.StatusEnum;
@@ -57,7 +58,6 @@ public class BackendMerchantController extends BaseController {
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('merchant:index')")
     public ResponseObject list(HttpServletRequest request) throws BusinessCheckException {
-        String token = request.getHeader("Access-Token");
         Integer page = request.getParameter("page") == null ? Constants.PAGE_NUMBER : Integer.parseInt(request.getParameter("page"));
         Integer pageSize = request.getParameter("pageSize") == null ? Constants.PAGE_SIZE : Integer.parseInt(request.getParameter("pageSize"));
 
@@ -65,7 +65,7 @@ public class BackendMerchantController extends BaseController {
         String merchantName = request.getParameter("name");
         String status = request.getParameter("status");
 
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
+        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
         if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
             merchantId = accountInfo.getMerchantId().toString();
         }
@@ -85,7 +85,7 @@ public class BackendMerchantController extends BaseController {
             params.put("status", status);
         }
         paginationRequest.setSearchParams(params);
-        PaginationResponse<MtMerchant> paginationResponse = merchantService.queryMerchantListByPagination(paginationRequest);
+        PaginationResponse<MerchantDto> paginationResponse = merchantService.queryMerchantListByPagination(paginationRequest);
 
         // 商户类型列表
         List<ParamDto> typeList = MerchantTypeEnum.getMerchantTypeList();
@@ -131,11 +131,10 @@ public class BackendMerchantController extends BaseController {
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('merchant:index')")
     public ResponseObject updateStatus(HttpServletRequest request, @RequestBody Map<String, Object> params) throws BusinessCheckException {
-        String token = request.getHeader("Access-Token");
         String status = params.get("status") != null ? params.get("status").toString() : StatusEnum.ENABLED.getKey();
         Integer merchantId = params.get("merchantId") == null ? 0 : Integer.parseInt(params.get("merchantId").toString());
 
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
+        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
         if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
             merchantId = accountInfo.getMerchantId();
         }
@@ -151,8 +150,7 @@ public class BackendMerchantController extends BaseController {
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('merchant:index')")
     public ResponseObject saveHandler(HttpServletRequest request, @RequestBody MerchantSubmitRequest merchantInfo) throws BusinessCheckException {
-        String token = request.getHeader("Access-Token");
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
+        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
         Integer merchantId = accountInfo.getMerchantId();
 
         MtMerchant mtMerchant = new MtMerchant();
@@ -188,14 +186,12 @@ public class BackendMerchantController extends BaseController {
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('merchant:index')")
     public ResponseObject getMerchantInfo(HttpServletRequest request, @PathVariable("id") Integer merchantId) throws BusinessCheckException {
-        String token = request.getHeader("Access-Token");
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
+        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
         if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
             merchantId = accountInfo.getMerchantId();
         }
 
         MtMerchant merchantInfo = merchantService.queryMerchantById(merchantId);
-
         Map<String, Object> result = new HashMap<>();
         result.put("merchantInfo", merchantInfo);
 

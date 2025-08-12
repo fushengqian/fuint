@@ -3,6 +3,7 @@ package com.fuint.common.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.fuint.common.dto.MerchantDto;
 import com.fuint.common.enums.StatusEnum;
 import com.fuint.common.service.MerchantService;
 import com.fuint.common.service.StoreService;
@@ -24,6 +25,7 @@ import lombok.AllArgsConstructor;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -61,7 +63,7 @@ public class MerchantServiceImpl extends ServiceImpl<MtMerchantMapper, MtMerchan
      * @return
      */
     @Override
-    public PaginationResponse<MtMerchant> queryMerchantListByPagination(PaginationRequest paginationRequest) {
+    public PaginationResponse<MerchantDto> queryMerchantListByPagination(PaginationRequest paginationRequest) {
         Page<MtMerchant> pageHelper = PageHelper.startPage(paginationRequest.getCurrentPage(), paginationRequest.getPageSize());
         LambdaQueryWrapper<MtMerchant> lambdaQueryWrapper = Wrappers.lambdaQuery();
         lambdaQueryWrapper.ne(MtMerchant::getStatus, StatusEnum.DISABLE.getKey());
@@ -80,11 +82,20 @@ public class MerchantServiceImpl extends ServiceImpl<MtMerchantMapper, MtMerchan
         }
 
         lambdaQueryWrapper.orderByAsc(MtMerchant::getStatus).orderByDesc(MtMerchant::getId);
-        List<MtMerchant> dataList = mtMerchantMapper.selectList(lambdaQueryWrapper);
+        List<MtMerchant> merchantList = mtMerchantMapper.selectList(lambdaQueryWrapper);
+        List<MerchantDto> dataList = new ArrayList<>();
+        if (merchantList != null && merchantList.size() > 0) {
+            for (MtMerchant mtMerchant : merchantList) {
+                 MerchantDto merchantDto = new MerchantDto();
+                 BeanUtils.copyProperties(mtMerchant, merchantDto);
+                 merchantDto.setPhone(CommonUtil.hidePhone(mtMerchant.getPhone()));
+                 dataList.add(merchantDto);
+            }
+        }
 
         PageRequest pageRequest = PageRequest.of(paginationRequest.getCurrentPage(), paginationRequest.getPageSize());
         PageImpl pageImpl = new PageImpl(dataList, pageRequest, pageHelper.getTotal());
-        PaginationResponse<MtMerchant> paginationResponse = new PaginationResponse(pageImpl, MtMerchant.class);
+        PaginationResponse<MerchantDto> paginationResponse = new PaginationResponse(pageImpl, MtMerchant.class);
         paginationResponse.setTotalPages(pageHelper.getPages());
         paginationResponse.setTotalElements(pageHelper.getTotal());
         paginationResponse.setContent(dataList);

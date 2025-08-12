@@ -44,7 +44,7 @@ public class CommonUtil {
      * @return
      * */
     public static String hidePhone(String phone) {
-        if (StringUtil.isEmpty(phone)) {
+        if (StringUtil.isBlank(phone)) {
             return "";
         }
         if (phone.length() < 11) {

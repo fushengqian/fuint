@@ -4,11 +4,9 @@ import com.fuint.common.Constants;
 import com.fuint.common.dto.AccountInfo;
 import com.fuint.common.dto.StoreDto;
 import com.fuint.common.enums.StatusEnum;
-import com.fuint.common.enums.YesOrNoEnum;
 import com.fuint.common.service.MerchantService;
 import com.fuint.common.service.SettingService;
 import com.fuint.common.service.StoreService;
-import com.fuint.common.util.CommonUtil;
 import com.fuint.common.util.TokenUtil;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.pagination.PaginationRequest;
@@ -65,14 +63,13 @@ public class BackendStoreController extends BaseController {
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('store:list')")
     public ResponseObject list(HttpServletRequest request) throws BusinessCheckException {
-        String token = request.getHeader("Access-Token");
         Integer page = request.getParameter("page") == null ? Constants.PAGE_NUMBER : Integer.parseInt(request.getParameter("page"));
         Integer pageSize = request.getParameter("pageSize") == null ? Constants.PAGE_SIZE : Integer.parseInt(request.getParameter("pageSize"));
 
         String storeName = request.getParameter("name");
         String storeStatus = request.getParameter("status");
 
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
+        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
 
         PaginationRequest paginationRequest = new PaginationRequest();
         paginationRequest.setCurrentPage(page);
@@ -111,12 +108,11 @@ public class BackendStoreController extends BaseController {
     @RequestMapping(value = "/searchStore",  method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject search(HttpServletRequest request) throws BusinessCheckException {
-        String token = request.getHeader("Access-Token");
         String merchantId = request.getParameter("merchantId") == null ? "" : request.getParameter("merchantId");
         String storeId = request.getParameter("id") == null ? "" : request.getParameter("id");
         String storeName = request.getParameter("name") == null ? "" : request.getParameter("name");
 
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
+        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
 
         if (accountInfo.getStoreId() != null && accountInfo.getStoreId() > 0) {
             storeId = accountInfo.getStoreId().toString();
@@ -152,11 +148,10 @@ public class BackendStoreController extends BaseController {
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('store:add')")
     public ResponseObject updateStatus(HttpServletRequest request, @RequestBody Map<String, Object> params) throws BusinessCheckException {
-        String token = request.getHeader("Access-Token");
         String status = params.get("status") != null ? params.get("status").toString() : StatusEnum.ENABLED.getKey();
         Integer storeId = params.get("storeId") == null ? 0 : Integer.parseInt(params.get("storeId").toString());
 
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
+        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
         storeService.updateStatus(storeId, accountInfo.getAccountName(), status);
 
         return getSuccessResult(true);
@@ -215,8 +210,7 @@ public class BackendStoreController extends BaseController {
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('store:list')")
     public ResponseObject getStoreInfo(HttpServletRequest request, @PathVariable("id") Integer id) throws BusinessCheckException {
-        String token = request.getHeader("Access-Token");
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
+        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
 
         StoreDto storeInfo = storeService.queryStoreDtoById(id);
         if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {

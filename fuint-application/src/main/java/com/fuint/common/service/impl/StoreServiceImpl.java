@@ -14,6 +14,7 @@ import com.fuint.common.enums.YesOrNoEnum;
 import com.fuint.common.service.MerchantService;
 import com.fuint.common.service.StoreService;
 import com.fuint.common.service.WeixinService;
+import com.fuint.common.util.CommonUtil;
 import com.fuint.framework.annoation.OperationServiceLog;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.pagination.PaginationRequest;
@@ -119,6 +120,7 @@ public class StoreServiceImpl extends ServiceImpl<MtStoreMapper, MtStore> implem
         for (MtStore mtStore : storeList) {
              StoreDto storeDto = new StoreDto();
              BeanUtils.copyProperties(mtStore, storeDto);
+             storeDto.setPhone(CommonUtil.hidePhone(mtStore.getPhone()));
              MtMerchant mtMerchant = mtMerchantMapper.selectById(mtStore.getMerchantId());
              if (mtMerchant != null) {
                  storeDto.setMerchantName(mtMerchant.getName());

@@ -265,7 +265,7 @@ public class CommissionLogServiceImpl extends ServiceImpl<MtCommissionLogMapper,
                          // 分佣金额计算，散客和会员佣金比例不同
                          BigDecimal rate = mtCommissionRuleItem.getMember();
                          if (mtOrder.getStaffId() != null && mtOrder.getStaffId() > 0 && mtOrder.getIsVisitor().equals(YesOrNoEnum.YES.getKey())) {
-                            rate = mtCommissionRuleItem.getGuest();
+                             rate = mtCommissionRuleItem.getGuest();
                          }
                          BigDecimal amount = mtOrder.getAmount().multiply(rate.divide(new BigDecimal("100")));
                          addCommissionLog(mtOrder, mtCommissionRule, amount, mtCommissionRuleItem, 0);
