@@ -69,7 +69,6 @@ public class BackendPrinterController extends BaseController {
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('printer:index')")
     public ResponseObject list(HttpServletRequest request) throws BusinessCheckException {
-        String token = request.getHeader("Access-Token");
         Integer page = request.getParameter("page") == null ? Constants.PAGE_NUMBER : Integer.parseInt(request.getParameter("page"));
         Integer pageSize = request.getParameter("pageSize") == null ? Constants.PAGE_SIZE : Integer.parseInt(request.getParameter("pageSize"));
         String name = request.getParameter("name");
@@ -77,12 +76,8 @@ public class BackendPrinterController extends BaseController {
         String status = request.getParameter("status");
         String searchStoreId = request.getParameter("storeId");
 
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
+        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
         Integer storeId = accountInfo.getStoreId();
-
-        PaginationRequest paginationRequest = new PaginationRequest();
-        paginationRequest.setCurrentPage(page);
-        paginationRequest.setPageSize(pageSize);
 
         Map<String, Object> params = new HashMap<>();
         if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
@@ -103,8 +98,7 @@ public class BackendPrinterController extends BaseController {
         if (storeId != null && storeId > 0) {
             params.put("storeId", storeId);
         }
-        paginationRequest.setSearchParams(params);
-        PaginationResponse<MtPrinter> paginationResponse = printerService.queryPrinterListByPagination(paginationRequest);
+        PaginationResponse<MtPrinter> paginationResponse = printerService.queryPrinterListByPagination(new PaginationRequest(page, pageSize, params));
 
         List<MtStore> storeList = storeService.getMyStoreList(accountInfo.getMerchantId(), accountInfo.getStoreId(), StatusEnum.ENABLED.getKey());
 

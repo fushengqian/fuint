@@ -80,12 +80,7 @@ public class MerchantBookController extends BaseController {
             params.put("status", requestParams.getStatus());
         }
 
-        PaginationRequest paginationRequest = new PaginationRequest();
-        paginationRequest.setCurrentPage(requestParams.getPage());
-        paginationRequest.setPageSize(requestParams.getPageSize());
-        paginationRequest.setSearchParams(params);
-
-        PaginationResponse paginationResponse = bookItemService.queryBookItemListByPagination(paginationRequest);
+        PaginationResponse paginationResponse = bookItemService.queryBookItemListByPagination(new PaginationRequest(requestParams.getPage(), requestParams.getPageSize(), params));
 
         Map<String, Object> result = new HashMap<>();
         result.put("content", paginationResponse.getContent());
@@ -129,8 +124,7 @@ public class MerchantBookController extends BaseController {
     @RequestMapping(value = "/cancel", method = RequestMethod.POST)
     @CrossOrigin
     public ResponseObject cancel(HttpServletRequest request, @RequestBody BookDetailParam param) throws BusinessCheckException {
-        String token = request.getHeader("Access-Token");
-        UserInfo mtUser = TokenUtil.getUserInfoByToken(token);
+        UserInfo mtUser = TokenUtil.getUserInfoByToken(request.getHeader("Access-Token"));
 
         Integer bookId = param.getBookId();
         if (bookId == null) {

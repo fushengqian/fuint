@@ -34,6 +34,23 @@ public class PaginationRequest implements Serializable {
      */
     private Map<String, Object> searchParams;
 
+    // 默认构造函数
+    public PaginationRequest() {
+        this.currentPage = 1;
+        this.pageSize = 20;
+    }
+
+    public PaginationRequest(Integer pageNumber, Integer pageSize) {
+        this.currentPage = pageNumber;
+        this.pageSize = pageSize;
+    }
+
+    public PaginationRequest(Integer pageNumber, Integer pageSize, Map<String, Object> searchParams) {
+        this.currentPage = pageNumber;
+        this.pageSize = pageSize;
+        this.searchParams = searchParams;
+    }
+
     public int getCurrentPage() {
         return currentPage;
     }

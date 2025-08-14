@@ -53,11 +53,10 @@ public class MerchantCouponController extends BaseController {
     @RequestMapping(value = "/sendCoupon", method = RequestMethod.POST)
     @CrossOrigin
     public ResponseObject sendCoupon(HttpServletRequest request, @RequestBody CouponReceiveParam receiveParam) throws BusinessCheckException {
-        String token = request.getHeader("Access-Token");
         String merchantNo = request.getHeader("merchantNo") == null ? "" : request.getHeader("merchantNo");
         Integer merchantId = merchantService.getMerchantId(merchantNo);
 
-        UserInfo userInfo = TokenUtil.getUserInfoByToken(token);
+        UserInfo userInfo = TokenUtil.getUserInfoByToken(request.getHeader("Access-Token"));
         MtUser mtUser = memberService.queryMemberById(userInfo.getId());
 
         if (mtUser == null || mtUser.getMobile() == null) {

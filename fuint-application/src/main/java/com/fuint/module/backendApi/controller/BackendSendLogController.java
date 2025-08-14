@@ -57,7 +57,6 @@ public class BackendSendLogController extends BaseController {
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject list(HttpServletRequest request) throws BusinessCheckException {
-        String token = request.getHeader("Access-Token");
         String status = request.getParameter("status") == null ? "" : request.getParameter("status");
         String userId = request.getParameter("userId") == null ? "" : request.getParameter("userId");
         String mobile = request.getParameter("mobile") == null ? "" : request.getParameter("mobile");
@@ -65,12 +64,7 @@ public class BackendSendLogController extends BaseController {
         Integer page = request.getParameter("page") == null ? Constants.PAGE_NUMBER : Integer.parseInt(request.getParameter("page"));
         Integer pageSize = request.getParameter("pageSize") == null ? Constants.PAGE_SIZE : Integer.parseInt(request.getParameter("pageSize"));
 
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
-
-        PaginationRequest paginationRequest = new PaginationRequest();
-        paginationRequest.setCurrentPage(page);
-        paginationRequest.setPageSize(pageSize);
-
+        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
         Map<String, Object> searchParams = new HashMap<>();
         if (StringUtil.isNotEmpty(status)) {
             searchParams.put("status", status);
@@ -100,9 +94,7 @@ public class BackendSendLogController extends BaseController {
                 searchParams.put("userId", "0");
             }
         }
-
-        paginationRequest.setSearchParams(searchParams);
-        PaginationResponse<MtSendLog> paginationResponse = sendLogService.querySendLogListByPagination(paginationRequest);
+        PaginationResponse<MtSendLog> paginationResponse = sendLogService.querySendLogListByPagination(new PaginationRequest(page, pageSize, searchParams));
 
         Map<String, Object> result = new HashMap<>();
         result.put("paginationResponse", paginationResponse);

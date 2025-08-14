@@ -70,10 +70,6 @@ public class BackendMerchantController extends BaseController {
             merchantId = accountInfo.getMerchantId().toString();
         }
 
-        PaginationRequest paginationRequest = new PaginationRequest();
-        paginationRequest.setCurrentPage(page);
-        paginationRequest.setPageSize(pageSize);
-
         Map<String, Object> params = new HashMap<>();
         if (StringUtil.isNotEmpty(merchantId)) {
             params.put("id", merchantId);
@@ -84,8 +80,7 @@ public class BackendMerchantController extends BaseController {
         if (StringUtil.isNotEmpty(status)) {
             params.put("status", status);
         }
-        paginationRequest.setSearchParams(params);
-        PaginationResponse<MerchantDto> paginationResponse = merchantService.queryMerchantListByPagination(paginationRequest);
+        PaginationResponse<MerchantDto> paginationResponse = merchantService.queryMerchantListByPagination(new PaginationRequest(page, pageSize, params));
 
         // 商户类型列表
         List<ParamDto> typeList = MerchantTypeEnum.getMerchantTypeList();

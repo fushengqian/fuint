@@ -77,11 +77,6 @@ public class BackendConfirmLogController extends BaseController {
         String couponId = request.getParameter("couponId") == null ? "" : request.getParameter("couponId");
 
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
-
-        PaginationRequest paginationRequest = new PaginationRequest();
-        paginationRequest.setCurrentPage(page);
-        paginationRequest.setPageSize(pageSize);
-
         Map<String, Object> searchParams = new HashMap<>();
         if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
             searchParams.put("merchantId", accountInfo.getMerchantId());
@@ -103,7 +98,6 @@ public class BackendConfirmLogController extends BaseController {
                 searchParams.put("userId", "0");
             }
         }
-        paginationRequest.setSearchParams(searchParams);
 
         // 登录员工所属店铺处理
         TAccount tAccount = tAccountService.getAccountInfoById(accountInfo.getId());
@@ -111,7 +105,7 @@ public class BackendConfirmLogController extends BaseController {
             searchParams.put("storeId", tAccount.getStoreId());
         }
 
-        PaginationResponse<ConfirmLogDto> paginationResponse = confirmLogService.queryConfirmLogListByPagination(paginationRequest);
+        PaginationResponse<ConfirmLogDto> paginationResponse = confirmLogService.queryConfirmLogListByPagination(new PaginationRequest(page, pageSize, searchParams));
 
         // 卡券类型列表
         List<ParamDto> typeList = CouponTypeEnum.getCouponTypeList();

@@ -82,28 +82,13 @@ public class ClientGiveController extends BaseController {
     @RequestMapping(value = "/giveLog", method = RequestMethod.POST)
     @CrossOrigin
     public ResponseObject giveLog(HttpServletRequest request, @RequestBody GiveListParam giveListParam) throws BusinessCheckException {
-        String token = request.getHeader("Access-Token");
-
-        if (StringUtil.isEmpty(token)) {
-            return getFailureResult(1001);
-        }
-
-        UserInfo mtUser = TokenUtil.getUserInfoByToken(token);
-
-        if (null == mtUser) {
-            return getFailureResult(1001);
-        }
-
+        UserInfo mtUser = TokenUtil.getUserInfoByToken(request.getHeader("Access-Token"));
         String mobile = giveListParam.getMobile() == null ? "" : giveListParam.getMobile();
         String type = giveListParam.getType() == null ? "give" : giveListParam.getType();
-        Integer pageNumber = giveListParam.getPage() == null ? Constants.PAGE_NUMBER : giveListParam.getPage();
+        Integer page = giveListParam.getPage() == null ? Constants.PAGE_NUMBER : giveListParam.getPage();
         Integer pageSize = giveListParam.getPageSize() == null ? Constants.PAGE_SIZE : giveListParam.getPageSize();
 
-        PaginationRequest paginationRequest = new PaginationRequest();
         Map<String, Object> searchParams = new HashMap<>();
-        paginationRequest.setCurrentPage(pageNumber);
-        paginationRequest.setPageSize(pageSize);
-
         if (type.equals("gived")) {
             searchParams.put("userId", mtUser.getId());
         } else {
@@ -115,8 +100,7 @@ public class ClientGiveController extends BaseController {
         } else if(StringUtil.isNotEmpty(mobile) && type.equals("gived")) {
             searchParams.put("userMobile", mobile);
         }
-        paginationRequest.setSearchParams(searchParams);
-        PaginationResponse<GiveDto> paginationResponse = giveService.queryGiveListByPagination(paginationRequest);
+        PaginationResponse<GiveDto> paginationResponse = giveService.queryGiveListByPagination(new PaginationRequest(page, pageSize, searchParams));
 
         Map<String, Object> outParams = new HashMap();
         outParams.put("content", paginationResponse.getContent());

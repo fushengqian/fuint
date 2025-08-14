@@ -52,19 +52,13 @@ public class BackendUserGradeController extends BaseController {
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('userGrade:index')")
     public ResponseObject list(HttpServletRequest request) throws BusinessCheckException {
-        String token = request.getHeader("Access-Token");
         String name = request.getParameter("name");
         String status = request.getParameter("status");
         String catchTypeKey = request.getParameter("catchType");
         Integer page = request.getParameter("page") == null ? Constants.PAGE_NUMBER : Integer.parseInt(request.getParameter("page"));
         Integer pageSize = request.getParameter("pageSize") == null ? Constants.PAGE_SIZE : Integer.parseInt(request.getParameter("pageSize"));
 
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
-
-        PaginationRequest paginationRequest = new PaginationRequest();
-        paginationRequest.setCurrentPage(page);
-        paginationRequest.setPageSize(pageSize);
-
+        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
         Map<String, Object> params = new HashMap<>();
         if (StringUtil.isNotEmpty(name)) {
             params.put("name", name);
@@ -78,9 +72,7 @@ public class BackendUserGradeController extends BaseController {
         if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
             params.put("merchantId", accountInfo.getMerchantId());
         }
-        paginationRequest.setSearchParams(params);
-
-        PaginationResponse<MtUserGrade> paginationResponse = userGradeService.queryUserGradeListByPagination(paginationRequest);
+        PaginationResponse<MtUserGrade> paginationResponse = userGradeService.queryUserGradeListByPagination(new PaginationRequest(page, pageSize, params));
         List<MtUserGrade> dataList = paginationResponse.getContent();
         List<MtUserGrade> content = new ArrayList<>();
         UserGradeCatchTypeEnum[] catchTypeList = UserGradeCatchTypeEnum.values();

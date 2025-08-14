@@ -53,8 +53,6 @@ public class ClientAddressController extends BaseController {
     @RequestMapping(value = "/save", method = RequestMethod.POST)
     @CrossOrigin
     public ResponseObject save(HttpServletRequest request, @RequestBody AddressRequest address) throws BusinessCheckException {
-        String token = request.getHeader("Access-Token");
-
         String name = address.getName() == null ? "" : address.getName();
         String mobile = address.getMobile() == null ? "" : address.getMobile();
         Integer provinceId = address.getProvinceId() == null ? 0 : address.getProvinceId();
@@ -65,15 +63,7 @@ public class ClientAddressController extends BaseController {
         String isDefault = address.getIsDefault() == null ? "" : address.getIsDefault();
         Integer addressId = address.getAddressId() == null ? 0 : address.getAddressId();
 
-        if (StringUtil.isEmpty(token)) {
-            return getFailureResult(1001);
-        }
-
-        UserInfo mtUser = TokenUtil.getUserInfoByToken(token);
-        if (null == mtUser) {
-            return getFailureResult(1001);
-        }
-
+        UserInfo mtUser = TokenUtil.getUserInfoByToken(request.getHeader("Access-Token"));
         MtAddress mtAddress = new MtAddress();
         mtAddress.setId(addressId);
         mtAddress.setName(name);
@@ -97,17 +87,11 @@ public class ClientAddressController extends BaseController {
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject list(HttpServletRequest request) throws BusinessCheckException, InvocationTargetException, IllegalAccessException {
-        String token = request.getHeader("Access-Token");
-
         Map<String, Object> result = new HashMap<>();
         Map<String, Object> param = new HashMap<>();
 
-        UserInfo mtUser = TokenUtil.getUserInfoByToken(token);
-        if (null == mtUser) {
-            return getFailureResult(1001);
-        } else {
-            param.put("userId", mtUser.getId());
-        }
+        UserInfo mtUser = TokenUtil.getUserInfoByToken(request.getHeader("Access-Token"));
+        param.put("userId", mtUser.getId());
         param.put("status", StatusEnum.ENABLED.getKey());
         List<MtAddress> addressList = addressService.queryListByParams(param);
 
@@ -156,7 +140,6 @@ public class ClientAddressController extends BaseController {
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @CrossOrigin
     public ResponseObject detail(HttpServletRequest request, @RequestBody AddressDetailParam addressDetailParam) throws BusinessCheckException, InvocationTargetException, IllegalAccessException {
-        String token = request.getHeader("Access-Token") == null ? "" : request.getHeader("Access-Token");
         String addressIdStr = addressDetailParam.getAddressId() == null ? "0" : addressDetailParam.getAddressId();
         Integer addressId = 0;
         if (StringUtil.isNotEmpty(addressIdStr)) {
@@ -164,10 +147,7 @@ public class ClientAddressController extends BaseController {
         }
 
         Map<String, Object> result = new HashMap<>();
-        UserInfo mtUser = TokenUtil.getUserInfoByToken(token);
-        if (null == mtUser || StringUtil.isEmpty(token)) {
-            return getFailureResult(1001);
-        }
+        UserInfo mtUser = TokenUtil.getUserInfoByToken(request.getHeader("Access-Token"));
 
         MtAddress mtAddress = null;
         if (addressId > 0) {

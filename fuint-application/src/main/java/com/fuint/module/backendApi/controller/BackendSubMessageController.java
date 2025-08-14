@@ -55,11 +55,10 @@ public class BackendSubMessageController extends BaseController {
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('subMessage:index')")
     public ResponseObject list(HttpServletRequest request) throws BusinessCheckException {
-        String token = request.getHeader("Access-Token");
         String status = request.getParameter("status") == null ? "" : request.getParameter("status");
         String title = request.getParameter("title") == null ? "" : request.getParameter("title");
 
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
+        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
 
         List<SubMessageDto> dataList = new ArrayList<>();
         for (WxMessageEnum wxMessageEnum : WxMessageEnum.values()) {
@@ -113,8 +112,7 @@ public class BackendSubMessageController extends BaseController {
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('subMessage:index')")
     public ResponseObject info(HttpServletRequest request, @PathVariable("key") String key) throws BusinessCheckException {
-        String token = request.getHeader("Access-Token");
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
+        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
 
         Map<String, Object> result = new HashMap();
 
@@ -182,13 +180,12 @@ public class BackendSubMessageController extends BaseController {
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('subMessage:edit')")
     public ResponseObject saveHandler(HttpServletRequest request, @RequestBody Map<String, Object> param) {
-        String token = request.getHeader("Access-Token");
         String key = param.get("key").toString();
         String templateId = param.get("templateId").toString();
         String tid = param.get("tid").toString();
         List<LinkedHashMap> paramData = (List) param.get("params");
 
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
+        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
         if (accountInfo.getMerchantId() == null || accountInfo.getMerchantId() <= 0) {
             return getFailureResult(201, "请使用商户账号操作");
         }

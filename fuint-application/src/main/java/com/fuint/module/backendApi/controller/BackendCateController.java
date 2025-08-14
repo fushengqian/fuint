@@ -70,21 +70,14 @@ public class BackendCateController extends BaseController {
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('goods:cate:index')")
     public ResponseObject list(HttpServletRequest request) throws BusinessCheckException {
-        String token = request.getHeader("Access-Token");
         Integer page = request.getParameter("page") == null ? Constants.PAGE_NUMBER : Integer.parseInt(request.getParameter("page"));
         Integer pageSize = request.getParameter("pageSize") == null ? Constants.PAGE_SIZE : Integer.parseInt(request.getParameter("pageSize"));
         String name = request.getParameter("name");
         String status = request.getParameter("status");
         String searchStoreId = request.getParameter("storeId");
 
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
-
-        TAccount account = accountService.getAccountInfoById(accountInfo.getId());
-        Integer storeId = account.getStoreId() == null ? 0 : account.getStoreId();
-
-        PaginationRequest paginationRequest = new PaginationRequest();
-        paginationRequest.setCurrentPage(page);
-        paginationRequest.setPageSize(pageSize);
+        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
+        Integer storeId = accountInfo.getStoreId() == null ? 0 : accountInfo.getStoreId();
 
         Map<String, Object> params = new HashMap<>();
         if (StringUtil.isNotEmpty(name)) {
@@ -103,8 +96,7 @@ public class BackendCateController extends BaseController {
             params.put("merchantId", accountInfo.getMerchantId());
         }
 
-        paginationRequest.setSearchParams(params);
-        PaginationResponse<GoodsCateDto> paginationResponse = cateService.queryCateListByPagination(paginationRequest);
+        PaginationResponse<GoodsCateDto> paginationResponse = cateService.queryCateListByPagination(new PaginationRequest(page, pageSize, params));
 
         List<MtStore> storeList = storeService.getMyStoreList(accountInfo.getMerchantId(), storeId, StatusEnum.ENABLED.getKey());
 

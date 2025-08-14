@@ -79,10 +79,6 @@ public class BackendBookController extends BaseController {
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
         Integer storeId = accountInfo.getStoreId();
 
-        PaginationRequest paginationRequest = new PaginationRequest();
-        paginationRequest.setCurrentPage(page);
-        paginationRequest.setPageSize(pageSize);
-
         Map<String, Object> params = new HashMap<>();
         if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
             params.put("merchantId", accountInfo.getMerchantId());
@@ -102,8 +98,7 @@ public class BackendBookController extends BaseController {
         if (storeId != null && storeId > 0) {
             params.put("storeId", storeId);
         }
-        paginationRequest.setSearchParams(params);
-        PaginationResponse<BookDto> paginationResponse = bookService.queryBookListByPagination(paginationRequest);
+        PaginationResponse<BookDto> paginationResponse = bookService.queryBookListByPagination(new PaginationRequest(page, pageSize, params));
 
         Map<String, Object> param = new HashMap<>();
         param.put("status", StatusEnum.ENABLED.getKey());

@@ -62,18 +62,12 @@ public class BackendDutyController extends BaseController {
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('system:role:index')")
     public ResponseObject list(HttpServletRequest request) {
-        String token = request.getHeader("Access-Token");
         Integer page = request.getParameter("page") == null ? Constants.PAGE_NUMBER : Integer.parseInt(request.getParameter("page"));
         Integer pageSize = request.getParameter("pageSize") == null ? Constants.PAGE_SIZE : Integer.parseInt(request.getParameter("pageSize"));
         String name = request.getParameter("name") == null ? "" : request.getParameter("name");
         String status = request.getParameter("status") == null ? "" : request.getParameter("status");
 
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
-
-        PaginationRequest paginationRequest = new PaginationRequest();
-        paginationRequest.setCurrentPage(page);
-        paginationRequest.setPageSize(pageSize);
-
+        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
         Map<String, Object> searchParams = new HashMap<>();
         if (StringUtil.isNotEmpty(name)) {
             searchParams.put("name", name);
@@ -85,8 +79,7 @@ public class BackendDutyController extends BaseController {
             searchParams.put("merchantId", accountInfo.getMerchantId());
         }
 
-        paginationRequest.setSearchParams(searchParams);
-        PaginationResponse<TDuty> paginationResponse = tDutyService.findDutiesByPagination(paginationRequest);
+        PaginationResponse<TDuty> paginationResponse = tDutyService.findDutiesByPagination(new PaginationRequest(page, pageSize, searchParams));
         List<RoleDto> content = new ArrayList<>();
         if (paginationResponse.getContent().size() > 0) {
             for (TDuty tDuty : paginationResponse.getContent()) {
@@ -100,7 +93,7 @@ public class BackendDutyController extends BaseController {
             }
         }
 
-        PageRequest pageRequest = PageRequest.of(paginationRequest.getCurrentPage(), paginationRequest.getPageSize());
+        PageRequest pageRequest = PageRequest.of(page, pageSize);
         Page pageImpl = new PageImpl(content, pageRequest, paginationResponse.getTotalElements());
         PaginationResponse<RoleDto> result = new PaginationResponse(pageImpl, AccountDto.class);
         result.setTotalPages(paginationResponse.getTotalPages());

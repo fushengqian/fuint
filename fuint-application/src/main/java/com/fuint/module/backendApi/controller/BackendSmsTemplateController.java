@@ -47,13 +47,12 @@ public class BackendSmsTemplateController extends BaseController {
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('smsTemplate:index')")
     public ResponseObject list(HttpServletRequest request) throws BusinessCheckException {
-        String token = request.getHeader("Access-Token");
         Integer page = request.getParameter("page") == null ? Constants.PAGE_NUMBER : Integer.parseInt(request.getParameter("page"));
         Integer pageSize = request.getParameter("pageSize") == null ? Constants.PAGE_SIZE : Integer.parseInt(request.getParameter("pageSize"));
         String name = request.getParameter("content") == null ? "" : request.getParameter("content");
         String code = request.getParameter("code") == null ? "" : request.getParameter("code");
 
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
+        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
 
         Map<String, Object> searchParams = new HashMap<>();
         if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
@@ -65,11 +64,7 @@ public class BackendSmsTemplateController extends BaseController {
         if (StringUtil.isNotEmpty(name)) {
             searchParams.put("name", name);
         }
-        PaginationRequest paginationRequest = new PaginationRequest();
-        paginationRequest.setCurrentPage(page);
-        paginationRequest.setPageSize(pageSize);
-        paginationRequest.setSearchParams(searchParams);
-        PaginationResponse<MtSmsTemplate> paginationResponse = smsTemplateService.querySmsTemplateListByPagination(paginationRequest);
+        PaginationResponse<MtSmsTemplate> paginationResponse = smsTemplateService.querySmsTemplateListByPagination(new PaginationRequest(page, pageSize, searchParams));
 
         Map<String, Object> result = new HashMap<>();
         result.put("paginationResponse", paginationResponse);
@@ -85,8 +80,7 @@ public class BackendSmsTemplateController extends BaseController {
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('smsTemplate:edit')")
     public ResponseObject saveHandler(HttpServletRequest request, @RequestBody SmsTemplateDto smsTemplateDto) throws BusinessCheckException {
-        String token = request.getHeader("Access-Token");
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
+        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
         smsTemplateDto.setMerchantId(accountInfo.getMerchantId());
         smsTemplateService.saveSmsTemplate(smsTemplateDto);
         return getSuccessResult(true);
@@ -100,8 +94,7 @@ public class BackendSmsTemplateController extends BaseController {
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('smsTemplate:index')")
     public ResponseObject info(HttpServletRequest request, @PathVariable("id") Long id) throws BusinessCheckException {
-        String token = request.getHeader("Access-Token");
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
+        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
 
         MtSmsTemplate mtSmsTemplate = smsTemplateService.querySmsTemplateById(id.intValue());
         if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
@@ -124,8 +117,7 @@ public class BackendSmsTemplateController extends BaseController {
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('smsTemplate:edit')")
     public ResponseObject delete(HttpServletRequest request, @PathVariable("id") Integer id) throws BusinessCheckException {
-        String token = request.getHeader("Access-Token");
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
+        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
         smsTemplateService.deleteTemplate(id, accountInfo.getAccountName());
         return getSuccessResult(true);
     }

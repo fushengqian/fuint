@@ -56,7 +56,6 @@ public class MerchantMemberController extends BaseController {
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @CrossOrigin
     public ResponseObject list(HttpServletRequest request, @RequestBody MemberListParam memberListParam) throws BusinessCheckException, IllegalAccessException {
-        String token = request.getHeader("Access-Token");
         String dataType = memberListParam.getDataType();
         Integer page = memberListParam.getPage() == null ? Constants.PAGE_NUMBER : memberListParam.getPage();
         Integer pageSize = memberListParam.getPageSize() == null ? Constants.PAGE_SIZE : memberListParam.getPageSize();
@@ -70,7 +69,7 @@ public class MerchantMemberController extends BaseController {
             memberListParam.setActiveTime(activeTime);
         }
 
-        UserInfo userInfo = TokenUtil.getUserInfoByToken(token);
+        UserInfo userInfo = TokenUtil.getUserInfoByToken(request.getHeader("Access-Token"));
 
         MtUser mtUser = memberService.queryMemberById(userInfo.getId());
         MtStaff staffInfo = null;
@@ -81,10 +80,6 @@ public class MerchantMemberController extends BaseController {
             return getFailureResult(201, "该账号不是商户");
         }
 
-        PaginationRequest paginationRequest = new PaginationRequest();
-        paginationRequest.setCurrentPage(page);
-        paginationRequest.setPageSize(pageSize);
-
         if (staffInfo.getMerchantId() != null && staffInfo.getMerchantId() > 0) {
             memberListParam.setMerchantId(staffInfo.getMerchantId());
         }
@@ -92,8 +87,7 @@ public class MerchantMemberController extends BaseController {
             memberListParam.setStoreId(staffInfo.getStoreId());
         }
 
-        paginationRequest.setSearchParams(CommonUtil.convert(memberListParam));
-        PaginationResponse<UserDto> paginationResponse = memberService.queryMemberListByPagination(paginationRequest);
+        PaginationResponse<UserDto> paginationResponse = memberService.queryMemberListByPagination(new PaginationRequest(page, pageSize, CommonUtil.convert(memberListParam)));
 
         // 会员等级列表
         Map<String, Object> param = new HashMap<>();

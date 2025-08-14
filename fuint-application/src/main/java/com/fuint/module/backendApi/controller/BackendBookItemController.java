@@ -71,7 +71,6 @@ public class BackendBookItemController extends BaseController {
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('book:index')")
     public ResponseObject list(HttpServletRequest request) throws BusinessCheckException {
-        String token = request.getHeader("Access-Token");
         Integer page = request.getParameter("page") == null ? Constants.PAGE_NUMBER : Integer.parseInt(request.getParameter("page"));
         Integer pageSize = request.getParameter("pageSize") == null ? Constants.PAGE_SIZE : Integer.parseInt(request.getParameter("pageSize"));
         String mobile = request.getParameter("mobile");
@@ -80,12 +79,8 @@ public class BackendBookItemController extends BaseController {
         String userId = request.getParameter("userId");
         String cateId = request.getParameter("cateId");
 
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
+        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
         Integer storeId = accountInfo.getStoreId();
-
-        PaginationRequest paginationRequest = new PaginationRequest();
-        paginationRequest.setCurrentPage(page);
-        paginationRequest.setPageSize(pageSize);
 
         Map<String, Object> params = new HashMap<>();
         if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
@@ -109,8 +104,7 @@ public class BackendBookItemController extends BaseController {
         if (storeId != null && storeId > 0) {
             params.put("storeId", storeId);
         }
-        paginationRequest.setSearchParams(params);
-        PaginationResponse<BookItemDto> paginationResponse = bookItemService.queryBookItemListByPagination(paginationRequest);
+        PaginationResponse<BookItemDto> paginationResponse = bookItemService.queryBookItemListByPagination(new PaginationRequest(page, pageSize, params));
 
         List<MtStore> storeList = storeService.getMyStoreList(accountInfo.getMerchantId(), accountInfo.getStoreId(), StatusEnum.ENABLED.getKey());
 

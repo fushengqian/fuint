@@ -51,11 +51,6 @@ public class BackendStockController extends BaseController {
     private SettingService settingService;
 
     /**
-     * 后台账户服务接口
-     */
-    private AccountService accountService;
-
-    /**
      * 店铺服务接口
      */
     private StoreService storeService;
@@ -68,7 +63,6 @@ public class BackendStockController extends BaseController {
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('stock:index')")
     public ResponseObject list(HttpServletRequest request) throws BusinessCheckException {
-        String token = request.getHeader("Access-Token");
         Integer page = request.getParameter("page") == null ? Constants.PAGE_NUMBER : Integer.parseInt(request.getParameter("page"));
         Integer pageSize = request.getParameter("pageSize") == null ? Constants.PAGE_SIZE : Integer.parseInt(request.getParameter("pageSize"));
         String description = request.getParameter("description");
@@ -76,14 +70,8 @@ public class BackendStockController extends BaseController {
         String searchStoreId = request.getParameter("storeId");
         String type = request.getParameter("type");
 
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
-
-        TAccount account = accountService.getAccountInfoById(accountInfo.getId());
-        Integer storeId = account.getStoreId() == null ? 0 : account.getStoreId();
-
-        PaginationRequest paginationRequest = new PaginationRequest();
-        paginationRequest.setCurrentPage(page);
-        paginationRequest.setPageSize(pageSize);
+        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
+        Integer storeId = accountInfo.getStoreId() == null ? 0 : accountInfo.getStoreId();
 
         Map<String, Object> params = new HashMap<>();
         if (StringUtil.isNotEmpty(description)) {
@@ -95,8 +83,8 @@ public class BackendStockController extends BaseController {
         if (StringUtil.isNotEmpty(type)) {
             params.put("type", type);
         }
-        if (account.getMerchantId() != null && account.getMerchantId() > 0) {
-            params.put("merchantId", account.getMerchantId());
+        if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
+            params.put("merchantId", accountInfo.getMerchantId());
         }
         if (StringUtil.isNotEmpty(searchStoreId)) {
             params.put("storeId", searchStoreId);
@@ -104,9 +92,7 @@ public class BackendStockController extends BaseController {
         if (storeId > 0) {
             params.put("storeId", storeId);
         }
-
-        paginationRequest.setSearchParams(params);
-        PaginationResponse<MtStock> paginationResponse = stockService.queryStockListByPagination(paginationRequest);
+        PaginationResponse<MtStock> paginationResponse = stockService.queryStockListByPagination(new PaginationRequest(page, pageSize, params));
 
         // 店铺列表
         List<MtStore> storeList = storeService.getMyStoreList(accountInfo.getMerchantId(), accountInfo.getStoreId(), StatusEnum.ENABLED.getKey());

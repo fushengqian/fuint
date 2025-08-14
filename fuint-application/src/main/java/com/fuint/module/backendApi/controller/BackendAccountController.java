@@ -83,10 +83,6 @@ public class BackendAccountController extends BaseController {
         String staffId = request.getParameter("staffId") == null ? "" : request.getParameter("staffId");
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
 
-        PaginationRequest paginationRequest = new PaginationRequest();
-        paginationRequest.setCurrentPage(page);
-        paginationRequest.setPageSize(pageSize);
-
         Map<String, Object> searchParams = new HashMap<>();
         if (StringUtil.isNotEmpty(accountName)) {
             searchParams.put("name", accountName);
@@ -117,9 +113,7 @@ public class BackendAccountController extends BaseController {
         if (StringUtil.isNotEmpty(staffId)) {
             searchParams.put("staffId", staffId);
         }
-
-        paginationRequest.setSearchParams(searchParams);
-        PaginationResponse<AccountDto> paginationResponse = tAccountService.getAccountListByPagination(paginationRequest);
+        PaginationResponse<AccountDto> paginationResponse = tAccountService.getAccountListByPagination(new PaginationRequest(page, pageSize, searchParams));
         return getSuccessResult(paginationResponse);
     }
 

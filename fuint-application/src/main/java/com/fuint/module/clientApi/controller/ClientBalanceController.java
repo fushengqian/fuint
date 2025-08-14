@@ -169,14 +169,10 @@ public class ClientBalanceController extends BaseController {
         Integer pageSize = balanceListParam.getPageSize() == null ? Constants.PAGE_SIZE : balanceListParam.getPageSize();
         UserInfo mtUser = TokenUtil.getUserInfoByToken(token);
 
-        PaginationRequest paginationRequest = new PaginationRequest();
-        paginationRequest.setCurrentPage(page);
-        paginationRequest.setPageSize(pageSize);
 
         Map<String, Object> searchParams = new HashMap<>();
         searchParams.put("userId", mtUser.getId());
-        paginationRequest.setSearchParams(searchParams);
-        PaginationResponse<BalanceDto> paginationResponse = balanceService.queryBalanceListByPagination(paginationRequest);
+        PaginationResponse<BalanceDto> paginationResponse = balanceService.queryBalanceListByPagination(new PaginationRequest(page, pageSize, searchParams));
 
         Map<String, Object> result = new HashMap<>();
         result.put("data", paginationResponse);

@@ -65,7 +65,6 @@ public class BackendBalanceController extends BaseController {
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('balance:list')")
     public ResponseObject list(HttpServletRequest request) throws BusinessCheckException {
-        String token = request.getHeader("Access-Token");
         Integer page = request.getParameter("page") == null ? Constants.PAGE_NUMBER : Integer.parseInt(request.getParameter("page"));
         Integer pageSize = request.getParameter("pageSize") == null ? Constants.PAGE_SIZE : Integer.parseInt(request.getParameter("pageSize"));
         String mobile = request.getParameter("mobile") == null ? "" : request.getParameter("mobile");
@@ -74,7 +73,7 @@ public class BackendBalanceController extends BaseController {
         String orderSn = request.getParameter("orderSn") == null ? "" : request.getParameter("orderSn");
         String status = request.getParameter("status") == null ? StatusEnum.ENABLED.getKey() : request.getParameter("status");
 
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
+        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
 
         Map<String, Object> searchParams = new HashMap<>();
         if (StringUtil.isNotEmpty(mobile)) {
@@ -100,12 +99,7 @@ public class BackendBalanceController extends BaseController {
             searchParams.put("merchantId", accountInfo.getMerchantId());
         }
 
-        PaginationRequest paginationRequest = new PaginationRequest();
-        paginationRequest.setCurrentPage(page);
-        paginationRequest.setPageSize(pageSize);
-        paginationRequest.setSearchParams(searchParams);
-
-        PaginationResponse<BalanceDto> paginationResponse = balanceService.queryBalanceListByPagination(paginationRequest);
+        PaginationResponse<BalanceDto> paginationResponse = balanceService.queryBalanceListByPagination(new PaginationRequest(page, pageSize, searchParams));
 
         Map<String, Object> result = new HashMap<>();
         result.put("paginationResponse", paginationResponse);

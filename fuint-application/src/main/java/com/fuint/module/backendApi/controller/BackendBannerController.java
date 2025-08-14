@@ -61,19 +61,14 @@ public class BackendBannerController extends BaseController {
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('content:banner:list')")
     public ResponseObject list(HttpServletRequest request) throws BusinessCheckException {
-        String token = request.getHeader("Access-Token");
         Integer page = request.getParameter("page") == null ? Constants.PAGE_NUMBER : Integer.parseInt(request.getParameter("page"));
         Integer pageSize = request.getParameter("pageSize") == null ? Constants.PAGE_SIZE : Integer.parseInt(request.getParameter("pageSize"));
         String title = request.getParameter("title");
         String status = request.getParameter("status");
         String searchStoreId = request.getParameter("storeId");
 
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
+        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
         Integer storeId = accountInfo.getStoreId();
-
-        PaginationRequest paginationRequest = new PaginationRequest();
-        paginationRequest.setCurrentPage(page);
-        paginationRequest.setPageSize(pageSize);
 
         Map<String, Object> params = new HashMap<>();
         if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
@@ -91,8 +86,7 @@ public class BackendBannerController extends BaseController {
         if (storeId != null && storeId > 0) {
             params.put("storeId", storeId);
         }
-        paginationRequest.setSearchParams(params);
-        PaginationResponse<MtBanner> paginationResponse = bannerService.queryBannerListByPagination(paginationRequest);
+        PaginationResponse<MtBanner> paginationResponse = bannerService.queryBannerListByPagination(new PaginationRequest(page, pageSize, params));
 
         List<MtStore> storeList = storeService.getMyStoreList(accountInfo.getMerchantId(), accountInfo.getStoreId(), StatusEnum.ENABLED.getKey());
         String imagePath = settingService.getUploadBasePath();
@@ -141,7 +135,6 @@ public class BackendBannerController extends BaseController {
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('content:banner:add')")
     public ResponseObject saveHandler(HttpServletRequest request, @RequestBody Map<String, Object> params) throws BusinessCheckException {
-        String token = request.getHeader("Access-Token");
         String id = params.get("id") == null ? "" : params.get("id").toString();
         String title = params.get("title") == null ? "" : params.get("title").toString();
         String description = params.get("description") == null ? "" : params.get("description").toString();
@@ -151,7 +144,7 @@ public class BackendBannerController extends BaseController {
         String storeId = params.get("storeId") == null ? "0" : params.get("storeId").toString();
         String sort = params.get("sort") == null ? "0" : params.get("sort").toString();
 
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
+        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
 
         BannerDto bannerDto = new BannerDto();
         bannerDto.setTitle(title);
@@ -184,8 +177,7 @@ public class BackendBannerController extends BaseController {
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('content:banner:list')")
     public ResponseObject info(HttpServletRequest request, @PathVariable("id") Integer id) throws BusinessCheckException {
-        String token = request.getHeader("Access-Token");
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
+        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
 
         MtBanner bannerInfo = bannerService.queryBannerById(id);
         String imagePath = settingService.getUploadBasePath();

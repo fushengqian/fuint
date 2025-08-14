@@ -89,10 +89,6 @@ public class ClientBookController extends BaseController {
         Integer page = param.getPage() == null ? Constants.PAGE_NUMBER : param.getPage();
         Integer pageSize = param.getPageSize() == null ? Constants.PAGE_SIZE : param.getPageSize();
 
-        PaginationRequest paginationRequest = new PaginationRequest();
-        paginationRequest.setCurrentPage(page);
-        paginationRequest.setPageSize(pageSize);
-
         Map<String, Object> params = new HashMap<>();
         params.put("status", StatusEnum.ENABLED.getKey());
         if (StringUtil.isNotEmpty(name)) {
@@ -113,8 +109,7 @@ public class ClientBookController extends BaseController {
         if (cateId != null && cateId > 0) {
             params.put("cateId", cateId);
         }
-        paginationRequest.setSearchParams(params);
-        PaginationResponse<BookDto> paginationResponse = bookService.queryBookListByPagination(paginationRequest);
+        PaginationResponse<BookDto> paginationResponse = bookService.queryBookListByPagination(new PaginationRequest(page, pageSize, params));
 
         Map<String, Object> result = new HashMap();
         result.put("content", paginationResponse.getContent());
@@ -229,32 +224,23 @@ public class ClientBookController extends BaseController {
     @RequestMapping(value = "/myBook", method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject myBook(HttpServletRequest request) throws BusinessCheckException {
-        String token = request.getHeader("Access-Token");
-        String merchantNo = request.getHeader("merchantNo") == null ? "" : request.getHeader("merchantNo");
         Integer page = request.getParameter("page") == null ? Constants.PAGE_NUMBER : Integer.parseInt(request.getParameter("page"));
         Integer pageSize = request.getParameter("pageSize") == null ? Constants.PAGE_SIZE : Integer.parseInt(request.getParameter("pageSize"));
         String status = request.getParameter("status") == null ? "" : request.getParameter("status");
 
         Map<String, Object> param = new HashMap<>();
-        Integer merchantId = merchantService.getMerchantId(merchantNo);
+        Integer merchantId = merchantService.getMerchantId(request.getHeader("merchantNo"));
         if (merchantId > 0) {
             param.put("merchantId", merchantId);
         }
 
-        UserInfo loginInfo = TokenUtil.getUserInfoByToken(token);
-        if (null == loginInfo) {
-            return getFailureResult(1001);
-        }
+        UserInfo loginInfo = TokenUtil.getUserInfoByToken(request.getHeader("Access-Token"));
         param.put("userId", loginInfo.getId());
         if (StringUtil.isNotEmpty(status)) {
             param.put("status", status);
         }
 
-        PaginationRequest paginationRequest = new PaginationRequest();
-        paginationRequest.setCurrentPage(page);
-        paginationRequest.setPageSize(pageSize);
-        paginationRequest.setSearchParams(param);
-        PaginationResponse<BookItemDto> paginationResponse = bookItemService.queryBookItemListByPagination(paginationRequest);
+        PaginationResponse<BookItemDto> paginationResponse = bookItemService.queryBookItemListByPagination(new PaginationRequest(page, pageSize, param));
 
         Map<String, Object> result = new HashMap<>();
         result.put("content", paginationResponse.getContent());

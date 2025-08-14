@@ -67,7 +67,6 @@ public class BackendRefundController extends BaseController {
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('refund:index')")
     public ResponseObject list(HttpServletRequest request) throws BusinessCheckException {
-        String token = request.getHeader("Access-Token");
         String orderSn = request.getParameter("orderSn");
         String mobile = request.getParameter("mobile");
         String userId = request.getParameter("userId");
@@ -77,14 +76,10 @@ public class BackendRefundController extends BaseController {
         String startTime = request.getParameter("startTime") == null ? "" : request.getParameter("startTime");
         String endTime = request.getParameter("endTime") == null ? "" : request.getParameter("endTime");
 
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
+        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
 
         TAccount account = accountService.getAccountInfoById(accountInfo.getId());
         Integer storeId = account.getStoreId() == null ? 0 : account.getStoreId();
-
-        PaginationRequest paginationRequest = new PaginationRequest();
-        paginationRequest.setCurrentPage(page);
-        paginationRequest.setPageSize(pageSize);
 
         Map<String, Object> params = new HashMap<>();
         if (account.getMerchantId() != null && account.getMerchantId() > 0) {
@@ -121,8 +116,7 @@ public class BackendRefundController extends BaseController {
         if (StringUtil.isNotEmpty(endTime)) {
             params.put("endTime", endTime);
         }
-        paginationRequest.setSearchParams(params);
-        PaginationResponse<RefundDto> paginationResponse = refundService.getRefundListByPagination(paginationRequest);
+        PaginationResponse<RefundDto> paginationResponse = refundService.getRefundListByPagination(new PaginationRequest(page, pageSize, params));
 
         // 售后状态列表
         List<ParamDto> statusList = RefundStatusEnum.getRefundStatusList();

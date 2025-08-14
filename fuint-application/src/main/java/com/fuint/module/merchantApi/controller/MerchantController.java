@@ -61,8 +61,7 @@ public class MerchantController extends BaseController {
     @RequestMapping(value = "/info", method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject info(HttpServletRequest request) throws BusinessCheckException {
-        String token = request.getHeader("Access-Token");
-        UserInfo userInfo = TokenUtil.getUserInfoByToken(token);
+        UserInfo userInfo = TokenUtil.getUserInfoByToken(request.getHeader("Access-Token"));
 
         MtUser mtUser = memberService.queryMemberById(userInfo.getId());
         Map<String, Object> outParams = new HashMap<>();

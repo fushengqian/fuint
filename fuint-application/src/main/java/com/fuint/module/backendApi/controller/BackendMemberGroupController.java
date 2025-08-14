@@ -53,19 +53,13 @@ public class BackendMemberGroupController extends BaseController {
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('member:group:index')")
     public ResponseObject list(HttpServletRequest request) throws BusinessCheckException {
-        String token = request.getHeader("Access-Token");
         Integer page = request.getParameter("page") == null ? 1 : Integer.parseInt(request.getParameter("page"));
         Integer pageSize = request.getParameter("pageSize") == null ? Constants.PAGE_SIZE : Integer.parseInt(request.getParameter("pageSize"));
         String name = request.getParameter("name") == null ? "" : request.getParameter("name");
         String id = request.getParameter("id") == null ? "" : request.getParameter("id");
         String status = request.getParameter("status") == null ? StatusEnum.ENABLED.getKey() : request.getParameter("status");
 
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
-
-        PaginationRequest paginationRequest = new PaginationRequest();
-        paginationRequest.setCurrentPage(page);
-        paginationRequest.setPageSize(pageSize);
-
+        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
         Map<String, Object> searchParams = new HashMap<>();
         if (StringUtil.isNotEmpty(name)) {
             searchParams.put("name", name);
@@ -82,9 +76,7 @@ public class BackendMemberGroupController extends BaseController {
         if (accountInfo.getStoreId() != null && accountInfo.getStoreId() > 0) {
             searchParams.put("storeId", accountInfo.getStoreId());
         }
-
-        paginationRequest.setSearchParams(searchParams);
-        PaginationResponse<UserGroupDto> paginationResponse = memberGroupService.queryMemberGroupListByPagination(paginationRequest);
+        PaginationResponse<UserGroupDto> paginationResponse = memberGroupService.queryMemberGroupListByPagination(new PaginationRequest(page, pageSize, searchParams));
 
         Map<String, Object> result = new HashMap<>();
         result.put("paginationResponse", paginationResponse);
@@ -100,8 +92,7 @@ public class BackendMemberGroupController extends BaseController {
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('member:group:index')")
     public ResponseObject save(HttpServletRequest request, @RequestBody MemberGroupDto memberGroupDto) throws BusinessCheckException {
-        String token = request.getHeader("Access-Token");
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
+        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
 
         if (accountInfo.getMerchantId() == null || accountInfo.getMerchantId() <= 0) {
             return getFailureResult(5002);
@@ -126,8 +117,7 @@ public class BackendMemberGroupController extends BaseController {
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('member:group:index')")
     public ResponseObject delete(HttpServletRequest request, @PathVariable("id") Integer id) throws BusinessCheckException {
-        String token = request.getHeader("Access-Token");
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
+        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
 
         // 该分组已有会员，不允许删除
         Map<String, Object> searchParams = new HashMap<>();
@@ -151,11 +141,10 @@ public class BackendMemberGroupController extends BaseController {
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('member:group:index')")
     public ResponseObject updateStatus(HttpServletRequest request, @RequestBody Map<String, Object> params) throws BusinessCheckException {
-        String token = request.getHeader("Access-Token");
         String status = params.get("status") != null ? params.get("status").toString() : StatusEnum.ENABLED.getKey();
         Integer id = params.get("id") == null ? 0 : Integer.parseInt(params.get("id").toString());
 
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
+        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
         MemberGroupDto groupDto = new MemberGroupDto();
         groupDto.setOperator(accountInfo.getAccountName());
         groupDto.setId(id);

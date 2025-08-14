@@ -52,10 +52,6 @@ public class BackendGenCodeController extends BaseController {
         String tableName = request.getParameter("tableName");
         String status = request.getParameter("status");
 
-        PaginationRequest paginationRequest = new PaginationRequest();
-        paginationRequest.setCurrentPage(page);
-        paginationRequest.setPageSize(pageSize);
-
         Map<String, Object> params = new HashMap<>();
         if (StringUtil.isNotEmpty(tableName)) {
             params.put("tableName", tableName);
@@ -63,8 +59,7 @@ public class BackendGenCodeController extends BaseController {
         if (StringUtil.isNotEmpty(status)) {
             params.put("status", status);
         }
-        paginationRequest.setSearchParams(params);
-        PaginationResponse<TGenCode> paginationResponse = genCodeService.queryGenCodeListByPagination(paginationRequest);
+        PaginationResponse<TGenCode> paginationResponse = genCodeService.queryGenCodeListByPagination(new PaginationRequest(page, pageSize, params));
 
         Map<String, Object> result = new HashMap<>();
         result.put("dataList", paginationResponse);

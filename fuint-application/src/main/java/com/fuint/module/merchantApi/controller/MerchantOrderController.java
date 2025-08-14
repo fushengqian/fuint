@@ -58,8 +58,7 @@ public class MerchantOrderController extends BaseController {
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @CrossOrigin
     public ResponseObject list(HttpServletRequest request, @RequestBody OrderListParam params) throws BusinessCheckException {
-        String token = request.getHeader("Access-Token");
-        UserInfo userInfo = TokenUtil.getUserInfoByToken(token);
+        UserInfo userInfo = TokenUtil.getUserInfoByToken(request.getHeader("Access-Token"));
 
         MtUser mtUser = memberService.queryMemberById(userInfo.getId());
         MtStaff staffInfo = staffService.queryStaffByMobile(mtUser.getMobile());
@@ -82,9 +81,7 @@ public class MerchantOrderController extends BaseController {
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @CrossOrigin
     public ResponseObject detail(HttpServletRequest request, @RequestBody OrderDetailParam param) throws BusinessCheckException {
-        String token = request.getHeader("Access-Token");
-
-        UserInfo userInfo = TokenUtil.getUserInfoByToken(token);
+        UserInfo userInfo = TokenUtil.getUserInfoByToken(request.getHeader("Access-Token"));
 
         MtUser mtUser = memberService.queryMemberById(userInfo.getId());
         MtStaff mtStaff = staffService.queryStaffByMobile(mtUser.getMobile());
@@ -109,8 +106,7 @@ public class MerchantOrderController extends BaseController {
     @RequestMapping(value = "/cancel", method = RequestMethod.POST)
     @CrossOrigin
     public ResponseObject cancel(HttpServletRequest request, @RequestBody OrderDetailParam param) throws BusinessCheckException {
-        String token = request.getHeader("Access-Token");
-        UserInfo mtUser = TokenUtil.getUserInfoByToken(token);
+        UserInfo mtUser = TokenUtil.getUserInfoByToken(request.getHeader("Access-Token"));
 
         String orderId = param.getOrderId();
         if (orderId == null || StringUtil.isEmpty(orderId)) {
@@ -140,8 +136,7 @@ public class MerchantOrderController extends BaseController {
     @RequestMapping(value = "/confirm", method = RequestMethod.POST)
     @CrossOrigin
     public ResponseObject confirm(HttpServletRequest request, @RequestBody OrderConfirmParam param) throws BusinessCheckException {
-        String token = request.getHeader("Access-Token");
-        UserInfo mtUser = TokenUtil.getUserInfoByToken(token);
+        UserInfo mtUser = TokenUtil.getUserInfoByToken(request.getHeader("Access-Token"));
 
         Integer orderId = param.getOrderId();
 

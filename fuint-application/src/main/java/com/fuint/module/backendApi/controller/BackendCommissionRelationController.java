@@ -55,7 +55,6 @@ public class BackendCommissionRelationController extends BaseController {
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('commission:relation:index')")
     public ResponseObject list(HttpServletRequest request) throws BusinessCheckException {
-        String token = request.getHeader("Access-Token");
         Integer page = request.getParameter("page") == null ? Constants.PAGE_NUMBER : Integer.parseInt(request.getParameter("page"));
         Integer pageSize = request.getParameter("pageSize") == null ? Constants.PAGE_SIZE : Integer.parseInt(request.getParameter("pageSize"));
         String userId = request.getParameter("userId");
@@ -63,11 +62,7 @@ public class BackendCommissionRelationController extends BaseController {
         String searchStoreId = request.getParameter("storeId");
         String subUserId = request.getParameter("subUserId");
 
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
-
-        PaginationRequest paginationRequest = new PaginationRequest();
-        paginationRequest.setCurrentPage(page);
-        paginationRequest.setPageSize(pageSize);
+        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
 
         Map<String, Object> params = new HashMap<>();
         if (StringUtil.isNotEmpty(userId)) {
@@ -88,8 +83,7 @@ public class BackendCommissionRelationController extends BaseController {
         if (StringUtil.isNotEmpty(searchStoreId)) {
             params.put("storeId", searchStoreId);
         }
-        paginationRequest.setSearchParams(params);
-        PaginationResponse<CommissionRelationDto> paginationResponse = commissionRelationService.queryRelationByPagination(paginationRequest);
+        PaginationResponse<CommissionRelationDto> paginationResponse = commissionRelationService.queryRelationByPagination(new PaginationRequest(page, pageSize, params));
 
         Map<String, Object> param = new HashMap<>();
         if (accountInfo.getStoreId() != null && accountInfo.getStoreId() > 0) {
@@ -116,8 +110,7 @@ public class BackendCommissionRelationController extends BaseController {
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('commission:relation:index')")
     public ResponseObject updateStatus(HttpServletRequest request, @RequestBody Map<String, Object> param) throws BusinessCheckException {
-        String token = request.getHeader("Access-Token");
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
+        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
         Integer id = param.get("id") == null ? 0 : Integer.parseInt(param.get("id").toString());
         String status = param.get("status") == null ? StatusEnum.ENABLED.getKey() : param.get("status").toString();
 
@@ -142,8 +135,7 @@ public class BackendCommissionRelationController extends BaseController {
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('commission:relation:index')")
     public ResponseObject delete(HttpServletRequest request, @PathVariable("id") Integer id) throws BusinessCheckException {
-        String token = request.getHeader("Access-Token");
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
+        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
 
         MtCommissionRelation mtCommissionRelation = commissionRelationService.getById(id);
         if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {

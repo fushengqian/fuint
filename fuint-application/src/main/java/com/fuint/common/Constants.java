@@ -18,7 +18,7 @@ public class Constants {
     public static final int PAGE_SIZE = 20;
 
     // 读取数据最多行数
-    public static final int MAX_ROWS = 2000;
+    public static final int MAX_ROWS = 5000;
 
     // 读取数据全部行数
     public static final int ALL_ROWS = 1000000;

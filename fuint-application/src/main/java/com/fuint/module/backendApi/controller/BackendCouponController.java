@@ -86,7 +86,6 @@ public class BackendCouponController extends BaseController {
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('coupon:coupon:index')")
     public ResponseObject list(HttpServletRequest request) throws BusinessCheckException {
-        String token = request.getHeader("Access-Token");
         Integer page = request.getParameter("page") == null ? Constants.PAGE_NUMBER : Integer.parseInt(request.getParameter("page"));
         Integer pageSize = request.getParameter("pageSize") == null ? Constants.PAGE_SIZE : Integer.parseInt(request.getParameter("pageSize"));
         Integer groupId = (request.getParameter("groupId") == null || StringUtil.isEmpty(request.getParameter("groupId"))) ? 0 : Integer.parseInt(request.getParameter("groupId"));
@@ -94,13 +93,7 @@ public class BackendCouponController extends BaseController {
         String name = request.getParameter("name") == null ? "" : request.getParameter("name");
         String type = request.getParameter("type") == null ? "" : request.getParameter("type");
         String status = request.getParameter("status") == null ? "" : request.getParameter("status");
-
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
-
-        PaginationRequest paginationRequest = new PaginationRequest();
-        paginationRequest.setCurrentPage(page);
-        paginationRequest.setPageSize(pageSize);
-
+        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
         Map<String, Object> params = new HashMap<>();
         if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
             params.put("merchantId", accountInfo.getMerchantId());
@@ -129,9 +122,7 @@ public class BackendCouponController extends BaseController {
         if (accountInfo.getStoreId() != null && accountInfo.getStoreId() > 0) {
             params.put("storeId", accountInfo.getStoreId());
         }
-
-        paginationRequest.setSearchParams(params);
-        PaginationResponse<MtCoupon> paginationResponse = couponService.queryCouponListByPagination(paginationRequest);
+        PaginationResponse<MtCoupon> paginationResponse = couponService.queryCouponListByPagination(new PaginationRequest(page, pageSize, params));
         List<MtCoupon> dataList = paginationResponse.getContent();
         List<MtCouponGroup> groupList = new ArrayList<>();
 

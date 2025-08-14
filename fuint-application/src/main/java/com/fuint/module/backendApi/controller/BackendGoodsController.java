@@ -93,16 +93,11 @@ public class BackendGoodsController extends BaseController {
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('goods:goods:index')")
     public ResponseObject list(HttpServletRequest request, @RequestBody GoodsListParam param) throws BusinessCheckException, IllegalAccessException {
-        String token = request.getHeader("Access-Token");
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
+        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
 
         TAccount account = accountService.getAccountInfoById(accountInfo.getId());
         Integer storeId = account.getStoreId() == null ? 0 : account.getStoreId();
         Integer merchantId = account.getMerchantId() == null ? 0 : account.getMerchantId();
-
-        PaginationRequest paginationRequest = new PaginationRequest();
-        paginationRequest.setCurrentPage(param.getPage());
-        paginationRequest.setPageSize(param.getPageSize());
 
         if (merchantId > 0) {
             param.setMerchantId(merchantId);
@@ -111,8 +106,7 @@ public class BackendGoodsController extends BaseController {
             param.setStoreId(storeId);
         }
 
-        paginationRequest.setSearchParams(CommonUtil.convert(param));
-        PaginationResponse<GoodsDto> paginationResponse = goodsService.queryGoodsListByPagination(paginationRequest);
+        PaginationResponse<GoodsDto> paginationResponse = goodsService.queryGoodsListByPagination(new PaginationRequest(param.getPage(), param.getPageSize(), CommonUtil.convert(param)));
 
         // 商品类型列表
         List<ParamDto> typeList = GoodsTypeEnum.getGoodsTypeList();

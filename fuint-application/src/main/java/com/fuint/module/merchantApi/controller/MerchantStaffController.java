@@ -81,12 +81,7 @@ public class MerchantStaffController extends BaseController {
             params.put("mobile", requestParams.getMobile());
         }
 
-        PaginationRequest paginationRequest = new PaginationRequest();
-        paginationRequest.setCurrentPage(requestParams.getPage());
-        paginationRequest.setPageSize(requestParams.getPageSize());
-        paginationRequest.setSearchParams(params);
-
-        PaginationResponse paginationResponse = staffService.queryStaffListByPagination(paginationRequest);
+        PaginationResponse paginationResponse = staffService.queryStaffListByPagination(new PaginationRequest(requestParams.getPage(), requestParams.getPageSize(), params));
         Map<String, Object> result = new HashMap<>();
         result.put("staffList", paginationResponse.getContent());
         result.put("pageSize", paginationResponse.getPageSize());

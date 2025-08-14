@@ -67,12 +67,8 @@ public class BackendBookCateController extends BaseController {
         String status = request.getParameter("status");
         String searchStoreId = request.getParameter("storeId");
 
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
+        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
         Integer storeId = accountInfo.getStoreId();
-
-        PaginationRequest paginationRequest = new PaginationRequest();
-        paginationRequest.setCurrentPage(page);
-        paginationRequest.setPageSize(pageSize);
 
         Map<String, Object> params = new HashMap<>();
         if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
@@ -90,8 +86,7 @@ public class BackendBookCateController extends BaseController {
         if (storeId != null && storeId > 0) {
             params.put("storeId", storeId);
         }
-        paginationRequest.setSearchParams(params);
-        PaginationResponse<MtBookCate> paginationResponse = bookCateService.queryBookCateListByPagination(paginationRequest);
+        PaginationResponse<MtBookCate> paginationResponse = bookCateService.queryBookCateListByPagination(new PaginationRequest(page, pageSize, params));
 
         List<MtStore> storeList = storeService.getMyStoreList(accountInfo.getMerchantId(), accountInfo.getStoreId(), StatusEnum.ENABLED.getKey());
 

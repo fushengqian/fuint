@@ -53,12 +53,7 @@ public class ClientPointsController extends BaseController {
 
         param.put("userId", mtUser.getId());
         param.put("status", StatusEnum.ENABLED.getKey());
-
-        PaginationRequest paginationRequest = new PaginationRequest();
-        paginationRequest.setSearchParams(param);
-        paginationRequest.setCurrentPage(page);
-        paginationRequest.setPageSize(pageSize);
-        PaginationResponse<PointDto> paginationResponse = pointService.queryPointListByPagination(paginationRequest);
+        PaginationResponse<PointDto> paginationResponse = pointService.queryPointListByPagination(new PaginationRequest(page, pageSize, param));
 
         return getSuccessResult(paginationResponse);
     }

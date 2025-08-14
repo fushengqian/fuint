@@ -55,18 +55,12 @@ public class BackendSmsController extends BaseController {
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject list(HttpServletRequest request) throws BusinessCheckException {
-        String token = request.getHeader("Access-Token");
         Integer page = request.getParameter("page") == null ? Constants.PAGE_NUMBER : Integer.parseInt(request.getParameter("page"));
         Integer pageSize = request.getParameter("pageSize") == null ? Constants.PAGE_SIZE : Integer.parseInt(request.getParameter("pageSize"));
         String mobile = request.getParameter("mobile") == null ? "" : request.getParameter("mobile");
         String content = request.getParameter("content") == null ? "" : request.getParameter("content");
 
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
-
-        PaginationRequest paginationRequest = new PaginationRequest();
-        paginationRequest.setCurrentPage(page);
-        paginationRequest.setPageSize(pageSize);
-
+        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
         Map<String, Object> searchParams = new HashMap<>();
         if (StringUtil.isNotEmpty(mobile)) {
             searchParams.put("mobile", mobile);
@@ -77,9 +71,7 @@ public class BackendSmsController extends BaseController {
         if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
             searchParams.put("merchantId", accountInfo.getMerchantId());
         }
-
-        paginationRequest.setSearchParams(searchParams);
-        PaginationResponse<MtSmsSendedLog> paginationResponse = sendSmsService.querySmsListByPagination(paginationRequest);
+        PaginationResponse<MtSmsSendedLog> paginationResponse = sendSmsService.querySmsListByPagination(new PaginationRequest(page, pageSize, searchParams));
 
         Map<String, Object> result = new HashMap<>();
         result.put("paginationResponse", paginationResponse);

@@ -71,21 +71,14 @@ public class BackendGiveLogController extends BaseController {
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject list(HttpServletRequest request) throws BusinessCheckException {
-        String token = request.getHeader("Access-Token");
         Integer page = request.getParameter("page") == null ? Constants.PAGE_NUMBER : Integer.parseInt(request.getParameter("page"));
         Integer pageSize = request.getParameter("pageSize") == null ? Constants.PAGE_SIZE : Integer.parseInt(request.getParameter("pageSize"));
         String mobile = request.getParameter("mobile") == null ? "" : request.getParameter("mobile");
         String userId = request.getParameter("userId") == null ? "" : request.getParameter("userId");
         String couponId = request.getParameter("couponId") == null ? "" : request.getParameter("couponId");
+        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
 
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
-
-        PaginationRequest paginationRequest = new PaginationRequest();
-        paginationRequest.setCurrentPage(page);
-        paginationRequest.setPageSize(pageSize);
-
-        TAccount account = accountService.getAccountInfoById(accountInfo.getId());
-        Integer storeId = account.getStoreId() == null ? 0 : account.getStoreId();
+        Integer storeId = accountInfo.getStoreId() == null ? 0 : accountInfo.getStoreId();
         Map<String, Object> params = new HashMap<>();
         if (StringUtil.isNotEmpty(mobile)) {
             params.put("mobile", mobile);
@@ -99,11 +92,10 @@ public class BackendGiveLogController extends BaseController {
         if (storeId > 0) {
             params.put("storeId", storeId);
         }
-        if (account.getMerchantId() != null && account.getMerchantId() > 0) {
-            params.put("merchantId", account.getMerchantId());
+        if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
+            params.put("merchantId", accountInfo.getMerchantId());
         }
-        paginationRequest.setSearchParams(params);
-        PaginationResponse<GiveDto> paginationResponse = giveService.queryGiveListByPagination(paginationRequest);
+        PaginationResponse<GiveDto> paginationResponse = giveService.queryGiveListByPagination(new PaginationRequest(page, pageSize, params));
 
         Map<String, Object> result = new HashMap<>();
         result.put("paginationResponse", paginationResponse);
@@ -123,10 +115,6 @@ public class BackendGiveLogController extends BaseController {
         if (StringUtil.isEmpty(giveId)) {
             return getFailureResult(201, "参数有误");
         }
-
-        PaginationRequest paginationRequest = new PaginationRequest();
-        paginationRequest.setCurrentPage(1);
-        paginationRequest.setPageSize(5000);
 
         Map<String, Object> params = new HashMap<>();
         params.put("status", StatusEnum.ENABLED.getKey());
@@ -170,11 +158,7 @@ public class BackendGiveLogController extends BaseController {
     @RequestMapping(value = "/export", method = RequestMethod.GET)
     @ResponseBody
     public void export(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        PaginationRequest paginationRequest = new PaginationRequest();
-        paginationRequest.setCurrentPage(1);
-        paginationRequest.setPageSize(50000);
-
-        PaginationResponse<GiveDto> paginationResponse = giveService.queryGiveListByPagination(paginationRequest);
+        PaginationResponse<GiveDto> paginationResponse = giveService.queryGiveListByPagination(new PaginationRequest(1, 50000));
         List<GiveDto> list = paginationResponse.getContent();
 
         // excel标题

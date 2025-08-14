@@ -137,10 +137,6 @@ public class ClientGoodsController extends BaseController {
         String sortType = params.getSortType() == null ? "all" : params.getSortType();
         String sortPrice = params.getSortPrice() == null ? "0" : params.getSortPrice();
 
-        PaginationRequest paginationRequest = new PaginationRequest();
-        paginationRequest.setCurrentPage(page);
-        paginationRequest.setPageSize(pageSize);
-
         Map<String, Object> searchParams = new HashMap<>();
         searchParams.put("status", StatusEnum.ENABLED.getKey());
         searchParams.put("hasPrice", YesOrNoEnum.YES.getKey());
@@ -167,8 +163,7 @@ public class ClientGoodsController extends BaseController {
             searchParams.put("platform", platform);
         }
 
-        paginationRequest.setSearchParams(searchParams);
-        PaginationResponse<GoodsDto> paginationResponse = goodsService.queryGoodsListByPagination(paginationRequest);
+        PaginationResponse<GoodsDto> paginationResponse = goodsService.queryGoodsListByPagination(new PaginationRequest(page, pageSize, searchParams));
 
         return getSuccessResult(paginationResponse);
     }

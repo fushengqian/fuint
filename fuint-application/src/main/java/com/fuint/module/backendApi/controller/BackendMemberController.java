@@ -102,10 +102,6 @@ public class BackendMemberController extends BaseController {
         Integer page = request.getParameter("page") == null ? Constants.PAGE_NUMBER : Integer.parseInt(request.getParameter("page"));
         Integer pageSize = request.getParameter("pageSize") == null ? Constants.PAGE_SIZE : Integer.parseInt(request.getParameter("pageSize"));
 
-        PaginationRequest paginationRequest = new PaginationRequest();
-        paginationRequest.setCurrentPage(page);
-        paginationRequest.setPageSize(pageSize);
-
         Map<String, Object> params = new HashMap<>();
         if (StringUtil.isNotEmpty(userId)) {
             params.put("id", userId);
@@ -144,8 +140,7 @@ public class BackendMemberController extends BaseController {
         if (StringUtil.isNotEmpty(endTime)) {
             params.put("endTime", endTime);
         }
-        paginationRequest.setSearchParams(params);
-        PaginationResponse<UserDto> paginationResponse = memberService.queryMemberListByPagination(paginationRequest);
+        PaginationResponse<UserDto> paginationResponse = memberService.queryMemberListByPagination(new PaginationRequest(page, pageSize, params));
 
         // 会员等级列表
         Map<String, Object> param = new HashMap<>();

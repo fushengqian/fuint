@@ -65,15 +65,9 @@ public class BackendStoreController extends BaseController {
     public ResponseObject list(HttpServletRequest request) throws BusinessCheckException {
         Integer page = request.getParameter("page") == null ? Constants.PAGE_NUMBER : Integer.parseInt(request.getParameter("page"));
         Integer pageSize = request.getParameter("pageSize") == null ? Constants.PAGE_SIZE : Integer.parseInt(request.getParameter("pageSize"));
-
         String storeName = request.getParameter("name");
         String storeStatus = request.getParameter("status");
-
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
-
-        PaginationRequest paginationRequest = new PaginationRequest();
-        paginationRequest.setCurrentPage(page);
-        paginationRequest.setPageSize(pageSize);
 
         Map<String, Object> params = new HashMap<>();
         if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
@@ -88,8 +82,7 @@ public class BackendStoreController extends BaseController {
         if (StringUtil.isNotEmpty(storeStatus)) {
             params.put("status", storeStatus);
         }
-        paginationRequest.setSearchParams(params);
-        PaginationResponse<StoreDto> paginationResponse = storeService.queryStoreListByPagination(paginationRequest);
+        PaginationResponse<StoreDto> paginationResponse = storeService.queryStoreListByPagination(new PaginationRequest(page, pageSize, params));
 
         List<MtMerchant> merchantList = merchantService.getMyMerchantList(accountInfo.getMerchantId(), accountInfo.getStoreId(), StatusEnum.ENABLED.getKey());
 

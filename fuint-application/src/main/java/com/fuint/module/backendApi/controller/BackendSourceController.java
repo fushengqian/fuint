@@ -47,9 +47,7 @@ public class BackendSourceController extends BaseController {
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     @PreAuthorize("@pms.hasPermission('system:menu:index')")
     public ResponseObject list(HttpServletRequest request) {
-        String token = request.getHeader("Access-Token");
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
-
+        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
         List<TreeNode> sources = sourceService.getSourceTree(accountInfo.getMerchantId(), "");
         return getSuccessResult(sources);
     }
@@ -89,8 +87,7 @@ public class BackendSourceController extends BaseController {
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     @PreAuthorize("@pms.hasPermission('system:menu:add')")
     public ResponseObject addSource(HttpServletRequest request, @RequestBody Map<String, Object> param) {
-        String token = request.getHeader("Access-Token");
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
+        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
 
         String name = param.get("name").toString();
         String status = param.get("status").toString();
@@ -140,8 +137,7 @@ public class BackendSourceController extends BaseController {
     @RequestMapping(value = "/update", method = RequestMethod.POST)
     @PreAuthorize("@pms.hasPermission('system:menu:edit')")
     public ResponseObject update(HttpServletRequest request, @RequestBody Map<String, Object> param) {
-        String token = request.getHeader("Access-Token");
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
+        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
 
         String name = param.get("name").toString();
         String status = param.get("status").toString();
@@ -198,8 +194,7 @@ public class BackendSourceController extends BaseController {
     @RequestMapping(value = "/delete/{sourceId}", method = RequestMethod.GET)
     @PreAuthorize("@pms.hasPermission('system:menu:delete')")
     public ResponseObject delete(HttpServletRequest request, @PathVariable("sourceId") Long sourceId) throws BusinessCheckException {
-        String token = request.getHeader("Access-Token");
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
+        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
         TSource tSource = sourceService.getById(sourceId);
         if (!tSource.getMerchantId().equals(accountInfo.getMerchantId()) && accountInfo.getMerchantId() > 0) {
             return getFailureResult(201, "抱歉，您没有删除的权限");
@@ -214,8 +209,7 @@ public class BackendSourceController extends BaseController {
     @ApiOperation(value = "获取菜单下拉树列表")
     @RequestMapping(value = "/treeselect", method = RequestMethod.GET)
     public ResponseObject treeselect(HttpServletRequest request) {
-        String token = request.getHeader("Access-Token");
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
+        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
 
         List<TreeNode> sources = sourceService.getSourceTree(accountInfo.getMerchantId(), "");
         List<TreeSelect> data = sourceService.buildMenuTreeSelect(sources);

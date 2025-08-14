@@ -10,7 +10,6 @@ import com.fuint.framework.web.ResponseObject;
 import com.fuint.repository.model.MtOrder;
 import com.fuint.repository.model.MtStaff;
 import com.fuint.repository.model.MtUser;
-import com.fuint.utils.StringUtil;
 import io.swagger.annotations.Api;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -59,18 +58,8 @@ public class MerchantBalanceController extends BaseController {
     @RequestMapping(value = "/doRecharge", method = RequestMethod.POST)
     @CrossOrigin
     public ResponseObject doRecharge(HttpServletRequest request, @RequestBody RechargeParam rechargeParam) throws BusinessCheckException {
-        String token = request.getHeader("Access-Token");
-        String merchantNo = request.getHeader("merchantNo") == null ? "" : request.getHeader("merchantNo");
-        Integer merchantId = merchantService.getMerchantId(merchantNo);
-        if (StringUtil.isEmpty(token)) {
-            return getFailureResult(1001);
-        }
-
-        UserInfo userInfo = TokenUtil.getUserInfoByToken(token);
-        if (null == userInfo) {
-            return getFailureResult(1001);
-        }
-
+        Integer merchantId = merchantService.getMerchantId(request.getHeader("merchantNo"));
+        UserInfo userInfo = TokenUtil.getUserInfoByToken(request.getHeader("Access-Token"));
         MtStaff staffInfo = null;
         MtUser mtUser = memberService.queryMemberById(userInfo.getId());
         if (mtUser != null && mtUser.getMobile() != null) {
@@ -90,7 +79,6 @@ public class MerchantBalanceController extends BaseController {
                 result = paymentService.paymentCallback(orderInfo);
             }
         }
-
         return getSuccessResult(result);
     }
 }
