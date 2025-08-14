@@ -12,12 +12,13 @@ import com.fuint.repository.model.MtStaff;
 import com.fuint.repository.model.MtUser;
 import com.fuint.utils.StringUtil;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 
 /**
- * 卡券接口controller
+ * 商户卡券接口controller
  *
  * Created by FSQ
  * CopyRight https://www.fuint.cn
@@ -48,9 +49,7 @@ public class MerchantCouponController extends BaseController {
      */
     private CouponService couponService;
 
-    /**
-     * 充值余额
-     * */
+    @ApiOperation(value = "发放卡券")
     @RequestMapping(value = "/sendCoupon", method = RequestMethod.POST)
     @CrossOrigin
     public ResponseObject sendCoupon(HttpServletRequest request, @RequestBody CouponReceiveParam receiveParam) throws BusinessCheckException {

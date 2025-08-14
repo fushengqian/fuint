@@ -66,9 +66,6 @@ public class ClientCouponController extends BaseController {
      */
     private StoreService storeService;
 
-    /**
-     * 获取卡券列表数据
-     */
     @ApiOperation(value = "获取卡券列表数据")
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @CrossOrigin
@@ -90,9 +87,6 @@ public class ClientCouponController extends BaseController {
         return getSuccessResult(responseObject.getData());
     }
 
-    /**
-     * 领取卡券
-     * */
     @ApiOperation(value = "领取卡券")
     @RequestMapping(value = "/receive", method = RequestMethod.POST)
     @CrossOrigin
@@ -115,9 +109,6 @@ public class ClientCouponController extends BaseController {
         return getSuccessResult(result);
     }
 
-    /**
-     * 查询卡券详情
-     */
     @ApiOperation(value = "查询卡券详情")
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @CrossOrigin

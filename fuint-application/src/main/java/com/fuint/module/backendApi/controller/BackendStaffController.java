@@ -126,8 +126,7 @@ public class BackendStaffController extends BaseController {
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('staff:list')")
     public ResponseObject saveHandler(HttpServletRequest request, @RequestBody StaffParam staffParam) throws BusinessCheckException {
-        String token = request.getHeader("Access-Token");
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
+        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
         if (accountInfo.getMerchantId() == null || accountInfo.getMerchantId() <= 0) {
             return getFailureResult(5002);
         }
@@ -175,9 +174,7 @@ public class BackendStaffController extends BaseController {
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('staff:list')")
     public ResponseObject getStaffInfo(HttpServletRequest request, @PathVariable("id") Integer id) throws BusinessCheckException {
-        String token = request.getHeader("Access-Token");
-
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
+        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
         MtStaff staffInfo = staffService.queryStaffById(id);
         if (accountInfo.getMerchantId() > 0 && !accountInfo.getMerchantId().equals(staffInfo.getMerchantId())) {
             return getFailureResult(1004);
@@ -199,9 +196,7 @@ public class BackendStaffController extends BaseController {
     @RequestMapping(value = "/storeStaffList/{storeId}", method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject storeStaffList(HttpServletRequest request, @PathVariable("storeId") Integer storeId) throws BusinessCheckException {
-        String token = request.getHeader("Access-Token");
-
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
+        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
 
         Map<String, Object> params = new HashMap<>();
         if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
@@ -230,10 +225,7 @@ public class BackendStaffController extends BaseController {
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('staff:list')")
     public ResponseObject deleteStaff(HttpServletRequest request, @PathVariable("id") Integer id) throws BusinessCheckException {
-        String token = request.getHeader("Access-Token");
-
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
-
+        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
         staffService.updateAuditedStatus(id, StatusEnum.DISABLE.getKey(), accountInfo.getAccountName());
         return getSuccessResult(true);
     }
