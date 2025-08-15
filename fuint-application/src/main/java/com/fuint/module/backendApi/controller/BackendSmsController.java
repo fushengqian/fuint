@@ -87,8 +87,7 @@ public class BackendSmsController extends BaseController {
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('smsTemplate:edit')")
     public ResponseObject setting(HttpServletRequest request) throws BusinessCheckException {
-        String token = request.getHeader("Access-Token");
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
+        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
 
         List<MtSetting> settingList = settingService.getSettingList(accountInfo.getMerchantId(), SettingTypeEnum.SMS_CONFIG.getKey());
 
@@ -127,13 +126,12 @@ public class BackendSmsController extends BaseController {
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('smsTemplate:edit')")
     public ResponseObject saveSetting(HttpServletRequest request, @RequestBody Map<String, Object> param) throws BusinessCheckException {
-        String token = request.getHeader("Access-Token");
         String isClose = param.get("isClose") != null ? param.get("isClose").toString() : null;
         String accessKeyId = param.get("accessKeyId") != null ? param.get("accessKeyId").toString() : null;
         String accessKeySecret = param.get("accessKeySecret") != null ? param.get("accessKeySecret").toString() : null;
         String signName = param.get("signName") != null ? param.get("signName").toString() : null;
 
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
+        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
         if (accountInfo.getMerchantId() == null || accountInfo.getMerchantId() <= 0) {
             return getFailureResult(5002);
         }

@@ -68,7 +68,6 @@ public class BackendConfirmLogController extends BaseController {
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('coupon:confirmLog:index')")
     public ResponseObject list(HttpServletRequest request) throws BusinessCheckException {
-        String token = request.getHeader("Access-Token");
         Integer page = request.getParameter("page") == null ? Constants.PAGE_NUMBER : Integer.parseInt(request.getParameter("page"));
         Integer pageSize = request.getParameter("pageSize") == null ? Constants.PAGE_SIZE : Integer.parseInt(request.getParameter("pageSize"));
         String status = request.getParameter("status") == null ? "" : request.getParameter("status");
@@ -76,7 +75,7 @@ public class BackendConfirmLogController extends BaseController {
         String mobile = request.getParameter("mobile") == null ? "" : request.getParameter("mobile");
         String couponId = request.getParameter("couponId") == null ? "" : request.getParameter("couponId");
 
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
+        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
         Map<String, Object> searchParams = new HashMap<>();
         if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
             searchParams.put("merchantId", accountInfo.getMerchantId());
@@ -125,11 +124,8 @@ public class BackendConfirmLogController extends BaseController {
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('coupon:confirmLog:index')")
     public ResponseObject rollbackUserCoupon(HttpServletRequest request, @PathVariable("id") Integer id) throws BusinessCheckException {
-        String token = request.getHeader("Access-Token");
         String userCouponId = (request.getParameter("userCouponId") == null || StringUtil.isEmpty(request.getParameter("userCouponId"))) ? "0" : request.getParameter("userCouponId");
-
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
-
+        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
         couponService.rollbackUserCoupon(id, Integer.parseInt(userCouponId), accountInfo.getAccountName());
         return getSuccessResult(true);
     }

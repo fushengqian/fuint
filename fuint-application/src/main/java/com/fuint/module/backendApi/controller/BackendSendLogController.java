@@ -109,8 +109,7 @@ public class BackendSendLogController extends BaseController {
     @RequestMapping(value = "/removeUserCoupon/{id}", method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject removeUserCoupon(HttpServletRequest request, @PathVariable("id") Long id) throws BusinessCheckException {
-        String token = request.getHeader("Access-Token");
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
+        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
 
         if (id == null) {
             return getFailureResult(201, "系统参数有误");

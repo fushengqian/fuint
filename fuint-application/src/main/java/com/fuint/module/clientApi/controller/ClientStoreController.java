@@ -61,7 +61,6 @@ public class ClientStoreController extends BaseController {
     @CrossOrigin
     public ResponseObject detail(HttpServletRequest request) throws BusinessCheckException {
         Integer storeId = StringUtil.isEmpty(request.getHeader("storeId")) ? 0 : Integer.parseInt(request.getHeader("storeId"));
-
         MtStore storeInfo = storeService.queryStoreById(storeId);
 
         Map<String, Object> outParams = new HashMap<>();

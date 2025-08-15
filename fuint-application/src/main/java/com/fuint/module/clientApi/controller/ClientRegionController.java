@@ -38,8 +38,7 @@ public class ClientRegionController extends BaseController {
     @RequestMapping(value = "/tree", method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject tree(HttpServletRequest request) {
-        String token = request.getHeader("Access-Token");
-        UserInfo userInfo = TokenUtil.getUserInfoByToken(token);
+        UserInfo userInfo = TokenUtil.getUserInfoByToken(request.getHeader("Access-Token"));
         if (userInfo == null) {
             return getFailureResult(1001, "用户未登录");
         }

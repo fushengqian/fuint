@@ -55,8 +55,6 @@ public class MerchantStaffController extends BaseController {
     @RequestMapping(value = "/staffList", method = RequestMethod.POST)
     @CrossOrigin
     public ResponseObject staffList(HttpServletRequest request, @RequestBody StaffListRequest requestParams) throws BusinessCheckException {
-        Integer merchantId = merchantService.getMerchantId(request.getHeader("merchantNo"));
-
         UserInfo userInfo = TokenUtil.getUserInfoByToken(request.getHeader("Access-Token"));
         MtUser mtUser = memberService.queryMemberById(userInfo.getId());
 
@@ -65,6 +63,7 @@ public class MerchantStaffController extends BaseController {
         }
 
         MtStaff staff = staffService.queryStaffByMobile(mtUser.getMobile());
+        Integer merchantId = merchantService.getMerchantId(request.getHeader("merchantNo"));
         if (staff == null || !merchantId.equals(staff.getMerchantId())) {
             return getFailureResult(201, "您没有操作权限");
         }
@@ -74,16 +73,13 @@ public class MerchantStaffController extends BaseController {
         if (staff.getStoreId() != null && staff.getStoreId() > 0) {
             params.put("storeId", staff.getStoreId());
         }
-        if (StringUtil.isNotEmpty(requestParams.getName())) {
-            params.put("name", requestParams.getName());
-        }
-        if (StringUtil.isNotEmpty(requestParams.getMobile())) {
-            params.put("mobile", requestParams.getMobile());
+        if (StringUtil.isNotEmpty(requestParams.getKeyword())) {
+            params.put("keyword", requestParams.getKeyword());
         }
 
         PaginationResponse paginationResponse = staffService.queryStaffListByPagination(new PaginationRequest(requestParams.getPage(), requestParams.getPageSize(), params));
         Map<String, Object> result = new HashMap<>();
-        result.put("staffList", paginationResponse.getContent());
+        result.put("content", paginationResponse.getContent());
         result.put("pageSize", paginationResponse.getPageSize());
         result.put("pageNumber", paginationResponse.getCurrentPage());
         result.put("totalRow", paginationResponse.getTotalElements());
@@ -100,7 +96,6 @@ public class MerchantStaffController extends BaseController {
 
         UserInfo userInfo = TokenUtil.getUserInfoByToken(request.getHeader("Access-Token"));
         MtUser mtUser = memberService.queryMemberById(userInfo.getId());
-
         if (mtUser == null || StringUtil.isBlank(mtUser.getMobile())) {
             return getFailureResult(201, "该账号不是商户");
         }

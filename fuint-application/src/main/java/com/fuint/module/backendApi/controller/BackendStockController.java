@@ -114,10 +114,9 @@ public class BackendStockController extends BaseController {
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('stock:index')")
     public ResponseObject delete(HttpServletRequest request, @RequestBody Map<String, Object> params) throws BusinessCheckException {
-        String token = request.getHeader("Access-Token");
         Integer id = params.get("id") == null ? 0 : Integer.parseInt(params.get("id").toString());
 
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
+        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
         MtStock mtStock = stockService.queryStockById(id.longValue());
         if (mtStock == null) {
             return getFailureResult(201, "该数据不存在");
@@ -135,14 +134,13 @@ public class BackendStockController extends BaseController {
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('stock:index')")
     public ResponseObject save(HttpServletRequest request, @RequestBody Map<String, Object> params) throws BusinessCheckException {
-        String token = request.getHeader("Access-Token");
         String type = params.get("type") == null ? "" : CommonUtil.replaceXSS(params.get("type").toString());
         String description = params.get("description") == null ? "" : CommonUtil.replaceXSS(params.get("description").toString());
         String status = params.get("status") == null ? StatusEnum.ENABLED.getKey() : params.get("status").toString();
         Integer storeId = (params.get("storeId") == null || StringUtil.isEmpty(params.get("storeId").toString())) ? 0 : Integer.parseInt(params.get("storeId").toString());
         List<LinkedHashMap> goodsList = (List) params.get("goodsList");
 
-        AccountInfo accountDto = TokenUtil.getAccountInfoByToken(token);
+        AccountInfo accountDto = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
 
         Integer myStoreId = accountDto.getStoreId();
         if (myStoreId != null && myStoreId > 0) {

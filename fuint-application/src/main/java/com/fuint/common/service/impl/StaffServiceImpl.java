@@ -99,7 +99,13 @@ public class StaffServiceImpl extends ServiceImpl<MtStaffMapper, MtStaff> implem
         if (StringUtils.isNotBlank(category)) {
             lambdaQueryWrapper.eq(MtStaff::getCategory, category);
         }
-
+        String keyword = paginationRequest.getSearchParams().get("keyword") == null ? "" : paginationRequest.getSearchParams().get("keyword").toString();
+        if (StringUtils.isNotBlank(keyword)) {
+            lambdaQueryWrapper.and(wq -> wq
+                    .eq(MtStaff::getMobile, keyword)
+                    .or()
+                    .eq(MtStaff::getRealName, keyword));
+        }
         lambdaQueryWrapper.orderByDesc(MtStaff::getId);
         List<MtStaff> dataList = mtStaffMapper.selectList(lambdaQueryWrapper);
         if (dataList != null && dataList.size() > 0) {

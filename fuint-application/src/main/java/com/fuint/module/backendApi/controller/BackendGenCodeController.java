@@ -97,7 +97,6 @@ public class BackendGenCodeController extends BaseController {
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('system:genCode:add')")
     public ResponseObject saveHandler(HttpServletRequest request, @RequestBody Map<String, Object> params) throws BusinessCheckException {
-        String token = request.getHeader("Access-Token");
         String id = params.get("id") == null ? "" : params.get("id").toString();
         String status = params.get("status") == null ? "" : params.get("status").toString();
         String tableName = params.get("tableName") == null ? "" : params.get("tableName").toString();
@@ -106,7 +105,7 @@ public class BackendGenCodeController extends BaseController {
         String author = params.get("author") == null ? "" : params.get("author").toString();
         String backendPath = params.get("backendPath") == null ? "" : params.get("backendPath").toString();
 
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
+        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
         if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
             return getFailureResult(1004, "平台超管帐号才有操作权限");
         }
@@ -155,8 +154,7 @@ public class BackendGenCodeController extends BaseController {
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('system:genCode:gen')")
     public ResponseObject gen(HttpServletRequest request, @PathVariable("id") Integer id) throws BusinessCheckException {
-        String token = request.getHeader("Access-Token");
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
+        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
         if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
             return getFailureResult(1004, "平台超管帐号才有操作权限");
         }

@@ -3,7 +3,6 @@ package com.fuint.module.clientApi.controller;
 import com.fuint.common.Constants;
 import com.fuint.common.dto.BookDto;
 import com.fuint.common.dto.BookItemDto;
-import com.fuint.common.dto.ParamDto;
 import com.fuint.common.dto.UserInfo;
 import com.fuint.common.enums.BookStatusEnum;
 import com.fuint.common.enums.StatusEnum;
@@ -144,12 +143,11 @@ public class ClientBookController extends BaseController {
     @RequestMapping(value = "/cateList", method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject cateList(HttpServletRequest request) throws BusinessCheckException {
-        String merchantNo = request.getHeader("merchantNo") == null ? "" : request.getHeader("merchantNo");
         Integer storeId = StringUtil.isEmpty(request.getHeader("storeId")) ? 0 : Integer.parseInt(request.getHeader("storeId"));
 
         Map<String, Object> param = new HashMap<>();
         param.put("status", StatusEnum.ENABLED.getKey());
-        Integer merchantId = merchantService.getMerchantId(merchantNo);
+        Integer merchantId = merchantService.getMerchantId(request.getHeader("merchantNo"));
         if (merchantId > 0) {
             param.put("merchantId", merchantId);
         }
@@ -181,7 +179,6 @@ public class ClientBookController extends BaseController {
     @RequestMapping(value = "/submit", method = RequestMethod.POST)
     @CrossOrigin
     public ResponseObject submit(HttpServletRequest request, @RequestBody Map<String, Object> param) throws BusinessCheckException, ParseException {
-        String token = request.getHeader("Access-Token");
         Integer storeId = StringUtil.isEmpty(request.getHeader("storeId")) ? 0 : Integer.parseInt(request.getHeader("storeId"));
         String bookId = param.get("bookId") == null ? "" : param.get("bookId").toString();
         String remark = param.get("remark") == null ? "" : param.get("remark").toString();
@@ -190,7 +187,7 @@ public class ClientBookController extends BaseController {
         String date = param.get("date") == null ? "" : param.get("date").toString();
         String time = param.get("time") == null ? "" : param.get("time").toString();
 
-        UserInfo loginInfo = TokenUtil.getUserInfoByToken(token);
+        UserInfo loginInfo = TokenUtil.getUserInfoByToken(request.getHeader("Access-Token"));
         if (null == loginInfo) {
             return getFailureResult(1001);
         }
@@ -260,14 +257,9 @@ public class ClientBookController extends BaseController {
     @RequestMapping(value = "/cancel", method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject cancel(HttpServletRequest request) throws BusinessCheckException {
-        String token = request.getHeader("Access-Token");
         String bookId = request.getParameter("bookId");
         String remark = request.getParameter("remark") == null ? "会员取消" : request.getParameter("remark");
-        UserInfo mtUser = TokenUtil.getUserInfoByToken(token);
-
-        if (mtUser == null) {
-            return getFailureResult(1001, "用户未登录");
-        }
+        UserInfo mtUser = TokenUtil.getUserInfoByToken(request.getHeader("Access-Token"));
 
         if (StringUtil.isEmpty(bookId)) {
             return getFailureResult(2000, "订单不能为空");

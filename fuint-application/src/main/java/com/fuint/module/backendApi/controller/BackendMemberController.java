@@ -87,7 +87,7 @@ public class BackendMemberController extends BaseController {
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('member:index')")
     public ResponseObject list(HttpServletRequest request) throws BusinessCheckException {
-        String token = request.getHeader("Access-Token");
+        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
         String mobile = request.getParameter("mobile");
         String userId = request.getParameter("id");
         String name = request.getParameter("name");
@@ -130,7 +130,6 @@ public class BackendMemberController extends BaseController {
         if (StringUtil.isNotEmpty(groupIds)) {
             params.put("groupIds", groupIds);
         }
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
         if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
             params.put("merchantId", accountInfo.getMerchantId());
         }

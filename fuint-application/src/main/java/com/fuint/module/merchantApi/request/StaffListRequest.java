@@ -14,10 +14,7 @@ import java.io.Serializable;
 @Data
 public class StaffListRequest extends PageParam implements Serializable {
 
-    @ApiModelProperty(value="姓名", name="name")
-    private String name;
-
-    @ApiModelProperty(value="手机号", name="mobile")
-    private String mobile;
+    @ApiModelProperty(value="关键字:手机号、姓名", name="keyword")
+    private String keyword;
 
 }

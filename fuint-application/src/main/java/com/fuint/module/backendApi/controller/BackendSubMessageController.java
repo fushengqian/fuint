@@ -23,6 +23,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.core.env.Environment;
 import javax.servlet.http.HttpServletRequest;
+import java.io.UnsupportedEncodingException;
 import java.util.*;
 
 /**
@@ -179,7 +180,7 @@ public class BackendSubMessageController extends BaseController {
     @RequestMapping(value = "/save", method = RequestMethod.POST)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('subMessage:edit')")
-    public ResponseObject saveHandler(HttpServletRequest request, @RequestBody Map<String, Object> param) {
+    public ResponseObject saveHandler(HttpServletRequest request, @RequestBody Map<String, Object> param) throws BusinessCheckException, UnsupportedEncodingException {
         String key = param.get("key").toString();
         String templateId = param.get("templateId").toString();
         String tid = param.get("tid").toString();
@@ -196,49 +197,44 @@ public class BackendSubMessageController extends BaseController {
         subMessageDto.setTid(tid);
         subMessageDto.setStatus(StatusEnum.ENABLED.getKey());
 
-        try {
-            String tplConfigJson = env.getProperty("weixin.subMessage." + key);
-            JSONArray jsonArray = (JSONArray) JSONObject.parse(tplConfigJson);
-            List<ParamDto> params = new ArrayList<>();
-            for (int i = 0; i < jsonArray.size(); i++) {
-                JSONObject obj = jsonArray.getJSONObject(i);
-                String oKey = obj.get("key").toString();
-                String value = "";
-                for (LinkedHashMap paraItem : paramData) {
-                     String pKey = paraItem.get("key").toString();
-                     if (pKey.equals(oKey)) {
-                         value = paraItem.get("value").toString();
-                         break;
-                     }
-                }
-                String name = obj.get("name").toString();
-                if (!CommonUtil.isUtf8(name) || CommonUtil.isErrCode(name)) {
-                    name = new String(name.getBytes("ISO8859-1"), "UTF-8");
-                }
-                params.add(new ParamDto(obj.get("key").toString(), name, value));
+        String tplConfigJson = env.getProperty("weixin.subMessage." + key);
+        JSONArray jsonArray = (JSONArray) JSONObject.parse(tplConfigJson);
+        List<ParamDto> params = new ArrayList<>();
+        for (int i = 0; i < jsonArray.size(); i++) {
+            JSONObject obj = jsonArray.getJSONObject(i);
+            String oKey = obj.get("key").toString();
+            String value = "";
+            for (LinkedHashMap paraItem : paramData) {
+                 String pKey = paraItem.get("key").toString();
+                 if (pKey.equals(oKey)) {
+                     value = paraItem.get("value").toString();
+                     break;
+                 }
             }
-
-            subMessageDto.setParams(params);
-            String json = JSONObject.toJSONString(subMessageDto);
-
-            // 保存配置
-            settingService.removeSetting(accountInfo.getMerchantId(), SettingTypeEnum.SUB_MESSAGE.getKey(), key);
-            MtSetting info = new MtSetting();
-            info.setMerchantId(accountInfo.getMerchantId());
-            info.setType(SettingTypeEnum.SUB_MESSAGE.getKey());
-            info.setName(key);
-            info.setValue(json);
-            info.setMerchantId(accountInfo.getMerchantId());
-            info.setStoreId(0);
-            String description = WxMessageEnum.getValue(key);
-            info.setDescription(description);
-            info.setOperator(accountInfo.getAccountName());
-            info.setUpdateTime(new Date());
-            settingService.saveSetting(info);
-        }  catch (Exception e) {
-            return getFailureResult(201, "操作失败");
+            String name = obj.get("name").toString();
+            if (!CommonUtil.isUtf8(name) || CommonUtil.isErrCode(name)) {
+                name = new String(name.getBytes("ISO8859-1"), "UTF-8");
+            }
+            params.add(new ParamDto(obj.get("key").toString(), name, value));
         }
 
+        subMessageDto.setParams(params);
+        String json = JSONObject.toJSONString(subMessageDto);
+
+        // 保存配置
+        settingService.removeSetting(accountInfo.getMerchantId(), SettingTypeEnum.SUB_MESSAGE.getKey(), key);
+        MtSetting info = new MtSetting();
+        info.setMerchantId(accountInfo.getMerchantId());
+        info.setType(SettingTypeEnum.SUB_MESSAGE.getKey());
+        info.setName(key);
+        info.setValue(json);
+        info.setMerchantId(accountInfo.getMerchantId());
+        info.setStoreId(0);
+        String description = WxMessageEnum.getValue(key);
+        info.setDescription(description);
+        info.setOperator(accountInfo.getAccountName());
+        info.setUpdateTime(new Date());
+        settingService.saveSetting(info);
         return getSuccessResult(true);
     }
 }

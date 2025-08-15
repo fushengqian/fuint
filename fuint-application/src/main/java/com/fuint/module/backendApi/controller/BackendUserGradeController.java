@@ -104,8 +104,7 @@ public class BackendUserGradeController extends BaseController {
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('userGrade:index')")
     public ResponseObject updateStatus(HttpServletRequest request, @RequestBody Map<String, Object> param) throws BusinessCheckException {
-        String token = request.getHeader("Access-Token");
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
+        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
 
         Integer userGradeId = param.get("userGradeId") == null ? 0 : Integer.parseInt(param.get("userGradeId").toString());
         String status = param.get("status") == null ? StatusEnum.ENABLED.getKey() : param.get("status").toString();
@@ -129,8 +128,7 @@ public class BackendUserGradeController extends BaseController {
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('userGrade:index')")
     public ResponseObject delete(HttpServletRequest request, @PathVariable("id") Integer id) throws BusinessCheckException {
-        String token = request.getHeader("Access-Token");
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
+        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
 
         MtUserGrade mtUserGrade = userGradeService.queryUserGradeById(0, id, 0);
         if (mtUserGrade == null || !mtUserGrade.getMerchantId().equals(accountInfo.getMerchantId())) {
@@ -149,8 +147,7 @@ public class BackendUserGradeController extends BaseController {
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('userGrade:add')")
     public ResponseObject saveHandler(HttpServletRequest request, @RequestBody Map<String, Object> param) throws BusinessCheckException {
-        String token = request.getHeader("Access-Token");
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
+        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
 
         String grade = param.get("grade") == null ? "0" : param.get("grade").toString();
         String name = CommonUtil.replaceXSS(param.get("name").toString());
@@ -230,8 +227,7 @@ public class BackendUserGradeController extends BaseController {
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('userGrade:index')")
     public ResponseObject info(HttpServletRequest request, @PathVariable("id") Integer id) throws BusinessCheckException {
-        String token = request.getHeader("Access-Token");
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
+        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
 
         MtUserGrade userGradeInfo = userGradeService.queryUserGradeById(accountInfo.getMerchantId(), id, 0);
 
