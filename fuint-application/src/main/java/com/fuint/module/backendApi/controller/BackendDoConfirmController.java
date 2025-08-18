@@ -144,10 +144,7 @@ public class BackendDoConfirmController extends BaseController {
         if (StringUtil.isEmpty(userCouponId)) {
             return getFailureResult(201, "系统参数有误");
         }
-
-        TAccount account = accountService.getAccountInfoById(accountInfo.getId());
-        Integer storeId = account.getStoreId() == null ? 0 : account.getStoreId();
-
+        Integer storeId = accountInfo.getStoreId() == null ? 0 : accountInfo.getStoreId();
         MtUserCoupon mtUserCoupon = mtUserCouponMapper.selectById(Integer.parseInt(userCouponId));
         if (mtUserCoupon.getType().equals(CouponTypeEnum.PRESTORE.getKey()) && StringUtil.isEmpty(amount)) {
             return getFailureResult(201, "储值卡核销金额不能为空");

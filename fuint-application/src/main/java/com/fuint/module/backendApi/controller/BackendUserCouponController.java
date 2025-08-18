@@ -142,9 +142,7 @@ public class BackendUserCouponController extends BaseController {
         }
 
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
-
-        TAccount account = accountService.getAccountInfoById(accountInfo.getId());
-        Integer storeId = account.getStoreId();
+        Integer storeId = accountInfo.getStoreId();
 
         BigDecimal confirmAmount = mtUserCoupon.getAmount();
         if (mtUserCoupon.getType().equals(CouponTypeEnum.PRESTORE.getKey())) {

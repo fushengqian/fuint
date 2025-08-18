@@ -71,11 +71,6 @@ public class BackendGoodsController extends BaseController {
     private StoreService storeService;
 
     /**
-     * 后台账户服务接口
-     */
-    private AccountService accountService;
-
-    /**
      * 系统设置服务接口
      * */
     private SettingService settingService;
@@ -94,18 +89,14 @@ public class BackendGoodsController extends BaseController {
     @PreAuthorize("@pms.hasPermission('goods:goods:index')")
     public ResponseObject list(HttpServletRequest request, @RequestBody GoodsListParam param) throws BusinessCheckException, IllegalAccessException {
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
-
-        TAccount account = accountService.getAccountInfoById(accountInfo.getId());
-        Integer storeId = account.getStoreId() == null ? 0 : account.getStoreId();
-        Integer merchantId = account.getMerchantId() == null ? 0 : account.getMerchantId();
-
+        Integer storeId = accountInfo.getStoreId() == null ? 0 : accountInfo.getStoreId();
+        Integer merchantId = accountInfo.getMerchantId() == null ? 0 : accountInfo.getMerchantId();
         if (merchantId > 0) {
             param.setMerchantId(merchantId);
         }
         if (storeId > 0) {
             param.setStoreId(storeId);
         }
-
         PaginationResponse<GoodsDto> paginationResponse = goodsService.queryGoodsListByPagination(new PaginationRequest(param.getPage(), param.getPageSize(), CommonUtil.convert(param)));
 
         // 商品类型列表

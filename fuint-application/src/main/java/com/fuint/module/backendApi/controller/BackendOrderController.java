@@ -87,11 +87,10 @@ public class BackendOrderController extends BaseController {
     @PreAuthorize("@pms.hasPermission('order:index')")
     public ResponseObject list(HttpServletRequest request, @RequestBody OrderListParam orderListParam) throws BusinessCheckException {
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
-        TAccount account = accountService.getAccountInfoById(accountInfo.getId());
-        if (account.getMerchantId() != null && account.getMerchantId() > 0) {
-            orderListParam.setMerchantId(account.getMerchantId());
+        if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
+            orderListParam.setMerchantId(accountInfo.getMerchantId());
         }
-        Integer storeId = account.getStoreId() == null ? 0 : account.getStoreId();
+        Integer storeId = accountInfo.getStoreId() == null ? 0 : accountInfo.getStoreId();
         if (storeId > 0) {
             orderListParam.setStoreId(storeId);
         }
@@ -302,9 +301,8 @@ public class BackendOrderController extends BaseController {
             return getSuccessResult(result);
         }
 
-        TAccount account = accountService.getAccountInfoById(accountInfo.getId());
-        Integer storeId = account.getStoreId() == null ? 0 : account.getStoreId();
-        Integer staffId = account.getStaffId();
+        Integer storeId = accountInfo.getStoreId() == null ? 0 : accountInfo.getStoreId();
+        Integer staffId = accountInfo.getStaffId();
         if (storeId > 0) {
             orderListParam.setStoreId(storeId);
         }

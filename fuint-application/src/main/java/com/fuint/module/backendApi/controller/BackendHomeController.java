@@ -115,12 +115,10 @@ public class BackendHomeController extends BaseController {
         Integer storeId = StringUtil.isEmpty(request.getParameter("storeId")) ? 0 : Integer.parseInt(request.getParameter("storeId"));
 
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
+        Integer merchantId = accountInfo.getMerchantId() == null ? 0 : accountInfo.getMerchantId();
 
-        TAccount account = accountService.getAccountInfoById(accountInfo.getId());
-        Integer merchantId = account.getMerchantId() == null ? 0 : account.getMerchantId();
-
-        if (account.getStoreId() != null && account.getStoreId() > 0) {
-            storeId = account.getStoreId();
+        if (accountInfo.getStoreId() != null && accountInfo.getStoreId() > 0) {
+            storeId = accountInfo.getStoreId();
         }
 
         ArrayList<String> days = TimeUtils.getDays(5);
