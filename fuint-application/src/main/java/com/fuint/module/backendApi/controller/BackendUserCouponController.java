@@ -67,11 +67,6 @@ public class BackendUserCouponController extends BaseController {
     private StoreService storeService;
 
     /**
-     * 后台用户接口
-     * */
-    private AccountService accountService;
-
-    /**
      * 卡券发放记录接口
      * */
     private SendLogService sendLogService;

@@ -5,7 +5,6 @@ import com.fuint.common.dto.AccountInfo;
 import com.fuint.common.dto.GiveDto;
 import com.fuint.common.dto.GiveItemDto;
 import com.fuint.common.enums.StatusEnum;
-import com.fuint.common.service.AccountService;
 import com.fuint.common.service.GiveService;
 import com.fuint.common.util.CommonUtil;
 import com.fuint.common.util.ExcelUtil;
@@ -58,11 +57,6 @@ public class BackendGiveLogController extends BaseController {
      * 转赠服务接口
      */
     private GiveService giveService;
-
-    /**
-     * 后台账户服务接口
-     */
-    private AccountService accountService;
 
     /**
      * 查询转赠列表

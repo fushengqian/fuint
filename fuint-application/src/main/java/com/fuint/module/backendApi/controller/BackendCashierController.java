@@ -98,8 +98,7 @@ public class BackendCashierController extends BaseController {
         Integer pageSize = request.getParameter("pageSize") == null ? Constants.PAGE_SIZE : Integer.parseInt(request.getParameter("pageSize"));
         Integer cateId = request.getParameter("cateId") == null ? 0 : Integer.parseInt(request.getParameter("cateId"));
 
-        AccountInfo accountDto = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
-        TAccount accountInfo = accountService.getAccountInfoById(accountDto.getId());
+        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
         Integer storeId = (accountInfo.getStoreId() == null || accountInfo.getStoreId() < 1) ? 0 : accountInfo.getStoreId();
         MtStore storeInfo = null;
         if (storeId == null || storeId < 1) {
@@ -125,7 +124,7 @@ public class BackendCashierController extends BaseController {
         result.put("imagePath", settingService.getUploadBasePath());
         result.put("storeInfo", storeInfo);
         result.put("memberInfo", memberInfo);
-        result.put("accountInfo", accountDto);
+        result.put("accountInfo", accountInfo);
         result.put("goodsList", goodsData.get("goodsList"));
         result.put("totalGoods", goodsData.get("total"));
         result.put("cateList", cateList);

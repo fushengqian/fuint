@@ -4,7 +4,6 @@ import com.fuint.common.Constants;
 import com.fuint.common.dto.AccountInfo;
 import com.fuint.common.dto.GoodsCateDto;
 import com.fuint.common.enums.StatusEnum;
-import com.fuint.common.service.AccountService;
 import com.fuint.common.service.CateService;
 import com.fuint.common.service.SettingService;
 import com.fuint.common.service.StoreService;
@@ -17,7 +16,6 @@ import com.fuint.framework.web.BaseController;
 import com.fuint.framework.web.ResponseObject;
 import com.fuint.repository.model.MtGoodsCate;
 import com.fuint.repository.model.MtStore;
-import com.fuint.repository.model.TAccount;
 import com.fuint.utils.StringUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -51,11 +49,6 @@ public class BackendCateController extends BaseController {
      * 配置服务接口
      * */
     private SettingService settingService;
-
-    /**
-     * 后台账户服务接口
-     */
-    private AccountService accountService;
 
     /**
      * 店铺服务接口

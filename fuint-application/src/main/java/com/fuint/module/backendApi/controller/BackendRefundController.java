@@ -4,7 +4,6 @@ import com.fuint.common.Constants;
 import com.fuint.common.dto.*;
 import com.fuint.common.enums.RefundStatusEnum;
 import com.fuint.common.enums.RefundTypeEnum;
-import com.fuint.common.service.AccountService;
 import com.fuint.common.service.MemberService;
 import com.fuint.common.service.OrderService;
 import com.fuint.common.service.RefundService;
@@ -15,7 +14,6 @@ import com.fuint.framework.pagination.PaginationResponse;
 import com.fuint.framework.web.BaseController;
 import com.fuint.framework.web.ResponseObject;
 import com.fuint.repository.model.MtUser;
-import com.fuint.repository.model.TAccount;
 import com.fuint.utils.StringUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -48,11 +46,6 @@ public class BackendRefundController extends BaseController {
      * 订单服务接口
      * */
     private OrderService orderService;
-
-    /**
-     * 后台账户服务接口
-     */
-    private AccountService accountService;
 
     /**
      * 会员接口服务

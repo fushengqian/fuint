@@ -58,7 +58,7 @@ public class BackendConfirmLogController extends BaseController {
     /**
      * 后台账户服务接口
      */
-    private AccountService tAccountService;
+    private AccountService accountService;
 
     /**
      * 获取会员卡券核销记录列表
@@ -99,7 +99,7 @@ public class BackendConfirmLogController extends BaseController {
         }
 
         // 登录员工所属店铺处理
-        TAccount tAccount = tAccountService.getAccountInfoById(accountInfo.getId());
+        TAccount tAccount = accountService.getAccountInfoById(accountInfo.getId());
         if (tAccount.getStoreId() > 0 && tAccount.getStoreId() > 0) {
             searchParams.put("storeId", tAccount.getStoreId());
         }

@@ -2,7 +2,6 @@ package com.fuint.module.backendApi.controller;
 
 import com.fuint.common.dto.AccountInfo;
 import com.fuint.common.dto.UserOrderDto;
-import com.fuint.common.service.AccountService;
 import com.fuint.common.service.MemberService;
 import com.fuint.common.service.OrderService;
 import com.fuint.common.util.DateUtil;
@@ -11,7 +10,6 @@ import com.fuint.common.util.TokenUtil;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.web.BaseController;
 import com.fuint.framework.web.ResponseObject;
-import com.fuint.repository.model.TAccount;
 import com.fuint.utils.StringUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -45,11 +43,6 @@ public class BackendHomeController extends BaseController {
      * 订单服务接口
      * */
     private OrderService orderService;
-
-    /**
-     * 后台账号服务接口
-     * */
-    private AccountService accountService;
 
     /**
      * 首页统计数据

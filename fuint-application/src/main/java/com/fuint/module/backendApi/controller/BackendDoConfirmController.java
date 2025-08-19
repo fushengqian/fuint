@@ -5,7 +5,6 @@ import com.fuint.common.dto.ParamDto;
 import com.fuint.common.dto.UserCouponDto;
 import com.fuint.common.enums.CouponExpireTypeEnum;
 import com.fuint.common.enums.CouponTypeEnum;
-import com.fuint.common.service.AccountService;
 import com.fuint.common.service.ConfirmLogService;
 import com.fuint.common.service.CouponService;
 import com.fuint.common.service.MemberService;
@@ -18,7 +17,6 @@ import com.fuint.repository.mapper.MtUserCouponMapper;
 import com.fuint.repository.model.MtCoupon;
 import com.fuint.repository.model.MtUser;
 import com.fuint.repository.model.MtUserCoupon;
-import com.fuint.repository.model.TAccount;
 import com.fuint.utils.StringUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -54,11 +52,6 @@ public class BackendDoConfirmController extends BaseController {
      * 卡券服务接口
      */
     private CouponService couponService;
-
-    /**
-     * 账户服务接口
-     */
-    private AccountService accountService;
 
     /**
      * 核销记录服务接口
