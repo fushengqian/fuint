@@ -26,7 +26,6 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Lazy;
-import org.springframework.core.env.Environment;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -184,31 +183,31 @@ public class CouponGroupServiceImpl extends ServiceImpl<MtCouponGroupMapper, MtC
     /**
      * 修改卡券分组
      *
-     * @param reqcouponGroupDto
+     * @param reqCouponGroupDto
      * @throws BusinessCheckException
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
     @OperationServiceLog(description = "更新卡券分组")
-    public MtCouponGroup updateCouponGroup(ReqCouponGroupDto reqcouponGroupDto) throws BusinessCheckException {
-        MtCouponGroup couponGroup = queryCouponGroupById(reqcouponGroupDto.getId());
+    public MtCouponGroup updateCouponGroup(ReqCouponGroupDto reqCouponGroupDto) throws BusinessCheckException {
+        MtCouponGroup couponGroup = queryCouponGroupById(reqCouponGroupDto.getId());
         if (null == couponGroup || StatusEnum.DISABLE.getKey().equalsIgnoreCase(couponGroup.getStatus())) {
             throw new BusinessCheckException("该分组不存在或已被删除");
         }
-        if (reqcouponGroupDto.getName() != null) {
-            couponGroup.setName(CommonUtil.replaceXSS(reqcouponGroupDto.getName()));
+        if (reqCouponGroupDto.getName() != null) {
+            couponGroup.setName(CommonUtil.replaceXSS(reqCouponGroupDto.getName()));
         }
-        if (reqcouponGroupDto.getDescription() != null) {
-            couponGroup.setDescription(CommonUtil.replaceXSS(reqcouponGroupDto.getDescription()));
+        if (reqCouponGroupDto.getDescription() != null) {
+            couponGroup.setDescription(CommonUtil.replaceXSS(reqCouponGroupDto.getDescription()));
         }
         if (couponGroup.getTotal() == null) {
             couponGroup.setTotal(0);
         }
-        if (reqcouponGroupDto.getStatus() != null) {
-            couponGroup.setStatus(reqcouponGroupDto.getStatus());
+        if (reqCouponGroupDto.getStatus() != null) {
+            couponGroup.setStatus(reqCouponGroupDto.getStatus());
         }
         couponGroup.setUpdateTime(new Date());
-        couponGroup.setOperator(reqcouponGroupDto.getOperator());
+        couponGroup.setOperator(reqCouponGroupDto.getOperator());
         this.updateById(couponGroup);
         return couponGroup;
     }

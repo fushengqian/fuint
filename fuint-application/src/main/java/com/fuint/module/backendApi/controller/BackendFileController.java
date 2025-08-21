@@ -64,11 +64,8 @@ public class BackendFileController extends BaseController {
     @RequestMapping(value = "/upload", method = RequestMethod.POST)
     @CrossOrigin
     public ResponseObject uploadFileLocal(HttpServletRequest request) {
-        String token = request.getHeader("Access-Token");
         String action = request.getParameter("action") == null ? "" : request.getParameter("action");
-
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
-
+        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
         if (action.equals("config")) {
             Map<String, Object> outParams = new HashMap();
             outParams.put("imageActionName", "upload");

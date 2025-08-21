@@ -134,7 +134,6 @@ public class BackendArticleController extends BaseController {
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('content:article:add')")
     public ResponseObject saveHandler(HttpServletRequest request, @RequestBody Map<String, Object> params) throws BusinessCheckException {
-        String token = request.getHeader("Access-Token");
         String id = params.get("id") == null ? "" : params.get("id").toString();
         String title = params.get("title") == null ? "" : params.get("title").toString();
         String description = params.get("description") == null ? "" : params.get("description").toString();
@@ -145,7 +144,7 @@ public class BackendArticleController extends BaseController {
         String sort = params.get("sort") == null ? "0" : params.get("sort").toString();
         String brief = params.get("brief") == null ? "" : params.get("brief").toString();
 
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
+        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
 
         ArticleDto articleDto = new ArticleDto();
         articleDto.setTitle(title);
@@ -184,11 +183,9 @@ public class BackendArticleController extends BaseController {
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('content:article:index')")
     public ResponseObject info(HttpServletRequest request, @PathVariable("id") Integer id) throws BusinessCheckException {
-        String token = request.getHeader("Access-Token");
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
+        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
 
         MtArticle articleInfo = articleService.queryArticleById(id);
-        String imagePath = settingService.getUploadBasePath();
         if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
             if (!articleInfo.getMerchantId().equals(accountInfo.getMerchantId())) {
                 return getFailureResult(1004);
@@ -197,7 +194,7 @@ public class BackendArticleController extends BaseController {
 
         Map<String, Object> result = new HashMap<>();
         result.put("articleInfo", articleInfo);
-        result.put("imagePath", imagePath);
+        result.put("imagePath", settingService.getUploadBasePath());
 
         return getSuccessResult(result);
     }

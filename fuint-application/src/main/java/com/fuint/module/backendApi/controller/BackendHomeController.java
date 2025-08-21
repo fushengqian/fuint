@@ -51,13 +51,10 @@ public class BackendHomeController extends BaseController {
     @RequestMapping(value = "/index", method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject index(HttpServletRequest request) throws BusinessCheckException {
-        String token = request.getHeader("Access-Token");
-
         Date beginTime = DateUtil.getDayBegin();
         Date endTime = DateUtil.getDayEnd();
 
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
-
+        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
         Integer merchantId = accountInfo.getMerchantId();
         Integer storeId = accountInfo.getStoreId();
 

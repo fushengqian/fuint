@@ -114,12 +114,11 @@ public class BackendBalanceController extends BaseController {
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('balance:modify')")
     public ResponseObject doRecharge(HttpServletRequest request, @RequestBody Map<String, Object> param) throws BusinessCheckException {
-        String token = request.getHeader("Access-Token");
         String amount = param.get("amount") == null ? "0" : param.get("amount").toString();
         String remark = param.get("remark") == null ? "后台充值" : param.get("remark").toString();
         Integer userId = param.get("userId") == null ? 0 : Integer.parseInt(param.get("userId").toString());
         Integer type = param.get("type") == null ? 1 : Integer.parseInt(param.get("type").toString());// 1 增加，2 扣减
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
+        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
 
         if (!CommonUtil.isNumeric(amount)) {
             return getFailureResult(201, "充值金额必须是数字");
@@ -158,14 +157,12 @@ public class BackendBalanceController extends BaseController {
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('balance:distribute')")
     public ResponseObject distribute(HttpServletRequest request, @RequestBody Map<String, Object> param) throws BusinessCheckException {
-        String token = request.getHeader("Access-Token");
         String amount = param.get("amount") == null ? "0" : param.get("amount").toString();
         String remark = param.get("remark") == null ? "后台充值" : param.get("remark").toString();
         String userIds = param.get("userIds") == null ? "" : param.get("userIds").toString();
         String object = param.get("object") == null ? "" : param.get("object").toString();
 
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
-
+        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
         balanceService.distribute(accountInfo, object, userIds, amount, remark);
         return getSuccessResult(true);
     }
@@ -178,8 +175,7 @@ public class BackendBalanceController extends BaseController {
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('balance:setting')")
     public ResponseObject setting(HttpServletRequest request) throws BusinessCheckException {
-        String token = request.getHeader("Access-Token");
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
+        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
 
         List<MtSetting> settingList = settingService.getSettingList(accountInfo.getMerchantId(), SettingTypeEnum.BALANCE.getKey());
 
@@ -224,13 +220,14 @@ public class BackendBalanceController extends BaseController {
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('balance:setting')")
     public ResponseObject saveSetting(HttpServletRequest request, @RequestBody Map<String, Object> param) throws BusinessCheckException {
-        String token = request.getHeader("Access-Token");
         String status = param.get("status") == null ? StatusEnum.ENABLED.getKey() : param.get("status").toString();
         String remark = param.get("remark") == null ? "" : param.get("remark").toString();
         List<LinkedHashMap> rechargeItems = (List) param.get("rechargeItem");
 
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
-
+        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
+        if (accountInfo.getMerchantId() == null || accountInfo.getMerchantId() <= 0) {
+            throw new BusinessCheckException("平台方帐号无法执行该操作，请使用商户帐号操作");
+        }
         if (rechargeItems.size() < 0) {
             return getFailureResult(201, "充值规则设置不能为空");
         }

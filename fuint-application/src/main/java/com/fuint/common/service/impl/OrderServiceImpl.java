@@ -821,6 +821,10 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
             }
         }
 
+        if (merchantId == null || merchantId <= 0) {
+            throw new BusinessCheckException("系统异常，商户ID不能为空");
+        }
+
         // 生成订单数据
         OrderDto orderDto = new OrderDto();
         orderDto.setId(orderId);
@@ -1694,8 +1698,8 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
             userInfo.setId(user.getId());
             userInfo.setNo(user.getUserNo());
             userInfo.setName(user.getName());
-            if (StringUtil.isNotEmpty(user.getMobile())) {
-                userInfo.setMobile(user.getMobile().replaceAll("(\\d{3})\\d{4}(\\d{4})", "$1****$2"));
+            if (StringUtil.isNotBlank(user.getMobile())) {
+                userInfo.setMobile(CommonUtil.hidePhone(user.getMobile()));
             }
             userInfo.setCardNo(user.getIdcard());
             userInfo.setAddress(user.getAddress());

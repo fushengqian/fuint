@@ -132,12 +132,10 @@ public class BackendGoodsController extends BaseController {
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('goods:goods:edit')")
     public ResponseObject updateStatus(HttpServletRequest request, @RequestBody Map<String, Object> params) throws BusinessCheckException {
-        String token = request.getHeader("Access-Token");
         String status = params.get("status") != null ? params.get("status").toString() : StatusEnum.ENABLED.getKey();
         Integer goodsId = params.get("id") == null ? 0 : Integer.parseInt(params.get("id").toString());
 
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
-
+        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
         MtGoods mtGoods = goodsService.queryGoodsById(goodsId);
         if (mtGoods == null) {
             return getFailureResult(201, "该商品不存在");
@@ -161,9 +159,7 @@ public class BackendGoodsController extends BaseController {
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('goods:goods:index')")
     public ResponseObject info(HttpServletRequest request, @PathVariable("id") Integer goodsId) throws BusinessCheckException, InvocationTargetException, IllegalAccessException {
-        String token = request.getHeader("Access-Token");
-
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
+        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
 
         Integer storeId = accountInfo.getStoreId();
         GoodsDto goods = goodsService.getGoodsDetail(goodsId, false);
@@ -265,8 +261,7 @@ public class BackendGoodsController extends BaseController {
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('goods:goods:add')")
     public ResponseObject saveHandler(HttpServletRequest request, @RequestBody Map<String, Object> param) throws BusinessCheckException {
-        String token = request.getHeader("Access-Token");
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
+        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
 
         String goodsId = param.get("goodsId") == null ? "0" : param.get("goodsId").toString();
         if (StringUtil.isEmpty(goodsId)) {
@@ -693,8 +688,7 @@ public class BackendGoodsController extends BaseController {
     @RequestMapping(value = "/selectGoods", method = RequestMethod.POST)
     @CrossOrigin
     public ResponseObject selectGoods(HttpServletRequest request, @RequestBody Map<String, Object> params) throws BusinessCheckException {
-        String token = request.getHeader("Access-Token");
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
+        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
 
         if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
             params.put("merchantId", accountInfo.getMerchantId());
@@ -729,8 +723,7 @@ public class BackendGoodsController extends BaseController {
     @RequestMapping(value = "/uploadGoodsFile", method = RequestMethod.POST)
     @CrossOrigin
     public ResponseObject uploadGoodsFile(HttpServletRequest request) throws Exception {
-        String token = request.getHeader("Access-Token");
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
+        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
 
         MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
         MultipartFile file = multipartRequest.getFile("file");

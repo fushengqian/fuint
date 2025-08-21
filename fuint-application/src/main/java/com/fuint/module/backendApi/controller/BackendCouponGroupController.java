@@ -146,8 +146,7 @@ public class BackendCouponGroupController extends BaseController {
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('coupon:group:edit')")
     public ResponseObject save(HttpServletRequest request, @RequestBody ReqCouponGroupDto reqCouponGroupDto) throws BusinessCheckException {
-        String token = request.getHeader("Access-Token");
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
+        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
         reqCouponGroupDto.setMerchantId(accountInfo.getMerchantId());
         reqCouponGroupDto.setStoreId(accountInfo.getStoreId());
         reqCouponGroupDto.setOperator(accountInfo.getAccountName());
@@ -167,8 +166,7 @@ public class BackendCouponGroupController extends BaseController {
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('coupon:group:edit')")
     public ResponseObject delete(HttpServletRequest request, @PathVariable("id") Integer id) throws BusinessCheckException {
-        String token = request.getHeader("Access-Token");
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
+        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
 
         // 该分组已有数据，不允许删除
         Map<String, Object> searchParams = new HashMap<>();
@@ -192,12 +190,10 @@ public class BackendCouponGroupController extends BaseController {
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('coupon:group:edit')")
     public ResponseObject updateStatus(HttpServletRequest request, @RequestBody Map<String, Object> params) throws BusinessCheckException {
-        String token = request.getHeader("Access-Token");
         String status = params.get("status") != null ? params.get("status").toString() : StatusEnum.ENABLED.getKey();
         Integer id = params.get("id") == null ? 0 : Integer.parseInt(params.get("id").toString());
 
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
-
+        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
         ReqCouponGroupDto groupDto = new ReqCouponGroupDto();
         groupDto.setOperator(accountInfo.getAccountName());
         groupDto.setId(id);

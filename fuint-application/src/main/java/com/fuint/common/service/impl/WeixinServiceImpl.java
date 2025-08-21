@@ -1129,10 +1129,9 @@ public class WeixinServiceImpl implements WeixinService {
             Map<String, String> respMap = WxPayKit.xmlToMap(xmlResult);
             String returnCode = respMap.get("return_code");
             String returnMsg = respMap.get("return_msg");
-            if (!WxPayKit.codeIsOk(returnCode)) {
-                // 通讯失败
+            String errCode = respMap.get("err_code");
+            if (WxPayKit.codeIsOk(returnCode)) {
                 Map<String, String> payResult = null;
-                String errCode = respMap.get("err_code");
                 if (StringUtil.isNotEmpty(errCode)) {
                     // 用户支付中，需要输入密码
                     if (errCode.equals("USERPAYING")) {

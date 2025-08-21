@@ -69,8 +69,7 @@ public class BackendLoginController extends BaseController {
     @ApiOperation(value = "获取登录信息")
     @RequestMapping(value = "/getInfo", method = RequestMethod.GET)
     public ResponseObject getInfo(HttpServletRequest request) throws BusinessCheckException {
-        String token = request.getHeader("Access-Token");
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
+        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
         if (accountInfo == null) {
             return getFailureResult(401, "登录信息已失效，请重新登录");
         }
@@ -119,8 +118,7 @@ public class BackendLoginController extends BaseController {
     @RequestMapping(value = "/getRouters", method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject getRouters(HttpServletRequest request) throws BusinessCheckException {
-        String token = request.getHeader("Access-Token");
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
+        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
         if (accountInfo == null) {
             return getFailureResult(401, "登录信息已失效，请重新登录");
         }

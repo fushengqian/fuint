@@ -54,11 +54,6 @@ public class BackendOrderController extends BaseController {
     private OrderService orderService;
 
     /**
-     * 后台账户服务接口
-     */
-    private AccountService accountService;
-
-    /**
      * 会员服务接口
      * */
     private MemberService memberService;

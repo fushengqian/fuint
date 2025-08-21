@@ -279,6 +279,7 @@ public class ClientCartController extends BaseController {
             // 直接购买
             MtCart mtCart = new MtCart();
             mtCart.setGoodsId(goodsId);
+            mtCart.setStoreId(storeId);
 
             // 校验skuId是否正确
             if (skuId > 0) {

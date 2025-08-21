@@ -62,16 +62,11 @@ public class ClientConfirmController extends BaseController {
     @RequestMapping(value = "/doConfirm", method = RequestMethod.POST)
     @CrossOrigin
     public ResponseObject doConfirm(HttpServletRequest request, @RequestBody ConfirmParam confirmParam) throws BusinessCheckException {
-        String token = request.getHeader("Access-Token");
         String code = confirmParam.getCode() == null ? "" : confirmParam.getCode();
         String amount = (confirmParam.getAmount() == null || confirmParam.getAmount() == "") ? "0" : confirmParam.getAmount();
         String remark = confirmParam.getRemark() == null ? "" : confirmParam.getRemark();
 
-        if (StringUtil.isEmpty(token)) {
-            return getFailureResult(1001);
-        }
-
-        UserInfo loginInfo = TokenUtil.getUserInfoByToken(token);
+        UserInfo loginInfo = TokenUtil.getUserInfoByToken(request.getHeader("Access-Token"));
         if (loginInfo == null) {
             return getFailureResult(1001);
         }

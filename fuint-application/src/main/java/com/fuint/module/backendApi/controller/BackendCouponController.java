@@ -69,11 +69,6 @@ public class BackendCouponController extends BaseController {
     private MemberService memberService;
 
     /**
-     * 后台账户服务接口
-     * */
-    private AccountService accountService;
-
-    /**
      * 系统配置服务接口
      * */
     private SettingService settingService;
@@ -199,8 +194,7 @@ public class BackendCouponController extends BaseController {
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('coupon:coupon:index')")
     public ResponseObject delete(HttpServletRequest request, @PathVariable("id") Long id) throws BusinessCheckException {
-        String token = request.getHeader("Access-Token");
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
+        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
         couponService.deleteCoupon(id, accountInfo.getAccountName());
         return getSuccessResult(true);
     }
@@ -213,9 +207,7 @@ public class BackendCouponController extends BaseController {
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('coupon:coupon:add')")
     public ResponseObject saveCouponHandler(HttpServletRequest request, @RequestBody ReqCouponDto reqCouponDto) throws BusinessCheckException,ParseException {
-        String token = request.getHeader("Access-Token");
-
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
+        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
         reqCouponDto.setOperator(accountInfo.getAccountName());
 
         // 同一分组内卡券名称不能重复
@@ -341,13 +333,12 @@ public class BackendCouponController extends BaseController {
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('coupon:coupon:index')")
     public ResponseObject sendCoupon(HttpServletRequest request) throws BusinessCheckException {
-        String token = request.getHeader("Access-Token");
         String mobile = request.getParameter("mobile");
         String num = request.getParameter("num");
         String couponId = request.getParameter("couponId");
         String userIds = request.getParameter("userIds");
         String object = request.getParameter("object");
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
+        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
 
         if (couponId == null) {
             return getFailureResult(201, "系统参数有误");

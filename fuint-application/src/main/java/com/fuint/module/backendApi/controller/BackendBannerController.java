@@ -107,12 +107,10 @@ public class BackendBannerController extends BaseController {
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('content:banner:edit')")
     public ResponseObject updateStatus(HttpServletRequest request, @RequestBody Map<String, Object> params) throws BusinessCheckException {
-        String token = request.getHeader("Access-Token");
         String status = params.get("status") != null ? params.get("status").toString() : StatusEnum.ENABLED.getKey();
         Integer id = params.get("id") == null ? 0 : Integer.parseInt(params.get("id").toString());
 
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
-
+        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
         MtBanner mtBanner = bannerService.queryBannerById(id);
         if (mtBanner == null) {
             return getFailureResult(201);

@@ -119,8 +119,7 @@ public class BackendCommissionCashController extends BaseController {
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('commission:cash:index')")
     public ResponseObject info(HttpServletRequest request, @PathVariable("id") Integer id) throws BusinessCheckException {
-        String token = request.getHeader("Access-Token");
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
+        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
 
         CommissionCashDto commissionCash = commissionCashService.queryCommissionCashById(id);
         if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
