@@ -371,8 +371,7 @@ public class ClientSignController extends BaseController {
     @RequestMapping(value = "/doGetUserInfo", method = RequestMethod.POST)
     @CrossOrigin
     public ResponseObject doGetUserInfo(HttpServletRequest request) {
-        String token = request.getHeader("Access-Token");
-        UserInfo userInfo = TokenUtil.getUserInfoByToken(token);
+        UserInfo userInfo = TokenUtil.getUserInfoByToken(request.getHeader("Access-Token"));
         if (userInfo == null) {
             return getFailureResult(1001, "用户没登录!");
         }
@@ -386,9 +385,7 @@ public class ClientSignController extends BaseController {
     @RequestMapping(value = "/authLoginConfig", method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject authLoginConfig(HttpServletRequest request) {
-        String merchantNo = request.getHeader("merchantNo") == null ? "" : request.getHeader("merchantNo");
-
-        MtMerchant mtMerchant = merchantService.queryMerchantByNo(merchantNo);
+        MtMerchant mtMerchant = merchantService.queryMerchantByNo(request.getHeader("merchantNo"));
 
         Map<String, Object> outParams = new HashMap<>();
         String domain = env.getProperty("website.url");

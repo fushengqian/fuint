@@ -48,19 +48,11 @@ public class ClientMyCouponController extends BaseController {
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject list(HttpServletRequest request) throws BusinessCheckException {
-        String token = request.getHeader("Access-Token");
         String status = request.getParameter("status") == null ? "" : request.getParameter("status");
         String type = request.getParameter("type") == null ? "" : request.getParameter("type");
         String userId = request.getParameter("userId") == null ? "" : request.getParameter("userId");
 
-        if (StringUtil.isEmpty(token)) {
-            return getFailureResult(1001);
-        }
-
-        UserInfo mtUser = TokenUtil.getUserInfoByToken(token);
-        if (null == mtUser) {
-            return getFailureResult(1001);
-        }
+        UserInfo mtUser = TokenUtil.getUserInfoByToken(request.getHeader("Access-Token"));
         if (StringUtil.isNotEmpty(userId)) {
             mtUser.setId(Integer.parseInt(userId));
         }
@@ -82,19 +74,9 @@ public class ClientMyCouponController extends BaseController {
     @RequestMapping(value = "/isUsed", method = RequestMethod.POST)
     @CrossOrigin
     public ResponseObject isUsed(HttpServletRequest request, @RequestBody MyCouponRequest requestParam) throws BusinessCheckException {
-        String token = request.getHeader("Access-Token");
         Integer userCouponId = requestParam.getId() == null ? 0 : requestParam.getId();
 
-        if (StringUtil.isEmpty(token)) {
-            return getFailureResult(1001);
-        }
-
-        UserInfo mtUser = TokenUtil.getUserInfoByToken(token);
-
-        if (null == mtUser) {
-            return getFailureResult(1001);
-        }
-
+        UserInfo mtUser = TokenUtil.getUserInfoByToken(request.getHeader("Access-Token"));
         MtUserCoupon userCoupon = couponService.queryUserCouponById(userCouponId);
         if (userCoupon.getStatus().equals(UserCouponStatusEnum.USED.getKey()) && mtUser.getId().equals(userCoupon.getUserId())) {
             return getSuccessResult(true);
@@ -110,18 +92,8 @@ public class ClientMyCouponController extends BaseController {
     @RequestMapping(value = "/remove", method = RequestMethod.POST)
     @CrossOrigin
     public ResponseObject remove(HttpServletRequest request, @RequestBody MyCouponRequest requestParam) throws BusinessCheckException {
-        String token = request.getHeader("Access-Token");
         Integer userCouponId = requestParam.getUserCouponId() == null ? 0 : requestParam.getUserCouponId();
-
-        if (StringUtil.isEmpty(token)) {
-            return getFailureResult(1001);
-        }
-
-        UserInfo mtUser = TokenUtil.getUserInfoByToken(token);
-
-        if (null == mtUser) {
-            return getFailureResult(1001);
-        }
+        UserInfo mtUser = TokenUtil.getUserInfoByToken(request.getHeader("Access-Token"));
 
         Boolean result = couponService.removeCoupon(userCouponId, mtUser.getId());
         if (result) {

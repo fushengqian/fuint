@@ -93,14 +93,11 @@ public class ClientUserController extends BaseController {
     @RequestMapping(value = "/info", method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject info(HttpServletRequest request) throws BusinessCheckException {
-        String merchantNo = request.getHeader("merchantNo") == null ? "" : request.getHeader("merchantNo");
         String isWechat = request.getHeader("isWechat") == null ? YesOrNoEnum.NO.getKey() : request.getHeader("isWechat");
         String platform = request.getHeader("platform") == null ? "" : request.getHeader("platform");
         String userNo = request.getParameter("code") == null ? "" : request.getParameter("code");
         UserInfo loginInfo = TokenUtil.getUserInfoByToken(request.getHeader("Access-Token"));
-
-        Integer merchantId = merchantService.getMerchantId(merchantNo);
-
+        Integer merchantId = merchantService.getMerchantId(request.getHeader("merchantNo"));
         MtUser mtUser = null;
         if (loginInfo != null) {
             mtUser = memberService.queryMemberById(loginInfo.getId());

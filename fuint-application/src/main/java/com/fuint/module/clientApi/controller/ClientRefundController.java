@@ -53,15 +53,8 @@ public class ClientRefundController extends BaseController {
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject list(HttpServletRequest request, @RequestParam RefundListRequest param) throws BusinessCheckException {
-        String token = request.getHeader("Access-Token");
-        UserInfo userInfo = TokenUtil.getUserInfoByToken(token);
-
-        if (userInfo == null) {
-            return getFailureResult(1001, "用户未登录");
-        }
-
+        UserInfo userInfo = TokenUtil.getUserInfoByToken(request.getHeader("merchantNo"));
         param.setUserId(userInfo.getId());
-
         String status = param.getStatus() != null ? param.getStatus() : "";
         if (status.equals("1")) {
             status = RefundStatusEnum.CREATED.getKey();
@@ -86,8 +79,7 @@ public class ClientRefundController extends BaseController {
     @RequestMapping(value = "/submit", method = RequestMethod.POST)
     @CrossOrigin
     public ResponseObject submit(HttpServletRequest request, @RequestBody RefundSubmitRequest param) throws BusinessCheckException {
-        String token = request.getHeader("Access-Token");
-        UserInfo mtUser = TokenUtil.getUserInfoByToken(token);
+        UserInfo mtUser = TokenUtil.getUserInfoByToken(request.getHeader("merchantNo"));
         if (null == mtUser) {
             return getFailureResult(1001);
         }
@@ -125,7 +117,6 @@ public class ClientRefundController extends BaseController {
         outParams.put("refundInfo", refundInfo);
 
         ResponseObject responseObject = getSuccessResult(outParams);
-
         return getSuccessResult(responseObject.getData());
     }
 
@@ -136,20 +127,11 @@ public class ClientRefundController extends BaseController {
     @RequestMapping(value = "/detail", method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject detail(HttpServletRequest request) throws BusinessCheckException {
-        String token = request.getHeader("Access-Token");
-        UserInfo mtUser = TokenUtil.getUserInfoByToken(token);
-
-        if (mtUser == null) {
-            return getFailureResult(1001, "用户未登录");
-        }
-
         String refundId = request.getParameter("refundId");
         if (StringUtil.isEmpty(refundId)) {
             return getFailureResult(2000, "售后订单ID不能为空");
         }
-
         RefundDto refundInfo = refundService.getRefundById(Integer.parseInt(refundId));
-
         return getSuccessResult(refundInfo);
     }
 
@@ -160,13 +142,8 @@ public class ClientRefundController extends BaseController {
     @RequestMapping(value = "/delivery", method = RequestMethod.POST)
     @CrossOrigin
     public ResponseObject delivery(HttpServletRequest request, @RequestBody Map<String, Object> param) throws BusinessCheckException {
-        String token = request.getHeader("Access-Token");
-        UserInfo mtUser = TokenUtil.getUserInfoByToken(token);
-        if (null == mtUser) {
-            return getFailureResult(1001);
-        }
+        UserInfo mtUser = TokenUtil.getUserInfoByToken(request.getHeader("Access-Token"));
         param.put("userId", mtUser.getId());
-
         String refundId = param.get("refundId") == null ? "" : param.get("refundId").toString();
         String expressName = param.get("expressName") == null ? "" : param.get("expressName").toString();
         String expressNo = param.get("expressNo") == null ? "" : param.get("expressNo").toString();

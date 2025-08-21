@@ -74,7 +74,6 @@ public class ClientCartController extends BaseController {
     @RequestMapping(value = "/save", method = RequestMethod.POST)
     @CrossOrigin
     public ResponseObject save(HttpServletRequest request, @RequestBody CartSaveParam saveParam) throws BusinessCheckException {
-        String token = request.getHeader("Access-Token");
         String merchantNo = request.getHeader("merchantNo") == null ? "" : request.getHeader("merchantNo");
         Integer storeId = StringUtil.isEmpty(request.getHeader("storeId")) ? 0 : Integer.parseInt(request.getHeader("storeId"));
         Integer cartId = saveParam.getCartId() == null ? 0 : saveParam.getCartId();
@@ -86,16 +85,16 @@ public class ClientCartController extends BaseController {
         String hangNo = saveParam.getHangNo() == null ? "" : saveParam.getHangNo();
         Integer userId = saveParam.getUserId() == null ? 0 : saveParam.getUserId(); // 指定会员ID
 
-        UserInfo userInfo = TokenUtil.getUserInfoByToken(token);
+        UserInfo userInfo = TokenUtil.getUserInfoByToken(request.getHeader("Access-Token"));
         MtUser mtUser;
         if (userInfo == null) {
-            mtUser = memberService.getCurrentUserInfo(request, userId, token);
+            mtUser = memberService.getCurrentUserInfo(request, userId, request.getHeader("Access-Token"));
         } else {
             mtUser = memberService.queryMemberById(userInfo.getId());
         }
 
-        if (mtUser == null && StringUtil.isNotEmpty(token)) {
-            AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
+        if (mtUser == null && StringUtil.isNotEmpty(request.getHeader("Access-Token"))) {
+            AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
             if (accountInfo != null) {
                 return getFailureResult(201, "该管理员还未关联店铺员工");
             }
@@ -127,7 +126,7 @@ public class ClientCartController extends BaseController {
             merchantId = mtUser.getMerchantId();
         }
         if (merchantId <= 0) {
-            AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
+            AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
             if (accountInfo != null) {
                 merchantId = accountInfo.getMerchantId();
                 if (merchantId == null || merchantId <= 0) {
@@ -164,15 +163,14 @@ public class ClientCartController extends BaseController {
     @RequestMapping(value = "/clear", method = RequestMethod.POST)
     @CrossOrigin
     public ResponseObject clear(HttpServletRequest request, @RequestBody CartClearParam clearParam) throws BusinessCheckException {
-        String token = request.getHeader("Access-Token");
         String cartIds = clearParam.getCartId() == null ? "" : String.join(",", clearParam.getCartId());
         Integer userId = clearParam.getUserId() == null ? 0 : clearParam.getUserId();
         String hangNo = clearParam.getHangNo() == null ? "" : clearParam.getHangNo();
 
-        UserInfo userInfo = TokenUtil.getUserInfoByToken(token);
+        UserInfo userInfo = TokenUtil.getUserInfoByToken(request.getHeader("Access-Token"));
         MtUser mtUser;
         if (userInfo == null) {
-            mtUser = memberService.getCurrentUserInfo(request, userId, token);
+            mtUser = memberService.getCurrentUserInfo(request, userId, request.getHeader("Access-Token"));
         } else {
             mtUser = memberService.queryMemberById(userInfo.getId());
         }
@@ -201,7 +199,6 @@ public class ClientCartController extends BaseController {
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @CrossOrigin
     public ResponseObject list(HttpServletRequest request, @RequestBody CartListParam params) throws BusinessCheckException {
-        String token = request.getHeader("Access-Token");
         String merchantNo = request.getHeader("merchantNo") == null ? "" : request.getHeader("merchantNo");
         Integer storeId = StringUtil.isEmpty(request.getHeader("storeId")) ? 0 : Integer.parseInt(request.getHeader("storeId"));
         String platform = request.getHeader("platform") == null ? "" : request.getHeader("platform");
@@ -232,11 +229,11 @@ public class ClientCartController extends BaseController {
         result.put("memberDiscount", 0);
 
         Map<String, Object> param = new HashMap<>();
-        UserInfo userInfo = TokenUtil.getUserInfoByToken(token);
+        UserInfo userInfo = TokenUtil.getUserInfoByToken(request.getHeader("Access-Token"));
         MtUser mtUser;
         // 没有会员信息，则查询是否是后台收银员下单
         if (userInfo == null) {
-            mtUser = memberService.getCurrentUserInfo(request, userId, token);
+            mtUser = memberService.getCurrentUserInfo(request, userId, request.getHeader("Access-Token"));
             // 把收银员的购物信息切换给会员
             if (mtUser != null && StringUtil.isNotEmpty(cartIds)) {
                 cartService.switchCartIds(userId, cartIds);
