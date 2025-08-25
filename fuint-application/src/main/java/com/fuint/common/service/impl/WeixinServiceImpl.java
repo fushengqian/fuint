@@ -19,6 +19,8 @@ import com.fuint.common.util.*;
 import com.fuint.common.vo.printer.OrderStatusType;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.web.ResponseObject;
+import com.fuint.repository.mapper.MtGoodsMapper;
+import com.fuint.repository.mapper.MtOrderGoodsMapper;
 import com.fuint.repository.mapper.MtUploadShippingLogMapper;
 import com.fuint.repository.model.*;
 import com.fuint.utils.QRCodeUtil;
@@ -67,6 +69,10 @@ public class WeixinServiceImpl implements WeixinService {
     private static final Logger logger = LoggerFactory.getLogger(WeixinServiceImpl.class);
 
     private MtUploadShippingLogMapper uploadShippingLogMapper;
+
+    private MtOrderGoodsMapper mtOrderGoodsMapper;
+
+    private MtGoodsMapper mtGoodsMapper;
 
     /**
      * 订单服务接口
@@ -194,6 +200,21 @@ public class WeixinServiceImpl implements WeixinService {
         reqData.put("fee_type", "CNY");
         reqData.put("total_fee", payAmount.toString());
         reqData.put("spbill_create_ip", ip);
+        if (orderInfo.getType() != null && orderInfo.getType().equals(OrderTypeEnum.GOODS.getKey())) {
+            Map<String, Object> params = new HashMap<>();
+            params.put("ORDER_ID", orderInfo.getId());
+            params.put("STATUS", StatusEnum.ENABLED.getKey());
+            List<MtOrderGoods> goodsList = mtOrderGoodsMapper.selectByMap(params);
+            if (goodsList != null && goodsList.size() > 0) {
+                Integer goodsId = goodsList.get(0).getGoodsId();
+                if (goodsId != null && goodsId > 0) {
+                    MtGoods mtGoods = mtGoodsMapper.selectById(goodsId);
+                    if (mtGoods != null) {
+                        reqData.put("description", mtGoods.getName());
+                    }
+                }
+            }
+        }
 
         // JSAPI支付
         if (orderInfo.getPayType().equals(PayTypeEnum.JSAPI.getKey())) {
