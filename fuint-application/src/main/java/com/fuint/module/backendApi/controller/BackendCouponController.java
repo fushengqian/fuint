@@ -244,17 +244,14 @@ public class BackendCouponController extends BaseController {
     public ResponseObject info(@PathVariable("id") Integer couponId) throws BusinessCheckException {
         MtCoupon mtCouponInfo = couponService.queryCouponById(couponId);
 
-        String baseImage = settingService.getUploadBasePath();
-
         Map<String, Object> result = new HashMap<>();
-        result.put("baseImage", baseImage);
+        result.put("baseImage", settingService.getUploadBasePath());
         result.put("couponInfo", mtCouponInfo);
 
         MtCouponGroup mtGroupInfo = couponGroupService.queryCouponGroupById(mtCouponInfo.getGroupId());
         result.put("groupInfo", mtGroupInfo);
 
         List<MtStore> storeList = new ArrayList<>();
-
         if (StringUtil.isNotEmpty(mtCouponInfo.getStoreIds())) {
             String[] ids = mtCouponInfo.getStoreIds().split(",");
             for (String storeId : ids) {
@@ -340,7 +337,7 @@ public class BackendCouponController extends BaseController {
         String object = request.getParameter("object");
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
 
-        if (couponId == null) {
+        if (StringUtil.isBlank(couponId)) {
             return getFailureResult(201, "系统参数有误");
         }
         if (!PhoneFormatCheckUtils.isChinaPhoneLegal(mobile) && StringUtil.isNotEmpty(mobile)) {

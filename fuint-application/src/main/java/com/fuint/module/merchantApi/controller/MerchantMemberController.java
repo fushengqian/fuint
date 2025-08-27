@@ -111,8 +111,7 @@ public class MerchantMemberController extends BaseController {
     @RequestMapping(value = "/info", method = RequestMethod.POST)
     @CrossOrigin
     public ResponseObject info(HttpServletRequest request, @RequestBody MemberDetailParam memberParam) throws BusinessCheckException {
-        String token = request.getHeader("Access-Token");
-        UserInfo userInfo = TokenUtil.getUserInfoByToken(token);
+        UserInfo userInfo = TokenUtil.getUserInfoByToken(request.getHeader("Access-Token"));
 
         MtStaff staffInfo = null;
         MtUser mtUser = memberService.queryMemberById(userInfo.getId());
@@ -139,8 +138,7 @@ public class MerchantMemberController extends BaseController {
     @RequestMapping(value = "/save", method = RequestMethod.POST)
     @CrossOrigin
     public ResponseObject save(HttpServletRequest request, @RequestBody MemberInfoParam memberInfoParam) throws BusinessCheckException {
-        String token = request.getHeader("Access-Token");
-        UserInfo userInfo = TokenUtil.getUserInfoByToken(token);
+        UserInfo userInfo = TokenUtil.getUserInfoByToken(request.getHeader("Access-Token"));
 
         MtStaff staffInfo = null;
         MtUser myUserInfo = memberService.queryMemberById(userInfo.getId());

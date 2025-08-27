@@ -20,6 +20,21 @@ import java.lang.reflect.Field;
 public class CommonUtil {
 
     /**
+     * 校验经纬度是否是有效的全球坐标
+     *
+     * @param longitude 经度
+     * @param latitude 纬度
+     * @return true-有效； false-无效
+     */
+    public static boolean isValidGlobalCoordinate(double longitude, double latitude) {
+        // 校验纬度范围 (-90 ~ 90)
+        boolean isLatValid = (latitude >= -90.0 && latitude <= 90.0);
+        // 校验经度范围 (-180 ~ 180)
+        boolean isLngValid = (longitude >= -180.0 && longitude <= 180.0);
+        return isLatValid && isLngValid;
+    }
+
+    /**
      * 对象转化成map
      *
      * @param obj 对象

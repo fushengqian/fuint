@@ -65,6 +65,8 @@ public class CouponServiceImpl extends ServiceImpl<MtCouponMapper, MtCoupon> imp
 
     private MtOrderMapper mtOrderMapper;
 
+    private MtGoodsMapper mtGoodsMapper;
+
     /**
      * 会员卡券服务接口
      * */
@@ -271,14 +273,10 @@ public class CouponServiceImpl extends ServiceImpl<MtCouponMapper, MtCoupon> imp
             reqCouponDto.setAmount(new BigDecimal(0));
         }
         mtCoupon.setAmount(reqCouponDto.getAmount());
-        String image = reqCouponDto.getImage();
-        if (null == image || image.equals("")) {
-            image = "";
+        if (StringUtil.isNotBlank(reqCouponDto.getImage())) {
+            mtCoupon.setImage(reqCouponDto.getImage());
         }
-
-        mtCoupon.setImage(image);
         mtCoupon.setRemarks(CommonUtil.replaceXSS(reqCouponDto.getRemarks()));
-
         if (reqCouponDto.getStatus() == null || StringUtil.isEmpty(reqCouponDto.getStatus())) {
             mtCoupon.setStatus(StatusEnum.ENABLED.getKey());
         } else {
@@ -316,18 +314,27 @@ public class CouponServiceImpl extends ServiceImpl<MtCouponMapper, MtCoupon> imp
                // 1.先删除
                List<MtCouponGoods> couponGoodsList = mtCouponGoodsMapper.getCouponGoods(couponInfo.getId());
                for (MtCouponGoods cg : couponGoodsList) {
-                   mtCouponGoodsMapper.deleteById(cg.getId());
+                    mtCouponGoodsMapper.deleteById(cg.getId());
                }
                // 2.再添加
                for (int n = 0; n < goodsIds.length; n++) {
-                   if (StringUtil.isNotEmpty(goodsIds[n])) {
-                       MtCouponGoods mtCouponGoods = new MtCouponGoods();
-                       mtCouponGoods.setCouponId(couponInfo.getId());
-                       mtCouponGoods.setGoodsId(Integer.parseInt(goodsIds[n]));
-                       mtCouponGoods.setStatus(StatusEnum.ENABLED.getKey());
-                       mtCouponGoods.setCreateTime(new Date());
-                       mtCouponGoods.setUpdateTime(new Date());
-                       mtCouponGoodsMapper.insert(mtCouponGoods);
+                    boolean isNumeric = CommonUtil.isNumeric(goodsIds[n]);
+                    if (!isNumeric) {
+                        throw new BusinessCheckException("适用商品ID必须为正整数！");
+                    } else {
+                        MtGoods mtGoods = mtGoodsMapper.selectById(Integer.parseInt(goodsIds[n]));
+                        if (mtGoods == null) {
+                            throw new BusinessCheckException("适用商品不存在，请确认！");
+                        }
+                    }
+                    if (StringUtil.isNotEmpty(goodsIds[n])) {
+                        MtCouponGoods mtCouponGoods = new MtCouponGoods();
+                        mtCouponGoods.setCouponId(couponInfo.getId());
+                        mtCouponGoods.setGoodsId(Integer.parseInt(goodsIds[n]));
+                        mtCouponGoods.setStatus(StatusEnum.ENABLED.getKey());
+                        mtCouponGoods.setCreateTime(new Date());
+                        mtCouponGoods.setUpdateTime(new Date());
+                        mtCouponGoodsMapper.insert(mtCouponGoods);
                    }
                }
            }

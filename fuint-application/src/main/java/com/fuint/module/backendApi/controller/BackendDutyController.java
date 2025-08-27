@@ -111,14 +111,13 @@ public class BackendDutyController extends BaseController {
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('system:role:add')")
     public ResponseObject addHandler(HttpServletRequest request, @RequestBody Map<String, Object> param) throws BusinessCheckException {
-        String token = request.getHeader("Access-Token");
         List<Integer> menuIds = (List) param.get("menuIds");
         String name = param.get("roleName").toString();
         String type = param.get("roleType").toString();
         String status = param.get("status").toString();
         String description = param.get("description").toString();
 
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
+        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
 
         // 获取角色所分配的菜单
         List<TSource> sources = null;
@@ -180,7 +179,6 @@ public class BackendDutyController extends BaseController {
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('system:role:edit')")
     public ResponseObject updateHandler(HttpServletRequest request, @RequestBody Map<String, Object> param) throws BusinessCheckException {
-        String token = request.getHeader("Access-Token");
         List<Integer> menuIds = (List) param.get("menuIds");
         String id = param.get("id").toString();
         String name = param.get("roleName").toString();
@@ -188,7 +186,7 @@ public class BackendDutyController extends BaseController {
         String status = param.get("status").toString();
         String description = param.get("description").toString();
 
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
+        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
 
         if (StringUtil.isEmpty(id)) {
             return getFailureResult(201, "信息提交有误");
@@ -226,8 +224,7 @@ public class BackendDutyController extends BaseController {
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('system:role:delete')")
     public ResponseObject deleteRole(HttpServletRequest request, @PathVariable("roleId") Long roleId) throws BusinessCheckException {
-        String token = request.getHeader("Access-Token");
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
+        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
         tDutyService.deleteDuty(accountInfo.getMerchantId(), roleId);
         return getSuccessResult(true);
     }
@@ -240,8 +237,7 @@ public class BackendDutyController extends BaseController {
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('system:role:edit')")
     public ResponseObject changeStatus(HttpServletRequest request, @RequestBody DutyStatusRequest dutyStatusRequest) throws BusinessCheckException {
-        String token = request.getHeader("Access-Token");
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
+        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
         tDutyService.updateStatus(accountInfo.getMerchantId(), dutyStatusRequest);
         return getSuccessResult(true);
     }

@@ -202,8 +202,16 @@ public class StoreServiceImpl extends ServiceImpl<MtStoreMapper, MtStore> implem
         mtStore.setIsDefault(storeDto.getIsDefault());
         mtStore.setAddress(storeDto.getAddress());
         mtStore.setHours(storeDto.getHours());
-        mtStore.setLatitude(storeDto.getLatitude());
-        mtStore.setLongitude(storeDto.getLongitude());
+
+        if (StringUtil.isNotBlank(storeDto.getLatitude()) && StringUtil.isNotBlank(storeDto.getLongitude())) {
+            boolean isValid = CommonUtil.isValidGlobalCoordinate(Double.parseDouble(storeDto.getLongitude()), Double.parseDouble(storeDto.getLatitude()));
+            if (!isValid) {
+                throw new BusinessCheckException("店铺经纬度格式不正确，请确认！");
+            } else {
+                mtStore.setLatitude(storeDto.getLatitude());
+                mtStore.setLongitude(storeDto.getLongitude());
+            }
+        }
         mtStore.setStatus(storeDto.getStatus());
         if (storeDto.getMerchantId() != null) {
             mtStore.setMerchantId(storeDto.getMerchantId());
