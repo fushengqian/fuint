@@ -180,7 +180,12 @@ public class PaymentServiceImpl implements PaymentService {
         if (StringUtil.isEmpty(orderId)) {
             throw new BusinessCheckException("订单不能为空");
         }
-
+        if (orderId.length() >= 12) {
+            MtOrder mtOrder = orderService.getOrderInfoByOrderSn(orderId);
+            if (mtOrder != null) {
+                orderId = mtOrder.getId().toString();
+            }
+        }
         MtOrder orderInfo = mtOrderMapper.selectById(Integer.parseInt(orderId));
         if (orderInfo == null) {
             throw new BusinessCheckException("该订单不存在");

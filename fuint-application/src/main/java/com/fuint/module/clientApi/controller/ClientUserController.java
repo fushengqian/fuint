@@ -335,8 +335,7 @@ public class ClientUserController extends BaseController {
             MtUser mtUser = memberService.queryMemberById(userInfo.getId());
             memberService.updateMember(mtUser, false);
         }
-        Map<String, Object> outParams = new HashMap<>();
-        return getSuccessResult(outParams);
+        return getSuccessResult(true);
     }
 
     /**

@@ -59,12 +59,16 @@ public class ClientOrderController extends BaseController {
     @RequestMapping(value = "/detail", method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject detail(HttpServletRequest request) throws BusinessCheckException {
-        UserInfo userInfo = TokenUtil.getUserInfoByToken(request.getHeader("Access-Token"));
         String orderId = request.getParameter("orderId");
         if (StringUtil.isEmpty(orderId)) {
             return getFailureResult(2000, "订单不能为空");
         }
-        UserOrderDto orderInfo = orderService.getMyOrderById(Integer.parseInt(orderId));
+        UserOrderDto orderInfo;
+        if (orderId.length() >= 12) {
+            orderInfo = orderService.getOrderByOrderSn(orderId);
+        } else {
+            orderInfo = orderService.getMyOrderById(Integer.parseInt(orderId));
+        }
         return getSuccessResult(orderInfo);
     }
 
@@ -80,6 +84,13 @@ public class ClientOrderController extends BaseController {
         String orderId = request.getParameter("orderId");
         if (StringUtil.isEmpty(orderId)) {
             return getFailureResult(2000, "订单不能为空");
+        }
+
+        if (orderId.length() >= 12) {
+            MtOrder mtOrder = orderService.getOrderInfoByOrderSn(orderId);
+            if (mtOrder != null) {
+                orderId = mtOrder.getId().toString();
+            }
         }
 
         UserOrderDto order = orderService.getOrderById(Integer.parseInt(orderId));
