@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 
 import com.fuint.common.dto.CommissionRuleDto;
 import com.fuint.common.dto.CommissionRuleItemDto;
+import com.fuint.common.enums.CommissionTypeEnum;
 import com.fuint.common.param.CommissionRuleItemParam;
 import com.fuint.common.param.CommissionRuleParam;
 import com.fuint.common.service.GoodsService;
@@ -133,6 +134,18 @@ public class CommissionRuleServiceImpl extends ServiceImpl<MtCommissionRuleMappe
         mtCommissionRule.setStoreIds(storeIds);
         boolean result = save(mtCommissionRule);
         if (result) {
+            if (mtCommissionRule.getType().equals(CommissionTypeEnum.RECHARGE.getKey()) || mtCommissionRule.getType().equals(CommissionTypeEnum.PAYMENT.getKey())) {
+                if (commissionRule.getMemberVal() != null || commissionRule.getVisitorVal() != null) {
+                    List<CommissionRuleItemParam> detailList = new ArrayList<>();
+                    CommissionRuleItemParam detailItem = new CommissionRuleItemParam();
+                    detailItem.setMethod("percent");
+                    detailItem.setGoodsId(0);
+                    detailItem.setMemberVal(commissionRule.getMemberVal());
+                    detailItem.setVisitorVal(commissionRule.getVisitorVal());
+                    detailList.add(detailItem);
+                    commissionRule.setDetailList(detailList);
+                }
+            }
             if (commissionRule.getDetailList() != null && commissionRule.getDetailList().size() > 0) {
                 for (CommissionRuleItemParam itemParam : commissionRule.getDetailList()) {
                      MtCommissionRuleItem mtCommissionRuleItem = new MtCommissionRuleItem();
@@ -200,7 +213,17 @@ public class CommissionRuleServiceImpl extends ServiceImpl<MtCommissionRuleMappe
             }
         }
         commissionRuleDto.setDetailList(detailList);
-
+        if (mtCommissionRule.getType().equals(CommissionTypeEnum.RECHARGE.getKey()) || mtCommissionRule.getType().equals(CommissionTypeEnum.PAYMENT.getKey())) {
+            commissionRuleDto.setDetailList(null);
+            Map<String, Object> params = new HashMap();
+            params.put("RULE_ID", id);
+            params.put("STATUS", StatusEnum.ENABLED.getKey());
+            List<MtCommissionRuleItem> mtCommissionRuleItemList = mtCommissionRuleItemMapper.selectByMap(params);
+            if (mtCommissionRuleItemList != null && mtCommissionRuleItemList.size() > 0) {
+                commissionRuleDto.setMemberVal(mtCommissionRuleItemList.get(0).getMember());
+                commissionRuleDto.setVisitorVal(mtCommissionRuleItemList.get(0).getGuest());
+            }
+        }
         List<Integer> storeIds = new ArrayList<>();
         if (StringUtil.isNotEmpty(mtCommissionRule.getStoreIds())) {
             List<String> storeIdList = Arrays.asList(mtCommissionRule.getStoreIds().split(","));
@@ -211,7 +234,6 @@ public class CommissionRuleServiceImpl extends ServiceImpl<MtCommissionRuleMappe
             }
         }
         commissionRuleDto.setStoreIdList(storeIds);
-
         return commissionRuleDto;
     }
 
@@ -262,6 +284,19 @@ public class CommissionRuleServiceImpl extends ServiceImpl<MtCommissionRuleMappe
             mtCommissionRule.setStoreIds(storeIds);
         }
 
+        if (mtCommissionRule.getType().equals(CommissionTypeEnum.RECHARGE.getKey()) || mtCommissionRule.getType().equals(CommissionTypeEnum.PAYMENT.getKey())) {
+            if (commissionRule.getMemberVal() != null || commissionRule.getVisitorVal() != null) {
+                List<CommissionRuleItemParam> detailList = new ArrayList<>();
+                CommissionRuleItemParam detailItem = new CommissionRuleItemParam();
+                detailItem.setMethod("percent");
+                detailItem.setGoodsId(0);
+                detailItem.setMemberVal(commissionRule.getMemberVal());
+                detailItem.setVisitorVal(commissionRule.getVisitorVal());
+                detailList.add(detailItem);
+                commissionRule.setDetailList(detailList);
+            }
+        }
+
         // 更新或插入
         Date date = new Date();
         List<Integer> itemIds = new ArrayList<>();
@@ -283,7 +318,7 @@ public class CommissionRuleServiceImpl extends ServiceImpl<MtCommissionRuleMappe
                 mtCommissionRuleItem.setMember(itemParam.getMemberVal());
                 mtCommissionRuleItem.setGuest(itemParam.getVisitorVal());
                 // 判断是否已经存在，存在则更新
-                if (itemParam.getGoodsId() != null && itemParam.getGoodsId() > 0) {
+                if (itemParam.getGoodsId() != null && itemParam.getGoodsId() >= 0) {
                     Map<String, Object> param = new HashMap();
                     param.put("RULE_ID", commissionRule.getId());
                     param.put("TARGET_ID", itemParam.getGoodsId());

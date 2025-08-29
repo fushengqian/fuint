@@ -6,7 +6,6 @@ import com.fuint.common.dto.ParamDto;
 import com.fuint.common.enums.CommissionTypeEnum;
 import com.fuint.common.param.CommissionRuleParam;
 import com.fuint.common.service.CommissionRuleService;
-import com.fuint.common.service.StoreService;
 import com.fuint.common.util.TokenUtil;
 import com.fuint.framework.web.BaseController;
 import com.fuint.framework.web.ResponseObject;
@@ -43,11 +42,6 @@ public class BackendCommissionRuleController extends BaseController {
      * 分销提成规则服务接口
      */
     private CommissionRuleService commissionRuleService;
-
-    /**
-     * 店铺服务接口
-     */
-    private StoreService storeService;
 
     /**
      * 规则列表查询
@@ -110,7 +104,6 @@ public class BackendCommissionRuleController extends BaseController {
         Integer id = params.get("id") == null ? 0 : Integer.parseInt(params.get("id").toString());
 
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
-
         CommissionRuleDto commissionRuleDto = commissionRuleService.queryCommissionRuleById(id);
         if (commissionRuleDto == null) {
             return getFailureResult(201);
@@ -141,6 +134,7 @@ public class BackendCommissionRuleController extends BaseController {
         if (accountInfo.getStoreId() != null && accountInfo.getStoreId() > 0) {
             params.setStoreId(accountInfo.getStoreId());
         }
+        params.setOperator(accountInfo.getAccountName());
         if (StringUtil.isNotEmpty(id)) {
             commissionRuleService.updateCommissionRule(params);
         } else {

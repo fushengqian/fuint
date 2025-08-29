@@ -8,9 +8,6 @@ import com.fuint.framework.pagination.PaginationResponse;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.repository.model.MtCommissionRule;
 
-import java.util.List;
-import java.util.Map;
-
 /**
  * 分销提成规则业务接口
  *
@@ -28,7 +25,7 @@ public interface CommissionRuleService extends IService<MtCommissionRule> {
     PaginationResponse<MtCommissionRule> queryDataByPagination(PaginationRequest paginationRequest) throws BusinessCheckException;
 
     /**
-     * 添加分销提成规则
+     * 添加分佣提成规则
      *
      * @param  commissionRule
      * @throws BusinessCheckException
@@ -44,7 +41,8 @@ public interface CommissionRuleService extends IService<MtCommissionRule> {
     CommissionRuleDto queryCommissionRuleById(Integer id) throws BusinessCheckException;
 
     /**
-     * 更新数据
+     * 更新分佣提成规则
+     *
      * @param  commissionRule
      * @throws BusinessCheckException
      * */

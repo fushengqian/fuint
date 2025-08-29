@@ -74,7 +74,7 @@ public class CommissionJob {
              if (dataList.size() > 0) {
                 int dealNum = 0;
                 for (MtOrder mtOrder : dataList) {
-                     // 计算订单佣金
+                     // 计算订单佣金，生成分佣记录
                      if (dealNum <= MAX_ROWS) {
                          commissionLogService.calculateCommission(mtOrder.getId());
                          dealNum++;

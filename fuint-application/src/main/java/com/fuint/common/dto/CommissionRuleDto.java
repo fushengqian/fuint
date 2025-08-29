@@ -3,11 +3,13 @@ package com.fuint.common.dto;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
 /**
  * 分销提成规则实体
+ *
  * Created by FSQ
  * CopyRight https://www.fuint.cn
  */
@@ -37,6 +39,12 @@ public class CommissionRuleDto implements Serializable {
 
     @ApiModelProperty("具体项目列表")
     private List<CommissionRuleItemDto> detailList;
+
+    @ApiModelProperty("散客值")
+    private BigDecimal visitorVal;
+
+    @ApiModelProperty("会员值")
+    private BigDecimal memberVal;
 
     @ApiModelProperty("备注")
     private String description;
