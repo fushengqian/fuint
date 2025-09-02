@@ -58,7 +58,7 @@ public class ClientCaptchaController extends BaseController {
         response.addHeader("Cache-Control", "no-cache");
 
         Map<String, Object> outParams = new HashMap<String, Object>();
-        outParams.put("captcha", "data:image/jpg;base64," + captcha);
+        outParams.put("code", "data:image/jpg;base64," + captcha);
         outParams.put("uuid", uuid);
 
         return getSuccessResult(outParams);

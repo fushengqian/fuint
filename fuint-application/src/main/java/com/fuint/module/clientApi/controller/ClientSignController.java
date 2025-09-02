@@ -94,7 +94,6 @@ public class ClientSignController extends BaseController {
         Integer merchantId = merchantService.getMerchantId(merchantNo);
         JSONObject userInfo = paramsObj.getJSONObject("userInfo");
         JSONObject loginInfo = weixinService.getWxProfile(merchantId, param.get("code").toString());
-        userInfo.put("shareId", shareId);
         if (loginInfo == null) {
             return getFailureResult(0, "微信登录失败");
         }
@@ -102,6 +101,7 @@ public class ClientSignController extends BaseController {
         String type = userInfo.getString("type");
         String encryptedData = userInfo.getString("encryptedData");
         userInfo.put("phone", "");
+        userInfo.put("shareId", shareId);
         userInfo.put("source", MemberSourceEnum.WECHAT_LOGIN.getKey());
         if (type.equals("phone") && StringUtil.isNotEmpty(encryptedData)) {
             String phone = weixinService.getPhoneNumber(userInfo.get("encryptedData").toString(), loginInfo.get("session_key").toString(), userInfo.get("iv").toString());

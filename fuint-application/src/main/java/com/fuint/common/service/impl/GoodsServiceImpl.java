@@ -168,17 +168,17 @@ public class GoodsServiceImpl extends ServiceImpl<MtGoodsMapper, MtGoods> implem
         if (StringUtil.isNotEmpty(sortType)) {
             if (sortType.equals("price")) {
                 if (sortPrice.equals("0")) {
-                    lambdaQueryWrapper.orderByDesc(MtGoods::getPrice);
+                    lambdaQueryWrapper.orderByDesc(MtGoods::getPrice).orderByAsc(MtGoods::getId);
                 } else {
-                    lambdaQueryWrapper.orderByAsc(MtGoods::getPrice);
+                    lambdaQueryWrapper.orderByAsc(MtGoods::getPrice).orderByAsc(MtGoods::getId);
                 }
             } else if (sortType.equals("sales")) {
-                lambdaQueryWrapper.orderByDesc(MtGoods::getInitSale);
+                lambdaQueryWrapper.orderByDesc(MtGoods::getInitSale).orderByAsc(MtGoods::getId);
             } else {
-                lambdaQueryWrapper.orderByAsc(MtGoods::getSort);
+                lambdaQueryWrapper.orderByAsc(MtGoods::getSort).orderByAsc(MtGoods::getId);
             }
         } else {
-            lambdaQueryWrapper.orderByAsc(MtGoods::getSort, MtGoods::getId);
+            lambdaQueryWrapper.orderByAsc(MtGoods::getSort).orderByAsc(MtGoods::getId);
         }
         lambdaQueryWrapper.select(
                 MtGoods::getId,
@@ -212,37 +212,37 @@ public class GoodsServiceImpl extends ServiceImpl<MtGoodsMapper, MtGoods> implem
         List<GoodsDto> dataList = new ArrayList<>();
         String basePath = settingService.getUploadBasePath();
         for (MtGoods mtGoods : goodsList) {
-            MtGoodsCate cateInfo = null;
-            if (mtGoods.getCateId() != null) {
-                cateInfo = cateService.queryCateById(mtGoods.getCateId());
-            }
-            GoodsDto item = new GoodsDto();
-            item.setId(mtGoods.getId());
-            item.setInitSale(mtGoods.getInitSale());
-            if (StringUtil.isNotEmpty(mtGoods.getLogo())) {
-                item.setLogo(basePath + mtGoods.getLogo());
-            }
-            item.setStoreId(mtGoods.getStoreId());
-            if (mtGoods.getStoreId() != null) {
-                MtStore storeInfo = storeService.queryStoreById(mtGoods.getStoreId());
-                item.setStoreInfo(storeInfo);
-            }
-            item.setName(mtGoods.getName());
-            item.setGoodsNo(mtGoods.getGoodsNo());
-            item.setCateId(mtGoods.getCateId());
-            item.setStock(mtGoods.getStock());
-            item.setCateInfo(cateInfo);
-            item.setType(mtGoods.getType());
-            item.setPrice(mtGoods.getPrice());
-            item.setLinePrice(mtGoods.getLinePrice());
-            item.setSalePoint(mtGoods.getSalePoint());
-            item.setCreateTime(mtGoods.getCreateTime());
-            item.setUpdateTime(mtGoods.getUpdateTime());
-            item.setStatus(mtGoods.getStatus());
-            item.setOperator(mtGoods.getOperator());
-            item.setWeight(mtGoods.getWeight());
-            item.setSort(mtGoods.getSort());
-            dataList.add(item);
+             MtGoodsCate cateInfo = null;
+             if (mtGoods.getCateId() != null) {
+                 cateInfo = cateService.queryCateById(mtGoods.getCateId());
+             }
+             GoodsDto item = new GoodsDto();
+             item.setId(mtGoods.getId());
+             item.setInitSale(mtGoods.getInitSale());
+             if (StringUtil.isNotEmpty(mtGoods.getLogo())) {
+                 item.setLogo(basePath + mtGoods.getLogo());
+             }
+             item.setStoreId(mtGoods.getStoreId());
+             if (mtGoods.getStoreId() != null) {
+                 MtStore storeInfo = storeService.queryStoreById(mtGoods.getStoreId());
+                 item.setStoreInfo(storeInfo);
+             }
+             item.setName(mtGoods.getName());
+             item.setGoodsNo(mtGoods.getGoodsNo());
+             item.setCateId(mtGoods.getCateId());
+             item.setStock(mtGoods.getStock());
+             item.setCateInfo(cateInfo);
+             item.setType(mtGoods.getType());
+             item.setPrice(mtGoods.getPrice());
+             item.setLinePrice(mtGoods.getLinePrice());
+             item.setSalePoint(mtGoods.getSalePoint());
+             item.setCreateTime(mtGoods.getCreateTime());
+             item.setUpdateTime(mtGoods.getUpdateTime());
+             item.setStatus(mtGoods.getStatus());
+             item.setOperator(mtGoods.getOperator());
+             item.setWeight(mtGoods.getWeight());
+             item.setSort(mtGoods.getSort());
+             dataList.add(item);
         }
 
         PageRequest pageRequest = PageRequest.of(paginationRequest.getCurrentPage(), paginationRequest.getPageSize());

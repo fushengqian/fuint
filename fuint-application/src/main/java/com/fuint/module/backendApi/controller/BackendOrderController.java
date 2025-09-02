@@ -426,10 +426,9 @@ public class BackendOrderController extends BaseController {
         String payStatus = request.getParameter("payStatus") == null ? "" : request.getParameter("payStatus");
         String startTime = request.getParameter("startTime") == null ? "" : request.getParameter("startTime");
         String endTime = request.getParameter("endTime") == null ? "" : request.getParameter("endTime");
-
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
+        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getParameter("token"));
         OrderListParam params = new OrderListParam();
-        params.setPage(1);
+        params.setPage(Constants.PAGE_NUMBER);
         params.setPageSize(Constants.MAX_ROWS);
         if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
             params.setMerchantId(accountInfo.getMerchantId());

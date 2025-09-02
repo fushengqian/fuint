@@ -152,7 +152,7 @@ public class BackendGiveLogController extends BaseController {
     @RequestMapping(value = "/export", method = RequestMethod.GET)
     @ResponseBody
     public void export(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        PaginationResponse<GiveDto> paginationResponse = giveService.queryGiveListByPagination(new PaginationRequest(1, 50000));
+        PaginationResponse<GiveDto> paginationResponse = giveService.queryGiveListByPagination(new PaginationRequest(Constants.PAGE_NUMBER, Constants.MAX_ROWS));
         List<GiveDto> list = paginationResponse.getContent();
 
         // excel标题
