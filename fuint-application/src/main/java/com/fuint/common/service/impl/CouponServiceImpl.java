@@ -149,7 +149,7 @@ public class CouponServiceImpl extends ServiceImpl<MtCouponMapper, MtCoupon> imp
             lambdaQueryWrapper.eq(MtCoupon::getStoreId, storeId);
         }
 
-        lambdaQueryWrapper.orderByDesc(MtCoupon::getId);
+        lambdaQueryWrapper.orderByDesc(MtCoupon::getUpdateTime);
         List<MtCoupon> dataList = mtCouponMapper.selectList(lambdaQueryWrapper);
 
         PageRequest pageRequest = PageRequest.of(paginationRequest.getCurrentPage(), paginationRequest.getPageSize());
@@ -185,10 +185,17 @@ public class CouponServiceImpl extends ServiceImpl<MtCouponMapper, MtCoupon> imp
         }
         // 固定有效期验证
         if (reqCouponDto.getExpireType().equals(CouponExpireTypeEnum.FIX.getKey())) {
-            Date startTime = DateUtil.parseDate(reqCouponDto.getBeginTime());
-            Date endTime = DateUtil.parseDate(reqCouponDto.getEndTime());
-            if (endTime.before(startTime)) {
-                throw new BusinessCheckException("生效期结束时间不能早于开始时间");
+            if (StringUtil.isNotBlank(reqCouponDto.getBeginTime()) && StringUtil.isNotBlank(reqCouponDto.getEndTime())) {
+                Date startTime = DateUtil.parseDate(reqCouponDto.getBeginTime());
+                Date endTime = DateUtil.parseDate(reqCouponDto.getEndTime());
+                if (endTime.after(new Date())) {
+                    if (mtCoupon != null && mtCoupon.getStatus().equals(StatusEnum.EXPIRED.getKey())) {
+                        reqCouponDto.setStatus(StatusEnum.ENABLED.getKey());
+                    }
+                }
+                if (endTime.before(startTime)) {
+                    throw new BusinessCheckException("生效期结束时间不能早于开始时间");
+                }
             }
         }
         if (reqCouponDto.getMerchantId() != null) {
@@ -308,7 +315,7 @@ public class CouponServiceImpl extends ServiceImpl<MtCouponMapper, MtCoupon> imp
         }
 
         // 适用商品
-        if (reqCouponDto.getGoodsIds() != null) {
+        if (StringUtil.isNotBlank(reqCouponDto.getGoodsIds())) {
            String[] goodsIds = reqCouponDto.getGoodsIds().split(",");
            if (goodsIds.length > 0) {
                // 1.先删除

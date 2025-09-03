@@ -157,7 +157,7 @@ public class BackendCouponController extends BaseController {
         List<ParamDto> typeList = CouponTypeEnum.getCouponTypeList();
 
         // 状态列表
-        List<ParamDto> statusList = StatusEnum.getStatusList();
+        List<ParamDto> statusList = StatusEnum.getStatusList(StatusEnum.DISABLE.getKey());
 
         // 卡券使用专项列表
         List<ParamDto> couponUseForList = CouponUseForEnum.getCouponUseForList();

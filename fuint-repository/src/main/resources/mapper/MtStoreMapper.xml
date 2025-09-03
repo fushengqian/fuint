@@ -46,5 +46,6 @@
         <if test="status != null and status != ''">
             AND t.STATUS = #{status}
         </if>
+        ORDER BY t.IS_DEFAULT desc
     </select>
 </mapper>

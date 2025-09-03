@@ -45,8 +45,10 @@ public enum StatusEnum {
         this.value = value;
     }
 
-    public static List<ParamDto> getStatusList() {
+    public static List<ParamDto> getStatusList(String... excludedKeys) {
+        List<String> excludedKeySet = Arrays.asList(excludedKeys);
         return Arrays.stream(StatusEnum.values())
+                .filter(status -> !excludedKeySet.contains(status.getKey()))
                 .map(status -> new ParamDto(status.getKey(), status.getValue(), status.getValue()))
                 .collect(Collectors.toList());
     }
