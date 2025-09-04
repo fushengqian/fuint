@@ -4,4 +4,20 @@
     <update id="deleteByRuleId">
         update mt_commission_rule_item set STATUS = 'D',UPDATE_TIME=#{updateTime} where RULE_ID = #{ruleId}
     </update>
+    <select id="getEffectiveCommissionList" resultType="com.fuint.repository.model.MtCommissionRuleItem">
+        SELECT t1.*
+        FROM `mt_commission_rule_item` t1
+        INNER JOIN (
+            SELECT target, MAX(id) AS max_id
+            FROM `mt_commission_rule_item`
+            WHERE `type` = #{type}
+              AND merchant_id = #{merchantId}
+              <if test="targetId != null and targetId != ''">
+                  AND target_id = #{targetId}
+              </if>
+              AND `status` = 'A'
+            GROUP BY target
+        ) t2 ON t1.id = t2.max_id
+        ORDER BY t1.id DESC;
+    </select>
 </mapper>

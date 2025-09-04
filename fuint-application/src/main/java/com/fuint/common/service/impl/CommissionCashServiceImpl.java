@@ -211,7 +211,7 @@ public class CommissionCashServiceImpl extends ServiceImpl<MtCommissionCashMappe
                      staffIds.add(CommissionTargetEnum.STAFF.getKey() + mtCommissionLog.getStaffId());
                  } else if (mtCommissionLog.getUserId() != null && mtCommissionLog.getUserId() > 0 && !userIds.contains(CommissionTargetEnum.MEMBER.getKey() + mtCommissionLog.getUserId())){
                      userIds.add(CommissionTargetEnum.MEMBER.getKey() + mtCommissionLog.getUserId());
-                }
+                 }
             }
         }
         staffIds.addAll(userIds);

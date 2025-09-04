@@ -188,12 +188,12 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
         Integer storeId = orderListParam.getStoreId() == null ? 0 : orderListParam.getStoreId();
         String status =  orderListParam.getStatus() == null ? "": orderListParam.getStatus();
         String payStatus =  orderListParam.getPayStatus() == null ? "": orderListParam.getPayStatus();
-        String settleStatus =  orderListParam.getSettleStatus() == null ? "": orderListParam.getSettleStatus();
-        String dataType =  orderListParam.getDataType() == null ? "": orderListParam.getDataType();
-        String type =  orderListParam.getType() == null ? "": orderListParam.getType();
-        String orderSn =  orderListParam.getOrderSn() == null ? "": orderListParam.getOrderSn();
-        String mobile =  orderListParam.getMobile() == null ? "": orderListParam.getMobile();
-        String orderMode =  orderListParam.getOrderMode() == null ? "" : orderListParam.getOrderMode();
+        String settleStatus = orderListParam.getSettleStatus() == null ? "": orderListParam.getSettleStatus();
+        String dataType = orderListParam.getDataType() == null ? "": orderListParam.getDataType();
+        String type = orderListParam.getType() == null ? "": orderListParam.getType();
+        String orderSn = orderListParam.getOrderSn() == null ? "": orderListParam.getOrderSn();
+        String mobile = orderListParam.getMobile() == null ? "": orderListParam.getMobile();
+        String orderMode = orderListParam.getOrderMode() == null ? "" : orderListParam.getOrderMode();
         String staffId = orderListParam.getStaffId() == null ? "" : orderListParam.getStaffId();
         String couponId = orderListParam.getCouponId() == null ? "" : orderListParam.getCouponId();
         String storeIds = orderListParam.getStoreIds() == null ? "" : orderListParam.getStoreIds();
@@ -1372,13 +1372,14 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
             mtOrder.setAmount(orderDto.getAmount());
         }
 
-        if (null != orderDto.getVerifyCode() && StringUtil.isNotEmpty(orderDto.getVerifyCode())) {
+        if (StringUtil.isNotBlank(orderDto.getVerifyCode())) {
             if (orderDto.getVerifyCode().equals(mtOrder.getVerifyCode()) || StringUtil.isEmpty(mtOrder.getVerifyCode())) {
                 mtOrder.setStatus(OrderStatusEnum.DELIVERED.getKey());
                 mtOrder.setVerifyCode("");
                 mtOrder.setConfirmStatus(YesOrNoEnum.YES.getKey());
                 mtOrder.setConfirmTime(new Date());
                 mtOrder.setConfirmRemark(orderDto.getConfirmRemark());
+                mtOrder.setStatus(OrderStatusEnum.COMPLETE.getKey());
             } else {
                 throw new BusinessCheckException("核销码错误，请确认！");
             }
