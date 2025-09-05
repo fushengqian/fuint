@@ -61,11 +61,11 @@
     </select>
 
     <select id="getUserPayMoney" resultType="java.math.BigDecimal">
-        SELECT sum(t.PAY_AMOUNT) as num FROM mt_order t where t.USER_ID = #{userId} and t.PAY_STATUS='B' and t.STATUS not in('C', 'G', 'H')
+        SELECT sum(t.PAY_AMOUNT) as num FROM mt_order t where t.USER_ID = #{userId} and t.PAY_TYPE !='BALANCE' and t.PAY_STATUS='B' and t.STATUS not in('C', 'G', 'H')
     </select>
 
     <select id="getUserPayOrderCount" resultType="java.lang.Integer">
-        SELECT COUNT(DISTINCT t.ID) as num FROM mt_order t where t.USER_ID = #{userId} and t.PAY_STATUS='B' and t.STATUS not in('C', 'G', 'H')
+        SELECT COUNT(DISTINCT t.ID) as num FROM mt_order t where t.USER_ID = #{userId} and t.PAY_TYPE !='BALANCE' and t.PAY_STATUS='B' and t.STATUS not in('C', 'G', 'H')
     </select>
 
     <select id="getTobeCommissionOrderList" resultType="com.fuint.repository.model.MtOrder">
