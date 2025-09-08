@@ -52,8 +52,8 @@ public class ClientRefundController extends BaseController {
     @ApiOperation(value = "获取售后订单列表")
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     @CrossOrigin
-    public ResponseObject list(HttpServletRequest request, @RequestParam RefundListRequest param) throws BusinessCheckException {
-        UserInfo userInfo = TokenUtil.getUserInfoByToken(request.getHeader("merchantNo"));
+    public ResponseObject list(HttpServletRequest request, @ModelAttribute RefundListRequest param) throws BusinessCheckException {
+        UserInfo userInfo = TokenUtil.getUserInfoByToken(request.getHeader("Access-Token"));
         param.setUserId(userInfo.getId());
         String status = param.getStatus() != null ? param.getStatus() : "";
         if (status.equals("1")) {
@@ -79,7 +79,7 @@ public class ClientRefundController extends BaseController {
     @RequestMapping(value = "/submit", method = RequestMethod.POST)
     @CrossOrigin
     public ResponseObject submit(HttpServletRequest request, @RequestBody RefundSubmitRequest param) throws BusinessCheckException {
-        UserInfo mtUser = TokenUtil.getUserInfoByToken(request.getHeader("merchantNo"));
+        UserInfo mtUser = TokenUtil.getUserInfoByToken(request.getHeader("Access-Token"));
         if (null == mtUser) {
             return getFailureResult(1001);
         }
