@@ -130,19 +130,19 @@ public class BackendCouponController extends BaseController {
                 if (groupInfo == null) {
                     continue;
                 }
-                MtCouponGroup g = new MtCouponGroup();
-                g.setId(groupInfo.getId());
-                g.setName(groupInfo.getName());
-                g.setTotal(groupInfo.getTotal());
+                MtCouponGroup mtCouponGroup = new MtCouponGroup();
+                mtCouponGroup.setId(groupInfo.getId());
+                mtCouponGroup.setName(groupInfo.getName());
+                mtCouponGroup.setTotal(groupInfo.getTotal());
 
                 Boolean isInGroup = false;
-                for (MtCouponGroup gg : groupList) {
-                    if (gg.getId().equals(groupInfo.getId())) {
+                for (MtCouponGroup group : groupList) {
+                    if (group.getId().equals(groupInfo.getId())) {
                         isInGroup = true;
                     }
                 }
                 if (!isInGroup) {
-                    groupList.add(g);
+                    groupList.add(mtCouponGroup);
                 }
             }
         }

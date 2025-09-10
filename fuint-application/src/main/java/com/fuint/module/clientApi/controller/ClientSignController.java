@@ -126,6 +126,7 @@ public class ClientSignController extends BaseController {
         UserInfo userLoginInfo = new UserInfo();
         userLoginInfo.setId(mtUser.getId());
         userLoginInfo.setToken(token);
+        userLoginInfo.setMobile(mtUser.getMobile());
         TokenUtil.saveToken(userLoginInfo);
 
         Map<String, Object> result = new HashMap<>();
@@ -173,6 +174,7 @@ public class ClientSignController extends BaseController {
         UserInfo userLoginInfo = new UserInfo();
         userLoginInfo.setId(mtUser.getId());
         userLoginInfo.setToken(token);
+        userLoginInfo.setMobile(mtUser.getMobile());
         TokenUtil.saveToken(userLoginInfo);
 
         Map<String, Object> result = new HashMap<>();
@@ -236,6 +238,7 @@ public class ClientSignController extends BaseController {
             UserInfo loginInfo = new UserInfo();
             loginInfo.setId(userInfo.getId());
             loginInfo.setToken(token);
+            loginInfo.setMobile(userInfo.getMobile());
             TokenUtil.saveToken(loginInfo);
             Map<String, Object> outParams = new HashMap<>();
             outParams.put("userId", userInfo.getId());
@@ -307,6 +310,7 @@ public class ClientSignController extends BaseController {
                 UserInfo loginInfo = new UserInfo();
                 loginInfo.setId(mtUser.getId());
                 loginInfo.setToken(userToken);
+                loginInfo.setMobile(mtUser.getMobile());
                 TokenUtil.saveToken(loginInfo);
 
                 dto.setIsLogin(YesOrNoEnum.TRUE.getKey());
@@ -333,6 +337,7 @@ public class ClientSignController extends BaseController {
                     UserInfo loginInfo = new UserInfo();
                     loginInfo.setToken(TokenUtil.generateToken(userAgent, userInfo.getId()));
                     loginInfo.setId(userInfo.getId());
+                    loginInfo.setToken(userInfo.getMobile());
                     TokenUtil.saveToken(loginInfo);
                     dto.setToken(loginInfo.getToken());
                     mtUser = userInfo;

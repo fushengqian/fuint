@@ -17,6 +17,7 @@ import com.fuint.repository.model.MtMerchant;
 import com.fuint.repository.model.MtStaff;
 import com.fuint.repository.model.MtStore;
 import com.fuint.repository.model.MtUser;
+import com.fuint.utils.StringUtil;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import lombok.AllArgsConstructor;
@@ -264,6 +265,9 @@ public class StaffServiceImpl extends ServiceImpl<MtStaffMapper, MtStaff> implem
      */
     @Override
     public MtStaff queryStaffByMobile(String mobile) {
+        if (StringUtil.isBlank(mobile)) {
+            return null;
+        }
         return mtStaffMapper.queryStaffByMobile(mobile);
     }
 

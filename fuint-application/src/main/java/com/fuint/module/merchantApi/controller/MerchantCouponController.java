@@ -1,6 +1,7 @@
 package com.fuint.module.merchantApi.controller;
 
 import com.fuint.common.dto.*;
+import com.fuint.common.param.CouponListParam;
 import com.fuint.common.param.CouponReceiveParam;
 import com.fuint.common.service.*;
 import com.fuint.common.util.TokenUtil;
@@ -16,6 +17,7 @@ import io.swagger.annotations.ApiOperation;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
+import java.text.ParseException;
 
 /**
  * 商户卡券接口controller
@@ -49,25 +51,56 @@ public class MerchantCouponController extends BaseController {
      */
     private CouponService couponService;
 
-    @ApiOperation(value = "发放卡券")
-    @RequestMapping(value = "/sendCoupon", method = RequestMethod.POST)
+    @ApiOperation(value = "获取卡券列表")
+    @RequestMapping(value = "/couponList", method = RequestMethod.POST)
     @CrossOrigin
-    public ResponseObject sendCoupon(HttpServletRequest request, @RequestBody CouponReceiveParam receiveParam) throws BusinessCheckException {
-        String merchantNo = request.getHeader("merchantNo") == null ? "" : request.getHeader("merchantNo");
-        Integer merchantId = merchantService.getMerchantId(merchantNo);
-
+    public ResponseObject couponList(HttpServletRequest request, @RequestBody CouponListParam params) throws BusinessCheckException {
+        Integer merchantId = merchantService.getMerchantId(request.getHeader("merchantNo"));
         UserInfo userInfo = TokenUtil.getUserInfoByToken(request.getHeader("Access-Token"));
         MtUser mtUser = memberService.queryMemberById(userInfo.getId());
-
-        if (mtUser == null || mtUser.getMobile() == null) {
-            return getFailureResult(201, "该账号不是商户");
-        }
-
         MtStaff staff = staffService.queryStaffByMobile(mtUser.getMobile());
         if (staff == null || !merchantId.equals(staff.getMerchantId())) {
             return getFailureResult(201, "您没有操作权限");
         }
+        params.setMerchantId(merchantId);
+        if (staff.getStoreId() != null && staff.getStoreId() > 0) {
+            params.setStoreId(staff.getStoreId());
+        }
+        ResponseObject result = couponService.findCouponList(params);
+        return getSuccessResult(result.getData());
+    }
 
+    @ApiOperation(value = "保存卡券信息")
+    @RequestMapping(value = "/saveCoupon", method = RequestMethod.POST)
+    @CrossOrigin
+    public ResponseObject saveCoupon(HttpServletRequest request, @RequestBody ReqCouponDto reqCouponDto) throws BusinessCheckException, ParseException {
+        Integer merchantId = merchantService.getMerchantId(request.getHeader("merchantNo"));
+        UserInfo userInfo = TokenUtil.getUserInfoByToken(request.getHeader("Access-Token"));
+        if (userInfo == null || userInfo.getMobile() == null) {
+            return getFailureResult(201, "该账号不是商户");
+        }
+        MtStaff staff = staffService.queryStaffByMobile(userInfo.getMobile());
+        MtCoupon couponInfo = couponService.queryCouponById(reqCouponDto.getId());
+        if (staff == null || !merchantId.equals(couponInfo.getMerchantId())) {
+            return getFailureResult(201, "您没有操作权限");
+        }
+        couponService.saveCoupon(reqCouponDto);
+        return getSuccessResult(true);
+    }
+
+    @ApiOperation(value = "发放卡券")
+    @RequestMapping(value = "/sendCoupon", method = RequestMethod.POST)
+    @CrossOrigin
+    public ResponseObject sendCoupon(HttpServletRequest request, @RequestBody CouponReceiveParam receiveParam) throws BusinessCheckException {
+        Integer merchantId = merchantService.getMerchantId(request.getHeader("merchantNo"));
+        UserInfo userInfo = TokenUtil.getUserInfoByToken(request.getHeader("Access-Token"));
+        if (userInfo == null || userInfo.getMobile() == null) {
+            return getFailureResult(201, "该账号不是商户");
+        }
+        MtStaff staff = staffService.queryStaffByMobile(userInfo.getMobile());
+        if (staff == null || !merchantId.equals(staff.getMerchantId())) {
+            return getFailureResult(201, "您没有操作权限");
+        }
         // 判断店铺权限
         MtCoupon couponInfo = couponService.queryCouponById(receiveParam.getCouponId());
         if (StringUtil.isNotEmpty(couponInfo.getStoreIds()) && staff.getStoreId() != null && staff.getStoreId() > 0) {

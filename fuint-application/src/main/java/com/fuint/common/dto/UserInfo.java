@@ -16,6 +16,9 @@ public class UserInfo implements Serializable {
     @ApiModelProperty("会员ID")
     private Integer id;
 
+    @ApiModelProperty("会员手机号")
+    private String mobile;
+
     @ApiModelProperty("登录Token")
     private String token;
 
