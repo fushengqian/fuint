@@ -213,7 +213,7 @@ public class BalanceServiceImpl extends ServiceImpl<MtBalanceMapper, MtBalance> 
                 orderService.setOrderPayed(mtOrder.getId(), null);
             }
         }
-
+        mtUser = mtUserMapper.selectById(mtBalance.getUserId());
         try {
             List<String> mobileList = new ArrayList<>();
             mobileList.add(mtUser.getMobile());

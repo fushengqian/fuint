@@ -50,6 +50,9 @@ public class CouponDto implements Serializable {
     @ApiModelProperty("剩余数量")
     private Integer leftNum;
 
+    @ApiModelProperty("发行数量")
+    private Integer total;
+
     @ApiModelProperty("限制数量")
     private Integer limitNum;
 

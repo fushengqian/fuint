@@ -15,6 +15,7 @@ import com.fuint.utils.StringUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.AllArgsConstructor;
+import org.springframework.beans.BeanUtils;
 import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import java.text.ParseException;
@@ -66,6 +67,7 @@ public class MerchantCouponController extends BaseController {
         if (staff.getStoreId() != null && staff.getStoreId() > 0) {
             params.setStoreId(staff.getStoreId());
         }
+        params.setStatus("");
         ResponseObject result = couponService.findCouponList(params);
         return getSuccessResult(result.getData());
     }
@@ -73,7 +75,7 @@ public class MerchantCouponController extends BaseController {
     @ApiOperation(value = "保存卡券信息")
     @RequestMapping(value = "/saveCoupon", method = RequestMethod.POST)
     @CrossOrigin
-    public ResponseObject saveCoupon(HttpServletRequest request, @RequestBody ReqCouponDto reqCouponDto) throws BusinessCheckException, ParseException {
+    public ResponseObject saveCoupon(HttpServletRequest request, @RequestBody ReqCouponDto reqCouponDto) throws BusinessCheckException {
         Integer merchantId = merchantService.getMerchantId(request.getHeader("merchantNo"));
         UserInfo userInfo = TokenUtil.getUserInfoByToken(request.getHeader("Access-Token"));
         if (userInfo == null || userInfo.getMobile() == null) {
@@ -81,11 +83,12 @@ public class MerchantCouponController extends BaseController {
         }
         MtStaff staff = staffService.queryStaffByMobile(userInfo.getMobile());
         MtCoupon couponInfo = couponService.queryCouponById(reqCouponDto.getId());
-        if (staff == null || !merchantId.equals(couponInfo.getMerchantId())) {
+        if (staff == null || couponInfo == null || !merchantId.equals(couponInfo.getMerchantId())) {
             return getFailureResult(201, "您没有操作权限");
         }
-        couponService.saveCoupon(reqCouponDto);
-        return getSuccessResult(true);
+        BeanUtils.copyProperties(reqCouponDto, couponInfo);
+        couponService.updateById(couponInfo);
+        return getSuccessResult(couponInfo);
     }
 
     @ApiOperation(value = "发放卡券")

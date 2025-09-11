@@ -480,7 +480,7 @@ public class CouponServiceImpl extends ServiceImpl<MtCouponMapper, MtCoupon> imp
 
         Page<MtCoupon> pageHelper = PageHelper.startPage(pageNumber, pageSize);
         LambdaQueryWrapper<MtCoupon> lambdaQueryWrapper = Wrappers.lambdaQuery();
-
+        lambdaQueryWrapper.ne(MtCoupon::getStatus, StatusEnum.DISABLE.getKey());
         if (StringUtil.isNotEmpty(status)) {
             lambdaQueryWrapper.eq(MtCoupon::getStatus, status);
         }
@@ -621,8 +621,7 @@ public class CouponServiceImpl extends ServiceImpl<MtCouponMapper, MtCoupon> imp
      * @return
      * */
     public List<MtCoupon> queryCouponListByGroupId(Integer groupId) {
-        List<MtCoupon> couponList = mtCouponMapper.queryByGroupId(groupId.intValue());
-        return couponList;
+        return mtCouponMapper.queryByGroupId(groupId.intValue());
     }
 
     /**
