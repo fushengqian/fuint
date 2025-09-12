@@ -75,7 +75,7 @@ public class ClientGoodsController extends BaseController {
 
         Integer merchantId = merchantService.getMerchantId(merchantNo);
         List<MtGoodsCate> cateList = cateService.getCateList(merchantId, storeId, null, StatusEnum.ENABLED.getKey());
-        Map<String, Object> goodsData = goodsService.getStoreGoodsList(storeId, "", platform, 0, 1, 500);
+        Map<String, Object> goodsData = goodsService.getStoreGoodsList(storeId, "", platform, 0, 1, 1000);
         List<MtGoods> goodsList = (ArrayList)goodsData.get("goodsList");
         String baseImage = settingService.getUploadBasePath();
         if (goodsList.size() > 0) {
