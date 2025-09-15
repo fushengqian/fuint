@@ -5,19 +5,26 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fuint.common.dto.MerchantDto;
 import com.fuint.common.dto.MerchantSettingDto;
+import com.fuint.common.dto.StoreDto;
+import com.fuint.common.enums.OrderSettingEnum;
+import com.fuint.common.enums.SettingTypeEnum;
 import com.fuint.common.enums.StatusEnum;
+import com.fuint.common.enums.YesOrNoEnum;
 import com.fuint.common.service.MerchantService;
+import com.fuint.common.service.SettingService;
 import com.fuint.common.service.StoreService;
 import com.fuint.common.util.CommonUtil;
 import com.fuint.framework.annoation.OperationServiceLog;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.pagination.PaginationRequest;
 import com.fuint.framework.pagination.PaginationResponse;
+import com.fuint.module.merchantApi.request.MerchantSettingParam;
 import com.fuint.repository.mapper.MtGoodsMapper;
 import com.fuint.repository.mapper.MtMerchantMapper;
 import com.fuint.repository.mapper.MtStoreMapper;
 import com.fuint.repository.model.MtGoods;
 import com.fuint.repository.model.MtMerchant;
+import com.fuint.repository.model.MtSetting;
 import com.fuint.repository.model.MtStore;
 import com.fuint.utils.StringUtil;
 import com.github.pagehelper.Page;
@@ -56,6 +63,11 @@ public class MerchantServiceImpl extends ServiceImpl<MtMerchantMapper, MtMerchan
      * 店铺服务接口
      * */
     private StoreService storeService;
+
+    /**
+     * 系统设置服务接口
+     * */
+    private SettingService settingService;
 
     /**
      * 分页查询商户列表
@@ -315,19 +327,86 @@ public class MerchantServiceImpl extends ServiceImpl<MtMerchantMapper, MtMerchan
     }
 
     /**
-     * 获取商户信息
+     * 获取商户设置信息
      *
      * @param merchantId 商户ID
      * @param storeId 店铺ID
      * @return
      * */
     @Override
-    public MerchantSettingDto getMerchantInfo(Integer merchantId, Integer storeId) {
-       // 店铺打烊设置
+    public MerchantSettingDto getMerchantSettingInfo(Integer merchantId, Integer storeId) throws BusinessCheckException {
+       String name = "";
+       Integer id = merchantId;
+       String contact = "";
+       String logo = "";
+       String phone = "";
+       if (storeId != null && storeId > 0) {
+           MtStore storeInfo = storeService.queryStoreById(storeId);
+           if (storeInfo != null) {
+               id = storeInfo.getId();
+               name = storeInfo.getName();
+               contact = storeInfo.getContact();
+               logo = storeInfo.getLogo();
+               phone = storeInfo.getPhone();
+           }
+       } else {
+           MtMerchant merchantInfo = getById(merchantId);
+           if (merchantInfo != null) {
+               name = merchantInfo.getName();
+               contact = merchantInfo.getContact();
+               logo = merchantInfo.getLogo();
+               phone = merchantInfo.getPhone();
+           }
+       }
+       MtSetting mtSetting = settingService.querySettingByName(merchantId, storeId, SettingTypeEnum.ORDER.getKey(), OrderSettingEnum.IS_CLOSE.getKey());
+       MerchantSettingDto merchantSettingDto = new MerchantSettingDto();
+       merchantSettingDto.setName(name);
+       merchantSettingDto.setId(id);
+       merchantSettingDto.setContact(contact);
+       merchantSettingDto.setLogo(logo);
+       merchantSettingDto.setPhone(phone);
+       if (mtSetting != null) {
+           merchantSettingDto.setStatus(mtSetting.getValue());
+       } else {
+           merchantSettingDto.setStatus(YesOrNoEnum.YES.getKey());
+       }
+       return merchantSettingDto;
+    }
 
-       // 商户基本信息
-
-       // 登录需手机号
-       return null;
+    /**
+     * 保存商户设置信息
+     *
+     * @param params 商户设置项
+     * @return
+     * */
+    @Override
+    public MerchantSettingDto saveMerchantSetting(MerchantSettingParam params) throws BusinessCheckException {
+        if (params.getStoreId() != null && params.getStoreId() > 0) {
+            MtStore storeInfo = storeService.queryStoreById(params.getStoreId());
+            if (storeInfo != null) {
+                StoreDto storeDto = new StoreDto();
+                storeDto.setId(storeInfo.getId());
+                storeDto.setName(params.getName());
+                storeDto.setContact(params.getContact());
+                storeDto.setPhone(params.getPhone());
+                storeDto.setLogo(params.getLogo());
+                storeService.saveStore(storeDto);
+            }
+        } else {
+            MtMerchant merchantInfo = getById(params.getMerchantId());
+            if (merchantInfo != null) {
+                merchantInfo.setName(params.getName());
+                merchantInfo.setContact(params.getContact());
+                merchantInfo.setPhone(params.getPhone());
+                merchantInfo.setLogo(params.getLogo());
+                updateById(merchantInfo);
+            }
+        }
+        MtSetting mtSetting = settingService.querySettingByName(params.getMerchantId(), params.getStoreId(), SettingTypeEnum.ORDER.getKey(), OrderSettingEnum.IS_CLOSE.getKey());
+        if (mtSetting != null && StringUtil.isNotEmpty(params.getStatus())) {
+            mtSetting.setValue(params.getStatus());
+            settingService.saveSetting(mtSetting);
+        }
+        return getMerchantSettingInfo(params.getMerchantId(), params.getStoreId());
     }
 }

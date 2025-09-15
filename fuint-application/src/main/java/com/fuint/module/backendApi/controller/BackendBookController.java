@@ -110,12 +110,11 @@ public class BackendBookController extends BaseController {
         }
 
         List<MtStore> storeList = storeService.getMyStoreList(accountInfo.getMerchantId(), accountInfo.getStoreId(), StatusEnum.ENABLED.getKey());
-        String imagePath = settingService.getUploadBasePath();
         List<MtBookCate> cateList = bookCateService.queryBookCateListByParams(param);
 
         Map<String, Object> result = new HashMap<>();
         result.put("dataList", paginationResponse);
-        result.put("imagePath", imagePath);
+        result.put("imagePath", settingService.getUploadBasePath());
         result.put("storeList", storeList);
         result.put("cateList", cateList);
 
