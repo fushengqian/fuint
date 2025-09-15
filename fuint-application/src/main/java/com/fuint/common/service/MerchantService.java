@@ -2,6 +2,7 @@ package com.fuint.common.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.fuint.common.dto.MerchantDto;
+import com.fuint.common.dto.MerchantSettingDto;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.pagination.PaginationRequest;
 import com.fuint.framework.pagination.PaginationResponse;
@@ -96,5 +97,14 @@ public interface MerchantService extends IService<MtMerchant> {
      * @return
      * */
     List<MtMerchant> getMyMerchantList(Integer merchantId, Integer storeId, String status) throws BusinessCheckException;
+
+    /**
+     * 获取商户信息
+     *
+     * @param merchantId 商户ID
+     * @param storeId 店铺ID
+     * @return
+     * */
+    MerchantSettingDto getMerchantInfo(Integer merchantId, Integer storeId);
 
 }

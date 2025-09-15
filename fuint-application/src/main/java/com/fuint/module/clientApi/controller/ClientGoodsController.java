@@ -72,18 +72,9 @@ public class ClientGoodsController extends BaseController {
         String merchantNo = request.getHeader("merchantNo") == null ? "" : request.getHeader("merchantNo");
         Integer storeId = StringUtil.isEmpty(request.getHeader("storeId")) ? 0 : Integer.parseInt(request.getHeader("storeId"));
         String platform = request.getHeader("platform") == null ? "" : request.getHeader("platform");
-
         Integer merchantId = merchantService.getMerchantId(merchantNo);
-        List<MtGoodsCate> cateList = cateService.getCateList(merchantId, storeId, null, StatusEnum.ENABLED.getKey());
-        Map<String, Object> goodsData = goodsService.getStoreGoodsList(storeId, "", platform, 0, 1, 1000);
-        List<MtGoods> goodsList = (ArrayList)goodsData.get("goodsList");
         String baseImage = settingService.getUploadBasePath();
-        if (goodsList.size() > 0) {
-            for (MtGoods goods : goodsList) {
-                 goods.setLogo(baseImage + goods.getLogo());
-            }
-        }
-
+        List<MtGoodsCate> cateList = cateService.getCateList(merchantId, storeId, null, StatusEnum.ENABLED.getKey());
         List<ResCateDto> result = new ArrayList<>();
         for (MtGoodsCate cate : cateList) {
              ResCateDto dto = new ResCateDto();
@@ -91,6 +82,13 @@ public class ClientGoodsController extends BaseController {
              dto.setName(cate.getName());
              if (StringUtil.isNotEmpty(cate.getLogo())) {
                  dto.setLogo(baseImage + cate.getLogo());
+             }
+             Map<String, Object> goodsData = goodsService.getStoreGoodsList(storeId, "", platform, cate.getId(), 1, 100);
+             List<MtGoods> goodsList = (ArrayList)goodsData.get("goodsList");
+             if (goodsList.size() > 0) {
+                 for (MtGoods goods : goodsList) {
+                      goods.setLogo(baseImage + goods.getLogo());
+                 }
              }
              List<MtGoods> goodsArr = new ArrayList<>();
              for (MtGoods goods : goodsList) {

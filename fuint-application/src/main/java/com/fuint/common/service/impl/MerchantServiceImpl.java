@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fuint.common.dto.MerchantDto;
+import com.fuint.common.dto.MerchantSettingDto;
 import com.fuint.common.enums.StatusEnum;
 import com.fuint.common.service.MerchantService;
 import com.fuint.common.service.StoreService;
@@ -311,5 +312,22 @@ public class MerchantServiceImpl extends ServiceImpl<MtMerchantMapper, MtMerchan
             param.put("status", status);
         }
         return queryMerchantByParams(param);
+    }
+
+    /**
+     * 获取商户信息
+     *
+     * @param merchantId 商户ID
+     * @param storeId 店铺ID
+     * @return
+     * */
+    @Override
+    public MerchantSettingDto getMerchantInfo(Integer merchantId, Integer storeId) {
+       // 店铺打烊设置
+
+       // 商户基本信息
+
+       // 登录需手机号
+       return null;
     }
 }
