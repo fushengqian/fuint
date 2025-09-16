@@ -88,10 +88,34 @@ public class MerchantStaffController extends BaseController {
         return getSuccessResult(result);
     }
 
+    /**
+     * 查询员工详情
+     */
+    @ApiOperation(value = "查询员工详情")
+    @RequestMapping(value = "/info", method = RequestMethod.POST)
+    @CrossOrigin
+    public ResponseObject info(HttpServletRequest request, @RequestBody StaffParam params) throws BusinessCheckException {
+        UserInfo userInfo = TokenUtil.getUserInfoByToken(request.getHeader("Access-Token"));
+
+        MtStaff myInfo = null;
+        MtUser mtUser = memberService.queryMemberById(userInfo.getId());
+        if (mtUser != null && mtUser.getMobile() != null) {
+            myInfo = staffService.queryStaffByMobile(mtUser.getMobile());
+        }
+        if (myInfo == null) {
+            return getFailureResult(201, "该账号不是商户");
+        }
+        MtStaff staffInfo = staffService.queryStaffById(params.getId());
+        Map<String, Object> result = new HashMap<>();
+        result.put("staffInfo", staffInfo);
+
+        return getSuccessResult(result);
+    }
+
     @ApiOperation(value = "保存员工信息")
     @RequestMapping(value = "/saveStaff", method = RequestMethod.POST)
     @CrossOrigin
-    public ResponseObject saveStaff(HttpServletRequest request, @RequestBody StaffParam staffInfo) throws BusinessCheckException {
+    public ResponseObject saveStaff(HttpServletRequest request, @RequestBody StaffParam params) throws BusinessCheckException {
         Integer merchantId = merchantService.getMerchantId(request.getHeader("merchantNo"));
 
         UserInfo userInfo = TokenUtil.getUserInfoByToken(request.getHeader("Access-Token"));
@@ -106,12 +130,14 @@ public class MerchantStaffController extends BaseController {
         }
 
         MtStaff mtStaff = new MtStaff();
-        if (staffInfo.getId() != null && staffInfo.getId() > 0) {
-            mtStaff = staffService.queryStaffById(staffInfo.getId());
+        mtStaff.setMerchantId(staff.getMerchantId());
+        mtStaff.setStoreId(staff.getStoreId());
+        if (params.getId() != null && params.getId() > 0) {
+            mtStaff = staffService.queryStaffById(params.getId());
         }
-        BeanUtils.copyProperties(staffInfo, mtStaff);
-        staffService.saveStaff(mtStaff, staff.getRealName());
+        BeanUtils.copyProperties(params, mtStaff);
+        MtStaff staffInfo = staffService.saveStaff(mtStaff, staff.getRealName());
 
-        return getSuccessResult(true);
+        return getSuccessResult(staffInfo);
     }
 }
