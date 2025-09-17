@@ -64,7 +64,7 @@ public class MerchantSettingController extends BaseController {
         MtUser mtUser = memberService.queryMemberById(userInfo.getId());
         StaffDto staffInfo = staffService.getStaffInfoByMobile(mtUser.getMobile());
         if (null == staffInfo) {
-            return getFailureResult(1002, "该账号不是商户");
+            return getFailureResult(1002, "您的帐号不是商户，没有操作权限");
         }
         MerchantSettingDto merchantInfo = merchantService.getMerchantSettingInfo(staffInfo.getMerchantId(), staffInfo.getStoreId());
         Map<String, Object> outParams = new HashMap<>();
@@ -84,7 +84,7 @@ public class MerchantSettingController extends BaseController {
         MtUser mtUser = memberService.queryMemberById(userInfo.getId());
         StaffDto staffInfo = staffService.getStaffInfoByMobile(mtUser.getMobile());
         if (null == staffInfo) {
-            return getFailureResult(1002, "该账号不是商户");
+            return getFailureResult(1002, "您的帐号不是商户，没有操作权限");
         }
         params.setMerchantId(staffInfo.getMerchantId());
         params.setStoreId(staffInfo.getStoreId());

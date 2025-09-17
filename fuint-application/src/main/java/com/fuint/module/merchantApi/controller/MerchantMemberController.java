@@ -77,7 +77,7 @@ public class MerchantMemberController extends BaseController {
             staffInfo = staffService.queryStaffByMobile(mtUser.getMobile());
         }
         if (staffInfo == null) {
-            return getFailureResult(201, "该账号不是商户");
+            return getFailureResult(201, "您的帐号不是商户，没有操作权限");
         }
 
         if (staffInfo.getMerchantId() != null && staffInfo.getMerchantId() > 0) {
@@ -119,7 +119,7 @@ public class MerchantMemberController extends BaseController {
             staffInfo = staffService.queryStaffByMobile(mtUser.getMobile());
         }
         if (staffInfo == null) {
-            return getFailureResult(201, "该账号不是商户");
+            return getFailureResult(201, "您的帐号不是商户，没有操作权限");
         }
         MtUser memberInfo = memberService.queryMemberById(memberParam.getMemberId());
         MtUserGrade gradeInfo = memberService.queryMemberGradeByGradeId(memberInfo.getGradeId());
@@ -146,7 +146,7 @@ public class MerchantMemberController extends BaseController {
             staffInfo = staffService.queryStaffByMobile(myUserInfo.getMobile());
         }
         if (staffInfo == null) {
-            return getFailureResult(201, "该账号不是商户");
+            return getFailureResult(201, "您的帐号不是商户，没有操作权限");
         }
         MtUser mtUser = new MtUser();
         if (memberInfoParam.getId() != null) {

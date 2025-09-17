@@ -66,7 +66,7 @@ public class MerchantBalanceController extends BaseController {
             staffInfo = staffService.queryStaffByMobile(mtUser.getMobile());
         }
         if (staffInfo == null) {
-            return getFailureResult(201, "该账号不是商户");
+            return getFailureResult(201, "您的帐号不是商户，没有操作权限");
         }
         if (!merchantId.equals(staffInfo.getMerchantId())) {
             return getFailureResult(201, "您没有操作权限");
