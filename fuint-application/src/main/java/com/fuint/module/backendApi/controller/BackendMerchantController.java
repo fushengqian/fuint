@@ -156,11 +156,6 @@ public class BackendMerchantController extends BaseController {
 
         if (StringUtil.isEmpty(mtMerchant.getName())) {
             return getFailureResult(201, "商户名称不能为空");
-        } else {
-            MtMerchant merchant = merchantService.queryMerchantByName(mtMerchant.getName());
-            if (merchant != null && !merchant.getId().equals(mtMerchant.getId())) {
-                return getFailureResult(201, "该商户名称已经存在");
-            }
         }
 
         if (mtMerchant.getId() == null && merchantId != null && merchantId > 0) {
