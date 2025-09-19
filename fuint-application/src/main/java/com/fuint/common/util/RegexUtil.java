@@ -6,7 +6,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * RegexUtil 工具类
+ * 校验工具类
  *
  * Created by FSQ
  * CopyRight https://www.fuint.cn
@@ -17,6 +17,26 @@ public class RegexUtil {
 
     public RegexUtil() {
         // empty
+    }
+
+    /**
+     * 检查字符串中是否包含中文字符
+     * @param input 待检查的字符串
+     * @return 如果包含中文字符返回true，否则返回false
+     */
+    public static boolean containsChinese(String input) {
+        if (input == null || input.isEmpty()) {
+            return false;
+        }
+
+        for (int i = 0; i < input.length(); i++) {
+            char c = input.charAt(i);
+            // 检查字符是否在CJK统一表意文字范围内（包括扩展区）
+            if (isChineseCharacter(c)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public static boolean isEmail(String email) {
@@ -86,5 +106,25 @@ public class RegexUtil {
         }
 
         return p;
+    }
+
+    /**
+     * 判断单个字符是否为中文字符
+     * @param c 待检查的字符
+     * @return 如果是中文字符返回true，否则返回false
+     */
+    private static boolean isChineseCharacter(char c) {
+        // 基本CJK统一表意文字范围：U+4E00到U+9FFF
+        // CJK统一表意文字扩展区A：U+3400到U+4DBF
+        // CJK统一表意文字扩展区B：U+20000到U+2A6DF（需要特殊处理，因为Java char是16位）
+        // 这里我们主要检查基本范围和扩展区A
+        Character.UnicodeBlock block = Character.UnicodeBlock.of(c);
+        return (c >= 0x4E00 && c <= 0x9FFF) ||
+                (c >= 0x3400 && c <= 0x4DBF) ||
+                block == Character.UnicodeBlock.CJK_UNIFIED_IDEOGRAPHS ||
+                block == Character.UnicodeBlock.CJK_UNIFIED_IDEOGRAPHS_EXTENSION_A ||
+                block == Character.UnicodeBlock.CJK_UNIFIED_IDEOGRAPHS_EXTENSION_B ||
+                block == Character.UnicodeBlock.CJK_COMPATIBILITY_IDEOGRAPHS ||
+                block == Character.UnicodeBlock.CJK_SYMBOLS_AND_PUNCTUATION;
     }
 }

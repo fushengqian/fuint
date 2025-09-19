@@ -28,6 +28,8 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.*;
 
 /**
@@ -71,7 +73,7 @@ public class StaffServiceImpl extends ServiceImpl<MtStaffMapper, MtStaff> implem
      * @return
      */
     @Override
-    public PaginationResponse<MtStaff> queryStaffListByPagination(PaginationRequest paginationRequest) {
+    public PaginationResponse<StaffDto> queryStaffListByPagination(PaginationRequest paginationRequest) throws BusinessCheckException {
         Page<MtStaff> pageHelper = PageHelper.startPage(paginationRequest.getCurrentPage(), paginationRequest.getPageSize());
         LambdaQueryWrapper<MtStaff> lambdaQueryWrapper = Wrappers.lambdaQuery();
         lambdaQueryWrapper.ne(MtStaff::getAuditedStatus, StatusEnum.DISABLE.getKey());
@@ -108,15 +110,24 @@ public class StaffServiceImpl extends ServiceImpl<MtStaffMapper, MtStaff> implem
                     .eq(MtStaff::getRealName, keyword));
         }
         lambdaQueryWrapper.orderByDesc(MtStaff::getId);
-        List<MtStaff> dataList = mtStaffMapper.selectList(lambdaQueryWrapper);
-        if (dataList != null && dataList.size() > 0) {
-            for (MtStaff mtStaff : dataList) {
+        List<MtStaff> staffList = mtStaffMapper.selectList(lambdaQueryWrapper);
+        List<StaffDto> dataList = new ArrayList<>();
+
+        if (staffList != null && staffList.size() > 0) {
+            for (MtStaff mtStaff : staffList) {
+                 StaffDto staffDto = new StaffDto();
                  mtStaff.setMobile(CommonUtil.hidePhone(mtStaff.getMobile()));
+                 BeanUtils.copyProperties(mtStaff, staffDto);
+                 if (mtStaff.getStoreId() != null && mtStaff.getStoreId() > 0) {
+                     MtStore mtStore = storeService.queryStoreById(mtStaff.getStoreId());
+                     staffDto.setStoreInfo(mtStore);
+                 }
+                 dataList.add(staffDto);
             }
         }
         PageRequest pageRequest = PageRequest.of(paginationRequest.getCurrentPage(), paginationRequest.getPageSize());
         PageImpl pageImpl = new PageImpl(dataList, pageRequest, pageHelper.getTotal());
-        PaginationResponse<MtStaff> paginationResponse = new PaginationResponse(pageImpl, MtStaff.class);
+        PaginationResponse<StaffDto> paginationResponse = new PaginationResponse(pageImpl, StaffDto.class);
         paginationResponse.setTotalPages(pageHelper.getPages());
         paginationResponse.setTotalElements(pageHelper.getTotal());
         paginationResponse.setContent(dataList);
@@ -133,6 +144,7 @@ public class StaffServiceImpl extends ServiceImpl<MtStaffMapper, MtStaff> implem
      * @return
      */
     @Override
+    @Transactional(rollbackFor = Exception.class)
     @OperationServiceLog(description = "保存店铺员工")
     public MtStaff saveStaff(MtStaff mtStaff, String operator) throws BusinessCheckException {
         mtStaff.setUpdateTime(new Date());
@@ -181,6 +193,7 @@ public class StaffServiceImpl extends ServiceImpl<MtStaffMapper, MtStaff> implem
 
         // 更新员工
         this.updateById(mtStaff);
+        logger.info("{}保存员工信息：{}", operator, mtStaff.toString());
         return mtStaff;
     }
 

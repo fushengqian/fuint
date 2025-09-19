@@ -14,6 +14,7 @@ import com.fuint.common.service.MerchantService;
 import com.fuint.common.service.SettingService;
 import com.fuint.common.service.StoreService;
 import com.fuint.common.util.CommonUtil;
+import com.fuint.common.util.RegexUtil;
 import com.fuint.framework.annoation.OperationServiceLog;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.pagination.PaginationRequest;
@@ -126,8 +127,13 @@ public class MerchantServiceImpl extends ServiceImpl<MtMerchantMapper, MtMerchan
     @Override
     @Transactional
     @OperationServiceLog(description = "保存商户信息")
-    public MtMerchant saveMerchant(MtMerchant merchant) {
+    public MtMerchant saveMerchant(MtMerchant merchant) throws BusinessCheckException {
         MtMerchant mtMerchant = new MtMerchant();
+
+        // 商户号不能含有中文
+        if (RegexUtil.containsChinese(merchant.getNo())) {
+            throw new BusinessCheckException("商户号不能含有中文字符");
+        }
 
         // 编辑商户
         if (merchant.getId() != null) {
@@ -380,6 +386,8 @@ public class MerchantServiceImpl extends ServiceImpl<MtMerchantMapper, MtMerchan
      * @return
      * */
     @Override
+    @Transactional(rollbackFor = Exception.class)
+    @OperationServiceLog(description = "保存商户设置信息")
     public MerchantSettingDto saveMerchantSetting(MerchantSettingParam params) throws BusinessCheckException {
         if (params.getStoreId() != null && params.getStoreId() > 0) {
             MtStore storeInfo = storeService.queryStoreById(params.getStoreId());

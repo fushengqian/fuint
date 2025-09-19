@@ -3,6 +3,7 @@ package com.fuint.module.backendApi.controller;
 import com.fuint.common.Constants;
 import com.fuint.common.dto.AccountInfo;
 import com.fuint.common.dto.ParamDto;
+import com.fuint.common.dto.StaffDto;
 import com.fuint.common.enums.StaffCategoryEnum;
 import com.fuint.common.enums.StatusEnum;
 import com.fuint.common.param.StaffParam;
@@ -84,7 +85,7 @@ public class BackendStaffController extends BaseController {
         if (StringUtil.isNotEmpty(category)) {
             params.put("category", category);
         }
-        PaginationResponse<MtStaff> paginationResponse = staffService.queryStaffListByPagination(new PaginationRequest(page, pageSize, params));
+        PaginationResponse<StaffDto> paginationResponse = staffService.queryStaffListByPagination(new PaginationRequest(page, pageSize, params));
 
         // 员工类别列表
         List<ParamDto> categoryList = StaffCategoryEnum.getStaffCategoryList();

@@ -18,6 +18,8 @@ import com.fuint.utils.StringUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.AllArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
@@ -117,7 +119,6 @@ public class MerchantStaffController extends BaseController {
     @CrossOrigin
     public ResponseObject saveStaff(HttpServletRequest request, @RequestBody StaffParam params) throws BusinessCheckException {
         Integer merchantId = merchantService.getMerchantId(request.getHeader("merchantNo"));
-
         UserInfo userInfo = TokenUtil.getUserInfoByToken(request.getHeader("Access-Token"));
         MtUser mtUser = memberService.queryMemberById(userInfo.getId());
         if (mtUser == null || StringUtil.isBlank(mtUser.getMobile())) {
@@ -135,9 +136,10 @@ public class MerchantStaffController extends BaseController {
         }
         BeanUtils.copyProperties(params, mtStaff);
         mtStaff.setMerchantId(staff.getMerchantId());
-        mtStaff.setStoreId(staff.getStoreId());
+        if (staff.getStoreId() != null && staff.getStoreId() > 0) {
+            mtStaff.setStoreId(staff.getStoreId());
+        }
         MtStaff staffInfo = staffService.saveStaff(mtStaff, staff.getRealName());
-
         return getSuccessResult(staffInfo);
     }
 }
