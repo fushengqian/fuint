@@ -1,6 +1,8 @@
 package com.fuint.common.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.fuint.common.dto.NavigationDto;
 import com.fuint.common.dto.ParamDto;
 import com.fuint.common.enums.*;
 import com.fuint.framework.annoation.OperationServiceLog;
@@ -189,12 +191,28 @@ public class SettingServiceImpl extends ServiceImpl<MtSettingMapper, MtSetting> 
         payTypeList.add(balance);
 
         // 前台支付
-        MtSetting mtSetting = settingService.querySettingByName(merchantId, storeId,  SettingTypeEnum.ORDER.getKey(), OrderSettingEnum.PAY_OFF_LINE.getKey());
+        MtSetting mtSetting = settingService.querySettingByName(merchantId, storeId, SettingTypeEnum.ORDER.getKey(), OrderSettingEnum.PAY_OFF_LINE.getKey());
         if (mtSetting != null && mtSetting.getValue().equals(YesOrNoEnum.YES.getKey())) {
             ParamDto store = new ParamDto(PayTypeEnum.STORE.getKey(), PayTypeEnum.STORE.getValue(), PayTypeEnum.STORE.getKey());
             payTypeList.add(store);
         }
 
         return payTypeList;
+    }
+
+    /**
+     * 获取导航栏
+     *
+     * @param merchantId 商户ID
+     * @param storeId 店铺ID
+     * @return
+     * */
+    @Override
+    public List<NavigationDto> getNavigation(Integer merchantId, Integer storeId) {
+        MtSetting mtSetting = mtSettingMapper.querySettingByName(merchantId, storeId, SettingTypeEnum.NAVIGATION.getKey(), SettingTypeEnum.NAVIGATION.getKey());
+        if (mtSetting != null && StringUtil.isNotBlank(mtSetting.getValue())) {
+            JSON.parse(mtSetting.getValue());
+        }
+        return new ArrayList<>();
     }
 }

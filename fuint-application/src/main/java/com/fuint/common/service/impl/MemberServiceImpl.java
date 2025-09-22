@@ -1077,7 +1077,7 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
             List<MtUser> userList = new ArrayList<>();
             List<MtUserGrade> userGrades = userGradeService.getMerchantGradeList(accountInfo.getMerchantId());
             for (int i = 0; i < memberList.size(); i++) {
-                 List<String> userInfo = memberList.get(0);
+                 List<String> userInfo = memberList.get(i);
                  String username = userInfo.get(0);
                  String userNo = userInfo.get(1);
                  Integer sex = userInfo.get(3).equals("男") ? 1 : 0;

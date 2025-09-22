@@ -124,7 +124,7 @@ public class CommissionRelationServiceImpl extends ServiceImpl<MtCommissionRelat
      */
     @Override
     public void setCommissionRelation(MtUser userInfo, String shareId) throws BusinessCheckException {
-        if (userInfo == null || StringUtil.isEmpty(shareId) || Integer.parseInt(shareId) <= 0) {
+        if (userInfo == null || StringUtil.isBlank(shareId) || Integer.parseInt(shareId) <= 0) {
             return;
         }
 
