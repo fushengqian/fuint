@@ -124,7 +124,7 @@ public class RefundServiceImpl extends ServiceImpl<MtRefundMapper, MtRefund> imp
             lambdaQueryWrapper.eq(MtRefund::getOrderId, orderId);
         }
         String userId = paginationRequest.getSearchParams().get("userId") == null ? "" : paginationRequest.getSearchParams().get("userId").toString();
-        if (StringUtils.isNotBlank(userId)) {
+        if (StringUtils.isNotBlank(userId) && Integer.parseInt(userId) > 0) {
             lambdaQueryWrapper.eq(MtRefund::getUserId, userId);
         }
         String storeId = paginationRequest.getSearchParams().get("storeId") == null ? "" : paginationRequest.getSearchParams().get("storeId").toString();

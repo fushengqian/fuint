@@ -67,7 +67,7 @@ public class MerchantCouponController extends BaseController {
         if (staff.getStoreId() != null && staff.getStoreId() > 0) {
             params.setStoreId(staff.getStoreId());
         }
-        params.setStatus("");
+        params.setStatus(null);
         ResponseObject result = couponService.findCouponList(params);
         return getSuccessResult(result.getData());
     }

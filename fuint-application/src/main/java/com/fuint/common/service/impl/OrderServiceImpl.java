@@ -258,7 +258,7 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
                 userId = "0";
             }
         }
-        if (StringUtil.isNotEmpty(userId)) {
+        if (StringUtil.isNotEmpty(userId) && Integer.parseInt(userId) > 0) {
             lambdaQueryWrapper.eq(MtOrder::getUserId, userId);
         }
         if (merchantId != null && merchantId > 0) {
