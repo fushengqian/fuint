@@ -1,7 +1,9 @@
 package com.fuint.common.service.impl;
 
-import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fuint.common.dto.NavigationDto;
 import com.fuint.common.dto.ParamDto;
 import com.fuint.common.enums.*;
@@ -208,11 +210,13 @@ public class SettingServiceImpl extends ServiceImpl<MtSettingMapper, MtSetting> 
      * @return
      * */
     @Override
-    public List<NavigationDto> getNavigation(Integer merchantId, Integer storeId) {
+    public List<NavigationDto> getNavigation(Integer merchantId, Integer storeId) throws JsonProcessingException {
         MtSetting mtSetting = mtSettingMapper.querySettingByName(merchantId, storeId, SettingTypeEnum.NAVIGATION.getKey(), SettingTypeEnum.NAVIGATION.getKey());
+        List<NavigationDto> navigation = new ArrayList<>();
         if (mtSetting != null && StringUtil.isNotBlank(mtSetting.getValue())) {
-            JSON.parse(mtSetting.getValue());
+            ObjectMapper objectMapper = new ObjectMapper();
+            navigation = objectMapper.readValue(mtSetting.getValue(), new TypeReference<List<NavigationDto>>() {});
         }
-        return new ArrayList<>();
+        return navigation;
     }
 }

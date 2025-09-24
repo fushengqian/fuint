@@ -1,5 +1,6 @@
 package com.fuint.module.backendApi.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fuint.common.dto.AccountInfo;
 import com.fuint.common.dto.NavigationDto;
 import com.fuint.common.enums.SettingTypeEnum;
@@ -10,6 +11,7 @@ import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.web.BaseController;
 import com.fuint.framework.web.ResponseObject;
 import com.fuint.repository.model.MtSetting;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.AllArgsConstructor;
@@ -43,7 +45,7 @@ public class BackendNavigateController extends BaseController {
     @ApiOperation(value = "导航设置详情")
     @RequestMapping(value = "/info", method = RequestMethod.GET)
     @CrossOrigin
-    public ResponseObject info(HttpServletRequest request) throws BusinessCheckException {
+    public ResponseObject info(HttpServletRequest request) throws BusinessCheckException, JsonProcessingException {
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
         List<NavigationDto> navigation = settingService.getNavigation(accountInfo.getMerchantId(), accountInfo.getStoreId());
         Map<String, Object> result = new HashMap();
@@ -57,18 +59,23 @@ public class BackendNavigateController extends BaseController {
     @ApiOperation(value = "提交导航设置")
     @RequestMapping(value = "/save", method = RequestMethod.POST)
     @CrossOrigin
-    public ResponseObject save(HttpServletRequest request, @RequestBody List<NavigationDto> navigation) throws BusinessCheckException {
+    public ResponseObject save(HttpServletRequest request, @RequestBody List<NavigationDto> navigation) throws BusinessCheckException, JsonProcessingException {
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
         if (accountInfo.getMerchantId() == null || accountInfo.getMerchantId() <= 0) {
             return getFailureResult(5002);
         }
-
+        ObjectMapper objectMapper = new ObjectMapper();
         MtSetting mtSetting = new MtSetting();
         mtSetting.setMerchantId(accountInfo.getMerchantId());
         mtSetting.setStoreId(accountInfo.getStoreId());
         mtSetting.setType(SettingTypeEnum.NAVIGATION.getKey());
         mtSetting.setName(SettingTypeEnum.NAVIGATION.getKey());
-        mtSetting.setValue("");
+        if (navigation != null && navigation.size() > 0) {
+            String json = objectMapper.writeValueAsString(navigation);
+            mtSetting.setValue(json);
+        } else {
+            mtSetting.setValue("");
+        }
         mtSetting.setDescription(SettingTypeEnum.NAVIGATION.getValue());
         mtSetting.setStatus(StatusEnum.ENABLED.getKey());
         mtSetting.setOperator(accountInfo.getAccountName());

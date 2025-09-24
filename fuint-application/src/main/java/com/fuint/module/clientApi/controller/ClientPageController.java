@@ -1,5 +1,6 @@
 package com.fuint.module.clientApi.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fuint.common.dto.NavigationDto;
 import com.fuint.common.enums.StatusEnum;
 import com.fuint.common.service.BannerService;
@@ -52,7 +53,7 @@ public class ClientPageController extends BaseController {
     @ApiOperation(value = "获取首页页面数据")
     @RequestMapping(value = "/home", method = RequestMethod.GET)
     @CrossOrigin
-    public ResponseObject getPageData(HttpServletRequest request, @RequestParam Map<String, Object> param) throws BusinessCheckException {
+    public ResponseObject getPageData(HttpServletRequest request, @RequestParam Map<String, Object> param) throws BusinessCheckException, JsonProcessingException {
         String merchantNo = request.getHeader("merchantNo") == null ? "" : request.getHeader("merchantNo");
         Integer storeId = StringUtil.isEmpty(request.getHeader("storeId")) ? 0 : Integer.parseInt(request.getHeader("storeId"));
 

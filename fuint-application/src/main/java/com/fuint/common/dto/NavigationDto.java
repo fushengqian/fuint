@@ -13,6 +13,9 @@ import java.io.Serializable;
 @Data
 public class NavigationDto implements Serializable {
 
+    @ApiModelProperty("导航ID")
+    private Integer id;
+
     @ApiModelProperty("导航名称")
     private String name;
 
@@ -21,5 +24,8 @@ public class NavigationDto implements Serializable {
 
     @ApiModelProperty("图标")
     private String icon;
+
+    @ApiModelProperty("导航排序")
+    private Integer sort;
 
 }
