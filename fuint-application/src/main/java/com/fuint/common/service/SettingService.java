@@ -86,8 +86,9 @@ public interface SettingService extends IService<MtSetting> {
      *
      * @param merchantId 商户ID
      * @param storeId 店铺ID
+     * @param status 状态
      * @return
      * */
-    List<NavigationDto> getNavigation(Integer merchantId, Integer storeId) throws JsonProcessingException;
+    List<NavigationDto> getNavigation(Integer merchantId, Integer storeId, String status) throws JsonProcessingException;
 
 }

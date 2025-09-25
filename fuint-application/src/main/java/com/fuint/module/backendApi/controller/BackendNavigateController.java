@@ -17,10 +17,7 @@ import io.swagger.annotations.ApiOperation;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * 积分管理controller
@@ -47,19 +44,20 @@ public class BackendNavigateController extends BaseController {
     @CrossOrigin
     public ResponseObject info(HttpServletRequest request) throws BusinessCheckException, JsonProcessingException {
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
-        List<NavigationDto> navigation = settingService.getNavigation(accountInfo.getMerchantId(), accountInfo.getStoreId());
+        List<NavigationDto> navigation = settingService.getNavigation(accountInfo.getMerchantId(), accountInfo.getStoreId(), null);
         Map<String, Object> result = new HashMap();
         result.put("navigation", navigation);
+        result.put("imagePath", settingService.getUploadBasePath());
         return getSuccessResult(result);
     }
 
     /**
-     * 提交导航设置
+     * 保存导航设置
      */
-    @ApiOperation(value = "提交导航设置")
+    @ApiOperation(value = "保存导航设置")
     @RequestMapping(value = "/save", method = RequestMethod.POST)
     @CrossOrigin
-    public ResponseObject save(HttpServletRequest request, @RequestBody List<NavigationDto> navigation) throws BusinessCheckException, JsonProcessingException {
+    public ResponseObject save(HttpServletRequest request, @RequestBody NavigationDto navigation) throws BusinessCheckException, JsonProcessingException {
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
         if (accountInfo.getMerchantId() == null || accountInfo.getMerchantId() <= 0) {
             return getFailureResult(5002);
@@ -70,9 +68,33 @@ public class BackendNavigateController extends BaseController {
         mtSetting.setStoreId(accountInfo.getStoreId());
         mtSetting.setType(SettingTypeEnum.NAVIGATION.getKey());
         mtSetting.setName(SettingTypeEnum.NAVIGATION.getKey());
-        if (navigation != null && navigation.size() > 0) {
-            String json = objectMapper.writeValueAsString(navigation);
-            mtSetting.setValue(json);
+        navigation.setStatus(navigation.getStatus() == null ? StatusEnum.ENABLED.getKey() : navigation.getStatus());
+        if (navigation != null) {
+            List<NavigationDto> navigationNew = new ArrayList<>();
+            List<NavigationDto> navigations = settingService.getNavigation(accountInfo.getMerchantId(), accountInfo.getStoreId(), null);
+            if (!navigation.getStatus().equals(StatusEnum.DISABLE.getKey())) {
+                boolean exit = false;
+                for (NavigationDto item : navigations) {
+                     if (item.getName().equals(navigation.getName())) {
+                         exit = true;
+                     }
+                }
+                if (!exit) {
+                    navigationNew.add(navigation);
+                }
+            }
+            if (navigations != null && navigations.size() > 0) {
+                for (NavigationDto item : navigations) {
+                     if (!item.getName().equals(navigation.getName())) {
+                         navigationNew.add(item);
+                     } else {
+                         if (!navigation.getStatus().equals(StatusEnum.DISABLE.getKey())) {
+                             navigationNew.add(navigation);
+                         }
+                     }
+                }
+            }
+            mtSetting.setValue(objectMapper.writeValueAsString(navigationNew));
         } else {
             mtSetting.setValue("");
         }

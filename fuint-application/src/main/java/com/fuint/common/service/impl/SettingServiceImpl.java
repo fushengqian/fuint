@@ -19,8 +19,10 @@ import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * 配置业务接口实现类
@@ -207,16 +209,23 @@ public class SettingServiceImpl extends ServiceImpl<MtSettingMapper, MtSetting> 
      *
      * @param merchantId 商户ID
      * @param storeId 店铺ID
+     *  @param status 状态
      * @return
      * */
     @Override
-    public List<NavigationDto> getNavigation(Integer merchantId, Integer storeId) throws JsonProcessingException {
+    public List<NavigationDto> getNavigation(Integer merchantId, Integer storeId, String status) throws JsonProcessingException {
         MtSetting mtSetting = mtSettingMapper.querySettingByName(merchantId, storeId, SettingTypeEnum.NAVIGATION.getKey(), SettingTypeEnum.NAVIGATION.getKey());
         List<NavigationDto> navigation = new ArrayList<>();
         if (mtSetting != null && StringUtil.isNotBlank(mtSetting.getValue())) {
             ObjectMapper objectMapper = new ObjectMapper();
             navigation = objectMapper.readValue(mtSetting.getValue(), new TypeReference<List<NavigationDto>>() {});
         }
+        if (StringUtil.isNotBlank(status)) {
+            navigation = navigation.stream().filter(nav -> status.equals(nav.getStatus())).collect(Collectors.toList());
+        }
+        String basePath = getUploadBasePath();
+        navigation.stream().forEach(p -> p.setIconUrl(basePath + p.getIcon()));
+        Collections.sort(navigation, (p1, p2) -> Integer.compare(p2.getSort(), p1.getSort()));
         return navigation;
     }
 }

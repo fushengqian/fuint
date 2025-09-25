@@ -68,7 +68,7 @@ public class ClientPageController extends BaseController {
         }
 
         List<MtBanner> bannerList = bannerService.queryBannerListByParams(params);
-        List<NavigationDto> navigation = settingService.getNavigation(merchantId, storeId);
+        List<NavigationDto> navigation = settingService.getNavigation(merchantId, storeId, StatusEnum.ENABLED.getKey());
 
         Map<String, Object> outParams = new HashMap();
         outParams.put("banner", bannerList);
