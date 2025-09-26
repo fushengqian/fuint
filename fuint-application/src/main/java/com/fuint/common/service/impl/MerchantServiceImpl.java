@@ -129,13 +129,16 @@ public class MerchantServiceImpl extends ServiceImpl<MtMerchantMapper, MtMerchan
     @OperationServiceLog(description = "保存商户信息")
     public MtMerchant saveMerchant(MtMerchant merchant) throws BusinessCheckException {
         MtMerchant mtMerchant = queryMerchantByName(merchant.getName());
-        if (merchant != null && !merchant.getId().equals(mtMerchant.getId())) {
-            throw new BusinessCheckException("该商户名称已经存在");
+        if (mtMerchant != null) {
+            if ((merchant.getId() != null && !merchant.getId().equals(mtMerchant.getId())) || (merchant.getId() == null || merchant.getId() <= 0)) {
+                throw new BusinessCheckException("该商户名称已经存在");
+            }
         }
-
         mtMerchant = queryMerchantByNo(merchant.getNo());
-        if (merchant != null && !merchant.getId().equals(mtMerchant.getId())) {
-            throw new BusinessCheckException("该商户号已经存在");
+        if (mtMerchant != null) {
+            if ((merchant.getId() != null && !merchant.getId().equals(mtMerchant.getId())) || (merchant.getId() == null || merchant.getId() <= 0)) {
+                throw new BusinessCheckException("该商户名称已经存在");
+            }
         }
 
         mtMerchant = new MtMerchant();
