@@ -927,14 +927,17 @@ public class GoodsServiceImpl extends ServiceImpl<MtGoodsMapper, MtGoods> implem
                  mtGoods.setMerchantId(accountInfo.getMerchantId());
                  mtGoods.setStoreId(accountInfo.getStoreId());
                  Integer cateId = cateService.getGoodsCateId(accountInfo.getMerchantId(), accountInfo.getStoreId(), goods.get(3));
-                 if (cateId == null && StringUtil.isNotBlank(goods.get(3))) {
+                 if ((cateId == null || cateId <= 0) && StringUtil.isNotBlank(goods.get(3))) {
                      MtGoodsCate mtCate = new MtGoodsCate();
                      mtCate.setMerchantId(accountInfo.getMerchantId());
                      mtCate.setStoreId(accountInfo.getStoreId());
                      mtCate.setName(goods.get(3));
                      mtCate.setOperator(accountInfo.getAccountName());
                      mtCate.setDescription("导入商品并创建商品分类");
-                     cateService.addCate(mtCate);
+                     MtGoodsCate mtGoodsCate = cateService.addCate(mtCate);
+                     if (mtGoodsCate != null) {
+                         cateId = mtGoodsCate.getId();
+                     }
                  }
                  mtGoods.setCateId(cateId);
                  mtGoods.setOperator(accountInfo.getAccountName());
@@ -971,10 +974,12 @@ public class GoodsServiceImpl extends ServiceImpl<MtGoodsMapper, MtGoods> implem
 
         // 2、录入规格信息
         if (skuList != null && skuList.size() > 0) {
+            MtGoods mtGoods = null;
+            Double totalStock = 0d;
+            BigDecimal price = new BigDecimal("0");
             for (int j = 0; j < skuList.size(); j++) {
                  List<String> sku = skuList.get(j);
                  List<MtGoods> goodsList1 = mtGoodsMapper.getByGoodsName(accountInfo.getMerchantId(), sku.get(0));
-                 MtGoods mtGoods = null;
                  if (goodsList1.size() == 1) {
                      mtGoods = goodsList1.get(0);
                  } else if (goodsList1.size() > 1) {
@@ -1007,15 +1012,27 @@ public class GoodsServiceImpl extends ServiceImpl<MtGoodsMapper, MtGoods> implem
                              mtGoodsSku.setSkuNo(sku.get(1));
                              mtGoodsSku.setGoodsId(mtGoods.getId());
                              mtGoodsSku.setSpecIds(String.join("-", specIds));
-                             mtGoodsSku.setPrice(new BigDecimal(sku.get(4)));
+                             BigDecimal skuPrice = new BigDecimal(sku.get(4));
+                             mtGoodsSku.setPrice(skuPrice);
                              mtGoodsSku.setLinePrice(new BigDecimal(sku.get(5)));
-                             mtGoodsSku.setStock(Double.parseDouble(sku.get(6)));
+                             Double stock = Double.parseDouble(sku.get(6));
+                             mtGoodsSku.setStock(stock);
                              mtGoodsSku.setWeight(new BigDecimal(sku.get(7)));
                              mtGoodsSku.setStatus(StatusEnum.ENABLED.getKey());
                              mtGoodsSkuMapper.insert(mtGoodsSku);
+                             totalStock = totalStock + stock;
+                             if (((skuPrice.compareTo(price) <= 0) || (price.compareTo(new BigDecimal("0")) <= 0)) && skuPrice.compareTo(new BigDecimal("0")) > 0) {
+                                 price = skuPrice;
+                             }
                          }
                      }
                  }
+            }
+            // 更新商品价格和库存
+            if (mtGoods != null) {
+                mtGoods.setStock(totalStock);
+                mtGoods.setPrice(price);
+                mtGoodsMapper.updateById(mtGoods);
             }
         }
         return true;
