@@ -208,23 +208,39 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
 
         if (dataType.equals("toPay")) {
             status = OrderStatusEnum.CREATED.getKey(); // 待支付
-        } else if(dataType.equals("paid")) {
+        } else if (dataType.equals("paid")) {
             status = "";
             payStatus = PayStatusEnum.SUCCESS.getKey(); // 已支付
         } else if(dataType.equals("cancel")) {
             status = OrderStatusEnum.CANCEL.getKey();  // 已取消
-        } else if(dataType.equals("todo")) {
+        } else if (dataType.equals("todo")) {
             // 待核销
             payStatus = PayStatusEnum.SUCCESS.getKey();
             lambdaQueryWrapper.eq(MtOrder::getConfirmStatus, YesOrNoEnum.NO.getKey());
             lambdaQueryWrapper.eq(MtOrder::getType, OrderTypeEnum.GOODS.getKey());
             lambdaQueryWrapper.eq(MtOrder::getOrderMode, OrderModeEnum.ONESELF.getKey());
-        } else if(dataType.equals("confirm")) {
+        } else if (dataType.equals("confirm")) {
             // 已核销
             payStatus = PayStatusEnum.SUCCESS.getKey();
             lambdaQueryWrapper.eq(MtOrder::getType, OrderTypeEnum.GOODS.getKey());
             lambdaQueryWrapper.eq(MtOrder::getConfirmStatus, YesOrNoEnum.YES.getKey());
             lambdaQueryWrapper.eq(MtOrder::getOrderMode, OrderModeEnum.ONESELF.getKey());
+        } else if (dataType.equals("unShipped")) {
+            // 待发货
+            payStatus = PayStatusEnum.SUCCESS.getKey();
+            lambdaQueryWrapper.eq(MtOrder::getType, OrderTypeEnum.GOODS.getKey());
+            lambdaQueryWrapper.eq(MtOrder::getStatus, OrderStatusEnum.DELIVERY.getKey());
+            lambdaQueryWrapper.eq(MtOrder::getOrderMode, OrderModeEnum.EXPRESS.getKey());
+        } else if (dataType.equals("shipped")) {
+            // 已发货
+            payStatus = PayStatusEnum.SUCCESS.getKey();
+            lambdaQueryWrapper.eq(MtOrder::getType, OrderTypeEnum.GOODS.getKey());
+            lambdaQueryWrapper.eq(MtOrder::getStatus, OrderStatusEnum.DELIVERED.getKey());
+            lambdaQueryWrapper.eq(MtOrder::getOrderMode, OrderModeEnum.EXPRESS.getKey());
+        } else if (dataType.equals("completed")) {
+            // 已完成
+            payStatus = PayStatusEnum.SUCCESS.getKey();
+            lambdaQueryWrapper.eq(MtOrder::getStatus, OrderStatusEnum.COMPLETE.getKey());
         }
 
         if (StringUtil.isNotEmpty(orderSn)) {

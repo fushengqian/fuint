@@ -69,6 +69,6 @@
     </select>
 
     <select id="getTobeCommissionOrderList" resultType="com.fuint.repository.model.MtOrder">
-        SELECT t.* FROM `mt_order` t WHERE t.PAY_TIME &lt;= #{dateTime} AND t.STATUS NOT IN('C', 'G', 'H') AND t.PAY_STATUS = 'B' AND t.COMMISSION_STATUS = 'A' ORDER BY t.ID DESC LIMIT 10
+        SELECT t.* FROM `mt_order` t WHERE t.PAY_TIME &lt;= #{dateTime} AND t.STATUS = 'I' AND t.PAY_STATUS = 'B' AND t.COMMISSION_STATUS = 'A' ORDER BY t.ID DESC LIMIT 10
     </select>
 </mapper>
