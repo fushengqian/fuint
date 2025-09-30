@@ -231,6 +231,12 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
             lambdaQueryWrapper.eq(MtOrder::getType, OrderTypeEnum.GOODS.getKey());
             lambdaQueryWrapper.eq(MtOrder::getStatus, OrderStatusEnum.DELIVERY.getKey());
             lambdaQueryWrapper.eq(MtOrder::getOrderMode, OrderModeEnum.EXPRESS.getKey());
+        } else if (dataType.equals("received")) {
+            // 已收货
+            payStatus = PayStatusEnum.SUCCESS.getKey();
+            lambdaQueryWrapper.eq(MtOrder::getType, OrderTypeEnum.GOODS.getKey());
+            lambdaQueryWrapper.eq(MtOrder::getStatus, OrderStatusEnum.RECEIVED.getKey());
+            lambdaQueryWrapper.eq(MtOrder::getOrderMode, OrderModeEnum.EXPRESS.getKey());
         } else if (dataType.equals("shipped")) {
             // 已发货
             payStatus = PayStatusEnum.SUCCESS.getKey();
