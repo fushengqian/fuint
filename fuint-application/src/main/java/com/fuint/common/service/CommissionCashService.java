@@ -71,4 +71,13 @@ public interface CommissionCashService extends IService<MtCommissionCash> {
      */
     void cancelCommissionCash(CommissionSettleConfirmRequest requestParam) throws BusinessCheckException;
 
+    /**
+     * 支付结算金额到用户余额
+     *
+     * @param commissionCashRequest 请求参数
+     * @throws BusinessCheckException
+     * @return
+     */
+    void payToBalance(CommissionCashRequest commissionCashRequest) throws BusinessCheckException;
+
 }

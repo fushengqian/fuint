@@ -170,9 +170,10 @@ public class BalanceServiceImpl extends ServiceImpl<MtBalanceMapper, MtBalance> 
         if (mtBalance.getUserId() < 0) {
             return false;
         }
+        Date nowDate = new Date();
         mtBalance.setStatus(StatusEnum.ENABLED.getKey());
-        mtBalance.setCreateTime(new Date());
-        mtBalance.setUpdateTime(new Date());
+        mtBalance.setCreateTime(nowDate);
+        mtBalance.setUpdateTime(nowDate);
 
         MtUser mtUser = mtUserMapper.selectById(mtBalance.getUserId());
         BigDecimal newAmount = mtUser.getBalance().add(mtBalance.getAmount());

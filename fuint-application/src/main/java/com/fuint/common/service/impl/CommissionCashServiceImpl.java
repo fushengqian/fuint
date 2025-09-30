@@ -71,6 +71,11 @@ public class CommissionCashServiceImpl extends ServiceImpl<MtCommissionCashMappe
     private CommissionLogService commissionLogService;
 
     /**
+     * 余额服务接口
+     * */
+    private BalanceService balanceService;
+
+    /**
      * 分页查询提现列表
      *
      * @param paginationRequest
@@ -290,6 +295,7 @@ public class CommissionCashServiceImpl extends ServiceImpl<MtCommissionCashMappe
         MtCommissionCash mtCommissionCash = mtCommissionCashMapper.selectById(id);
         CommissionCashDto commissionCashDto = null;
         if (mtCommissionCash != null) {
+            commissionCashDto = new CommissionCashDto();
             BeanUtils.copyProperties(mtCommissionCash, commissionCashDto);
         }
         return commissionCashDto;
@@ -356,11 +362,61 @@ public class CommissionCashServiceImpl extends ServiceImpl<MtCommissionCashMappe
     @OperationServiceLog(description = "取消结算")
     public void cancelCommissionCash(CommissionSettleConfirmRequest requestParam) throws BusinessCheckException {
         if (StringUtil.isEmpty(requestParam.getUuid())) {
-            throw new BusinessCheckException("请求有误.");
+            throw new BusinessCheckException("请求参数有误");
         }
         boolean flag = mtCommissionCashMapper.cancelCommissionCash(requestParam.getMerchantId(), requestParam.getUuid(), requestParam.getOperator());
         if (flag) {
             mtCommissionLogMapper.cancelCommissionLog(requestParam.getMerchantId(), requestParam.getUuid(), requestParam.getOperator());
+        }
+    }
+
+    /**
+     * 支付结算金额到用户余额
+     *
+     * @param commissionCashRequest 请求参数
+     * @throws BusinessCheckException
+     * @return
+     */
+    @Override
+    @Transactional
+    @OperationServiceLog(description = "支付结算金额到用户余额")
+    public void payToBalance(CommissionCashRequest commissionCashRequest) throws BusinessCheckException {
+        MtCommissionCash mtCommissionCash = mtCommissionCashMapper.selectById(commissionCashRequest.getId());
+        if (mtCommissionCash == null) {
+            throw new BusinessCheckException("请求参数有误");
+        }
+        if (mtCommissionCash.getStatus().equals(CommissionCashStatusEnum.PAYED.getKey())) {
+            throw new BusinessCheckException("该记录已经支付过了");
+        }
+        if (mtCommissionCash.getStatus().equals(CommissionCashStatusEnum.CANCEL.getKey())) {
+            throw new BusinessCheckException("该记录已经作废了");
+        }
+        BigDecimal amount = mtCommissionCash.getAmount();
+        if (StringUtil.isNotBlank(commissionCashRequest.getAmount()) && (new BigDecimal(commissionCashRequest.getAmount()).compareTo(new BigDecimal("0")) > 0)) {
+            if (new BigDecimal(commissionCashRequest.getAmount()).compareTo(amount) > 0) {
+                throw new BusinessCheckException("付款金额不能大于" + amount);
+            }
+            amount = new BigDecimal(commissionCashRequest.getAmount());
+        }
+        mtCommissionCash.setOperator(commissionCashRequest.getOperator());
+        mtCommissionCash.setStatus(CommissionCashStatusEnum.PAYED.getKey());
+        mtCommissionCash.setAmount(amount);
+        mtCommissionCash.setUpdateTime(new Date());
+        mtCommissionCash.setDescription(commissionCashRequest.getDescription());
+        Integer i = mtCommissionCashMapper.updateById(mtCommissionCash);
+        if (i > 0 && mtCommissionCash.getUserId() != null) {
+            MtUser mtUser = memberService.queryMemberById(mtCommissionCash.getUserId());
+            if (mtUser != null) {
+                MtBalance mtBalance = new MtBalance();
+                mtBalance.setMerchantId(mtCommissionCash.getMerchantId());
+                mtBalance.setStoreId(mtCommissionCash.getStoreId());
+                mtBalance.setUserId(mtCommissionCash.getUserId());
+                mtBalance.setAmount(amount);
+                mtBalance.setStatus(StatusEnum.ENABLED.getKey());
+                mtBalance.setMobile(mtUser.getMobile());
+                mtBalance.setDescription("发放分享佣金");
+                balanceService.addBalance(mtBalance, true);
+            }
         }
     }
 }

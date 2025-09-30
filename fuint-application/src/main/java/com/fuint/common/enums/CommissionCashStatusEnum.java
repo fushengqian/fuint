@@ -15,8 +15,8 @@ import java.util.stream.Collectors;
 public enum CommissionCashStatusEnum {
     WAIT("A", "待确认"),
     SETTLED("B", "已确认"),
-    CANCEL("C", "已打款"),
-    PAYED("D", "已作废");
+    CANCEL("C", "已作废"),
+    PAYED("D", "已打款");
 
     private String key;
 

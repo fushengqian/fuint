@@ -465,10 +465,6 @@ public class RefundServiceImpl extends ServiceImpl<MtRefundMapper, MtRefund> imp
                 } else {
                     balanceReq.setAmount(refundAmount.negate());
                 }
-
-                balanceReq.setStatus(StatusEnum.ENABLED.getKey());
-                balanceReq.setCreateTime(new Date());
-                balanceReq.setUpdateTime(new Date());
                 balanceService.addBalance(balanceReq, true);
             }
         }

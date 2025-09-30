@@ -121,8 +121,7 @@ public class ClientSignController extends BaseController {
             return getFailureResult(0, "用户状态异常");
         }
 
-        String userAgent = request.getHeader("user-agent");
-        String token = TokenUtil.generateToken(userAgent, mtUser.getId());
+        String token = TokenUtil.generateToken(request.getHeader("user-agent"), mtUser.getId());
         UserInfo userLoginInfo = new UserInfo();
         userLoginInfo.setId(mtUser.getId());
         userLoginInfo.setToken(token);
