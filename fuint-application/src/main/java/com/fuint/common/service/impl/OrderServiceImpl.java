@@ -276,11 +276,9 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
             MtUser userInfo = memberService.queryMemberByMobile(merchantId, mobile);
             if (userInfo != null) {
                 userId = userInfo.getId().toString();
-            } else {
-                userId = "0";
             }
         }
-        if (StringUtil.isNotEmpty(userId) && Integer.parseInt(userId) > 0) {
+        if (StringUtil.isNotBlank(userId) && Integer.parseInt(userId) > 0) {
             lambdaQueryWrapper.eq(MtOrder::getUserId, userId);
         }
         if (merchantId != null && merchantId > 0) {
@@ -422,6 +420,9 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
         }
         if (mtOrder.getVerifyCode() == null && !orderDto.getPlatform().equals(PlatformTypeEnum.PC.getCode())) {
             mtOrder.setVerifyCode(SeqUtil.getRandomNumber(6));
+        } else {
+            mtOrder.setVerifyCode("");
+            mtOrder.setConfirmStatus(YesOrNoEnum.YES.getKey());
         }
 
         // 首先生成订单

@@ -86,7 +86,7 @@ public class SendLogServiceImpl extends ServiceImpl<MtSendLogMapper, MtSendLog> 
     /**
      * 添加发放记录
      *
-     * @param reqSendLogDto
+     * @param  reqSendLogDto
      * @throws BusinessCheckException
      * @return
      */
@@ -129,21 +129,19 @@ public class SendLogServiceImpl extends ServiceImpl<MtSendLogMapper, MtSendLog> 
     /**
      * 根据ID删除发券记录
      *
-     * @param  id       发券记录ID
+     * @param  id 发券记录ID
      * @param  operator 操作人
      * @throws BusinessCheckException
      * @return
      */
     @Override
     public void deleteSendLog(Long id, String operator) {
-        MtSendLog couponGroup = querySendLogById(id);
-
-        if (null == couponGroup) {
+        MtSendLog mtSendLog = querySendLogById(id);
+        if (null == mtSendLog) {
             return;
         }
-
-        couponGroup.setStatus(StatusEnum.DISABLE.getKey());
-        couponGroup.setOperator(operator);
-        mtSendLogMapper.updateById(couponGroup);
+        mtSendLog.setStatus(StatusEnum.DISABLE.getKey());
+        mtSendLog.setOperator(operator);
+        mtSendLogMapper.updateById(mtSendLog);
     }
 }

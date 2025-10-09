@@ -29,7 +29,7 @@ public class MtUserCoupon implements Serializable {
     @TableId(value = "ID", type = IdType.AUTO)
     private Integer id;
 
-    @ApiModelProperty("编码")
+    @ApiModelProperty("核销码")
     private String code;
 
     @ApiModelProperty("券类型，C优惠券；P储值卡；T计次卡")
@@ -85,6 +85,5 @@ public class MtUserCoupon implements Serializable {
 
     @ApiModelProperty("订单ID")
     private Integer orderId;
-
 
 }
