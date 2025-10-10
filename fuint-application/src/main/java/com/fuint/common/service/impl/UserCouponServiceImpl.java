@@ -688,14 +688,10 @@ public class UserCouponServiceImpl extends ServiceImpl<MtUserCouponMapper, MtUse
             userCoupon.setAmount(couponInfo.getAmount());
             userCoupon.setBalance(couponInfo.getAmount());
 
-            // 12位随机数
-            StringBuffer code = new StringBuffer();
-            code.append(SeqUtil.getRandomNumber(4));
-            code.append(SeqUtil.getRandomNumber(4));
-            code.append(SeqUtil.getRandomNumber(4));
-            code.append(SeqUtil.getRandomNumber(4));
-            userCoupon.setCode(code.toString());
-            userCoupon.setUuid(code.toString());
+            // 16位随机数
+            String code = SeqUtil.getRandomNumber(16);
+            userCoupon.setCode(code);
+            userCoupon.setUuid(code);
 
             mtUserCouponMapper.insert(userCoupon);
         }
@@ -748,14 +744,10 @@ public class UserCouponServiceImpl extends ServiceImpl<MtUserCouponMapper, MtUse
         userCoupon.setAmount(amount);
         userCoupon.setBalance(amount);
 
-        // 12位随机数
-        StringBuffer code = new StringBuffer();
-        code.append(SeqUtil.getRandomNumber(4));
-        code.append(SeqUtil.getRandomNumber(4));
-        code.append(SeqUtil.getRandomNumber(4));
-        code.append(SeqUtil.getRandomNumber(4));
-        userCoupon.setCode(code.toString());
-        userCoupon.setUuid(code.toString());
+        // 16位随机数
+        String code = SeqUtil.getRandomNumber(16);
+        userCoupon.setCode(code);
+        userCoupon.setUuid(code);
 
         mtUserCouponMapper.insert(userCoupon);
         return true;

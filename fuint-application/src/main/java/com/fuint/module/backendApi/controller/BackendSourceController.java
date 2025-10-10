@@ -169,16 +169,15 @@ public class BackendSourceController extends BaseController {
         editSource.setEname(eName);
 
         if (StringUtil.isNotBlank(parentId)) {
-            try {
-                if (Integer.parseInt(parentId) > 0) {
-                    TSource parentSource = sourceService.getById(Long.parseLong(parentId));
+            if (Integer.parseInt(parentId) > 0) {
+                TSource parentSource = sourceService.getById(Long.parseLong(parentId));
+                if (parentSource != null) {
                     editSource.setParentId(parentSource.getSourceId());
                     editSource.setSourceLevel(parentSource.getSourceLevel() + 1);
-                } else {
-                    editSource.setSourceLevel(1);
                 }
-            } catch (Exception e) {
-                return getFailureResult(201, "父菜单" + parentId + "不存在");
+            } else {
+                editSource.setSourceLevel(1);
+                editSource.setParentId(0);
             }
         } else {
             editSource.setSourceLevel(1);
