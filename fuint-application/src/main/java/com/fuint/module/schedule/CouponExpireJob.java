@@ -71,7 +71,7 @@ public class CouponExpireJob {
      **/
     private int MAX_SEND_NUM = 50;
 
-    @Scheduled(cron = "${couponExpire.job.time}")
+    @Scheduled(cron = "${couponExpire.job.time:0 0/1 * * * ?}")
     @Transactional(rollbackFor = Exception.class)
     public void dealCoupon() throws BusinessCheckException, ParseException {
         String theSwitch = environment.getProperty("couponExpire.job.switch");

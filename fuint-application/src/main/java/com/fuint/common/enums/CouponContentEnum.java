@@ -7,11 +7,8 @@ package com.fuint.common.enums;
  * CopyRight https://www.fuint.cn
  */
 public enum CouponContentEnum {
-    ROOM("1", "房间"),
-    ROOM_BTEAKFAST("2", "房间+早餐"),
-    MEALS("3", "餐食"),
-    WASH("4", "洗衣"),
-    HEALTH("5", "康乐");
+    AMOUNT("1", "满减券"),
+    PERCENT("2", "折扣券");
 
     private String key;
 

@@ -41,7 +41,7 @@ public class UploadShippingInfoJob {
     @Autowired(required = false)
     private WeixinService weixinService;
 
-    @Scheduled(cron = "${uploadShippingInfoJob.job.time}")
+    @Scheduled(cron = "${uploadShippingInfoJob.job.time:0 0/5 * * * ?}")
     @Transactional(rollbackFor = Exception.class)
     public void dealOrder() {
         String theSwitch = environment.getProperty("uploadShippingInfoJob.job.switch");

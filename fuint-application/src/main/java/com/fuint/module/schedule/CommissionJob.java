@@ -56,7 +56,7 @@ public class CommissionJob {
      * */
     private int OVER_DAY = 0;
 
-    @Scheduled(cron = "${commission.job.time}")
+    @Scheduled(cron = "${commission.job.time:0 0/5 * * * ?}")
     @Transactional(rollbackFor = Exception.class)
     public void dealOrder() throws BusinessCheckException {
         String theSwitch = environment.getProperty("commission.job.switch");
