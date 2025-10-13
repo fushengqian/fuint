@@ -96,10 +96,9 @@ public class BackendStockController extends BaseController {
 
         // 店铺列表
         List<MtStore> storeList = storeService.getMyStoreList(accountInfo.getMerchantId(), accountInfo.getStoreId(), StatusEnum.ENABLED.getKey());
-        String imagePath = settingService.getUploadBasePath();
 
         Map<String, Object> result = new HashMap<>();
-        result.put("imagePath", imagePath);
+        result.put("imagePath", settingService.getUploadBasePath());
         result.put("storeList", storeList);
         result.put("paginationResponse", paginationResponse);
 
@@ -140,20 +139,20 @@ public class BackendStockController extends BaseController {
         Integer storeId = (params.get("storeId") == null || StringUtil.isEmpty(params.get("storeId").toString())) ? 0 : Integer.parseInt(params.get("storeId").toString());
         List<LinkedHashMap> goodsList = (List) params.get("goodsList");
 
-        AccountInfo accountDto = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
+        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
 
-        Integer myStoreId = accountDto.getStoreId();
+        Integer myStoreId = accountInfo.getStoreId();
         if (myStoreId != null && myStoreId > 0) {
             storeId = myStoreId;
         }
 
         MtStock mtStock = new MtStock();
-        mtStock.setMerchantId(accountDto.getMerchantId());
+        mtStock.setMerchantId(accountInfo.getMerchantId());
         mtStock.setDescription(description);
         mtStock.setStatus(status);
         mtStock.setStoreId(storeId);
         mtStock.setType(type);
-        String operator = accountDto.getAccountName();
+        String operator = accountInfo.getAccountName();
         mtStock.setOperator(operator);
         stockService.addStock(mtStock, goodsList);
 

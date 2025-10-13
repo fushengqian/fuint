@@ -18,7 +18,6 @@ import com.fuint.framework.web.ResponseObject;
 import com.fuint.repository.mapper.MtOpenGiftMapper;
 import com.fuint.repository.mapper.MtUserMapper;
 import com.fuint.repository.model.*;
-import com.fuint.utils.StringUtil;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import lombok.AllArgsConstructor;

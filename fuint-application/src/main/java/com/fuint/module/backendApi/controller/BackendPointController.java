@@ -124,7 +124,7 @@ public class BackendPointController extends BaseController {
         String canUsedAsMoney = "";
         String exchangeNeedPoint = "";
         String rechargePointSpeed = "";
-        String status = "";
+        String status = StatusEnum.ENABLED.getKey();
 
         for (MtSetting setting : settingList) {
             if (setting.getName().equals(PointSettingEnum.POINT_NEED_CONSUME.getKey())) {

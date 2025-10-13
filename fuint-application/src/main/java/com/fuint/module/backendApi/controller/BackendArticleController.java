@@ -68,7 +68,7 @@ public class BackendArticleController extends BaseController {
         String searchStoreId = request.getParameter("storeId");
 
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
-        Integer storeId = accountInfo.getStoreId();;
+        Integer storeId = accountInfo.getStoreId();
 
         Map<String, Object> params = new HashMap<>();
         if (StringUtil.isNotEmpty(title)) {

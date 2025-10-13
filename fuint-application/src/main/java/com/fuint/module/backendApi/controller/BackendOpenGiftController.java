@@ -188,18 +188,20 @@ public class BackendOpenGiftController extends BaseController {
     @RequestMapping(value = "/updateStatus", method = RequestMethod.POST)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('openGift:index')")
-    public ResponseObject updateStatus(@RequestBody Map<String, Object> param) throws BusinessCheckException {
+    public ResponseObject updateStatus(HttpServletRequest request, @RequestBody Map<String, Object> param) throws BusinessCheckException {
+        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
         Integer id = param.get("id") == null ? 0 : Integer.parseInt(param.get("id").toString());
         String status = param.get("status") == null ? StatusEnum.ENABLED.getKey() : param.get("status").toString();
 
         OpenGiftDto info = openGiftService.getOpenGiftDetail(id);
         if (info == null) {
-            return getFailureResult(201, "会员等级不存在");
+            return getFailureResult(201, "开卡赠礼不存在");
         }
 
         MtOpenGift reqDto = new MtOpenGift();
         reqDto.setId(id);
         reqDto.setStatus(status);
+        reqDto.setOperator(accountInfo.getAccountName());
 
         openGiftService.updateOpenGift(reqDto);
         return getSuccessResult(true);
