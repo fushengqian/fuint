@@ -32,6 +32,9 @@ public class ReqCouponDto implements Serializable {
     @ApiModelProperty("类型")
     private String type;
 
+    @ApiModelProperty("内容")
+    private Integer content;
+
     @ApiModelProperty("名称")
     private String name;
 

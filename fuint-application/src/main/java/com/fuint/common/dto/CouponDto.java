@@ -23,6 +23,9 @@ public class CouponDto implements Serializable {
     @ApiModelProperty("卡券类型")
     private String type;
 
+    @ApiModelProperty("内容")
+    private Integer content;
+
     @ApiModelProperty("状态")
     private String status;
 

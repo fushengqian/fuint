@@ -41,6 +41,9 @@ public class MtCoupon implements Serializable {
     @ApiModelProperty("券类型，C优惠券；P储值卡；T计次卡")
     private String type;
 
+    @ApiModelProperty("券内容，如：0表示满减券、1表示折扣券")
+    private Integer content;
+
     @ApiModelProperty("券名称")
     private String name;
 
