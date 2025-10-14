@@ -454,6 +454,7 @@ public class UserCouponServiceImpl extends ServiceImpl<MtUserCouponMapper, MtUse
                 dto.setAmount(userCouponDto.getAmount());
                 dto.setBalance(userCouponDto.getBalance());
                 dto.setType(couponInfo.getType());
+                dto.setContent(couponInfo.getContent());
                 dto.setUsedTime(userCouponDto.getUsedTime());
                 dto.setCreateTime(userCouponDto.getCreateTime());
                 dto.setUserInfo(userInfo);

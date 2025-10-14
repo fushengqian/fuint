@@ -414,12 +414,12 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
         if (mtOrder.getId() == null || mtOrder.getId() <= 0) {
             mtOrder.setCreateTime(new Date());
         }
-        // 核销码
         if (orderDto.getPlatform() == null) {
             orderDto.setPlatform("");
         }
+        // 核销码
         if (mtOrder.getVerifyCode() == null && !orderDto.getPlatform().equals(PlatformTypeEnum.PC.getCode())) {
-            mtOrder.setVerifyCode(SeqUtil.getRandomNumber(6));
+            mtOrder.setVerifyCode(SeqUtil.getRandomNumber(4));
         } else {
             mtOrder.setVerifyCode("");
             mtOrder.setConfirmStatus(YesOrNoEnum.YES.getKey());
@@ -1027,7 +1027,18 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
                                     String useCode = couponService.useCoupon(couponId, orderDto.getUserId(), orderDto.getStoreId(), orderInfo.getId(), userCouponInfo.getAmount(), "核销");
                                     if (StringUtil.isNotEmpty(useCode)) {
                                         orderDto.setCouponId(couponId);
-                                        orderDto.setDiscount(orderInfo.getDiscount().add(userCouponInfo.getAmount()));
+                                        // 折扣券
+                                        if (couponInfo.getContent().equals(CouponContentEnum.PERCENT.getKey())) {
+                                            BigDecimal discount = new BigDecimal("0");
+                                            BigDecimal percent = userCouponInfo.getAmount().divide(new BigDecimal("100"), BigDecimal.ROUND_CEILING, 4);
+                                            discount = discount.multiply(new BigDecimal("1").subtract(percent));
+                                            if (discount.compareTo(new BigDecimal("0")) > 0) {
+                                                orderDto.setDiscount(orderInfo.getDiscount().add(discount));
+                                            }
+                                        } else {
+                                            // 满减券
+                                            orderDto.setDiscount(orderInfo.getDiscount().add(userCouponInfo.getAmount()));
+                                        }
                                         updateOrder(orderDto);
                                     }
                                 }
@@ -1853,6 +1864,7 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
                     couponInfo.setBalance(mtUserCoupon.getBalance());
                     couponInfo.setStatus(mtUserCoupon.getStatus());
                     couponInfo.setType(mtCoupon.getType());
+                    couponInfo.setContent(mtCoupon.getContent());
                     userOrderDto.setCouponInfo(couponInfo);
                 }
             }
@@ -2108,6 +2120,7 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
                     couponDto.setName(couponInfo.getName());
                     couponDto.setAmount(userCoupon.getAmount());
                     couponDto.setStatus(UserCouponStatusEnum.DISABLE.getKey());
+                    couponDto.setContent(couponInfo.getContent());
                     // 购物不能用专用的卡券
                     if (couponInfo.getUseFor() != null && StringUtil.isNotEmpty(couponInfo.getUseFor())) {
                         if (couponInfo.getUseFor().equals(CouponUseForEnum.MEMBER_GRADE.getKey())) {
@@ -2197,7 +2210,12 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
                 if (isEffective) {
                    if (useCouponInfo.getType().equals(CouponTypeEnum.COUPON.getKey())) {
                        couponAmount = useCouponInfo.getAmount();
-                   } else if(useCouponInfo.getType().equals(CouponTypeEnum.PRESTORE.getKey())) {
+                       // 折扣券
+                       if (useCouponInfo.getContent().equals(CouponContentEnum.PERCENT.getKey())) {
+                           BigDecimal disc = userCouponInfo.getAmount().divide(new BigDecimal("100"), BigDecimal.ROUND_CEILING, 4);
+                           couponAmount = totalPrice.multiply(new BigDecimal(1).subtract(disc));
+                       }
+                   } else if (useCouponInfo.getType().equals(CouponTypeEnum.PRESTORE.getKey())) {
                        BigDecimal couponTotalAmount = userCouponInfo.getBalance();
                        if (couponTotalAmount.compareTo(totalPrice) > 0) {
                            couponAmount = totalPrice;

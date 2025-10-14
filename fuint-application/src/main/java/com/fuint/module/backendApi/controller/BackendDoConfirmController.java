@@ -102,6 +102,7 @@ public class BackendDoConfirmController extends BaseController {
         userCouponInfo.setDescription(couponInfo.getDescription());
         userCouponInfo.setId(userCoupon.getId());
         userCouponInfo.setType(couponInfo.getType());
+        userCouponInfo.setContent(couponInfo.getContent());
         userCouponInfo.setStatus(userCoupon.getStatus());
         userCouponInfo.setBalance(userCoupon.getBalance());
         userCouponInfo.setAmount(userCoupon.getAmount());

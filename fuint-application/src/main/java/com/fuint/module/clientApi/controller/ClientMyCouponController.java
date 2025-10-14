@@ -63,7 +63,6 @@ public class ClientMyCouponController extends BaseController {
         param.put("type", type);
 
         ResponseObject result = userCouponService.getUserCouponList(param);
-
         return getSuccessResult(result.getData());
     }
 
