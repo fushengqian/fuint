@@ -2194,7 +2194,9 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
                     if (couponInfo.getExpireType().equals(CouponExpireTypeEnum.FLEX.getKey())) {
                         couponDto.setEffectiveDate(DateUtil.formatDate(userCoupon.getCreateTime(), "yyyy.MM.dd HH:mm") + "~" + DateUtil.formatDate(userCoupon.getExpireTime(), "yyyy.MM.dd HH:mm"));
                     }
-                    couponList.add(couponDto);
+                    if (couponDto.getStatus().equals(UserCouponStatusEnum.UNUSED.getKey())) {
+                        couponList.add(couponDto);
+                    }
                 }
             }
         }
