@@ -178,6 +178,11 @@ public class UserCouponServiceImpl extends ServiceImpl<MtUserCouponMapper, MtUse
             throw new BusinessCheckException(Message.USER_NOT_EXIST);
         }
 
+        // 校验前台领取
+        if (!couponInfo.getSendWay().equals(SendWayEnum.FRONT.getKey())) {
+            throw new BusinessCheckException(Message.SEND_WAY_ERROR);
+        }
+
         // 会员等级限制
         if (couponInfo.getGradeIds() != null && StringUtil.isNotEmpty(couponInfo.getGradeIds())) {
             String gradeIds[] = couponInfo.getGradeIds().split(",");
