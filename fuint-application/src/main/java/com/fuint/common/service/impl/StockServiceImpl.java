@@ -3,6 +3,7 @@ package com.fuint.common.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.fuint.common.dto.StockGoodsDto;
 import com.fuint.common.enums.StatusEnum;
 import com.fuint.common.enums.YesOrNoEnum;
 import com.fuint.common.service.*;
@@ -99,7 +100,7 @@ public class StockServiceImpl extends ServiceImpl<MtStockMapper, MtStock> implem
     @Override
     @Transactional(rollbackFor = Exception.class)
     @OperationServiceLog(description = "新增库存管理记录")
-    public ResponseObject addStock(MtStock stockParam, List<LinkedHashMap> goodsList) throws BusinessCheckException {
+    public ResponseObject addStock(MtStock stockParam, List<StockGoodsDto> goodsList) throws BusinessCheckException {
         MtStock mtStock = new MtStock();
         mtStock.setMerchantId(stockParam.getMerchantId());
         mtStock.setStoreId(stockParam.getStoreId());
@@ -113,15 +114,14 @@ public class StockServiceImpl extends ServiceImpl<MtStockMapper, MtStock> implem
         this.save(mtStock);
 
         Integer stockId = mtStock.getId();
-        for (LinkedHashMap goods : goodsList) {
+        for (StockGoodsDto goods : goodsList) {
              MtStockItem mtStockItem = new MtStockItem();
              mtStockItem.setStockId(stockId);
-             Integer goodsId = Integer.parseInt(goods.get("id").toString());
-             Integer skuId = null;
-             Integer num = Integer.parseInt(goods.get("num").toString());
+             Integer goodsId = goods.getId();
+             Integer skuId = goods.getSkuId();
+             Integer num = goods.getNum();
              mtStockItem.setGoodsId(goodsId);
-             if (goods.get("skuId") != null && StringUtil.isNotEmpty(goods.get("skuId").toString())) {
-                 skuId = Integer.parseInt(goods.get("skuId").toString());
+             if (goods.getSkuId() != null) {
                  mtStockItem.setSkuId(skuId);
              }
              mtStockItem.setStatus(StatusEnum.ENABLED.getKey());
