@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.Date;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -42,6 +43,9 @@ public class MtMerchant implements Serializable {
 
     @ApiModelProperty("微信公众号秘钥")
     private String wxOfficialAppSecret;
+
+    @ApiModelProperty(value="结算比例")
+    private BigDecimal settleRate;
 
     @ApiModelProperty("商户号")
     private String no;

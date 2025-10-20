@@ -3,6 +3,7 @@ package com.fuint.module.backendApi.request;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import java.io.Serializable;
+import java.math.BigDecimal;
 
 /**
  * 提交商户请求参数
@@ -54,5 +55,8 @@ public class MerchantSubmitRequest implements Serializable {
 
     @ApiModelProperty(value="公众号AppSecret", name="wxOfficialAppSecret")
     private String wxOfficialAppSecret;
+
+    @ApiModelProperty(value="结算比例", name="settleRate")
+    private BigDecimal settleRate;
 
 }

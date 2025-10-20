@@ -172,6 +172,9 @@ public class MerchantServiceImpl extends ServiceImpl<MtMerchantMapper, MtMerchan
         mtMerchant.setWxAppSecret(merchant.getWxAppSecret());
         mtMerchant.setWxOfficialAppId(merchant.getWxOfficialAppId());
         mtMerchant.setWxOfficialAppSecret(merchant.getWxOfficialAppSecret());
+        if (merchant.getSettleRate() != null) {
+            mtMerchant.setSettleRate(merchant.getSettleRate());
+        }
         mtMerchant.setDescription(merchant.getDescription());
         mtMerchant.setPhone(merchant.getPhone());
         mtMerchant.setAddress(merchant.getAddress());

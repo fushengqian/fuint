@@ -38,6 +38,9 @@ public class MtSettlement implements Serializable {
     @ApiModelProperty("店铺ID")
     private Integer storeId;
 
+    @ApiModelProperty("结算比例")
+    private BigDecimal settleRate;
+
     @ApiModelProperty("订单总金额")
     private BigDecimal totalOrderAmount;
 

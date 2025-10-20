@@ -141,7 +141,6 @@ public class BackendStockController extends BaseController {
         List<StockGoodsDto> goodsList = (List) params.get("goodsList");
 
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
-
         Integer myStoreId = accountInfo.getStoreId();
         if (myStoreId != null && myStoreId > 0) {
             storeId = myStoreId;

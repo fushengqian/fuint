@@ -11,6 +11,7 @@ import com.fuint.common.enums.PayTypeEnum;
 import com.fuint.common.enums.SettleStatusEnum;
 import com.fuint.common.enums.StatusEnum;
 import com.fuint.common.param.OrderListParam;
+import com.fuint.common.service.MerchantService;
 import com.fuint.common.service.OrderService;
 import com.fuint.common.service.SettlementService;
 import com.fuint.common.util.CommonUtil;
@@ -21,10 +22,7 @@ import com.fuint.framework.pagination.PaginationResponse;
 import com.fuint.module.backendApi.request.SettlementRequest;
 import com.fuint.repository.mapper.MtSettlementMapper;
 import com.fuint.repository.mapper.MtSettlementOrderMapper;
-import com.fuint.repository.model.MtBanner;
-import com.fuint.repository.model.MtOrder;
-import com.fuint.repository.model.MtSettlement;
-import com.fuint.repository.model.MtSettlementOrder;
+import com.fuint.repository.model.*;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import lombok.AllArgsConstructor;
@@ -55,6 +53,11 @@ public class SettlementServiceImpl implements SettlementService {
      * 订单服务接口
      * */
     private OrderService orderService;
+
+    /**
+     * 商户服务接口
+     * */
+    private MerchantService merchantService;
 
     /**
      * 分页查询结算列表
@@ -143,7 +146,14 @@ public class SettlementServiceImpl implements SettlementService {
         mtSettlement.setMerchantId(requestParam.getMerchantId());
         mtSettlement.setStoreId(requestParam.getStoreId());
         mtSettlement.setSettlementNo(CommonUtil.createSettlementNo());
-        mtSettlement.setAmount(amount);
+
+        MtMerchant mtMerchant = merchantService.queryMerchantById(requestParam.getMerchantId());
+        BigDecimal percent = new BigDecimal("1");
+        if (mtMerchant.getSettleRate() != null && mtMerchant.getSettleRate().compareTo(new BigDecimal("0")) > 0) {
+            percent = mtMerchant.getSettleRate().divide(new BigDecimal("100"), BigDecimal.ROUND_CEILING, 4);
+        }
+        mtSettlement.setAmount(amount.multiply(percent));
+        mtMerchant.setSettleRate(percent.multiply(new BigDecimal("100")));
         mtSettlement.setTotalOrderAmount(totalOrderAmount);
         mtSettlement.setStatus(StatusEnum.ENABLED.getKey());
         mtSettlement.setOperator(requestParam.getOperator());
