@@ -153,7 +153,7 @@ public class SettlementServiceImpl implements SettlementService {
             percent = mtMerchant.getSettleRate().divide(new BigDecimal("100"), BigDecimal.ROUND_CEILING, 4);
         }
         mtSettlement.setAmount(amount.multiply(percent));
-        mtMerchant.setSettleRate(percent.multiply(new BigDecimal("100")));
+        mtSettlement.setSettleRate(percent.multiply(new BigDecimal("100")));
         mtSettlement.setTotalOrderAmount(totalOrderAmount);
         mtSettlement.setStatus(StatusEnum.ENABLED.getKey());
         mtSettlement.setOperator(requestParam.getOperator());
