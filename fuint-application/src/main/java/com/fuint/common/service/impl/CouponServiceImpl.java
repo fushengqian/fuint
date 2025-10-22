@@ -189,7 +189,7 @@ public class CouponServiceImpl extends ServiceImpl<MtCouponMapper, MtCoupon> imp
                 Date startTime = DateUtil.parseDate(reqCouponDto.getBeginTime());
                 Date endTime = DateUtil.parseDate(reqCouponDto.getEndTime());
                 if (endTime.after(new Date())) {
-                    if (mtCoupon != null && mtCoupon.getStatus().equals(StatusEnum.EXPIRED.getKey())) {
+                    if (mtCoupon != null && mtCoupon.getId() != null && mtCoupon.getStatus().equals(StatusEnum.EXPIRED.getKey())) {
                         reqCouponDto.setStatus(StatusEnum.ENABLED.getKey());
                     }
                 }

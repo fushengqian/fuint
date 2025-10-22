@@ -6,10 +6,7 @@ import com.fuint.common.Constants;
 import com.fuint.common.dto.SettlementDto;
 import com.fuint.common.dto.SettlementOrderDto;
 import com.fuint.common.dto.UserOrderDto;
-import com.fuint.common.enums.PayStatusEnum;
-import com.fuint.common.enums.PayTypeEnum;
-import com.fuint.common.enums.SettleStatusEnum;
-import com.fuint.common.enums.StatusEnum;
+import com.fuint.common.enums.*;
 import com.fuint.common.param.OrderListParam;
 import com.fuint.common.service.MerchantService;
 import com.fuint.common.service.OrderService;
@@ -118,7 +115,7 @@ public class SettlementServiceImpl implements SettlementService {
         orderParam.setStartTime(requestParam.getStartTime());
         orderParam.setEndTime(requestParam.getEndTime());
         orderParam.setSettleStatus(SettleStatusEnum.WAIT.getKey());
-
+        orderParam.setStatus(OrderStatusEnum.COMPLETE.getKey());
         List<String> payType = new ArrayList<>();
         payType.add(PayTypeEnum.JSAPI.getKey());
         payType.add(PayTypeEnum.MICROPAY.getKey());
