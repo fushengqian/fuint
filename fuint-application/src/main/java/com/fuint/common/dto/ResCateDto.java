@@ -2,9 +2,7 @@ package com.fuint.common.dto;
 
 import com.fuint.repository.model.MtGoods;
 import io.swagger.annotations.ApiModelProperty;
-import lombok.Getter;
-import lombok.Setter;
-
+import lombok.Data;
 import java.io.Serializable;
 import java.util.List;
 
@@ -14,8 +12,7 @@ import java.util.List;
  * Created by FSQ
  * CopyRight https://www.fuint.cn
  */
-@Getter
-@Setter
+@Data
 public class ResCateDto implements Serializable {
 
     @ApiModelProperty("分类ID")

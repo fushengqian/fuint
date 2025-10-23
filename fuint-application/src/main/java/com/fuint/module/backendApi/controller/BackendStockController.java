@@ -7,6 +7,7 @@ import com.fuint.common.dto.StockGoodsDto;
 import com.fuint.common.enums.StatusEnum;
 import com.fuint.common.service.*;
 import com.fuint.common.util.CommonUtil;
+import com.fuint.common.util.ListUtil;
 import com.fuint.common.util.TokenUtil;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.pagination.PaginationRequest;
@@ -138,7 +139,8 @@ public class BackendStockController extends BaseController {
         String description = params.get("description") == null ? "" : CommonUtil.replaceXSS(params.get("description").toString());
         String status = params.get("status") == null ? StatusEnum.ENABLED.getKey() : params.get("status").toString();
         Integer storeId = (params.get("storeId") == null || StringUtil.isEmpty(params.get("storeId").toString())) ? 0 : Integer.parseInt(params.get("storeId").toString());
-        List<StockGoodsDto> goodsList = (List) params.get("goodsList");
+        List<LinkedHashMap<String, Object>> originalMapList = (List<LinkedHashMap<String, Object>>) params.get("goodsList");
+        List<StockGoodsDto> goodsList = ListUtil.convertMapListToDtoList(originalMapList, StockGoodsDto.class);
 
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
         Integer myStoreId = accountInfo.getStoreId();
