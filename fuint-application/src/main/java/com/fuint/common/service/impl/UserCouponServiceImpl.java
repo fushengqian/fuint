@@ -363,7 +363,7 @@ public class UserCouponServiceImpl extends ServiceImpl<MtUserCouponMapper, MtUse
         String id = paramMap.get("id") == null ? "" : paramMap.get("id").toString();
 
         // 处理已失效
-        if (pageNumber <= 1 && StringUtil.isNotEmpty(userId)) {
+        if (pageNumber <= 1 && StringUtil.isNotBlank(userId)) {
             List<String> statusList = Arrays.asList(UserCouponStatusEnum.UNUSED.getKey());
             List<MtUserCoupon> data = mtUserCouponMapper.getUserCouponList(Integer.parseInt(userId), statusList);
             for (MtUserCoupon uc : data) {
@@ -391,14 +391,22 @@ public class UserCouponServiceImpl extends ServiceImpl<MtUserCouponMapper, MtUse
 
         LambdaQueryWrapper<MtUserCoupon> lambdaQueryWrapper = Wrappers.lambdaQuery();
         lambdaQueryWrapper.ne(MtUserCoupon::getStatus, StatusEnum.DISABLE.getKey());
-        if (StringUtil.isNotEmpty(status)) {
+        if (StringUtil.isNotBlank(mobile)) {
+            MtUser mtUser = memberService.queryMemberByMobile(Integer.parseInt(merchantId), mobile);
+            if (mtUser != null) {
+                userId = mtUser.getId().toString();
+            } else {
+                lambdaQueryWrapper.eq(MtUserCoupon::getUserId, -1);
+            }
+        }
+        if (StringUtil.isNotBlank(status)) {
             lambdaQueryWrapper.eq(MtUserCoupon::getStatus, status);
         }
-        if (StringUtil.isNotEmpty(userId)) {
+        if (StringUtil.isNotBlank(userId)) {
             lambdaQueryWrapper.eq(MtUserCoupon::getUserId, userId);
         }
-        if (StringUtil.isNotEmpty(userNo)) {
-            if (StringUtil.isEmpty(merchantId)) {
+        if (StringUtil.isNotBlank(userNo)) {
+            if (StringUtil.isBlank(merchantId)) {
                 merchantId = "0";
             }
             MtUser userInfo = memberService.queryMemberByUserNo(Integer.parseInt(merchantId), userNo);
@@ -408,25 +416,22 @@ public class UserCouponServiceImpl extends ServiceImpl<MtUserCouponMapper, MtUse
                 lambdaQueryWrapper.eq(MtUserCoupon::getUserId, -1);
             }
         }
-        if (StringUtil.isNotEmpty(mobile)) {
-            lambdaQueryWrapper.eq(MtUserCoupon::getMobile, mobile);
-        }
-        if (StringUtil.isNotEmpty(type)) {
+        if (StringUtil.isNotBlank(type)) {
             lambdaQueryWrapper.eq(MtUserCoupon::getType, type);
         }
-        if (StringUtil.isNotEmpty(merchantId)) {
+        if (StringUtil.isNotBlank(merchantId)) {
             lambdaQueryWrapper.eq(MtUserCoupon::getMerchantId, merchantId);
         }
-        if (StringUtil.isNotEmpty(storeId)) {
+        if (StringUtil.isNotBlank(storeId)) {
             lambdaQueryWrapper.eq(MtUserCoupon::getStoreId, storeId);
         }
-        if (StringUtil.isNotEmpty(couponId)) {
+        if (StringUtil.isNotBlank(couponId)) {
             lambdaQueryWrapper.eq(MtUserCoupon::getCouponId, couponId);
         }
-        if (StringUtil.isNotEmpty(code)) {
+        if (StringUtil.isNotBlank(code)) {
             lambdaQueryWrapper.eq(MtUserCoupon::getCode, code);
         }
-        if (StringUtil.isNotEmpty(id)) {
+        if (StringUtil.isNotBlank(id)) {
             lambdaQueryWrapper.eq(MtUserCoupon::getId, id);
         }
 
