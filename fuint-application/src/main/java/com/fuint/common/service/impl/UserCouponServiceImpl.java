@@ -178,8 +178,8 @@ public class UserCouponServiceImpl extends ServiceImpl<MtUserCouponMapper, MtUse
             throw new BusinessCheckException(Message.USER_NOT_EXIST);
         }
 
-        // 校验前台领取
-        if (!couponInfo.getSendWay().equals(SendWayEnum.FRONT.getKey())) {
+        // 校验后台领取
+        if (couponInfo.getSendWay().equals(SendWayEnum.BACKEND.getKey())) {
             throw new BusinessCheckException(Message.SEND_WAY_ERROR);
         }
 
