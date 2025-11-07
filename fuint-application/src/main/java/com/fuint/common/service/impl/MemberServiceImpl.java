@@ -1111,6 +1111,9 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
                  mtUser.setBalance(new BigDecimal(userInfo.get(11)));
                  String status = userInfo.get(12).equals("正常") ? StatusEnum.ENABLED.getKey() : StatusEnum.FORBIDDEN.getKey();
                  mtUser.setStatus(status);
+                 if (StringUtil.isNotBlank(userInfo.get(13))) {
+                     mtUser.setPassword(userInfo.get(13));
+                 }
                  userList.add(mtUser);
             }
 
