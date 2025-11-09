@@ -333,12 +333,13 @@ public class ClientSignController extends BaseController {
                 String myPassword = userInfo.getPassword();
                 String inputPassword = memberService.deCodePassword(password, userInfo.getSalt());
                 if (myPassword.equals(inputPassword)) {
+                    token = TokenUtil.generateToken(userAgent, userInfo.getId());
                     UserInfo loginInfo = new UserInfo();
-                    loginInfo.setToken(TokenUtil.generateToken(userAgent, userInfo.getId()));
+                    loginInfo.setToken(token);
                     loginInfo.setId(userInfo.getId());
-                    loginInfo.setToken(userInfo.getMobile());
+                    loginInfo.setMobile(userInfo.getMobile());
                     TokenUtil.saveToken(loginInfo);
-                    dto.setToken(loginInfo.getToken());
+                    dto.setToken(token);
                     mtUser = userInfo;
                 } else {
                     return getFailureResult(201, "账号或密码有误");

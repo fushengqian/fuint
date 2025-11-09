@@ -1107,8 +1107,14 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
                  if (StringUtil.isNotEmpty(gradeDate)) {
                     mtUser.setEndTime(DateUtil.parseDate(userInfo.get(9)));
                  }
-                 mtUser.setPoint(Integer.parseInt(userInfo.get(10)));
-                 mtUser.setBalance(new BigDecimal(userInfo.get(11)));
+                 if (StringUtil.isNotBlank(userInfo.get(10))) {
+                     mtUser.setPoint(Integer.parseInt(userInfo.get(10)));
+                 } else {
+                     mtUser.setPoint(0);
+                 }
+                 if (StringUtil.isNotBlank(userInfo.get(11))) {
+                     mtUser.setBalance(new BigDecimal(userInfo.get(11)));
+                 }
                  String status = userInfo.get(12).equals("正常") ? StatusEnum.ENABLED.getKey() : StatusEnum.FORBIDDEN.getKey();
                  mtUser.setStatus(status);
                  if (StringUtil.isNotBlank(userInfo.get(13))) {
