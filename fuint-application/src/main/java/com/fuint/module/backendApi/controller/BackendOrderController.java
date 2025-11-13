@@ -418,47 +418,21 @@ public class BackendOrderController extends BaseController {
     @RequestMapping(value = "/export", method = RequestMethod.GET)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('order:index')")
-    public void export(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        String storeId = request.getParameter("storeId") == null ? "" : request.getParameter("storeId");
-        String userId = request.getParameter("userId") == null ? "" : request.getParameter("userId");
-        String mobile = request.getParameter("mobile") == null ? "" : request.getParameter("mobile");
-        String status = request.getParameter("status") == null ? "" : request.getParameter("status");
-        String payStatus = request.getParameter("payStatus") == null ? "" : request.getParameter("payStatus");
-        String startTime = request.getParameter("startTime") == null ? "" : request.getParameter("startTime");
-        String endTime = request.getParameter("endTime") == null ? "" : request.getParameter("endTime");
+    public void export(HttpServletRequest request, HttpServletResponse response, OrderListParam params) throws Exception {
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getParameter("token"));
-        OrderListParam params = new OrderListParam();
         params.setPage(Constants.PAGE_NUMBER);
         params.setPageSize(Constants.MAX_ROWS);
         if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
             params.setMerchantId(accountInfo.getMerchantId());
         }
-        if (StringUtil.isNotEmpty(storeId)) {
-            params.setStoreId(Integer.parseInt(storeId));
-        }
-        if (StringUtil.isNotEmpty(userId)) {
-            params.setUserId(userId);
-        }
-        if (StringUtil.isNotEmpty(mobile)) {
-            params.setMobile(mobile);
-        }
-        if (StringUtil.isNotEmpty(status)) {
-            params.setStatus(status);
-        }
-        if (StringUtil.isNotEmpty(payStatus)) {
-            params.setPayStatus(payStatus);
-        }
-        if (StringUtil.isNotEmpty(startTime)) {
-            params.setStartTime(startTime);
-        }
-        if (StringUtil.isNotEmpty(endTime)) {
-            params.setEndTime(endTime);
+        if (accountInfo.getStoreId() != null && accountInfo.getStoreId() > 0) {
+            params.setStoreId(accountInfo.getStoreId());
         }
 
         PaginationResponse<UserOrderDto> result = orderService.getUserOrderList(params);
 
         // excel标题
-        String[] title = { "订单号", "会员名称", "订单类型", "所属门店", "总金额", "支付状态", "订单状态" };
+        String[] title = { "订单号", "会员名称", "手机号", "订单类型", "所属门店", "总金额", "支付状态", "订单状态" };
 
         // excel文件名
         String fileName = "订单列表"+ DateUtil.formatDate(new Date(), "yyyy.MM.dd_HHmm") +".xls";
@@ -479,19 +453,26 @@ public class BackendOrderController extends BaseController {
             if (orderDto != null) {
                 String storeName = "";
                 String userName = "";
+                String mobile = "";
                 if (orderDto.getStoreInfo() != null) {
                     storeName = orderDto.getStoreInfo().getName();
                 }
                 if (orderDto.getUserInfo() != null) {
                     userName = orderDto.getUserInfo().getName();
                 }
+                if (orderDto.getAddress() != null) {
+                    mobile = orderDto.getAddress().getMobile();
+                } else if(orderDto.getUserInfo() != null) {
+                    mobile = orderDto.getUserInfo().getMobile();
+                }
                 content[i][0] = objectConvertToString(orderDto.getOrderSn());
                 content[i][1] = objectConvertToString(userName);
-                content[i][2] = objectConvertToString(orderDto.getTypeName());
-                content[i][3] = objectConvertToString(storeName);
-                content[i][4] = objectConvertToString(orderDto.getAmount());
-                content[i][5] = objectConvertToString(orderDto.getPayStatus());
-                content[i][6] = objectConvertToString(orderDto.getStatusText());
+                content[i][2] = objectConvertToString(mobile);
+                content[i][3] = objectConvertToString(orderDto.getTypeName());
+                content[i][4] = objectConvertToString(storeName);
+                content[i][5] = objectConvertToString(orderDto.getAmount());
+                content[i][6] = objectConvertToString(orderDto.getPayStatus());
+                content[i][7] = objectConvertToString(orderDto.getStatusText());
             }
         }
 
