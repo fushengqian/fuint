@@ -4,6 +4,7 @@ import com.fuint.common.service.CaptchaService;
 import com.fuint.framework.web.BaseController;
 import com.fuint.framework.web.ResponseObject;
 import com.fuint.common.util.Base64Util;
+import com.fuint.utils.SeqUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.AllArgsConstructor;
@@ -16,7 +17,6 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
 /**
  * 图形验证码控制类
@@ -40,7 +40,7 @@ public class ClientCaptchaController extends BaseController {
     @CrossOrigin
     public ResponseObject getCode(HttpServletResponse response) {
         String captcha = "";
-        String uuid = UUID.randomUUID().toString().replaceAll("-", "");
+        String uuid = SeqUtil.getUUID();
 
         try {
             BufferedImage image = captchaService.getCodeByUuid(uuid);

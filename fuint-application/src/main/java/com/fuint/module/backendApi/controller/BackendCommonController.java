@@ -68,7 +68,7 @@ public class BackendCommonController extends BaseController {
     @ApiOperation(value = "生成二维码")
     @RequestMapping(value = "/createQrCode", method = RequestMethod.POST)
     @CrossOrigin
-    public ResponseObject createQrCode(HttpServletRequest request, @RequestBody Map<String, Object> params) throws BusinessCheckException {
+    public ResponseObject createQrCode(HttpServletRequest request, @RequestBody Map<String, Object> params) throws Exception {
         String type = params.get("type") != null ? params.get("type").toString() : "";
         Integer id = params.get("id") == null ? 0 : Integer.parseInt(params.get("id").toString());
 
@@ -93,20 +93,22 @@ public class BackendCommonController extends BaseController {
                 merchantId = mtCoupon.getMerchantId();
             }
         }
-        String h5QrCode = "";
-        try {
-            String h5Page = env.getProperty("website.url") + "#" + page;
-            ByteArrayOutputStream out = new ByteArrayOutputStream();
-            QRCodeUtil.createQrCode(out, h5Page, 800, 800, "png", "");
-            h5QrCode = new String(Base64Util.baseEncode(out.toByteArray()), "UTF-8");
-            h5QrCode = "data:image/jpg;base64," + h5QrCode;
-        } catch (Exception e) {
-            logger.error(e.getMessage(), e);
-        }
 
-        String imagePath = settingService.getUploadBasePath();
-        String minAppQrCode = weixinService.createQrCode(merchantId, type, id, page, 320);
-        minAppQrCode = imagePath + minAppQrCode;
+        String h5QrCode = "";
+        String h5Page = env.getProperty("website.url") + "#" + page;
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        QRCodeUtil.createQrCode(out, h5Page, 800, 800, "png", "");
+        h5QrCode = new String(Base64Util.baseEncode(out.toByteArray()), "UTF-8");
+        h5QrCode = "data:image/jpg;base64," + h5QrCode;
+
+        String minAppQrCode = "";
+        try {
+            String imagePath = settingService.getUploadBasePath();
+            minAppQrCode = weixinService.createQrCode(merchantId, type, id, page, 320);
+            minAppQrCode = imagePath + minAppQrCode;
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+        }
 
         Map<String, Object> result = new HashMap<>();
         result.put("minAppQrCode", minAppQrCode);
