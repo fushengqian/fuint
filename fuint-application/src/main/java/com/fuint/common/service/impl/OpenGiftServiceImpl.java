@@ -11,6 +11,7 @@ import com.fuint.common.enums.YesOrNoEnum;
 import com.fuint.common.param.CouponReceiveParam;
 import com.fuint.common.service.*;
 import com.fuint.common.util.DateUtil;
+import com.fuint.common.util.SeqUtil;
 import com.fuint.framework.annoation.OperationServiceLog;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.pagination.PaginationResponse;
@@ -304,7 +305,7 @@ public class OpenGiftServiceImpl extends ServiceImpl<MtOpenGiftMapper, MtOpenGif
                        param.setCouponId(item.getCouponId());
                        param.setUserId(userId);
                        param.setNum(item.getCouponNum() == null ? 1 : item.getCouponNum());
-                       String uuid = UUID.randomUUID().toString().replaceAll("-", "");
+                       String uuid = SeqUtil.getUUID();
                        couponService.sendCoupon(item.getCouponId(), userId, param.getNum(), true, uuid, "");
                        totalAmount = totalAmount.add(mtCoupon.getAmount());
                    }

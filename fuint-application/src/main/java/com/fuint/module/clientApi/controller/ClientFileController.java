@@ -4,6 +4,7 @@ import com.fuint.common.service.SettingService;
 import com.fuint.common.util.AliyunOssUtil;
 import com.fuint.common.util.CommonUtil;
 import com.fuint.common.util.DateUtil;
+import com.fuint.common.util.SeqUtil;
 import com.fuint.framework.web.BaseController;
 import com.fuint.framework.web.ResponseObject;
 import com.fuint.utils.StringUtil;
@@ -23,11 +24,9 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
-import java.io.IOException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
 /**
  * 文件上传管理控制类
@@ -156,7 +155,7 @@ public class ClientFileController extends BaseController {
         if (pathRoot == null || StringUtil.isEmpty(pathRoot)) {
             pathRoot = ResourceUtils.getURL("classpath:").getPath();
         }
-        String uuid = UUID.randomUUID().toString().replaceAll("-", "");
+        String uuid = SeqUtil.getUUID();
         String baseImage = env.getProperty("images.path");
         String filePath = baseImage + DateUtil.formatDate(new Date(), "yyyyMMdd") + "/";
         String path = filePath + uuid + imageName;

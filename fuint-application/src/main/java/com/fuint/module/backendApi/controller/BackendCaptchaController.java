@@ -1,5 +1,6 @@
 package com.fuint.module.backendApi.controller;
 
+import com.fuint.common.util.SeqUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.AllArgsConstructor;
@@ -14,7 +15,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.fuint.common.service.CaptchaService;
@@ -39,7 +39,7 @@ public class BackendCaptchaController {
     @RequestMapping(value="/getCode", method = RequestMethod.GET)
     public void getCode(HttpServletResponse response) throws Exception {
         // 生成验证码
-        String uuid = UUID.randomUUID().toString().replaceAll("-", "");
+        String uuid = SeqUtil.getUUID();
         BufferedImage codeImage = captchaService.getCodeByUuid(uuid);
 
         // 输出验证码图像

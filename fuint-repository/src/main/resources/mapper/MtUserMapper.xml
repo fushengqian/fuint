@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.fuint.repository.mapper.MtUserMapper">
     <select id="queryMemberByMobile" resultType="com.fuint.repository.model.MtUser">
-        select * from mt_user t where t.MOBILE = #{mobile} AND t.status != 'D'
+        select * from mt_user t where t.MOBILE = #{mobile} AND t.status != 'D' AND t.IS_STAFF = 'N'
         <if test="merchantId != null and merchantId > 0">
             AND t.MERCHANT_ID = #{merchantId}
         </if>

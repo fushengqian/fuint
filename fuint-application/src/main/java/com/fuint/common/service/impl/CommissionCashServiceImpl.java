@@ -7,6 +7,7 @@ import com.fuint.common.dto.OrderUserDto;
 import com.fuint.common.enums.*;
 import com.fuint.common.service.*;
 import com.fuint.common.util.CommonUtil;
+import com.fuint.common.util.SeqUtil;
 import com.fuint.framework.annoation.OperationServiceLog;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.pagination.PaginationRequest;
@@ -209,7 +210,7 @@ public class CommissionCashServiceImpl extends ServiceImpl<MtCommissionCashMappe
         List<MtCommissionLog> commissionLogList = mtCommissionLogMapper.selectList(lambdaQueryWrapper);
         List<String> staffIds = new ArrayList<>();
         List<String> userIds = new ArrayList<>();
-        String uuid = UUID.randomUUID().toString().replaceAll("-", "");
+        String uuid = SeqUtil.getUUID();
         if (commissionLogList != null && commissionLogList.size() > 0) {
             for (MtCommissionLog mtCommissionLog : commissionLogList) {
                  if (mtCommissionLog.getStaffId() != null && mtCommissionLog.getStaffId() > 0 && !staffIds.contains(CommissionTargetEnum.STAFF.getKey() + mtCommissionLog.getStaffId())) {
@@ -406,16 +407,22 @@ public class CommissionCashServiceImpl extends ServiceImpl<MtCommissionCashMappe
         Integer i = mtCommissionCashMapper.updateById(mtCommissionCash);
         if (i > 0 && mtCommissionCash.getUserId() != null) {
             MtUser mtUser = memberService.queryMemberById(mtCommissionCash.getUserId());
+            if (mtCommissionCash.getStaffId() != null && mtCommissionCash.getStaffId() > 0) {
+                MtStaff mtStaff = staffService.queryStaffById(mtCommissionCash.getStaffId());
+                mtUser = memberService.queryMemberByMobile(mtCommissionCash.getMerchantId(), mtStaff.getMobile());
+            }
             if (mtUser != null) {
                 MtBalance mtBalance = new MtBalance();
                 mtBalance.setMerchantId(mtCommissionCash.getMerchantId());
                 mtBalance.setStoreId(mtCommissionCash.getStoreId());
-                mtBalance.setUserId(mtCommissionCash.getUserId());
+                mtBalance.setUserId(mtUser.getId());
                 mtBalance.setAmount(amount);
                 mtBalance.setStatus(StatusEnum.ENABLED.getKey());
                 mtBalance.setMobile(mtUser.getMobile());
                 mtBalance.setDescription("发放分享佣金");
                 balanceService.addBalance(mtBalance, true);
+            } else {
+                throw new BusinessCheckException("付款失败，未找到会员信息");
             }
         }
     }

@@ -3,6 +3,7 @@ package com.fuint.common.service.impl;
 import com.fuint.common.service.UploadService;
 import com.fuint.common.util.CommonUtil;
 import com.fuint.common.util.DateUtil;
+import com.fuint.common.util.SeqUtil;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.utils.StringUtil;
 import lombok.AllArgsConstructor;
@@ -16,7 +17,6 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.util.Date;
-import java.util.UUID;
 
 /**
  * 文件上传服务类
@@ -52,7 +52,7 @@ public class UploadServiceImpl implements UploadService {
         if (pathRoot == null || StringUtil.isEmpty(pathRoot)) {
             pathRoot = ResourceUtils.getURL("classpath:").getPath();
         }
-        String uuid = UUID.randomUUID().toString().replaceAll("-", "");
+        String uuid = SeqUtil.getUUID();
 
         String filePath = "/static/uploadFiles/"+ DateUtil.formatDate(new Date(), "yyyyMMdd")+"/";
         String path = filePath + uuid + uploadPath;

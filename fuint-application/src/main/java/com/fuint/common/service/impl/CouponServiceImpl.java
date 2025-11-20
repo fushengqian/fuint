@@ -357,7 +357,7 @@ public class CouponServiceImpl extends ServiceImpl<MtCouponMapper, MtCoupon> imp
                 total = mtCoupon.getTotal();
             }
             if (total > 0) {
-                String uuid = UUID.randomUUID().toString().replaceAll("-", "");
+                String uuid = SeqUtil.getUUID();
                 for (int i = 1; i <= total; i++) {
                     MtUserCoupon userCoupon = new MtUserCoupon();
                     userCoupon.setMerchantId(mtCoupon.getMerchantId());
@@ -638,7 +638,7 @@ public class CouponServiceImpl extends ServiceImpl<MtCouponMapper, MtCoupon> imp
     @OperationServiceLog(description = "发放卡券")
     public void sendCoupon(Integer couponId, Integer userId, Integer num, Boolean sendMessage, String uuid, String operator) throws BusinessCheckException {
         if (StringUtil.isEmpty(uuid)) {
-            uuid = UUID.randomUUID().toString().replaceAll("-", "");
+            uuid = SeqUtil.getUUID();
         }
         MtCoupon couponInfo = queryCouponById(couponId);
         MtUser userInfo = memberService.queryMemberById(userId);
@@ -934,7 +934,7 @@ public class CouponServiceImpl extends ServiceImpl<MtCouponMapper, MtCoupon> imp
                 }
             }
             String[] gradeIds = couponInfo.getGradeIds().split(",");
-            if (gradeIds.length > 0 && !Arrays.asList(gradeIds).contains(mtUser.getGradeId())) {
+            if (gradeIds.length > 0 && !Arrays.asList(gradeIds).contains(mtUser.getGradeId().toString())) {
                 throw new BusinessCheckException("该卡券不适用于该会员等级");
             }
         }
