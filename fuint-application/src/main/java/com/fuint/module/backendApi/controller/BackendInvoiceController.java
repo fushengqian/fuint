@@ -1,11 +1,11 @@
 package com.fuint.module.backendApi.controller;
 
 import com.fuint.common.dto.AccountInfo;
+import com.fuint.common.param.InvoiceParam;
 import com.fuint.common.util.TokenUtil;
 import com.fuint.framework.web.BaseController;
 import com.fuint.framework.web.ResponseObject;
 import com.fuint.common.Constants;
-import com.fuint.common.enums.StatusEnum;
 import com.fuint.common.service.InvoiceService;
 import com.fuint.framework.pagination.PaginationRequest;
 import com.fuint.framework.pagination.PaginationResponse;
@@ -49,6 +49,8 @@ public class BackendInvoiceController extends BaseController {
         Integer page = request.getParameter("page") == null ? Constants.PAGE_NUMBER : Integer.parseInt(request.getParameter("page"));
         Integer pageSize = request.getParameter("pageSize") == null ? Constants.PAGE_SIZE : Integer.parseInt(request.getParameter("pageSize"));
         String title = request.getParameter("title");
+        String orderSn = request.getParameter("orderSn");
+        String mobile = request.getParameter("mobile");
         String status = request.getParameter("status");
         String searchStoreId = request.getParameter("storeId");
 
@@ -59,13 +61,19 @@ public class BackendInvoiceController extends BaseController {
         if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
             params.put("merchantId", accountInfo.getMerchantId());
         }
-        if (StringUtil.isNotEmpty(title)) {
+        if (StringUtil.isNotBlank(title)) {
             params.put("title", title);
         }
-        if (StringUtil.isNotEmpty(status)) {
+        if (StringUtil.isNotBlank(orderSn)) {
+            params.put("orderSn", orderSn);
+        }
+        if (StringUtil.isNotBlank(mobile)) {
+            params.put("mobile", mobile);
+        }
+        if (StringUtil.isNotBlank(status)) {
             params.put("status", status);
         }
-        if (StringUtil.isNotEmpty(searchStoreId)) {
+        if (StringUtil.isNotBlank(searchStoreId)) {
             params.put("storeId", searchStoreId);
         }
         if (storeId != null && storeId > 0) {
@@ -88,19 +96,14 @@ public class BackendInvoiceController extends BaseController {
     @RequestMapping(value = "/updateStatus", method = RequestMethod.POST)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('invoice:edit')")
-    public ResponseObject updateStatus(HttpServletRequest request, @RequestBody Map<String, Object> params) throws BusinessCheckException {
-        String status = params.get("status") != null ? params.get("status").toString() : StatusEnum.ENABLED.getKey();
-        Integer id = params.get("id") == null ? 0 : Integer.parseInt(params.get("id").toString());
+    public ResponseObject updateStatus(HttpServletRequest request, @RequestBody InvoiceParam invoice) throws BusinessCheckException {
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
-        MtInvoice mtInvoice = invoiceService.queryInvoiceById(id);
+        MtInvoice mtInvoice = invoiceService.queryInvoiceById(invoice.getId());
         if (mtInvoice == null) {
             return getFailureResult(201);
         }
-
-        mtInvoice.setOperator(accountInfo.getAccountName());
-        mtInvoice.setStatus(status);
-        invoiceService.updateInvoice(mtInvoice);
-
+        invoice.setOperator(accountInfo.getAccountName());
+        invoiceService.updateInvoice(invoice);
         return getSuccessResult(true);
     }
 
@@ -111,23 +114,15 @@ public class BackendInvoiceController extends BaseController {
     @RequestMapping(value = "/save", method = RequestMethod.POST)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('invoice:add')")
-    public ResponseObject saveHandler(HttpServletRequest request, @RequestBody Map<String, Object> params) throws BusinessCheckException {
-        String id = params.get("id") == null ? "" : params.get("id").toString();
-        String status = params.get("status") == null ? "" : params.get("status").toString();
-        String storeId = params.get("storeId") == null ? "0" : params.get("storeId").toString();
-
+    public ResponseObject saveHandler(HttpServletRequest request, @RequestBody InvoiceParam invoice) throws BusinessCheckException {
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
 
-        MtInvoice mtInvoice = new MtInvoice();
-        mtInvoice.setOperator(accountInfo.getAccountName());
-        mtInvoice.setStatus(status);
-        mtInvoice.setStoreId(Integer.parseInt(storeId));
-        mtInvoice.setMerchantId(accountInfo.getMerchantId());
-        if (StringUtil.isNotEmpty(id)) {
-            mtInvoice.setId(Integer.parseInt(id));
-            invoiceService.updateInvoice(mtInvoice);
+        invoice.setStoreId(accountInfo.getStoreId());
+        invoice.setMerchantId(accountInfo.getMerchantId());
+        if (invoice.getId() != null && invoice.getId() > 0) {
+            invoiceService.updateInvoice(invoice);
         } else {
-            invoiceService.addInvoice(mtInvoice);
+            invoiceService.addInvoice(invoice);
         }
 
         return getSuccessResult(true);

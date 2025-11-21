@@ -1,6 +1,7 @@
 package com.fuint.common.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.fuint.common.param.InvoiceParam;
 import com.fuint.framework.pagination.PaginationRequest;
 import com.fuint.framework.pagination.PaginationResponse;
 import com.fuint.repository.model.MtInvoice;
@@ -27,11 +28,11 @@ public interface InvoiceService extends IService<MtInvoice> {
     /**
      * 添加发票
      *
-     * @param  mtInvoice
+     * @param  invoice
      * @throws BusinessCheckException
      * @return
      */
-    MtInvoice addInvoice(MtInvoice mtInvoice) throws BusinessCheckException;
+    MtInvoice addInvoice(InvoiceParam invoice) throws BusinessCheckException;
 
     /**
      * 根据ID获取发票信息
@@ -53,17 +54,18 @@ public interface InvoiceService extends IService<MtInvoice> {
     void deleteInvoice(Integer id, String operator) throws BusinessCheckException;
 
     /**
-     * 更新发票
-     * @param  mtInvoice
+     * 更新发票信息
+     *
+     * @param  invoice
      * @throws BusinessCheckException
      * @return
      * */
-    MtInvoice updateInvoice(MtInvoice mtInvoice) throws BusinessCheckException;
+    MtInvoice updateInvoice(InvoiceParam invoice) throws BusinessCheckException;
 
     /**
      * 根据条件搜索发票
      *
-     * @param params 查询参数
+     * @param  params 查询参数
      * @throws BusinessCheckException
      * @return
      * */

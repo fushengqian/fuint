@@ -3,6 +3,7 @@ package com.fuint.common.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.fuint.common.param.InvoiceParam;
 import com.fuint.framework.annoation.OperationServiceLog;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.pagination.PaginationRequest;
@@ -17,6 +18,7 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.github.pagehelper.Page;
+import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -49,6 +51,27 @@ public class InvoiceServiceImpl extends ServiceImpl<MtInvoiceMapper, MtInvoice> 
         LambdaQueryWrapper<MtInvoice> lambdaQueryWrapper = Wrappers.lambdaQuery();
         lambdaQueryWrapper.ne(MtInvoice::getStatus, StatusEnum.DISABLE.getKey());
 
+        String mobile = paginationRequest.getSearchParams().get("mobile") == null ? "" : paginationRequest.getSearchParams().get("mobile").toString();
+        if (StringUtils.isNotBlank(mobile)) {
+            lambdaQueryWrapper.like(MtInvoice::getTitle, mobile);
+        }
+        String orderSn = paginationRequest.getSearchParams().get("orderSn") == null ? "" : paginationRequest.getSearchParams().get("orderSn").toString();
+        if (StringUtils.isNotBlank(orderSn)) {
+            lambdaQueryWrapper.like(MtInvoice::getOrderSn, orderSn);
+        }
+        String title = paginationRequest.getSearchParams().get("title") == null ? "" : paginationRequest.getSearchParams().get("title").toString();
+        if (StringUtils.isNotBlank(title)) {
+            lambdaQueryWrapper.like(MtInvoice::getTitle, title);
+        }
+        String status = paginationRequest.getSearchParams().get("status") == null ? "" : paginationRequest.getSearchParams().get("status").toString();
+        if (StringUtils.isNotBlank(status)) {
+            lambdaQueryWrapper.eq(MtInvoice::getStatus, status);
+        }
+        String merchantId = paginationRequest.getSearchParams().get("merchantId") == null ? "" : paginationRequest.getSearchParams().get("merchantId").toString();
+        if (StringUtils.isNotBlank(merchantId)) {
+            lambdaQueryWrapper.eq(MtInvoice::getMerchantId, merchantId);
+        }
+
         lambdaQueryWrapper.orderByAsc(MtInvoice::getId);
         List<MtInvoice> dataList = mtInvoiceMapper.selectList(lambdaQueryWrapper);
 
@@ -65,12 +88,15 @@ public class InvoiceServiceImpl extends ServiceImpl<MtInvoiceMapper, MtInvoice> 
     /**
      * 添加发票
      *
-     * @param mtInvoice 发票信息
+     * @param invoice 发票信息
      * @return
      */
     @Override
     @OperationServiceLog(description = "新增发票")
-    public MtInvoice addInvoice(MtInvoice mtInvoice) throws BusinessCheckException {
+    public MtInvoice addInvoice(InvoiceParam invoice) throws BusinessCheckException {
+        MtInvoice mtInvoice = new MtInvoice();
+        BeanUtils.copyProperties(invoice, mtInvoice);
+
         mtInvoice.setStatus(StatusEnum.ENABLED.getKey());
         mtInvoice.setUpdateTime(new Date());
         mtInvoice.setCreateTime(new Date());
@@ -78,12 +104,13 @@ public class InvoiceServiceImpl extends ServiceImpl<MtInvoiceMapper, MtInvoice> 
         if (id > 0) {
             return mtInvoice;
         } else {
+            logger.error("新增发票数据失败.");
             throw new BusinessCheckException("新增发票数据失败");
         }
     }
 
     /**
-     * 根据ID获发票取息
+     * 根据ID获取发票取息
      *
      * @param id 发票ID
      * @return
@@ -110,24 +137,27 @@ public class InvoiceServiceImpl extends ServiceImpl<MtInvoiceMapper, MtInvoice> 
         }
         mtInvoice.setStatus(StatusEnum.DISABLE.getKey());
         mtInvoice.setUpdateTime(new Date());
+        mtInvoice.setOperator(operator);
         mtInvoiceMapper.updateById(mtInvoice);
+        logger.info("删除发票信息");
     }
 
     /**
      * 修改发票数据
      *
-     * @param mtInvoice
+     * @param invoice
      * @throws BusinessCheckException
      * @return
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
     @OperationServiceLog(description = "更新发票")
-    public MtInvoice updateInvoice(MtInvoice mtInvoice) throws BusinessCheckException {
-        mtInvoice = queryInvoiceById(mtInvoice.getId());
+    public MtInvoice updateInvoice(InvoiceParam invoice) throws BusinessCheckException {
+        MtInvoice mtInvoice = queryInvoiceById(invoice.getId());
         if (mtInvoice == null) {
             throw new BusinessCheckException("该发票状态异常");
         }
+        BeanUtils.copyProperties(invoice, mtInvoice);
         mtInvoice.setUpdateTime(new Date());
         mtInvoiceMapper.updateById(mtInvoice);
         return mtInvoice;
@@ -142,13 +172,17 @@ public class InvoiceServiceImpl extends ServiceImpl<MtInvoiceMapper, MtInvoice> 
     * */
     @Override
     public List<MtInvoice> queryInvoiceListByParams(Map<String, Object> params) {
-        String status =  params.get("status") == null ? StatusEnum.ENABLED.getKey(): params.get("status").toString();
+        String orderSn =  params.get("orderSn") == null ? "" : params.get("orderSn").toString();
+        String status =  params.get("status") == null ? StatusEnum.ENABLED.getKey() : params.get("status").toString();
         String storeId =  params.get("storeId") == null ? "" : params.get("storeId").toString();
         String merchantId =  params.get("merchantId") == null ? "" : params.get("merchantId").toString();
 
         LambdaQueryWrapper<MtInvoice> lambdaQueryWrapper = Wrappers.lambdaQuery();
         if (StringUtils.isNotBlank(status)) {
             lambdaQueryWrapper.eq(MtInvoice::getStatus, status);
+        }
+        if (StringUtils.isNotBlank(orderSn)) {
+            lambdaQueryWrapper.eq(MtInvoice::getOrderSn, orderSn);
         }
         if (StringUtils.isNotBlank(merchantId)) {
             lambdaQueryWrapper.eq(MtInvoice::getMerchantId, merchantId);

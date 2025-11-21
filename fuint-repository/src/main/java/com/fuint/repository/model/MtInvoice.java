@@ -42,11 +42,17 @@ public class MtInvoice implements Serializable {
     @ApiModelProperty("订单号")
     private String orderSn;
 
+    @ApiModelProperty("开票时间")
+    private Date InvoiceTime;
+
     @ApiModelProperty("开票金额")
     private BigDecimal invoiceAmount;
 
     @ApiModelProperty("发票抬头")
     private String title;
+
+    @ApiModelProperty("发票下载地址")
+    private String downloadUrl;
 
     @ApiModelProperty("发票类型")
     private String type;
@@ -81,7 +87,7 @@ public class MtInvoice implements Serializable {
     @ApiModelProperty("最后操作人")
     private String operator;
 
-    @ApiModelProperty("状态，A待开票，B开票中，C开票成功，D开票失败")
+    @ApiModelProperty("状态，A开票中，B开票成功，C已冲红")
     private String status;
 
 }
