@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fuint.common.param.InvoiceParam;
+import com.fuint.common.service.OrderService;
 import com.fuint.framework.annoation.OperationServiceLog;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.pagination.PaginationRequest;
@@ -12,6 +13,8 @@ import com.fuint.repository.model.MtInvoice;
 import com.fuint.common.service.InvoiceService;
 import com.fuint.common.enums.StatusEnum;
 import com.fuint.repository.mapper.MtInvoiceMapper;
+import com.fuint.repository.model.MtOrder;
+import com.fuint.utils.StringUtil;
 import com.github.pagehelper.PageHelper;
 import lombok.AllArgsConstructor;
 import org.apache.commons.lang.StringUtils;
@@ -40,6 +43,11 @@ public class InvoiceServiceImpl extends ServiceImpl<MtInvoiceMapper, MtInvoice> 
     private MtInvoiceMapper mtInvoiceMapper;
 
     /**
+     * 订单服务接口
+     * */
+    private OrderService orderService;
+
+    /**
      * 分页查询数据列表
      *
      * @param paginationRequest
@@ -53,7 +61,7 @@ public class InvoiceServiceImpl extends ServiceImpl<MtInvoiceMapper, MtInvoice> 
 
         String mobile = paginationRequest.getSearchParams().get("mobile") == null ? "" : paginationRequest.getSearchParams().get("mobile").toString();
         if (StringUtils.isNotBlank(mobile)) {
-            lambdaQueryWrapper.like(MtInvoice::getTitle, mobile);
+            lambdaQueryWrapper.like(MtInvoice::getMobile, mobile);
         }
         String orderSn = paginationRequest.getSearchParams().get("orderSn") == null ? "" : paginationRequest.getSearchParams().get("orderSn").toString();
         if (StringUtils.isNotBlank(orderSn)) {
@@ -95,11 +103,24 @@ public class InvoiceServiceImpl extends ServiceImpl<MtInvoiceMapper, MtInvoice> 
     @OperationServiceLog(description = "新增发票")
     public MtInvoice addInvoice(InvoiceParam invoice) throws BusinessCheckException {
         MtInvoice mtInvoice = new MtInvoice();
-        BeanUtils.copyProperties(invoice, mtInvoice);
+        if ((invoice.getOrderId() == null || invoice.getOrderId() <= 0) && StringUtil.isBlank(invoice.getOrderSn())) {
+            throw new BusinessCheckException("新增发票数据失败，订单参数不能为空");
+        }
+        MtOrder order;
+        if (invoice.getOrderId() != null) {
+            order = orderService.getOrderInfo(invoice.getOrderId());
+        } else {
+            order = orderService.getOrderInfoByOrderSn(invoice.getOrderSn());
+        }
+        if (order == null) {
+            throw new BusinessCheckException("新增发票数据失败，订单信息不存在");
+        }
 
+        BeanUtils.copyProperties(invoice, mtInvoice);
+        Date nowTime = new Date();
         mtInvoice.setStatus(StatusEnum.ENABLED.getKey());
-        mtInvoice.setUpdateTime(new Date());
-        mtInvoice.setCreateTime(new Date());
+        mtInvoice.setUpdateTime(nowTime);
+        mtInvoice.setCreateTime(nowTime);
         Integer id = mtInvoiceMapper.insert(mtInvoice);
         if (id > 0) {
             return mtInvoice;

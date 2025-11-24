@@ -549,6 +549,35 @@ CREATE TABLE `mt_goods_spec` (
   PRIMARY KEY (`ID`)
 ) ENGINE=InnoDB AUTO_INCREMENT=433 DEFAULT CHARSET=utf8 COMMENT='规格表';
 
+/*Table structure for table `mt_invoice` */
+
+DROP TABLE IF EXISTS `mt_invoice`;
+
+CREATE TABLE `mt_invoice` (
+  `ID` int NOT NULL AUTO_INCREMENT COMMENT '自增ID',
+  `MERCHANT_ID` int NOT NULL COMMENT '商户ID',
+  `STORE_ID` int NOT NULL COMMENT '店铺ID',
+  `USER_ID` int NOT NULL DEFAULT '0' COMMENT '用户ID',
+  `ORDER_ID` int NOT NULL COMMENT '订单ID',
+  `ORDER_SN` varchar(32) NOT NULL COMMENT '订单号',
+  `INVOICE_TIME` datetime DEFAULT NULL COMMENT '开票时间',
+  `INVOICE_AMOUNT` decimal(10,2) NOT NULL COMMENT '开票金额',
+  `TITLE` varchar(200) DEFAULT NULL COMMENT '发票抬头',
+  `TYPE` varchar(30) DEFAULT NULL COMMENT '发票类型',
+  `TAX_CODE` varchar(50) DEFAULT NULL COMMENT '纳税人识别码',
+  `BANK_NAME` varchar(50) DEFAULT NULL COMMENT '开户行',
+  `BANK_CARD_NO` varchar(30) DEFAULT NULL COMMENT '开户卡号',
+  `BANK_CARD_NAME` varchar(50) DEFAULT NULL COMMENT '开户户名',
+  `DESCRIPTION` varchar(500) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL COMMENT '开票备注',
+  `EMAIL` varchar(50) DEFAULT NULL COMMENT '接收邮箱',
+  `MOBILE` varchar(20) DEFAULT NULL COMMENT '联系电话',
+  `CREATE_TIME` datetime DEFAULT NULL COMMENT '创建时间',
+  `UPDATE_TIME` datetime DEFAULT NULL COMMENT '更新时间',
+  `OPERATOR` varchar(30) DEFAULT NULL COMMENT '最后操作人',
+  `STATUS` char(1) DEFAULT 'A' COMMENT '状态，A待开票，B开票中，C开票成功，D开票失败',
+  PRIMARY KEY (`ID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='发票表';
+
 /*Table structure for table `mt_merchant` */
 
 DROP TABLE IF EXISTS `mt_merchant`;
