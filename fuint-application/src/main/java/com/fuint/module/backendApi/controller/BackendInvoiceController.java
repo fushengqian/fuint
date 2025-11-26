@@ -100,7 +100,10 @@ public class BackendInvoiceController extends BaseController {
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
         MtInvoice mtInvoice = invoiceService.queryInvoiceById(invoice.getId());
         if (mtInvoice == null) {
-            return getFailureResult(201);
+            return getFailureResult(201, "发票信息不存在");
+        }
+        if (!mtInvoice.getMerchantId().equals(accountInfo.getMerchantId())) {
+            return getFailureResult(201, "抱歉，您没有操作权限");
         }
         invoice.setOperator(accountInfo.getAccountName());
         invoiceService.updateInvoice(invoice);
@@ -116,9 +119,12 @@ public class BackendInvoiceController extends BaseController {
     @PreAuthorize("@pms.hasPermission('invoice:add')")
     public ResponseObject saveHandler(HttpServletRequest request, @RequestBody InvoiceParam invoice) throws BusinessCheckException {
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
-
+        if (accountInfo.getMerchantId() == null || accountInfo.getMerchantId() <= 0) {
+            throw new BusinessCheckException("平台方帐号无法执行该操作，请使用商户帐号操作");
+        }
         invoice.setStoreId(accountInfo.getStoreId());
         invoice.setMerchantId(accountInfo.getMerchantId());
+        invoice.setOperator(accountInfo.getAccountName());
         if (invoice.getId() != null && invoice.getId() > 0) {
             invoiceService.updateInvoice(invoice);
         } else {
@@ -138,9 +144,15 @@ public class BackendInvoiceController extends BaseController {
     @RequestMapping(value = "/info/{id}", method = RequestMethod.GET)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('invoice:list')")
-    public ResponseObject info(@PathVariable("id") Integer id) throws BusinessCheckException {
+    public ResponseObject info(HttpServletRequest request, @PathVariable("id") Integer id) throws BusinessCheckException {
+        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
         MtInvoice invoiceInfo = invoiceService.queryInvoiceById(id);
-
+        if (invoiceInfo == null) {
+            return getFailureResult(201, "发票信息不存在");
+        }
+        if (!invoiceInfo.getMerchantId().equals(accountInfo.getMerchantId())) {
+            return getFailureResult(201, "抱歉，您没有查看权限");
+        }
         Map<String, Object> result = new HashMap<>();
         result.put("invoiceInfo", invoiceInfo);
 

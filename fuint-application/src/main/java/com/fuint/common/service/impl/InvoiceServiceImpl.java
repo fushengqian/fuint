@@ -26,6 +26,8 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.math.BigDecimal;
 import java.util.*;
 
 /**
@@ -121,6 +123,8 @@ public class InvoiceServiceImpl extends ServiceImpl<MtInvoiceMapper, MtInvoice> 
         mtInvoice.setStatus(StatusEnum.ENABLED.getKey());
         mtInvoice.setUpdateTime(nowTime);
         mtInvoice.setCreateTime(nowTime);
+        mtInvoice.setMerchantId(order.getMerchantId());
+        mtInvoice.setStoreId(order.getStoreId());
         Integer id = mtInvoiceMapper.insert(mtInvoice);
         if (id > 0) {
             return mtInvoice;
@@ -218,5 +222,19 @@ public class InvoiceServiceImpl extends ServiceImpl<MtInvoiceMapper, MtInvoice> 
         lambdaQueryWrapper.orderByAsc(MtInvoice::getId);
         List<MtInvoice> dataList = mtInvoiceMapper.selectList(lambdaQueryWrapper);
         return dataList;
+    }
+
+    /**
+     * 获取开票金额
+     *
+     * @param  merchantId 商户ID
+     * @param  storeId 店铺ID
+     * @param  beginTime 开始时间
+     * @param  endTime 结束时间
+     * @return
+     */
+    @Override
+    public BigDecimal getInvoiceTotalAmount(Integer merchantId, Integer storeId,  Date beginTime, Date endTime) {
+        return mtInvoiceMapper.getInvoiceTotalAmount(merchantId, storeId, beginTime, endTime);
     }
 }

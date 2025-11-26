@@ -6,6 +6,9 @@ import com.fuint.framework.pagination.PaginationRequest;
 import com.fuint.framework.pagination.PaginationResponse;
 import com.fuint.repository.model.MtInvoice;
 import com.fuint.framework.exception.BusinessCheckException;
+
+import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -70,4 +73,16 @@ public interface InvoiceService extends IService<MtInvoice> {
      * @return
      * */
     List<MtInvoice> queryInvoiceListByParams(Map<String, Object> params) throws BusinessCheckException;
+
+    /**
+     * 获取开票金额
+     *
+     * @param  merchantId 商户ID
+     * @param  storeId 店铺ID
+     * @param  beginTime 开始时间
+     * @param  endTime 结束时间
+     * @return
+     */
+    BigDecimal getInvoiceTotalAmount(Integer merchantId, Integer storeId, Date beginTime, Date endTime);
+
 }

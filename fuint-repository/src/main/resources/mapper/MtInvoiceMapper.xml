@@ -1,5 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.fuint.repository.mapper.MtInvoiceMapper}">
-
+<mapper namespace="com.fuint.repository.mapper.MtInvoiceMapper">
+    <select id="getInvoiceTotalAmount" resultType="java.math.BigDecimal">
+        SELECT sum(t.INVOICE_AMOUNT) AS num FROM mt_invoice t WHERE t.STATUS IN('B', 'C')
+        <if test="merchantId != null and merchantId > 0">
+            AND t.MERCHANT_ID = #{merchantId}
+        </if>
+        <if test="storeId != null and storeId > 0">
+            AND t.STORE_ID = #{storeId}
+        </if>
+        <if test="beginTime != null and beginTime != ''">
+            AND t.INVOICE_TIME &gt;= #{beginTime}
+        </if>
+        <if test="endTime != null and endTime != ''">
+            AND t.CREATE_TIME &lt; #{endTime}
+        </if>
+    </select>
 </mapper>
