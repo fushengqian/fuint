@@ -131,16 +131,15 @@ public class BackendBannerController extends BaseController {
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('content:banner:add')")
     public ResponseObject saveHandler(HttpServletRequest request, @RequestBody Map<String, Object> params) throws BusinessCheckException {
+        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
         String id = params.get("id") == null ? "" : params.get("id").toString();
         String title = params.get("title") == null ? "" : params.get("title").toString();
         String description = params.get("description") == null ? "" : params.get("description").toString();
         String image = params.get("image") == null ? "" : params.get("image").toString();
         String url = params.get("url") == null ? "" : params.get("url").toString();
-        String status = params.get("status") == null ? "" : params.get("status").toString();
+        String status = params.get("status") == null ? StatusEnum.ENABLED.getKey() : params.get("status").toString();
         String storeId = params.get("storeId") == null ? "0" : params.get("storeId").toString();
         String sort = params.get("sort") == null ? "0" : params.get("sort").toString();
-
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
 
         BannerDto bannerDto = new BannerDto();
         bannerDto.setTitle(title);

@@ -166,7 +166,7 @@ public class BackendBookItemController extends BaseController {
         String id = params.get("id") == null ? "" : params.get("id").toString();
         String mobile = params.get("name") == null ? "" : params.get("name").toString();
         String remark = params.get("remark") == null ? "" : params.get("remark").toString();
-        String status = params.get("status") == null ? "" : params.get("status").toString();
+        String status = params.get("status") == null ? BookStatusEnum.CREATED.getKey() : params.get("status").toString();
         String storeId = params.get("storeId") == null ? "0" : params.get("storeId").toString();
 
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));

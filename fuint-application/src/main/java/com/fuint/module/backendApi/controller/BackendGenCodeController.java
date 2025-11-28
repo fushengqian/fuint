@@ -98,7 +98,7 @@ public class BackendGenCodeController extends BaseController {
     @PreAuthorize("@pms.hasPermission('system:genCode:add')")
     public ResponseObject saveHandler(HttpServletRequest request, @RequestBody Map<String, Object> params) throws BusinessCheckException {
         String id = params.get("id") == null ? "" : params.get("id").toString();
-        String status = params.get("status") == null ? "" : params.get("status").toString();
+        String status = params.get("status") == null ? StatusEnum.ENABLED.getKey() : params.get("status").toString();
         String tableName = params.get("tableName") == null ? "" : params.get("tableName").toString();
         String moduleName = params.get("moduleName") == null ? "" : params.get("moduleName").toString();
         String tablePrefix = params.get("tablePrefix") == null ? "" : params.get("tablePrefix").toString();
