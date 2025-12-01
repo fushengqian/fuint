@@ -3,6 +3,7 @@ package com.fuint.module.backendApi.controller;
 import com.fuint.common.dto.AccountInfo;
 import com.fuint.common.dto.UserOrderDto;
 import com.fuint.common.enums.*;
+import com.fuint.common.param.PrinterParam;
 import com.fuint.common.service.OrderService;
 import com.fuint.common.service.PrinterService;
 import com.fuint.common.service.SettingService;
@@ -21,6 +22,7 @@ import com.fuint.utils.StringUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.AllArgsConstructor;
+import org.springframework.beans.BeanUtils;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
@@ -141,28 +143,18 @@ public class BackendPrinterController extends BaseController {
     @RequestMapping(value = "/save", method = RequestMethod.POST)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('printer:index')")
-    public ResponseObject saveHandler(HttpServletRequest request, @RequestBody Map<String, Object> params) throws BusinessCheckException {
-        String id = params.get("id") == null ? "" : params.get("id").toString();
-        String status = params.get("status") == null ? StatusEnum.ENABLED.getKey() : params.get("status").toString();
-        String storeId = params.get("storeId") == null ? "0" : params.get("storeId").toString();
-        String name = params.get("name") == null ? "" : params.get("name").toString();
-        String sn = params.get("sn") == null ? "" : params.get("sn").toString();
-        String description = params.get("description") == null ? "" : params.get("description").toString();
-        String autoPrint = params.get("autoPrint") == null ? YesOrNoEnum.NO.getKey() : params.get("autoPrint").toString();
-
+    public ResponseObject saveHandler(HttpServletRequest request, @RequestBody PrinterParam printer) throws BusinessCheckException {
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
-
         MtPrinter mtPrinter = new MtPrinter();
+        BeanUtils.copyProperties(printer, mtPrinter);
         mtPrinter.setOperator(accountInfo.getAccountName());
-        mtPrinter.setStatus(status);
-        mtPrinter.setStoreId(Integer.parseInt(storeId));
-        mtPrinter.setName(name);
-        mtPrinter.setSn(sn);
-        mtPrinter.setAutoPrint(autoPrint);
-        mtPrinter.setDescription(description);
         mtPrinter.setMerchantId(accountInfo.getMerchantId());
-        if (StringUtil.isNotEmpty(id)) {
-            mtPrinter.setId(Integer.parseInt(id));
+        if (accountInfo.getStoreId() != null && accountInfo.getStoreId() > 0) {
+            mtPrinter.setStoreId(accountInfo.getStoreId());
+        }
+
+        if (printer.getId() != null && printer.getId() > 0) {
+            mtPrinter.setId(printer.getId());
             printerService.updatePrinter(mtPrinter);
         } else {
             printerService.addPrinter(mtPrinter);
