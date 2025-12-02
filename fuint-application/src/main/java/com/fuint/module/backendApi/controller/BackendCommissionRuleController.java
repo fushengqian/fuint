@@ -125,20 +125,19 @@ public class BackendCommissionRuleController extends BaseController {
     @RequestMapping(value = "/save", method = RequestMethod.POST)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('commission:rule:index')")
-    public ResponseObject saveHandler(HttpServletRequest request, @RequestBody CommissionRuleParam params) throws BusinessCheckException {
-        String id = params.getId() == null ? "" : params.getId().toString();
+    public ResponseObject saveHandler(HttpServletRequest request, @RequestBody CommissionRuleParam commissionRule) throws BusinessCheckException {
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
         if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
-            params.setMerchantId(accountInfo.getMerchantId());
+            commissionRule.setMerchantId(accountInfo.getMerchantId());
         }
         if (accountInfo.getStoreId() != null && accountInfo.getStoreId() > 0) {
-            params.setStoreId(accountInfo.getStoreId());
+            commissionRule.setStoreId(accountInfo.getStoreId());
         }
-        params.setOperator(accountInfo.getAccountName());
-        if (StringUtil.isNotEmpty(id)) {
-            commissionRuleService.updateCommissionRule(params);
+        commissionRule.setOperator(accountInfo.getAccountName());
+        if (commissionRule.getId() != null && commissionRule.getId() > 0) {
+            commissionRuleService.updateCommissionRule(commissionRule);
         } else {
-            commissionRuleService.addCommissionRule(params);
+            commissionRuleService.addCommissionRule(commissionRule);
         }
         return getSuccessResult(true);
     }

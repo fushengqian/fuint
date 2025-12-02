@@ -2,6 +2,7 @@ package com.fuint.module.backendApi.controller;
 
 import com.fuint.common.dto.AccountInfo;
 import com.fuint.common.dto.BookDto;
+import com.fuint.common.dto.BookTimeDto;
 import com.fuint.common.service.BookCateService;
 import com.fuint.common.service.BookService;
 import com.fuint.common.service.StoreService;
@@ -156,45 +157,26 @@ public class BackendBookController extends BaseController {
     @RequestMapping(value = "/save", method = RequestMethod.POST)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('book:index')")
-    public ResponseObject saveHandler(HttpServletRequest request, @RequestBody Map<String, Object> params) throws BusinessCheckException {
-        String id = params.get("id") == null ? "" : params.get("id").toString();
-        String cateId = params.get("cateId") == null ? "0" : params.get("cateId").toString();
-        String name = params.get("name") == null ? "" : params.get("name").toString();
-        String description = params.get("description") == null ? "" : params.get("description").toString();
-        String logo = params.get("logo") == null ? "" : params.get("logo").toString();
-        String status = params.get("status") == null ? StatusEnum.ENABLED.getKey() : params.get("status").toString();
-        String storeId = (params.get("storeId") == null || StringUtil.isEmpty(params.get("storeId").toString())) ? "0" : params.get("storeId").toString();
-        String sort = (params.get("sort") == null || StringUtil.isEmpty(params.get("sort").toString())) ? "0" : params.get("sort").toString();
-        String dates = params.get("dates") == null ? "" : params.get("dates").toString();
-        List<LinkedHashMap> times = params.get("times") == null ? new ArrayList<>() : (List) params.get("times");
-
+    public ResponseObject saveHandler(HttpServletRequest request, @RequestBody BookDto bookDto) throws BusinessCheckException {
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
         if (accountInfo.getMerchantId() == null || accountInfo.getMerchantId() < 1) {
             getFailureResult(5002);
         }
+        if (accountInfo.getStoreId() != null && accountInfo.getStoreId() > 0) {
+            bookDto.setStoreId(accountInfo.getStoreId());
+        }
 
         MtBook mtBook = new MtBook();
-        mtBook.setName(name);
-        mtBook.setDescription(description);
-        mtBook.setLogo(logo);
-        mtBook.setOperator(accountInfo.getAccountName());
-        mtBook.setStatus(status);
-        mtBook.setStoreId(Integer.parseInt(storeId));
-        mtBook.setSort(Integer.parseInt(sort));
+        BeanUtils.copyProperties(bookDto, mtBook);
         mtBook.setMerchantId(accountInfo.getMerchantId());
-        mtBook.setServiceDates(dates);
-        if (StringUtil.isNotEmpty(cateId)) {
-            mtBook.setCateId(Integer.parseInt(cateId));
-        }
+        mtBook.setOperator(accountInfo.getAccountName());
+        mtBook.setServiceDates(bookDto.getDates());
         String timeStr = "";
-        if (times != null && times.size() > 0) {
+        if (bookDto.getTimes() != null && bookDto.getTimes().size() > 0) {
             List<String> timeArr = new ArrayList<>();
-            for (LinkedHashMap time : times) {
-                 String startTime = time.get("startTime") == null ? "" : time.get("startTime").toString();
-                 String endTime = time.get("endTime") == null ? "" : time.get("endTime").toString();
-                 String num = time.get("num") == null ? "" : time.get("num").toString();
-                 if (StringUtil.isNotEmpty(startTime) && StringUtil.isNotEmpty(endTime) && StringUtil.isNotEmpty(num)) {
-                     String item = startTime + "-" + endTime + "-" + num;
+            for (BookTimeDto time : bookDto.getTimes()) {
+                 if (StringUtil.isNotEmpty(time.getStartTime()) && StringUtil.isNotEmpty(time.getEndTime()) && StringUtil.isNotEmpty(time.getNum())) {
+                     String item = time.getStartTime() + "-" + time.getEndTime() + "-" + time.getNum();
                      if (!timeArr.contains(item)) {
                          timeArr.add(item);
                      }
@@ -206,8 +188,7 @@ public class BackendBookController extends BaseController {
             }
         }
         mtBook.setServiceTimes(timeStr);
-        if (StringUtil.isNotEmpty(id)) {
-            mtBook.setId(Integer.parseInt(id));
+        if (bookDto.getId() != null) {
             bookService.updateBook(mtBook);
         } else {
             bookService.addBook(mtBook);

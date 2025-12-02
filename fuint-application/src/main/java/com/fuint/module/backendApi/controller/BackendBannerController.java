@@ -130,37 +130,20 @@ public class BackendBannerController extends BaseController {
     @RequestMapping(value = "/save", method = RequestMethod.POST)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('content:banner:add')")
-    public ResponseObject saveHandler(HttpServletRequest request, @RequestBody Map<String, Object> params) throws BusinessCheckException {
+    public ResponseObject saveHandler(HttpServletRequest request, @RequestBody BannerDto bannerDto) throws BusinessCheckException {
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
-        String id = params.get("id") == null ? "" : params.get("id").toString();
-        String title = params.get("title") == null ? "" : params.get("title").toString();
-        String description = params.get("description") == null ? "" : params.get("description").toString();
-        String image = params.get("image") == null ? "" : params.get("image").toString();
-        String url = params.get("url") == null ? "" : params.get("url").toString();
-        String status = params.get("status") == null ? StatusEnum.ENABLED.getKey() : params.get("status").toString();
-        String storeId = params.get("storeId") == null ? "0" : params.get("storeId").toString();
-        String sort = params.get("sort") == null ? "0" : params.get("sort").toString();
-
-        BannerDto bannerDto = new BannerDto();
-        bannerDto.setTitle(title);
-        bannerDto.setDescription(description);
-        bannerDto.setImage(image);
-        bannerDto.setUrl(url);
         bannerDto.setOperator(accountInfo.getAccountName());
-        bannerDto.setStatus(status);
-        bannerDto.setStoreId(Integer.parseInt(storeId));
-        bannerDto.setSort(Integer.parseInt(sort));
         if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
             bannerDto.setMerchantId(accountInfo.getMerchantId());
         }
-
-        if (StringUtil.isNotEmpty(id)) {
-            bannerDto.setId(Integer.parseInt(id));
+        if (accountInfo.getStoreId() != null && accountInfo.getStoreId() > 0) {
+            bannerDto.setStoreId(accountInfo.getStoreId());
+        }
+        if (bannerDto.getId() != null && bannerDto.getId() > 0) {
             bannerService.updateBanner(bannerDto);
         } else {
             bannerService.addBanner(bannerDto);
         }
-
         return getSuccessResult(true);
     }
 

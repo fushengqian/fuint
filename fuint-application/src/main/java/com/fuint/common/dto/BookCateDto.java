@@ -2,25 +2,24 @@ package com.fuint.common.dto;
 
 import java.io.Serializable;
 import java.util.Date;
-import java.util.List;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 /**
- * 预约实体
+ * 预约分类实体
  *
  * Created by FSQ
  * CopyRight https://www.fuint.cn
  */
 @Data
-public class BookDto implements Serializable {
+public class BookCateDto implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     @ApiModelProperty("自增ID")
     private Integer id;
 
-    @ApiModelProperty("预约名称")
+    @ApiModelProperty("分类名称")
     private String name;
 
     @ApiModelProperty("所属商户ID")
@@ -29,38 +28,8 @@ public class BookDto implements Serializable {
     @ApiModelProperty("所属店铺ID")
     private Integer storeId;
 
-    @ApiModelProperty("预约类型")
-    private String type;
-
     @ApiModelProperty("图片地址")
     private String logo;
-
-    @ApiModelProperty("关联商品ID")
-    private Integer goodsId;
-
-    @ApiModelProperty("类别ID")
-    private Integer cateId;
-
-    @ApiModelProperty("可预约日期")
-    private String serviceDates;
-
-    @ApiModelProperty("可预约日期，字符串")
-    private String dates = "";
-
-    @ApiModelProperty("可预约日期列表")
-    private List<DayDto> dateList;
-
-    @ApiModelProperty("可预约时间段")
-    private String serviceTimes;
-
-    @ApiModelProperty("可预约时间段列表")
-    private List<TimeDto> timeList;
-
-    @ApiModelProperty("可预约可预约时段")
-    private List<BookTimeDto> times;
-
-    @ApiModelProperty("可预约员工ID")
-    private String serviceStaffIds;
 
     @ApiModelProperty("描述")
     private String description;
@@ -79,5 +48,4 @@ public class BookDto implements Serializable {
 
     @ApiModelProperty("A：正常；D：删除")
     private String status;
-
 }

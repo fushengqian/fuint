@@ -133,40 +133,17 @@ public class BackendArticleController extends BaseController {
     @RequestMapping(value = "/save", method = RequestMethod.POST)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('content:article:add')")
-    public ResponseObject saveHandler(HttpServletRequest request, @RequestBody Map<String, Object> params) throws BusinessCheckException {
-        String id = params.get("id") == null ? "" : params.get("id").toString();
-        String title = params.get("title") == null ? "" : params.get("title").toString();
-        String description = params.get("description") == null ? "" : params.get("description").toString();
-        String image = params.get("image") == null ? "" : params.get("image").toString();
-        String url = params.get("url") == null ? "" : params.get("url").toString();
-        String status = params.get("status") == null ? StatusEnum.ENABLED.getKey() : params.get("status").toString();
-        String storeId = params.get("storeId") == null ? "0" : params.get("storeId").toString();
-        String sort = params.get("sort") == null ? "0" : params.get("sort").toString();
-        String brief = params.get("brief") == null ? "" : params.get("brief").toString();
-
+    public ResponseObject saveHandler(HttpServletRequest request, @RequestBody ArticleDto articleDto) throws BusinessCheckException {
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
-
-        ArticleDto articleDto = new ArticleDto();
-        articleDto.setTitle(title);
-        articleDto.setDescription(description);
-        articleDto.setImage(image);
-        articleDto.setUrl(url);
         articleDto.setOperator(accountInfo.getAccountName());
-        articleDto.setStatus(status);
         if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
             articleDto.setMerchantId(accountInfo.getMerchantId());
         }
         if (accountInfo.getStoreId() != null && accountInfo.getStoreId() > 0) {
-            storeId = accountInfo.getStoreId().toString();
+            articleDto.setStoreId(accountInfo.getStoreId());
         }
-        if (StringUtil.isNotEmpty(storeId)) {
-            articleDto.setStoreId(Integer.parseInt(storeId));
-        }
-        articleDto.setSort(Integer.parseInt(sort));
-        articleDto.setBrief(brief);
 
-        if (StringUtil.isNotEmpty(id)) {
-            articleDto.setId(Integer.parseInt(id));
+        if (articleDto.getId() != null && articleDto.getId() > 0) {
             articleService.updateArticle(articleDto);
         } else {
             articleService.addArticle(articleDto);

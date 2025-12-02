@@ -23,6 +23,7 @@ import com.fuint.utils.StringUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.AllArgsConstructor;
+import org.springframework.beans.BeanUtils;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
@@ -162,25 +163,17 @@ public class BackendBookItemController extends BaseController {
     @RequestMapping(value = "/save", method = RequestMethod.POST)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('book:index')")
-    public ResponseObject saveHandler(HttpServletRequest request, @RequestBody Map<String, Object> params) throws BusinessCheckException, ParseException {
-        String id = params.get("id") == null ? "" : params.get("id").toString();
-        String mobile = params.get("name") == null ? "" : params.get("name").toString();
-        String remark = params.get("remark") == null ? "" : params.get("remark").toString();
-        String status = params.get("status") == null ? BookStatusEnum.CREATED.getKey() : params.get("status").toString();
-        String storeId = params.get("storeId") == null ? "0" : params.get("storeId").toString();
-
+    public ResponseObject saveHandler(HttpServletRequest request, @RequestBody BookItemDto bookItemDto) throws BusinessCheckException, ParseException {
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
 
         MtBookItem mtBookItem = new MtBookItem();
-        mtBookItem.setMobile(mobile);
-        mtBookItem.setRemark(remark);
+        BeanUtils.copyProperties(bookItemDto, mtBookItem);
         mtBookItem.setOperator(accountInfo.getAccountName());
-        mtBookItem.setStatus(status);
-        mtBookItem.setStoreId(Integer.parseInt(storeId));
         mtBookItem.setMerchantId(accountInfo.getMerchantId());
-
-        if (StringUtil.isNotEmpty(id)) {
-            mtBookItem.setId(Integer.parseInt(id));
+        if (accountInfo.getStoreId() != null && accountInfo.getStoreId() > 0) {
+            mtBookItem.setStoreId(accountInfo.getStoreId());
+        }
+        if (bookItemDto.getId() != null && mtBookItem.getId() > 0) {
             bookItemService.updateBookItem(mtBookItem);
         } else {
             bookItemService.addBookItem(mtBookItem);
