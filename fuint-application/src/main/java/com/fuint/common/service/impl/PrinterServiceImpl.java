@@ -7,6 +7,7 @@ import com.fuint.common.dto.GoodsSpecValueDto;
 import com.fuint.common.dto.OrderGoodsDto;
 import com.fuint.common.dto.UserOrderDto;
 import com.fuint.common.enums.*;
+import com.fuint.common.param.PrinterPage;
 import com.fuint.common.service.SettingService;
 import com.fuint.common.util.HashSignUtil;
 import com.fuint.common.util.NoteFormatter;
@@ -14,7 +15,6 @@ import com.fuint.common.util.PrinterUtil;
 import com.fuint.common.vo.printer.*;
 import com.fuint.framework.annoation.OperationServiceLog;
 import com.fuint.framework.exception.BusinessCheckException;
-import com.fuint.framework.pagination.PaginationRequest;
 import com.fuint.framework.pagination.PaginationResponse;
 import com.fuint.repository.model.MtPrinter;
 import com.fuint.common.service.PrinterService;
@@ -63,39 +63,39 @@ public class PrinterServiceImpl extends ServiceImpl<MtPrinterMapper, MtPrinter> 
     /**
      * 分页查询数据列表
      *
-     * @param paginationRequest
+     * @param printerPage
      * @return
      */
     @Override
-    public PaginationResponse<MtPrinter> queryPrinterListByPagination(PaginationRequest paginationRequest) {
-        Page<MtPrinter> pageHelper = PageHelper.startPage(paginationRequest.getCurrentPage(), paginationRequest.getPageSize());
+    public PaginationResponse<MtPrinter> queryPrinterListByPagination(PrinterPage printerPage) {
+        Page<MtPrinter> pageHelper = PageHelper.startPage(printerPage.getPage(), printerPage.getPageSize());
         LambdaQueryWrapper<MtPrinter> lambdaQueryWrapper = Wrappers.lambdaQuery();
         lambdaQueryWrapper.ne(MtPrinter::getStatus, StatusEnum.DISABLE.getKey());
 
-        String status =  paginationRequest.getSearchParams().get("status") == null ? "" : paginationRequest.getSearchParams().get("status").toString();
+        String status = printerPage.getStatus();
         if (StringUtils.isNotBlank(status)) {
             lambdaQueryWrapper.eq(MtPrinter::getStatus, status);
         }
-        String merchantId =  paginationRequest.getSearchParams().get("merchantId") == null ? "" : paginationRequest.getSearchParams().get("merchantId").toString();
-        if (StringUtils.isNotBlank(merchantId)) {
+        Integer merchantId = printerPage.getMerchantId();
+        if (merchantId != null && merchantId > 0) {
             lambdaQueryWrapper.eq(MtPrinter::getMerchantId, merchantId);
         }
-        String storeId =  paginationRequest.getSearchParams().get("storeId") == null ? "" : paginationRequest.getSearchParams().get("storeId").toString();
-        if (StringUtils.isNotBlank(storeId)) {
+        Integer storeId = printerPage.getStoreId();
+        if (storeId != null && storeId > 0) {
             lambdaQueryWrapper.and(wq -> wq
                     .eq(MtPrinter::getStoreId, 0)
                     .or()
                     .eq(MtPrinter::getStoreId, storeId));
         }
-        String sn =  paginationRequest.getSearchParams().get("sn") == null ? "" : paginationRequest.getSearchParams().get("sn").toString();
+        String sn = printerPage.getSn();
         if (StringUtils.isNotBlank(sn)) {
             lambdaQueryWrapper.eq(MtPrinter::getSn, sn);
         }
-        String name = paginationRequest.getSearchParams().get("name") == null ? "" : paginationRequest.getSearchParams().get("name").toString();
+        String name = printerPage.getName();
         if (StringUtils.isNotBlank(name)) {
-            lambdaQueryWrapper.eq(MtPrinter::getName, name);
+            lambdaQueryWrapper.like(MtPrinter::getName, name);
         }
-        String autoPrint = paginationRequest.getSearchParams().get("autoPrint") == null ? "" : paginationRequest.getSearchParams().get("autoPrint").toString();
+        String autoPrint = printerPage.getAutoPrint();
         if (StringUtils.isNotBlank(autoPrint)) {
             lambdaQueryWrapper.eq(MtPrinter::getAutoPrint, autoPrint);
         }
@@ -103,7 +103,7 @@ public class PrinterServiceImpl extends ServiceImpl<MtPrinterMapper, MtPrinter> 
         lambdaQueryWrapper.orderByAsc(MtPrinter::getId);
         List<MtPrinter> dataList = mtPrinterMapper.selectList(lambdaQueryWrapper);
 
-        PageRequest pageRequest = PageRequest.of(paginationRequest.getCurrentPage(), paginationRequest.getPageSize());
+        PageRequest pageRequest = PageRequest.of(printerPage.getPage(), printerPage.getPageSize());
         PageImpl pageImpl = new PageImpl(dataList, pageRequest, pageHelper.getTotal());
         PaginationResponse<MtPrinter> paginationResponse = new PaginationResponse(pageImpl, MtPrinter.class);
         paginationResponse.setTotalPages(pageHelper.getPages());

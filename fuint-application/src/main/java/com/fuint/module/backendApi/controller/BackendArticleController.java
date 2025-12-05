@@ -2,6 +2,7 @@ package com.fuint.module.backendApi.controller;
 
 import com.fuint.common.dto.AccountInfo;
 import com.fuint.common.dto.ArticleDto;
+import com.fuint.common.param.ArticlePage;
 import com.fuint.common.service.ArticleService;
 import com.fuint.common.service.StoreService;
 import com.fuint.common.util.TokenUtil;
@@ -60,33 +61,15 @@ public class BackendArticleController extends BaseController {
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('content:article:index')")
-    public ResponseObject list(HttpServletRequest request) throws BusinessCheckException {
-        Integer page = request.getParameter("page") == null ? Constants.PAGE_NUMBER : Integer.parseInt(request.getParameter("page"));
-        Integer pageSize = request.getParameter("pageSize") == null ? Constants.PAGE_SIZE : Integer.parseInt(request.getParameter("pageSize"));
-        String title = request.getParameter("title");
-        String status = request.getParameter("status");
-        String searchStoreId = request.getParameter("storeId");
-
+    public ResponseObject list(HttpServletRequest request, @ModelAttribute ArticlePage articlePage) throws BusinessCheckException {
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
-        Integer storeId = accountInfo.getStoreId();
-
-        Map<String, Object> params = new HashMap<>();
-        if (StringUtil.isNotEmpty(title)) {
-            params.put("title", title);
-        }
-        if (StringUtil.isNotEmpty(status)) {
-            params.put("status", status);
-        }
-        if (StringUtil.isNotEmpty(searchStoreId)) {
-            params.put("storeId", searchStoreId);
-        }
-        if (storeId != null && storeId > 0) {
-            params.put("storeId", storeId);
-        }
         if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
-            params.put("merchantId", accountInfo.getMerchantId());
+            articlePage.setMerchantId(accountInfo.getMerchantId());
         }
-        PaginationResponse<ArticleDto> paginationResponse = articleService.queryArticleListByPagination(new PaginationRequest(page, pageSize, params));
+        if (accountInfo.getStoreId() != null && accountInfo.getStoreId() > 0) {
+            articlePage.setStoreId(accountInfo.getStoreId());
+        }
+        PaginationResponse<ArticleDto> paginationResponse = articleService.queryArticleListByPagination(articlePage);
 
         // 店铺列表
         List<MtStore> storeList = storeService.getMyStoreList(accountInfo.getMerchantId(), accountInfo.getStoreId(), StatusEnum.ENABLED.getKey());

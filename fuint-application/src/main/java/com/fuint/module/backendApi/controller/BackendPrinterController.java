@@ -3,6 +3,7 @@ package com.fuint.module.backendApi.controller;
 import com.fuint.common.dto.AccountInfo;
 import com.fuint.common.dto.UserOrderDto;
 import com.fuint.common.enums.*;
+import com.fuint.common.param.PrinterPage;
 import com.fuint.common.param.PrinterParam;
 import com.fuint.common.service.OrderService;
 import com.fuint.common.service.PrinterService;
@@ -11,8 +12,6 @@ import com.fuint.common.service.StoreService;
 import com.fuint.common.util.TokenUtil;
 import com.fuint.framework.web.BaseController;
 import com.fuint.framework.web.ResponseObject;
-import com.fuint.common.Constants;
-import com.fuint.framework.pagination.PaginationRequest;
 import com.fuint.framework.pagination.PaginationResponse;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.repository.model.MtPrinter;
@@ -70,38 +69,16 @@ public class BackendPrinterController extends BaseController {
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('printer:index')")
-    public ResponseObject list(HttpServletRequest request) throws BusinessCheckException {
-        Integer page = request.getParameter("page") == null ? Constants.PAGE_NUMBER : Integer.parseInt(request.getParameter("page"));
-        Integer pageSize = request.getParameter("pageSize") == null ? Constants.PAGE_SIZE : Integer.parseInt(request.getParameter("pageSize"));
-        String name = request.getParameter("name");
-        String sn = request.getParameter("sn");
-        String status = request.getParameter("status");
-        String searchStoreId = request.getParameter("storeId");
-
+    public ResponseObject list(HttpServletRequest request, @ModelAttribute PrinterPage printerPage) throws BusinessCheckException {
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
-        Integer storeId = accountInfo.getStoreId();
-
-        Map<String, Object> params = new HashMap<>();
         if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
-            params.put("merchantId", accountInfo.getMerchantId());
+            printerPage.setMerchantId(accountInfo.getMerchantId());
         }
-        if (StringUtil.isNotEmpty(name)) {
-            params.put("name", name);
+        if (accountInfo.getStoreId() != null && accountInfo.getStoreId() > 0) {
+            printerPage.setStoreId(accountInfo.getStoreId());
         }
-        if (StringUtil.isNotEmpty(sn)) {
-            params.put("sn", sn);
-        }
-        if (StringUtil.isNotEmpty(status)) {
-            params.put("status", status);
-        }
-        if (StringUtil.isNotEmpty(searchStoreId)) {
-            params.put("storeId", searchStoreId);
-        }
-        if (storeId != null && storeId > 0) {
-            params.put("storeId", storeId);
-        }
-        PaginationResponse<MtPrinter> paginationResponse = printerService.queryPrinterListByPagination(new PaginationRequest(page, pageSize, params));
 
+        PaginationResponse<MtPrinter> paginationResponse = printerService.queryPrinterListByPagination(printerPage);
         List<MtStore> storeList = storeService.getMyStoreList(accountInfo.getMerchantId(), accountInfo.getStoreId(), StatusEnum.ENABLED.getKey());
 
         Map<String, Object> result = new HashMap<>();

@@ -2,7 +2,7 @@ package com.fuint.common.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.fuint.common.dto.ArticleDto;
-import com.fuint.framework.pagination.PaginationRequest;
+import com.fuint.common.param.ArticlePage;
 import com.fuint.framework.pagination.PaginationResponse;
 import com.fuint.repository.model.MtArticle;
 import com.fuint.framework.exception.BusinessCheckException;
@@ -20,10 +20,10 @@ public interface ArticleService extends IService<MtArticle> {
     /**
      * 分页查询文章列表
      *
-     * @param paginationRequest
+     * @param articlePage
      * @return
      */
-    PaginationResponse<ArticleDto> queryArticleListByPagination(PaginationRequest paginationRequest) throws BusinessCheckException;
+    PaginationResponse<ArticleDto> queryArticleListByPagination(ArticlePage articlePage) throws BusinessCheckException;
 
     /**
      * 添加文章
