@@ -1,7 +1,7 @@
 package com.fuint.common.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.fuint.framework.pagination.PaginationRequest;
+import com.fuint.common.param.BannerPage;
 import com.fuint.framework.pagination.PaginationResponse;
 import com.fuint.repository.model.MtBanner;
 import com.fuint.common.dto.BannerDto;
@@ -20,10 +20,10 @@ public interface BannerService extends IService<MtBanner> {
     /**
      * 分页查询列表
      *
-     * @param paginationRequest
+     * @param bannerPage
      * @return
      */
-    PaginationResponse<MtBanner> queryBannerListByPagination(PaginationRequest paginationRequest) throws BusinessCheckException;
+    PaginationResponse<MtBanner> queryBannerListByPagination(BannerPage bannerPage) throws BusinessCheckException;
 
     /**
      * 添加Banner

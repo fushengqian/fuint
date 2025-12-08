@@ -4,10 +4,10 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 
+import com.fuint.common.param.BannerPage;
 import com.fuint.common.service.StoreService;
 import com.fuint.framework.annoation.OperationServiceLog;
 import com.fuint.framework.exception.BusinessCheckException;
-import com.fuint.framework.pagination.PaginationRequest;
 import com.fuint.framework.pagination.PaginationResponse;
 import com.fuint.repository.model.MtBanner;
 import com.fuint.common.dto.BannerDto;
@@ -57,36 +57,36 @@ public class BannerServiceImpl extends ServiceImpl<MtBannerMapper, MtBanner> imp
     /**
      * 分页查询焦点图列表
      *
-     * @param paginationRequest
+     * @param bannerPage
      * @return
      */
     @Override
-    public PaginationResponse<MtBanner> queryBannerListByPagination(PaginationRequest paginationRequest) {
-        Page<MtBanner> pageHelper = PageHelper.startPage(paginationRequest.getCurrentPage(), paginationRequest.getPageSize());
+    public PaginationResponse<MtBanner> queryBannerListByPagination(BannerPage bannerPage) {
+        Page<MtBanner> pageHelper = PageHelper.startPage(bannerPage.getPage(), bannerPage.getPageSize());
         LambdaQueryWrapper<MtBanner> lambdaQueryWrapper = Wrappers.lambdaQuery();
         lambdaQueryWrapper.ne(MtBanner::getStatus, StatusEnum.DISABLE.getKey());
 
-        String title = paginationRequest.getSearchParams().get("title") == null ? "" : paginationRequest.getSearchParams().get("title").toString();
+        String title = bannerPage.getTitle();
         if (StringUtils.isNotBlank(title)) {
             lambdaQueryWrapper.like(MtBanner::getTitle, title);
         }
-        String status = paginationRequest.getSearchParams().get("status") == null ? "" : paginationRequest.getSearchParams().get("status").toString();
+        String status = bannerPage.getStatus();
         if (StringUtils.isNotBlank(status)) {
             lambdaQueryWrapper.eq(MtBanner::getStatus, status);
         }
-        String merchantId = paginationRequest.getSearchParams().get("merchantId") == null ? "" : paginationRequest.getSearchParams().get("merchantId").toString();
-        if (StringUtils.isNotBlank(merchantId)) {
+        Integer merchantId = bannerPage.getMerchantId();
+        if (merchantId != null) {
             lambdaQueryWrapper.eq(MtBanner::getMerchantId, merchantId);
         }
-        String storeId = paginationRequest.getSearchParams().get("storeId") == null ? "" : paginationRequest.getSearchParams().get("storeId").toString();
-        if (StringUtils.isNotBlank(storeId)) {
+        Integer storeId = bannerPage.getStoreId();
+        if (storeId != null) {
             lambdaQueryWrapper.eq(MtBanner::getStoreId, storeId);
         }
 
         lambdaQueryWrapper.orderByAsc(MtBanner::getSort);
         List<MtBanner> dataList = mtBannerMapper.selectList(lambdaQueryWrapper);
 
-        PageRequest pageRequest = PageRequest.of(paginationRequest.getCurrentPage(), paginationRequest.getPageSize());
+        PageRequest pageRequest = PageRequest.of(bannerPage.getPage(), bannerPage.getPageSize());
         PageImpl pageImpl = new PageImpl(dataList, pageRequest, pageHelper.getTotal());
         PaginationResponse<MtBanner> paginationResponse = new PaginationResponse(pageImpl, MtBanner.class);
         paginationResponse.setTotalPages(pageHelper.getPages());

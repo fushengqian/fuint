@@ -46,7 +46,7 @@ public class ClientArticleController extends BaseController {
     @ApiOperation(value="获取文章列表", notes="获取文章列表")
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @CrossOrigin
-    public ResponseObject list(HttpServletRequest request,  @RequestBody ArticlePage articlePage) throws BusinessCheckException, InvocationTargetException, IllegalAccessException {
+    public ResponseObject list(HttpServletRequest request, @RequestBody ArticlePage articlePage) throws BusinessCheckException, InvocationTargetException, IllegalAccessException {
         String merchantNo = request.getHeader("merchantNo") == null ? "" : request.getHeader("merchantNo");
 
         articlePage.setStatus(StatusEnum.ENABLED.getKey());
