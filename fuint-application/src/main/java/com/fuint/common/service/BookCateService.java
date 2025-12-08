@@ -1,7 +1,7 @@
 package com.fuint.common.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.fuint.framework.pagination.PaginationRequest;
+import com.fuint.common.param.BookCatePage;
 import com.fuint.framework.pagination.PaginationResponse;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.repository.model.MtBookCate;
@@ -19,10 +19,10 @@ public interface BookCateService extends IService<MtBookCate> {
     /**
      * 分页查询列表
      *
-     * @param paginationRequest
+     * @param bookCatePage
      * @return
      */
-    PaginationResponse<MtBookCate> queryBookCateListByPagination(PaginationRequest paginationRequest) throws BusinessCheckException;
+    PaginationResponse<MtBookCate> queryBookCateListByPagination(BookCatePage bookCatePage) throws BusinessCheckException;
 
     /**
      * 添加预约类别

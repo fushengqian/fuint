@@ -8,15 +8,12 @@ import com.fuint.common.service.StoreService;
 import com.fuint.common.util.TokenUtil;
 import com.fuint.framework.web.BaseController;
 import com.fuint.framework.web.ResponseObject;
-import com.fuint.common.Constants;
 import com.fuint.common.enums.StatusEnum;
 import com.fuint.common.service.SettingService;
-import com.fuint.framework.pagination.PaginationRequest;
 import com.fuint.framework.pagination.PaginationResponse;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.repository.model.MtArticle;
 import com.fuint.repository.model.MtStore;
-import com.fuint.utils.StringUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.AllArgsConstructor;
@@ -90,10 +87,9 @@ public class BackendArticleController extends BaseController {
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('content:article:edit')")
     public ResponseObject updateStatus(HttpServletRequest request, @RequestBody Map<String, Object> params) throws BusinessCheckException {
+        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
         String status = params.get("status") != null ? params.get("status").toString() : StatusEnum.ENABLED.getKey();
         Integer id = params.get("id") == null ? 0 : Integer.parseInt(params.get("id").toString());
-
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
 
         MtArticle mtArticle = articleService.queryArticleById(id);
         if (mtArticle == null) {

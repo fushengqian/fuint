@@ -2,20 +2,18 @@ package com.fuint.module.backendApi.controller;
 
 import com.fuint.common.dto.AccountInfo;
 import com.fuint.common.dto.BookCateDto;
+import com.fuint.common.param.BookCatePage;
 import com.fuint.common.service.BookCateService;
 import com.fuint.common.service.StoreService;
 import com.fuint.common.util.TokenUtil;
 import com.fuint.framework.web.BaseController;
 import com.fuint.framework.web.ResponseObject;
-import com.fuint.common.Constants;
 import com.fuint.common.enums.StatusEnum;
 import com.fuint.common.service.SettingService;
-import com.fuint.framework.pagination.PaginationRequest;
 import com.fuint.framework.pagination.PaginationResponse;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.repository.model.MtBookCate;
 import com.fuint.repository.model.MtStore;
-import com.fuint.utils.StringUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.AllArgsConstructor;
@@ -61,34 +59,15 @@ public class BackendBookCateController extends BaseController {
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('book:index')")
-    public ResponseObject list(HttpServletRequest request) throws BusinessCheckException {
-        Integer page = request.getParameter("page") == null ? Constants.PAGE_NUMBER : Integer.parseInt(request.getParameter("page"));
-        Integer pageSize = request.getParameter("pageSize") == null ? Constants.PAGE_SIZE : Integer.parseInt(request.getParameter("pageSize"));
-        String name = request.getParameter("name");
-        String status = request.getParameter("status");
-        String searchStoreId = request.getParameter("storeId");
-
+    public ResponseObject list(HttpServletRequest request, @ModelAttribute BookCatePage bookCatePage) throws BusinessCheckException {
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
-        Integer storeId = accountInfo.getStoreId();
-
-        Map<String, Object> params = new HashMap<>();
         if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
-            params.put("merchantId", accountInfo.getMerchantId());
+            bookCatePage.setMerchantId(accountInfo.getMerchantId());
         }
-        if (StringUtil.isNotEmpty(name)) {
-            params.put("name", name);
+        if (accountInfo.getStoreId() != null && accountInfo.getStoreId() > 0) {
+            bookCatePage.setStoreId(accountInfo.getStoreId());
         }
-        if (StringUtil.isNotEmpty(status)) {
-            params.put("status", status);
-        }
-        if (StringUtil.isNotEmpty(searchStoreId)) {
-            params.put("storeId", searchStoreId);
-        }
-        if (storeId != null && storeId > 0) {
-            params.put("storeId", storeId);
-        }
-        PaginationResponse<MtBookCate> paginationResponse = bookCateService.queryBookCateListByPagination(new PaginationRequest(page, pageSize, params));
-
+        PaginationResponse<MtBookCate> paginationResponse = bookCateService.queryBookCateListByPagination(bookCatePage);
         List<MtStore> storeList = storeService.getMyStoreList(accountInfo.getMerchantId(), accountInfo.getStoreId(), StatusEnum.ENABLED.getKey());
 
         Map<String, Object> result = new HashMap<>();
