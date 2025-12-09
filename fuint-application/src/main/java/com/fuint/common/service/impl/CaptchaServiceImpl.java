@@ -75,7 +75,7 @@ public class CaptchaServiceImpl implements CaptchaService {
         // 生成验证码
         String codeText = captchaProducer.createText();
         BufferedImage codeImage = captchaProducer.createImage(codeText);
-        logger.info("生成验证码{}", codeText);
+        logger.info("生成验证码 = {}, uuid = {}", codeText, uuid);
 
         if (codeText != null) {
             RedisUtil.set(uuid, codeText, 1800);
@@ -92,6 +92,7 @@ public class CaptchaServiceImpl implements CaptchaService {
      */
     public Boolean checkCodeByUuid(String code, String uuid){
         String vCode = RedisUtil.get(uuid);
+        logger.info("checkCodeByUuid vCode = {}, code = {}， uuid = {}", vCode, code, uuid);
         if (StringUtil.isEmpty(code) || StringUtil.isEmpty(vCode)) {
             return false;
         } else {
