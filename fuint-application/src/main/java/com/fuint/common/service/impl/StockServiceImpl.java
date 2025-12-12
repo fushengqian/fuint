@@ -90,7 +90,7 @@ public class StockServiceImpl extends ServiceImpl<MtStockMapper, MtStock> implem
     }
 
     /**
-     * 新增库存管理记录
+     * 新增库存管理记录 (操作库存)
      *
      * @param  stockParam 库存参数
      * @param  goodsList 商品列表
@@ -119,7 +119,7 @@ public class StockServiceImpl extends ServiceImpl<MtStockMapper, MtStock> implem
              mtStockItem.setStockId(stockId);
              Integer goodsId = goods.getId();
              Integer skuId = goods.getSkuId();
-             Integer num = goods.getNum();
+             Double num = goods.getNum();
              mtStockItem.setGoodsId(goodsId);
              if (goods.getSkuId() != null) {
                  mtStockItem.setSkuId(skuId);
@@ -211,5 +211,46 @@ public class StockServiceImpl extends ServiceImpl<MtStockMapper, MtStock> implem
             params = new HashMap<>();
         }
         return mtStockItemMapper.selectByMap(params);
+    }
+
+    /**
+     * 生成出入库记录
+     *
+     * @param merchantId 商户ID
+     * @param storeId 店铺ID
+     * @param goodsId 商品ID
+     * @param skuId 商品SKU ID
+     * @param type 类型，increase:入库，reduce:出库
+     * @param num 数量
+     * @param description 说明
+     * @return
+     * */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public Boolean addStockRecord(Integer merchantId, Integer storeId, Integer goodsId, Integer skuId, String type, Double num, String description) {
+        MtStock mtStock = new MtStock();
+        mtStock.setMerchantId(merchantId);
+        mtStock.setStoreId(storeId);
+        mtStock.setStatus(StatusEnum.ENABLED.getKey());
+        mtStock.setType(type);
+        Date createTime = new Date();
+        mtStock.setCreateTime(createTime);
+        mtStock.setUpdateTime(createTime);
+        mtStock.setDescription(description);
+        mtStockMapper.insert(mtStock);
+        // 生成库存明细
+        MtStockItem mtStockItem = new MtStockItem();
+        mtStockItem.setStockId(mtStock.getId());
+        mtStockItem.setGoodsId(goodsId);
+        if (skuId != null) {
+            mtStockItem.setSkuId(skuId);
+        }
+        mtStockItem.setStatus(StatusEnum.ENABLED.getKey());
+        mtStockItem.setNum(num);
+        mtStockItem.setDescription(description);
+        mtStockItem.setCreateTime(createTime);
+        mtStockItem.setUpdateTime(createTime);
+        mtStockItemMapper.insert(mtStockItem);
+        return true;
     }
 }

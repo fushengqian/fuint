@@ -62,4 +62,18 @@ public interface StockService extends IService<MtStock> {
      * @return
      * */
     List<MtStockItem> queryItemByParams(Map<String, Object> params) throws BusinessCheckException;
+
+    /**
+     * 生成出入库记录
+     *
+     * @param merchantId 商户ID
+     * @param storeId 店铺ID
+     * @param goodsId 商品ID
+     * @param skuId 商品SKU ID
+     * @param type 类型，increase:入库，reduce:出库
+     * @param num 数量
+     * @param description 说明
+     * @return
+     * */
+    Boolean addStockRecord(Integer merchantId, Integer storeId, Integer goodsId, Integer skuId, String type, Double num, String description);
 }

@@ -29,7 +29,7 @@ public class StockGoodsDto implements Serializable {
     private Integer cateId;
 
     @ApiModelProperty("商品数量")
-    private Integer num;
+    private Double num;
 
     @ApiModelProperty("库存")
     private Double stock;

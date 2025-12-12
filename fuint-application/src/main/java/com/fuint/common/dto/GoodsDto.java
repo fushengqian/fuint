@@ -73,7 +73,7 @@ public class GoodsDto implements Serializable {
     private Double stock;
 
     @ApiModelProperty("数量")
-    private Integer num;
+    private Double num;
 
     @ApiModelProperty("服务时长")
     private Integer serviceTime;
