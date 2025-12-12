@@ -69,7 +69,7 @@ public class BackendRefundController extends BaseController {
         String startTime = request.getParameter("startTime") == null ? "" : request.getParameter("startTime");
         String endTime = request.getParameter("endTime") == null ? "" : request.getParameter("endTime");
 
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
+        AccountInfo accountInfo = TokenUtil.getAccountInfo();
         Integer storeId = accountInfo.getStoreId() == null ? 0 : accountInfo.getStoreId();
 
         Map<String, Object> params = new HashMap<>();
@@ -130,8 +130,8 @@ public class BackendRefundController extends BaseController {
     @RequestMapping(value = "/info/{refundId}", method = RequestMethod.GET)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('refund:index')")
-    public ResponseObject info(HttpServletRequest request, @PathVariable("refundId") Integer refundId) throws BusinessCheckException {
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
+    public ResponseObject info(@PathVariable("refundId") Integer refundId) throws BusinessCheckException {
+        AccountInfo accountInfo = TokenUtil.getAccountInfo();
 
         RefundDto refundInfo = refundService.getRefundById(refundId);
         UserOrderDto orderInfo = null;
@@ -158,12 +158,12 @@ public class BackendRefundController extends BaseController {
     @RequestMapping(value = "save", method = RequestMethod.POST)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('refund:edit')")
-    public ResponseObject save(HttpServletRequest request, @RequestBody Map<String, Object> param) throws BusinessCheckException {
+    public ResponseObject save(@RequestBody Map<String, Object> param) throws BusinessCheckException {
         Integer refundId = param.get("refundId") == null ? 0 : Integer.parseInt(param.get("refundId").toString());
         String status = param.get("status") == null ? "" : param.get("status").toString();
         String remark = param.get("remark") == null ? "" : param.get("remark").toString();
         String rejectReason = param.get("rejectReason") == null ? "" : param.get("rejectReason").toString();
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
+        AccountInfo accountInfo = TokenUtil.getAccountInfo();
 
         if (status.equals(RefundStatusEnum.REJECT.getKey())) {
             RefundDto dto = new RefundDto();
@@ -195,11 +195,11 @@ public class BackendRefundController extends BaseController {
     @RequestMapping(value = "doRefund", method = RequestMethod.POST)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('refund:edit')")
-    public ResponseObject doRefund(HttpServletRequest request, @RequestBody Map<String, Object> param) throws BusinessCheckException {
+    public ResponseObject doRefund(@RequestBody Map<String, Object> param) throws BusinessCheckException {
         Integer orderId = param.get("orderId") == null ? 0 : Integer.parseInt(param.get("orderId").toString());
         String remark = param.get("remark") == null ? "" : param.get("remark").toString();
         String refundAmount = param.get("refundAmount") == null ? "" : param.get("refundAmount").toString();
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
+        AccountInfo accountInfo = TokenUtil.getAccountInfo();
 
         if (orderId <= 0 || StringUtil.isEmpty(refundAmount)) {
             return getFailureResult(201, "参数有误，发起退款失败");

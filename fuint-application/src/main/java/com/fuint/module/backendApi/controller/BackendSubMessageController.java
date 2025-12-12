@@ -59,7 +59,7 @@ public class BackendSubMessageController extends BaseController {
         String status = request.getParameter("status") == null ? "" : request.getParameter("status");
         String title = request.getParameter("title") == null ? "" : request.getParameter("title");
 
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
+        AccountInfo accountInfo = TokenUtil.getAccountInfo();
 
         List<SubMessageDto> dataList = new ArrayList<>();
         for (WxMessageEnum wxMessageEnum : WxMessageEnum.values()) {
@@ -112,8 +112,8 @@ public class BackendSubMessageController extends BaseController {
     @RequestMapping(value = "/info/{key}", method = RequestMethod.GET)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('subMessage:index')")
-    public ResponseObject info(HttpServletRequest request, @PathVariable("key") String key) throws BusinessCheckException {
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
+    public ResponseObject info(@PathVariable("key") String key) throws BusinessCheckException {
+        AccountInfo accountInfo = TokenUtil.getAccountInfo();
 
         Map<String, Object> result = new HashMap();
 
@@ -180,13 +180,13 @@ public class BackendSubMessageController extends BaseController {
     @RequestMapping(value = "/save", method = RequestMethod.POST)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('subMessage:edit')")
-    public ResponseObject saveHandler(HttpServletRequest request, @RequestBody Map<String, Object> param) throws BusinessCheckException, UnsupportedEncodingException {
+    public ResponseObject saveHandler(@RequestBody Map<String, Object> param) throws BusinessCheckException, UnsupportedEncodingException {
         String key = param.get("key").toString();
         String templateId = param.get("templateId").toString();
         String tid = param.get("tid").toString();
         List<LinkedHashMap> paramData = (List) param.get("params");
 
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
+        AccountInfo accountInfo = TokenUtil.getAccountInfo();
         if (accountInfo.getMerchantId() == null || accountInfo.getMerchantId() <= 0) {
             return getFailureResult(201, "请使用商户账号操作");
         }

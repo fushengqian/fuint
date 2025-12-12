@@ -7,6 +7,10 @@ import com.fuint.common.dto.UserInfo;
 import com.fuint.utils.StringUtil;
 import nl.bitwalker.useragentutils.UserAgent;
 import org.springframework.stereotype.Component;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
+
+import javax.servlet.http.HttpServletRequest;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Random;
@@ -21,6 +25,28 @@ import java.util.Random;
 public class TokenUtil {
 
     public static int TOKEN_OVER_TIME = 604800;
+
+    public static String TOKEN_NAME = "Access-Token";
+
+    public static HttpServletRequest getCurrentRequest() {
+        ServletRequestAttributes attributes =
+                (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
+        return attributes.getRequest();
+    }
+
+    /**
+     * 获取后台登录用户信息
+     * */
+    public static AccountInfo getAccountInfo() {
+        return getAccountInfoByToken(getCurrentRequest().getHeader(TOKEN_NAME));
+    }
+
+    /**
+     * 获取会员登录信息
+     * */
+    public static UserInfo getUserInfo() {
+        return getUserInfoByToken(getCurrentRequest().getHeader(TOKEN_NAME));
+    }
 
     /**
      * 生成token

@@ -58,7 +58,7 @@ public class BackendCommissionRuleController extends BaseController {
         String target = request.getParameter("target");
         String type = request.getParameter("type");
 
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
+        AccountInfo accountInfo = TokenUtil.getAccountInfo();
         Integer storeId = accountInfo.getStoreId();
 
         Map<String, Object> params = new HashMap<>();
@@ -99,11 +99,11 @@ public class BackendCommissionRuleController extends BaseController {
     @RequestMapping(value = "/updateStatus", method = RequestMethod.POST)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('commission:rule:index')")
-    public ResponseObject updateStatus(HttpServletRequest request, @RequestBody Map<String, Object> params) throws BusinessCheckException {
+    public ResponseObject updateStatus(@RequestBody Map<String, Object> params) throws BusinessCheckException {
         String status = params.get("status") != null ? params.get("status").toString() : StatusEnum.ENABLED.getKey();
         Integer id = params.get("id") == null ? 0 : Integer.parseInt(params.get("id").toString());
 
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
+        AccountInfo accountInfo = TokenUtil.getAccountInfo();
         CommissionRuleDto commissionRuleDto = commissionRuleService.queryCommissionRuleById(id);
         if (commissionRuleDto == null) {
             return getFailureResult(201);
@@ -125,8 +125,8 @@ public class BackendCommissionRuleController extends BaseController {
     @RequestMapping(value = "/save", method = RequestMethod.POST)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('commission:rule:index')")
-    public ResponseObject saveHandler(HttpServletRequest request, @RequestBody CommissionRuleParam commissionRule) throws BusinessCheckException {
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
+    public ResponseObject saveHandler(@RequestBody CommissionRuleParam commissionRule) throws BusinessCheckException {
+        AccountInfo accountInfo = TokenUtil.getAccountInfo();
         if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
             commissionRule.setMerchantId(accountInfo.getMerchantId());
         }

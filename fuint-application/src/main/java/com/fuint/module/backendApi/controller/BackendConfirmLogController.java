@@ -75,7 +75,7 @@ public class BackendConfirmLogController extends BaseController {
         String mobile = request.getParameter("mobile") == null ? "" : request.getParameter("mobile");
         String couponId = request.getParameter("couponId") == null ? "" : request.getParameter("couponId");
 
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
+        AccountInfo accountInfo = TokenUtil.getAccountInfo();
         Map<String, Object> searchParams = new HashMap<>();
         if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
             searchParams.put("merchantId", accountInfo.getMerchantId());
@@ -125,7 +125,7 @@ public class BackendConfirmLogController extends BaseController {
     @PreAuthorize("@pms.hasPermission('coupon:confirmLog:index')")
     public ResponseObject rollbackUserCoupon(HttpServletRequest request, @PathVariable("id") Integer id) throws BusinessCheckException {
         String userCouponId = (request.getParameter("userCouponId") == null || StringUtil.isEmpty(request.getParameter("userCouponId"))) ? "0" : request.getParameter("userCouponId");
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
+        AccountInfo accountInfo = TokenUtil.getAccountInfo();
         couponService.rollbackUserCoupon(id, Integer.parseInt(userCouponId), accountInfo.getAccountName());
         return getSuccessResult(true);
     }

@@ -52,7 +52,7 @@ public class ClientMyCouponController extends BaseController {
         String type = request.getParameter("type") == null ? "" : request.getParameter("type");
         String userId = request.getParameter("userId") == null ? "" : request.getParameter("userId");
 
-        UserInfo mtUser = TokenUtil.getUserInfoByToken(request.getHeader("Access-Token"));
+        UserInfo mtUser = TokenUtil.getUserInfo();
         if (StringUtil.isNotEmpty(userId)) {
             mtUser.setId(Integer.parseInt(userId));
         }
@@ -72,10 +72,10 @@ public class ClientMyCouponController extends BaseController {
     @ApiOperation(value = "查询我的卡券是否已使用")
     @RequestMapping(value = "/isUsed", method = RequestMethod.POST)
     @CrossOrigin
-    public ResponseObject isUsed(HttpServletRequest request, @RequestBody MyCouponRequest requestParam) throws BusinessCheckException {
+    public ResponseObject isUsed(@RequestBody MyCouponRequest requestParam) throws BusinessCheckException {
         Integer userCouponId = requestParam.getId() == null ? 0 : requestParam.getId();
 
-        UserInfo mtUser = TokenUtil.getUserInfoByToken(request.getHeader("Access-Token"));
+        UserInfo mtUser = TokenUtil.getUserInfo();
         MtUserCoupon userCoupon = couponService.queryUserCouponById(userCouponId);
         if (userCoupon.getStatus().equals(UserCouponStatusEnum.USED.getKey()) && mtUser.getId().equals(userCoupon.getUserId())) {
             return getSuccessResult(true);
@@ -90,9 +90,9 @@ public class ClientMyCouponController extends BaseController {
     @ApiOperation(value = "删除我的卡券")
     @RequestMapping(value = "/remove", method = RequestMethod.POST)
     @CrossOrigin
-    public ResponseObject remove(HttpServletRequest request, @RequestBody MyCouponRequest requestParam) throws BusinessCheckException {
+    public ResponseObject remove(@RequestBody MyCouponRequest requestParam) throws BusinessCheckException {
         Integer userCouponId = requestParam.getUserCouponId() == null ? 0 : requestParam.getUserCouponId();
-        UserInfo mtUser = TokenUtil.getUserInfoByToken(request.getHeader("Access-Token"));
+        UserInfo mtUser = TokenUtil.getUserInfo();
 
         Boolean result = couponService.removeCoupon(userCouponId, mtUser.getId());
         if (result) {

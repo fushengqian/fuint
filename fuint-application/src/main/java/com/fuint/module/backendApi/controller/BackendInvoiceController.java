@@ -54,7 +54,7 @@ public class BackendInvoiceController extends BaseController {
         String status = request.getParameter("status");
         String searchStoreId = request.getParameter("storeId");
 
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
+        AccountInfo accountInfo = TokenUtil.getAccountInfo();
         Integer storeId = accountInfo.getStoreId();
 
         Map<String, Object> params = new HashMap<>();
@@ -96,8 +96,8 @@ public class BackendInvoiceController extends BaseController {
     @RequestMapping(value = "/updateStatus", method = RequestMethod.POST)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('invoice:edit')")
-    public ResponseObject updateStatus(HttpServletRequest request, @RequestBody InvoiceParam invoice) throws BusinessCheckException {
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
+    public ResponseObject updateStatus(@RequestBody InvoiceParam invoice) throws BusinessCheckException {
+        AccountInfo accountInfo = TokenUtil.getAccountInfo();
         MtInvoice mtInvoice = invoiceService.queryInvoiceById(invoice.getId());
         if (mtInvoice == null) {
             return getFailureResult(201, "发票信息不存在");
@@ -117,8 +117,8 @@ public class BackendInvoiceController extends BaseController {
     @RequestMapping(value = "/save", method = RequestMethod.POST)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('invoice:add')")
-    public ResponseObject saveHandler(HttpServletRequest request, @RequestBody InvoiceParam invoice) throws BusinessCheckException {
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
+    public ResponseObject saveHandler(@RequestBody InvoiceParam invoice) throws BusinessCheckException {
+        AccountInfo accountInfo = TokenUtil.getAccountInfo();
         if (accountInfo.getMerchantId() == null || accountInfo.getMerchantId() <= 0) {
             throw new BusinessCheckException("平台方帐号无法执行该操作，请使用商户帐号操作");
         }
@@ -144,8 +144,8 @@ public class BackendInvoiceController extends BaseController {
     @RequestMapping(value = "/info/{id}", method = RequestMethod.GET)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('invoice:list')")
-    public ResponseObject info(HttpServletRequest request, @PathVariable("id") Integer id) throws BusinessCheckException {
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
+    public ResponseObject info(@PathVariable("id") Integer id) throws BusinessCheckException {
+        AccountInfo accountInfo = TokenUtil.getAccountInfo();
         MtInvoice invoiceInfo = invoiceService.queryInvoiceById(id);
         if (invoiceInfo == null) {
             return getFailureResult(201, "发票信息不存在");

@@ -11,7 +11,6 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -37,8 +36,8 @@ public class ClientRegionController extends BaseController {
     @ApiOperation(value = "获取地区树状结构")
     @RequestMapping(value = "/tree", method = RequestMethod.GET)
     @CrossOrigin
-    public ResponseObject tree(HttpServletRequest request) {
-        UserInfo userInfo = TokenUtil.getUserInfoByToken(request.getHeader("Access-Token"));
+    public ResponseObject tree() {
+        UserInfo userInfo = TokenUtil.getUserInfo();
         if (userInfo == null) {
             return getFailureResult(1001, "用户未登录");
         }

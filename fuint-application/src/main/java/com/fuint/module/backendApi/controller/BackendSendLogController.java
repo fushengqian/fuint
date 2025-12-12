@@ -64,7 +64,7 @@ public class BackendSendLogController extends BaseController {
         Integer page = request.getParameter("page") == null ? Constants.PAGE_NUMBER : Integer.parseInt(request.getParameter("page"));
         Integer pageSize = request.getParameter("pageSize") == null ? Constants.PAGE_SIZE : Integer.parseInt(request.getParameter("pageSize"));
 
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
+        AccountInfo accountInfo = TokenUtil.getAccountInfo();
         Map<String, Object> searchParams = new HashMap<>();
         if (StringUtil.isNotEmpty(status)) {
             searchParams.put("status", status);
@@ -108,8 +108,8 @@ public class BackendSendLogController extends BaseController {
     @ApiOperation(value = "废除用户卡券")
     @RequestMapping(value = "/removeUserCoupon/{id}", method = RequestMethod.GET)
     @CrossOrigin
-    public ResponseObject removeUserCoupon(HttpServletRequest request, @PathVariable("id") Long id) throws BusinessCheckException {
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
+    public ResponseObject removeUserCoupon(@PathVariable("id") Long id) throws BusinessCheckException {
+        AccountInfo accountInfo = TokenUtil.getAccountInfo();
 
         if (id == null) {
             return getFailureResult(201, "系统参数有误");

@@ -21,7 +21,6 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -58,8 +57,8 @@ public class MerchantRefundController extends BaseController {
     @ApiOperation(value = "获取售订单后列表")
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @CrossOrigin
-    public ResponseObject list(HttpServletRequest request, @RequestBody RefundListParam params) throws BusinessCheckException, IllegalAccessException {
-        UserInfo userInfo = TokenUtil.getUserInfoByToken(request.getHeader("Access-Token"));
+    public ResponseObject list(@RequestBody RefundListParam params) throws BusinessCheckException, IllegalAccessException {
+        UserInfo userInfo = TokenUtil.getUserInfo();
         MtStaff staffInfo = staffService.queryStaffByMobile(userInfo.getMobile());
 
         if (staffInfo == null) {
@@ -81,8 +80,8 @@ public class MerchantRefundController extends BaseController {
     @ApiOperation(value = "获取售后订单详情")
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @CrossOrigin
-    public ResponseObject detail(HttpServletRequest request, @RequestBody RefundDetailParam param) throws BusinessCheckException {
-        UserInfo userInfo = TokenUtil.getUserInfoByToken(request.getHeader("Access-Token"));
+    public ResponseObject detail(@RequestBody RefundDetailParam param) throws BusinessCheckException {
+        UserInfo userInfo = TokenUtil.getUserInfo();
 
         MtUser mtUser = memberService.queryMemberById(userInfo.getId());
         MtStaff mtStaff = staffService.queryStaffByMobile(mtUser.getMobile());
@@ -105,8 +104,8 @@ public class MerchantRefundController extends BaseController {
     @ApiOperation(value = "更新售后订单")
     @RequestMapping(value = "/update", method = RequestMethod.POST)
     @CrossOrigin
-    public ResponseObject update(HttpServletRequest request, @RequestBody RefundDetailParam param) throws BusinessCheckException {
-        UserInfo mtUser = TokenUtil.getUserInfoByToken(request.getHeader("Access-Token"));
+    public ResponseObject update(@RequestBody RefundDetailParam param) throws BusinessCheckException {
+        UserInfo mtUser = TokenUtil.getUserInfo();
 
         Integer refundId = param.getRefundId();
         if (refundId == null || refundId <= 0) {

@@ -60,7 +60,7 @@ public class BackendSmsController extends BaseController {
         String mobile = request.getParameter("mobile") == null ? "" : request.getParameter("mobile");
         String content = request.getParameter("content") == null ? "" : request.getParameter("content");
 
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
+        AccountInfo accountInfo = TokenUtil.getAccountInfo();
         Map<String, Object> searchParams = new HashMap<>();
         if (StringUtil.isNotEmpty(mobile)) {
             searchParams.put("mobile", mobile);
@@ -86,8 +86,8 @@ public class BackendSmsController extends BaseController {
     @RequestMapping(value = "/setting", method = RequestMethod.GET)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('smsTemplate:edit')")
-    public ResponseObject setting(HttpServletRequest request) throws BusinessCheckException {
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
+    public ResponseObject setting() throws BusinessCheckException {
+        AccountInfo accountInfo = TokenUtil.getAccountInfo();
 
         List<MtSetting> settingList = settingService.getSettingList(accountInfo.getMerchantId(), SettingTypeEnum.SMS_CONFIG.getKey());
 
@@ -125,13 +125,13 @@ public class BackendSmsController extends BaseController {
     @RequestMapping(value = "/saveSetting", method = RequestMethod.POST)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('smsTemplate:edit')")
-    public ResponseObject saveSetting(HttpServletRequest request, @RequestBody Map<String, Object> param) throws BusinessCheckException {
+    public ResponseObject saveSetting(@RequestBody Map<String, Object> param) throws BusinessCheckException {
         String isClose = param.get("isClose") != null ? param.get("isClose").toString() : null;
         String accessKeyId = param.get("accessKeyId") != null ? param.get("accessKeyId").toString() : null;
         String accessKeySecret = param.get("accessKeySecret") != null ? param.get("accessKeySecret").toString() : null;
         String signName = param.get("signName") != null ? param.get("signName").toString() : null;
 
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
+        AccountInfo accountInfo = TokenUtil.getAccountInfo();
         if (accountInfo.getMerchantId() == null || accountInfo.getMerchantId() <= 0) {
             return getFailureResult(5002);
         }

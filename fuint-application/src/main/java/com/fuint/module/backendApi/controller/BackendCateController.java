@@ -69,7 +69,7 @@ public class BackendCateController extends BaseController {
         String status = request.getParameter("status");
         String searchStoreId = request.getParameter("storeId");
 
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
+        AccountInfo accountInfo = TokenUtil.getAccountInfo();
         Integer storeId = accountInfo.getStoreId() == null ? 0 : accountInfo.getStoreId();
 
         Map<String, Object> params = new HashMap<>();
@@ -108,11 +108,11 @@ public class BackendCateController extends BaseController {
     @RequestMapping(value = "/updateStatus", method = RequestMethod.POST)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('goods:cate:index')")
-    public ResponseObject updateStatus(HttpServletRequest request, @RequestBody Map<String, Object> params) throws BusinessCheckException {
+    public ResponseObject updateStatus(@RequestBody Map<String, Object> params) throws BusinessCheckException {
         String status = params.get("status") != null ? params.get("status").toString() : StatusEnum.ENABLED.getKey();
         Integer id = params.get("id") == null ? 0 : Integer.parseInt(params.get("id").toString());
 
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
+        AccountInfo accountInfo = TokenUtil.getAccountInfo();
         MtGoodsCate mtCate = cateService.queryCateById(id);
         if (mtCate == null) {
             return getFailureResult(201, "该类别不存在");
@@ -133,7 +133,7 @@ public class BackendCateController extends BaseController {
     @ApiOperation(value = "保存商品分类")
     @RequestMapping(value = "/save", method = RequestMethod.POST)
     @PreAuthorize("@pms.hasPermission('goods:cate:index')")
-    public ResponseObject save(HttpServletRequest request, @RequestBody Map<String, Object> params) throws BusinessCheckException {
+    public ResponseObject save(@RequestBody Map<String, Object> params) throws BusinessCheckException {
         String id = params.get("id") == null ? "" : params.get("id").toString();
         String name = params.get("name") == null ? "" : CommonUtil.replaceXSS(params.get("name").toString());
         String description = params.get("description") == null ? "" : CommonUtil.replaceXSS(params.get("description").toString());
@@ -142,9 +142,8 @@ public class BackendCateController extends BaseController {
         String status = params.get("status") == null ? StatusEnum.ENABLED.getKey() : params.get("status").toString();
         Integer storeId = (params.get("storeId") == null || StringUtil.isEmpty(params.get("storeId").toString())) ? 0 : Integer.parseInt(params.get("storeId").toString());
 
-        AccountInfo accountDto = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
-
-        Integer myStoreId = accountDto.getStoreId();
+        AccountInfo accountInfo = TokenUtil.getAccountInfo();
+        Integer myStoreId = accountInfo.getStoreId();
         if (myStoreId > 0) {
             storeId = myStoreId;
         }
@@ -155,10 +154,9 @@ public class BackendCateController extends BaseController {
         info.setLogo(logo);
         info.setSort(Integer.parseInt(sort));
         info.setStatus(status);
-        info.setMerchantId(accountDto.getMerchantId());
+        info.setMerchantId(accountInfo.getMerchantId());
         info.setStoreId(storeId);
-        String operator = accountDto.getAccountName();
-        info.setOperator(operator);
+        info.setOperator(accountInfo.getAccountName());
 
         if (StringUtil.isNotEmpty(id)) {
             info.setId(Integer.parseInt(id));
@@ -177,8 +175,8 @@ public class BackendCateController extends BaseController {
     @RequestMapping(value = "/info/{id}", method = RequestMethod.GET)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('goods:cate:index')")
-    public ResponseObject info(HttpServletRequest request, @PathVariable("id") Integer id) throws BusinessCheckException {
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
+    public ResponseObject info(@PathVariable("id") Integer id) throws BusinessCheckException {
+        AccountInfo accountInfo = TokenUtil.getAccountInfo();
 
         MtGoodsCate mtCate = cateService.queryCateById(id);
         if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0 && !accountInfo.getMerchantId().equals(mtCate.getMerchantId())) {

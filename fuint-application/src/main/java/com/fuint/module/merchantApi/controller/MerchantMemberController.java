@@ -55,7 +55,7 @@ public class MerchantMemberController extends BaseController {
     @ApiOperation(value = "查询会员列表")
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @CrossOrigin
-    public ResponseObject list(HttpServletRequest request, @RequestBody MemberListParam memberListParam) throws BusinessCheckException, IllegalAccessException {
+    public ResponseObject list(@RequestBody MemberListParam memberListParam) throws BusinessCheckException, IllegalAccessException {
         String dataType = memberListParam.getDataType();
         Integer page = memberListParam.getPage() == null ? Constants.PAGE_NUMBER : memberListParam.getPage();
         Integer pageSize = memberListParam.getPageSize() == null ? Constants.PAGE_SIZE : memberListParam.getPageSize();
@@ -69,7 +69,7 @@ public class MerchantMemberController extends BaseController {
             memberListParam.setActiveTime(activeTime);
         }
 
-        UserInfo userInfo = TokenUtil.getUserInfoByToken(request.getHeader("Access-Token"));
+        UserInfo userInfo = TokenUtil.getUserInfo();
 
         MtUser mtUser = memberService.queryMemberById(userInfo.getId());
         MtStaff staffInfo = null;
@@ -110,8 +110,8 @@ public class MerchantMemberController extends BaseController {
     @ApiOperation(value = "查询会员详情")
     @RequestMapping(value = "/info", method = RequestMethod.POST)
     @CrossOrigin
-    public ResponseObject info(HttpServletRequest request, @RequestBody MemberDetailParam memberParam) throws BusinessCheckException {
-        UserInfo userInfo = TokenUtil.getUserInfoByToken(request.getHeader("Access-Token"));
+    public ResponseObject info(@RequestBody MemberDetailParam memberParam) throws BusinessCheckException {
+        UserInfo userInfo = TokenUtil.getUserInfo();
 
         MtStaff staffInfo = null;
         MtUser mtUser = memberService.queryMemberById(userInfo.getId());
@@ -137,8 +137,8 @@ public class MerchantMemberController extends BaseController {
     @ApiOperation(value = "保存会员信息")
     @RequestMapping(value = "/save", method = RequestMethod.POST)
     @CrossOrigin
-    public ResponseObject save(HttpServletRequest request, @RequestBody MemberInfoParam memberInfoParam) throws BusinessCheckException {
-        UserInfo userInfo = TokenUtil.getUserInfoByToken(request.getHeader("Access-Token"));
+    public ResponseObject save(@RequestBody MemberInfoParam memberInfoParam) throws BusinessCheckException {
+        UserInfo userInfo = TokenUtil.getUserInfo();
 
         MtStaff staffInfo = null;
         MtUser myUserInfo = memberService.queryMemberById(userInfo.getId());

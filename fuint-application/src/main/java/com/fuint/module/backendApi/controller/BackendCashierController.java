@@ -93,7 +93,7 @@ public class BackendCashierController extends BaseController {
         Integer pageSize = request.getParameter("pageSize") == null ? Constants.PAGE_SIZE : Integer.parseInt(request.getParameter("pageSize"));
         Integer cateId = request.getParameter("cateId") == null ? 0 : Integer.parseInt(request.getParameter("cateId"));
 
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
+        AccountInfo accountInfo = TokenUtil.getAccountInfo();
         Integer storeId = (accountInfo.getStoreId() == null || accountInfo.getStoreId() < 1) ? 0 : accountInfo.getStoreId();
         MtStore storeInfo = null;
         if (storeId == null || storeId < 1) {
@@ -134,10 +134,10 @@ public class BackendCashierController extends BaseController {
     @RequestMapping(value = "/searchGoods", method = RequestMethod.POST)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('cashier:index')")
-    public ResponseObject searchGoods(HttpServletRequest request, @RequestBody Map<String, Object> param) throws BusinessCheckException {
+    public ResponseObject searchGoods(@RequestBody Map<String, Object> param) throws BusinessCheckException {
         String keyword =  param.get("keyword") == null ? "" : param.get("keyword").toString();
 
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
+        AccountInfo accountInfo = TokenUtil.getAccountInfo();
         Integer storeId = accountInfo.getStoreId();
 
         if (storeId == null || storeId <= 0) {
@@ -233,9 +233,9 @@ public class BackendCashierController extends BaseController {
     @RequestMapping(value = "/getMemberInfo", method = RequestMethod.POST)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('cashier:index')")
-    public ResponseObject getMemberInfo(HttpServletRequest request, @RequestBody Map<String, Object> param) throws BusinessCheckException {
+    public ResponseObject getMemberInfo(@RequestBody Map<String, Object> param) throws BusinessCheckException {
         String keyword = param.get("keyword") == null ? "" : param.get("keyword").toString();
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
+        AccountInfo accountInfo = TokenUtil.getAccountInfo();
         if (StringUtil.isEmpty(keyword)) {
             return getFailureResult(201);
         }
@@ -268,8 +268,8 @@ public class BackendCashierController extends BaseController {
     @RequestMapping(value = "/getMemberInfoById/{userId}", method = RequestMethod.GET)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('cashier:index')")
-    public ResponseObject getMemberInfoById(HttpServletRequest request, @PathVariable("userId") String userId) throws BusinessCheckException {
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
+    public ResponseObject getMemberInfoById(@PathVariable("userId") String userId) throws BusinessCheckException {
+        AccountInfo accountInfo = TokenUtil.getAccountInfo();
 
         if (StringUtil.isEmpty(userId)) {
             return getFailureResult(201);
@@ -292,12 +292,12 @@ public class BackendCashierController extends BaseController {
     @RequestMapping(value = "/doHangUp", method = RequestMethod.POST)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('cashier:index')")
-    public ResponseObject doHangUp(HttpServletRequest request, @RequestBody Map<String, Object> param) throws BusinessCheckException {
+    public ResponseObject doHangUp(@RequestBody Map<String, Object> param) throws BusinessCheckException {
         String cartIds = param.get("cartIds") == null ? "" : param.get("cartIds").toString();
         String hangNo = param.get("hangNo") == null ? "" : param.get("hangNo").toString();
         String userId = param.get("userId") == null ? "" : param.get("userId").toString();
 
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
+        AccountInfo accountInfo = TokenUtil.getAccountInfo();
 
         if (accountInfo.getMerchantId() == null || accountInfo.getMerchantId() <= 0) {
             return getFailureResult(201, "平台账号不能执行该操作");
@@ -327,8 +327,8 @@ public class BackendCashierController extends BaseController {
     @RequestMapping(value = "/getHangUpList", method = RequestMethod.GET)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('cashier:index')")
-    public ResponseObject getHangUpList(HttpServletRequest request) throws BusinessCheckException {
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
+    public ResponseObject getHangUpList() throws BusinessCheckException {
+        AccountInfo accountInfo = TokenUtil.getAccountInfo();
 
         List<HangUpDto> dataList = new ArrayList<>();
 

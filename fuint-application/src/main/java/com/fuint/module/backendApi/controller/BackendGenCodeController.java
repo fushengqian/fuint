@@ -96,7 +96,7 @@ public class BackendGenCodeController extends BaseController {
     @RequestMapping(value = "/save", method = RequestMethod.POST)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('system:genCode:add')")
-    public ResponseObject saveHandler(HttpServletRequest request, @RequestBody Map<String, Object> params) throws BusinessCheckException {
+    public ResponseObject saveHandler(@RequestBody Map<String, Object> params) throws BusinessCheckException {
         String id = params.get("id") == null ? "" : params.get("id").toString();
         String status = params.get("status") == null ? StatusEnum.ENABLED.getKey() : params.get("status").toString();
         String tableName = params.get("tableName") == null ? "" : params.get("tableName").toString();
@@ -105,7 +105,7 @@ public class BackendGenCodeController extends BaseController {
         String author = params.get("author") == null ? "" : params.get("author").toString();
         String backendPath = params.get("backendPath") == null ? "" : params.get("backendPath").toString();
 
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
+        AccountInfo accountInfo = TokenUtil.getAccountInfo();
         if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
             return getFailureResult(1004, "平台超管帐号才有操作权限");
         }
@@ -153,8 +153,8 @@ public class BackendGenCodeController extends BaseController {
     @RequestMapping(value = "/gen/{id}", method = RequestMethod.GET)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('system:genCode:gen')")
-    public ResponseObject gen(HttpServletRequest request, @PathVariable("id") Integer id) throws BusinessCheckException {
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
+    public ResponseObject gen(@PathVariable("id") Integer id) throws BusinessCheckException {
+        AccountInfo accountInfo = TokenUtil.getAccountInfo();
         if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
             return getFailureResult(1004, "平台超管帐号才有操作权限");
         }

@@ -50,11 +50,11 @@ public class BackendHomeController extends BaseController {
     @ApiOperation(value = "首页统计数据")
     @RequestMapping(value = "/index", method = RequestMethod.GET)
     @CrossOrigin
-    public ResponseObject index(HttpServletRequest request) throws BusinessCheckException {
+    public ResponseObject index() throws BusinessCheckException {
         Date beginTime = DateUtil.getDayBegin();
         Date endTime = DateUtil.getDayEnd();
 
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
+        AccountInfo accountInfo = TokenUtil.getAccountInfo();
         Integer merchantId = accountInfo.getMerchantId();
         Integer storeId = accountInfo.getStoreId();
 
@@ -103,7 +103,7 @@ public class BackendHomeController extends BaseController {
         String tag = request.getParameter("tag") == null ? "order,user_active" : request.getParameter("tag");
         Integer storeId = StringUtil.isEmpty(request.getParameter("storeId")) ? 0 : Integer.parseInt(request.getParameter("storeId"));
 
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
+        AccountInfo accountInfo = TokenUtil.getAccountInfo();
         Integer merchantId = accountInfo.getMerchantId() == null ? 0 : accountInfo.getMerchantId();
 
         if (accountInfo.getStoreId() != null && accountInfo.getStoreId() > 0) {

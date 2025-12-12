@@ -62,7 +62,7 @@ public class BackendCommissionRelationController extends BaseController {
         String searchStoreId = request.getParameter("storeId");
         String subUserId = request.getParameter("subUserId");
 
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
+        AccountInfo accountInfo = TokenUtil.getAccountInfo();
 
         Map<String, Object> params = new HashMap<>();
         if (StringUtil.isNotEmpty(userId)) {
@@ -109,8 +109,8 @@ public class BackendCommissionRelationController extends BaseController {
     @RequestMapping(value = "/updateStatus", method = RequestMethod.POST)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('commission:relation:index')")
-    public ResponseObject updateStatus(HttpServletRequest request, @RequestBody Map<String, Object> param) throws BusinessCheckException {
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
+    public ResponseObject updateStatus(@RequestBody Map<String, Object> param) throws BusinessCheckException {
+        AccountInfo accountInfo = TokenUtil.getAccountInfo();
         Integer id = param.get("id") == null ? 0 : Integer.parseInt(param.get("id").toString());
         String status = param.get("status") == null ? StatusEnum.ENABLED.getKey() : param.get("status").toString();
 
@@ -134,8 +134,8 @@ public class BackendCommissionRelationController extends BaseController {
     @RequestMapping(value = "/delete/{id}", method = RequestMethod.GET)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('commission:relation:index')")
-    public ResponseObject delete(HttpServletRequest request, @PathVariable("id") Integer id) throws BusinessCheckException {
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
+    public ResponseObject delete(@PathVariable("id") Integer id) throws BusinessCheckException {
+        AccountInfo accountInfo = TokenUtil.getAccountInfo();
 
         MtCommissionRelation mtCommissionRelation = commissionRelationService.getById(id);
         if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {

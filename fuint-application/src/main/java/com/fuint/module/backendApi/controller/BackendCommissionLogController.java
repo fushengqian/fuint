@@ -76,7 +76,7 @@ public class BackendCommissionLogController extends BaseController {
         String startTime = request.getParameter("startTime") == null ? "" : request.getParameter("startTime");
         String endTime = request.getParameter("endTime") == null ? "" : request.getParameter("endTime");
 
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
+        AccountInfo accountInfo = TokenUtil.getAccountInfo();
         Integer storeId = accountInfo.getStoreId();
 
         Map<String, Object> params = new HashMap<>();
@@ -137,8 +137,8 @@ public class BackendCommissionLogController extends BaseController {
     @RequestMapping(value = "/info/{id}", method = RequestMethod.GET)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('commission:log:index')")
-    public ResponseObject info(HttpServletRequest request, @PathVariable("id") Integer id) throws BusinessCheckException {
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
+    public ResponseObject info(@PathVariable("id") Integer id) throws BusinessCheckException {
+        AccountInfo accountInfo = TokenUtil.getAccountInfo();
 
         CommissionLogDto commissionLog = commissionLogService.queryCommissionLogById(id);
         if (accountInfo.getMerchantId() > 0 && !commissionLog.getMerchantId().equals(accountInfo.getMerchantId())) {
@@ -157,8 +157,8 @@ public class BackendCommissionLogController extends BaseController {
     @ApiOperation(value = "修改分销提成记录")
     @RequestMapping(value = "/save", method = RequestMethod.POST)
     @PreAuthorize("@pms.hasPermission('commission:log:index')")
-    public ResponseObject save(HttpServletRequest request, @RequestBody CommissionLogRequest commissionLogRequest) throws BusinessCheckException {
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
+    public ResponseObject save(@RequestBody CommissionLogRequest commissionLogRequest) throws BusinessCheckException {
+        AccountInfo accountInfo = TokenUtil.getAccountInfo();
 
         commissionLogRequest.setOperator(accountInfo.getAccountName());
         commissionLogService.updateCommissionLog(commissionLogRequest);
@@ -173,8 +173,8 @@ public class BackendCommissionLogController extends BaseController {
     @RequestMapping(value = "/delete/{id}", method = RequestMethod.GET)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('commission:log:index')")
-    public ResponseObject delete(HttpServletRequest request, @PathVariable("id") Integer id) throws BusinessCheckException {
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
+    public ResponseObject delete(@PathVariable("id") Integer id) throws BusinessCheckException {
+        AccountInfo accountInfo = TokenUtil.getAccountInfo();
 
         CommissionLogDto commissionLog = commissionLogService.queryCommissionLogById(id);
         if (accountInfo.getMerchantId() > 0 && !commissionLog.getMerchantId().equals(accountInfo.getMerchantId())) {
@@ -195,8 +195,8 @@ public class BackendCommissionLogController extends BaseController {
     @ApiOperation(value = "分销提成结算")
     @RequestMapping(value = "/doSettle", method = RequestMethod.POST)
     @PreAuthorize("@pms.hasPermission('commission:log:index')")
-    public ResponseObject doSettle(HttpServletRequest request, @RequestBody CommissionSettleRequest commissionSettleRequest) throws BusinessCheckException {
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
+    public ResponseObject doSettle(@RequestBody CommissionSettleRequest commissionSettleRequest) throws BusinessCheckException {
+        AccountInfo accountInfo = TokenUtil.getAccountInfo();
 
         commissionSettleRequest.setOperator(accountInfo.getAccountName());
         if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {

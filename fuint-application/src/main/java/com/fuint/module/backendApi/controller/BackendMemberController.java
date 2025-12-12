@@ -82,7 +82,7 @@ public class BackendMemberController extends BaseController {
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('member:index')")
     public ResponseObject list(HttpServletRequest request) throws BusinessCheckException {
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
+        AccountInfo accountInfo = TokenUtil.getAccountInfo();
         String mobile = request.getParameter("mobile");
         String userId = request.getParameter("id");
         String name = request.getParameter("name");
@@ -179,10 +179,10 @@ public class BackendMemberController extends BaseController {
     @RequestMapping(value = "/updateStatus", method = RequestMethod.POST)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('member:index')")
-    public ResponseObject updateStatus(HttpServletRequest request, @RequestBody Map<String, Object> param) throws BusinessCheckException {
+    public ResponseObject updateStatus(@RequestBody Map<String, Object> param) throws BusinessCheckException {
         Integer userId = param.get("userId") == null ? 0 : Integer.parseInt(param.get("userId").toString());
         String status = param.get("status") == null ? StatusEnum.ENABLED.getKey() : param.get("status").toString();
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
+        AccountInfo accountInfo = TokenUtil.getAccountInfo();
         MtUser userInfo = memberService.queryMemberById(userId);
         if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
             if (!accountInfo.getMerchantId().equals(userInfo.getMerchantId())) {
@@ -207,8 +207,8 @@ public class BackendMemberController extends BaseController {
     @RequestMapping(value = "/delete/{id}", method = RequestMethod.GET)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('member:index')")
-    public ResponseObject delete(HttpServletRequest request, @PathVariable("id") Integer id) throws BusinessCheckException {
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
+    public ResponseObject delete(@PathVariable("id") Integer id) throws BusinessCheckException {
+        AccountInfo accountInfo = TokenUtil.getAccountInfo();
         MtUser mtUser = memberService.queryMemberById(id);
         if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
             if (!mtUser.getMerchantId().equals(accountInfo.getMerchantId())) {
@@ -225,8 +225,8 @@ public class BackendMemberController extends BaseController {
     @RequestMapping(value = "/save", method = RequestMethod.POST)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('member:add')")
-    public ResponseObject save(HttpServletRequest request, @RequestBody MemberSubmitRequest memberInfo) throws BusinessCheckException, ParseException {
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
+    public ResponseObject save(@RequestBody MemberSubmitRequest memberInfo) throws BusinessCheckException, ParseException {
+        AccountInfo accountInfo = TokenUtil.getAccountInfo();
         if (PhoneFormatCheckUtils.isChinaPhoneLegal(memberInfo.getMobile())) {
             // 重置该手机号
             memberService.resetMobile(memberInfo.getMobile(), memberInfo.getId());
@@ -265,8 +265,8 @@ public class BackendMemberController extends BaseController {
     @RequestMapping(value = "/info/{id}", method = RequestMethod.GET)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('member:index')")
-    public ResponseObject info(HttpServletRequest request, @PathVariable("id") Integer id) throws BusinessCheckException {
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
+    public ResponseObject info(@PathVariable("id") Integer id) throws BusinessCheckException {
+        AccountInfo accountInfo = TokenUtil.getAccountInfo();
         MtUser mtUser = memberService.queryMemberById(id);
         if (mtUser == null) {
             return getFailureResult(201, "会员信息有误");
@@ -303,8 +303,8 @@ public class BackendMemberController extends BaseController {
     @RequestMapping(value = "/setting", method = RequestMethod.GET)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('member:setting')")
-    public ResponseObject setting(HttpServletRequest request) throws BusinessCheckException {
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
+    public ResponseObject setting() throws BusinessCheckException {
+        AccountInfo accountInfo = TokenUtil.getAccountInfo();
         List<MtSetting> settingList = settingService.getSettingList(accountInfo.getMerchantId(), SettingTypeEnum.USER.getKey());
 
         String getCouponNeedPhone = YesOrNoEnum.FALSE.getKey();
@@ -347,14 +347,14 @@ public class BackendMemberController extends BaseController {
     @RequestMapping(value = "/saveSetting", method = RequestMethod.POST)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('member:setting')")
-    public ResponseObject saveSetting(HttpServletRequest request, @RequestBody Map<String, Object> param) throws BusinessCheckException {
+    public ResponseObject saveSetting(@RequestBody Map<String, Object> param) throws BusinessCheckException {
         String getCouponNeedPhone = param.get("getCouponNeedPhone") != null ? param.get("getCouponNeedPhone").toString() : null;
         String submitOrderNeedPhone = param.get("submitOrderNeedPhone") != null ? param.get("submitOrderNeedPhone").toString() : null;
         String loginNeedPhone = param.get("loginNeedPhone") != null ? param.get("loginNeedPhone").toString() : null;
         String openWxCard = param.get("openWxCard") != null ? param.get("openWxCard").toString() : null;
         String wxMemberCard = param.get("wxMemberCard") != null ? param.get("wxMemberCard").toString() : null;
 
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
+        AccountInfo accountInfo = TokenUtil.getAccountInfo();
         if (accountInfo.getMerchantId() == null || accountInfo.getMerchantId() <= 0) {
             throw new BusinessCheckException("平台方帐号无法执行该操作，请使用商户帐号操作");
         }
@@ -415,11 +415,11 @@ public class BackendMemberController extends BaseController {
     @RequestMapping(value = "/resetPwd", method = RequestMethod.POST)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('member:add')")
-    public ResponseObject resetPwd(HttpServletRequest request, @RequestBody Map<String, Object> param) throws BusinessCheckException {
+    public ResponseObject resetPwd(@RequestBody Map<String, Object> param) throws BusinessCheckException {
         Integer userId = param.get("userId") == null ? 0 : Integer.parseInt(param.get("userId").toString());
         String password = param.get("password") == null ? "" : param.get("password").toString();
 
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
+        AccountInfo accountInfo = TokenUtil.getAccountInfo();
         if (StringUtil.isEmpty(password)) {
             return getFailureResult(1001, "密码格式有误");
         }
@@ -447,8 +447,8 @@ public class BackendMemberController extends BaseController {
     @ApiOperation(value = "获取会员分组")
     @RequestMapping(value = "/groupList", method = RequestMethod.GET)
     @CrossOrigin
-    public ResponseObject groupList(HttpServletRequest request) throws BusinessCheckException {
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
+    public ResponseObject groupList() throws BusinessCheckException {
+        AccountInfo accountInfo = TokenUtil.getAccountInfo();
 
         // 会员分组
         List<UserGroupDto> groupList = new ArrayList<>();
@@ -477,7 +477,7 @@ public class BackendMemberController extends BaseController {
     public ResponseObject searchMembers(HttpServletRequest request) {
         String groupIds = request.getParameter("groupIds") != null ? request.getParameter("groupIds") : "";
         String keyword = request.getParameter("keyword") != null ? request.getParameter("keyword") : "";
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
+        AccountInfo accountInfo = TokenUtil.getAccountInfo();
         List<GroupMemberDto> memberList = memberService.searchMembers(accountInfo.getMerchantId(), keyword, groupIds,1, Constants.MAX_ROWS);
         return getSuccessResult(memberList);
     }
@@ -499,7 +499,7 @@ public class BackendMemberController extends BaseController {
     @RequestMapping(value = "/uploadMemberFile", method = RequestMethod.POST)
     @CrossOrigin
     public ResponseObject uploadMemberFile(HttpServletRequest request) throws Exception {
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
+        AccountInfo accountInfo = TokenUtil.getAccountInfo();
 
         MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
         MultipartFile file = multipartRequest.getFile("file");

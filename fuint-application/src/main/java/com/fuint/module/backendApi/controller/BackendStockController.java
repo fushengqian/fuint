@@ -72,7 +72,7 @@ public class BackendStockController extends BaseController {
         String searchStoreId = request.getParameter("storeId");
         String type = request.getParameter("type");
 
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
+        AccountInfo accountInfo = TokenUtil.getAccountInfo();
         Integer storeId = accountInfo.getStoreId() == null ? 0 : accountInfo.getStoreId();
 
         Map<String, Object> params = new HashMap<>();
@@ -114,10 +114,10 @@ public class BackendStockController extends BaseController {
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('stock:index')")
-    public ResponseObject delete(HttpServletRequest request, @RequestBody Map<String, Object> params) throws BusinessCheckException {
+    public ResponseObject delete(@RequestBody Map<String, Object> params) throws BusinessCheckException {
         Integer id = params.get("id") == null ? 0 : Integer.parseInt(params.get("id").toString());
 
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
+        AccountInfo accountInfo = TokenUtil.getAccountInfo();
         MtStock mtStock = stockService.queryStockById(id.longValue());
         if (mtStock == null) {
             return getFailureResult(201, "该数据不存在");
@@ -134,7 +134,7 @@ public class BackendStockController extends BaseController {
     @RequestMapping(value = "/save", method = RequestMethod.POST)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('stock:index')")
-    public ResponseObject save(HttpServletRequest request, @RequestBody Map<String, Object> params) throws BusinessCheckException {
+    public ResponseObject save(@RequestBody Map<String, Object> params) throws BusinessCheckException {
         String type = params.get("type") == null ? "" : CommonUtil.replaceXSS(params.get("type").toString());
         String description = params.get("description") == null ? "" : CommonUtil.replaceXSS(params.get("description").toString());
         String status = params.get("status") == null ? StatusEnum.ENABLED.getKey() : params.get("status").toString();
@@ -142,7 +142,7 @@ public class BackendStockController extends BaseController {
         List<LinkedHashMap<String, Object>> originalMapList = (List<LinkedHashMap<String, Object>>) params.get("goodsList");
         List<StockGoodsDto> goodsList = ListUtil.convertMapListToDtoList(originalMapList, StockGoodsDto.class);
 
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getHeader("Access-Token"));
+        AccountInfo accountInfo = TokenUtil.getAccountInfo();
         Integer myStoreId = accountInfo.getStoreId();
         if (myStoreId != null && myStoreId > 0) {
             storeId = myStoreId;

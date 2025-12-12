@@ -71,7 +71,7 @@ public class ClientCouponController extends BaseController {
     @CrossOrigin
     public ResponseObject list(HttpServletRequest request, @RequestBody CouponListParam params) throws BusinessCheckException {
         String merchantNo = request.getHeader("merchantNo") == null ? "" : request.getHeader("merchantNo");
-        UserInfo mtUser = TokenUtil.getUserInfoByToken(request.getHeader("Access-Token"));
+        UserInfo mtUser = TokenUtil.getUserInfo();
         if (null != mtUser) {
             params.setUserId(mtUser.getId());
         }
@@ -89,8 +89,8 @@ public class ClientCouponController extends BaseController {
     @ApiOperation(value = "领取卡券")
     @RequestMapping(value = "/receive", method = RequestMethod.POST)
     @CrossOrigin
-    public ResponseObject receive(HttpServletRequest request, @RequestBody CouponReceiveParam couponReceiveParam) throws BusinessCheckException {
-        UserInfo mtUser = TokenUtil.getUserInfoByToken(request.getHeader("Access-Token"));
+    public ResponseObject receive(@RequestBody CouponReceiveParam couponReceiveParam) throws BusinessCheckException {
+        UserInfo mtUser = TokenUtil.getUserInfo();
         if (null != mtUser) {
             couponReceiveParam.setUserId(mtUser.getId());
         } else {
@@ -109,8 +109,8 @@ public class ClientCouponController extends BaseController {
     @ApiOperation(value = "查询卡券详情")
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @CrossOrigin
-    public ResponseObject detail(HttpServletRequest request, @RequestBody CouponInfoParam params) throws BusinessCheckException, InvocationTargetException, IllegalAccessException {
-        UserInfo mtUser = TokenUtil.getUserInfoByToken(request.getHeader("Access-Token"));
+    public ResponseObject detail(@RequestBody CouponInfoParam params) throws BusinessCheckException, InvocationTargetException, IllegalAccessException {
+        UserInfo mtUser = TokenUtil.getUserInfo();
 
         Integer couponId = params.getCouponId() == null ? 0 : params.getCouponId();
         String userCouponCode = params.getUserCouponCode() == null ? "" : params.getUserCouponCode();

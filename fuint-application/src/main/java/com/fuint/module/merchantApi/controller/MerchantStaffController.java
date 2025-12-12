@@ -18,8 +18,6 @@ import com.fuint.utils.StringUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.AllArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
@@ -57,7 +55,7 @@ public class MerchantStaffController extends BaseController {
     @RequestMapping(value = "/staffList", method = RequestMethod.POST)
     @CrossOrigin
     public ResponseObject staffList(HttpServletRequest request, @RequestBody StaffListRequest requestParams) throws BusinessCheckException {
-        UserInfo userInfo = TokenUtil.getUserInfoByToken(request.getHeader("Access-Token"));
+        UserInfo userInfo = TokenUtil.getUserInfo();
         MtUser mtUser = memberService.queryMemberById(userInfo.getId());
 
         if (mtUser == null || StringUtil.isBlank(mtUser.getMobile())) {
@@ -96,8 +94,8 @@ public class MerchantStaffController extends BaseController {
     @ApiOperation(value = "查询员工详情")
     @RequestMapping(value = "/info", method = RequestMethod.POST)
     @CrossOrigin
-    public ResponseObject info(HttpServletRequest request, @RequestBody StaffParam params) throws BusinessCheckException {
-        UserInfo userInfo = TokenUtil.getUserInfoByToken(request.getHeader("Access-Token"));
+    public ResponseObject info(@RequestBody StaffParam params) throws BusinessCheckException {
+        UserInfo userInfo = TokenUtil.getUserInfo();
 
         MtStaff myInfo = null;
         MtUser mtUser = memberService.queryMemberById(userInfo.getId());
@@ -119,7 +117,7 @@ public class MerchantStaffController extends BaseController {
     @CrossOrigin
     public ResponseObject saveStaff(HttpServletRequest request, @RequestBody StaffParam params) throws BusinessCheckException {
         Integer merchantId = merchantService.getMerchantId(request.getHeader("merchantNo"));
-        UserInfo userInfo = TokenUtil.getUserInfoByToken(request.getHeader("Access-Token"));
+        UserInfo userInfo = TokenUtil.getUserInfo();
         MtUser mtUser = memberService.queryMemberById(userInfo.getId());
         if (mtUser == null || StringUtil.isBlank(mtUser.getMobile())) {
             return getFailureResult(201, "您的帐号不是商户，没有操作权限");

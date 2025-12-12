@@ -59,8 +59,8 @@ public class MerchantSettingController extends BaseController {
     @ApiOperation(value = "查询商户设置信息")
     @RequestMapping(value = "/settingInfo", method = RequestMethod.GET)
     @CrossOrigin
-    public ResponseObject settingInfo(HttpServletRequest request) throws BusinessCheckException {
-        UserInfo userInfo = TokenUtil.getUserInfoByToken(request.getHeader("Access-Token"));
+    public ResponseObject settingInfo() throws BusinessCheckException {
+        UserInfo userInfo = TokenUtil.getUserInfo();
         MtUser mtUser = memberService.queryMemberById(userInfo.getId());
         StaffDto staffInfo = staffService.getStaffInfoByMobile(mtUser.getMobile());
         if (null == staffInfo) {
@@ -79,8 +79,8 @@ public class MerchantSettingController extends BaseController {
     @ApiOperation(value = "保存商户设置")
     @RequestMapping(value = "/saveSetting", method = RequestMethod.POST)
     @CrossOrigin
-    public ResponseObject saveSetting(HttpServletRequest request, @RequestBody MerchantSettingParam params) throws BusinessCheckException {
-        UserInfo userInfo = TokenUtil.getUserInfoByToken(request.getHeader("Access-Token"));
+    public ResponseObject saveSetting(@RequestBody MerchantSettingParam params) throws BusinessCheckException {
+        UserInfo userInfo = TokenUtil.getUserInfo();
         MtUser mtUser = memberService.queryMemberById(userInfo.getId());
         StaffDto staffInfo = staffService.getStaffInfoByMobile(mtUser.getMobile());
         if (null == staffInfo) {

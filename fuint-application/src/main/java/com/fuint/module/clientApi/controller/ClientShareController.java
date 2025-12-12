@@ -71,7 +71,7 @@ public class ClientShareController extends BaseController {
         Integer page = param.getPage() == null ? Constants.PAGE_NUMBER : param.getPage();
         Integer pageSize = param.getPageSize() == null ? Constants.PAGE_SIZE : param.getPageSize();
         String merchantNo = request.getHeader("merchantNo") == null ? "" : request.getHeader("merchantNo");
-        UserInfo userInfo = TokenUtil.getUserInfoByToken(request.getHeader("Access-Token"));
+        UserInfo userInfo = TokenUtil.getUserInfo();
         Map<String, Object> params = new HashMap<>();
         params.put("status", StatusEnum.ENABLED.getKey());
         params.put("userId", userInfo.getId());
@@ -94,7 +94,7 @@ public class ClientShareController extends BaseController {
     @RequestMapping(value = "/getMiniAppLink", method = RequestMethod.POST)
     @CrossOrigin
     public ResponseObject getMiniAppLink(HttpServletRequest request, @RequestBody Map<String, Object> param) throws BusinessCheckException {
-        UserInfo mtUser = TokenUtil.getUserInfoByToken(request.getHeader("Access-Token"));
+        UserInfo mtUser = TokenUtil.getUserInfo();
         String path = param.get("path") == null ? "" : param.get("path").toString();
         String query = param.get("query") == null ? "" : param.get("query").toString();
         Integer merchantId = merchantService.getMerchantId(request.getHeader("merchantNo"));
