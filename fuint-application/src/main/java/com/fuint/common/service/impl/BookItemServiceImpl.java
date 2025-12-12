@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fuint.common.dto.BookItemDto;
 import com.fuint.common.enums.BookStatusEnum;
+import com.fuint.common.param.BookItemPage;
 import com.fuint.common.param.BookableParam;
 import com.fuint.common.service.BookItemService;
 import com.fuint.common.service.BookService;
@@ -12,7 +13,6 @@ import com.fuint.common.service.StoreService;
 import com.fuint.common.util.SeqUtil;
 import com.fuint.framework.annoation.OperationServiceLog;
 import com.fuint.framework.exception.BusinessCheckException;
-import com.fuint.framework.pagination.PaginationRequest;
 import com.fuint.framework.pagination.PaginationResponse;
 import com.fuint.repository.mapper.MtBookItemMapper;
 import com.fuint.common.enums.StatusEnum;
@@ -68,42 +68,38 @@ public class BookItemServiceImpl extends ServiceImpl<MtBookItemMapper, MtBookIte
     /**
      * 分页查询预约订单列表
      *
-     * @param paginationRequest
+     * @param bookItemPage
      * @return
      */
     @Override
-    public PaginationResponse<BookItemDto> queryBookItemListByPagination(PaginationRequest paginationRequest) {
-        Page<MtBookItem> pageHelper = PageHelper.startPage(paginationRequest.getCurrentPage(), paginationRequest.getPageSize());
+    public PaginationResponse<BookItemDto> queryBookItemListByPagination(BookItemPage bookItemPage) {
+        Page<MtBookItem> pageHelper = PageHelper.startPage(bookItemPage.getPage(), bookItemPage.getPageSize());
         LambdaQueryWrapper<MtBookItem> lambdaQueryWrapper = Wrappers.lambdaQuery();
         lambdaQueryWrapper.ne(MtBookItem::getStatus, StatusEnum.DISABLE.getKey());
 
-        String mobile = paginationRequest.getSearchParams().get("mobile") == null ? "" : paginationRequest.getSearchParams().get("mobile").toString();
+        String mobile = bookItemPage.getMobile();
         if (StringUtils.isNotBlank(mobile)) {
             lambdaQueryWrapper.like(MtBookItem::getMobile, mobile);
         }
-        String contact = paginationRequest.getSearchParams().get("contact") == null ? "" : paginationRequest.getSearchParams().get("contact").toString();
+        String contact = bookItemPage.getContact();
         if (StringUtils.isNotBlank(contact)) {
             lambdaQueryWrapper.like(MtBookItem::getContact, contact);
         }
-        String status = paginationRequest.getSearchParams().get("status") == null ? "" : paginationRequest.getSearchParams().get("status").toString();
+        String status = bookItemPage.getStatus();
         if (StringUtils.isNotBlank(status)) {
             lambdaQueryWrapper.eq(MtBookItem::getStatus, status);
         }
-        String merchantId = paginationRequest.getSearchParams().get("merchantId") == null ? "" : paginationRequest.getSearchParams().get("merchantId").toString();
-        if (StringUtils.isNotBlank(merchantId)) {
-            lambdaQueryWrapper.eq(MtBookItem::getMerchantId, merchantId);
+        if (bookItemPage.getMerchantId() != null) {
+            lambdaQueryWrapper.eq(MtBookItem::getMerchantId, bookItemPage.getMerchantId());
         }
-        String storeId = paginationRequest.getSearchParams().get("storeId") == null ? "" : paginationRequest.getSearchParams().get("storeId").toString();
-        if (StringUtils.isNotBlank(storeId)) {
-            lambdaQueryWrapper.eq(MtBookItem::getStoreId, storeId);
+        if (bookItemPage.getStoreId() != null) {
+            lambdaQueryWrapper.eq(MtBookItem::getStoreId, bookItemPage.getStoreId());
         }
-        String userId = paginationRequest.getSearchParams().get("userId") == null ? "" : paginationRequest.getSearchParams().get("userId").toString();
-        if (StringUtils.isNotBlank(userId)) {
-            lambdaQueryWrapper.eq(MtBookItem::getUserId, userId);
+        if (bookItemPage.getUserId() != null) {
+            lambdaQueryWrapper.eq(MtBookItem::getUserId, bookItemPage.getUserId());
         }
-        String cateId = paginationRequest.getSearchParams().get("cateId") == null ? "" : paginationRequest.getSearchParams().get("cateId").toString();
-        if (StringUtils.isNotBlank(cateId)) {
-            lambdaQueryWrapper.eq(MtBookItem::getCateId, cateId);
+        if (bookItemPage.getCateId() != null) {
+            lambdaQueryWrapper.eq(MtBookItem::getCateId, bookItemPage.getCateId());
         }
 
         lambdaQueryWrapper.orderByDesc(MtBookItem::getId);
@@ -122,7 +118,7 @@ public class BookItemServiceImpl extends ServiceImpl<MtBookItemMapper, MtBookIte
             }
         }
 
-        PageRequest pageRequest = PageRequest.of(paginationRequest.getCurrentPage(), paginationRequest.getPageSize());
+        PageRequest pageRequest = PageRequest.of(bookItemPage.getPage(), bookItemPage.getPageSize());
         PageImpl pageImpl = new PageImpl(dataList, pageRequest, pageHelper.getTotal());
         PaginationResponse<BookItemDto> paginationResponse = new PaginationResponse(pageImpl, BookItemDto.class);
         paginationResponse.setTotalPages(pageHelper.getPages());

@@ -3,8 +3,8 @@ package com.fuint.common.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.fuint.common.dto.AccountInfo;
 import com.fuint.common.dto.BalanceDto;
+import com.fuint.common.param.BalancePage;
 import com.fuint.framework.exception.BusinessCheckException;
-import com.fuint.framework.pagination.PaginationRequest;
 import com.fuint.framework.pagination.PaginationResponse;
 import com.fuint.repository.model.MtBalance;
 import java.util.List;
@@ -20,10 +20,10 @@ public interface BalanceService extends IService<MtBalance> {
     /**
      * 分页查询余额列表
      *
-     * @param paginationRequest
+     * @param balancePage
      * @return
      */
-    PaginationResponse<BalanceDto> queryBalanceListByPagination(PaginationRequest paginationRequest) throws BusinessCheckException;
+    PaginationResponse<BalanceDto> queryBalanceListByPagination(BalancePage balancePage) throws BusinessCheckException;
 
     /**
      * 添加余额记录
@@ -37,11 +37,11 @@ public interface BalanceService extends IService<MtBalance> {
     /**
      * 发放余额
      *
-     * @param accountInfo
-     * @param object
-     * @param userIds
-     * @param amount
-     * @param remark
+     * @param accountInfo 账号信息
+     * @param object 发放对象，all全部
+     * @param userIds 会员ID
+     * @param amount 发放金额
+     * @param remark 备注
      * @return
      */
     void distribute(AccountInfo accountInfo, String object, String userIds, String amount, String remark) throws BusinessCheckException;

@@ -7,13 +7,13 @@ import com.fuint.common.dto.AccountInfo;
 import com.fuint.common.dto.BalanceDto;
 import com.fuint.common.dto.OrderDto;
 import com.fuint.common.enums.*;
+import com.fuint.common.param.BalancePage;
 import com.fuint.common.service.*;
 import com.fuint.common.util.CommonUtil;
 import com.fuint.common.util.DateUtil;
 import com.fuint.common.util.PhoneFormatCheckUtils;
 import com.fuint.framework.annoation.OperationServiceLog;
 import com.fuint.framework.exception.BusinessCheckException;
-import com.fuint.framework.pagination.PaginationRequest;
 import com.fuint.framework.pagination.PaginationResponse;
 import com.fuint.repository.mapper.MtBalanceMapper;
 import com.fuint.repository.mapper.MtUserMapper;
@@ -74,56 +74,56 @@ public class BalanceServiceImpl extends ServiceImpl<MtBalanceMapper, MtBalance> 
     /**
      * 分页查询余额列表
      *
-     * @param paginationRequest
+     * @param balancePage
      * @return
      */
     @Override
-    public PaginationResponse<BalanceDto> queryBalanceListByPagination(PaginationRequest paginationRequest) throws BusinessCheckException {
+    public PaginationResponse<BalanceDto> queryBalanceListByPagination(BalancePage balancePage) throws BusinessCheckException {
         LambdaQueryWrapper<MtBalance> lambdaQueryWrapper = Wrappers.lambdaQuery();
         lambdaQueryWrapper.ne(MtBalance::getStatus, StatusEnum.DISABLE.getKey());
 
-        String description = paginationRequest.getSearchParams().get("description") == null ? "" : paginationRequest.getSearchParams().get("description").toString();
+        String description = balancePage.getDescription();
         if (StringUtils.isNotBlank(description)) {
             lambdaQueryWrapper.like(MtBalance::getDescription, description);
         }
-        String status = paginationRequest.getSearchParams().get("status") == null ? "" : paginationRequest.getSearchParams().get("status").toString();
+        String status = balancePage.getStatus();
         if (StringUtils.isNotBlank(status)) {
             lambdaQueryWrapper.eq(MtBalance::getStatus, status);
         }
-        String userId = paginationRequest.getSearchParams().get("userId") == null ? "" : paginationRequest.getSearchParams().get("userId").toString();
-        if (StringUtils.isNotBlank(userId)) {
+        Integer userId = balancePage.getUserId();
+        if (userId != null) {
             lambdaQueryWrapper.eq(MtBalance::getUserId, userId);
         }
-        String orderSn = paginationRequest.getSearchParams().get("orderSn") == null ? "" : paginationRequest.getSearchParams().get("orderSn").toString();
+        String orderSn = balancePage.getOrderSn();
         if (StringUtils.isNotBlank(orderSn)) {
             lambdaQueryWrapper.eq(MtBalance::getOrderSn, orderSn);
         }
-        String mobile = paginationRequest.getSearchParams().get("mobile") == null ? "" : paginationRequest.getSearchParams().get("mobile").toString();
+        String mobile = balancePage.getMobile();
         if (StringUtils.isNotBlank(mobile)) {
             lambdaQueryWrapper.eq(MtBalance::getMobile, mobile);
         }
-        String merchantId = paginationRequest.getSearchParams().get("merchantId") == null ? "" : paginationRequest.getSearchParams().get("merchantId").toString();
-        if (StringUtils.isNotBlank(merchantId)) {
+        Integer merchantId = balancePage.getMerchantId();
+        if (merchantId != null) {
             lambdaQueryWrapper.eq(MtBalance::getMerchantId, merchantId);
         }
-        String userNo = paginationRequest.getSearchParams().get("userNo") == null ? "" : paginationRequest.getSearchParams().get("userNo").toString();
+        String userNo = balancePage.getUserNo();
         if (StringUtil.isNotEmpty(userNo)) {
-            if (StringUtil.isEmpty(merchantId)) {
-                merchantId = "0";
+            if (merchantId == null) {
+                merchantId = 0;
             }
-            MtUser userInfo = memberService.queryMemberByUserNo(Integer.parseInt(merchantId), userNo);
+            MtUser userInfo = memberService.queryMemberByUserNo(merchantId, userNo);
             if (userInfo != null) {
                 lambdaQueryWrapper.eq(MtBalance::getUserId, userInfo.getId());
             } else {
                 lambdaQueryWrapper.eq(MtBalance::getUserId, -1);
             }
         }
-        String storeId = paginationRequest.getSearchParams().get("storeId") == null ? "" : paginationRequest.getSearchParams().get("storeId").toString();
-        if (StringUtils.isNotBlank(storeId)) {
+        Integer storeId = balancePage.getStoreId();
+        if (storeId != null) {
             lambdaQueryWrapper.eq(MtBalance::getStoreId, storeId);
         }
         lambdaQueryWrapper.orderByDesc(MtBalance::getId);
-        Page<MtBanner> pageHelper = PageHelper.startPage(paginationRequest.getCurrentPage(), paginationRequest.getPageSize());
+        Page<MtBanner> pageHelper = PageHelper.startPage(balancePage.getPage(), balancePage.getPageSize());
         List<MtBalance> balanceList = mtBalanceMapper.selectList(lambdaQueryWrapper);
 
         List<BalanceDto> dataList = new ArrayList<>();
@@ -146,7 +146,7 @@ public class BalanceServiceImpl extends ServiceImpl<MtBalanceMapper, MtBalance> 
             dataList.add(item);
         }
 
-        PageRequest pageRequest = PageRequest.of(paginationRequest.getCurrentPage(), paginationRequest.getPageSize());
+        PageRequest pageRequest = PageRequest.of(balancePage.getPage(), balancePage.getPageSize());
         PageImpl pageImpl = new PageImpl(dataList, pageRequest, pageHelper.getTotal());
         PaginationResponse<BalanceDto> paginationResponse = new PaginationResponse(pageImpl, BalanceDto.class);
         paginationResponse.setTotalPages(pageHelper.getPages());

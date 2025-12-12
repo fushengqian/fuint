@@ -197,47 +197,34 @@ public class BookCateServiceImpl extends ServiceImpl<MtBookCateMapper, MtBookCat
     }
 
     /**
-     * 根据条件搜索焦点图
+     * 获取可用的预约类别
      *
-     * @param params 查询参数
+     * @param  merchantId 商户ID
+     * @param  storeId 店铺ID
      * @throws BusinessCheckException
      * @return
      * */
     @Override
-    public List<MtBookCate> queryBookCateListByParams(Map<String, Object> params) {
-        String status =  params.get("status") == null ? StatusEnum.ENABLED.getKey(): params.get("status").toString();
-        String storeId =  params.get("storeId") == null ? "" : params.get("storeId").toString();
-        String merchantId =  params.get("merchantId") == null ? "" : params.get("merchantId").toString();
-        String name = params.get("name") == null ? "" : params.get("name").toString();
-
+    public List<MtBookCate> getAvailableBookCate(Integer merchantId, Integer storeId) {
         LambdaQueryWrapper<MtBookCate> lambdaQueryWrapper = Wrappers.lambdaQuery();
-        lambdaQueryWrapper.ne(MtBookCate::getStatus, StatusEnum.DISABLE.getKey());
-        if (StringUtils.isNotBlank(name)) {
-            lambdaQueryWrapper.like(MtBookCate::getName, name);
-        }
-        if (StringUtils.isNotBlank(status)) {
-            lambdaQueryWrapper.eq(MtBookCate::getStatus, status);
-        }
-        if (StringUtils.isNotBlank(merchantId)) {
+        lambdaQueryWrapper.eq(MtBookCate::getStatus, StatusEnum.ENABLED.getKey());
+        if (merchantId != null && merchantId > 0) {
             lambdaQueryWrapper.eq(MtBookCate::getMerchantId, merchantId);
         }
-        if (StringUtils.isNotBlank(storeId)) {
+        if (storeId != null && storeId > 0) {
             lambdaQueryWrapper.and(wq -> wq
                     .eq(MtBookCate::getStoreId, 0)
                     .or()
                     .eq(MtBookCate::getStoreId, storeId));
         }
-
         lambdaQueryWrapper.orderByAsc(MtBookCate::getSort);
         List<MtBookCate> dataList = mtBookCateMapper.selectList(lambdaQueryWrapper);
         String baseImage = settingService.getUploadBasePath();
-
         if (dataList.size() > 0) {
             for (MtBookCate mtBookCate : dataList) {
-                 mtBookCate.setLogo(baseImage + mtBookCate.getLogo());
+                mtBookCate.setLogo(baseImage + mtBookCate.getLogo());
             }
         }
-
         return dataList;
     }
 }
