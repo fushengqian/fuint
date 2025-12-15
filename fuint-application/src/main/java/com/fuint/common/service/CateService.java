@@ -2,8 +2,8 @@ package com.fuint.common.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.fuint.common.dto.GoodsCateDto;
+import com.fuint.common.param.GoodsCatePage;
 import com.fuint.framework.exception.BusinessCheckException;
-import com.fuint.framework.pagination.PaginationRequest;
 import com.fuint.framework.pagination.PaginationResponse;
 import com.fuint.repository.model.MtGoodsCate;
 import java.util.List;
@@ -19,10 +19,10 @@ public interface CateService extends IService<MtGoodsCate> {
     /**
      * 分页查询列表
      *
-     * @param paginationRequest
+     * @param catePage
      * @return
      */
-    PaginationResponse<GoodsCateDto> queryCateListByPagination(PaginationRequest paginationRequest) throws BusinessCheckException;
+    PaginationResponse<GoodsCateDto> queryCateListByPagination(GoodsCatePage catePage) throws BusinessCheckException;
 
     /**
      * 添加商品分类

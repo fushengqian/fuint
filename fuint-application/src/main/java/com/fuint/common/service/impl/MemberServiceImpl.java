@@ -542,6 +542,7 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
         mtUser.setStoreId(0);
         mtUser.setSource(MemberSourceEnum.MOBILE_LOGIN.getKey());
         mtUser.setIp(ip);
+        mtUser.setIsStaff(YesOrNoEnum.NO.getKey());
         mtUserMapper.insert(mtUser);
         mtUser = queryMemberByMobile(merchantId, mobile);
 
@@ -635,6 +636,9 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
                     }
                 }
             }
+        }
+        if (mtUser.getIsStaff() == null) {
+            mtUser.setIsStaff(YesOrNoEnum.NO.getKey());
         }
         return mtUser;
     }

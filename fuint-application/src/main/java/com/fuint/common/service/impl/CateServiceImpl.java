@@ -5,11 +5,11 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fuint.common.dto.GoodsCateDto;
 import com.fuint.common.enums.StatusEnum;
+import com.fuint.common.param.GoodsCatePage;
 import com.fuint.common.service.CateService;
 import com.fuint.common.service.StoreService;
 import com.fuint.framework.annoation.OperationServiceLog;
 import com.fuint.framework.exception.BusinessCheckException;
-import com.fuint.framework.pagination.PaginationRequest;
 import com.fuint.framework.pagination.PaginationResponse;
 import com.fuint.repository.mapper.MtGoodsCateMapper;
 import com.fuint.repository.mapper.MtGoodsMapper;
@@ -54,29 +54,29 @@ public class CateServiceImpl extends ServiceImpl<MtGoodsCateMapper, MtGoodsCate>
     /**
      * 分页查询分类列表
      *
-     * @param paginationRequest
+     * @param catePage
      * @return
      */
     @Override
-    public PaginationResponse<GoodsCateDto> queryCateListByPagination(PaginationRequest paginationRequest) throws BusinessCheckException {
-        Page<MtGoodsCate> pageHelper = PageHelper.startPage(paginationRequest.getCurrentPage(), paginationRequest.getPageSize());
+    public PaginationResponse<GoodsCateDto> queryCateListByPagination(GoodsCatePage catePage) throws BusinessCheckException {
+        Page<MtGoodsCate> pageHelper = PageHelper.startPage(catePage.getPage(), catePage.getPageSize());
         LambdaQueryWrapper<MtGoodsCate> lambdaQueryWrapper = Wrappers.lambdaQuery();
         lambdaQueryWrapper.ne(MtGoodsCate::getStatus, StatusEnum.DISABLE.getKey());
 
-        String name = paginationRequest.getSearchParams().get("name") == null ? "" : paginationRequest.getSearchParams().get("name").toString();
+        String name = catePage.getName();
         if (StringUtils.isNotBlank(name)) {
             lambdaQueryWrapper.like(MtGoodsCate::getName, name);
         }
-        String status = paginationRequest.getSearchParams().get("status") == null ? "" : paginationRequest.getSearchParams().get("status").toString();
+        String status = catePage.getStatus();
         if (StringUtils.isNotBlank(status)) {
             lambdaQueryWrapper.eq(MtGoodsCate::getStatus, status);
         }
-        String merchantId = paginationRequest.getSearchParams().get("merchantId") == null ? "" : paginationRequest.getSearchParams().get("merchantId").toString();
-        if (StringUtils.isNotBlank(merchantId)) {
+        Integer merchantId = catePage.getMerchantId();
+        if (merchantId != null) {
             lambdaQueryWrapper.eq(MtGoodsCate::getMerchantId, merchantId);
         }
-        String storeId = paginationRequest.getSearchParams().get("storeId") == null ? "" : paginationRequest.getSearchParams().get("storeId").toString();
-        if (StringUtils.isNotBlank(storeId)) {
+        Integer storeId = catePage.getStoreId();
+        if (storeId != null) {
             lambdaQueryWrapper.and(wq -> wq
                     .eq(MtGoodsCate::getStoreId, 0)
                     .or()
@@ -96,7 +96,7 @@ public class CateServiceImpl extends ServiceImpl<MtGoodsCateMapper, MtGoodsCate>
              }
              dataList.add(cateDto);
         }
-        PageRequest pageRequest = PageRequest.of(paginationRequest.getCurrentPage(), paginationRequest.getPageSize());
+        PageRequest pageRequest = PageRequest.of(catePage.getPage(), catePage.getPageSize());
         PageImpl pageImpl = new PageImpl(dataList, pageRequest, pageHelper.getTotal());
         PaginationResponse<GoodsCateDto> paginationResponse = new PaginationResponse(pageImpl, GoodsCateDto.class);
         paginationResponse.setTotalPages(pageHelper.getPages());
