@@ -7,7 +7,7 @@ import java.lang.reflect.Method;
 import java.util.*;
 
 public class DtoConversionEntity {
-    private static Logger logger = LoggerFactory.getLogger(DtoConversionEntity.class);
+    private static final Logger logger = LoggerFactory.getLogger(DtoConversionEntity.class);
     //将model中与entity中类型和名称相同的属性值赋值给对应的entity的属性，并返回entity
     public static <T1, T2> T2 TypeConversion(T1 model, T2 entity) {
         List<Map<String, Object>> modelList = getFiledInfo(model);

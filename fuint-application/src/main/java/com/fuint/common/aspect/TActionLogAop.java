@@ -42,7 +42,7 @@ import java.util.Map;
 @Aspect
 public class TActionLogAop {
 
-    private Logger logger = LoggerFactory.getLogger(TActionLogAop.class);
+    private final Logger logger = LoggerFactory.getLogger(TActionLogAop.class);
 
     @Lazy
     @Autowired

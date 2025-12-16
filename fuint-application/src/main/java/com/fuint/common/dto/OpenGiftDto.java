@@ -4,8 +4,7 @@ import com.fuint.repository.model.MtCoupon;
 import com.fuint.repository.model.MtStore;
 import com.fuint.repository.model.MtUserGrade;
 import io.swagger.annotations.ApiModelProperty;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
 import java.io.Serializable;
 
@@ -15,8 +14,7 @@ import java.io.Serializable;
  * Created by FSQ
  * CopyRight https://www.fuint.cn
  */
-@Getter
-@Setter
+@Data
 public class OpenGiftDto implements Serializable {
 
     @ApiModelProperty("自增ID")

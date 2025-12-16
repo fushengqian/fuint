@@ -37,7 +37,7 @@ public class HttpRESTDataClient {
 
     private static final OkHttpClient client = new OkHttpClient();
 
-    private static HttpClientBuilder httpClientBuilder;
+    private static final HttpClientBuilder httpClientBuilder;
 
     static {
         httpClientBuilder = HttpClientBuilder.create();

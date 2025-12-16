@@ -16,7 +16,7 @@ import java.util.List;
  */
 public class PrinterUtil {
 
-    private static String BASE_URL = "https://open.xpyun.net/api/openapi";
+    private static final String BASE_URL = "https://open.xpyun.net/api/openapi";
 
     private static final Logger logger = LoggerFactory.getLogger(PrinterUtil.class);
 

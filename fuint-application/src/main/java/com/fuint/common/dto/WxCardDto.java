@@ -1,8 +1,7 @@
 package com.fuint.common.dto;
 
 import io.swagger.annotations.ApiModelProperty;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
 /**
  * 微信会员卡实体类
@@ -10,8 +9,7 @@ import lombok.Setter;
  * Created by FSQ
  * CopyRight https://www.fuint.cn
  */
-@Getter
-@Setter
+@Data
 public class WxCardDto {
 
     @ApiModelProperty("会员卡类型")

@@ -27,7 +27,7 @@ import java.util.Map;
 @Component("UploadShippingInfoJob")
 public class UploadShippingInfoJob {
 
-    private Logger logger = LoggerFactory.getLogger(UploadShippingInfoJob.class);
+    private final Logger logger = LoggerFactory.getLogger(UploadShippingInfoJob.class);
 
     @Autowired
     private Environment environment;

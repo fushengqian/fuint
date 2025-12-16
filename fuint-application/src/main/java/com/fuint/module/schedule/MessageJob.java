@@ -26,7 +26,7 @@ import java.util.List;
 @Component("messageJob")
 public class MessageJob {
 
-    private Logger logger = LoggerFactory.getLogger(MessageJob.class);
+    private final Logger logger = LoggerFactory.getLogger(MessageJob.class);
 
     /**
      * 消息服务接口
@@ -46,7 +46,7 @@ public class MessageJob {
     /**
      * 一次最多发送消息数量
      **/
-    private int MAX_SEND_NUM = 50;
+    private final int MAX_SEND_NUM = 50;
 
     @Scheduled(cron = "${message.job.time:0 0/1 * * * ?}")
     @Transactional(rollbackFor = Exception.class)

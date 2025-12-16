@@ -2,8 +2,7 @@ package com.fuint.common.dto;
 
 import com.fuint.repository.model.MtUser;
 import io.swagger.annotations.ApiModelProperty;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -14,8 +13,7 @@ import java.util.Date;
  * Created by FSQ
  * CopyRight https://www.fuint.cn
  */
-@Getter
-@Setter
+@Data
 public class PointDto implements Serializable {
 
     @ApiModelProperty("自增ID")

@@ -57,7 +57,7 @@ public class BackendBannerController extends BaseController {
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('content:banner:list')")
-    public ResponseObject list(@RequestBody BannerPage bannerPage) throws BusinessCheckException {
+    public ResponseObject list(@ModelAttribute BannerPage bannerPage) throws BusinessCheckException {
         AccountInfo accountInfo = TokenUtil.getAccountInfo();
         if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
             bannerPage.setMerchantId(accountInfo.getMerchantId());

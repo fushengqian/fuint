@@ -17,7 +17,7 @@ public class BizCodeGenerator {
 
     private static final Logger logger = LoggerFactory.getLogger(BizCodeGenerator.class);
 
-    private static String DATE_FORMAT="yyyyMMddHHmmssSSS";
+    private static final String DATE_FORMAT="yyyyMMddHHmmssSSS";
 
     /**
      * 获取指定前缀的Code字符串

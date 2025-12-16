@@ -117,7 +117,7 @@ public class ClientMessageController extends BaseController {
     @CrossOrigin
     public ResponseObject getSubTemplate(HttpServletRequest request) throws BusinessCheckException {
         String merchantNo = request.getHeader("merchantNo");
-        String keys =  request.getParameter("keys") == null ? "" :request.getParameter("keys");
+        String keys = request.getParameter("keys") == null ? "" :request.getParameter("keys");
 
         List<String> dataList = new ArrayList<>();
         Integer merchantId = merchantService.getMerchantId(merchantNo);

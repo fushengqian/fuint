@@ -20,7 +20,7 @@ import java.text.SimpleDateFormat;
 @Service
 public class ExportServiceImpl implements ExportService {
 
-    private static Logger logger = LoggerFactory.getLogger(ExportServiceImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(ExportServiceImpl.class);
 
     private static SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 

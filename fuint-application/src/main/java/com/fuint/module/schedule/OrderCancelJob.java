@@ -30,7 +30,7 @@ import java.util.Map;
 @Component("orderCancelJob")
 public class OrderCancelJob {
 
-    private Logger logger = LoggerFactory.getLogger(OrderCancelJob.class);
+    private final Logger logger = LoggerFactory.getLogger(OrderCancelJob.class);
 
     /**
      * 订单服务接口
@@ -44,12 +44,12 @@ public class OrderCancelJob {
     /**
      * 一次最多处理订单数量
      **/
-    private int MAX_SEND_NUM = 50;
+    private final int MAX_SEND_NUM = 50;
 
     /**
      * 订单超时分钟
      * */
-    private int OVER_TIME = 30;
+    private final int OVER_TIME = 30;
 
     @Scheduled(cron = "${orderCancel.job.time:0 0/2 * * * ?}")
     @Transactional(rollbackFor = Exception.class)

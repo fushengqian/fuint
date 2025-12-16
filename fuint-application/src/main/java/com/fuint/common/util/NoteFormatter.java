@@ -29,7 +29,7 @@ public class NoteFormatter {
     private static final Integer LAST_ROW_MAX_NAME_CHAR_LEN80 = 17;
     private static final Integer MAX_QUANTITY_CHAR_LEN80 = 6;
     private static final Integer MAX_PRICE_CHAR_LEN80 = 6;
-    private static String orderNameEmpty = StringUtils.repeat(" ", MAX_NAME_CHAR_LEN);
+    private static final String orderNameEmpty = StringUtils.repeat(" ", MAX_NAME_CHAR_LEN);
 
     /**
      * 格式化订单数据 80mm打印机使用

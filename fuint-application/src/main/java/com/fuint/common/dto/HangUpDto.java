@@ -2,8 +2,7 @@ package com.fuint.common.dto;
 
 import com.fuint.repository.model.MtUser;
 import io.swagger.annotations.ApiModelProperty;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
 import java.math.BigDecimal;
 
@@ -13,8 +12,7 @@ import java.math.BigDecimal;
  * Created by FSQ
  * CopyRight https://www.fuint.cn
  */
-@Getter
-@Setter
+@Data
 public class HangUpDto {
 
     @ApiModelProperty("挂单号")

@@ -1,8 +1,7 @@
 package com.fuint.common.dto;
 
 import io.swagger.annotations.ApiModelProperty;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 import java.io.Serializable;
 import java.util.Map;
 
@@ -12,8 +11,7 @@ import java.util.Map;
  * Created by FSQ
  * CopyRight https://www.fuint.cn
  */
-@Getter
-@Setter
+@Data
 public class ReqResult implements Serializable {
 
     @ApiModelProperty("返回代码")

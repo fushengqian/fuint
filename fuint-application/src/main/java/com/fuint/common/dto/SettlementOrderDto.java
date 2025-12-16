@@ -3,8 +3,7 @@ package com.fuint.common.dto;
 import java.io.Serializable;
 import java.util.Date;
 import io.swagger.annotations.ApiModelProperty;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
 /**
  * 结算订单表
@@ -12,8 +11,7 @@ import lombok.Setter;
  * Created by FSQ
  * CopyRight https://www.fuint.cn
  */
-@Getter
-@Setter
+@Data
 public class SettlementOrderDto implements Serializable {
 
     @ApiModelProperty("自增ID")

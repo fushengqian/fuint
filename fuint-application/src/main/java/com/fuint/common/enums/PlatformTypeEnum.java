@@ -55,4 +55,12 @@ public enum PlatformTypeEnum {
     public void setValue(String value) {
         this.value = value;
     }
+
+    public Integer getNum() {
+        return num;
+    }
+
+    public void setNum(Integer code) {
+        this.num = num;
+    }
 }

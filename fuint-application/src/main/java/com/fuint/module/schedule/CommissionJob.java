@@ -26,7 +26,7 @@ import java.util.*;
 @Component("CommissionJob")
 public class CommissionJob {
 
-    private Logger logger = LoggerFactory.getLogger(CommissionJob.class);
+    private final Logger logger = LoggerFactory.getLogger(CommissionJob.class);
 
     /**
      * 订单服务接口
@@ -49,12 +49,12 @@ public class CommissionJob {
     /**
      * 一次最多处理订单数量
      **/
-    private int MAX_ROWS = 10;
+    private final int MAX_ROWS = 10;
 
     /**
      * 订单完成后n天可产生佣金
      * */
-    private int OVER_DAY = 0;
+    private final int OVER_DAY = 0;
 
     @Scheduled(cron = "${commission.job.time:0 0/5 * * * ?}")
     @Transactional(rollbackFor = Exception.class)

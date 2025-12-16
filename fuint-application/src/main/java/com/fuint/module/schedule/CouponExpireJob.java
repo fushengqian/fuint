@@ -34,7 +34,7 @@ import java.util.*;
 @Component("couponExpireJob")
 public class CouponExpireJob {
 
-    private Logger logger = LoggerFactory.getLogger(CouponExpireJob.class);
+    private final Logger logger = LoggerFactory.getLogger(CouponExpireJob.class);
 
     /**
      * 会员卡券服务接口
@@ -69,7 +69,7 @@ public class CouponExpireJob {
     /**
      * 一次最多发送消息数量
      **/
-    private int MAX_SEND_NUM = 50;
+    private final int MAX_SEND_NUM = 50;
 
     @Scheduled(cron = "${couponExpire.job.time:0 0/1 * * * ?}")
     @Transactional(rollbackFor = Exception.class)

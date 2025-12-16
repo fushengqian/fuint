@@ -5,8 +5,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 import com.fuint.framework.pagination.PaginationResponse;
 import io.swagger.annotations.ApiModelProperty;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
 /**
  * 结算实体类
@@ -14,8 +13,7 @@ import lombok.Setter;
  * Created by FSQ
  * CopyRight https://www.fuint.cn
  */
-@Getter
-@Setter
+@Data
 public class SettlementDto implements Serializable {
 
     @ApiModelProperty("自增ID")

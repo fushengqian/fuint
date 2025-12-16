@@ -1,8 +1,7 @@
 package com.fuint.common.dto;
 
 import io.swagger.annotations.ApiModelProperty;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
 /**
  * 卡券分组数据DTO
@@ -10,8 +9,7 @@ import lombok.Setter;
  * Created by FSQ
  * CopyRight https://www.fuint.cn
  */
-@Getter
-@Setter
+@Data
 public class GroupDataListDto {
 
     @ApiModelProperty("键值")

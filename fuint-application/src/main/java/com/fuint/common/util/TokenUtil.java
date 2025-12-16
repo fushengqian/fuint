@@ -24,9 +24,9 @@ import java.util.Random;
 @Component
 public class TokenUtil {
 
-    public static int TOKEN_OVER_TIME = 604800;
+    public static final int TOKEN_OVER_TIME = 604800;
 
-    public static String TOKEN_NAME = "Access-Token";
+    public static final String TOKEN_NAME = "Access-Token";
 
     public static HttpServletRequest getCurrentRequest() {
         ServletRequestAttributes attributes =
