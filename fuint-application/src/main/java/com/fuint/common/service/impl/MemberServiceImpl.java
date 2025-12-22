@@ -9,6 +9,7 @@ import com.fuint.common.dto.GroupMemberDto;
 import com.fuint.common.dto.MemberTopDto;
 import com.fuint.common.dto.UserDto;
 import com.fuint.common.enums.*;
+import com.fuint.common.param.MemberPage;
 import com.fuint.common.service.*;
 import com.fuint.common.util.*;
 import com.fuint.framework.annoation.OperationServiceLog;
@@ -197,24 +198,24 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
     /**
      * 分页查询会员列表
      *
-     * @param paginationRequest
+     * @param memberPage
      * @return
      */
     @Override
-    public PaginationResponse<UserDto> queryMemberListByPagination(PaginationRequest paginationRequest) throws BusinessCheckException {
-        Page<MtUser> pageHelper = PageHelper.startPage(paginationRequest.getCurrentPage(), paginationRequest.getPageSize());
+    public PaginationResponse<UserDto> queryMemberListByPagination(MemberPage memberPage) throws BusinessCheckException {
+        Page<MtUser> pageHelper = PageHelper.startPage(memberPage.getPage(), memberPage.getPageSize());
         LambdaQueryWrapper<MtUser> wrapper = Wrappers.lambdaQuery();
         wrapper.ne(MtUser::getStatus, StatusEnum.DISABLE.getKey());
         wrapper.eq(MtUser::getIsStaff, YesOrNoEnum.NO.getKey());
-        String name = paginationRequest.getSearchParams().get("name") == null ? "" : paginationRequest.getSearchParams().get("name").toString();
+        String name = memberPage.getName();
         if (StringUtils.isNotBlank(name)) {
             wrapper.like(MtUser::getName, name);
         }
-        String id = paginationRequest.getSearchParams().get("id") == null ? "" : paginationRequest.getSearchParams().get("id").toString();
-        if (StringUtils.isNotBlank(id)) {
-            wrapper.eq(MtUser::getId, id);
+        Integer userId = memberPage.getId();
+        if (userId != null && userId > 0) {
+            wrapper.eq(MtUser::getId, userId);
         }
-        String keyword = paginationRequest.getSearchParams().get("keyword") == null ? "" : paginationRequest.getSearchParams().get("keyword").toString();
+        String keyword = memberPage.getKeyword();
         if (StringUtils.isNotBlank(keyword)) {
             wrapper.and(wq -> wq
                     .eq(MtUser::getMobile, keyword)
@@ -223,51 +224,51 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
                     .or()
                     .eq(MtUser::getName, keyword));
         }
-        String mobile = paginationRequest.getSearchParams().get("mobile") == null ? "" : paginationRequest.getSearchParams().get("mobile").toString();
+        String mobile = memberPage.getMobile();
         if (StringUtils.isNotBlank(mobile)) {
             wrapper.like(MtUser::getMobile, mobile);
         }
-        String birthday = paginationRequest.getSearchParams().get("birthday") == null ? "" : paginationRequest.getSearchParams().get("birthday").toString();
+        String birthday = memberPage.getBirthday();
         if (StringUtils.isNotBlank(birthday)) {
             wrapper.like(MtUser::getBirthday, birthday);
         }
-        String userNo = paginationRequest.getSearchParams().get("userNo") == null ? "" : paginationRequest.getSearchParams().get("userNo").toString();
+        String userNo = memberPage.getUserNo();
         if (StringUtils.isNotBlank(userNo)) {
             wrapper.eq(MtUser::getUserNo, userNo);
         }
-        String gradeId = paginationRequest.getSearchParams().get("gradeId") == null ? "" : paginationRequest.getSearchParams().get("gradeId").toString();
-        if (StringUtils.isNotBlank(gradeId)) {
+        Integer gradeId = memberPage.getGradeId();
+        if (gradeId != null && gradeId > 0) {
             wrapper.eq(MtUser::getGradeId, gradeId);
         }
-        String merchantId = paginationRequest.getSearchParams().get("merchantId") == null ? "" : paginationRequest.getSearchParams().get("merchantId").toString();
-        if (StringUtils.isNotBlank(merchantId)) {
+        Integer merchantId = memberPage.getMerchantId();
+        if (merchantId != null && merchantId > 0) {
             wrapper.eq(MtUser::getMerchantId, merchantId);
         }
-        String storeId = paginationRequest.getSearchParams().get("storeId") == null ? "" : paginationRequest.getSearchParams().get("storeId").toString();
-        if (StringUtils.isNotBlank(storeId)) {
+        Integer storeId = memberPage.getStoreId();
+        if (storeId != null && storeId > 0) {
             wrapper.eq(MtUser::getStoreId, storeId);
         }
-        String storeIds = paginationRequest.getSearchParams().get("storeIds") == null ? "" : paginationRequest.getSearchParams().get("storeIds").toString();
+        String storeIds = memberPage.getStoreIds();
         if (StringUtils.isNotBlank(storeIds)) {
             List<String> idList = Arrays.asList(storeIds.split(","));
             if (idList.size() > 0) {
                 wrapper.in(MtUser::getStoreId, idList);
             }
         }
-        String groupIds = paginationRequest.getSearchParams().get("groupIds") == null ? "" : paginationRequest.getSearchParams().get("groupIds").toString();
+        String groupIds = memberPage.getGroupIds();
         if (StringUtils.isNotBlank(groupIds)) {
             List<String> idList = Arrays.asList(groupIds.split(","));
             if (idList.size() > 0) {
                 wrapper.in(MtUser::getGroupId, idList);
             }
         }
-        String status = paginationRequest.getSearchParams().get("status") == null ? "" : paginationRequest.getSearchParams().get("status").toString();
+        String status = memberPage.getStatus();
         if (StringUtils.isNotBlank(status)) {
             wrapper.eq(MtUser::getStatus, status);
         }
         // 注册开始、结束时间
-        String startTime = paginationRequest.getSearchParams().get("startTime") == null ? "" : paginationRequest.getSearchParams().get("startTime").toString();
-        String endTime = paginationRequest.getSearchParams().get("endTime") == null ? "" : paginationRequest.getSearchParams().get("endTime").toString();
+        String startTime = memberPage.getStartTime();
+        String endTime = memberPage.getEndTime();
         if (StringUtil.isNotEmpty(startTime)) {
             wrapper.ge(MtUser::getCreateTime, startTime);
         }
@@ -275,7 +276,7 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
             wrapper.le(MtUser::getCreateTime, endTime);
         }
         // 注册时间
-        String regTime = paginationRequest.getSearchParams().get("regTime") == null ? "" : paginationRequest.getSearchParams().get("regTime").toString();
+        String regTime = memberPage.getRegTime();
         if (StringUtil.isNotEmpty(regTime)) {
             String[] dateTime = regTime.split("~");
             if (dateTime.length == 2) {
@@ -284,7 +285,7 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
             }
         }
         // 活跃时间
-        String activeTime = paginationRequest.getSearchParams().get("activeTime") == null ? "" : paginationRequest.getSearchParams().get("activeTime").toString();
+        String activeTime = memberPage.getActiveTime();
         if (StringUtil.isNotEmpty(activeTime)) {
             String[] dateTime = activeTime.split("~");
             if (dateTime.length == 2) {
@@ -293,7 +294,7 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
             }
         }
         // 会员有效期
-        String memberTime = paginationRequest.getSearchParams().get("memberTime") == null ? "" : paginationRequest.getSearchParams().get("memberTime").toString();
+        String memberTime = memberPage.getMemberTime();
         if (StringUtil.isNotEmpty(memberTime)) {
             String[] dateTime = memberTime.split("~");
             if (dateTime.length == 2) {
@@ -315,7 +316,7 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
                 }
             }
             if (userDto.getGradeId() != null) {
-                Integer mchId = StringUtil.isNotEmpty(merchantId) ? Integer.parseInt(merchantId) : 0;
+                Integer mchId = merchantId != null ? merchantId : 0;
                 MtUserGrade mtGrade = userGradeService.queryUserGradeById(mchId, userDto.getGradeId(), mtUser.getId());
                 if (mtGrade != null) {
                     userDto.setGradeName(mtGrade.getName());
@@ -329,7 +330,7 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
             dataList.add(userDto);
         }
 
-        PageRequest pageRequest = PageRequest.of(paginationRequest.getCurrentPage(), paginationRequest.getPageSize());
+        PageRequest pageRequest = PageRequest.of(memberPage.getPage(), memberPage.getPageSize());
         PageImpl pageImpl = new PageImpl(dataList, pageRequest, pageHelper.getTotal());
         PaginationResponse<UserDto> paginationResponse = new PaginationResponse(pageImpl, UserDto.class);
         paginationResponse.setTotalPages(pageHelper.getPages());
@@ -636,9 +637,9 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
                     }
                 }
             }
-        }
-        if (mtUser.getIsStaff() == null) {
-            mtUser.setIsStaff(YesOrNoEnum.NO.getKey());
+            if (mtUser.getIsStaff() == null) {
+                mtUser.setIsStaff(YesOrNoEnum.NO.getKey());
+            }
         }
         return mtUser;
     }

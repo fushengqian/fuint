@@ -6,6 +6,7 @@ import com.fuint.common.enums.SettingTypeEnum;
 import com.fuint.common.enums.StatusEnum;
 import com.fuint.common.enums.UserSettingEnum;
 import com.fuint.common.enums.YesOrNoEnum;
+import com.fuint.common.param.MemberPage;
 import com.fuint.common.service.*;
 import com.fuint.common.util.*;
 import com.fuint.framework.exception.BusinessCheckException;
@@ -81,60 +82,12 @@ public class BackendMemberController extends BaseController {
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('member:index')")
-    public ResponseObject list(HttpServletRequest request) throws BusinessCheckException {
+    public ResponseObject list(@ModelAttribute MemberPage memberPage) throws BusinessCheckException {
         AccountInfo accountInfo = TokenUtil.getAccountInfo();
-        String mobile = request.getParameter("mobile");
-        String userId = request.getParameter("id");
-        String name = request.getParameter("name");
-        String birthday = request.getParameter("birthday");
-        String userNo = request.getParameter("userNo");
-        String gradeId = request.getParameter("gradeId");
-        String startTime = request.getParameter("startTime") == null ? "" : request.getParameter("startTime");
-        String endTime = request.getParameter("endTime") == null ? "" : request.getParameter("endTime");
-        String status = request.getParameter("status");
-        String storeIds = request.getParameter("storeIds");
-        String groupIds = request.getParameter("groupIds");
-        Integer page = request.getParameter("page") == null ? Constants.PAGE_NUMBER : Integer.parseInt(request.getParameter("page"));
-        Integer pageSize = request.getParameter("pageSize") == null ? Constants.PAGE_SIZE : Integer.parseInt(request.getParameter("pageSize"));
-
-        Map<String, Object> params = new HashMap<>();
-        if (StringUtil.isNotEmpty(userId)) {
-            params.put("id", userId);
-        }
-        if (StringUtil.isNotEmpty(name)) {
-            params.put("name", name);
-        }
-        if (StringUtil.isNotEmpty(mobile)) {
-            params.put("mobile", mobile);
-        }
-        if (StringUtil.isNotEmpty(birthday)) {
-            params.put("birthday", birthday);
-        }
-        if (StringUtil.isNotEmpty(userNo)) {
-            params.put("userNo", userNo);
-        }
-        if (StringUtil.isNotEmpty(gradeId)) {
-            params.put("gradeId", gradeId);
-        }
-        if (StringUtil.isNotEmpty(status)) {
-            params.put("status", status);
-        }
-        if (StringUtil.isNotEmpty(storeIds)) {
-            params.put("storeIds", storeIds);
-        }
-        if (StringUtil.isNotEmpty(groupIds)) {
-            params.put("groupIds", groupIds);
-        }
         if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
-            params.put("merchantId", accountInfo.getMerchantId());
+            memberPage.setMerchantId(accountInfo.getMerchantId());
         }
-        if (StringUtil.isNotEmpty(startTime)) {
-            params.put("startTime", startTime);
-        }
-        if (StringUtil.isNotEmpty(endTime)) {
-            params.put("endTime", endTime);
-        }
-        PaginationResponse<UserDto> paginationResponse = memberService.queryMemberListByPagination(new PaginationRequest(page, pageSize, params));
+        PaginationResponse<UserDto> paginationResponse = memberService.queryMemberListByPagination(memberPage);
 
         // 会员等级列表
         Map<String, Object> param = new HashMap<>();

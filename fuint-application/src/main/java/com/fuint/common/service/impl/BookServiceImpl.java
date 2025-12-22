@@ -83,7 +83,7 @@ public class BookServiceImpl extends ServiceImpl<MtBookMapper, MtBook> implement
             lambdaQueryWrapper.like(MtBook::getName, name);
         }
         Integer cateId = bookPage.getCateId();
-        if (cateId != null) {
+        if (cateId != null && cateId > 0) {
             lambdaQueryWrapper.like(MtBook::getCateId, cateId);
         }
         if (StringUtils.isNotBlank(bookPage.getStatus())) {
