@@ -19,7 +19,7 @@ public class TimeUtils {
      * @return
      * @throws ParseException
      */
-    public static int date2timeStamp(String day, String format) throws ParseException {
+    public static int date2timeStamp(String day, String format) {
         try {
             SimpleDateFormat sdf = new SimpleDateFormat(format);
             return Integer.parseInt("" + sdf.parse(day).getTime() / 1000);

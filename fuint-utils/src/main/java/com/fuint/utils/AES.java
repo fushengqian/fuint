@@ -49,13 +49,10 @@ public class AES {
             // 初始化cipher
             cipher = Cipher.getInstance(algorithmStr, "BC");
         } catch (NoSuchAlgorithmException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         } catch (NoSuchPaddingException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         } catch (NoSuchProviderException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
     }
@@ -75,7 +72,6 @@ public class AES {
             cipher.init(Cipher.ENCRYPT_MODE, key, new IvParameterSpec(iv));
             encryptedText = cipher.doFinal(content);
         } catch (Exception e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
         return encryptedText;
@@ -96,7 +92,6 @@ public class AES {
             cipher.init(Cipher.DECRYPT_MODE, key, new IvParameterSpec(iv));
             encryptedText = cipher.doFinal(encryptedData);
         } catch (Exception e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
         return encryptedText;

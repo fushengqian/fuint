@@ -1,6 +1,7 @@
 package com.fuint.module.backendApi.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fuint.common.dto.AccountInfo;
 import com.fuint.common.dto.NavigationDto;
 import com.fuint.common.enums.SettingTypeEnum;
@@ -11,21 +12,20 @@ import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.web.BaseController;
 import com.fuint.framework.web.ResponseObject;
 import com.fuint.repository.model.MtSetting;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-import javax.servlet.http.HttpServletRequest;
+
 import java.util.*;
 
 /**
- * 积分管理controller
+ * 导航管理controller
  *
  * Created by FSQ
  * CopyRight https://www.fuint.cn
  */
-@Api(tags="管理端-积分相关接口")
+@Api(tags = "管理端-积分相关接口")
 @RestController
 @AllArgsConstructor
 @RequestMapping(value = "/backendApi/navigate")
@@ -33,7 +33,7 @@ public class BackendNavigateController extends BaseController {
 
     /**
      * 配置服务接口
-     * */
+     */
     private SettingService settingService;
 
     /**
@@ -75,9 +75,9 @@ public class BackendNavigateController extends BaseController {
             if (!navigation.getStatus().equals(StatusEnum.DISABLE.getKey())) {
                 boolean exit = false;
                 for (NavigationDto item : navigations) {
-                     if (item.getName().equals(navigation.getName())) {
-                         exit = true;
-                     }
+                    if (item.getName().equals(navigation.getName())) {
+                        exit = true;
+                    }
                 }
                 if (!exit) {
                     navigationNew.add(navigation);
@@ -85,13 +85,13 @@ public class BackendNavigateController extends BaseController {
             }
             if (navigations != null && navigations.size() > 0) {
                 for (NavigationDto item : navigations) {
-                     if (!item.getName().equals(navigation.getName())) {
-                         navigationNew.add(item);
-                     } else {
-                         if (!navigation.getStatus().equals(StatusEnum.DISABLE.getKey())) {
-                             navigationNew.add(navigation);
-                         }
-                     }
+                    if (!item.getName().equals(navigation.getName())) {
+                        navigationNew.add(item);
+                    } else {
+                        if (!navigation.getStatus().equals(StatusEnum.DISABLE.getKey())) {
+                            navigationNew.add(navigation);
+                        }
+                    }
                 }
             }
             mtSetting.setValue(objectMapper.writeValueAsString(navigationNew));
