@@ -19,17 +19,18 @@ import io.swagger.annotations.ApiOperation;
 import lombok.AllArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 /**
  * 焦点图管理类controller
- *
+ * <p>
  * Created by FSQ
  * CopyRight https://www.fuint.cn
  */
-@Api(tags="管理端-焦点图相关接口")
+@Api(tags = "管理端-焦点图相关接口")
 @RestController
 @AllArgsConstructor
 @RequestMapping(value = "/backendApi/banner")
@@ -42,7 +43,7 @@ public class BackendBannerController extends BaseController {
 
     /**
      * 系统设置服务接口
-     * */
+     */
     private SettingService settingService;
 
     /**

@@ -20,13 +20,12 @@ import com.fuint.repository.mapper.MtCouponMapper;
 import com.fuint.repository.mapper.MtUserCouponMapper;
 import com.fuint.repository.model.*;
 import com.fuint.utils.StringUtil;
-import static com.fuint.common.util.XlsUtil.objectConvertToString;
-
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.AllArgsConstructor;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.springframework.web.bind.annotation.*;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.OutputStream;
@@ -34,6 +33,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static com.fuint.common.util.XlsUtil.objectConvertToString;
 
 /**
  * 转赠管理类controller

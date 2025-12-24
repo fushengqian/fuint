@@ -1,8 +1,13 @@
 package com.fuint.module.clientApi.controller;
 
 import com.fuint.common.Constants;
-import com.fuint.common.dto.*;
-import com.fuint.common.enums.*;
+import com.fuint.common.dto.BalanceDto;
+import com.fuint.common.dto.RechargeRuleDto;
+import com.fuint.common.dto.UserInfo;
+import com.fuint.common.enums.BalanceSettingEnum;
+import com.fuint.common.enums.PayTypeEnum;
+import com.fuint.common.enums.SettingTypeEnum;
+import com.fuint.common.enums.StatusEnum;
 import com.fuint.common.param.BalanceListParam;
 import com.fuint.common.param.BalancePage;
 import com.fuint.common.param.RechargeParam;
@@ -19,6 +24,7 @@ import com.fuint.repository.model.MtUser;
 import io.swagger.annotations.Api;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+
 import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
 import java.util.ArrayList;

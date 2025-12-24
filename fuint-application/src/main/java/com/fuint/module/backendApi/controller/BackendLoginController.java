@@ -1,17 +1,20 @@
 package com.fuint.module.backendApi.controller;
 
+import com.fuint.common.Constants;
+import com.fuint.common.domain.TreeNode;
 import com.fuint.common.dto.AccountInfo;
 import com.fuint.common.enums.AdminRoleEnum;
-import com.fuint.common.service.*;
+import com.fuint.common.service.AccountService;
+import com.fuint.common.service.DutyService;
+import com.fuint.common.service.SourceService;
 import com.fuint.common.util.TokenUtil;
 import com.fuint.common.util.TreeUtil;
 import com.fuint.common.vo.RouterVo;
 import com.fuint.framework.annoation.OperationServiceLog;
 import com.fuint.framework.exception.BusinessCheckException;
-import com.fuint.module.backendApi.request.LoginRequest;
-import com.fuint.common.Constants;
 import com.fuint.framework.web.BaseController;
 import com.fuint.framework.web.ResponseObject;
+import com.fuint.module.backendApi.request.LoginRequest;
 import com.fuint.module.backendApi.response.LoginResponse;
 import com.fuint.repository.model.TAccount;
 import com.fuint.repository.model.TDuty;
@@ -21,9 +24,12 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-import com.fuint.common.domain.TreeNode;
+
 import javax.servlet.http.HttpServletRequest;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 后台登录接口

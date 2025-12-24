@@ -5,7 +5,9 @@ import com.fuint.common.dto.AccountInfo;
 import com.fuint.common.dto.GoodsDto;
 import com.fuint.common.dto.StockGoodsDto;
 import com.fuint.common.enums.StatusEnum;
-import com.fuint.common.service.*;
+import com.fuint.common.service.SettingService;
+import com.fuint.common.service.StockService;
+import com.fuint.common.service.StoreService;
 import com.fuint.common.util.CommonUtil;
 import com.fuint.common.util.ListUtil;
 import com.fuint.common.util.TokenUtil;
@@ -23,6 +25,7 @@ import io.swagger.annotations.ApiOperation;
 import lombok.AllArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
 

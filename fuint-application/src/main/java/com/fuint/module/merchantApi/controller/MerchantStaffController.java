@@ -2,9 +2,9 @@ package com.fuint.module.merchantApi.controller;
 
 import com.fuint.common.dto.UserInfo;
 import com.fuint.common.param.StaffParam;
+import com.fuint.common.service.MemberService;
 import com.fuint.common.service.MerchantService;
 import com.fuint.common.service.StaffService;
-import com.fuint.common.service.MemberService;
 import com.fuint.common.util.TokenUtil;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.pagination.PaginationRequest;
@@ -20,6 +20,7 @@ import io.swagger.annotations.ApiOperation;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.web.bind.annotation.*;
+
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.Map;

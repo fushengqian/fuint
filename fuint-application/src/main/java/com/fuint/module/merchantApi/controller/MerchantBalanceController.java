@@ -1,6 +1,7 @@
 package com.fuint.module.merchantApi.controller;
 
-import com.fuint.common.dto.*;
+import com.fuint.common.dto.UserInfo;
+import com.fuint.common.dto.UserOrderDto;
 import com.fuint.common.param.RechargeParam;
 import com.fuint.common.service.*;
 import com.fuint.common.util.TokenUtil;
@@ -13,6 +14,7 @@ import com.fuint.repository.model.MtUser;
 import io.swagger.annotations.Api;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+
 import javax.servlet.http.HttpServletRequest;
 
 /**

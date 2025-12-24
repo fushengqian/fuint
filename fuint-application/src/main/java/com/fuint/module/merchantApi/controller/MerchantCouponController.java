@@ -1,9 +1,13 @@
 package com.fuint.module.merchantApi.controller;
 
-import com.fuint.common.dto.*;
+import com.fuint.common.dto.ReqCouponDto;
+import com.fuint.common.dto.UserInfo;
 import com.fuint.common.param.CouponListParam;
 import com.fuint.common.param.CouponReceiveParam;
-import com.fuint.common.service.*;
+import com.fuint.common.service.CouponService;
+import com.fuint.common.service.MemberService;
+import com.fuint.common.service.MerchantService;
+import com.fuint.common.service.StaffService;
 import com.fuint.common.util.TokenUtil;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.web.BaseController;
@@ -17,8 +21,8 @@ import io.swagger.annotations.ApiOperation;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.web.bind.annotation.*;
+
 import javax.servlet.http.HttpServletRequest;
-import java.text.ParseException;
 
 /**
  * 商户卡券接口controller

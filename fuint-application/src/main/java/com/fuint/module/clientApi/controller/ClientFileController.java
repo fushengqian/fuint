@@ -1,5 +1,6 @@
 package com.fuint.module.clientApi.controller;
 
+import com.aliyun.oss.OSS;
 import com.fuint.common.service.SettingService;
 import com.fuint.common.util.AliyunOssUtil;
 import com.fuint.common.util.CommonUtil;
@@ -8,7 +9,6 @@ import com.fuint.common.util.SeqUtil;
 import com.fuint.framework.web.BaseController;
 import com.fuint.framework.web.ResponseObject;
 import com.fuint.utils.StringUtil;
-import com.aliyun.oss.OSS;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.AllArgsConstructor;
@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
+
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.util.Date;

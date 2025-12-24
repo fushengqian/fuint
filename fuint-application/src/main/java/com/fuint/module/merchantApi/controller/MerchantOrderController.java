@@ -22,7 +22,6 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-import javax.servlet.http.HttpServletRequest;
 
 /**
  * 订单类controller
