@@ -77,6 +77,11 @@ public class BackendCouponController extends BaseController {
     private SettingService settingService;
 
     /**
+     * 会员等级服务接口
+     **/
+    private UserGradeService userGradeService;
+
+    /**
      * 查询卡券列表
      */
     @ApiOperation(value = "查询卡券列表")
@@ -166,12 +171,7 @@ public class BackendCouponController extends BaseController {
         List<ParamDto> couponUseForList = CouponUseForEnum.getCouponUseForList();
 
         // 会员等级列表
-        Map<String, Object> param = new HashMap<>();
-        param.put("status", StatusEnum.ENABLED.getKey());
-        if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
-            param.put("MERCHANT_ID", accountInfo.getMerchantId());
-        }
-        List<MtUserGrade> gradeList = memberService.queryMemberGradeByParams(param);
+        List<MtUserGrade> gradeList = userGradeService.getMerchantGradeList(accountInfo.getMerchantId(), null);
 
         String imagePath = settingService.getUploadBasePath();
 

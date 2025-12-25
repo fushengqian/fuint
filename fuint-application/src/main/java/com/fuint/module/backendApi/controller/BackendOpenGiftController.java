@@ -4,8 +4,8 @@ import com.fuint.common.Constants;
 import com.fuint.common.dto.AccountInfo;
 import com.fuint.common.dto.OpenGiftDto;
 import com.fuint.common.enums.StatusEnum;
-import com.fuint.common.service.MemberService;
 import com.fuint.common.service.OpenGiftService;
+import com.fuint.common.service.UserGradeService;
 import com.fuint.common.util.TokenUtil;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.web.BaseController;
@@ -37,14 +37,14 @@ import java.util.Map;
 public class BackendOpenGiftController extends BaseController {
 
     /**
-     * 会员服务接口
-     */
-    private MemberService memberService;
-
-    /**
      * 开卡赠礼服务接口
      */
     private OpenGiftService openGiftService;
+
+    /**
+     * 会员等级服务接口
+     **/
+    private UserGradeService userGradeService;
 
     /**
      * 开卡赠礼列表查询
@@ -79,13 +79,7 @@ public class BackendOpenGiftController extends BaseController {
         param.put("pageSize", pageSize);
 
         ResponseObject response = openGiftService.getOpenGiftList(param);
-
-        Map<String, Object> params = new HashMap<>();
-        if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
-            params.put("MERCHANT_ID", accountInfo.getMerchantId());
-        }
-        params.put("STATUS", StatusEnum.ENABLED.getKey());
-        List<MtUserGrade> userGradeList = memberService.queryMemberGradeByParams(params);
+        List<MtUserGrade> userGradeList = userGradeService.getMerchantGradeList(accountInfo.getMerchantId(), null);
 
         Map<String, Object> result = new HashMap<>();
         result.put("paginationResponse", response.getData());
@@ -103,15 +97,9 @@ public class BackendOpenGiftController extends BaseController {
     @PreAuthorize("@pms.hasPermission('openGift:index')")
     public ResponseObject info(@PathVariable("id") Integer id) throws BusinessCheckException {
         AccountInfo accountInfo = TokenUtil.getAccountInfo();
-        Map<String, Object> param = new HashMap<>();
 
-        if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
-            param.put("MERCHANT_ID", accountInfo.getMerchantId());
-        }
-        List<MtUserGrade> userGradeMap = memberService.queryMemberGradeByParams(param);
-
+        List<MtUserGrade> userGradeMap = userGradeService.getMerchantGradeList(accountInfo.getMerchantId(), null);
         OpenGiftDto openGiftInfo = openGiftService.getOpenGiftDetail(id);
-
         Map<String, Object> result = new HashMap<>();
         result.put("openGiftInfo", openGiftInfo);
         result.put("userGradeMap", userGradeMap);

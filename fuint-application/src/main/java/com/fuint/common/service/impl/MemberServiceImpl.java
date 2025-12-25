@@ -14,7 +14,6 @@ import com.fuint.common.service.*;
 import com.fuint.common.util.*;
 import com.fuint.framework.annoation.OperationServiceLog;
 import com.fuint.framework.exception.BusinessCheckException;
-import com.fuint.framework.pagination.PaginationRequest;
 import com.fuint.framework.pagination.PaginationResponse;
 import com.fuint.repository.bean.MemberTopBean;
 import com.fuint.repository.mapper.MtUserActionMapper;
@@ -1080,7 +1079,7 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
             }
             // 先校验，是否已存在，是否为空，是否重复
             List<MtUser> userList = new ArrayList<>();
-            List<MtUserGrade> userGrades = userGradeService.getMerchantGradeList(accountInfo.getMerchantId());
+            List<MtUserGrade> userGrades = userGradeService.getMerchantGradeList(accountInfo.getMerchantId(), null);
             for (int i = 0; i < memberList.size(); i++) {
                  List<String> userInfo = memberList.get(i);
                  String username = userInfo.get(0);

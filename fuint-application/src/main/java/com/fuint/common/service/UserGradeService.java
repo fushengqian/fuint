@@ -85,9 +85,10 @@ public interface UserGradeService extends IService<MtUserGrade> {
     /**
      * 获取商户会员等级列表
      *
-     * @param  merchantId
+     * @param  merchantId 商户ID
+     * @param status 状态
      * @return
      * */
-    List<MtUserGrade> getMerchantGradeList(Integer merchantId);
+    List<MtUserGrade> getMerchantGradeList(Integer merchantId, String status);
 
 }

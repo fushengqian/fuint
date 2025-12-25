@@ -76,6 +76,11 @@ public class BackendMemberController extends BaseController {
     private UploadService uploadService;
 
     /**
+     * 会员等级服务接口
+     **/
+    private UserGradeService userGradeService;
+
+    /**
      * 查询会员列表
      */
     @ApiOperation(value = "查询会员列表")
@@ -90,12 +95,7 @@ public class BackendMemberController extends BaseController {
         PaginationResponse<UserDto> paginationResponse = memberService.queryMemberListByPagination(memberPage);
 
         // 会员等级列表
-        Map<String, Object> param = new HashMap<>();
-        param.put("STATUS", StatusEnum.ENABLED.getKey());
-        if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
-            param.put("MERCHANT_ID", accountInfo.getMerchantId());
-        }
-        List<MtUserGrade> userGradeList = memberService.queryMemberGradeByParams(param);
+        List<MtUserGrade> userGradeList = userGradeService.getMerchantGradeList(accountInfo.getMerchantId(), null);
 
         // 店铺列表
         List<MtStore> storeList = storeService.getMyStoreList(accountInfo.getMerchantId(), 0, StatusEnum.ENABLED.getKey());
@@ -235,13 +235,7 @@ public class BackendMemberController extends BaseController {
             memberInfo.setGroupInfo(userGroupDto);
         }
         memberInfo.setMobile(CommonUtil.hidePhone(memberInfo.getMobile()));
-        Map<String, Object> param = new HashMap<>();
-        if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
-            param.put("MERCHANT_ID", accountInfo.getMerchantId());
-        }
-        param.put("STATUS", StatusEnum.ENABLED.getKey());
-        List<MtUserGrade> userGradeList = memberService.queryMemberGradeByParams(param);
-
+        List<MtUserGrade> userGradeList = userGradeService.getMerchantGradeList(accountInfo.getMerchantId(), null);
         Map<String, Object> result = new HashMap<>();
         result.put("userGradeList", userGradeList);
         result.put("memberInfo", memberInfo);

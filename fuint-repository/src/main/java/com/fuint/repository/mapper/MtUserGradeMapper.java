@@ -14,6 +14,6 @@ import java.util.List;
  */
 public interface MtUserGradeMapper extends BaseMapper<MtUserGrade> {
 
-    List<MtUserGrade> getMerchantGradeList(@Param("merchantId") Integer merchantId);
+    List<MtUserGrade> getMerchantGradeList(@Param("merchantId") Integer merchantId, @Param("status") String status);
 
 }

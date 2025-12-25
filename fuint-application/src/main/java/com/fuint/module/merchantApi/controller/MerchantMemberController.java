@@ -9,6 +9,7 @@ import com.fuint.common.param.MemberListParam;
 import com.fuint.common.param.MemberPage;
 import com.fuint.common.service.MemberService;
 import com.fuint.common.service.StaffService;
+import com.fuint.common.service.UserGradeService;
 import com.fuint.common.util.DateUtil;
 import com.fuint.common.util.TokenUtil;
 import com.fuint.framework.exception.BusinessCheckException;
@@ -52,6 +53,11 @@ public class MerchantMemberController extends BaseController {
     private StaffService staffService;
 
     /**
+     * 会员等级服务接口
+     **/
+    private UserGradeService userGradeService;
+
+    /**
      * 会员列表查询
      */
     @ApiOperation(value = "查询会员列表")
@@ -89,12 +95,7 @@ public class MerchantMemberController extends BaseController {
         PaginationResponse<UserDto> paginationResponse = memberService.queryMemberListByPagination(memberPage);
 
         // 会员等级列表
-        Map<String, Object> param = new HashMap<>();
-        param.put("status", StatusEnum.ENABLED.getKey());
-        if (staffInfo.getMerchantId() != null && staffInfo.getMerchantId() > 0) {
-            param.put("MERCHANT_ID", staffInfo.getMerchantId());
-        }
-        List<MtUserGrade> userGradeList = memberService.queryMemberGradeByParams(param);
+        List<MtUserGrade> userGradeList = userGradeService.getMerchantGradeList(staffInfo.getMerchantId(), StatusEnum.ENABLED.getKey());
 
         Map<String, Object> result = new HashMap<>();
         result.put("paginationResponse", paginationResponse);
