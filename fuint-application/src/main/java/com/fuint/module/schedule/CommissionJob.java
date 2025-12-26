@@ -4,6 +4,8 @@ import com.fuint.common.enums.PayStatusEnum;
 import com.fuint.common.service.CommissionLogService;
 import com.fuint.common.service.OrderService;
 import com.fuint.common.util.DateUtil;
+import com.fuint.common.util.RedisLock;
+import com.fuint.common.util.SeqUtil;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.repository.model.MtOrder;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,6 +43,12 @@ public class CommissionJob {
     private CommissionLogService commissionLogService;
 
     /**
+     * 分布式锁
+     * */
+    @Autowired
+    private RedisLock redisLock;
+
+    /**
      * 系统环境变量
      * */
     @Autowired
@@ -59,29 +67,42 @@ public class CommissionJob {
     @Scheduled(cron = "${commission.job.time:0 0/5 * * * ?}")
     @Transactional(rollbackFor = Exception.class)
     public void dealOrder() throws BusinessCheckException {
-        String theSwitch = environment.getProperty("commission.job.switch");
-         if (theSwitch != null && theSwitch.equals("1")) {
-             logger.info("CommissionJobStart!!!");
-             Map<String, Object> param = new HashMap<>();
-             param.put("PAY_STATUS", PayStatusEnum.SUCCESS.getKey());
+        String lockKey = "lock:commissionJob:deal";
+        // 唯一标识当前请求/线程
+        String requestId = SeqUtil.getUUID();
+        try {
+            // 尝试加锁，60秒自动过期
+            if (redisLock.tryLock(lockKey, requestId, 60)) {
+                String theSwitch = environment.getProperty("commission.job.switch");
+                 if (theSwitch != null && theSwitch.equals("1")) {
+                     logger.info("CommissionJobStart!!!");
+                     Map<String, Object> param = new HashMap<>();
+                     param.put("PAY_STATUS", PayStatusEnum.SUCCESS.getKey());
 
-             Calendar calendar = Calendar.getInstance();
-             calendar.add(Calendar.DATE, -OVER_DAY);
-             Date dateTime = calendar.getTime();
-             String endTime = DateUtil.formatDate(dateTime, "yyyy-MM-dd HH:mm:ss");
+                     Calendar calendar = Calendar.getInstance();
+                     calendar.add(Calendar.DATE, -OVER_DAY);
+                     Date dateTime = calendar.getTime();
+                     String endTime = DateUtil.formatDate(dateTime, "yyyy-MM-dd HH:mm:ss");
 
-             List<MtOrder> dataList = orderService.getTobeCommissionOrderList(endTime);
-             if (dataList.size() > 0) {
-                int dealNum = 0;
-                for (MtOrder mtOrder : dataList) {
-                     // 计算订单佣金，生成分佣记录
-                     if (dealNum <= MAX_ROWS) {
-                         commissionLogService.calculateCommission(mtOrder.getId());
-                         dealNum++;
+                     List<MtOrder> dataList = orderService.getTobeCommissionOrderList(endTime);
+                     if (dataList.size() > 0) {
+                        int dealNum = 0;
+                        for (MtOrder mtOrder : dataList) {
+                             // 计算订单佣金，生成分佣记录
+                             if (dealNum <= MAX_ROWS) {
+                                 commissionLogService.calculateCommission(mtOrder.getId());
+                                 dealNum++;
+                             }
+                        }
                      }
+                     logger.info("CommissionJobEnd!!!");
                 }
-             }
-             logger.info("CommissionJobEnd!!!");
+            } else {
+                throw new RuntimeException("获取锁失败，请稍后重试");
+            }
+        } finally {
+            // 释放锁
+            redisLock.unlock(lockKey, requestId);
         }
     }
 }

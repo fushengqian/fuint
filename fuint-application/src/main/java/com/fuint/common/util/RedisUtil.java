@@ -4,6 +4,7 @@ import com.fuint.utils.ContextUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.util.CollectionUtils;
+
 import java.util.Collection;
 import java.util.concurrent.TimeUnit;
 

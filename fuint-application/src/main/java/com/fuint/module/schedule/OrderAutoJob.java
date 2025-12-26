@@ -4,16 +4,19 @@ import com.fuint.common.dto.OrderDto;
 import com.fuint.common.enums.OrderStatusEnum;
 import com.fuint.common.enums.PayStatusEnum;
 import com.fuint.common.service.OrderService;
+import com.fuint.common.util.RedisLock;
+import com.fuint.common.util.SeqUtil;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.repository.model.MtOrder;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.EnableScheduling;
-import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.core.env.Environment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
+import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -37,6 +40,12 @@ public class OrderAutoJob {
     @Autowired
     private OrderService orderService;
 
+    /**
+     * 分布式锁
+     * */
+    @Autowired
+    private RedisLock redisLock;
+
     @Autowired
     private Environment environment;
 
@@ -53,51 +62,64 @@ public class OrderAutoJob {
     @Scheduled(cron = "${OrderAutoJob.job.time:0 0/5 * * * ?}")
     @Transactional(rollbackFor = Exception.class)
     public void dealOrder() throws BusinessCheckException {
-        String theSwitch = environment.getProperty("orderAutoJob.job.switch");
-         if (theSwitch == null || theSwitch.equals("1")) {
-             logger.info("OrderAutoJobStart!!!");
+        String lockKey = "lock:orderAutoJob:deal";
+        // 唯一标识当前请求/线程
+        String requestId = SeqUtil.getUUID();
+        try {
+            // 尝试加锁，60秒自动过期
+            if (redisLock.tryLock(lockKey, requestId, 60)) {
+                String theSwitch = environment.getProperty("orderAutoJob.job.switch");
+                 if (theSwitch == null || theSwitch.equals("1")) {
+                     logger.info("OrderAutoJobStart!!!");
 
-             // 已发货，默认10天后确认为已收货
-             Map<String, Object> param1 = new HashMap<>();
-             param1.put("status", OrderStatusEnum.DELIVERED.getKey());
-             param1.put("pay_status", PayStatusEnum.SUCCESS.getKey());
-             List<MtOrder> dataList1 = orderService.getOrderListByParams(param1);
-             if (dataList1.size() > 0) {
-                 for (MtOrder mtOrder : dataList1) {
-                      Date overTime = new Date(mtOrder.getCreateTime().getTime() + (60000 * RECEIVED_OVER_TIME));
-                      Date nowTime = new Date();
-                      if ((overTime.getTime() <= nowTime.getTime())) {
-                          OrderDto orderDto = new OrderDto();
-                          orderDto.setId(mtOrder.getId());
-                          if (mtOrder.getStatus().equals(OrderStatusEnum.DELIVERED.getKey())) {
-                              orderDto.setStatus(OrderStatusEnum.RECEIVED.getKey());
-                          }
-                          orderService.updateOrder(orderDto);
-                      }
-                 }
-             }
+                     // 已发货，默认10天后确认为已收货
+                     Map<String, Object> param1 = new HashMap<>();
+                     param1.put("status", OrderStatusEnum.DELIVERED.getKey());
+                     param1.put("pay_status", PayStatusEnum.SUCCESS.getKey());
+                     List<MtOrder> dataList1 = orderService.getOrderListByParams(param1);
+                     if (dataList1.size() > 0) {
+                         for (MtOrder mtOrder : dataList1) {
+                              Date overTime = new Date(mtOrder.getCreateTime().getTime() + (60000 * RECEIVED_OVER_TIME));
+                              Date nowTime = new Date();
+                              if ((overTime.getTime() <= nowTime.getTime())) {
+                                  OrderDto orderDto = new OrderDto();
+                                  orderDto.setId(mtOrder.getId());
+                                  if (mtOrder.getStatus().equals(OrderStatusEnum.DELIVERED.getKey())) {
+                                      orderDto.setStatus(OrderStatusEnum.RECEIVED.getKey());
+                                  }
+                                  orderService.updateOrder(orderDto);
+                              }
+                         }
+                     }
 
-             // 已收货，默认1天确认为已完成
-             Map<String, Object> param = new HashMap<>();
-             param.put("status", OrderStatusEnum.DELIVERED.getKey());
-             param.put("pay_status", PayStatusEnum.SUCCESS.getKey());
-             List<MtOrder> dataList = orderService.getOrderListByParams(param);
-             if (dataList.size() > 0) {
-                 for (MtOrder mtOrder : dataList) {
-                      Date overTime = new Date(mtOrder.getCreateTime().getTime() + (60000 * DELIVERED_OVER_TIME));
-                      Date nowTime = new Date();
-                      if ((overTime.getTime() <= nowTime.getTime())) {
-                          OrderDto orderDto = new OrderDto();
-                          orderDto.setId(mtOrder.getId());
-                          if (mtOrder.getStatus().equals(OrderStatusEnum.RECEIVED.getKey())) {
-                              orderDto.setStatus(OrderStatusEnum.COMPLETE.getKey());
-                          }
-                          orderService.updateOrder(orderDto);
-                      }
-                 }
-             }
+                     // 已收货，默认1天确认为已完成
+                     Map<String, Object> param = new HashMap<>();
+                     param.put("status", OrderStatusEnum.DELIVERED.getKey());
+                     param.put("pay_status", PayStatusEnum.SUCCESS.getKey());
+                     List<MtOrder> dataList = orderService.getOrderListByParams(param);
+                     if (dataList.size() > 0) {
+                         for (MtOrder mtOrder : dataList) {
+                              Date overTime = new Date(mtOrder.getCreateTime().getTime() + (60000 * DELIVERED_OVER_TIME));
+                              Date nowTime = new Date();
+                              if ((overTime.getTime() <= nowTime.getTime())) {
+                                  OrderDto orderDto = new OrderDto();
+                                  orderDto.setId(mtOrder.getId());
+                                  if (mtOrder.getStatus().equals(OrderStatusEnum.RECEIVED.getKey())) {
+                                      orderDto.setStatus(OrderStatusEnum.COMPLETE.getKey());
+                                  }
+                                  orderService.updateOrder(orderDto);
+                              }
+                         }
+                     }
 
-             logger.info("OrderAutoJobStart!!!");
+                     logger.info("OrderAutoJobStart!!!");
+                }
+            } else {
+                throw new RuntimeException("获取锁失败，请稍后重试");
+            }
+        } finally {
+            // 释放锁
+            redisLock.unlock(lockKey, requestId);
         }
     }
 }
