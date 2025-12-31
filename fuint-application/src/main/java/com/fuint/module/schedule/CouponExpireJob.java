@@ -131,14 +131,13 @@ public class CouponExpireJob {
                                 if (couponInfo != null && userInfo != null && StringUtil.isNotEmpty(userInfo.getOpenId())) {
                                     Integer days = DateUtil.daysBetween(DateUtil.formatDate(mtUserCoupon.getUpdateTime(), "yyyy-MM-dd HH:mm:ss"), startTime);
                                     if (days > 1) {
-                                        Date now = new Date();
-                                        Date sendTime = new Date(now.getTime());
+                                        Date nowTime = new Date();
                                         Map<String, Object> params = new HashMap<>();
                                         String couponExpireTime = DateUtil.formatDate(mtUserCoupon.getExpireTime(), "yyyy-MM-dd HH:mm");
                                         params.put("expireTime", couponExpireTime);
                                         params.put("name", couponInfo.getName());
                                         params.put("tips", "您的卡券即将到期，请留意~");
-                                        weixinService.sendSubscribeMessage(userInfo.getMerchantId(), userInfo.getId(), userInfo.getOpenId(), WxMessageEnum.COUPON_EXPIRE.getKey(), "pages/user/index", params, sendTime);
+                                        weixinService.sendSubscribeMessage(userInfo.getMerchantId(), userInfo.getId(), userInfo.getOpenId(), WxMessageEnum.COUPON_EXPIRE.getKey(), "pages/user/index", params, nowTime);
                                         mtUserCoupon.setUpdateTime(new Date());
                                         mtUserCouponMapper.updateById(mtUserCoupon);
                                     }

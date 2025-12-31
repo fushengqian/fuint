@@ -190,13 +190,12 @@ public class PointServiceImpl extends ServiceImpl<MtPointMapper, MtPoint> implem
 
         // 发送小程序订阅消息
         Date nowTime = new Date();
-        Date sendTime = new Date(nowTime.getTime() + 60000);
         Map<String, Object> params = new HashMap<>();
         String dateTime = DateUtil.formatDate(Calendar.getInstance().getTime(), "yyyy-MM-dd HH:mm");
         params.put("amount", mtPoint.getAmount());
         params.put("time", dateTime);
         params.put("remark", "您的积分发生了变动，请留意~");
-        weixinService.sendSubscribeMessage(mtPoint.getMerchantId(), mtPoint.getUserId(), mtUser.getOpenId(), WxMessageEnum.POINT_CHANGE.getKey(), "pages/user/index", params, sendTime);
+        weixinService.sendSubscribeMessage(mtPoint.getMerchantId(), mtPoint.getUserId(), mtUser.getOpenId(), WxMessageEnum.POINT_CHANGE.getKey(), "pages/user/index", params, nowTime);
     }
 
     /**

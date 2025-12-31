@@ -1156,15 +1156,14 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
             outParams.put("payment", null);
         }
 
-        // 1分钟后发送小程序订阅消息
+        // 发送小程序订阅消息
         Date nowTime = new Date();
-        Date sendTime = new Date(nowTime.getTime() + 60000);
         Map<String, Object> params = new HashMap<>();
         String dateTime = DateUtil.formatDate(Calendar.getInstance().getTime(), "yyyy-MM-dd HH:mm");
         params.put("time", dateTime);
         params.put("orderSn", orderInfo.getOrderSn());
         params.put("remark", "您的订单已生成，请留意~");
-        weixinService.sendSubscribeMessage(merchantId, userInfo.getId(), userInfo.getOpenId(), WxMessageEnum.ORDER_CREATED.getKey(), "pages/order/index", params, sendTime);
+        weixinService.sendSubscribeMessage(merchantId, userInfo.getId(), userInfo.getOpenId(), WxMessageEnum.ORDER_CREATED.getKey(), "pages/order/index", params, nowTime);
 
         if (StringUtil.isNotEmpty(errorMessage)) {
             throw new BusinessCheckException(errorMessage);

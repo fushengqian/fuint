@@ -191,13 +191,12 @@ public class BackendOrderController extends BaseController {
         // 发送小程序订阅消息
         if (orderInfo != null && userInfo != null && orderInfo.getAddress() != null) {
             Date nowTime = new Date();
-            Date sendTime = new Date(nowTime.getTime() - 60000);
             Map<String, Object> params = new HashMap<>();
             params.put("receiver", orderInfo.getAddress().getName());
             params.put("orderSn", orderInfo.getOrderSn());
             params.put("expressCompany", expressCompany);
             params.put("expressNo", expressNo);
-            weixinService.sendSubscribeMessage(userInfo.getMerchantId(), userInfo.getId(), userInfo.getOpenId(), WxMessageEnum.DELIVER_GOODS.getKey(), "pages/order/index", params, sendTime);
+            weixinService.sendSubscribeMessage(userInfo.getMerchantId(), userInfo.getId(), userInfo.getOpenId(), WxMessageEnum.DELIVER_GOODS.getKey(), "pages/order/index", params, nowTime);
         }
 
         return getSuccessResult(true);

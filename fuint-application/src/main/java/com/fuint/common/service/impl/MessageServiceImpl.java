@@ -128,7 +128,6 @@ public class MessageServiceImpl extends ServiceImpl<MtMessageMapper, MtMessage> 
      */
     @Override
     public List<MtMessage> getNeedSendList() {
-        List<MtMessage> messageList = messageRepository.findNeedSendMessage(MessageEnum.SUB_MSG.getKey());
-        return messageList;
+        return messageRepository.findNeedSendMessage(MessageEnum.SUB_MSG.getKey());
     }
 }
