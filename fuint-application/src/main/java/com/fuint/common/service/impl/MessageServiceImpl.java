@@ -114,8 +114,7 @@ public class MessageServiceImpl extends ServiceImpl<MtMessageMapper, MtMessage> 
         List<MtMessage> messageList = messageRepository.findNewMessage(userId, MessageEnum.POP_MSG.getKey());
 
         if (messageList.size() > 0) {
-            MtMessage messageInfo = messageList.get(0);
-            return messageInfo;
+            return messageList.get(0);
         }
 
         return null;
