@@ -1,32 +1,29 @@
 package com.fuint.module.backendApi.controller;
 
-import com.fuint.common.Constants;
 import com.fuint.common.dto.AccountInfo;
 import com.fuint.common.dto.CommissionLogDto;
 import com.fuint.common.dto.ParamDto;
 import com.fuint.common.enums.CommissionStatusEnum;
 import com.fuint.common.enums.CommissionTargetEnum;
 import com.fuint.common.enums.StatusEnum;
+import com.fuint.common.param.CommissionLogPage;
 import com.fuint.common.service.CommissionCashService;
 import com.fuint.common.service.CommissionLogService;
 import com.fuint.common.service.StoreService;
 import com.fuint.common.util.TokenUtil;
 import com.fuint.framework.exception.BusinessCheckException;
-import com.fuint.framework.pagination.PaginationRequest;
 import com.fuint.framework.pagination.PaginationResponse;
 import com.fuint.framework.web.BaseController;
 import com.fuint.framework.web.ResponseObject;
 import com.fuint.module.backendApi.request.CommissionLogRequest;
 import com.fuint.module.backendApi.request.CommissionSettleRequest;
 import com.fuint.repository.model.MtStore;
-import com.fuint.utils.StringUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.AllArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -65,53 +62,16 @@ public class BackendCommissionLogController extends BaseController {
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('commission:log:index')")
-    public ResponseObject list(HttpServletRequest request) throws BusinessCheckException {
-        Integer page = request.getParameter("page") == null ? Constants.PAGE_NUMBER : Integer.parseInt(request.getParameter("page"));
-        Integer pageSize = request.getParameter("pageSize") == null ? Constants.PAGE_SIZE : Integer.parseInt(request.getParameter("pageSize"));
-        String target = request.getParameter("target");
-        String status = request.getParameter("status");
-        String searchStoreId = request.getParameter("storeId");
-        String realName = request.getParameter("realName");
-        String mobile = request.getParameter("mobile");
-        String uuid = request.getParameter("uuid");
-        String startTime = request.getParameter("startTime") == null ? "" : request.getParameter("startTime");
-        String endTime = request.getParameter("endTime") == null ? "" : request.getParameter("endTime");
-
+    public ResponseObject list(@ModelAttribute CommissionLogPage commissionLogPage) throws BusinessCheckException {
         AccountInfo accountInfo = TokenUtil.getAccountInfo();
-        Integer storeId = accountInfo.getStoreId();
-
-        Map<String, Object> params = new HashMap<>();
-        if (StringUtil.isNotEmpty(target)) {
-            params.put("target", target);
-        }
-        if (StringUtil.isNotEmpty(status)) {
-            params.put("status", status);
-        }
-        if (StringUtil.isNotEmpty(searchStoreId)) {
-            params.put("storeId", searchStoreId);
-        }
-        if (storeId != null && storeId > 0) {
-            params.put("storeId", storeId);
+        if (accountInfo.getStoreId() != null && accountInfo.getStoreId() > 0) {
+            commissionLogPage.setStoreId(accountInfo.getStoreId());
         }
         if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
-            params.put("merchantId", accountInfo.getMerchantId());
+            commissionLogPage.setMerchantId(accountInfo.getMerchantId());
         }
-        if (StringUtil.isNotEmpty(startTime)) {
-            params.put("startTime", startTime);
-        }
-        if (StringUtil.isNotEmpty(endTime)) {
-            params.put("endTime", endTime);
-        }
-        if (StringUtil.isNotEmpty(realName)) {
-            params.put("realName", realName);
-        }
-        if (StringUtil.isNotEmpty(mobile)) {
-            params.put("mobile", mobile);
-        }
-        if (StringUtil.isNotEmpty(uuid)) {
-            params.put("uuid", uuid);
-        }
-        PaginationResponse<CommissionLogDto> paginationResponse = commissionLogService.queryCommissionLogByPagination(new PaginationRequest(page, pageSize, params));
+
+        PaginationResponse<CommissionLogDto> paginationResponse = commissionLogService.queryCommissionLogByPagination(commissionLogPage);
 
         // 店铺列表
         List<MtStore> storeList = storeService.getMyStoreList(accountInfo.getMerchantId(), accountInfo.getStoreId(), StatusEnum.ENABLED.getKey());

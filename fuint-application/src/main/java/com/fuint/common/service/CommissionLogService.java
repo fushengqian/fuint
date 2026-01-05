@@ -2,9 +2,9 @@ package com.fuint.common.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.fuint.common.dto.CommissionLogDto;
-import com.fuint.framework.pagination.PaginationRequest;
-import com.fuint.framework.pagination.PaginationResponse;
+import com.fuint.common.param.CommissionLogPage;
 import com.fuint.framework.exception.BusinessCheckException;
+import com.fuint.framework.pagination.PaginationResponse;
 import com.fuint.module.backendApi.request.CommissionLogRequest;
 import com.fuint.repository.model.MtCommissionLog;
 
@@ -19,10 +19,10 @@ public interface CommissionLogService extends IService<MtCommissionLog> {
     /**
      * 分页查询列表
      *
-     * @param paginationRequest
+     * @param commissionLogPage
      * @return
      */
-    PaginationResponse<CommissionLogDto> queryCommissionLogByPagination(PaginationRequest paginationRequest) throws BusinessCheckException;
+    PaginationResponse<CommissionLogDto> queryCommissionLogByPagination(CommissionLogPage commissionLogPage) throws BusinessCheckException;
 
     /**
      * 计算订单分销提成

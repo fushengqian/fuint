@@ -6,27 +6,28 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fuint.common.dto.CommissionLogDto;
 import com.fuint.common.dto.OrderUserDto;
 import com.fuint.common.enums.*;
+import com.fuint.common.param.CommissionLogPage;
 import com.fuint.common.service.*;
 import com.fuint.common.util.CommonUtil;
 import com.fuint.framework.annoation.OperationServiceLog;
 import com.fuint.framework.exception.BusinessCheckException;
-import com.fuint.framework.pagination.PaginationRequest;
 import com.fuint.framework.pagination.PaginationResponse;
 import com.fuint.module.backendApi.request.CommissionLogRequest;
 import com.fuint.repository.mapper.*;
 import com.fuint.repository.model.*;
 import com.fuint.utils.StringUtil;
+import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import lombok.AllArgsConstructor;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.github.pagehelper.Page;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.math.BigDecimal;
 import java.util.*;
 
@@ -80,18 +81,18 @@ public class CommissionLogServiceImpl extends ServiceImpl<MtCommissionLogMapper,
     /**
      * 分页查询分销提成列表
      *
-     * @param paginationRequest
+     * @param commissionLogPage
      * @return
      */
     @Override
-    public PaginationResponse<CommissionLogDto> queryCommissionLogByPagination(PaginationRequest paginationRequest) throws BusinessCheckException {
+    public PaginationResponse<CommissionLogDto> queryCommissionLogByPagination(CommissionLogPage commissionLogPage) throws BusinessCheckException {
         LambdaQueryWrapper<MtCommissionLog> lambdaQueryWrapper = Wrappers.lambdaQuery();
         lambdaQueryWrapper.ne(MtCommissionLog::getStatus, StatusEnum.DISABLE.getKey());
-        String target = paginationRequest.getSearchParams().get("target") == null ? "" : paginationRequest.getSearchParams().get("target").toString();
+        String target = commissionLogPage.getTarget();
         if (StringUtils.isNotBlank(target)) {
             lambdaQueryWrapper.eq(MtCommissionLog::getTarget, target);
         }
-        String realName = paginationRequest.getSearchParams().get("realName") == null ? "" : paginationRequest.getSearchParams().get("realName").toString();
+        String realName = commissionLogPage.getRealName();
         if (StringUtils.isNotBlank(realName)) {
             Map<String, Object> params = new HashMap<>();
             params.put("REAL_NAME", realName);
@@ -103,7 +104,7 @@ public class CommissionLogServiceImpl extends ServiceImpl<MtCommissionLogMapper,
                 lambdaQueryWrapper.eq(MtCommissionLog::getStaffId, -1);
             }
         }
-        String mobile = paginationRequest.getSearchParams().get("mobile") == null ? "" : paginationRequest.getSearchParams().get("mobile").toString();
+        String mobile = commissionLogPage.getMobile();
         if (StringUtils.isNotBlank(mobile)) {
             MtStaff mtStaff = staffService.queryStaffByMobile(mobile);
             if (mtStaff != null) {
@@ -112,25 +113,25 @@ public class CommissionLogServiceImpl extends ServiceImpl<MtCommissionLogMapper,
                 lambdaQueryWrapper.eq(MtCommissionLog::getStaffId, -1);
             }
         }
-        String uuid = paginationRequest.getSearchParams().get("uuid") == null ? "" : paginationRequest.getSearchParams().get("uuid").toString();
+        String uuid = commissionLogPage.getUuid();
         if (StringUtils.isNotBlank(uuid)) {
             lambdaQueryWrapper.eq(MtCommissionLog::getSettleUuid, uuid);
         }
-        String status = paginationRequest.getSearchParams().get("status") == null ? "" : paginationRequest.getSearchParams().get("status").toString();
+        String status = commissionLogPage.getStatus();
         if (StringUtils.isNotBlank(status)) {
             lambdaQueryWrapper.eq(MtCommissionLog::getStatus, status);
         }
-        String merchantId = paginationRequest.getSearchParams().get("merchantId") == null ? "" : paginationRequest.getSearchParams().get("merchantId").toString();
-        if (StringUtils.isNotBlank(merchantId)) {
+        Integer merchantId = commissionLogPage.getMerchantId();
+        if (merchantId != null && merchantId > 0) {
             lambdaQueryWrapper.eq(MtCommissionLog::getMerchantId, merchantId);
         }
-        String storeId = paginationRequest.getSearchParams().get("storeId") == null ? "" : paginationRequest.getSearchParams().get("storeId").toString();
-        if (StringUtils.isNotBlank(storeId)) {
+        Integer storeId = commissionLogPage.getStoreId();
+        if (storeId != null && storeId > 0) {
             lambdaQueryWrapper.eq(MtCommissionLog::getStoreId, storeId);
         }
         // 开始时间、结束时间
-        String startTime = paginationRequest.getSearchParams().get("startTime") == null ? "" : paginationRequest.getSearchParams().get("startTime").toString();
-        String endTime = paginationRequest.getSearchParams().get("endTime") == null ? "" : paginationRequest.getSearchParams().get("endTime").toString();
+        String startTime = commissionLogPage.getStartTime();
+        String endTime = commissionLogPage.getEndTime();
         if (StringUtil.isNotEmpty(startTime)) {
             lambdaQueryWrapper.ge(MtCommissionLog::getCreateTime, startTime);
         }
@@ -139,7 +140,7 @@ public class CommissionLogServiceImpl extends ServiceImpl<MtCommissionLogMapper,
         }
 
         lambdaQueryWrapper.orderByDesc(MtCommissionLog::getId);
-        Page<MtCommissionLog> pageHelper = PageHelper.startPage(paginationRequest.getCurrentPage(), paginationRequest.getPageSize());
+        Page<MtCommissionLog> pageHelper = PageHelper.startPage(commissionLogPage.getPage(), commissionLogPage.getPageSize());
         List<MtCommissionLog> commissionLogList = mtCommissionLogMapper.selectList(lambdaQueryWrapper);
         List<CommissionLogDto> dataList = new ArrayList<>();
         if (commissionLogList != null && commissionLogList.size() > 0) {
@@ -174,7 +175,7 @@ public class CommissionLogServiceImpl extends ServiceImpl<MtCommissionLogMapper,
                  dataList.add(commissionLogDto);
             }
         }
-        PageRequest pageRequest = PageRequest.of(paginationRequest.getCurrentPage(), paginationRequest.getPageSize());
+        PageRequest pageRequest = PageRequest.of(commissionLogPage.getPage(), commissionLogPage.getPageSize());
         PageImpl pageImpl = new PageImpl(dataList, pageRequest, pageHelper.getTotal());
         PaginationResponse<CommissionLogDto> paginationResponse = new PaginationResponse(pageImpl, CommissionLogDto.class);
         paginationResponse.setTotalPages(pageHelper.getPages());
