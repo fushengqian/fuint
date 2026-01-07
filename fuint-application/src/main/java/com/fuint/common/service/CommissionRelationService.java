@@ -2,9 +2,9 @@ package com.fuint.common.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.fuint.common.dto.CommissionRelationDto;
-import com.fuint.framework.pagination.PaginationRequest;
-import com.fuint.framework.pagination.PaginationResponse;
+import com.fuint.common.param.CommissionRelationPage;
 import com.fuint.framework.exception.BusinessCheckException;
+import com.fuint.framework.pagination.PaginationResponse;
 import com.fuint.repository.model.MtCommissionRelation;
 import com.fuint.repository.model.MtUser;
 
@@ -19,10 +19,10 @@ public interface CommissionRelationService extends IService<MtCommissionRelation
     /**
      * 分页查询分佣关系列表
      *
-     * @param paginationRequest
+     * @param commissionRelationPage
      * @return
      */
-    PaginationResponse<CommissionRelationDto> queryRelationByPagination(PaginationRequest paginationRequest) throws BusinessCheckException;
+    PaginationResponse<CommissionRelationDto> queryRelationByPagination(CommissionRelationPage commissionRelationPage) throws BusinessCheckException;
 
     /**
      * 设置分销提成关系

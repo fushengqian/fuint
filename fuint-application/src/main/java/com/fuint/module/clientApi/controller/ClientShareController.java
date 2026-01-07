@@ -1,17 +1,15 @@
 package com.fuint.module.clientApi.controller;
 
-import com.fuint.common.Constants;
 import com.fuint.common.dto.CommissionRelationDto;
 import com.fuint.common.dto.UserInfo;
 import com.fuint.common.enums.StatusEnum;
-import com.fuint.common.param.ShareListParam;
+import com.fuint.common.param.CommissionRelationPage;
 import com.fuint.common.service.CommissionRelationService;
 import com.fuint.common.service.MemberService;
 import com.fuint.common.service.MerchantService;
 import com.fuint.common.service.WeixinService;
 import com.fuint.common.util.TokenUtil;
 import com.fuint.framework.exception.BusinessCheckException;
-import com.fuint.framework.pagination.PaginationRequest;
 import com.fuint.framework.pagination.PaginationResponse;
 import com.fuint.framework.web.BaseController;
 import com.fuint.framework.web.ResponseObject;
@@ -68,18 +66,17 @@ public class ClientShareController extends BaseController {
     @ApiOperation(value="获取邀请列表", notes="获取邀请列表")
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @CrossOrigin
-    public ResponseObject list(HttpServletRequest request,  @RequestBody ShareListParam param) throws BusinessCheckException, InvocationTargetException, IllegalAccessException {
-        Integer page = param.getPage() == null ? Constants.PAGE_NUMBER : param.getPage();
-        Integer pageSize = param.getPageSize() == null ? Constants.PAGE_SIZE : param.getPageSize();
+    public ResponseObject list(HttpServletRequest request,  @RequestBody CommissionRelationPage commissionRelationPage) throws BusinessCheckException, InvocationTargetException, IllegalAccessException {
         String merchantNo = request.getHeader("merchantNo") == null ? "" : request.getHeader("merchantNo");
         UserInfo userInfo = TokenUtil.getUserInfo();
-        Map<String, Object> params = new HashMap<>();
-        params.put("status", StatusEnum.ENABLED.getKey());
-        params.put("userId", userInfo.getId());
+
+        commissionRelationPage.setStatus(StatusEnum.ENABLED.getKey());
+        commissionRelationPage.setUserId(userInfo.getId());
         if (StringUtil.isNotEmpty(merchantNo)) {
-            params.put("merchantNo", merchantNo);
+            commissionRelationPage.setMerchantNo(merchantNo);
         }
-        PaginationResponse<CommissionRelationDto> paginationResponse = commissionRelationService.queryRelationByPagination(new PaginationRequest(page, pageSize, params));
+
+        PaginationResponse<CommissionRelationDto> paginationResponse = commissionRelationService.queryRelationByPagination(commissionRelationPage);
         Map<String, Object> outParams = new HashMap();
         String url = env.getProperty("website.url");
         outParams.put("url", url);
