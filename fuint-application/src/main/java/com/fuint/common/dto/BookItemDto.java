@@ -42,8 +42,11 @@ public class BookItemDto implements Serializable {
     @ApiModelProperty("预约用户ID")
     private Integer userId;
 
-    @ApiModelProperty("商品ID")
+    @ApiModelProperty("订单商品ID")
     private Integer goodsId;
+
+    @ApiModelProperty("已购商品名称")
+    private String goodsName;
 
     @ApiModelProperty("核销码")
     private String verifyCode;

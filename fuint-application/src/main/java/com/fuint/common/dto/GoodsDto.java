@@ -42,6 +42,9 @@ public class GoodsDto implements Serializable {
     @ApiModelProperty("分类ID")
     private Integer cateId;
 
+    @ApiModelProperty("预约项目ID")
+    private Integer bookId;
+
     @ApiModelProperty("分类信息")
     private MtGoodsCate cateInfo;
 

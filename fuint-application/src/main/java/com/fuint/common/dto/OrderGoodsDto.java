@@ -21,6 +21,12 @@ public class OrderGoodsDto implements Serializable {
     @ApiModelProperty("商品ID")
     private Integer goodsId;
 
+    @ApiModelProperty("预约项目ID")
+    private Integer bookId;
+
+    @ApiModelProperty("我的预约ID")
+    private Integer myBookId;
+
     @ApiModelProperty("订单类型")
     private String type;
 

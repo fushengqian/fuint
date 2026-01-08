@@ -13,9 +13,9 @@ import java.util.stream.Collectors;
  * CopyRight https://www.fuint.cn
  */
 public enum BookStatusEnum {
-    CREATED("A", "待审核"),
-    CONFIRM("B", "审核通过"),
-    FAIL("F", "审核未通过"),
+    CREATED("A", "待确认"),
+    CONFIRM("B", "确认通过"),
+    FAIL("F", "预约失败"),
     CANCEL("C", "已取消"),
     DELETE("D", "已删除"),
     COMPLETE("E", "已完成");
