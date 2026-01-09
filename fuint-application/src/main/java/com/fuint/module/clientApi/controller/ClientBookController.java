@@ -158,6 +158,7 @@ public class ClientBookController extends BaseController {
     public ResponseObject submit(HttpServletRequest request, @RequestBody Map<String, Object> param) throws BusinessCheckException, ParseException {
         Integer storeId = StringUtil.isEmpty(request.getHeader("storeId")) ? 0 : Integer.parseInt(request.getHeader("storeId"));
         String bookId = param.get("bookId") == null ? "" : param.get("bookId").toString();
+        String orderGoodsId = param.get("orderGoodsId") == null ? "" : param.get("orderGoodsId").toString();
         String remark = param.get("remark") == null ? "" : param.get("remark").toString();
         String mobile = param.get("mobile") == null ? "" : param.get("mobile").toString();
         String contact = param.get("contact") == null ? "" : param.get("contact").toString();
@@ -186,6 +187,9 @@ public class ClientBookController extends BaseController {
         mtBookItem.setBookId(bookInfo.getId());
         mtBookItem.setServiceDate(date);
         mtBookItem.setServiceTime(time);
+        if (StringUtil.isNotBlank(orderGoodsId)) {
+            mtBookItem.setGoodsId(Integer.parseInt(orderGoodsId));
+        }
         MtBookItem result = bookItemService.addBookItem(mtBookItem);
 
         return getSuccessResult(result);

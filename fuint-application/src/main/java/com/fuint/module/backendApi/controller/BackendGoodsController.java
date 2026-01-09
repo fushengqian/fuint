@@ -82,6 +82,11 @@ public class BackendGoodsController extends BaseController {
     private UploadService uploadService;
 
     /**
+     * 预约项目服务接口
+     */
+    private BookService bookService;
+
+    /**
      * 分页查询商品列表
      */
     @ApiOperation(value = "分页查询商品列表")
@@ -247,9 +252,13 @@ public class BackendGoodsController extends BaseController {
         // 商品类型列表
         List<ParamDto> typeList = GoodsTypeEnum.getGoodsTypeList();
 
+        // 预约项目
+        List<MtBook> bookList = bookService.getBookList(accountInfo.getMerchantId(), storeId);
+
         result.put("typeList", typeList);
         result.put("storeId", storeId);
         result.put("storeList", storeList);
+        result.put("bookList", bookList);
 
         return getSuccessResult(result);
     }
@@ -291,6 +300,7 @@ public class BackendGoodsController extends BaseController {
         String type = param.get("type") == null ? "" : param.get("type").toString();
         String couponIds = param.get("couponIds") == null ? "" : param.get("couponIds").toString();
         String serviceTime = param.get("serviceTime") == null ? "0" : param.get("serviceTime").toString();
+        Integer bookId = (param.get("bookId") == null || StringUtil.isEmpty(param.get("bookId").toString())) ? 0 : Integer.parseInt(param.get("bookId").toString());
         List<LinkedHashMap> skuList = param.get("skuData") == null ? new ArrayList<>() : (List) param.get("skuData");
         List<LinkedHashMap> specList = param.get("specData") == null ? new ArrayList<>() : (List) param.get("specData");
 
@@ -422,6 +432,7 @@ public class BackendGoodsController extends BaseController {
         mtGoods.setCateId(cateId);
         mtGoods.setName(name);
         mtGoods.setGoodsNo(goodsNo);
+        mtGoods.setBookId(bookId);
         if (StringUtil.isNotEmpty(serviceTime)) {
             mtGoods.setServiceTime(Integer.parseInt(serviceTime));
         }

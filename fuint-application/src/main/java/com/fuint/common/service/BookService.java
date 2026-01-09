@@ -65,12 +65,12 @@ public interface BookService extends IService<MtBook> {
     List<String> isBookable(BookableParam param) throws BusinessCheckException, ParseException;
 
     /**
-     * 根据条件搜索预约项目
+     * 获取预约项目列表
      *
-     * @param  params 查询参数
-     * @throws BusinessCheckException
+     * @param  merchantId 商户ID
+     * @param  storeId 店铺ID
      * @return
      * */
-    List<MtBook> queryBookListByParams(Map<String, Object> params) throws BusinessCheckException;
+    List<MtBook> getBookList(Integer merchantId, Integer storeId);
 
 }

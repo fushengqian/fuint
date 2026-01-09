@@ -371,31 +371,19 @@ public class BookServiceImpl extends ServiceImpl<MtBookMapper, MtBook> implement
     }
 
     /**
-     * 根据条件搜索预约项目
+     * 获取预约项目列表
      *
-     * @param  params 查询参数
-     * @throws BusinessCheckException
+     * @param  merchantId 商户ID
+     * @param  storeId 店铺ID
      * @return
      * */
-    @Override
-    public List<MtBook> queryBookListByParams(Map<String, Object> params) {
-        String status =  params.get("status") == null ? StatusEnum.ENABLED.getKey(): params.get("status").toString();
-        String storeId =  params.get("storeId") == null ? "" : params.get("storeId").toString();
-        String merchantId =  params.get("merchantId") == null ? "" : params.get("merchantId").toString();
-        String name = params.get("name") == null ? "" : params.get("name").toString();
-
+    public List<MtBook> getBookList(Integer merchantId, Integer storeId) {
         LambdaQueryWrapper<MtBook> lambdaQueryWrapper = Wrappers.lambdaQuery();
-        lambdaQueryWrapper.ne(MtBook::getStatus, StatusEnum.DISABLE.getKey());
-        if (StringUtils.isNotBlank(name)) {
-            lambdaQueryWrapper.like(MtBook::getName, name);
-        }
-        if (StringUtils.isNotBlank(status)) {
-            lambdaQueryWrapper.eq(MtBook::getStatus, status);
-        }
-        if (StringUtils.isNotBlank(merchantId)) {
+        lambdaQueryWrapper.eq(MtBook::getStatus, StatusEnum.ENABLED.getKey());
+        if (merchantId != null && merchantId > 0) {
             lambdaQueryWrapper.eq(MtBook::getMerchantId, merchantId);
         }
-        if (StringUtils.isNotBlank(storeId)) {
+        if (storeId != null && storeId > 0) {
             lambdaQueryWrapper.eq(MtBook::getStoreId, storeId);
         }
 
@@ -405,7 +393,7 @@ public class BookServiceImpl extends ServiceImpl<MtBookMapper, MtBook> implement
 
         if (dataList.size() > 0) {
             for (MtBook book : dataList) {
-                 book.setLogo(baseImage + book.getLogo());
+                book.setLogo(baseImage + book.getLogo());
             }
         }
 

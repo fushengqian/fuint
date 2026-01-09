@@ -3,12 +3,13 @@ package com.fuint.repository.model;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import java.io.Serializable;
-import java.math.BigDecimal;
-import java.util.Date;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+
+import java.io.Serializable;
+import java.math.BigDecimal;
+import java.util.Date;
 
 /**
  * 商品表
@@ -41,6 +42,9 @@ public class MtGoods implements Serializable {
 
     @ApiModelProperty("分类ID")
     private Integer cateId;
+
+    @ApiModelProperty("预约项目ID")
+    private Integer bookId;
 
     @ApiModelProperty("商品编码")
     private String goodsNo;
