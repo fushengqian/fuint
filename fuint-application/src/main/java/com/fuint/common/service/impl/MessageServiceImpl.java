@@ -9,6 +9,7 @@ import com.fuint.repository.mapper.MtMessageMapper;
 import com.fuint.repository.model.MtMessage;
 import com.fuint.utils.StringUtil;
 import lombok.AllArgsConstructor;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.Date;
@@ -21,7 +22,7 @@ import java.util.List;
  * CopyRight https://www.fuint.cn
  */
 @Service
-@AllArgsConstructor
+@AllArgsConstructor(onConstructor_= {@Lazy})
 public class MessageServiceImpl extends ServiceImpl<MtMessageMapper, MtMessage> implements MessageService {
 
     private MtMessageMapper messageRepository;

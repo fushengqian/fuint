@@ -3,8 +3,12 @@ package com.fuint.common.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.fuint.common.dto.CommissionCashDto;
 import com.fuint.common.dto.OrderUserDto;
-import com.fuint.common.enums.*;
+import com.fuint.common.enums.CommissionCashStatusEnum;
+import com.fuint.common.enums.CommissionStatusEnum;
+import com.fuint.common.enums.CommissionTargetEnum;
+import com.fuint.common.enums.StatusEnum;
 import com.fuint.common.param.CommissionCashPage;
 import com.fuint.common.service.*;
 import com.fuint.common.util.CommonUtil;
@@ -17,21 +21,22 @@ import com.fuint.module.backendApi.request.CommissionLogRequest;
 import com.fuint.module.backendApi.request.CommissionSettleConfirmRequest;
 import com.fuint.module.backendApi.request.CommissionSettleRequest;
 import com.fuint.repository.mapper.MtCommissionCashMapper;
-import com.fuint.common.dto.CommissionCashDto;
 import com.fuint.repository.mapper.MtCommissionLogMapper;
 import com.fuint.repository.model.*;
 import com.fuint.utils.StringUtil;
+import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import lombok.AllArgsConstructor;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.github.pagehelper.Page;
 import org.springframework.beans.BeanUtils;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.math.BigDecimal;
 import java.util.*;
 
@@ -42,7 +47,7 @@ import java.util.*;
  * CopyRight https://www.fuint.cn
  */
 @Service
-@AllArgsConstructor
+@AllArgsConstructor(onConstructor_= {@Lazy})
 public class CommissionCashServiceImpl extends ServiceImpl<MtCommissionCashMapper, MtCommissionCash> implements CommissionCashService {
 
     private static final Logger logger = LoggerFactory.getLogger(CommissionCashServiceImpl.class);

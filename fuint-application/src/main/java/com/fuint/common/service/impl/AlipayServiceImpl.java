@@ -23,6 +23,7 @@ import com.ijpay.alipay.AliPayApiConfigKit;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
@@ -35,7 +36,7 @@ import java.util.*;
  * CopyRight https://www.fuint.cn
  */
 @Service
-@AllArgsConstructor
+@AllArgsConstructor(onConstructor_= {@Lazy})
 public class AlipayServiceImpl implements AlipayService {
 
     private static final Logger logger = LoggerFactory.getLogger(AlipayServiceImpl.class);

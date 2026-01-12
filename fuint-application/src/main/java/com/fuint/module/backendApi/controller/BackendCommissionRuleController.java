@@ -1,28 +1,25 @@
 package com.fuint.module.backendApi.controller;
 
-import com.fuint.common.Constants;
 import com.fuint.common.dto.AccountInfo;
 import com.fuint.common.dto.CommissionRuleDto;
 import com.fuint.common.dto.ParamDto;
 import com.fuint.common.enums.CommissionTypeEnum;
 import com.fuint.common.enums.StatusEnum;
+import com.fuint.common.param.CommissionRulePage;
 import com.fuint.common.param.CommissionRuleParam;
 import com.fuint.common.service.CommissionRuleService;
 import com.fuint.common.util.TokenUtil;
 import com.fuint.framework.exception.BusinessCheckException;
-import com.fuint.framework.pagination.PaginationRequest;
 import com.fuint.framework.pagination.PaginationResponse;
 import com.fuint.framework.web.BaseController;
 import com.fuint.framework.web.ResponseObject;
 import com.fuint.repository.model.MtCommissionRule;
-import com.fuint.utils.StringUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.AllArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -51,37 +48,15 @@ public class BackendCommissionRuleController extends BaseController {
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('commission:rule:index')")
-    public ResponseObject list(HttpServletRequest request) throws BusinessCheckException {
-        Integer page = request.getParameter("page") == null ? Constants.PAGE_NUMBER : Integer.parseInt(request.getParameter("page"));
-        Integer pageSize = request.getParameter("pageSize") == null ? Constants.PAGE_SIZE : Integer.parseInt(request.getParameter("pageSize"));
-        String name = request.getParameter("name");
-        String status = request.getParameter("status");
-        String target = request.getParameter("target");
-        String type = request.getParameter("type");
-
+    public ResponseObject list(@ModelAttribute CommissionRulePage commissionRulePage) throws BusinessCheckException {
         AccountInfo accountInfo = TokenUtil.getAccountInfo();
-        Integer storeId = accountInfo.getStoreId();
-
-        Map<String, Object> params = new HashMap<>();
-        if (StringUtil.isNotEmpty(name)) {
-            params.put("name", name);
-        }
-        if (StringUtil.isNotEmpty(target)) {
-            params.put("target", target);
-        }
-        if (StringUtil.isNotEmpty(type)) {
-            params.put("type", type);
-        }
-        if (StringUtil.isNotEmpty(status)) {
-            params.put("status", status);
-        }
         if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
-            params.put("merchantId", accountInfo.getMerchantId());
+            commissionRulePage.setMerchantId(accountInfo.getMerchantId());
         }
-        if (storeId != null && storeId > 0) {
-            params.put("storeId", storeId);
+        if (accountInfo.getStoreId() != null && accountInfo.getStoreId() > 0) {
+            commissionRulePage.setStoreId(accountInfo.getStoreId());
         }
-        PaginationResponse<MtCommissionRule> paginationResponse = commissionRuleService.queryDataByPagination(new PaginationRequest(page, pageSize, params));
+        PaginationResponse<MtCommissionRule> paginationResponse = commissionRuleService.queryDataByPagination(commissionRulePage);
 
         // 分佣提成类型列表
         List<ParamDto> typeList = CommissionTypeEnum.getCommissionTypeList();

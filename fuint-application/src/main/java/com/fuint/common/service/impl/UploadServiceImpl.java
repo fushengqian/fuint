@@ -9,6 +9,7 @@ import com.fuint.utils.StringUtil;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ResourceUtils;
@@ -25,7 +26,7 @@ import java.util.Date;
  * CopyRight https://www.fuint.cn
  */
 @Service
-@AllArgsConstructor
+@AllArgsConstructor(onConstructor_= {@Lazy})
 public class UploadServiceImpl implements UploadService {
 
     private static final Logger logger = LoggerFactory.getLogger(UploadServiceImpl.class);

@@ -7,6 +7,7 @@ import com.fuint.framework.exception.BusinessRuntimeException;
 import com.fuint.repository.mapper.MtVerifyCodeMapper;
 import com.fuint.repository.model.MtVerifyCode;
 import lombok.AllArgsConstructor;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -20,7 +21,7 @@ import java.util.List;
  * CopyRight https://www.fuint.cn
  */
 @Service
-@AllArgsConstructor
+@AllArgsConstructor(onConstructor_= {@Lazy})
 public class VerifyCodeServiceImpl extends ServiceImpl<MtVerifyCodeMapper, MtVerifyCode> implements VerifyCodeService {
 
     private MtVerifyCodeMapper mtVerifyCodeMapper;
