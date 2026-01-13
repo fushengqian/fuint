@@ -5,8 +5,7 @@ import java.math.BigDecimal;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
 /**
  * 商品排行对象
@@ -14,8 +13,7 @@ import lombok.Setter;
  * Created by FSQ
  * CopyRight https://www.fuint.cn
  */
-@Getter
-@Setter
+@Data
 @ApiModel(value = "商品排行对象", description = "商品排行对象")
 public class GoodsTopBean implements Serializable {
 

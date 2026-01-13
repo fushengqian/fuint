@@ -8,8 +8,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
 /**
  * 核销记录表
@@ -17,8 +16,7 @@ import lombok.Setter;
  * Created by FSQ
  * CopyRight https://www.fuint.cn
  */
-@Getter
-@Setter
+@Data
 @TableName("mt_confirm_log")
 @ApiModel(value = "MtConfirmLog对象", description = "核销记录表")
 public class MtConfirmLog implements Serializable {

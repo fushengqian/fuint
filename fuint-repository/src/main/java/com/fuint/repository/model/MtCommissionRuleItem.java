@@ -8,6 +8,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -17,8 +18,7 @@ import lombok.Setter;
  * Created by FSQ
  * CopyRight https://www.fuint.cn
  */
-@Getter
-@Setter
+@Data
 @TableName("mt_commission_rule_item")
 @ApiModel(value = "MtCommissionRuleItem对象", description = "分佣提成规则项目表")
 public class MtCommissionRuleItem implements Serializable {

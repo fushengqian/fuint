@@ -20,4 +20,7 @@ public class RechargeRuleDto implements Serializable {
     @ApiModelProperty("赠送金额")
     private String giveAmount;
 
+    @ApiModelProperty("赠送卡券ID")
+    private String giveCouponIds;
+
 }

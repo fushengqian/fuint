@@ -7,8 +7,7 @@ import java.io.Serializable;
 import java.util.Date;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
 /**
  * 微信小程序上传发货信息实体
@@ -16,8 +15,7 @@ import lombok.Setter;
  * @Created by FSQ
  * CopyRight https://www.fuint.cn
  */
-@Getter
-@Setter
+@Data
 @TableName("mt_upload_shipping_log")
 @ApiModel(value = "upload_shipping_log表对象", description = "微信小程序上传发货信息对象")
 public class MtUploadShippingLog implements Serializable {

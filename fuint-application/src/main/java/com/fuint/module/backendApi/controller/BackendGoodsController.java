@@ -93,7 +93,7 @@ public class BackendGoodsController extends BaseController {
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('goods:goods:index')")
-    public ResponseObject list(HttpServletRequest request, @RequestBody GoodsListParam param) throws BusinessCheckException, IllegalAccessException {
+    public ResponseObject list(@RequestBody GoodsListParam param) throws BusinessCheckException, IllegalAccessException {
         AccountInfo accountInfo = TokenUtil.getAccountInfo();
         Integer storeId = accountInfo.getStoreId() == null ? 0 : accountInfo.getStoreId();
         Integer merchantId = accountInfo.getMerchantId() == null ? 0 : accountInfo.getMerchantId();

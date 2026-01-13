@@ -6,8 +6,7 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import java.io.Serializable;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
 /**
  * 后台账号角色表
@@ -15,8 +14,7 @@ import lombok.Setter;
  * Created by FSQ
  * CopyRight https://www.fuint.cn
  */
-@Getter
-@Setter
+@Data
 @TableName("t_account_duty")
 @ApiModel(value = "TAccountDuty对象", description = "后台账号角色表")
 public class TAccountDuty implements Serializable {
@@ -32,6 +30,5 @@ public class TAccountDuty implements Serializable {
 
     @ApiModelProperty("角色ID")
     private Integer dutyId;
-
 
 }

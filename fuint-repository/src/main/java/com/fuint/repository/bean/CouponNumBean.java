@@ -3,8 +3,7 @@ package com.fuint.repository.bean;
 import java.io.Serializable;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
 /**
  * 卡券数量对象
@@ -12,8 +11,7 @@ import lombok.Setter;
  * Created by FSQ
  * CopyRight https://www.fuint.cn
  */
-@Getter
-@Setter
+@Data
 @ApiModel(value = "卡券数量对象", description = "卡券数量对象")
 public class CouponNumBean implements Serializable {
 

@@ -7,19 +7,15 @@ import java.io.Serializable;
 import java.util.Date;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
 /**
- * <p>
  * 短信模板
- * </p>
  *
  * Created by FSQ
  * CopyRight https://www.fuint.cn
  */
-@Getter
-@Setter
+@Data
 @TableName("mt_sms_template")
 @ApiModel(value = "MtSmsTemplate对象", description = "短信模板")
 public class MtSmsTemplate implements Serializable {
@@ -59,6 +55,5 @@ public class MtSmsTemplate implements Serializable {
 
     @ApiModelProperty("状态：A激活；N禁用")
     private String status;
-
 
 }

@@ -98,7 +98,7 @@ public class ClientBalanceController extends BaseController {
                     if (item.length > 0) {
                         for (String value : item) {
                             String el[] = value.split("_");
-                            if (el.length == 2) {
+                            if (el.length >= 2) {
                                 RechargeRuleDto e = new RechargeRuleDto();
                                 e.setRechargeAmount(el[0]);
                                 e.setGiveAmount(el[1]);
@@ -144,7 +144,7 @@ public class ClientBalanceController extends BaseController {
         String ip = CommonUtil.getIPFromHttpRequest(request);
         BigDecimal pay = orderInfo.getAmount().multiply(new BigDecimal("100"));
         orderInfo.setPayType(PayTypeEnum.JSAPI.getKey());
-        ResponseObject paymentInfo = paymentService.createPrepayOrder(mtUser, orderInfo, (pay.intValue()), "", 0, ip, platform, isWechat);
+        ResponseObject paymentInfo = paymentService.createPrepayOrder(mtUser, orderInfo, pay.intValue(), "", 0, ip, platform, isWechat);
         if (paymentInfo.getData() == null) {
             return getFailureResult(201, "抱歉，发起支付失败");
         }

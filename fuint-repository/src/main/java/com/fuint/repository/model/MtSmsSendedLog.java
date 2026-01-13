@@ -7,8 +7,7 @@ import java.io.Serializable;
 import java.util.Date;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
 /**
  * 短信发送记录表
@@ -16,8 +15,7 @@ import lombok.Setter;
  * Created by FSQ
  * CopyRight https://www.fuint.cn
  */
-@Getter
-@Setter
+@Data
 @TableName("mt_sms_sended_log")
 @ApiModel(value = "MtSmsSendedLog对象", description = "短信发送记录表")
 public class MtSmsSendedLog implements Serializable {

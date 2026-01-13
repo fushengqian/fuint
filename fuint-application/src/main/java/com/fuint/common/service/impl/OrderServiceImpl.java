@@ -2387,7 +2387,7 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
                 String rules[] = mtSetting.getValue().split(",");
                 for (String rule : rules) {
                     String amountArr[] = rule.split("_");
-                    if (amountArr.length == 2) {
+                    if (amountArr.length >= 2) {
                         if (amountArr[0].equals(rechargeAmount)) {
                             ruleParam = rule;
                             break;

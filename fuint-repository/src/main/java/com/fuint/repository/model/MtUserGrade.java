@@ -7,8 +7,7 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
 /**
  * 会员等级表
@@ -16,8 +15,7 @@ import lombok.Setter;
  * Created by FSQ
  * CopyRight https://www.fuint.cn
  */
-@Getter
-@Setter
+@Data
 @TableName("mt_user_grade")
 @ApiModel(value = "MtUserGrade对象", description = "")
 public class MtUserGrade implements Serializable {

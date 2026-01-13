@@ -2,8 +2,7 @@ package com.fuint.common.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModelProperty;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 import java.util.Date;
 
 /**
@@ -12,8 +11,7 @@ import java.util.Date;
  * Created by FSQ
  * CopyRight https://www.fuint.cn
  */
-@Getter
-@Setter
+@Data
 public class AccountDto {
 
     @ApiModelProperty("账户主键id")
@@ -65,4 +63,5 @@ public class AccountDto {
 
     @ApiModelProperty("关联员工ID")
     private Integer staffId;
+
 }

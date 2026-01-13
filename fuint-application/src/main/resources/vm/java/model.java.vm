@@ -7,8 +7,7 @@ import java.io.Serializable;
 import java.util.Date;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
 /**
  * ${moduleName}实体
@@ -16,8 +15,7 @@ import lombok.Setter;
  * @Created by ${author}
  * CopyRight https://www.fuint.cn
  */
-@Getter
-@Setter
+@Data
 @TableName("${tablePrefix}_${tableName}")
 @ApiModel(value = "${tableName}表对象", description = "${tableName}表对象")
 public class ${modelName} implements Serializable {

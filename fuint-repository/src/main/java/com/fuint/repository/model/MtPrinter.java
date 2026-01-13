@@ -7,17 +7,15 @@ import java.io.Serializable;
 import java.util.Date;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
 /**
  * 打印机实体
- * 
+ *
  * @Created by FSQ
  * CopyRight https://www.fuint.cn
  */
-@Getter
-@Setter
+@Data
 @TableName("mt_printer")
 @ApiModel(value = "printer表对象", description = "printer表对象")
 public class MtPrinter implements Serializable {

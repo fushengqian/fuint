@@ -8,8 +8,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
 /**
  * 后台操作日志表
@@ -17,8 +16,7 @@ import lombok.Setter;
  * Created by FSQ
  * CopyRight https://www.fuint.cn
  */
-@Getter
-@Setter
+@Data
 @TableName("t_action_log")
 @ApiModel(value = "TActionLog对象", description = "后台操作日志表")
 public class TActionLog implements Serializable {

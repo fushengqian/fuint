@@ -6,19 +6,15 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import java.io.Serializable;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
 /**
- * <p>
  * 省市区数据表
- * </p>
  *
  * Created by FSQ
  * CopyRight https://www.fuint.cn
  */
-@Getter
-@Setter
+@Data
 @TableName("mt_region")
 @ApiModel(value = "MtRegion对象", description = "省市区数据表")
 public class MtRegion implements Serializable {

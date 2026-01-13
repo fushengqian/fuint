@@ -1,8 +1,7 @@
 package com.fuint.common.domain;
 
 import io.swagger.annotations.ApiModelProperty;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -13,8 +12,7 @@ import java.util.List;
  * Created by FSQ
  * CopyRight https://www.fuint.cn
  */
-@Getter
-@Setter
+@Data
 public class TreeNode implements Serializable {
 
     @ApiModelProperty("菜单ID")

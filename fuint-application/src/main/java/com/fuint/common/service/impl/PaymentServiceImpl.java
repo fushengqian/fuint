@@ -72,6 +72,11 @@ public class PaymentServiceImpl implements PaymentService {
     private UserCouponService userCouponService;
 
     /**
+     * 卡券服务接口
+     * */
+    private CouponService couponService;
+
+    /**
      * 创建预支付订单
      *
      * @param userInfo 会员信息
@@ -146,10 +151,23 @@ public class PaymentServiceImpl implements PaymentService {
             String param = orderInfo.getParam();
             if (StringUtil.isNotEmpty(param)) {
                 String params[] = param.split("_");
-                if (params.length == 2) {
+                if (params.length >= 2) {
                     BigDecimal amount = new BigDecimal(params[0]).add(new BigDecimal(params[1]));
                     mtBalance.setAmount(amount);
                     balanceService.addBalance(mtBalance, true);
+                }
+                // 充值赠送卡券
+                if (params.length == 3) {
+                    try {
+                        String[] couponIds = params[2].split("\\|");
+                        if (couponIds != null && couponIds.length > 0) {
+                            for (int i = 0; i < couponIds.length; i++) {
+                                 couponService.sendCoupon(Integer.parseInt(couponIds[i]), orderInfo.getUserId(), 1, true, null, null);
+                            }
+                        }
+                    } catch (Exception e) {
+                        logger.error("sendCoupon error", e);
+                    }
                 }
             }
         }

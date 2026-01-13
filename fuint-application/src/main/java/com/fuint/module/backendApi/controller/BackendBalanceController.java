@@ -8,6 +8,7 @@ import com.fuint.common.enums.SettingTypeEnum;
 import com.fuint.common.enums.StatusEnum;
 import com.fuint.common.param.BalancePage;
 import com.fuint.common.service.BalanceService;
+import com.fuint.common.service.CouponService;
 import com.fuint.common.service.MemberService;
 import com.fuint.common.service.SettingService;
 import com.fuint.common.util.CommonUtil;
@@ -17,15 +18,16 @@ import com.fuint.framework.pagination.PaginationResponse;
 import com.fuint.framework.web.BaseController;
 import com.fuint.framework.web.ResponseObject;
 import com.fuint.repository.model.MtBalance;
+import com.fuint.repository.model.MtCoupon;
 import com.fuint.repository.model.MtSetting;
 import com.fuint.repository.model.MtUser;
+import com.fuint.utils.StringUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.AllArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
 import java.util.*;
 
@@ -55,6 +57,11 @@ public class BackendBalanceController extends BaseController {
      * 会员服务接口
      * */
     private MemberService memberService;
+
+    /**
+     * 卡券服务接口
+     * */
+    private CouponService couponService;
 
     /**
      * 余额明细列表查询
@@ -129,7 +136,7 @@ public class BackendBalanceController extends BaseController {
     @RequestMapping(value = "/distribute", method = RequestMethod.POST)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('balance:distribute')")
-    public ResponseObject distribute(HttpServletRequest request, @RequestBody Map<String, Object> param) throws BusinessCheckException {
+    public ResponseObject distribute(@RequestBody Map<String, Object> param) throws BusinessCheckException {
         String amount = param.get("amount") == null ? "0" : param.get("amount").toString();
         String remark = param.get("remark") == null ? "后台充值" : param.get("remark").toString();
         String userIds = param.get("userIds") == null ? "" : param.get("userIds").toString();
@@ -163,11 +170,14 @@ public class BackendBalanceController extends BaseController {
                      if (item.length > 0) {
                          for (String value : item) {
                               String el[] = value.split("_");
-                              if (el.length == 2) {
-                                  RechargeRuleDto e = new RechargeRuleDto();
-                                  e.setRechargeAmount(el[0]);
-                                  e.setGiveAmount(el[1]);
-                                  rechargeRuleList.add(e);
+                              if (el.length >= 2) {
+                                  RechargeRuleDto ruleDto = new RechargeRuleDto();
+                                  ruleDto.setRechargeAmount(el[0]);
+                                  ruleDto.setGiveAmount(el[1]);
+                                  if (el.length >= 3) {
+                                      ruleDto.setGiveCouponIds(el[2]);
+                                  }
+                                  rechargeRuleList.add(ruleDto);
                               }
                          }
                      }
@@ -212,6 +222,16 @@ public class BackendBalanceController extends BaseController {
         List<String> amounts = new ArrayList<>();
         for (LinkedHashMap item : rechargeItems) {
              String amount = item.get("rechargeAmount").toString();
+             String giveCouponIds = item.get("giveCouponIds") == null ? "" : item.get("giveCouponIds").toString();
+             if (StringUtil.isNotBlank(giveCouponIds)) {
+                 String[] couponIds = giveCouponIds.split("\\|");
+                 for (int i = 0; i < couponIds.length; i++) {
+                      MtCoupon mtCoupon = couponService.queryCouponById(Integer.parseInt(couponIds[i]));
+                      if (mtCoupon == null) {
+                          return getFailureResult(201, "赠送卡券ID:"+couponIds[i]+"不存在，请核实！");
+                      }
+                 }
+             }
              if (amounts.contains(amount)) {
                  return getFailureResult(201, "充值金额设置不能有重复");
              }
@@ -219,6 +239,9 @@ public class BackendBalanceController extends BaseController {
                  rechargeRule = item.get("rechargeAmount").toString() + '_' + item.get("giveAmount").toString();
              } else {
                  rechargeRule = rechargeRule + ',' + item.get("rechargeAmount").toString() + '_' + item.get("giveAmount").toString();
+             }
+             if (StringUtil.isNotBlank(giveCouponIds)) {
+                 rechargeRule = rechargeRule + '_' + giveCouponIds;
              }
              amounts.add(amount);
         }

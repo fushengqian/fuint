@@ -30,6 +30,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.math.BigDecimal;
 import java.util.*;
 
@@ -53,11 +54,6 @@ public class OpenGiftServiceImpl extends ServiceImpl<MtOpenGiftMapper, MtOpenGif
      * 卡券服务接口
      * */
     private CouponService couponService;
-
-    /**
-     * 会员卡券服务接口
-     * */
-    private UserCouponService userCouponService;
 
     /**
      * 会员等级服务接口
@@ -305,8 +301,7 @@ public class OpenGiftServiceImpl extends ServiceImpl<MtOpenGiftMapper, MtOpenGif
                        param.setCouponId(item.getCouponId());
                        param.setUserId(userId);
                        param.setNum(item.getCouponNum() == null ? 1 : item.getCouponNum());
-                       String uuid = SeqUtil.getUUID();
-                       couponService.sendCoupon(item.getCouponId(), userId, param.getNum(), true, uuid, "");
+                       couponService.sendCoupon(item.getCouponId(), userId, param.getNum(), true, SeqUtil.getUUID(), "");
                        totalAmount = totalAmount.add(mtCoupon.getAmount());
                    }
                }

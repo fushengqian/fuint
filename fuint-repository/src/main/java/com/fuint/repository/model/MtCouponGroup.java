@@ -8,19 +8,15 @@ import java.math.BigDecimal;
 import java.util.Date;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
 /**
- * <p>
  * 优惠券组
- * </p>
  *
  * Created by FSQ
  * CopyRight https://www.fuint.cn
  */
-@Getter
-@Setter
+@Data
 @TableName("mt_coupon_group")
 @ApiModel(value = "MtCouponGroup对象", description = "优惠券组")
 public class MtCouponGroup implements Serializable {

@@ -8,8 +8,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
 /**
  * 卡券信息表
@@ -17,8 +16,7 @@ import lombok.Setter;
  * Created by FSQ
  * CopyRight https://www.fuint.cn
  */
-@Getter
-@Setter
+@Data
 @TableName("mt_coupon")
 @ApiModel(value = "MtCoupon对象", description = "卡券信息表")
 public class MtCoupon implements Serializable {
