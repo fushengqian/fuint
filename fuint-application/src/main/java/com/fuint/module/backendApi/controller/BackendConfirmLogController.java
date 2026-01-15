@@ -1,22 +1,19 @@
 package com.fuint.module.backendApi.controller;
 
-import com.fuint.common.Constants;
 import com.fuint.common.dto.AccountInfo;
 import com.fuint.common.dto.ConfirmLogDto;
 import com.fuint.common.dto.ParamDto;
 import com.fuint.common.enums.CouponTypeEnum;
-import com.fuint.common.service.AccountService;
+import com.fuint.common.param.ConfirmLogPage;
 import com.fuint.common.service.ConfirmLogService;
 import com.fuint.common.service.CouponService;
 import com.fuint.common.service.MemberService;
 import com.fuint.common.util.TokenUtil;
 import com.fuint.framework.exception.BusinessCheckException;
-import com.fuint.framework.pagination.PaginationRequest;
 import com.fuint.framework.pagination.PaginationResponse;
 import com.fuint.framework.web.BaseController;
 import com.fuint.framework.web.ResponseObject;
 import com.fuint.repository.model.MtUser;
-import com.fuint.repository.model.TAccount;
 import com.fuint.utils.StringUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -57,55 +54,30 @@ public class BackendConfirmLogController extends BaseController {
     private MemberService memberService;
 
     /**
-     * 后台账户服务接口
-     */
-    private AccountService accountService;
-
-    /**
      * 获取会员卡券核销记录列表
      */
     @ApiOperation(value = "获取会员卡券核销记录列表")
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('coupon:confirmLog:index')")
-    public ResponseObject list(HttpServletRequest request) throws BusinessCheckException {
-        Integer page = request.getParameter("page") == null ? Constants.PAGE_NUMBER : Integer.parseInt(request.getParameter("page"));
-        Integer pageSize = request.getParameter("pageSize") == null ? Constants.PAGE_SIZE : Integer.parseInt(request.getParameter("pageSize"));
-        String status = request.getParameter("status") == null ? "" : request.getParameter("status");
-        String userId = request.getParameter("userId") == null ? "" : request.getParameter("userId");
-        String mobile = request.getParameter("mobile") == null ? "" : request.getParameter("mobile");
-        String couponId = request.getParameter("couponId") == null ? "" : request.getParameter("couponId");
-
+    public ResponseObject list(@ModelAttribute ConfirmLogPage confirmLogPage) throws BusinessCheckException {
         AccountInfo accountInfo = TokenUtil.getAccountInfo();
-        Map<String, Object> searchParams = new HashMap<>();
         if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
-            searchParams.put("merchantId", accountInfo.getMerchantId());
+            confirmLogPage.setMerchantId(accountInfo.getMerchantId());
         }
-        if (StringUtil.isNotEmpty(status)) {
-            searchParams.put("status", status);
+        if (accountInfo.getStoreId() > 0 && accountInfo.getStoreId() > 0) {
+            confirmLogPage.setStoreId(accountInfo.getStoreId());
         }
-        if (StringUtil.isNotEmpty(userId)) {
-            searchParams.put("userId", userId);
-        }
-        if (StringUtil.isNotEmpty(couponId)) {
-            searchParams.put("couponId", couponId);
-        }
-        if (StringUtil.isNotEmpty(mobile)) {
-            MtUser userInfo = memberService.queryMemberByMobile(accountInfo.getMerchantId(), mobile);
+        if (StringUtil.isNotEmpty(confirmLogPage.getMobile())) {
+            MtUser userInfo = memberService.queryMemberByMobile(accountInfo.getMerchantId(), confirmLogPage.getMobile());
             if (userInfo != null) {
-                searchParams.put("userId", userInfo.getId().toString());
+                confirmLogPage.setUserId(userInfo.getId());
             } else {
-                searchParams.put("userId", "0");
+                confirmLogPage.setUserId(0);
             }
         }
 
-        // 登录员工所属店铺处理
-        TAccount tAccount = accountService.getAccountInfoById(accountInfo.getId());
-        if (tAccount.getStoreId() > 0 && tAccount.getStoreId() > 0) {
-            searchParams.put("storeId", tAccount.getStoreId());
-        }
-
-        PaginationResponse<ConfirmLogDto> paginationResponse = confirmLogService.queryConfirmLogListByPagination(new PaginationRequest(page, pageSize, searchParams));
+        PaginationResponse<ConfirmLogDto> paginationResponse = confirmLogService.queryConfirmLogListByPagination(confirmLogPage);
 
         // 卡券类型列表
         List<ParamDto> typeList = CouponTypeEnum.getCouponTypeList();

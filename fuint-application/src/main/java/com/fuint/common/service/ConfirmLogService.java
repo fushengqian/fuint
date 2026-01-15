@@ -2,8 +2,8 @@ package com.fuint.common.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.fuint.common.dto.ConfirmLogDto;
+import com.fuint.common.param.ConfirmLogPage;
 import com.fuint.framework.exception.BusinessCheckException;
-import com.fuint.framework.pagination.PaginationRequest;
 import com.fuint.framework.pagination.PaginationResponse;
 import com.fuint.repository.model.MtConfirmLog;
 
@@ -21,10 +21,10 @@ public interface ConfirmLogService extends IService<MtConfirmLog> {
     /**
      * 分页查询会员卡券核销列表
      *
-     * @param paginationRequest
+     * @param confirmLogPage
      * @return
      */
-    PaginationResponse<ConfirmLogDto> queryConfirmLogListByPagination(PaginationRequest paginationRequest) throws BusinessCheckException;
+    PaginationResponse<ConfirmLogDto> queryConfirmLogListByPagination(ConfirmLogPage confirmLogPage) throws BusinessCheckException;
 
     /**
      * 获取卡券核销次数

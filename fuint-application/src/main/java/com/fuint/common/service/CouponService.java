@@ -76,7 +76,7 @@ public interface CouponService extends IService<MtCoupon> {
      * @throws BusinessCheckException
      * @return
      */
-    void sendCoupon(Integer couponId, Integer userId, Integer num, Boolean sendMessage, String uuid, String operator) throws BusinessCheckException;
+    ResponseObject sendCoupon(Integer couponId, Integer userId, Integer num, Boolean sendMessage, String uuid, String operator) throws BusinessCheckException;
 
     /**
      * 发放卡券

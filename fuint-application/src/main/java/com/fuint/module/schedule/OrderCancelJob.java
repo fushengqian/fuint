@@ -96,8 +96,6 @@ public class OrderCancelJob {
                     }
                     logger.info("OrderCancelJobEnd!!!");
                 }
-            } else {
-                throw new RuntimeException("获取锁失败，请稍后重试");
             }
         } finally {
             // 释放锁

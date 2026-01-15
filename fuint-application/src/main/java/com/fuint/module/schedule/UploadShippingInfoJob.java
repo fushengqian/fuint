@@ -76,8 +76,6 @@ public class UploadShippingInfoJob {
                     }
                     logger.info("uploadShippingInfoJobEnd!!!");
                 }
-            } else {
-                throw new RuntimeException("获取锁失败，请稍后重试");
             }
         } finally {
             // 释放锁

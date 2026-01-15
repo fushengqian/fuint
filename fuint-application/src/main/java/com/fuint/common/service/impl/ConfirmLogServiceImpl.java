@@ -5,15 +5,18 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fuint.common.dto.ConfirmLogDto;
 import com.fuint.common.enums.StatusEnum;
+import com.fuint.common.param.ConfirmLogPage;
 import com.fuint.common.service.ConfirmLogService;
 import com.fuint.common.service.CouponService;
 import com.fuint.common.service.MemberService;
 import com.fuint.common.service.StoreService;
 import com.fuint.framework.exception.BusinessCheckException;
-import com.fuint.framework.pagination.PaginationRequest;
 import com.fuint.framework.pagination.PaginationResponse;
 import com.fuint.repository.mapper.MtConfirmLogMapper;
-import com.fuint.repository.model.*;
+import com.fuint.repository.model.MtConfirmLog;
+import com.fuint.repository.model.MtCoupon;
+import com.fuint.repository.model.MtStore;
+import com.fuint.repository.model.MtUser;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import lombok.AllArgsConstructor;
@@ -22,6 +25,7 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+
 import java.util.*;
 
 /**
@@ -54,33 +58,33 @@ public class ConfirmLogServiceImpl extends ServiceImpl<MtConfirmLogMapper, MtCon
     /**
      * 分页查询卡券核销列表
      *
-     * @param paginationRequest
+     * @param confirmLogPage
      * @return
      */
     @Override
-    public PaginationResponse<ConfirmLogDto> queryConfirmLogListByPagination(PaginationRequest paginationRequest) throws BusinessCheckException {
-        Page<MtConfirmLog> pageHelper = PageHelper.startPage(paginationRequest.getCurrentPage(), paginationRequest.getPageSize());
+    public PaginationResponse<ConfirmLogDto> queryConfirmLogListByPagination(ConfirmLogPage confirmLogPage) throws BusinessCheckException {
+        Page<MtConfirmLog> pageHelper = PageHelper.startPage(confirmLogPage.getPage(), confirmLogPage.getPageSize());
         LambdaQueryWrapper<MtConfirmLog> lambdaQueryWrapper = Wrappers.lambdaQuery();
         lambdaQueryWrapper.ne(MtConfirmLog::getStatus, StatusEnum.DISABLE.getKey());
 
-        String status = paginationRequest.getSearchParams().get("status") == null ? "" : paginationRequest.getSearchParams().get("status").toString();
+        String status = confirmLogPage.getStatus();
         if (StringUtils.isNotBlank(status)) {
             lambdaQueryWrapper.eq(MtConfirmLog::getStatus, status);
         }
-        String userId = paginationRequest.getSearchParams().get("userId") == null ? "" : paginationRequest.getSearchParams().get("userId").toString();
-        if (StringUtils.isNotBlank(userId)) {
+        Integer userId = confirmLogPage.getUserId();
+        if (userId != null) {
             lambdaQueryWrapper.eq(MtConfirmLog::getUserId, userId);
         }
-        String couponId = paginationRequest.getSearchParams().get("couponId") == null ? "" : paginationRequest.getSearchParams().get("couponId").toString();
-        if (StringUtils.isNotBlank(couponId)) {
+        Integer couponId = confirmLogPage.getCouponId();
+        if (couponId != null && couponId > 0) {
             lambdaQueryWrapper.eq(MtConfirmLog::getCouponId, couponId);
         }
-        String merchantId = paginationRequest.getSearchParams().get("merchantId") == null ? "" : paginationRequest.getSearchParams().get("merchantId").toString();
-        if (StringUtils.isNotBlank(merchantId)) {
+        Integer merchantId = confirmLogPage.getMerchantId();
+        if (merchantId != null && merchantId > 0) {
             lambdaQueryWrapper.eq(MtConfirmLog::getMerchantId, merchantId);
         }
-        String storeId = paginationRequest.getSearchParams().get("storeId") == null ? "" : paginationRequest.getSearchParams().get("storeId").toString();
-        if (StringUtils.isNotBlank(storeId)) {
+        Integer storeId = confirmLogPage.getStoreId();
+        if (storeId != null && storeId > 0) {
             lambdaQueryWrapper.eq(MtConfirmLog::getStoreId, storeId);
         }
 
@@ -108,7 +112,7 @@ public class ConfirmLogServiceImpl extends ServiceImpl<MtConfirmLogMapper, MtCon
              dataList.add(item);
         }
 
-        PageRequest pageRequest = PageRequest.of(paginationRequest.getCurrentPage(), paginationRequest.getPageSize());
+        PageRequest pageRequest = PageRequest.of(confirmLogPage.getPage(), confirmLogPage.getPageSize());
         PageImpl pageImpl = new PageImpl(dataList, pageRequest, pageHelper.getTotal());
         PaginationResponse<ConfirmLogDto> paginationResponse = new PaginationResponse(pageImpl, ConfirmLogDto.class);
         paginationResponse.setTotalPages(pageHelper.getPages());

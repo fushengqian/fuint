@@ -282,7 +282,7 @@ public class OpenGiftServiceImpl extends ServiceImpl<MtOpenGiftMapper, MtOpenGif
         if (openGiftList.size() > 0) {
             Integer totalPoint = 0;
             BigDecimal totalAmount = new BigDecimal("0");
-            for(MtOpenGift item : openGiftList) {
+            for (MtOpenGift item : openGiftList) {
                // 加积分
                if (item.getPoint() > 0) {
                    MtPoint reqPointDto = new MtPoint();
@@ -297,12 +297,19 @@ public class OpenGiftServiceImpl extends ServiceImpl<MtOpenGiftMapper, MtOpenGif
                if (item.getCouponId() > 0) {
                    MtCoupon mtCoupon = couponService.queryCouponById(item.getCouponId());
                    if (mtCoupon != null && mtCoupon.getStatus().equals(StatusEnum.ENABLED.getKey())) {
-                       CouponReceiveParam param = new CouponReceiveParam();
-                       param.setCouponId(item.getCouponId());
-                       param.setUserId(userId);
-                       param.setNum(item.getCouponNum() == null ? 1 : item.getCouponNum());
-                       couponService.sendCoupon(item.getCouponId(), userId, param.getNum(), true, SeqUtil.getUUID(), "");
-                       totalAmount = totalAmount.add(mtCoupon.getAmount());
+                       try {
+                           CouponReceiveParam param = new CouponReceiveParam();
+                           param.setCouponId(item.getCouponId());
+                           param.setUserId(userId);
+                           param.setNum(item.getCouponNum() == null ? 1 : item.getCouponNum());
+                           ResponseObject result = couponService.sendCoupon(item.getCouponId(), userId, param.getNum(), true, SeqUtil.getUUID(), "");
+                           if (!result.getCode().equals(200)) {
+                               logger.error("会员开卡赠礼赠送卡券失败：", result.getMessage());
+                           }
+                           totalAmount = totalAmount.add(mtCoupon.getAmount());
+                       } catch (Exception e) {
+                           logger.error("会员开卡赠礼异常：", e.getMessage());
+                       }
                    }
                }
             }

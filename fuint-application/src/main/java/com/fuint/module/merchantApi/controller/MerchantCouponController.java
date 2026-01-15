@@ -123,7 +123,10 @@ public class MerchantCouponController extends BaseController {
                 return getFailureResult(1003, "抱歉，该卡券存在店铺使用范围限制，您所在的店铺无发券权限！");
             }
         }
-        couponService.sendCoupon(receiveParam.getCouponId(), receiveParam.getUserId(), receiveParam.getNum(), true, null, staff.getRealName());
+        ResponseObject result = couponService.sendCoupon(receiveParam.getCouponId(), receiveParam.getUserId(), receiveParam.getNum(), true, null, staff.getRealName());
+        if (!result.getCode().equals(200)) {
+            return getFailureResult(result.getCode(), result.getMessage());
+        }
         return getSuccessResult(true);
     }
 }
