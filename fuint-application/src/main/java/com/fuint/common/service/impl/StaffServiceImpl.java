@@ -194,7 +194,7 @@ public class StaffServiceImpl extends ServiceImpl<MtStaffMapper, MtStaff> implem
 
         // 更新员工
         this.updateById(mtStaff);
-        logger.info("{}保存员工信息：{}", operator, mtStaff.toString());
+        logger.info("operator：{} 保存员工信息mtStaff：{}", operator, mtStaff);
         return mtStaff;
     }
 

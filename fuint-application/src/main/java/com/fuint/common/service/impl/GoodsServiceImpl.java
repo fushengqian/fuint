@@ -14,7 +14,6 @@ import com.fuint.common.enums.PlatformTypeEnum;
 import com.fuint.common.enums.StatusEnum;
 import com.fuint.common.enums.YesOrNoEnum;
 import com.fuint.common.service.*;
-import com.fuint.common.util.CommonUtil;
 import com.fuint.common.util.SeqUtil;
 import com.fuint.common.util.XlsUtil;
 import com.fuint.framework.annoation.OperationServiceLog;
@@ -42,6 +41,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.*;
@@ -550,7 +550,7 @@ public class GoodsServiceImpl extends ServiceImpl<MtGoodsMapper, MtGoods> implem
      * 根据ID获取商品详情
      *
      * @param  id 商品ID
-     * @throws BusinessCheckException
+     * @return
      */
     @Override
     public GoodsDto getGoodsDetail(Integer id, boolean getDeleteSpec) {

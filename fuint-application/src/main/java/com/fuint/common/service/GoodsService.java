@@ -11,8 +11,10 @@ import com.fuint.repository.model.MtGoods;
 import com.fuint.repository.model.MtGoodsSku;
 import com.fuint.repository.model.MtGoodsSpec;
 import org.springframework.web.multipart.MultipartFile;
-import java.lang.reflect.InvocationTargetException;
-import java.util.*;
+
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 商品业务接口
@@ -83,10 +85,9 @@ public interface GoodsService {
      * 根据ID获取商品详情
      *
      * @param  id 商品ID
-     * @throws BusinessCheckException
      * @return
      */
-    GoodsDto getGoodsDetail(Integer id, boolean getDeleteSpec) throws InvocationTargetException, IllegalAccessException;
+    GoodsDto getGoodsDetail(Integer id, boolean getDeleteSpec);
 
     /**
      * 获取店铺的商品列表

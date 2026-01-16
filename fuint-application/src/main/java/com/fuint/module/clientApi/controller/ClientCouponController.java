@@ -23,7 +23,6 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -110,7 +109,7 @@ public class ClientCouponController extends BaseController {
     @ApiOperation(value = "查询卡券详情")
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @CrossOrigin
-    public ResponseObject detail(@RequestBody CouponInfoParam params) throws BusinessCheckException, InvocationTargetException, IllegalAccessException {
+    public ResponseObject detail(@RequestBody CouponInfoParam params) throws BusinessCheckException {
         UserInfo mtUser = TokenUtil.getUserInfo();
 
         Integer couponId = params.getCouponId() == null ? 0 : params.getCouponId();

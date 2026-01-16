@@ -17,7 +17,6 @@ import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -46,7 +45,7 @@ public class ClientArticleController extends BaseController {
     @ApiOperation(value="获取文章列表", notes="获取文章列表")
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @CrossOrigin
-    public ResponseObject list(HttpServletRequest request, @RequestBody ArticlePage articlePage) throws BusinessCheckException, InvocationTargetException, IllegalAccessException {
+    public ResponseObject list(HttpServletRequest request, @RequestBody ArticlePage articlePage) throws BusinessCheckException {
         String merchantNo = request.getHeader("merchantNo") == null ? "" : request.getHeader("merchantNo");
 
         articlePage.setStatus(StatusEnum.ENABLED.getKey());
@@ -71,13 +70,8 @@ public class ClientArticleController extends BaseController {
     @ApiOperation(value="获取文章详情", notes="根据ID获取文章详情")
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @CrossOrigin
-    public ResponseObject detail(@RequestBody ArticleDetailParam articleDetailParam) throws BusinessCheckException, InvocationTargetException, IllegalAccessException {
-        String articleIdStr = articleDetailParam.getArticleId() == null ? "" : articleDetailParam.getArticleId();
-        Integer articleId = 0;
-        if (StringUtil.isNotEmpty(articleIdStr)) {
-            articleId = Integer.parseInt(articleIdStr);
-        }
-
+    public ResponseObject detail(@RequestBody ArticleDetailParam articleDetailParam) throws BusinessCheckException {
+        Integer articleId = articleDetailParam.getArticleId() == null ? 0 : articleDetailParam.getArticleId();
         // 更新阅读点击数
         ArticleDto mtArticle = articleService.getArticleDetail(articleId);
         if (mtArticle != null && mtArticle.getId() != null) {

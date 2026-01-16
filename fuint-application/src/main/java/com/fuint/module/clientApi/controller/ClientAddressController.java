@@ -14,14 +14,12 @@ import com.fuint.module.clientApi.request.AddressRequest;
 import com.fuint.repository.mapper.MtRegionMapper;
 import com.fuint.repository.model.MtAddress;
 import com.fuint.repository.model.MtRegion;
-import com.fuint.utils.StringUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.web.bind.annotation.*;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -86,7 +84,7 @@ public class ClientAddressController extends BaseController {
     @ApiOperation(value="获取个人收货地址列表", notes="获取个人收货地址列表")
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     @CrossOrigin
-    public ResponseObject list() throws BusinessCheckException, InvocationTargetException, IllegalAccessException {
+    public ResponseObject list() throws BusinessCheckException {
         Map<String, Object> result = new HashMap<>();
         Map<String, Object> param = new HashMap<>();
 
@@ -139,13 +137,8 @@ public class ClientAddressController extends BaseController {
     @ApiOperation(value="获取收货地址详情", notes="根据ID获取会员收货地址详情")
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @CrossOrigin
-    public ResponseObject detail(@RequestBody AddressDetailParam addressDetailParam) throws BusinessCheckException, InvocationTargetException, IllegalAccessException {
-        String addressIdStr = addressDetailParam.getAddressId() == null ? "0" : addressDetailParam.getAddressId();
-        Integer addressId = 0;
-        if (StringUtil.isNotEmpty(addressIdStr)) {
-            addressId = Integer.parseInt(addressIdStr);
-        }
-
+    public ResponseObject detail(@RequestBody AddressDetailParam addressDetailParam) throws BusinessCheckException {
+        Integer addressId = addressDetailParam.getAddressId() == null ? 0 : addressDetailParam.getAddressId();
         Map<String, Object> result = new HashMap<>();
         UserInfo mtUser = TokenUtil.getUserInfo();
 

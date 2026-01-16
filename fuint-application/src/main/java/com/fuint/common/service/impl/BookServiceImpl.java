@@ -6,9 +6,11 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fuint.common.dto.BookDto;
 import com.fuint.common.dto.DayDto;
 import com.fuint.common.dto.TimeDto;
+import com.fuint.common.enums.StatusEnum;
 import com.fuint.common.param.BookPage;
 import com.fuint.common.param.BookableParam;
 import com.fuint.common.service.BookService;
+import com.fuint.common.service.SettingService;
 import com.fuint.common.service.StoreService;
 import com.fuint.common.util.DateUtil;
 import com.fuint.framework.annoation.OperationServiceLog;
@@ -17,17 +19,15 @@ import com.fuint.framework.pagination.PaginationResponse;
 import com.fuint.repository.mapper.MtBookItemMapper;
 import com.fuint.repository.mapper.MtBookMapper;
 import com.fuint.repository.model.MtBanner;
-import com.fuint.common.service.SettingService;
-import com.fuint.common.enums.StatusEnum;
 import com.fuint.repository.model.MtBook;
 import com.fuint.repository.model.MtStore;
 import com.fuint.utils.StringUtil;
+import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import lombok.AllArgsConstructor;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.github.pagehelper.Page;
 import org.springframework.beans.BeanUtils;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.PageImpl;
@@ -308,7 +308,7 @@ public class BookServiceImpl extends ServiceImpl<MtBookMapper, MtBook> implement
      * @return
      * */
     @Override
-    public List<String> isBookable(BookableParam param) throws BusinessCheckException,ParseException {
+    public List<String> isBookable(BookableParam param) throws BusinessCheckException, ParseException {
        MtBook mtBook = mtBookMapper.selectById(param.getBookId());
        List<String> result = new ArrayList<>();
        if (mtBook == null) {

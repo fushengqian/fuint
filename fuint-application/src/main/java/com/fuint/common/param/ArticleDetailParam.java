@@ -13,6 +13,6 @@ import java.io.Serializable;
 public class ArticleDetailParam implements Serializable {
 
     @ApiModelProperty(value="文章ID", name="articleId")
-    private String articleId;
+    private Integer articleId;
 
 }

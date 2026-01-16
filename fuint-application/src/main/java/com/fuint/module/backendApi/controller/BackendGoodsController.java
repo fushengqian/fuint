@@ -34,7 +34,6 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.util.*;
 
@@ -164,7 +163,7 @@ public class BackendGoodsController extends BaseController {
     @RequestMapping(value = "/info/{id}", method = RequestMethod.GET)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('goods:goods:index')")
-    public ResponseObject info(@PathVariable("id") Integer goodsId) throws BusinessCheckException, InvocationTargetException, IllegalAccessException {
+    public ResponseObject info(@PathVariable("id") Integer goodsId) throws BusinessCheckException {
         AccountInfo accountInfo = TokenUtil.getAccountInfo();
 
         Integer storeId = accountInfo.getStoreId();
