@@ -1,6 +1,8 @@
 package com.fuint.common.param;
 
 import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
+
 import java.io.Serializable;
 
 /**
@@ -9,14 +11,22 @@ import java.io.Serializable;
  * Created by FSQ
  * CopyRight https://www.fuint.cn
  */
+@Data
 public class PageParam implements Serializable {
+
     private static final long serialVersionUID = -1833130751169582924L;
+
+    @ApiModelProperty("所属商户ID")
+    private Integer merchantId;
+
+    @ApiModelProperty("所属店铺ID")
+    private Integer storeId;
 
     @ApiModelProperty("当前页数")
     private Integer page = 1;
 
     @ApiModelProperty("分页大小")
-    private int pageSize = 20;
+    private Integer pageSize = 20;
 
     /**
      * 排序字段
@@ -29,41 +39,5 @@ public class PageParam implements Serializable {
      */
     @ApiModelProperty(value="排序方式",name="order")
     private String order;
-
-    public PageParam() {
-        // empty
-    }
-
-    public Integer getPage() {
-        return this.page;
-    }
-
-    public Integer getPageSize() {
-        return this.pageSize;
-    }
-
-    public void setPage(int page) {
-        this.page = page;
-    }
-
-    public void setPageSize(int pageSize) {
-        this.pageSize = pageSize;
-    }
-
-    public String getOrderBy() {
-        return orderBy;
-    }
-
-    public void setOrderBy(String orderBy) {
-        this.orderBy = orderBy;
-    }
-
-    public String getOrder() {
-        return order;
-    }
-
-    public void setOrder(String order) {
-        this.order = order;
-    }
 }
 

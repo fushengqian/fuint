@@ -462,7 +462,7 @@ public class CouponServiceImpl extends ServiceImpl<MtCouponMapper, MtCoupon> imp
      * */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public ResponseObject findCouponList(CouponListParam couponListParam) throws BusinessCheckException {
+    public ResponseObject findCouponList(CouponListParam couponListParam) {
         Integer pageNumber = couponListParam.getPage() == null ? Constants.PAGE_NUMBER : couponListParam.getPage();
         Integer pageSize = couponListParam.getPageSize() == null ? Constants.PAGE_SIZE : couponListParam.getPageSize();
         String status = couponListParam.getStatus() == null ? StatusEnum.ENABLED.getKey() : couponListParam.getStatus();

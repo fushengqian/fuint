@@ -1,10 +1,10 @@
 package com.fuint.module.backendApi.controller;
 
-import com.fuint.common.Constants;
 import com.fuint.common.dto.AccountDto;
 import com.fuint.common.dto.AccountInfo;
 import com.fuint.common.dto.RoleDto;
 import com.fuint.common.enums.StatusEnum;
+import com.fuint.common.param.AccountPage;
 import com.fuint.common.service.AccountService;
 import com.fuint.common.service.DutyService;
 import com.fuint.common.service.MerchantService;
@@ -12,7 +12,6 @@ import com.fuint.common.service.StoreService;
 import com.fuint.common.util.CommonUtil;
 import com.fuint.common.util.TokenUtil;
 import com.fuint.framework.exception.BusinessCheckException;
-import com.fuint.framework.pagination.PaginationRequest;
 import com.fuint.framework.pagination.PaginationResponse;
 import com.fuint.framework.web.BaseController;
 import com.fuint.framework.web.ResponseObject;
@@ -28,7 +27,6 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -73,48 +71,15 @@ public class BackendAccountController extends BaseController {
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('system:account:index')")
-    public ResponseObject list(HttpServletRequest request) throws BusinessCheckException {
-        Integer page = request.getParameter("page") == null ? Constants.PAGE_NUMBER : Integer.parseInt(request.getParameter("page"));
-        Integer pageSize = request.getParameter("pageSize") == null ? Constants.PAGE_SIZE : Integer.parseInt(request.getParameter("pageSize"));
-        String accountName = request.getParameter("accountName") == null ? "" : request.getParameter("accountName");
-        String realName = request.getParameter("realName") == null ? "" : request.getParameter("realName");
-        String accountStatus = request.getParameter("accountStatus") == null ? "" : request.getParameter("accountStatus");
-        String merchantId = request.getParameter("merchantId") == null ? "" : request.getParameter("merchantId");
-        String storeId = request.getParameter("storeId") == null ? "" : request.getParameter("storeId");
-        String staffId = request.getParameter("staffId") == null ? "" : request.getParameter("staffId");
+    public ResponseObject list(@ModelAttribute AccountPage accountPage) throws BusinessCheckException {
         AccountInfo accountInfo = TokenUtil.getAccountInfo();
-
-        Map<String, Object> searchParams = new HashMap<>();
-        if (StringUtil.isNotEmpty(accountName)) {
-            searchParams.put("name", accountName);
-        }
-        if (StringUtil.isNotEmpty(realName)) {
-            searchParams.put("realName", realName);
-        }
-        if (StringUtil.isNotEmpty(accountStatus)) {
-            searchParams.put("status", accountStatus);
-        }
-        if (StringUtil.isNotEmpty(accountStatus)) {
-            searchParams.put("status", accountStatus);
-        }
         if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
-            searchParams.put("merchantId", accountInfo.getMerchantId());
-        } else {
-            if (StringUtil.isNotEmpty(merchantId)) {
-                searchParams.put("merchantId", merchantId);
-            }
+            accountPage.setMerchantId(accountInfo.getMerchantId());
         }
         if (accountInfo.getStoreId() != null && accountInfo.getStoreId() > 0) {
-            searchParams.put("storeId", accountInfo.getStoreId());
-        } else {
-            if (StringUtil.isNotEmpty(storeId)) {
-                searchParams.put("storeId", storeId);
-            }
+            accountPage.setStoreId(accountInfo.getStoreId());
         }
-        if (StringUtil.isNotEmpty(staffId)) {
-            searchParams.put("staffId", staffId);
-        }
-        PaginationResponse<AccountDto> paginationResponse = tAccountService.getAccountListByPagination(new PaginationRequest(page, pageSize, searchParams));
+        PaginationResponse<AccountDto> paginationResponse = tAccountService.getAccountListByPagination(accountPage);
         return getSuccessResult(paginationResponse);
     }
 

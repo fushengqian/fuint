@@ -9,6 +9,7 @@ import com.fuint.framework.pagination.PaginationResponse;
 import com.fuint.framework.web.ResponseObject;
 import com.fuint.repository.model.MtCoupon;
 import com.fuint.repository.model.MtUserCoupon;
+
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.util.List;
@@ -62,7 +63,7 @@ public interface CouponService extends IService<MtCoupon> {
      * @param  couponListParam 查询参数
      * @throws BusinessCheckException
      * */
-    ResponseObject findCouponList(CouponListParam couponListParam) throws BusinessCheckException;
+    ResponseObject findCouponList(CouponListParam couponListParam);
 
     /**
      * 发放卡券
@@ -102,9 +103,9 @@ public interface CouponService extends IService<MtCoupon> {
     /**
      * 核销卡券
      * @param userCouponId 用户券ID
-     * @param userId       核销会员ID
-     * @param storeId      店铺ID
-     * @param orderId      订单ID
+     * @param userId 核销会员ID
+     * @param storeId 店铺ID
+     * @param orderId 订单ID
      * @param amount 核销金额
      * @param remark 核销备注
      * @throws BusinessCheckException

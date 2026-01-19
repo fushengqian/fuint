@@ -3,13 +3,14 @@ package com.fuint.common.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.fuint.common.dto.AccountDto;
 import com.fuint.common.dto.AccountInfo;
+import com.fuint.common.param.AccountPage;
 import com.fuint.framework.exception.BusinessCheckException;
-import com.fuint.framework.pagination.PaginationRequest;
 import com.fuint.framework.pagination.PaginationResponse;
 import com.fuint.module.backendApi.request.LoginRequest;
 import com.fuint.module.backendApi.response.LoginResponse;
 import com.fuint.repository.model.TAccount;
 import com.fuint.repository.model.TDuty;
+
 import java.util.List;
 
 /**
@@ -23,10 +24,10 @@ public interface AccountService extends IService<TAccount> {
     /**
      * 分页查询账号列表
      *
-     * @param paginationRequest
+     * @param accountPage
      * @return
      */
-    PaginationResponse<AccountDto> getAccountListByPagination(PaginationRequest paginationRequest) throws BusinessCheckException;
+    PaginationResponse<AccountDto> getAccountListByPagination(AccountPage accountPage) throws BusinessCheckException;
 
     /**
      * 根据账号名称获取账号信息
