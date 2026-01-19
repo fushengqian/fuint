@@ -16,6 +16,9 @@ public class GoodsListParam extends PageParam implements Serializable {
     @ApiModelProperty(value="商品名称", name="name")
     private String name;
 
+    @ApiModelProperty(value="搜索关键字", name="keyword")
+    private String keyword;
+
     @ApiModelProperty(value="商品编码", name="goodsNo")
     private String goodsNo;
 
@@ -42,5 +45,14 @@ public class GoodsListParam extends PageParam implements Serializable {
 
     @ApiModelProperty(value="商品分类", name="cateId")
     private Integer cateId;
+
+    @ApiModelProperty(value="是否有价格", name="hasPrice")
+    private String hasPrice;
+
+    @ApiModelProperty(value="排序方式", name="sortType")
+    private String sortType;
+
+    @ApiModelProperty(value="按价格排序", name="sortPrice")
+    private String sortPrice;
 
 }

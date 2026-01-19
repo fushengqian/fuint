@@ -1,22 +1,20 @@
 package com.fuint.module.clientApi.controller;
 
 import com.alibaba.fastjson.JSONObject;
-import com.fuint.common.Constants;
 import com.fuint.common.dto.*;
 import com.fuint.common.enums.StatusEnum;
 import com.fuint.common.enums.YesOrNoEnum;
 import com.fuint.common.param.GoodsInfoParam;
+import com.fuint.common.param.GoodsListParam;
 import com.fuint.common.service.CateService;
 import com.fuint.common.service.GoodsService;
 import com.fuint.common.service.MerchantService;
 import com.fuint.common.service.SettingService;
 import com.fuint.common.util.CommonUtil;
 import com.fuint.framework.exception.BusinessCheckException;
-import com.fuint.framework.pagination.PaginationRequest;
 import com.fuint.framework.pagination.PaginationResponse;
 import com.fuint.framework.web.BaseController;
 import com.fuint.framework.web.ResponseObject;
-import com.fuint.module.clientApi.request.GoodsSearchRequest;
 import com.fuint.repository.model.MtGoods;
 import com.fuint.repository.model.MtGoodsCate;
 import com.fuint.repository.model.MtGoodsSku;
@@ -124,45 +122,23 @@ public class ClientGoodsController extends BaseController {
     @ApiOperation(value = "搜索商品")
     @RequestMapping(value = "/search", method = RequestMethod.POST)
     @CrossOrigin
-    public ResponseObject search(HttpServletRequest request, @RequestBody GoodsSearchRequest params) throws BusinessCheckException {
+    public ResponseObject search(HttpServletRequest request, @RequestBody GoodsListParam params) throws BusinessCheckException {
         Integer storeId = StringUtil.isEmpty(request.getHeader("storeId")) ? 0 : Integer.parseInt(request.getHeader("storeId"));
         String merchantNo = request.getHeader("merchantNo") == null ? "" : request.getHeader("merchantNo");
         String platform = request.getHeader("platform") == null ? "" : request.getHeader("platform");
-        Integer page = params.getPage() == null ? 1 : params.getPage();
-        Integer pageSize = params.getPageSize() == null ? Constants.PAGE_SIZE : params.getPageSize();
-        String name = params.getName() == null ? "" : params.getName();
-        Integer cateId = params.getCateId() == null ? 0 : params.getCateId();
-        String sortType = params.getSortType() == null ? "all" : params.getSortType();
-        String sortPrice = params.getSortPrice() == null ? "0" : params.getSortPrice();
-
-        Map<String, Object> searchParams = new HashMap<>();
-        searchParams.put("status", StatusEnum.ENABLED.getKey());
-        searchParams.put("hasPrice", YesOrNoEnum.YES.getKey());
-        if (storeId > 0) {
-            searchParams.put("storeId", storeId.toString());
-        }
-        if (cateId > 0) {
-            searchParams.put("cateId", cateId);
-        }
-        if (StringUtil.isNotEmpty(name)) {
-            searchParams.put("name", name);
-        }
         Integer merchantId = merchantService.getMerchantId(merchantNo);
         if (merchantId > 0 ) {
-            searchParams.put("merchantId", merchantId);
+            params.setMerchantId(merchantId);
         }
-        if (StringUtil.isNotEmpty(sortType)) {
-            searchParams.put("sortType", sortType);
+        if (storeId > 0) {
+            params.setStoreId(storeId);
         }
-        if (StringUtil.isNotEmpty(sortPrice)) {
-            searchParams.put("sortPrice", sortPrice);
+        if (StringUtil.isNotBlank(platform)) {
+            params.setPlatform(platform);
         }
-        if (StringUtil.isNotEmpty(platform)) {
-            searchParams.put("platform", platform);
-        }
-
-        PaginationResponse<GoodsDto> paginationResponse = goodsService.queryGoodsListByPagination(new PaginationRequest(page, pageSize, searchParams));
-
+        params.setStatus(StatusEnum.ENABLED.getKey());
+        params.setHasPrice(YesOrNoEnum.YES.getKey());
+        PaginationResponse<GoodsDto> paginationResponse = goodsService.queryGoodsListByPagination(params);
         return getSuccessResult(paginationResponse);
     }
 

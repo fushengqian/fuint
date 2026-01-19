@@ -4,8 +4,8 @@ import com.fuint.common.dto.AccountInfo;
 import com.fuint.common.dto.GoodsDto;
 import com.fuint.common.dto.GoodsSpecValueDto;
 import com.fuint.common.dto.GoodsTopDto;
+import com.fuint.common.param.GoodsListParam;
 import com.fuint.framework.exception.BusinessCheckException;
-import com.fuint.framework.pagination.PaginationRequest;
 import com.fuint.framework.pagination.PaginationResponse;
 import com.fuint.repository.model.MtGoods;
 import com.fuint.repository.model.MtGoodsSku;
@@ -27,10 +27,10 @@ public interface GoodsService {
     /**
      * 分页查询商品列表
      *
-     * @param  paginationRequest
+     * @param  param
      * @return
      */
-    PaginationResponse<GoodsDto> queryGoodsListByPagination(PaginationRequest paginationRequest) throws BusinessCheckException;
+    PaginationResponse<GoodsDto> queryGoodsListByPagination(GoodsListParam param) throws BusinessCheckException;
 
     /**
      * 保存商品
