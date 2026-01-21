@@ -106,6 +106,9 @@ public class UserGradeServiceImpl extends ServiceImpl<MtUserGradeMapper, MtUserG
         if (mtUserGrade.getDiscount() != null && (mtUserGrade.getDiscount() > 10 || mtUserGrade.getDiscount() < 0)) {
             throw new BusinessCheckException("会员折扣需在0和10之间");
         }
+        if (mtUserGrade.getRebate() != null && (mtUserGrade.getRebate() > 10 || mtUserGrade.getRebate() < 0)) {
+            throw new BusinessCheckException("返利比例需在0和10之间");
+        }
         mtUserGradeMapper.insert(mtUserGrade);
         return mtUserGrade;
     }
@@ -145,6 +148,9 @@ public class UserGradeServiceImpl extends ServiceImpl<MtUserGradeMapper, MtUserG
     public MtUserGrade updateUserGrade(MtUserGrade mtUserGrade) throws BusinessCheckException {
         if (mtUserGrade.getDiscount() != null && (mtUserGrade.getDiscount() > 10 || mtUserGrade.getDiscount() < 0)) {
             throw new BusinessCheckException("会员折扣需在0和10之间");
+        }
+        if (mtUserGrade.getRebate() != null && (mtUserGrade.getRebate() > 10 || mtUserGrade.getRebate() < 0)) {
+            throw new BusinessCheckException("返利比例需在0和10之间");
         }
         if (mtUserGrade.getGrade() != null && (mtUserGrade.getGrade() <= 0)) {
             throw new BusinessCheckException("会员等级需大于0");

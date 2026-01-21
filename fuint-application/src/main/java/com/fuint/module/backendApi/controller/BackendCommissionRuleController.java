@@ -7,6 +7,7 @@ import com.fuint.common.enums.CommissionTypeEnum;
 import com.fuint.common.enums.StatusEnum;
 import com.fuint.common.param.CommissionRulePage;
 import com.fuint.common.param.CommissionRuleParam;
+import com.fuint.common.param.StatusParam;
 import com.fuint.common.service.CommissionRuleService;
 import com.fuint.common.util.TokenUtil;
 import com.fuint.framework.exception.BusinessCheckException;
@@ -75,19 +76,18 @@ public class BackendCommissionRuleController extends BaseController {
     @RequestMapping(value = "/updateStatus", method = RequestMethod.POST)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('commission:rule:index')")
-    public ResponseObject updateStatus(@RequestBody Map<String, Object> params) throws BusinessCheckException {
-        String status = params.get("status") != null ? params.get("status").toString() : StatusEnum.ENABLED.getKey();
-        Integer id = params.get("id") == null ? 0 : Integer.parseInt(params.get("id").toString());
+    public ResponseObject updateStatus(@RequestBody StatusParam params) throws BusinessCheckException {
+        String status = params.getStatus() != null ? params.getStatus() : StatusEnum.ENABLED.getKey();
 
         AccountInfo accountInfo = TokenUtil.getAccountInfo();
-        CommissionRuleDto commissionRuleDto = commissionRuleService.queryCommissionRuleById(id);
+        CommissionRuleDto commissionRuleDto = commissionRuleService.queryCommissionRuleById(params.getId());
         if (commissionRuleDto == null) {
             return getFailureResult(201);
         }
 
         CommissionRuleParam commissionRule = new CommissionRuleParam();
         commissionRule.setOperator(accountInfo.getAccountName());
-        commissionRule.setId(id);
+        commissionRule.setId(params.getId());
         commissionRule.setStatus(status);
         commissionRuleService.updateCommissionRule(commissionRule);
 

@@ -56,6 +56,9 @@ public class MtUserGrade implements Serializable {
     @ApiModelProperty("积分加速")
     private Float speedPoint;
 
+    @ApiModelProperty("返利比例")
+    private Float rebate;
+
     @ApiModelProperty("状态")
     private String status;
 

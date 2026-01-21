@@ -57,10 +57,9 @@ public interface GoodsService {
      * 根据ID获取商品信息
      *
      * @param  id 商品ID
-     * @throws BusinessCheckException
      * @return
      */
-    MtGoods queryGoodsById(Integer id) throws BusinessCheckException;
+    MtGoods queryGoodsById(Integer id);
 
     /**
      * 根据编码获取商品信息

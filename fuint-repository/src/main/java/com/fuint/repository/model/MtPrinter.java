@@ -12,7 +12,7 @@ import lombok.Data;
 /**
  * 打印机实体
  *
- * @Created by FSQ
+ * Created by FSQ
  * CopyRight https://www.fuint.cn
  */
 @Data

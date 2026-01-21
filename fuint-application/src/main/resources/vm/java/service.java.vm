@@ -22,7 +22,7 @@ public interface ${tableClass}Service extends IService<${className}> {
      * @param paginationRequest
      * @return
      */
-    PaginationResponse<${className}> query${tableClass}ListByPagination(PaginationRequest paginationRequest) throws BusinessCheckException;
+    PaginationResponse<${className}> query${tableClass}ListByPagination(PaginationRequest paginationRequest);
 
     /**
      * 添加${moduleName}
@@ -40,7 +40,7 @@ public interface ${tableClass}Service extends IService<${className}> {
      * @throws BusinessCheckException
      * @return
      */
-    ${className} query${tableClass}ById(Integer id) throws BusinessCheckException;
+    ${className} query${tableClass}ById(Integer id);
 
     /**
      * 根据ID删除${moduleName}
@@ -60,12 +60,4 @@ public interface ${tableClass}Service extends IService<${className}> {
      * */
     ${className} update${tableClass}(${className} ${tablePrefix}${tableClass}) throws BusinessCheckException;
 
-    /**
-     * 根据条件搜索${moduleName}
-     *
-     * @param params 查询参数
-     * @throws BusinessCheckException
-     * @return
-     * */
-    List<${className}> query${tableClass}ListByParams(Map<String, Object> params) throws BusinessCheckException;
 }

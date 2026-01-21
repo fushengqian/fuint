@@ -46,30 +46,23 @@ public class Backend${tableClass}Controller extends BaseController {
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('${serviceName}:list')")
     public ResponseObject list(HttpServletRequest request) throws BusinessCheckException {
+        AccountInfo accountInfo = TokenUtil.getAccountInfo();
         Integer page = request.getParameter("page") == null ? Constants.PAGE_NUMBER : Integer.parseInt(request.getParameter("page"));
         Integer pageSize = request.getParameter("pageSize") == null ? Constants.PAGE_SIZE : Integer.parseInt(request.getParameter("pageSize"));
-        String title = request.getParameter("title");
         String status = request.getParameter("status");
-        String searchStoreId = request.getParameter("storeId");
-
-        AccountInfo accountInfo = TokenUtil.getAccountInfo();
-        Integer storeId = accountInfo.getStoreId();
 
         Map<String, Object> params = new HashMap<>();
         if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
             params.put("merchantId", accountInfo.getMerchantId());
         }
-        if (StringUtil.isNotEmpty(title)) {
-            params.put("title", title);
-        }
-        if (StringUtil.isNotEmpty(status)) {
-            params.put("status", status);
-        }
-        if (StringUtil.isNotEmpty(searchStoreId)) {
-            params.put("storeId", searchStoreId);
+        if (accountInfo.getStoreId() != null && accountInfo.getStoreId() > 0) {
+            params.put("storeId", accountInfo.getStoreId();
         }
         if (storeId != null && storeId > 0) {
             params.put("storeId", storeId);
+        }
+        if (StringUtil.isNotEmpty(status)) {
+            params.put("status", status);
         }
         PaginationResponse<${className}> paginationResponse = ${serviceName}Service.query${tableClass}ListByPagination(new PaginationRequest(page, pageSize, params));
 
@@ -88,13 +81,12 @@ public class Backend${tableClass}Controller extends BaseController {
     @RequestMapping(value = "/updateStatus", method = RequestMethod.POST)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('${serviceName}:edit')")
-    public ResponseObject updateStatus(HttpServletRequest request, @RequestBody Map<String, Object> params) throws BusinessCheckException {
-        String status = params.get("status") != null ? params.get("status").toString() : StatusEnum.ENABLED.getKey();
-        Integer id = params.get("id") == null ? 0 : Integer.parseInt(params.get("id").toString());
+    public ResponseObject updateStatus(@RequestBody StatusParam params) throws BusinessCheckException {
         AccountInfo accountInfo = TokenUtil.getAccountInfo();
-        ${className} ${tablePrefix}${tableClass} = ${serviceName}Service.query${tableClass}ById(id);
+        String status = params.getStatus() == null ? params.getStatus() : StatusEnum.ENABLED.getKey();
+        ${className} ${tablePrefix}${tableClass} = ${serviceName}Service.query${tableClass}ById(params.getId());
         if (${tablePrefix}${tableClass} == null) {
-            return getFailureResult(201);
+            return getFailureResult(201, "该数据不存在");
         }
 
         ${tablePrefix}${tableClass}.setOperator(accountInfo.getAccountName());
@@ -111,7 +103,7 @@ public class Backend${tableClass}Controller extends BaseController {
     @RequestMapping(value = "/save", method = RequestMethod.POST)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('${serviceName}:add')")
-    public ResponseObject saveHandler(HttpServletRequest request, @RequestBody Map<String, Object> params) throws BusinessCheckException {
+    public ResponseObject saveHandler(@RequestBody Map<String, Object> params) throws BusinessCheckException {
         AccountInfo accountInfo = TokenUtil.getAccountInfo();
         String id = params.get("id") == null ? "" : params.get("id").toString();
         String status = params.get("status") == null ? StatusEnum.ENABLED.getKey() : params.get("status").toString();

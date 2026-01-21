@@ -157,6 +157,7 @@ public class BackendUserGradeController extends BaseController {
         String validDay = CommonUtil.replaceXSS(param.get("validDay").toString());
         String discount = CommonUtil.replaceXSS(param.get("discount").toString());
         String speedPoint = CommonUtil.replaceXSS(param.get("speedPoint").toString());
+        String rebate = CommonUtil.replaceXSS(param.get("rebate").toString());
         String condition = param.get("catchCondition") == null ? "" : CommonUtil.replaceXSS(param.get("catchCondition").toString());
         String privilege = param.get("userPrivilege") == null ? "" : CommonUtil.replaceXSS(param.get("userPrivilege").toString());
         String status = param.get("status") == null ? StatusEnum.ENABLED.getKey() : CommonUtil.replaceXSS(param.get("status").toString());
@@ -209,6 +210,9 @@ public class BackendUserGradeController extends BaseController {
         }
         if (StringUtil.isNotEmpty(speedPoint)) {
             mtUserGrade.setSpeedPoint(Float.parseFloat(speedPoint));
+        }
+        if (StringUtil.isNotEmpty(rebate)) {
+            mtUserGrade.setRebate(Float.parseFloat(rebate));
         }
         mtUserGrade.setStatus(status);
         if (StringUtil.isEmpty(id)) {

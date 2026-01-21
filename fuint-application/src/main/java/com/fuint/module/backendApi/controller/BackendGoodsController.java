@@ -7,6 +7,7 @@ import com.fuint.common.enums.GoodsTypeEnum;
 import com.fuint.common.enums.StatusEnum;
 import com.fuint.common.enums.YesOrNoEnum;
 import com.fuint.common.param.GoodsListParam;
+import com.fuint.common.param.StatusParam;
 import com.fuint.common.service.*;
 import com.fuint.common.util.CommonUtil;
 import com.fuint.common.util.ExcelUtil;
@@ -135,9 +136,9 @@ public class BackendGoodsController extends BaseController {
     @RequestMapping(value = "/updateStatus", method = RequestMethod.POST)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('goods:goods:edit')")
-    public ResponseObject updateStatus(@RequestBody Map<String, Object> params) throws BusinessCheckException {
-        String status = params.get("status") != null ? params.get("status").toString() : StatusEnum.ENABLED.getKey();
-        Integer goodsId = params.get("id") == null ? 0 : Integer.parseInt(params.get("id").toString());
+    public ResponseObject updateStatus(@RequestBody StatusParam params) throws BusinessCheckException {
+        String status = params.getStatus() != null ? params.getStatus() : StatusEnum.ENABLED.getKey();
+        Integer goodsId = params.getId();
 
         AccountInfo accountInfo = TokenUtil.getAccountInfo();
         MtGoods mtGoods = goodsService.queryGoodsById(goodsId);

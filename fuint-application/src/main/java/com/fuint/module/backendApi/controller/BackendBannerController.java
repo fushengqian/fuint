@@ -2,6 +2,7 @@ package com.fuint.module.backendApi.controller;
 
 import com.fuint.common.dto.AccountInfo;
 import com.fuint.common.param.BannerPage;
+import com.fuint.common.param.StatusParam;
 import com.fuint.common.service.StoreService;
 import com.fuint.common.util.TokenUtil;
 import com.fuint.framework.web.BaseController;
@@ -26,7 +27,7 @@ import java.util.Map;
 
 /**
  * 焦点图管理类controller
- * <p>
+ *
  * Created by FSQ
  * CopyRight https://www.fuint.cn
  */
@@ -84,19 +85,18 @@ public class BackendBannerController extends BaseController {
     @RequestMapping(value = "/updateStatus", method = RequestMethod.POST)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('content:banner:edit')")
-    public ResponseObject updateStatus(@RequestBody Map<String, Object> params) throws BusinessCheckException {
-        String status = params.get("status") != null ? params.get("status").toString() : StatusEnum.ENABLED.getKey();
-        Integer id = params.get("id") == null ? 0 : Integer.parseInt(params.get("id").toString());
+    public ResponseObject updateStatus(@RequestBody StatusParam params) throws BusinessCheckException {
+        String status = params.getStatus() != null ? params.getStatus() : StatusEnum.ENABLED.getKey();
 
         AccountInfo accountInfo = TokenUtil.getAccountInfo();
-        MtBanner mtBanner = bannerService.queryBannerById(id);
+        MtBanner mtBanner = bannerService.queryBannerById(params.getId());
         if (mtBanner == null) {
-            return getFailureResult(201);
+            return getFailureResult(201, "该数据不存在");
         }
 
         BannerDto bannerDto = new BannerDto();
         bannerDto.setOperator(accountInfo.getAccountName());
-        bannerDto.setId(id);
+        bannerDto.setId(params.getId());
         bannerDto.setStatus(status);
         bannerService.updateBanner(bannerDto);
 

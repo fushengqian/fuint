@@ -97,11 +97,11 @@ public class BackendAccountController extends BaseController {
         List<RoleDto> roles = new ArrayList<>();
         if (roleList.size() > 0) {
             for (TDuty duty : roleList) {
-                RoleDto e = new RoleDto();
-                e.setId(duty.getDutyId().longValue());
-                e.setName(duty.getDutyName());
-                e.setStatus(duty.getStatus());
-                roles.add(e);
+                 RoleDto role = new RoleDto();
+                 role.setId(duty.getDutyId().longValue());
+                 role.setName(duty.getDutyName());
+                 role.setStatus(duty.getStatus());
+                 roles.add(role);
             }
         }
         result.put("roles", roles);
