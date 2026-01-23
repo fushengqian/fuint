@@ -5,8 +5,8 @@ import com.fuint.common.dto.AccountInfo;
 import com.fuint.common.dto.ParamDto;
 import com.fuint.common.enums.StatusEnum;
 import com.fuint.common.enums.UserGradeCatchTypeEnum;
+import com.fuint.common.param.UserGradeParam;
 import com.fuint.common.service.UserGradeService;
-import com.fuint.common.util.CommonUtil;
 import com.fuint.common.util.TokenUtil;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.pagination.PaginationRequest;
@@ -18,11 +18,11 @@ import com.fuint.utils.StringUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.AllArgsConstructor;
+import org.springframework.beans.BeanUtils;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -110,13 +110,13 @@ public class BackendUserGradeController extends BaseController {
         Integer userGradeId = param.get("userGradeId") == null ? 0 : Integer.parseInt(param.get("userGradeId").toString());
         String status = param.get("status") == null ? StatusEnum.ENABLED.getKey() : param.get("status").toString();
 
-        MtUserGrade gradeInfo = userGradeService.queryUserGradeById(accountInfo.getMerchantId(), userGradeId, 0);
-        if (gradeInfo == null) {
+        MtUserGrade mtUserGrade = userGradeService.queryUserGradeById(accountInfo.getMerchantId(), userGradeId, 0);
+        if (mtUserGrade == null) {
             return getFailureResult(201, "会员等级不存在");
         }
 
-        gradeInfo.setStatus(status);
-        userGradeService.updateUserGrade(gradeInfo);
+        mtUserGrade.setStatus(status);
+        userGradeService.updateUserGrade(mtUserGrade);
 
         return getSuccessResult(true);
     }
@@ -147,78 +147,31 @@ public class BackendUserGradeController extends BaseController {
     @RequestMapping(value = "/save", method = RequestMethod.POST)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('userGrade:add')")
-    public ResponseObject saveHandler(@RequestBody Map<String, Object> param) throws BusinessCheckException {
+    public ResponseObject saveHandler(@RequestBody UserGradeParam userGrade) throws BusinessCheckException {
         AccountInfo accountInfo = TokenUtil.getAccountInfo();
-
-        String grade = param.get("grade") == null ? "0" : param.get("grade").toString();
-        String name = CommonUtil.replaceXSS(param.get("name").toString());
-        String catchType = CommonUtil.replaceXSS(param.get("catchType").toString());
-        String catchValue = CommonUtil.replaceXSS(param.get("catchValue").toString());
-        String validDay = CommonUtil.replaceXSS(param.get("validDay").toString());
-        String discount = CommonUtil.replaceXSS(param.get("discount").toString());
-        String speedPoint = CommonUtil.replaceXSS(param.get("speedPoint").toString());
-        String rebate = CommonUtil.replaceXSS(param.get("rebate").toString());
-        String condition = param.get("catchCondition") == null ? "" : CommonUtil.replaceXSS(param.get("catchCondition").toString());
-        String privilege = param.get("userPrivilege") == null ? "" : CommonUtil.replaceXSS(param.get("userPrivilege").toString());
-        String status = param.get("status") == null ? StatusEnum.ENABLED.getKey() : CommonUtil.replaceXSS(param.get("status").toString());
-        String id = param.get("id") == null ? "" : param.get("id").toString();
-
-        if (StringUtil.isEmpty(grade) || StringUtil.isEmpty(name)) {
+        if (accountInfo.getMerchantId() == null || accountInfo.getMerchantId() < 1) {
+            throw new BusinessCheckException("平台方帐号无法执行该操作，请使用商户帐号操作");
+        }
+        MtUserGrade mtUserGrade = new MtUserGrade();
+        BeanUtils.copyProperties(userGrade, mtUserGrade);
+        if (userGrade.getGrade() == null) {
             return getFailureResult(201, "参数有误");
         }
-        if (!CommonUtil.isNumeric(grade) || Integer.parseInt(grade) < 1) {
+        if (userGrade.getGrade() < 1) {
             return getFailureResult(201, "会员等级必须为正整数");
         }
-        if (!CommonUtil.isNumeric(validDay) || Integer.parseInt(validDay) < 0) {
+        if (userGrade.getValidDay() < 0) {
             return getFailureResult(201, "有效天数必须为正整数");
         }
-        if (!CommonUtil.isNumeric(speedPoint) || Integer.parseInt(speedPoint) < 0) {
+        if (userGrade.getSpeedPoint() < 0) {
             return getFailureResult(201, "积分加速必须是数字");
         }
-        if (!CommonUtil.isNumeric(catchValue)) {
-            return getFailureResult(201, "升级条件值必须是数字");
-        }
-        MtUserGrade mtUserGrade;
-        if (StringUtil.isEmpty(id)) {
-            mtUserGrade = new MtUserGrade();
-        } else {
-            mtUserGrade = userGradeService.queryUserGradeById(accountInfo.getMerchantId(), Integer.parseInt(id), 0);
-        }
-
-        mtUserGrade.setGrade(Integer.parseInt(grade));
-        mtUserGrade.setName(name);
         if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
             mtUserGrade.setMerchantId(accountInfo.getMerchantId());
         }
-        if (StringUtil.isNotEmpty(catchType)) {
-            mtUserGrade.setCatchType(catchType);
-        }
-        if (StringUtil.isNotEmpty(condition)) {
-            mtUserGrade.setCatchCondition(condition);
-        }
-        if (StringUtil.isNotEmpty(privilege)) {
-            mtUserGrade.setUserPrivilege(privilege);
-        }
-        if (StringUtil.isNotEmpty(catchValue)) {
-            mtUserGrade.setCatchValue(new BigDecimal(catchValue));
-        }
-        if (StringUtil.isNotEmpty(validDay)) {
-            mtUserGrade.setValidDay(Integer.parseInt(validDay));
-        }
-        if (StringUtil.isNotEmpty(discount)) {
-            mtUserGrade.setDiscount(Float.parseFloat(discount));
-        }
-        if (StringUtil.isNotEmpty(speedPoint)) {
-            mtUserGrade.setSpeedPoint(Float.parseFloat(speedPoint));
-        }
-        if (StringUtil.isNotEmpty(rebate)) {
-            mtUserGrade.setRebate(Float.parseFloat(rebate));
-        }
-        mtUserGrade.setStatus(status);
-        if (StringUtil.isEmpty(id)) {
+        if (mtUserGrade.getId() == null) {
             userGradeService.addUserGrade(mtUserGrade);
         } else {
-            mtUserGrade.setId(Integer.parseInt(id));
             userGradeService.updateUserGrade(mtUserGrade);
         }
         return getSuccessResult(true);
