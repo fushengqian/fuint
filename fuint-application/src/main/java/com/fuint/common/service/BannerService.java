@@ -1,11 +1,12 @@
 package com.fuint.common.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.fuint.common.dto.BannerDto;
 import com.fuint.common.param.BannerPage;
+import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.pagination.PaginationResponse;
 import com.fuint.repository.model.MtBanner;
-import com.fuint.common.dto.BannerDto;
-import com.fuint.framework.exception.BusinessCheckException;
+
 import java.util.List;
 import java.util.Map;
 
@@ -23,7 +24,7 @@ public interface BannerService extends IService<MtBanner> {
      * @param bannerPage
      * @return
      */
-    PaginationResponse<MtBanner> queryBannerListByPagination(BannerPage bannerPage) throws BusinessCheckException;
+    PaginationResponse<MtBanner> queryBannerListByPagination(BannerPage bannerPage);
 
     /**
      * 添加Banner
@@ -38,20 +39,9 @@ public interface BannerService extends IService<MtBanner> {
      * 根据ID获取Banner信息
      *
      * @param id Banner ID
-     * @throws BusinessCheckException
      * @return
      */
-    MtBanner queryBannerById(Integer id) throws BusinessCheckException;
-
-    /**
-     * 根据ID删除焦点图
-     *
-     * @param id ID
-     * @param operator 操作人
-     * @throws BusinessCheckException
-     * @return
-     */
-    void deleteBanner(Integer id, String operator) throws BusinessCheckException;
+    MtBanner queryBannerById(Integer id);
 
     /**
      * 更新焦点图
@@ -65,8 +55,7 @@ public interface BannerService extends IService<MtBanner> {
      * 根据条件搜索焦点图
      *
      * @param params 查询参数
-     * @throws BusinessCheckException
      * @return
      * */
-    List<MtBanner> queryBannerListByParams(Map<String, Object> params) throws BusinessCheckException;
+    List<MtBanner> queryBannerListByParams(Map<String, Object> params);
 }
