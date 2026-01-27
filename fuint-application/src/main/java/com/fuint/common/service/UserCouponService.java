@@ -8,6 +8,7 @@ import com.fuint.framework.pagination.PaginationRequest;
 import com.fuint.framework.pagination.PaginationResponse;
 import com.fuint.framework.web.ResponseObject;
 import com.fuint.repository.model.MtUserCoupon;
+
 import java.util.List;
 import java.util.Map;
 
@@ -25,7 +26,7 @@ public interface UserCouponService extends IService<MtUserCoupon> {
      * @param paginationRequest
      * @return
      */
-    PaginationResponse<MtUserCoupon> queryUserCouponListByPagination(PaginationRequest paginationRequest) throws BusinessCheckException;
+    PaginationResponse<MtUserCoupon> queryUserCouponListByPagination(PaginationRequest paginationRequest);
 
     /**
      * 领取卡券
@@ -49,7 +50,7 @@ public interface UserCouponService extends IService<MtUserCoupon> {
      * @param status
      * @return
      * */
-    List<MtUserCoupon> getUserCouponList(Integer userId, List<String> status) throws BusinessCheckException;
+    List<MtUserCoupon> getUserCouponList(Integer userId, List<String> status);
 
     /**
      * 获取用户的卡券
@@ -73,7 +74,7 @@ public interface UserCouponService extends IService<MtUserCoupon> {
      * @param userId
      * @param couponId
      * */
-    List<MtUserCoupon> getUserCouponDetail(Integer userId, Integer couponId) throws BusinessCheckException;
+    List<MtUserCoupon> getUserCouponDetail(Integer userId, Integer couponId);
 
     /**
      * 获取会员卡券详情
@@ -81,7 +82,7 @@ public interface UserCouponService extends IService<MtUserCoupon> {
      * @param userCouponId
      * @return
      * */
-    MtUserCoupon getUserCouponDetail(Integer userCouponId) throws BusinessCheckException;
+    MtUserCoupon getUserCouponDetail(Integer userCouponId);
 
     /**
      * 根据过期时间查询会员卡券

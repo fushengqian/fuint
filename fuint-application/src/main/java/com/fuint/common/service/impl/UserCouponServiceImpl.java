@@ -29,6 +29,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.math.BigDecimal;
 import java.util.*;
 
@@ -649,12 +650,17 @@ public class UserCouponServiceImpl extends ServiceImpl<MtUserCouponMapper, MtUse
         if (num == null || num <= 0) {
             num = 1.0;
         }
+        MtOrder orderInfo = orderService.getOrderInfo(orderId);
+        Integer storeId = 0;
+        if (orderInfo != null) {
+            storeId = orderInfo.getStoreId();
+        }
         for (int j = 0; j < num; j++) {
             MtCoupon couponInfo = couponService.queryCouponById(couponId);
             MtUserCoupon userCoupon = new MtUserCoupon();
             userCoupon.setCouponId(couponId);
             userCoupon.setMerchantId(couponInfo.getMerchantId());
-            userCoupon.setStoreId(couponInfo.getStoreId());
+            userCoupon.setStoreId(storeId);
             userCoupon.setType(couponInfo.getType());
             userCoupon.setGroupId(couponInfo.getGroupId());
             userCoupon.setMobile(mobile);
@@ -665,10 +671,10 @@ public class UserCouponServiceImpl extends ServiceImpl<MtUserCouponMapper, MtUse
             userCoupon.setExpireTime(couponInfo.getEndTime());
             if (couponInfo.getExpireType().equals(CouponExpireTypeEnum.FLEX.getKey())) {
                 Date expireTime = new Date();
-                Calendar c = Calendar.getInstance();
-                c.setTime(expireTime);
-                c.add(Calendar.DATE, couponInfo.getExpireTime());
-                expireTime = c.getTime();
+                Calendar calendar = Calendar.getInstance();
+                calendar.setTime(expireTime);
+                calendar.add(Calendar.DATE, couponInfo.getExpireTime());
+                expireTime = calendar.getTime();
                 userCoupon.setExpireTime(expireTime);
             }
             userCoupon.setOrderId(orderId);
@@ -676,7 +682,6 @@ public class UserCouponServiceImpl extends ServiceImpl<MtUserCouponMapper, MtUse
             // 如果购买的是储值卡
             if (couponInfo.getType().equals(CouponTypeEnum.PRESTORE.getKey()) && couponInfo.getInRule() != null) {
                 String[] paramArr = couponInfo.getInRule().split(","); // 100_200,300_500
-                MtOrder orderInfo = orderService.getOrderInfo(orderId);
                 if (orderInfo != null) {
                     BigDecimal payAmount = orderInfo.getPayAmount();
                     BigDecimal totalAmount = new BigDecimal(0);
@@ -698,8 +703,6 @@ public class UserCouponServiceImpl extends ServiceImpl<MtUserCouponMapper, MtUse
 
             userCoupon.setAmount(couponInfo.getAmount());
             userCoupon.setBalance(couponInfo.getAmount());
-
-            // 16位随机数
             String code = SeqUtil.getRandomNumber(16);
             userCoupon.setCode(code);
             userCoupon.setUuid(code);

@@ -56,10 +56,9 @@ public interface OrderService extends IService<MtOrder> {
      * 获取订单详情
      *
      * @param  id 订单ID
-     * @throws BusinessCheckException
      * @return
      */
-    MtOrder getOrderInfo(Integer id) throws BusinessCheckException;
+    MtOrder getOrderInfo(Integer id);
 
     /**
      * 根据ID获取订单

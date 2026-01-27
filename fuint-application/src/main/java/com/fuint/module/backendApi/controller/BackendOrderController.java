@@ -416,14 +416,15 @@ public class BackendOrderController extends BaseController {
     @RequestMapping(value = "/export", method = RequestMethod.GET)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('order:index')")
-    public void export(HttpServletResponse response, OrderListParam params) throws Exception {
-        AccountInfo accountInfo = TokenUtil.getAccountInfo();
+    public void export(HttpServletRequest request, HttpServletResponse response, OrderListParam params) throws Exception {
+        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getParameter("token"));
+
         params.setPage(Constants.PAGE_NUMBER);
         params.setPageSize(Constants.MAX_ROWS);
-        if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
+        if (accountInfo.getMerchantId() != null) {
             params.setMerchantId(accountInfo.getMerchantId());
         }
-        if (accountInfo.getStoreId() != null && accountInfo.getStoreId() > 0) {
+        if (accountInfo.getStoreId() != null) {
             params.setStoreId(accountInfo.getStoreId());
         }
 
