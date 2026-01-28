@@ -48,10 +48,10 @@ public interface MemberService extends IService<MtUser> {
     /**
      * 分页查询会员列表
      *
-     * @param memberPage
+     * @param memberPage 分页参数
      * @return
      */
-    PaginationResponse<UserDto> queryMemberListByPagination(MemberPage memberPage) throws BusinessCheckException;
+    PaginationResponse<UserDto> queryMemberListByPagination(MemberPage memberPage);
 
     /**
      * 添加会员
@@ -79,7 +79,7 @@ public interface MemberService extends IService<MtUser> {
      * @param  merchantId 商户ID
      * @param  mobile 手机号
      * @param  shareId 分享用户ID
-     * @param ip IP地址
+     * @param  ip IP地址
      * @throws BusinessCheckException
      * @return
      */
@@ -89,20 +89,18 @@ public interface MemberService extends IService<MtUser> {
      * 根据会员ID获取会员信息
      *
      * @param  id 会员ID
-     * @throws BusinessCheckException
      * @return
      */
-    MtUser queryMemberById(Integer id) throws BusinessCheckException;
+    MtUser queryMemberById(Integer id);
 
     /**
      * 根据会员名称获取会员信息
      *
      * @param  merchantId 商户ID
      * @param  name 会员名称
-     * @throws BusinessCheckException
      * @return
      */
-    MtUser queryMemberByName(Integer merchantId, String name) throws BusinessCheckException;
+    MtUser queryMemberByName(Integer merchantId, String name);
 
     /**
      * 根据会员ID获取会员信息

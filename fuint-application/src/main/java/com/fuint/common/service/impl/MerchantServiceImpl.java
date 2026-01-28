@@ -355,7 +355,7 @@ public class MerchantServiceImpl extends ServiceImpl<MtMerchantMapper, MtMerchan
      * @return
      * */
     @Override
-    public MerchantSettingDto getMerchantSettingInfo(Integer merchantId, Integer storeId) throws BusinessCheckException {
+    public MerchantSettingDto getMerchantSettingInfo(Integer merchantId, Integer storeId) {
        String name = "";
        Integer id = merchantId;
        String contact = "";

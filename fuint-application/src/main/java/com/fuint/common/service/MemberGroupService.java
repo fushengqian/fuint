@@ -22,7 +22,7 @@ public interface MemberGroupService extends IService<MtUserGroup> {
      * @param paginationRequest
      * @return
      */
-    PaginationResponse<UserGroupDto> queryMemberGroupListByPagination(PaginationRequest paginationRequest) throws BusinessCheckException;
+    PaginationResponse<UserGroupDto> queryMemberGroupListByPagination(PaginationRequest paginationRequest);
 
     /**
      * 新增会员分组
@@ -30,7 +30,7 @@ public interface MemberGroupService extends IService<MtUserGroup> {
      * @param  memberGroupDto
      * @throws BusinessCheckException
      */
-    MtUserGroup addMemberGroup(MemberGroupDto memberGroupDto) throws BusinessCheckException;
+    MtUserGroup addMemberGroup(MemberGroupDto memberGroupDto);
 
     /**
      * 修改卡券分组
@@ -44,16 +44,16 @@ public interface MemberGroupService extends IService<MtUserGroup> {
      * 根据组ID获取分组信息
      *
      * @param  id 分组ID
-     * @throws BusinessCheckException
+     * @return
      */
-    MtUserGroup queryMemberGroupById(Integer id) throws BusinessCheckException;
+    MtUserGroup queryMemberGroupById(Integer id);
 
     /**
      * 根据分组ID删除分组信息
      *
      * @param  id 分组ID
      * @param  operator 操作人
-     * @throws BusinessCheckException
+     * @return
      */
-    void deleteMemberGroup(Integer id, String operator) throws BusinessCheckException;
+    void deleteMemberGroup(Integer id, String operator);
 }

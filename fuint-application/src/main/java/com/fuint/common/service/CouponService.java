@@ -43,15 +43,14 @@ public interface CouponService extends IService<MtCoupon> {
      * 根据ID获取卡券信息
      *
      * @param id 卡券ID
-     * @throws BusinessCheckException
      * @return
      */
-    MtCoupon queryCouponById(Integer id) throws BusinessCheckException;
+    MtCoupon queryCouponById(Integer id);
 
     /**
      * 删除卡券信息
      *
-     * @param id       卡券ID
+     * @param id 卡券ID
      * @param operator 操作人
      * @throws BusinessCheckException
      * @return
@@ -61,7 +60,7 @@ public interface CouponService extends IService<MtCoupon> {
     /**
      * 获取卡券列表
      * @param  couponListParam 查询参数
-     * @throws BusinessCheckException
+     * @return
      * */
     ResponseObject findCouponList(CouponListParam couponListParam);
 
@@ -95,10 +94,9 @@ public interface CouponService extends IService<MtCoupon> {
     /**
      * 根据分组获取卡券列表
      * @param groupId 查询参数
-     * @throws BusinessCheckException
      * @return
      * */
-    List<MtCoupon> queryCouponListByGroupId(Integer groupId) throws BusinessCheckException;
+    List<MtCoupon> queryCouponListByGroupId(Integer groupId);
 
     /**
      * 核销卡券
@@ -136,14 +134,15 @@ public interface CouponService extends IService<MtCoupon> {
 
     /**
      * 根据ID获取用户卡券信息
+     *
      * @param userCouponId 查询参数
-     * @throws BusinessCheckException
      * @return
      * */
-    MtUserCoupon queryUserCouponById(Integer userCouponId) throws BusinessCheckException;
+    MtUserCoupon queryUserCouponById(Integer userCouponId);
 
     /**
      * 根据批次撤销卡券
+     *
      * @param id         ID
      * @param uuid       批次ID
      * @param operator   操作人

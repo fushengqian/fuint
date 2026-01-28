@@ -104,7 +104,7 @@ public class RefundServiceImpl extends ServiceImpl<MtRefundMapper, MtRefund> imp
      * @return
      */
     @Override
-    public PaginationResponse<RefundDto> getRefundListByPagination(PaginationRequest paginationRequest) throws BusinessCheckException {
+    public PaginationResponse<RefundDto> getRefundListByPagination(PaginationRequest paginationRequest) {
         Page<MtBanner> pageHelper = PageHelper.startPage(paginationRequest.getCurrentPage(), paginationRequest.getPageSize());
         LambdaQueryWrapper<MtRefund> lambdaQueryWrapper = Wrappers.lambdaQuery();
         lambdaQueryWrapper.ne(MtRefund::getStatus, StatusEnum.DISABLE.getKey());
@@ -297,11 +297,10 @@ public class RefundServiceImpl extends ServiceImpl<MtRefundMapper, MtRefund> imp
      * 根据ID获取订单详情
      *
      * @param  id 售后订单ID
-     * @throws BusinessCheckException
      * @return
      */
     @Override
-    public RefundDto getRefundById(Integer id) throws BusinessCheckException {
+    public RefundDto getRefundById(Integer id) {
         MtRefund mtRefund = mtRefundMapper.selectById(id);
         if (mtRefund != null) {
             RefundDto refundDto = new RefundDto();

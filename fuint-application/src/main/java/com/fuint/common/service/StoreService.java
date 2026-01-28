@@ -46,10 +46,9 @@ public interface StoreService extends IService<MtStore> {
      * 根据店铺ID获取店铺信息
      *
      * @param  id 店铺ID
-     * @throws BusinessCheckException
      * @return
      */
-    MtStore queryStoreById(Integer id) throws BusinessCheckException;
+    MtStore queryStoreById(Integer id);
 
     /**
      * 根据店铺名称获取店铺信息

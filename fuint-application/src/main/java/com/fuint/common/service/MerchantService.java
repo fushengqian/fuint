@@ -8,6 +8,7 @@ import com.fuint.framework.pagination.PaginationRequest;
 import com.fuint.framework.pagination.PaginationResponse;
 import com.fuint.module.merchantApi.request.MerchantSettingParam;
 import com.fuint.repository.model.MtMerchant;
+
 import java.util.List;
 import java.util.Map;
 
@@ -25,7 +26,7 @@ public interface MerchantService extends IService<MtMerchant> {
      * @param paginationRequest
      * @return
      */
-    PaginationResponse<MerchantDto> queryMerchantListByPagination(PaginationRequest paginationRequest) throws BusinessCheckException;
+    PaginationResponse<MerchantDto> queryMerchantListByPagination(PaginationRequest paginationRequest);
 
     /**
      * 保存商户信息
@@ -43,7 +44,7 @@ public interface MerchantService extends IService<MtMerchant> {
      * @throws BusinessCheckException
      * @return
      */
-    MtMerchant queryMerchantById(Integer id) throws BusinessCheckException;
+    MtMerchant queryMerchantById(Integer id);
 
     /**
      * 根据名称获取商户信息
@@ -52,7 +53,7 @@ public interface MerchantService extends IService<MtMerchant> {
      * @throws BusinessCheckException
      * @return
      */
-    MtMerchant queryMerchantByName(String name) throws BusinessCheckException;
+    MtMerchant queryMerchantByName(String name);
 
     /**
      * 根据商户号获取商户信息
@@ -87,7 +88,7 @@ public interface MerchantService extends IService<MtMerchant> {
      * @param params 查询参数
      * @return
      * */
-    List<MtMerchant> queryMerchantByParams(Map<String, Object> params) throws BusinessCheckException;
+    List<MtMerchant> queryMerchantByParams(Map<String, Object> params);
 
     /**
      * 查询我的商户列表
@@ -97,7 +98,7 @@ public interface MerchantService extends IService<MtMerchant> {
      * @param status 状态
      * @return
      * */
-    List<MtMerchant> getMyMerchantList(Integer merchantId, Integer storeId, String status) throws BusinessCheckException;
+    List<MtMerchant> getMyMerchantList(Integer merchantId, Integer storeId, String status);
 
     /**
      * 获取商户信息
@@ -106,7 +107,7 @@ public interface MerchantService extends IService<MtMerchant> {
      * @param storeId 店铺ID
      * @return
      * */
-    MerchantSettingDto getMerchantSettingInfo(Integer merchantId, Integer storeId) throws BusinessCheckException;
+    MerchantSettingDto getMerchantSettingInfo(Integer merchantId, Integer storeId);
 
     /**
      * 保存商户设置信息

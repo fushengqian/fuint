@@ -660,6 +660,9 @@ public class UserCouponServiceImpl extends ServiceImpl<MtUserCouponMapper, MtUse
             MtUserCoupon userCoupon = new MtUserCoupon();
             userCoupon.setCouponId(couponId);
             userCoupon.setMerchantId(couponInfo.getMerchantId());
+            if (storeId == null || storeId <= 0) {
+                storeId = couponInfo.getStoreId();
+            }
             userCoupon.setStoreId(storeId);
             userCoupon.setType(couponInfo.getType());
             userCoupon.setGroupId(couponInfo.getGroupId());

@@ -25,7 +25,7 @@ public interface RefundService extends IService<MtRefund> {
      * @param paginationRequest
      * @return
      */
-    PaginationResponse<RefundDto> getRefundListByPagination(PaginationRequest paginationRequest) throws BusinessCheckException;
+    PaginationResponse<RefundDto> getRefundListByPagination(PaginationRequest paginationRequest);
 
     /**
      * 获取用户的售后订单
@@ -46,17 +46,17 @@ public interface RefundService extends IService<MtRefund> {
      * 根据ID获取售后订单信息
      *
      * @param id ID
-     * @throws BusinessCheckException
+     * @return
      */
-    RefundDto getRefundById(Integer id) throws BusinessCheckException;
+    RefundDto getRefundById(Integer id);
 
     /**
      * 根据订单ID获取售后订单信息
      *
      * @param  orderId
-     * @throws BusinessCheckException
+     * @return
      */
-    MtRefund getRefundByOrderId(Integer orderId) throws BusinessCheckException;
+    MtRefund getRefundByOrderId(Integer orderId);
 
     /**
      * 更新售后订单
@@ -90,5 +90,5 @@ public interface RefundService extends IService<MtRefund> {
      * @param endTime
      * @return
      * */
-    Long getRefundCount(Date beginTime, Date endTime) throws BusinessCheckException;
+    Long getRefundCount(Date beginTime, Date endTime);
 }

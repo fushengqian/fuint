@@ -1181,7 +1181,6 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
      * 获取订单详情
      *
      * @param  orderId 订单ID
-     * @throws BusinessCheckException
      * @return
      */
     @Override
@@ -1196,11 +1195,10 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
      * 根据ID获取订单详情
      *
      * @param orderId 订单ID
-     * @throws BusinessCheckException
      * @return
      */
     @Override
-    public UserOrderDto getOrderById(Integer orderId) throws BusinessCheckException {
+    public UserOrderDto getOrderById(Integer orderId) {
         if (orderId == null || orderId <= 0) {
             return null;
         }
@@ -1212,11 +1210,10 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
      * 根据ID获取我的订单详情
      *
      * @param  orderId 订单ID
-     * @throws BusinessCheckException
      * @return
      */
     @Override
-    public UserOrderDto getMyOrderById(Integer orderId) throws BusinessCheckException {
+    public UserOrderDto getMyOrderById(Integer orderId) {
         if (orderId == null || orderId <= 0) {
             return null;
         }
@@ -1670,7 +1667,7 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
      * @param  getPayStatus 是否获取支付状态
      * @return UserOrderDto
      * */
-    private UserOrderDto getOrderDetail(MtOrder orderInfo, boolean needAddress, boolean getPayStatus) throws BusinessCheckException {
+    private UserOrderDto getOrderDetail(MtOrder orderInfo, boolean needAddress, boolean getPayStatus) {
         UserOrderDto userOrderDto = new UserOrderDto();
 
         userOrderDto.setId(orderInfo.getId());

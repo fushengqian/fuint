@@ -340,26 +340,25 @@ public class OpenGiftServiceImpl extends ServiceImpl<MtOpenGiftMapper, MtOpenGif
      * 赠礼详情
      *
      * @param  openGiftInfo 赠礼详情
-     * @throws BusinessCheckException
      * @return OpenGiftDto
      * */
-    private OpenGiftDto dealDetail(MtOpenGift openGiftInfo) throws BusinessCheckException {
-        OpenGiftDto dto = new OpenGiftDto();
+    private OpenGiftDto dealDetail(MtOpenGift openGiftInfo) {
+        OpenGiftDto openGiftDto = new OpenGiftDto();
 
-        dto.setId(openGiftInfo.getId());
-        dto.setCreateTime(DateUtil.formatDate(openGiftInfo.getCreateTime(), "yyyy.MM.dd HH:mm"));
-        dto.setUpdateTime(DateUtil.formatDate(openGiftInfo.getUpdateTime(), "yyyy.MM.dd HH:mm"));
-        dto.setStatus(openGiftInfo.getStatus());
-        dto.setCouponNum(openGiftInfo.getCouponNum());
-        dto.setPoint(openGiftInfo.getPoint());
-        dto.setOperator(openGiftInfo.getOperator());
+        openGiftDto.setId(openGiftInfo.getId());
+        openGiftDto.setCreateTime(DateUtil.formatDate(openGiftInfo.getCreateTime(), "yyyy.MM.dd HH:mm"));
+        openGiftDto.setUpdateTime(DateUtil.formatDate(openGiftInfo.getUpdateTime(), "yyyy.MM.dd HH:mm"));
+        openGiftDto.setStatus(openGiftInfo.getStatus());
+        openGiftDto.setCouponNum(openGiftInfo.getCouponNum());
+        openGiftDto.setPoint(openGiftInfo.getPoint());
+        openGiftDto.setOperator(openGiftInfo.getOperator());
 
         MtCoupon couponInfo = couponService.queryCouponById(openGiftInfo.getCouponId());
-        dto.setCouponInfo(couponInfo);
+        openGiftDto.setCouponInfo(couponInfo);
 
         MtUserGrade gradeInfo = userGradeService.queryUserGradeById(openGiftInfo.getMerchantId(), openGiftInfo.getGradeId(), 0);
-        dto.setGradeInfo(gradeInfo);
+        openGiftDto.setGradeInfo(gradeInfo);
 
-        return dto;
+        return openGiftDto;
     }
 }

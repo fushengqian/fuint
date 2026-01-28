@@ -107,7 +107,7 @@ public interface GoodsService {
      * @param skuId
      * @return
      * */
-    List<GoodsSpecValueDto> getSpecListBySkuId(Integer skuId) throws BusinessCheckException;
+    List<GoodsSpecValueDto> getSpecListBySkuId(Integer skuId);
 
     /**
      * 获取规格详情

@@ -6,14 +6,17 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fuint.common.dto.MemberGroupDto;
 import com.fuint.common.dto.UserGroupDto;
 import com.fuint.common.enums.StatusEnum;
-import com.fuint.common.service.*;
+import com.fuint.common.service.MemberGroupService;
+import com.fuint.common.service.StoreService;
 import com.fuint.common.util.CommonUtil;
 import com.fuint.framework.annoation.OperationServiceLog;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.pagination.PaginationRequest;
 import com.fuint.framework.pagination.PaginationResponse;
 import com.fuint.repository.mapper.MtUserGroupMapper;
-import com.fuint.repository.model.*;
+import com.fuint.repository.model.MtCouponGroup;
+import com.fuint.repository.model.MtStore;
+import com.fuint.repository.model.MtUserGroup;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import lombok.AllArgsConstructor;
@@ -26,7 +29,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import java.lang.String;
+
 import java.util.*;
 
 /**
@@ -108,12 +111,11 @@ public class MemberGroupServiceImpl extends ServiceImpl<MtUserGroupMapper, MtUse
      * 添加会员分组
      *
      * @param  memberGroupDto 会员分组
-     * @throws BusinessCheckException
      * @return
      */
     @Override
     @OperationServiceLog(description = "新增会员分组")
-    public MtUserGroup addMemberGroup(MemberGroupDto memberGroupDto) throws BusinessCheckException {
+    public MtUserGroup addMemberGroup(MemberGroupDto memberGroupDto) {
         MtUserGroup userGroup = new MtUserGroup();
         Integer storeId = memberGroupDto.getStoreId() == null ? 0 : memberGroupDto.getStoreId();
         if (memberGroupDto.getMerchantId() == null || memberGroupDto.getMerchantId() <= 0) {
@@ -139,7 +141,6 @@ public class MemberGroupServiceImpl extends ServiceImpl<MtUserGroupMapper, MtUse
      * 根据分组ID获取分组信息
      *
      * @param  id 分组ID
-     * @throws BusinessCheckException
      * @return
      */
     @Override
@@ -152,7 +153,6 @@ public class MemberGroupServiceImpl extends ServiceImpl<MtUserGroupMapper, MtUse
      *
      * @param  id       分组ID
      * @param  operator 操作人
-     * @throws BusinessCheckException
      * @return
      */
     @Override
