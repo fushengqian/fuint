@@ -7,6 +7,7 @@ import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.pagination.PaginationRequest;
 import com.fuint.framework.pagination.PaginationResponse;
 import com.fuint.repository.model.MtStore;
+
 import java.util.List;
 import java.util.Map;
 
@@ -24,23 +25,24 @@ public interface StoreService extends IService<MtStore> {
      * @param paginationRequest
      * @return
      */
-    PaginationResponse<StoreDto> queryStoreListByPagination(PaginationRequest paginationRequest) throws BusinessCheckException;
+    PaginationResponse<StoreDto> queryStoreListByPagination(PaginationRequest paginationRequest);
 
     /**
      * 保存店铺信息
      *
      * @param  reqStoreDto
      * @throws BusinessCheckException
+     * @return
      */
     MtStore saveStore(StoreDto reqStoreDto) throws BusinessCheckException;
 
     /**
      * 获取系统默认店铺
      *
-     * @throws BusinessCheckException
+     * @param merchantNo 商户号
      * @return
      */
-    MtStore getDefaultStore(String merchantNo) throws BusinessCheckException;
+    MtStore getDefaultStore(String merchantNo);
 
     /**
      * 根据店铺ID获取店铺信息
@@ -54,18 +56,17 @@ public interface StoreService extends IService<MtStore> {
      * 根据店铺名称获取店铺信息
      *
      * @param  storeName 店铺名称
-     * @throws BusinessCheckException
+     * @return
      */
-    StoreDto queryStoreByName(String storeName) throws BusinessCheckException;
+    StoreDto queryStoreByName(String storeName);
 
     /**
      * 根据店铺ID查询店铺信息
      *
      * @param  id 店铺ID
      * @return
-     * @throws BusinessCheckException
      */
-    StoreDto queryStoreDtoById(Integer id) throws BusinessCheckException;
+    StoreDto queryStoreDtoById(Integer id);
 
     /**
      * 更新店铺状态
@@ -83,7 +84,7 @@ public interface StoreService extends IService<MtStore> {
      * @param params 查询参数
      * @return
      * */
-    List<MtStore> queryStoresByParams(Map<String, Object> params) throws BusinessCheckException;
+    List<MtStore> queryStoresByParams(Map<String, Object> params);
 
     /**
      * 获取我的店铺列表
@@ -93,7 +94,7 @@ public interface StoreService extends IService<MtStore> {
      * @param status 状态
      * @return
      * */
-    List<MtStore> getMyStoreList(Integer merchantId, Integer storeId, String status) throws BusinessCheckException;
+    List<MtStore> getMyStoreList(Integer merchantId, Integer storeId, String status);
 
     /**
      * 根据距离远近查找店铺
@@ -104,7 +105,7 @@ public interface StoreService extends IService<MtStore> {
      * @param longitude 经度
      * @return
      * */
-    List<StoreInfo> queryByDistance(String merchantNo, String keyword, String latitude, String longitude) throws BusinessCheckException;
+    List<StoreInfo> queryByDistance(String merchantNo, String keyword, String latitude, String longitude);
 
     /**
      * 获取店铺名称
@@ -134,10 +135,10 @@ public interface StoreService extends IService<MtStore> {
     /**
      * 根据地址获取经纬度
      *
-     * @param addr 地址
+     * @param address 地址
      * @return
      * */
-    Map<String, Object> getLatAndLngByAddress(String addr);
+    Map<String, Object> getLatAndLngByAddress(String address);
 
     /**
      * 获取步行距离

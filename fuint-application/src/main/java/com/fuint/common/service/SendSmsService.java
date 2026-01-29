@@ -33,5 +33,5 @@ public interface SendSmsService {
      * @param paginationRequest
      * @return
      */
-    PaginationResponse<MtSmsSendedLog> querySmsListByPagination(PaginationRequest paginationRequest) throws BusinessCheckException;
+    PaginationResponse<MtSmsSendedLog> querySmsListByPagination(PaginationRequest paginationRequest);
 }

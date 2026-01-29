@@ -309,14 +309,13 @@ public class StoreServiceImpl extends ServiceImpl<MtStoreMapper, MtStore> implem
      * 根据店铺ID获取店铺信息
      *
      * @param  id 店铺ID
-     * @throws BusinessCheckException
      * @return
      */
     @Override
-    public StoreDto queryStoreDtoById(Integer id) throws BusinessCheckException {
+    public StoreDto queryStoreDtoById(Integer id) {
         MtStore mtStore = queryStoreById(id);
         if (null == mtStore || StatusEnum.DISABLE.getKey().equals(mtStore.getStatus())) {
-            throw new BusinessCheckException("该店铺状态异常");
+            return null;
         }
 
         StoreDto mtStoreDto = new StoreDto();

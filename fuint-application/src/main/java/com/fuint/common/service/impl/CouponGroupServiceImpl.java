@@ -18,7 +18,9 @@ import com.fuint.framework.pagination.PaginationResponse;
 import com.fuint.repository.mapper.MtCouponGroupMapper;
 import com.fuint.repository.mapper.MtCouponMapper;
 import com.fuint.repository.mapper.MtUserCouponMapper;
-import com.fuint.repository.model.*;
+import com.fuint.repository.model.MtCoupon;
+import com.fuint.repository.model.MtCouponGroup;
+import com.fuint.repository.model.MtUser;
 import com.fuint.utils.StringUtil;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
@@ -32,9 +34,9 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.lang.String;
 import java.util.*;
 import java.util.regex.Pattern;
 
@@ -126,7 +128,7 @@ public class CouponGroupServiceImpl extends ServiceImpl<MtCouponGroupMapper, MtC
      * 添加卡券分组
      *
      * @param  reqCouponGroupDto
-     * @throws BusinessCheckException
+     * @return
      */
     @Override
     @OperationServiceLog(description = "新增卡券分组")
@@ -152,7 +154,7 @@ public class CouponGroupServiceImpl extends ServiceImpl<MtCouponGroupMapper, MtC
      * 根据分组ID获取卡券分组信息
      *
      * @param id 卡券分组ID
-     * @throws BusinessCheckException
+     * @return
      */
     @Override
     public MtCouponGroup queryCouponGroupById(Integer id) {
@@ -164,7 +166,7 @@ public class CouponGroupServiceImpl extends ServiceImpl<MtCouponGroupMapper, MtC
      *
      * @param  id       分组ID
      * @param  operator 操作人
-     * @throws BusinessCheckException
+     * @return
      */
     @Override
     @OperationServiceLog(description = "删除卡券分组")
@@ -186,6 +188,7 @@ public class CouponGroupServiceImpl extends ServiceImpl<MtCouponGroupMapper, MtC
      *
      * @param reqCouponGroupDto
      * @throws BusinessCheckException
+     * @return
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -216,8 +219,8 @@ public class CouponGroupServiceImpl extends ServiceImpl<MtCouponGroupMapper, MtC
     /**
      * 获取卡券种类数量
      *
-     * @param id
-     * @throws BusinessCheckException
+     * @param id 分组ID
+     * @return
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -230,7 +233,7 @@ public class CouponGroupServiceImpl extends ServiceImpl<MtCouponGroupMapper, MtC
      * 获取卡券总价值
      *
      * @param  groupId
-     * @throws BusinessCheckException
+     * @return
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -252,7 +255,7 @@ public class CouponGroupServiceImpl extends ServiceImpl<MtCouponGroupMapper, MtC
      * 获取已发放套数
      *
      * @param  couponId  卡券ID
-     * @throws BusinessCheckException
+     * @return
      * */
     @Override
     public Integer getSendNum(Integer couponId) {

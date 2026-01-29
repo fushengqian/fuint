@@ -28,7 +28,7 @@ public interface CouponService extends IService<MtCoupon> {
      * @param paginationRequest
      * @return
      */
-    PaginationResponse<MtCoupon> queryCouponListByPagination(PaginationRequest paginationRequest) throws BusinessCheckException;
+    PaginationResponse<MtCoupon> queryCouponListByPagination(PaginationRequest paginationRequest);
 
     /**
      * 保存卡券
@@ -146,10 +146,9 @@ public interface CouponService extends IService<MtCoupon> {
      * @param id         ID
      * @param uuid       批次ID
      * @param operator   操作人
-     * @throws BusinessCheckException
      * @return
      */
-    void removeUserCoupon(Long id, String uuid, String operator) throws BusinessCheckException;
+    void removeUserCoupon(Long id, String uuid, String operator);
 
     /**
      * 判断卡券码是否过期

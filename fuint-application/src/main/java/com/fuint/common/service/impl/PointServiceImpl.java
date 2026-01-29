@@ -21,10 +21,10 @@ import com.fuint.repository.mapper.MtUserMapper;
 import com.fuint.repository.model.MtPoint;
 import com.fuint.repository.model.MtUser;
 import com.fuint.utils.StringUtil;
+import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import lombok.AllArgsConstructor;
 import org.apache.commons.lang.StringUtils;
-import com.github.pagehelper.Page;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -33,6 +33,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.util.*;
 
 /**
@@ -73,7 +74,7 @@ public class PointServiceImpl extends ServiceImpl<MtPointMapper, MtPoint> implem
      * @return
      */
     @Override
-    public PaginationResponse<PointDto> queryPointListByPagination(PaginationRequest paginationRequest) throws BusinessCheckException {
+    public PaginationResponse<PointDto> queryPointListByPagination(PaginationRequest paginationRequest) {
         LambdaQueryWrapper<MtPoint> lambdaQueryWrapper = Wrappers.lambdaQuery();
         lambdaQueryWrapper.ne(MtPoint::getStatus, StatusEnum.DISABLE.getKey());
 

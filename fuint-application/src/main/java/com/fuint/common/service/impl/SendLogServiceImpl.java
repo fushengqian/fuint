@@ -127,23 +127,4 @@ public class SendLogServiceImpl extends ServiceImpl<MtSendLogMapper, MtSendLog> 
     public MtSendLog querySendLogById(Long id) {
         return mtSendLogMapper.selectById(id.intValue());
     }
-
-    /**
-     * 根据ID删除发券记录
-     *
-     * @param  id 发券记录ID
-     * @param  operator 操作人
-     * @throws BusinessCheckException
-     * @return
-     */
-    @Override
-    public void deleteSendLog(Long id, String operator) {
-        MtSendLog mtSendLog = querySendLogById(id);
-        if (null == mtSendLog) {
-            return;
-        }
-        mtSendLog.setStatus(StatusEnum.DISABLE.getKey());
-        mtSendLog.setOperator(operator);
-        mtSendLogMapper.updateById(mtSendLog);
-    }
 }

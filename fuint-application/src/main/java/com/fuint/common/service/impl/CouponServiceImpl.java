@@ -1155,8 +1155,7 @@ public class CouponServiceImpl extends ServiceImpl<MtCouponMapper, MtCoupon> imp
 
     /**
      * 根据ID获取用户卡券信息
-     * @param  userCouponId 查询参数
-     * @throws BusinessCheckException
+     * @param  userCouponId 会员卡券ID
      * @return
      * */
     @Override
@@ -1169,7 +1168,7 @@ public class CouponServiceImpl extends ServiceImpl<MtCouponMapper, MtCoupon> imp
      *
      * @param uuid       批次ID
      * @param operator   操作人
-     * @throws BusinessCheckException
+     * @return
      */
     @Override
     @Transactional(rollbackFor = Exception.class)

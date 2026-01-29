@@ -23,21 +23,22 @@ public interface CouponGroupService extends IService<MtCouponGroup> {
      * @param paginationRequest
      * @return
      */
-    PaginationResponse<MtCouponGroup> queryCouponGroupListByPagination(PaginationRequest paginationRequest) throws BusinessCheckException;
+    PaginationResponse<MtCouponGroup> queryCouponGroupListByPagination(PaginationRequest paginationRequest);
 
     /**
      * 添加卡券分组
      *
      * @param reqCouponGroupDto
-     * @throws BusinessCheckException
+     * @return
      */
-    MtCouponGroup addCouponGroup(ReqCouponGroupDto reqCouponGroupDto) throws BusinessCheckException;
+    MtCouponGroup addCouponGroup(ReqCouponGroupDto reqCouponGroupDto);
 
     /**
      * 修改卡券分组
      *
      * @param reqCouponGroupDto
      * @throws BusinessCheckException
+     * @return
      */
     MtCouponGroup updateCouponGroup(ReqCouponGroupDto reqCouponGroupDto) throws BusinessCheckException;
 
@@ -45,42 +46,42 @@ public interface CouponGroupService extends IService<MtCouponGroup> {
      * 根据组ID获取分组信息
      *
      * @param id 分组ID
-     * @throws BusinessCheckException
+     * @return
      */
-    MtCouponGroup queryCouponGroupById(Integer id) throws BusinessCheckException;
+    MtCouponGroup queryCouponGroupById(Integer id);
 
     /**
      * 根据分组ID 删除分组信息
      *
      * @param id       分组ID
      * @param operator 操作人
-     * @throws BusinessCheckException
+     * @return
      */
-    void deleteCouponGroup(Integer id, String operator) throws BusinessCheckException;
+    void deleteCouponGroup(Integer id, String operator);
 
     /**
      * 根据分组ID 获取券种类数量
      *
      * @param id       分组ID
-     * @throws BusinessCheckException
+     * @return
      */
-    Integer getCouponNum(Integer id) throws BusinessCheckException;
+    Integer getCouponNum(Integer id);
 
     /**
      * 根据分组ID 获取券总价值
      *
      * @param id 分组ID
-     * @throws BusinessCheckException
+     * @return
      */
-    BigDecimal getCouponMoney(Integer id) throws BusinessCheckException;
+    BigDecimal getCouponMoney(Integer id);
 
     /**
      * 获取已发放套数
      *
      * @param  id  分组ID
-     * @throws BusinessCheckException
+     * @return
      * */
-    Integer getSendNum(Integer id) throws BusinessCheckException;
+    Integer getSendNum(Integer id);
 
     /**
      * 导入发券列表
