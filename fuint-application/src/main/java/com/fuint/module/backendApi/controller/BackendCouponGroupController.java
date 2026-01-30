@@ -269,7 +269,7 @@ public class BackendCouponGroupController extends BaseController {
     @ApiOperation(value = "查询分组列表")
     @RequestMapping(value = "/quickSearch", method = RequestMethod.GET)
     @CrossOrigin
-    public ResponseObject quickSearch() throws BusinessCheckException {
+    public ResponseObject quickSearch() {
         AccountInfo accountInfo = TokenUtil.getAccountInfo();
 
         Map<String, Object> param = new HashMap<>();

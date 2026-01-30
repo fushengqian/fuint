@@ -108,7 +108,7 @@ public class BackendSendLogController extends BaseController {
     @ApiOperation(value = "废除用户卡券")
     @RequestMapping(value = "/removeUserCoupon/{id}", method = RequestMethod.GET)
     @CrossOrigin
-    public ResponseObject removeUserCoupon(@PathVariable("id") Long id) throws BusinessCheckException {
+    public ResponseObject removeUserCoupon(@PathVariable("id") Long id) {
         AccountInfo accountInfo = TokenUtil.getAccountInfo();
 
         if (id == null) {

@@ -200,7 +200,7 @@ public class BackendUserCouponController extends BaseController {
     @RequestMapping(value = "/exportList", method = RequestMethod.GET)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('coupon:userCoupon:index')")
-    public void exportList(HttpServletRequest request, HttpServletResponse response) throws Exception {
+    public void exportList(HttpServletRequest request, HttpServletResponse response) {
         String mobile = request.getParameter("mobile") == null ? "" : request.getParameter("mobile");
         String userId = request.getParameter("userId") == null ? "" : request.getParameter("userId");
         String couponId = request.getParameter("couponId") == null ? "" : request.getParameter("couponId");

@@ -54,7 +54,7 @@ public class ClientPageController extends BaseController {
     @ApiOperation(value = "获取首页页面数据")
     @RequestMapping(value = "/home", method = RequestMethod.GET)
     @CrossOrigin
-    public ResponseObject getPageData(HttpServletRequest request, @RequestParam Map<String, Object> param) throws BusinessCheckException, JsonProcessingException {
+    public ResponseObject getPageData(HttpServletRequest request, @RequestParam Map<String, Object> param) throws JsonProcessingException {
         String merchantNo = request.getHeader("merchantNo") == null ? "" : request.getHeader("merchantNo");
         Integer storeId = StringUtil.isEmpty(request.getHeader("storeId")) ? 0 : Integer.parseInt(request.getHeader("storeId"));
 

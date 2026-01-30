@@ -73,7 +73,7 @@ public class ClientMyCouponController extends BaseController {
     @ApiOperation(value = "查询我的卡券是否已使用")
     @RequestMapping(value = "/isUsed", method = RequestMethod.POST)
     @CrossOrigin
-    public ResponseObject isUsed(@RequestBody MyCouponRequest requestParam) throws BusinessCheckException {
+    public ResponseObject isUsed(@RequestBody MyCouponRequest requestParam) {
         Integer userCouponId = requestParam.getId() == null ? 0 : requestParam.getId();
 
         UserInfo mtUser = TokenUtil.getUserInfo();

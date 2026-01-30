@@ -67,7 +67,7 @@ public class ClientGiveController extends BaseController {
     @ApiOperation(value = "查询转赠记录")
     @RequestMapping(value = "/giveLog", method = RequestMethod.POST)
     @CrossOrigin
-    public ResponseObject giveLog(@RequestBody GiveListParam giveListParam) throws BusinessCheckException {
+    public ResponseObject giveLog(@RequestBody GiveListParam giveListParam) {
         UserInfo mtUser = TokenUtil.getUserInfo();
         String mobile = giveListParam.getMobile() == null ? "" : giveListParam.getMobile();
         String type = giveListParam.getType() == null ? "give" : giveListParam.getType();

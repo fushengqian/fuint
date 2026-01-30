@@ -168,7 +168,7 @@ public class BackendCashierController extends BaseController {
     @RequestMapping(value = "/getGoodsInfo/{id}", method = RequestMethod.GET)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('cashier:index')")
-    public ResponseObject getGoodsInfo(@PathVariable("id") Integer goodsId) throws BusinessCheckException {
+    public ResponseObject getGoodsInfo(@PathVariable("id") Integer goodsId) {
         GoodsDto goodsInfo = goodsService.getGoodsDetail(goodsId, false);
 
         Map<String, Object> result = new HashMap<>();

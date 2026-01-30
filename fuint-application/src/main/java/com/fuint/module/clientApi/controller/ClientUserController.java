@@ -180,7 +180,7 @@ public class ClientUserController extends BaseController {
     @ApiOperation(value = "获取会员资产数据")
     @RequestMapping(value = "/asset", method = RequestMethod.GET)
     @CrossOrigin
-    public ResponseObject asset(HttpServletRequest request) throws BusinessCheckException {
+    public ResponseObject asset(HttpServletRequest request) {
         String userId = request.getParameter("userId");
         UserInfo mtUser = TokenUtil.getUserInfo();
         if (StringUtil.isNotEmpty(userId)) {

@@ -104,7 +104,7 @@ public class BackendGiveLogController extends BaseController {
     @ApiOperation(value = "查询转赠详情")
     @RequestMapping(value = "/giveItem", method = RequestMethod.GET)
     @CrossOrigin
-    public ResponseObject giveItem(HttpServletRequest request) throws BusinessCheckException {
+    public ResponseObject giveItem(HttpServletRequest request) {
         String giveId = request.getParameter("giveId");
 
         if (StringUtil.isEmpty(giveId)) {
@@ -152,7 +152,7 @@ public class BackendGiveLogController extends BaseController {
     @ApiOperation(value = "导出转赠记录")
     @RequestMapping(value = "/export", method = RequestMethod.GET)
     @ResponseBody
-    public void export(HttpServletRequest request, HttpServletResponse response) throws Exception {
+    public void export(HttpServletRequest request, HttpServletResponse response) {
         PaginationResponse<GiveDto> paginationResponse = giveService.queryGiveListByPagination(new PaginationRequest(Constants.PAGE_NUMBER, Constants.MAX_ROWS));
         List<GiveDto> list = paginationResponse.getContent();
 

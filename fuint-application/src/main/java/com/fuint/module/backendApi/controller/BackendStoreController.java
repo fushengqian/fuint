@@ -101,7 +101,7 @@ public class BackendStoreController extends BaseController {
     @ApiOperation(value = "搜索店铺")
     @RequestMapping(value = "/searchStore",  method = RequestMethod.GET)
     @CrossOrigin
-    public ResponseObject search(HttpServletRequest request) throws BusinessCheckException {
+    public ResponseObject search(HttpServletRequest request) {
         String merchantId = request.getParameter("merchantId") == null ? "" : request.getParameter("merchantId");
         String storeId = request.getParameter("id") == null ? "" : request.getParameter("id");
         String storeName = request.getParameter("name") == null ? "" : request.getParameter("name");

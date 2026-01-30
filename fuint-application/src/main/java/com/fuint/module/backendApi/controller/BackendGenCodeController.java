@@ -154,7 +154,7 @@ public class BackendGenCodeController extends BaseController {
     @RequestMapping(value = "/gen/{id}", method = RequestMethod.GET)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('system:genCode:gen')")
-    public ResponseObject gen(@PathVariable("id") Integer id) throws BusinessCheckException {
+    public ResponseObject gen(@PathVariable("id") Integer id) {
         AccountInfo accountInfo = TokenUtil.getAccountInfo();
         if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
             return getFailureResult(1004, "平台超管帐号才有操作权限");

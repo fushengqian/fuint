@@ -90,7 +90,7 @@ public class ClientShareController extends BaseController {
     @ApiOperation(value = "生成小程序链接")
     @RequestMapping(value = "/getMiniAppLink", method = RequestMethod.POST)
     @CrossOrigin
-    public ResponseObject getMiniAppLink(HttpServletRequest request, @RequestBody Map<String, Object> param) throws BusinessCheckException {
+    public ResponseObject getMiniAppLink(HttpServletRequest request, @RequestBody Map<String, Object> param) {
         UserInfo mtUser = TokenUtil.getUserInfo();
         String path = param.get("path") == null ? "" : param.get("path").toString();
         String query = param.get("query") == null ? "" : param.get("query").toString();

@@ -99,7 +99,7 @@ public interface GoodsService {
      * @param pageSize 每页数量
      * @return
      * */
-    Map<String, Object> getStoreGoodsList(Integer storeId, String keyword, String platform, Integer cateId, Integer page, Integer pageSize) throws BusinessCheckException;
+    Map<String, Object> getStoreGoodsList(Integer storeId, String keyword, String platform, Integer cateId, Integer page, Integer pageSize);
 
     /**
      * 根据skuId获取规格列表

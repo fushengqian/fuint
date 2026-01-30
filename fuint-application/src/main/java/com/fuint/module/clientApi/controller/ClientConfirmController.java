@@ -61,7 +61,7 @@ public class ClientConfirmController extends BaseController {
     @ApiOperation(value = "核销卡券")
     @RequestMapping(value = "/doConfirm", method = RequestMethod.POST)
     @CrossOrigin
-    public ResponseObject doConfirm(@RequestBody ConfirmParam confirmParam) throws BusinessCheckException {
+    public ResponseObject doConfirm(@RequestBody ConfirmParam confirmParam) {
         String code = confirmParam.getCode() == null ? "" : confirmParam.getCode();
         String amount = (confirmParam.getAmount() == null || confirmParam.getAmount() == "") ? "0" : confirmParam.getAmount();
         String remark = confirmParam.getRemark() == null ? "" : confirmParam.getRemark();

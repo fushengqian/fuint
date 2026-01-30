@@ -633,11 +633,10 @@ public class GoodsServiceImpl extends ServiceImpl<MtGoodsMapper, MtGoods> implem
      * @param cateId 分类ID
      * @param page 当前页码
      * @param pageSize 每页页数
-     * @throws BusinessCheckException
      * @return
      * */
     @Override
-    public Map<String, Object> getStoreGoodsList(Integer storeId, String keyword, String platform, Integer cateId, Integer page, Integer pageSize) throws BusinessCheckException {
+    public Map<String, Object> getStoreGoodsList(Integer storeId, String keyword, String platform, Integer cateId, Integer page, Integer pageSize) {
         MtStore mtStore = storeService.queryStoreById(storeId);
         if (mtStore == null) {
             Map<String, Object> result = new HashMap<>();
@@ -1031,8 +1030,8 @@ public class GoodsServiceImpl extends ServiceImpl<MtGoodsMapper, MtGoods> implem
                      }
                  }
             }
-            // 更新商品价格和库存
-            if (mtGoods != null) {
+            // 多规格商品，更新商品价格和库存
+            if (mtGoods != null && mtGoods.getIsSingleSpec().equals(YesOrNoEnum.NO.getKey())) {
                 mtGoods.setStock(totalStock);
                 mtGoods.setPrice(price);
                 mtGoodsMapper.updateById(mtGoods);

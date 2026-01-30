@@ -110,7 +110,7 @@ public class BackendDutyController extends BaseController {
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('system:role:add')")
-    public ResponseObject addHandler(HttpServletRequest request, @RequestBody Map<String, Object> param) throws BusinessCheckException {
+    public ResponseObject addHandler(@RequestBody Map<String, Object> param) throws BusinessCheckException {
         List<Integer> menuIds = (List) param.get("menuIds");
         String name = param.get("roleName").toString();
         String type = param.get("roleType").toString();
