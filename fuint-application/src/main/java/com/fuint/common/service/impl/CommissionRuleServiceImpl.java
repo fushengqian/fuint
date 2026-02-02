@@ -181,7 +181,7 @@ public class CommissionRuleServiceImpl extends ServiceImpl<MtCommissionRuleMappe
      * @return
      */
     @Override
-    public CommissionRuleDto queryCommissionRuleById(Integer id) throws BusinessCheckException {
+    public CommissionRuleDto queryCommissionRuleById(Integer id) {
         MtCommissionRule mtCommissionRule = mtCommissionRuleMapper.selectById(id);
         if (mtCommissionRule == null) {
             return null;

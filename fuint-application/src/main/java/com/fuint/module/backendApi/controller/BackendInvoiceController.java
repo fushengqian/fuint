@@ -56,7 +56,6 @@ public class BackendInvoiceController extends BaseController {
         String searchStoreId = request.getParameter("storeId");
 
         AccountInfo accountInfo = TokenUtil.getAccountInfo();
-        Integer storeId = accountInfo.getStoreId();
 
         Map<String, Object> params = new HashMap<>();
         if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
@@ -77,8 +76,8 @@ public class BackendInvoiceController extends BaseController {
         if (StringUtil.isNotBlank(searchStoreId)) {
             params.put("storeId", searchStoreId);
         }
-        if (storeId != null && storeId > 0) {
-            params.put("storeId", storeId);
+        if (accountInfo.getStoreId() != null && accountInfo.getStoreId() > 0) {
+            params.put("storeId", accountInfo.getStoreId());
         }
         PaginationResponse<MtInvoice> paginationResponse = invoiceService.queryInvoiceListByPagination(new PaginationRequest(page, pageSize, params));
 

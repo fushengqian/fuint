@@ -59,7 +59,7 @@ public class MerchantSettingController extends BaseController {
     @ApiOperation(value = "查询商户设置信息")
     @RequestMapping(value = "/settingInfo", method = RequestMethod.GET)
     @CrossOrigin
-    public ResponseObject settingInfo() throws BusinessCheckException {
+    public ResponseObject settingInfo() {
         UserInfo userInfo = TokenUtil.getUserInfo();
         MtUser mtUser = memberService.queryMemberById(userInfo.getId());
         StaffDto staffInfo = staffService.getStaffInfoByMobile(mtUser.getMobile());

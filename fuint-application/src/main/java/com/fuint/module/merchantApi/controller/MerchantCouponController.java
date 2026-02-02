@@ -59,7 +59,7 @@ public class MerchantCouponController extends BaseController {
     @ApiOperation(value = "获取卡券列表")
     @RequestMapping(value = "/couponList", method = RequestMethod.POST)
     @CrossOrigin
-    public ResponseObject couponList(HttpServletRequest request, @RequestBody CouponListParam params) throws BusinessCheckException {
+    public ResponseObject couponList(HttpServletRequest request, @RequestBody CouponListParam params) {
         Integer merchantId = merchantService.getMerchantId(request.getHeader("merchantNo"));
         UserInfo userInfo = TokenUtil.getUserInfo();
         MtUser mtUser = memberService.queryMemberById(userInfo.getId());
@@ -79,7 +79,7 @@ public class MerchantCouponController extends BaseController {
     @ApiOperation(value = "保存卡券信息")
     @RequestMapping(value = "/saveCoupon", method = RequestMethod.POST)
     @CrossOrigin
-    public ResponseObject saveCoupon(HttpServletRequest request, @RequestBody ReqCouponDto reqCouponDto) throws BusinessCheckException {
+    public ResponseObject saveCoupon(HttpServletRequest request, @RequestBody ReqCouponDto reqCouponDto) {
         Integer merchantId = merchantService.getMerchantId(request.getHeader("merchantNo"));
         UserInfo userInfo = TokenUtil.getUserInfo();
         if (userInfo == null || userInfo.getMobile() == null) {

@@ -347,7 +347,7 @@ public class ClientUserController extends BaseController {
     @ApiOperation(value = "获取会员二维码")
     @RequestMapping(value = "/qrCode", method = RequestMethod.GET)
     @CrossOrigin
-    public ResponseObject qrCode() throws BusinessCheckException {
+    public ResponseObject qrCode() {
         UserInfo loginInfo = TokenUtil.getUserInfo();
         if (loginInfo == null) {
             return getFailureResult(1001);

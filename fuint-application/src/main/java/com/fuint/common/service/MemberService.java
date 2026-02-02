@@ -116,20 +116,18 @@ public interface MemberService extends IService<MtUser> {
      * 根据会员组ID获取会员组信息
      *
      * @param  id 会员组ID
-     * @throws BusinessCheckException
      * @return
      */
-    MtUserGrade queryMemberGradeByGradeId(Integer id) throws BusinessCheckException;
+    MtUserGrade queryMemberGradeByGradeId(Integer id);
 
     /**
      * 根据会员手机获取会员信息
      *
      * @param merchantId 商户ID
      * @param  mobile 会员手机
-     * @throws BusinessCheckException
      * @return
      */
-    MtUser queryMemberByMobile(Integer merchantId, String mobile) throws BusinessCheckException;
+    MtUser queryMemberByMobile(Integer merchantId, String mobile);
 
     /**
      * 根据会员号获取会员信息

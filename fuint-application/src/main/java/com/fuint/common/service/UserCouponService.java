@@ -55,9 +55,9 @@ public interface UserCouponService extends IService<MtUserCoupon> {
     /**
      * 获取用户的卡券
      * @param paramMap 查询参数
-     * @throws BusinessCheckException
+     * @return
      * */
-    ResponseObject getUserCouponList(Map<String, Object> paramMap) throws BusinessCheckException;
+    ResponseObject getUserCouponList(Map<String, Object> paramMap);
 
     /**
      * 获取会员可支付用的卡券
@@ -67,7 +67,7 @@ public interface UserCouponService extends IService<MtUserCoupon> {
      * @param useFor 用途
      * @return
      * */
-    List<CouponDto> getPayAbleCouponList(Integer userId, Integer storeId, String useFor) throws BusinessCheckException;
+    List<CouponDto> getPayAbleCouponList(Integer userId, Integer storeId, String useFor);
 
     /**
      * 获取会员卡券详情
@@ -93,7 +93,7 @@ public interface UserCouponService extends IService<MtUserCoupon> {
      * @param endTime
      * @return
      * */
-    List<MtUserCoupon> getUserCouponListByExpireTime(Integer userId, String status, String startTime, String endTime) throws BusinessCheckException;
+    List<MtUserCoupon> getUserCouponListByExpireTime(Integer userId, String status, String startTime, String endTime);
 
     /**
      * 给会员发送卡券（会员购买）
@@ -105,7 +105,7 @@ public interface UserCouponService extends IService<MtUserCoupon> {
      * @param num 购买数量
      * @return
      * */
-    boolean buyCouponItem(Integer orderId, Integer couponId, Integer userId, String mobile, Double num) throws BusinessCheckException;
+    boolean buyCouponItem(Integer orderId, Integer couponId, Integer userId, String mobile, Double num);
 
     /**
      * 通过卡券ID删除会员卡券

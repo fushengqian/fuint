@@ -25,7 +25,7 @@ import java.util.List;
 @AllArgsConstructor(onConstructor_= {@Lazy})
 public class MessageServiceImpl extends ServiceImpl<MtMessageMapper, MtMessage> implements MessageService {
 
-    private MtMessageMapper messageRepository;
+    private MtMessageMapper mtMessageMapper;
 
     /**
      * 添加消息
@@ -61,7 +61,7 @@ public class MessageServiceImpl extends ServiceImpl<MtMessageMapper, MtMessage> 
             return;
         }
 
-        MtMessage mtMsg = messageRepository.selectById(msgId);
+        MtMessage mtMsg = mtMessageMapper.selectById(msgId);
         if (mtMsg == null) {
             return;
         }
@@ -69,7 +69,7 @@ public class MessageServiceImpl extends ServiceImpl<MtMessageMapper, MtMessage> 
         mtMsg.setIsRead(YesOrNoEnum.YES.getKey());
         mtMsg.setUpdateTime(new Date());
 
-        messageRepository.updateById(mtMsg);
+        mtMessageMapper.updateById(mtMsg);
     }
 
     /**
@@ -85,7 +85,7 @@ public class MessageServiceImpl extends ServiceImpl<MtMessageMapper, MtMessage> 
             return;
         }
 
-        MtMessage mtMsg = messageRepository.selectById(msgId);
+        MtMessage mtMsg = mtMessageMapper.selectById(msgId);
         if (mtMsg == null) {
             return;
         }
@@ -100,8 +100,7 @@ public class MessageServiceImpl extends ServiceImpl<MtMessageMapper, MtMessage> 
         }
 
         mtMsg.setUpdateTime(new Date());
-
-        messageRepository.updateById(mtMsg);
+        mtMessageMapper.updateById(mtMsg);
     }
 
     /**
@@ -112,7 +111,7 @@ public class MessageServiceImpl extends ServiceImpl<MtMessageMapper, MtMessage> 
      */
     @Override
     public MtMessage getOne(Integer userId) {
-        List<MtMessage> messageList = messageRepository.findNewMessage(userId, MessageEnum.POP_MSG.getKey());
+        List<MtMessage> messageList = mtMessageMapper.findNewMessage(userId, MessageEnum.POP_MSG.getKey());
 
         if (messageList.size() > 0) {
             return messageList.get(0);
@@ -128,6 +127,6 @@ public class MessageServiceImpl extends ServiceImpl<MtMessageMapper, MtMessage> 
      */
     @Override
     public List<MtMessage> getNeedSendList() {
-        return messageRepository.findNeedSendMessage(MessageEnum.SUB_MSG.getKey());
+        return mtMessageMapper.findNeedSendMessage(MessageEnum.SUB_MSG.getKey());
     }
 }

@@ -141,7 +141,7 @@ public class BackendCashierController extends BaseController {
     @RequestMapping(value = "/searchGoods", method = RequestMethod.POST)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('cashier:index')")
-    public ResponseObject searchGoods(@RequestBody Map<String, Object> param) throws BusinessCheckException {
+    public ResponseObject searchGoods(@RequestBody Map<String, Object> param) {
         String keyword =  param.get("keyword") == null ? "" : param.get("keyword").toString();
 
         AccountInfo accountInfo = TokenUtil.getAccountInfo();
@@ -240,7 +240,7 @@ public class BackendCashierController extends BaseController {
     @RequestMapping(value = "/getMemberInfo", method = RequestMethod.POST)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('cashier:index')")
-    public ResponseObject getMemberInfo(@RequestBody Map<String, Object> param) throws BusinessCheckException {
+    public ResponseObject getMemberInfo(@RequestBody Map<String, Object> param) {
         String keyword = param.get("keyword") == null ? "" : param.get("keyword").toString();
         AccountInfo accountInfo = TokenUtil.getAccountInfo();
         if (StringUtil.isEmpty(keyword)) {
@@ -275,7 +275,7 @@ public class BackendCashierController extends BaseController {
     @RequestMapping(value = "/getMemberInfoById/{userId}", method = RequestMethod.GET)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('cashier:index')")
-    public ResponseObject getMemberInfoById(@PathVariable("userId") String userId) throws BusinessCheckException {
+    public ResponseObject getMemberInfoById(@PathVariable("userId") String userId) {
         AccountInfo accountInfo = TokenUtil.getAccountInfo();
 
         if (StringUtil.isEmpty(userId)) {

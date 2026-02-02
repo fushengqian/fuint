@@ -11,7 +11,10 @@ import com.fuint.common.param.OrderListParam;
 import com.fuint.common.param.RechargeParam;
 import com.fuint.common.param.SettlementParam;
 import com.fuint.common.service.*;
-import com.fuint.common.util.*;
+import com.fuint.common.util.CommonUtil;
+import com.fuint.common.util.DateUtil;
+import com.fuint.common.util.SeqUtil;
+import com.fuint.common.util.TokenUtil;
 import com.fuint.framework.annoation.OperationServiceLog;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.pagination.PaginationResponse;
@@ -33,6 +36,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import weixin.popular.util.JsonUtil;
+
 import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
 import java.util.*;
@@ -190,7 +194,7 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
      * */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public PaginationResponse getUserOrderList(OrderListParam orderListParam) throws BusinessCheckException {
+    public PaginationResponse getUserOrderList(OrderListParam orderListParam) {
         Integer page = orderListParam.getPage() == null ? Constants.PAGE_NUMBER : orderListParam.getPage();
         Integer pageSize = orderListParam.getPageSize() == null ? Constants.PAGE_SIZE : orderListParam.getPageSize();
         String userId = orderListParam.getUserId() == null ? "" : orderListParam.getUserId();
@@ -1348,11 +1352,10 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
      * 根据订单号获取订单详情
      *
      * @param  orderSn 订单号
-     * @throws BusinessCheckException
      * @return
      */
     @Override
-    public UserOrderDto getOrderByOrderSn(String orderSn) throws BusinessCheckException {
+    public UserOrderDto getOrderByOrderSn(String orderSn) {
         MtOrder orderInfo = mtOrderMapper.findByOrderSn(orderSn);
         if (orderInfo == null) {
             return null;
@@ -1523,28 +1526,24 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
         // 处理购物订单
         UserOrderDto orderInfo = getOrderByOrderSn(mtOrder.getOrderSn());
         if (orderInfo.getType().equals(OrderTypeEnum.GOODS.getKey())) {
-            try {
-                List<OrderGoodsDto> goodsList = orderInfo.getGoods();
-                if (goodsList != null && goodsList.size() > 0) {
-                    for (OrderGoodsDto goodsDto : goodsList) {
-                        MtGoods mtGoods = goodsService.queryGoodsById(goodsDto.getGoodsId());
-                        if (mtGoods != null) {
-                            // 购买虚拟卡券商品发放处理
-                            if (mtGoods.getType().equals(GoodsTypeEnum.COUPON.getKey()) && mtGoods.getCouponIds() != null && StringUtil.isNotEmpty(mtGoods.getCouponIds())) {
-                                String couponIds[] = mtGoods.getCouponIds().split(",");
-                                if (couponIds.length > 0) {
-                                    for (int i = 0; i < couponIds.length; i++) {
-                                         userCouponService.buyCouponItem(orderInfo.getId(), Integer.parseInt(couponIds[i]), orderInfo.getUserId(), orderInfo.getUserInfo().getMobile(), goodsDto.getNum());
-                                    }
+            List<OrderGoodsDto> goodsList = orderInfo.getGoods();
+            if (goodsList != null && goodsList.size() > 0) {
+                for (OrderGoodsDto goodsDto : goodsList) {
+                    MtGoods mtGoods = goodsService.queryGoodsById(goodsDto.getGoodsId());
+                    if (mtGoods != null) {
+                        // 购买虚拟卡券商品发放处理
+                        if (mtGoods.getType().equals(GoodsTypeEnum.COUPON.getKey()) && mtGoods.getCouponIds() != null && StringUtil.isNotEmpty(mtGoods.getCouponIds())) {
+                            String couponIds[] = mtGoods.getCouponIds().split(",");
+                            if (couponIds.length > 0) {
+                                for (int i = 0; i < couponIds.length; i++) {
+                                     userCouponService.buyCouponItem(orderInfo.getId(), Integer.parseInt(couponIds[i]), orderInfo.getUserId(), orderInfo.getUserInfo().getMobile(), goodsDto.getNum());
                                 }
                             }
-                            // 将已销售数量+1
-                            goodsService.updateInitSale(mtGoods.getId(), goodsDto.getNum());
                         }
+                        // 将已销售数量+1
+                        goodsService.updateInitSale(mtGoods.getId(), goodsDto.getNum());
                     }
                 }
-            } catch (BusinessCheckException e) {
-                logger.error("会员购买的卡券发送给会员失败......" + e.getMessage());
             }
         }
 
@@ -2025,11 +2024,10 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
      * @param couponId 卡券ID
      * @param isUsePoint 使用积分数量
      * @param orderMode 订单模式
-     * @throws BusinessCheckException
      * @return
      * */
     @Override
-    public Map<String, Object> calculateCartGoods(Integer merchantId, Integer userId, List<MtCart> cartList, Integer couponId, boolean isUsePoint, String platform, String orderMode) throws BusinessCheckException {
+    public Map<String, Object> calculateCartGoods(Integer merchantId, Integer userId, List<MtCart> cartList, Integer couponId, boolean isUsePoint, String platform, String orderMode) {
         MtUser userInfo = memberService.queryMemberById(userId);
 
         // 设置是否不能用积分抵扣

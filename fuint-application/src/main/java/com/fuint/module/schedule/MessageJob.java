@@ -4,7 +4,6 @@ import com.fuint.common.service.MessageService;
 import com.fuint.common.service.WeixinService;
 import com.fuint.common.util.RedisLock;
 import com.fuint.common.util.SeqUtil;
-import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.repository.model.MtMessage;
 import com.fuint.utils.StringUtil;
 import org.slf4j.Logger;
@@ -59,7 +58,7 @@ public class MessageJob {
 
     @Scheduled(cron = "${message.job.time:0 0/1 * * * ?}")
     @Transactional(rollbackFor = Exception.class)
-    public void dealMessage() throws BusinessCheckException {
+    public void dealMessage() {
         String lockKey = "lock:messageJob:deal";
         // 唯一标识当前请求/线程
         String requestId = SeqUtil.getUUID();
@@ -73,13 +72,15 @@ public class MessageJob {
                     if (dataList.size() > 0) {
                         int dealNum = 0;
                         for (MtMessage mtMessage : dataList) {
-                            Date nowTime = new Date();
-                            // 如果到了发送时间，发送并删除该条消息
-                            if (dealNum <= MAX_SEND_NUM && mtMessage.getSendTime().before(nowTime) && StringUtil.isNotEmpty(mtMessage.getParams())) {
-                                boolean result = weixinService.doSendSubscribeMessage(mtMessage.getMerchantId(), mtMessage.getParams());
-                                messageService.sendMessage(mtMessage.getId(), result);
-                                dealNum++;
-                            }
+                             Date nowTime = new Date();
+                             // 如果到了发送时间，发送并删除该条消息
+                             if (dealNum <= MAX_SEND_NUM && mtMessage.getSendTime().before(nowTime) && StringUtil.isNotEmpty(mtMessage.getParams())) {
+                                 boolean result = weixinService.doSendSubscribeMessage(mtMessage.getMerchantId(), mtMessage.getParams());
+                                 if (result) {
+                                     messageService.sendMessage(mtMessage.getId(), true);
+                                 }
+                                 dealNum++;
+                             }
                         }
                     }
                     logger.info("MessageJobEnd!!!");

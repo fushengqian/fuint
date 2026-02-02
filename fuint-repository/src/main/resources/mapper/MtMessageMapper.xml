@@ -5,6 +5,6 @@
         select * from mt_message o where o.USER_ID = #{userId} and o.STATUS = 'A' and o.TYPE = #{type} and o.IS_READ = 'N' order by o.ID desc
     </select>
     <select id="findNeedSendMessage" resultType="com.fuint.repository.model.MtMessage">
-        select * from mt_message t where t.TYPE = #{type} and t.IS_SEND = 'N' order by t.SEND_TIME asc
+        select * from mt_message t where t.TYPE = #{type} and t.IS_SEND = 'N' and TIMESTAMPDIFF(HOUR, CREATE_TIME, NOW())  <![CDATA[ <= ]]> 1 order by t.ID desc
     </select>
 </mapper>

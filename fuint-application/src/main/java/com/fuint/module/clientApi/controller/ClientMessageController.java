@@ -60,7 +60,7 @@ public class ClientMessageController extends BaseController {
     @ApiOperation(value = "查询最新一条未读消息")
     @RequestMapping(value = "/getOne", method = RequestMethod.GET)
     @CrossOrigin
-    public ResponseObject getOne() throws BusinessCheckException {
+    public ResponseObject getOne() {
         UserInfo mtUser = TokenUtil.getUserInfo();
         if (null == mtUser) {
             return getSuccessResult(false);
@@ -85,7 +85,7 @@ public class ClientMessageController extends BaseController {
     @ApiOperation(value = "将消息置为已读")
     @RequestMapping(value = "/readed", method = RequestMethod.GET)
     @CrossOrigin
-    public ResponseObject readed(HttpServletRequest request) {
+    public ResponseObject setRead(HttpServletRequest request) {
         UserInfo mtUser = TokenUtil.getUserInfo();
 
         Integer msgId =  request.getParameter("msgId") == null ? 0 :Integer.parseInt(request.getParameter("msgId"));

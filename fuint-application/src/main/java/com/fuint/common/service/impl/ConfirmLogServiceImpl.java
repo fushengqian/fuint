@@ -10,7 +10,6 @@ import com.fuint.common.service.ConfirmLogService;
 import com.fuint.common.service.CouponService;
 import com.fuint.common.service.MemberService;
 import com.fuint.common.service.StoreService;
-import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.pagination.PaginationResponse;
 import com.fuint.repository.mapper.MtConfirmLogMapper;
 import com.fuint.repository.model.MtConfirmLog;
@@ -62,7 +61,7 @@ public class ConfirmLogServiceImpl extends ServiceImpl<MtConfirmLogMapper, MtCon
      * @return
      */
     @Override
-    public PaginationResponse<ConfirmLogDto> queryConfirmLogListByPagination(ConfirmLogPage confirmLogPage) throws BusinessCheckException {
+    public PaginationResponse<ConfirmLogDto> queryConfirmLogListByPagination(ConfirmLogPage confirmLogPage) {
         Page<MtConfirmLog> pageHelper = PageHelper.startPage(confirmLogPage.getPage(), confirmLogPage.getPageSize());
         LambdaQueryWrapper<MtConfirmLog> lambdaQueryWrapper = Wrappers.lambdaQuery();
         lambdaQueryWrapper.ne(MtConfirmLog::getStatus, StatusEnum.DISABLE.getKey());

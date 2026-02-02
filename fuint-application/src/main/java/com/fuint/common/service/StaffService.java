@@ -48,7 +48,6 @@ public interface StaffService extends IService<MtStaff> {
      * @param staffId 员工ID
      * @param status 状态
      * @param operator 操作人
-     * @throws BusinessCheckException
      * @return
      */
     Integer updateAuditedStatus(Integer staffId, String status, String operator);

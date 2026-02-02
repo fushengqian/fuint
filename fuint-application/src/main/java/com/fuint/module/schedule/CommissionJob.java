@@ -6,16 +6,16 @@ import com.fuint.common.service.OrderService;
 import com.fuint.common.util.DateUtil;
 import com.fuint.common.util.RedisLock;
 import com.fuint.common.util.SeqUtil;
-import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.repository.model.MtOrder;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.EnableScheduling;
-import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.core.env.Environment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
+import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.util.*;
 
 /**
@@ -66,7 +66,7 @@ public class CommissionJob {
 
     @Scheduled(cron = "${commission.job.time:0 0/5 * * * ?}")
     @Transactional(rollbackFor = Exception.class)
-    public void dealOrder() throws BusinessCheckException {
+    public void dealOrder() {
         String lockKey = "lock:commissionJob:deal";
         // 唯一标识当前请求/线程
         String requestId = SeqUtil.getUUID();

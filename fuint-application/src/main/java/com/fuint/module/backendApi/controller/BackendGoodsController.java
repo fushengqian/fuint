@@ -495,7 +495,7 @@ public class BackendGoodsController extends BaseController {
         Map<String, Object> result = new HashMap();
         result.put("goodsInfo", goodsInfo);
 
-        logger.info("保存商品信息, goodsId = {},account = {}", goodsInfo.getId(), accountInfo.getAccountName());
+        logger.info("保存商品信息, goodsId = {},accountName = {}", goodsInfo.getId(), accountInfo.getAccountName());
 
         return getSuccessResult(result);
     }

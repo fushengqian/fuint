@@ -55,7 +55,7 @@ public class MerchantStaffController extends BaseController {
     @ApiOperation(value = "员工列表")
     @RequestMapping(value = "/staffList", method = RequestMethod.POST)
     @CrossOrigin
-    public ResponseObject staffList(HttpServletRequest request, @RequestBody StaffListRequest requestParams) throws BusinessCheckException {
+    public ResponseObject staffList(HttpServletRequest request, @RequestBody StaffListRequest requestParams) {
         UserInfo userInfo = TokenUtil.getUserInfo();
         MtUser mtUser = memberService.queryMemberById(userInfo.getId());
 

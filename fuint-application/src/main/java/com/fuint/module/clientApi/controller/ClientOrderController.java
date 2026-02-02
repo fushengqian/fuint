@@ -139,7 +139,7 @@ public class ClientOrderController extends BaseController {
     @ApiOperation(value = "获取待办订单数量")
     @RequestMapping(value = "/todoCounts", method = RequestMethod.GET)
     @CrossOrigin
-    public ResponseObject todoCounts() throws BusinessCheckException {
+    public ResponseObject todoCounts() {
         UserInfo userInfo = TokenUtil.getUserInfo();
 
         Map<String, Object> result = new HashMap<>();

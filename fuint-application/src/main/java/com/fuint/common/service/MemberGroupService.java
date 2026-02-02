@@ -28,7 +28,7 @@ public interface MemberGroupService extends IService<MtUserGroup> {
      * 新增会员分组
      *
      * @param  memberGroupDto
-     * @throws BusinessCheckException
+     * @return
      */
     MtUserGroup addMemberGroup(MemberGroupDto memberGroupDto);
 

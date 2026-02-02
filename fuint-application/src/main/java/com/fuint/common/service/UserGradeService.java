@@ -49,7 +49,6 @@ public interface UserGradeService extends IService<MtUserGrade> {
      * @param merchantId
      * @param gradeId ID
      * @param userId
-     * @throws BusinessCheckException
      * @return
      */
     MtUserGrade queryUserGradeById(Integer merchantId, Integer gradeId, Integer userId);
@@ -59,7 +58,6 @@ public interface UserGradeService extends IService<MtUserGrade> {
      *
      * @param  id      ID
      * @param  operator 操作人
-     * @throws BusinessCheckException
      * @return
      */
     Integer deleteUserGrade(Integer id, String operator);
@@ -68,7 +66,6 @@ public interface UserGradeService extends IService<MtUserGrade> {
      * 获取默认的会员等级
      *
      * @param merchantId
-     * @throws BusinessCheckException
      * @return
      */
     MtUserGrade getInitUserGrade(Integer merchantId);
@@ -78,7 +75,6 @@ public interface UserGradeService extends IService<MtUserGrade> {
      *
      * @param  merchantId
      * @param  userInfo
-     * @throws BusinessCheckException
      * @return
      * */
     List<MtUserGrade> getPayUserGradeList(Integer merchantId, MtUser userInfo);
