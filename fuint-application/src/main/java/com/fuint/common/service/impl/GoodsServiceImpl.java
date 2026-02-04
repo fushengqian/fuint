@@ -94,7 +94,7 @@ public class GoodsServiceImpl extends ServiceImpl<MtGoodsMapper, MtGoods> implem
      * @return
      */
     @Override
-    public PaginationResponse<GoodsDto> queryGoodsListByPagination(GoodsListParam param) throws BusinessCheckException {
+    public PaginationResponse<GoodsDto> queryGoodsListByPagination(GoodsListParam param) {
         LambdaQueryWrapper<MtGoods> lambdaQueryWrapper = Wrappers.lambdaQuery();
         lambdaQueryWrapper.ne(MtGoods::getStatus, StatusEnum.DISABLE.getKey());
 
@@ -129,7 +129,7 @@ public class GoodsServiceImpl extends ServiceImpl<MtGoodsMapper, MtGoods> implem
             lambdaQueryWrapper.eq(MtGoods::getType, type);
         }
         Integer cateId = param.getCateId();
-        if (cateId != null) {
+        if (cateId != null && cateId > 0) {
             lambdaQueryWrapper.eq(MtGoods::getCateId, cateId);
         }
         String hasStock = param.getStock();

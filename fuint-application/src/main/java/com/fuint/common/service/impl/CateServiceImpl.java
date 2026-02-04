@@ -29,6 +29,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.util.*;
 
 /**
@@ -59,7 +60,7 @@ public class CateServiceImpl extends ServiceImpl<MtGoodsCateMapper, MtGoodsCate>
      * @return
      */
     @Override
-    public PaginationResponse<GoodsCateDto> queryCateListByPagination(GoodsCatePage catePage) throws BusinessCheckException {
+    public PaginationResponse<GoodsCateDto> queryCateListByPagination(GoodsCatePage catePage) {
         Page<MtGoodsCate> pageHelper = PageHelper.startPage(catePage.getPage(), catePage.getPageSize());
         LambdaQueryWrapper<MtGoodsCate> lambdaQueryWrapper = Wrappers.lambdaQuery();
         lambdaQueryWrapper.ne(MtGoodsCate::getStatus, StatusEnum.DISABLE.getKey());
@@ -148,7 +149,7 @@ public class CateServiceImpl extends ServiceImpl<MtGoodsCateMapper, MtGoodsCate>
      * 根据ID获取分类信息
      *
      * @param  id 分类ID
-     * @throws BusinessCheckException
+     * @return
      */
     @Override
     public MtGoodsCate queryCateById(Integer id) {

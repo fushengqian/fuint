@@ -109,7 +109,6 @@ public class ClientSmsController extends BaseController {
         }
 
         // 发送短信
-        Map<Boolean,List<String>> result;
         List<String> mobileList = new ArrayList<>();
         mobileList.add(mobile);
 
@@ -119,7 +118,7 @@ public class ClientSmsController extends BaseController {
         // 短信模板
         Map<String, String> params = new HashMap<>();
         params.put("code", verifyCode);
-        result = sendSmsService.sendSms(merchantId,"login-code", mobileList, params);
+        Map<Boolean,List<String>> result = sendSmsService.sendSms(merchantId,"login-code", mobileList, params);
         return getSuccessResult(result);
     }
 }

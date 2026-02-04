@@ -30,7 +30,7 @@ public interface GoodsService {
      * @param  param
      * @return
      */
-    PaginationResponse<GoodsDto> queryGoodsListByPagination(GoodsListParam param) throws BusinessCheckException;
+    PaginationResponse<GoodsDto> queryGoodsListByPagination(GoodsListParam param);
 
     /**
      * 保存商品
