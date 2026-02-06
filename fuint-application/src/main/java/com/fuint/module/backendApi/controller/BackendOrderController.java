@@ -209,7 +209,7 @@ public class BackendOrderController extends BaseController {
     @RequestMapping(value = "/save", method = RequestMethod.POST)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('order:edit')")
-    public ResponseObject save(HttpServletRequest request, @RequestBody Map<String, Object> param) throws BusinessCheckException {
+    public ResponseObject save(@RequestBody Map<String, Object> param) throws BusinessCheckException {
         Integer orderId = param.get("orderId") == null ? 0 : Integer.parseInt(param.get("orderId").toString());
         String status = param.get("status") == null ? "" : param.get("status").toString();
         String amount = param.get("amount") == null ? "" : param.get("amount").toString();
@@ -416,7 +416,7 @@ public class BackendOrderController extends BaseController {
     @RequestMapping(value = "/export", method = RequestMethod.GET)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('order:index')")
-    public void export(HttpServletRequest request, HttpServletResponse response, OrderListParam params) throws Exception {
+    public void export(HttpServletRequest request, HttpServletResponse response, OrderListParam params) {
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getParameter("token"));
 
         params.setPage(Constants.PAGE_NUMBER);

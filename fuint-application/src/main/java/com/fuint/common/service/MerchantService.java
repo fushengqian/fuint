@@ -41,7 +41,6 @@ public interface MerchantService extends IService<MtMerchant> {
      * 根据ID获取商户信息
      *
      * @param  id 商户ID
-     * @throws BusinessCheckException
      * @return
      */
     MtMerchant queryMerchantById(Integer id);
@@ -50,7 +49,6 @@ public interface MerchantService extends IService<MtMerchant> {
      * 根据名称获取商户信息
      *
      * @param  name 商户名称
-     * @throws BusinessCheckException
      * @return
      */
     MtMerchant queryMerchantByName(String name);

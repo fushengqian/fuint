@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fuint.common.enums.StatusEnum;
 import com.fuint.common.service.UserActionService;
+import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.pagination.PaginationRequest;
 import com.fuint.framework.pagination.PaginationResponse;
 import com.fuint.repository.mapper.MtUserActionMapper;
@@ -83,9 +84,9 @@ public class UserActionServiceImpl extends ServiceImpl<MtUserActionMapper, MtUse
      * @return
      */
     @Override
-    public boolean addUserAction(MtUserAction reqUserAction) {
+    public boolean addUserAction(MtUserAction reqUserAction) throws BusinessCheckException {
         if (reqUserAction.getAction() == null || reqUserAction.getUserId() == null) {
-            return false;
+            throw new BusinessCheckException("会员行为信息不完整");
         }
 
         Map<String, Object> params = new HashMap<>();

@@ -200,7 +200,7 @@ public class ClientBookController extends BaseController {
     @ApiOperation(value = "获取我的预约")
     @RequestMapping(value = "/myBook", method = RequestMethod.GET)
     @CrossOrigin
-    public ResponseObject myBook(HttpServletRequest request) throws BusinessCheckException {
+    public ResponseObject myBook(HttpServletRequest request) {
         String status = request.getParameter("status") == null ? "" : request.getParameter("status");
         BookItemPage bookItemPage = new BookItemPage();
         Integer merchantId = merchantService.getMerchantId(request.getHeader("merchantNo"));
@@ -256,7 +256,7 @@ public class ClientBookController extends BaseController {
     @ApiOperation(value="获取我的预约详情", notes="根据ID获取我的预约详情")
     @RequestMapping(value = "/myBookDetail", method = RequestMethod.POST)
     @CrossOrigin
-    public ResponseObject myBookDetail(@RequestBody BookDetailParam param) throws BusinessCheckException {
+    public ResponseObject myBookDetail(@RequestBody BookDetailParam param) {
         Integer bookId = param.getBookId() == null ? 0 : param.getBookId();
 
         BookItemDto bookInfo = bookItemService.getBookDetail(bookId);

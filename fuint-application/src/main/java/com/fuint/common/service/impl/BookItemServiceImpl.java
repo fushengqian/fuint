@@ -229,14 +229,13 @@ public class BookItemServiceImpl extends ServiceImpl<MtBookItemMapper, MtBookIte
      * 根据ID获取预约订单详情
      *
      * @param  id 预约订单ID
-     * @throws BusinessCheckException
      * @return
      */
     @Override
-    public BookItemDto getBookDetail(Integer id) throws BusinessCheckException {
+    public BookItemDto getBookDetail(Integer id) {
         MtBookItem mtBookItem = mtBookItemMapper.selectById(id);
         if (mtBookItem == null) {
-            throw new BusinessCheckException("预约不存在.");
+            return null;
         }
         BookItemDto bookItemDto = new BookItemDto();
         BeanUtils.copyProperties(mtBookItem, bookItemDto);

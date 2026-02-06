@@ -506,7 +506,6 @@ public class GoodsServiceImpl extends ServiceImpl<MtGoodsMapper, MtGoods> implem
      * 根据ID获取商品信息
      *
      * @param  id 商品ID
-     * @throws BusinessCheckException
      * @return
      */
     @Override
@@ -523,7 +522,6 @@ public class GoodsServiceImpl extends ServiceImpl<MtGoodsMapper, MtGoods> implem
      *
      * @param  merchantId 商户ID
      * @param  goodsNo 商品编码
-     * @throws BusinessCheckException
      * @return
      */
     @Override
@@ -535,7 +533,7 @@ public class GoodsServiceImpl extends ServiceImpl<MtGoodsMapper, MtGoods> implem
      * 根据条码获取sku信息
      *
      * @param  skuNo skuNo
-     * @throws BusinessCheckException
+     * @return
      * */
     @Override
     public MtGoodsSku getSkuInfoBySkuNo(String skuNo) {

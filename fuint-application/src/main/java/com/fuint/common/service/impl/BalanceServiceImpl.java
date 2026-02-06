@@ -80,7 +80,7 @@ public class BalanceServiceImpl extends ServiceImpl<MtBalanceMapper, MtBalance> 
      * @return
      */
     @Override
-    public PaginationResponse<BalanceDto> queryBalanceListByPagination(BalancePage balancePage) throws BusinessCheckException {
+    public PaginationResponse<BalanceDto> queryBalanceListByPagination(BalancePage balancePage) {
         LambdaQueryWrapper<MtBalance> lambdaQueryWrapper = Wrappers.lambdaQuery();
         lambdaQueryWrapper.ne(MtBalance::getStatus, StatusEnum.DISABLE.getKey());
 

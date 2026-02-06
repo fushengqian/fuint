@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fuint.common.dto.CommissionRelationDto;
+import com.fuint.common.enums.StatusEnum;
 import com.fuint.common.param.CommissionRelationPage;
 import com.fuint.common.service.CommissionRelationService;
 import com.fuint.common.service.MemberService;
@@ -11,21 +12,21 @@ import com.fuint.common.service.MerchantService;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.pagination.PaginationResponse;
 import com.fuint.repository.mapper.MtCommissionRelationMapper;
-import com.fuint.common.enums.StatusEnum;
 import com.fuint.repository.model.MtCommissionRelation;
 import com.fuint.repository.model.MtUser;
 import com.fuint.utils.StringUtil;
+import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import lombok.AllArgsConstructor;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.github.pagehelper.Page;
 import org.springframework.beans.BeanUtils;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+
 import java.util.*;
 
 /**
@@ -59,7 +60,7 @@ public class CommissionRelationServiceImpl extends ServiceImpl<MtCommissionRelat
      * @return
      */
     @Override
-    public PaginationResponse<CommissionRelationDto> queryRelationByPagination(CommissionRelationPage commissionRelationPage) throws BusinessCheckException {
+    public PaginationResponse<CommissionRelationDto> queryRelationByPagination(CommissionRelationPage commissionRelationPage) {
         Page<MtCommissionRelation> pageHelper = PageHelper.startPage(commissionRelationPage.getPage(), commissionRelationPage.getPageSize());
         LambdaQueryWrapper<MtCommissionRelation> lambdaQueryWrapper = Wrappers.lambdaQuery();
         lambdaQueryWrapper.ne(MtCommissionRelation::getStatus, StatusEnum.DISABLE.getKey());
@@ -123,7 +124,7 @@ public class CommissionRelationServiceImpl extends ServiceImpl<MtCommissionRelat
      * @retrurn
      */
     @Override
-    public void setCommissionRelation(MtUser userInfo, String shareId) throws BusinessCheckException {
+    public void setCommissionRelation(MtUser userInfo, String shareId) {
         if (userInfo == null || StringUtil.isBlank(shareId) || Integer.parseInt(shareId) <= 0) {
             return;
         }

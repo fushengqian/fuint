@@ -100,7 +100,7 @@ public class ClientPayController extends BaseController {
     @ApiOperation(value = "支付前查询")
     @RequestMapping(value = "/prePay", method = RequestMethod.GET)
     @CrossOrigin
-    public ResponseObject prePay(HttpServletRequest request) throws BusinessCheckException {
+    public ResponseObject prePay(HttpServletRequest request) {
         Integer storeId = StringUtil.isEmpty(request.getHeader("storeId")) ? 0 : Integer.parseInt(request.getHeader("storeId"));
         String useFor = request.getParameter("type") == null ? "" : request.getParameter("type");
         String merchantNo = request.getHeader("merchantNo");

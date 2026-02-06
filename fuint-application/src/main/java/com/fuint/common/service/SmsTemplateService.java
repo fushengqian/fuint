@@ -31,6 +31,7 @@ public interface SmsTemplateService extends IService<MtSmsTemplate> {
      *
      * @param reqSmsTemplateDto
      * @throws BusinessCheckException
+     * @return
      */
     MtSmsTemplate saveSmsTemplate(SmsTemplateDto reqSmsTemplateDto) throws BusinessCheckException;
 

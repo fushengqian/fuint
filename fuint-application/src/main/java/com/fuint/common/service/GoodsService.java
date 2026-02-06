@@ -66,19 +66,17 @@ public interface GoodsService {
      *
      * @param  merchantId 商户ID
      * @param  goodsNo 商品编码
-     * @throws BusinessCheckException
      * @return
      */
-    MtGoods queryGoodsByGoodsNo(Integer merchantId, String goodsNo) throws BusinessCheckException;
+    MtGoods queryGoodsByGoodsNo(Integer merchantId, String goodsNo);
 
     /**
      * 根据条码获取sku信息
      *
      * @param  skuNo skuNo
-     * @throws BusinessCheckException
      * @return
      * */
-    MtGoodsSku getSkuInfoBySkuNo(String skuNo) throws BusinessCheckException;
+    MtGoodsSku getSkuInfoBySkuNo(String skuNo);
 
     /**
      * 根据ID获取商品详情

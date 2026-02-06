@@ -13,7 +13,6 @@ import com.fuint.repository.mapper.TSourceMapper;
 import com.fuint.repository.model.TDutySource;
 import com.fuint.repository.model.TSource;
 import com.fuint.common.domain.TreeNode;
-import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.utils.ArrayUtil;
 import com.fuint.utils.StringUtil;
 import lombok.AllArgsConstructor;
@@ -109,7 +108,6 @@ public class SourceServiceImpl extends ServiceImpl<TSourceMapper, TSource> imple
      *
      * @param  merchantId 商户ID
      * @param  accountId 账号ID
-     * @throws BusinessCheckException
      * @return
      */
     @Override

@@ -88,7 +88,7 @@ public class CommissionCashServiceImpl extends ServiceImpl<MtCommissionCashMappe
      * @return
      */
     @Override
-    public PaginationResponse<CommissionCashDto> queryCommissionCashByPagination(CommissionCashPage commissionCashPage) throws BusinessCheckException {
+    public PaginationResponse<CommissionCashDto> queryCommissionCashByPagination(CommissionCashPage commissionCashPage) {
         Page<MtCommissionCash> pageHelper = PageHelper.startPage(commissionCashPage.getPage(), commissionCashPage.getPageSize());
         LambdaQueryWrapper<MtCommissionCash> lambdaQueryWrapper = Wrappers.lambdaQuery();
         String status = commissionCashPage.getStatus();

@@ -93,7 +93,7 @@ public class BackendCashierController extends BaseController {
     @RequestMapping(value = "/init/{userId}", method = RequestMethod.GET)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('cashier:index')")
-    public ResponseObject init(HttpServletRequest request, @PathVariable("userId") Integer userId) throws BusinessCheckException {
+    public ResponseObject init(HttpServletRequest request, @PathVariable("userId") Integer userId) {
         Integer page = request.getParameter("page") == null ? Constants.PAGE_NUMBER : Integer.parseInt(request.getParameter("page"));
         Integer pageSize = request.getParameter("pageSize") == null ? Constants.PAGE_SIZE : Integer.parseInt(request.getParameter("pageSize"));
         Integer cateId = request.getParameter("cateId") == null ? 0 : Integer.parseInt(request.getParameter("cateId"));
@@ -334,7 +334,7 @@ public class BackendCashierController extends BaseController {
     @RequestMapping(value = "/getHangUpList", method = RequestMethod.GET)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('cashier:index')")
-    public ResponseObject getHangUpList() throws BusinessCheckException {
+    public ResponseObject getHangUpList() {
         AccountInfo accountInfo = TokenUtil.getAccountInfo();
 
         List<HangUpDto> dataList = new ArrayList<>();

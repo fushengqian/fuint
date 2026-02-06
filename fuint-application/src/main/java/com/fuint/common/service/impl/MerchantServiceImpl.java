@@ -195,7 +195,6 @@ public class MerchantServiceImpl extends ServiceImpl<MtMerchantMapper, MtMerchan
      * 根据ID获取商户信息
      *
      * @param  id 商户ID
-     * @throws BusinessCheckException
      * @return
      */
     @Override
@@ -210,7 +209,6 @@ public class MerchantServiceImpl extends ServiceImpl<MtMerchantMapper, MtMerchan
      * 根据名称获取商户信息
      *
      * @param  name 商户名称
-     * @throws BusinessCheckException
      * @return
      */
     @Override

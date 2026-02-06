@@ -122,7 +122,7 @@ public class ClientMessageController extends BaseController {
     @ApiOperation(value = "微信订阅消息模板")
     @RequestMapping(value = "/getSubTemplate", method = RequestMethod.GET)
     @CrossOrigin
-    public ResponseObject getSubTemplate(HttpServletRequest request) throws BusinessCheckException {
+    public ResponseObject getSubTemplate(HttpServletRequest request) {
         String merchantNo = request.getHeader("merchantNo");
         String keys = request.getParameter("keys") == null ? "" :request.getParameter("keys");
 

@@ -25,7 +25,7 @@ public interface BookService extends IService<MtBook> {
      * @param bookPage
      * @return
      */
-    PaginationResponse<BookDto> queryBookListByPagination(BookPage bookPage) throws BusinessCheckException;
+    PaginationResponse<BookDto> queryBookListByPagination(BookPage bookPage);
 
     /**
      * 添加预约
@@ -41,7 +41,7 @@ public interface BookService extends IService<MtBook> {
      *
      * @param  id 预约项目ID
      * @param fillDate 填充日期
-     * @throws BusinessCheckException
+     * @throws ParseException
      * @return
      */
     BookDto getBookById(Integer id, boolean fillDate) throws ParseException;

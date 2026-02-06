@@ -159,7 +159,7 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
      * @return
      * */
     @Override
-    public MtUser getCurrentUserInfo(HttpServletRequest request, Integer userId, String token) throws BusinessCheckException {
+    public MtUser getCurrentUserInfo(HttpServletRequest request, Integer userId, String token) {
         MtUser mtUser = null;
 
         // 没有会员信息，则查询是否是后台收银员下单

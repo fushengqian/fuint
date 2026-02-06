@@ -24,7 +24,7 @@ public interface CommissionCashService extends IService<MtCommissionCash> {
      * @param commissionCashPage
      * @return
      */
-    PaginationResponse<CommissionCashDto> queryCommissionCashByPagination(CommissionCashPage commissionCashPage) throws BusinessCheckException;
+    PaginationResponse<CommissionCashDto> queryCommissionCashByPagination(CommissionCashPage commissionCashPage);
 
     /**
      * 计算订单分销提成

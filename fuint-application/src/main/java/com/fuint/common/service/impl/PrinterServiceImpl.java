@@ -8,6 +8,7 @@ import com.fuint.common.dto.OrderGoodsDto;
 import com.fuint.common.dto.UserOrderDto;
 import com.fuint.common.enums.*;
 import com.fuint.common.param.PrinterPage;
+import com.fuint.common.service.PrinterService;
 import com.fuint.common.service.SettingService;
 import com.fuint.common.util.HashSignUtil;
 import com.fuint.common.util.NoteFormatter;
@@ -16,18 +17,17 @@ import com.fuint.common.vo.printer.*;
 import com.fuint.framework.annoation.OperationServiceLog;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.pagination.PaginationResponse;
-import com.fuint.repository.model.MtPrinter;
-import com.fuint.common.service.PrinterService;
 import com.fuint.repository.mapper.MtPrinterMapper;
+import com.fuint.repository.model.MtPrinter;
 import com.fuint.repository.model.MtSetting;
 import com.fuint.repository.model.MtStore;
 import com.fuint.utils.StringUtil;
+import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import lombok.AllArgsConstructor;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.github.pagehelper.Page;
 import org.springframework.beans.BeanUtils;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.core.env.Environment;
@@ -35,6 +35,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.util.*;
 
 /**
@@ -343,7 +344,6 @@ public class PrinterServiceImpl extends ServiceImpl<MtPrinterMapper, MtPrinter> 
     * 根据条件搜索打印机
     *
     * @param params 查询参数
-    * @throws BusinessCheckException
     * @return
     * */
     @Override

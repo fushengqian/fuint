@@ -174,7 +174,6 @@ public class RefundServiceImpl extends ServiceImpl<MtRefundMapper, MtRefund> imp
      * 获取用户售后订单列表
      *
      * @param  paramMap 查询参数
-     * @throws BusinessCheckException
      * @return
      * */
     @Override
@@ -245,7 +244,6 @@ public class RefundServiceImpl extends ServiceImpl<MtRefundMapper, MtRefund> imp
      * 创建售后订单
      *
      * @param refundDto 订单参数
-     * @throws BusinessCheckException
      * @return
      */
     @Override
@@ -328,7 +326,6 @@ public class RefundServiceImpl extends ServiceImpl<MtRefundMapper, MtRefund> imp
      * 根据订单ID获取售后订单信息
      *
      * @param  orderId 订单ID
-     * @throws BusinessCheckException
      * @return
      */
     @Override

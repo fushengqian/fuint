@@ -3,7 +3,6 @@ package com.fuint.common.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.fuint.common.domain.TreeSelect;
 import com.fuint.common.vo.RouterVo;
-import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.common.domain.TreeNode;
 import com.fuint.repository.model.TSource;
 import java.util.List;
@@ -47,10 +46,9 @@ public interface SourceService extends IService<TSource> {
      *
      * @param  merchantId 商户ID
      * @param  accountId 账号ID
-     * @throws BusinessCheckException
      * @return
      */
-    List<TSource> getMenuListByUserId(Integer merchantId, Integer accountId) throws BusinessCheckException;
+    List<TSource> getMenuListByUserId(Integer merchantId, Integer accountId);
 
     /**
      * 构建前端路由所需要的菜单

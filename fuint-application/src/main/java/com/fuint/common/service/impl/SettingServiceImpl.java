@@ -11,7 +11,6 @@ import com.fuint.framework.annoation.OperationServiceLog;
 import com.fuint.repository.mapper.MtSettingMapper;
 import com.fuint.repository.model.MtSetting;
 import com.fuint.common.service.SettingService;
-import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.utils.StringUtil;
 import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Lazy;
@@ -52,7 +51,6 @@ public class SettingServiceImpl extends ServiceImpl<MtSettingMapper, MtSetting> 
      * @param  merchantId 商户ID
      * @param  type 类型
      * @param  name 配置名称
-     * @throws BusinessCheckException
      * @return
      */
     @Override
@@ -68,7 +66,6 @@ public class SettingServiceImpl extends ServiceImpl<MtSettingMapper, MtSetting> 
      * 保存配置
      *
      * @param  mtSetting 配置参数
-     * @throws BusinessCheckException
      * @return
      */
     @Override
@@ -113,7 +110,6 @@ public class SettingServiceImpl extends ServiceImpl<MtSettingMapper, MtSetting> 
      *
      * @param  merchantId 商户ID
      * @param  type 配置类型
-     * @throws BusinessCheckException
      * @return
      */
     @Override
@@ -127,7 +123,6 @@ public class SettingServiceImpl extends ServiceImpl<MtSettingMapper, MtSetting> 
      * @param  merchantId 商户ID
      * @param  type 类型
      * @param  name 配置名称
-     * @throws BusinessCheckException
      * @return
      */
     @Override
@@ -142,7 +137,6 @@ public class SettingServiceImpl extends ServiceImpl<MtSettingMapper, MtSetting> 
      * @param  storeId 店铺ID
      * @param  type 类型
      * @param  name 配置名称
-     * @throws BusinessCheckException
      * @return
      */
     @Override
@@ -183,7 +177,7 @@ public class SettingServiceImpl extends ServiceImpl<MtSettingMapper, MtSetting> 
      * @return
      * */
     @Override
-    public List<ParamDto> getPayTypeList(Integer merchantId, Integer storeId, String platform) throws BusinessCheckException {
+    public List<ParamDto> getPayTypeList(Integer merchantId, Integer storeId, String platform) {
         List<ParamDto> payTypeList = new ArrayList<>();
 
         // 微信jsapi

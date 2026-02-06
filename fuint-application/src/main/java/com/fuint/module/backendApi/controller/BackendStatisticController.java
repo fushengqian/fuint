@@ -66,7 +66,7 @@ public class BackendStatisticController extends BaseController {
     @ApiOperation(value = "数据概况")
     @RequestMapping(value = "/main", method = RequestMethod.POST)
     @CrossOrigin
-    public ResponseObject main(@RequestBody StatisticParam param) throws BusinessCheckException, ParseException {
+    public ResponseObject main(@RequestBody StatisticParam param) throws ParseException {
         String startTimeStr = param.getStartTime();
         String endTimeStr = param.getEndTime();
         Integer storeId = param.getStoreId();
@@ -164,7 +164,7 @@ public class BackendStatisticController extends BaseController {
     @ApiOperation(value = "获取会员数量")
     @RequestMapping(value = "/totalMember", method = RequestMethod.GET)
     @CrossOrigin
-    public ResponseObject totalMember() throws BusinessCheckException {
+    public ResponseObject totalMember() {
         AccountInfo accountInfo = TokenUtil.getAccountInfo();
 
         Integer merchantId = accountInfo.getMerchantId();

@@ -22,15 +22,14 @@ public interface CommissionRelationService extends IService<MtCommissionRelation
      * @param commissionRelationPage
      * @return
      */
-    PaginationResponse<CommissionRelationDto> queryRelationByPagination(CommissionRelationPage commissionRelationPage) throws BusinessCheckException;
+    PaginationResponse<CommissionRelationDto> queryRelationByPagination(CommissionRelationPage commissionRelationPage);
 
     /**
      * 设置分销提成关系
      *
      * @param  userInfo 会员信息
      * @param  shareId 分享者ID
-     * @throws BusinessCheckException
      * @retrurn
      */
-    void setCommissionRelation(MtUser userInfo, String shareId) throws BusinessCheckException;
+    void setCommissionRelation(MtUser userInfo, String shareId);
 }

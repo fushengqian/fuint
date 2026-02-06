@@ -20,13 +20,14 @@ public interface UserActionService extends IService<MtUserAction> {
      * @param paginationRequest
      * @return
      */
-    PaginationResponse<MtUserAction> queryUserActionListByPagination(PaginationRequest paginationRequest) throws BusinessCheckException;
+    PaginationResponse<MtUserAction> queryUserActionListByPagination(PaginationRequest paginationRequest);
 
     /**
      * 新增会员行为
      *
      * @param  mtUserAction
      * @throws BusinessCheckException
+     * @return
      */
     boolean addUserAction(MtUserAction mtUserAction) throws BusinessCheckException;
 
@@ -34,16 +35,16 @@ public interface UserActionService extends IService<MtUserAction> {
      * 根据ID获取会员行为详情
      *
      * @param  id ID
-     * @throws BusinessCheckException
+     * @return
      */
-    MtUserAction getUserActionDetail(Integer id) throws BusinessCheckException;
+    MtUserAction getUserActionDetail(Integer id);
 
     /**
-     * 根据ID删除会员行为
+     * 根据ID删除会员行为n
      *
      * @param id ID
      * @param operator 操作人
-     * @throws BusinessCheckException
+     * @return
      */
-    void deleteUserAction(Integer id, String operator) throws BusinessCheckException;
+    void deleteUserAction(Integer id, String operator);
 }

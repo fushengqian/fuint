@@ -24,13 +24,11 @@ public interface AddressService extends IService<MtAddress> {
     MtAddress saveAddress(MtAddress mtAddress) throws BusinessCheckException;
 
     /**
-     * 根据ID获取Banner信息
-     *
+     * 根据ID获取地址详情
      * @param  id 地址ID
-     * @throws BusinessCheckException
      * @return
      */
-    MtAddress detail(Integer id) throws BusinessCheckException;
+    MtAddress detail(Integer id);
 
     /**
      * 根据条件查询地址列表

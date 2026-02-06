@@ -23,7 +23,7 @@ public interface PrinterService extends IService<MtPrinter> {
      * @param printerPage
      * @return
      */
-    PaginationResponse<MtPrinter> queryPrinterListByPagination(PrinterPage printerPage) throws BusinessCheckException;
+    PaginationResponse<MtPrinter> queryPrinterListByPagination(PrinterPage printerPage);
 
     /**
      * 添加打印机
@@ -47,10 +47,9 @@ public interface PrinterService extends IService<MtPrinter> {
      * 根据ID获取打印机信息
      *
      * @param id ID
-     * @throws BusinessCheckException
      * @return
      */
-    MtPrinter queryPrinterById(Integer id) throws BusinessCheckException;
+    MtPrinter queryPrinterById(Integer id);
 
     /**
      * 根据ID删除打印机
@@ -74,8 +73,7 @@ public interface PrinterService extends IService<MtPrinter> {
      * 根据条件搜索打印机
      *
      * @param params 查询参数
-     * @throws BusinessCheckException
      * @return
      * */
-    List<MtPrinter> queryPrinterListByParams(Map<String, Object> params) throws BusinessCheckException;
+    List<MtPrinter> queryPrinterListByParams(Map<String, Object> params);
 }

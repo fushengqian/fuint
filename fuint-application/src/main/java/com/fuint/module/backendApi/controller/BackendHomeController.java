@@ -103,7 +103,7 @@ public class BackendHomeController extends BaseController {
     @ApiOperation(value = "首页图表统计数据")
     @RequestMapping(value = "/statistic", method = RequestMethod.GET)
     @CrossOrigin
-    public ResponseObject statistic(HttpServletRequest request) throws BusinessCheckException {
+    public ResponseObject statistic(HttpServletRequest request) {
         String tag = request.getParameter("tag") == null ? "order,user_active" : request.getParameter("tag");
         Integer storeId = StringUtil.isEmpty(request.getParameter("storeId")) ? 0 : Integer.parseInt(request.getParameter("storeId"));
 

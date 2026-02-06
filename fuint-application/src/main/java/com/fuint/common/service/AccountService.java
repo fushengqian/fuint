@@ -27,7 +27,7 @@ public interface AccountService extends IService<TAccount> {
      * @param accountPage
      * @return
      */
-    PaginationResponse<AccountDto> getAccountListByPagination(AccountPage accountPage) throws BusinessCheckException;
+    PaginationResponse<AccountDto> getAccountListByPagination(AccountPage accountPage);
 
     /**
      * 根据账号名称获取账号信息

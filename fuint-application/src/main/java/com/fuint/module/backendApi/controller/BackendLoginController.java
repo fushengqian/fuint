@@ -123,7 +123,7 @@ public class BackendLoginController extends BaseController {
     @ApiOperation(value = "获取登录路由菜单接口")
     @RequestMapping(value = "/getRouters", method = RequestMethod.GET)
     @CrossOrigin
-    public ResponseObject getRouters() throws BusinessCheckException {
+    public ResponseObject getRouters() {
         AccountInfo accountInfo = TokenUtil.getAccountInfo();
         if (accountInfo == null) {
             return getFailureResult(401, "登录信息已失效，请重新登录");

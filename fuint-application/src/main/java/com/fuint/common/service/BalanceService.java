@@ -23,7 +23,7 @@ public interface BalanceService extends IService<MtBalance> {
      * @param balancePage
      * @return
      */
-    PaginationResponse<BalanceDto> queryBalanceListByPagination(BalancePage balancePage) throws BusinessCheckException;
+    PaginationResponse<BalanceDto> queryBalanceListByPagination(BalancePage balancePage);
 
     /**
      * 添加余额记录
@@ -52,5 +52,5 @@ public interface BalanceService extends IService<MtBalance> {
      * @param orderSn
      * @return
      * */
-    List<MtBalance> getBalanceListByOrderSn(String orderSn) throws BusinessCheckException;
+    List<MtBalance> getBalanceListByOrderSn(String orderSn);
 }

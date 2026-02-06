@@ -1,21 +1,22 @@
 package com.fuint.common.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.fuint.common.service.AddressService;
-import com.fuint.repository.model.MtAddress;
-import com.fuint.repository.mapper.MtAddressMapper;
-import com.fuint.common.enums.YesOrNoEnum;
-import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.common.enums.StatusEnum;
+import com.fuint.common.enums.YesOrNoEnum;
+import com.fuint.common.service.AddressService;
+import com.fuint.framework.exception.BusinessCheckException;
+import com.fuint.repository.mapper.MtAddressMapper;
+import com.fuint.repository.model.MtAddress;
 import com.fuint.utils.StringUtil;
 import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import java.util.List;
+
 import java.util.Date;
-import java.util.Map;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 收货地址业务实现类
@@ -32,15 +33,18 @@ public class AddressServiceImpl extends ServiceImpl<MtAddressMapper, MtAddress> 
     /**
      * 保存收货地址
      *
-     * @param mtAddress
+     * @param  mtAddress
      * @throws BusinessCheckException
      * @return
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public MtAddress saveAddress(MtAddress mtAddress) {
+    public MtAddress saveAddress(MtAddress mtAddress) throws BusinessCheckException {
         if (mtAddress.getId() > 0) {
             MtAddress address = mtAddressMapper.selectById(mtAddress.getId());
+            if (address == null) {
+                throw new BusinessCheckException("地址信息不存在");
+            }
             if (StringUtil.isNotEmpty(mtAddress.getName())) {
                 address.setName(mtAddress.getName());
             }
@@ -86,7 +90,6 @@ public class AddressServiceImpl extends ServiceImpl<MtAddressMapper, MtAddress> 
      * 根据ID获取收货地址
      *
      * @param  id 地址ID
-     * @throws BusinessCheckException
      * @return
      */
     @Override
