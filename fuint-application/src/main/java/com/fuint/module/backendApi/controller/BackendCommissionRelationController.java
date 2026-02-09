@@ -4,6 +4,7 @@ import com.fuint.common.dto.AccountInfo;
 import com.fuint.common.dto.CommissionRelationDto;
 import com.fuint.common.enums.StatusEnum;
 import com.fuint.common.param.CommissionRelationPage;
+import com.fuint.common.param.StatusParam;
 import com.fuint.common.service.CommissionRelationService;
 import com.fuint.common.service.StoreService;
 import com.fuint.common.util.TokenUtil;
@@ -86,21 +87,16 @@ public class BackendCommissionRelationController extends BaseController {
     @RequestMapping(value = "/updateStatus", method = RequestMethod.POST)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('commission:relation:index')")
-    public ResponseObject updateStatus(@RequestBody Map<String, Object> param) throws BusinessCheckException {
+    public ResponseObject updateStatus(@RequestBody StatusParam params) throws BusinessCheckException {
         AccountInfo accountInfo = TokenUtil.getAccountInfo();
-        Integer id = param.get("id") == null ? 0 : Integer.parseInt(param.get("id").toString());
-        String status = param.get("status") == null ? StatusEnum.ENABLED.getKey() : param.get("status").toString();
-
-        MtCommissionRelation mtCommissionRelation = commissionRelationService.getById(id);
+        MtCommissionRelation mtCommissionRelation = commissionRelationService.getById(params.getId());
         if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
             if (!accountInfo.getMerchantId().equals(mtCommissionRelation.getMerchantId())) {
                 return getFailureResult(1004);
             }
         }
-
-        mtCommissionRelation.setStatus(status);
+        mtCommissionRelation.setStatus(params.getStatus());
         commissionRelationService.updateById(mtCommissionRelation);
-
         return getSuccessResult(true);
     }
 

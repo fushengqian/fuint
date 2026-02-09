@@ -53,12 +53,12 @@ public class MtUser implements Serializable {
     private Integer gradeId;
 
     @ApiModelProperty("会员开始时间")
-    @TableField(strategy = FieldStrategy.IGNORED)
+    @TableField(whereStrategy = FieldStrategy.NOT_EMPTY)
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date startTime;
 
     @ApiModelProperty("会员结束时间")
-    @TableField(strategy=FieldStrategy.IGNORED)
+    @TableField(whereStrategy = FieldStrategy.NOT_EMPTY)
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date endTime;
 

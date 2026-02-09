@@ -4,6 +4,7 @@ import com.fuint.common.dto.AccountInfo;
 import com.fuint.common.dto.GoodsCateDto;
 import com.fuint.common.enums.StatusEnum;
 import com.fuint.common.param.GoodsCatePage;
+import com.fuint.common.param.StatusParam;
 import com.fuint.common.service.CateService;
 import com.fuint.common.service.SettingService;
 import com.fuint.common.service.StoreService;
@@ -87,20 +88,17 @@ public class BackendCateController extends BaseController {
     @RequestMapping(value = "/updateStatus", method = RequestMethod.POST)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('goods:cate:index')")
-    public ResponseObject updateStatus(@RequestBody Map<String, Object> params) throws BusinessCheckException {
-        String status = params.get("status") != null ? params.get("status").toString() : StatusEnum.ENABLED.getKey();
-        Integer id = params.get("id") == null ? 0 : Integer.parseInt(params.get("id").toString());
-
+    public ResponseObject updateStatus(@RequestBody StatusParam params) throws BusinessCheckException {
         AccountInfo accountInfo = TokenUtil.getAccountInfo();
-        MtGoodsCate mtCate = cateService.queryCateById(id);
+        MtGoodsCate mtCate = cateService.queryCateById(params.getId());
         if (mtCate == null) {
             return getFailureResult(201, "该类别不存在");
         }
 
         MtGoodsCate cate = new MtGoodsCate();
         cate.setOperator(accountInfo.getAccountName());
-        cate.setId(id);
-        cate.setStatus(status);
+        cate.setId(params.getId());
+        cate.setStatus(params.getStatus());
         cateService.updateCate(cate);
 
         return getSuccessResult(true);

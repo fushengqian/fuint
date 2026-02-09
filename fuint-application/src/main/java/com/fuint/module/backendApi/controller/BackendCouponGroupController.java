@@ -6,6 +6,7 @@ import com.fuint.common.dto.GroupDataDto;
 import com.fuint.common.dto.GroupDataListDto;
 import com.fuint.common.dto.ReqCouponGroupDto;
 import com.fuint.common.enums.StatusEnum;
+import com.fuint.common.param.StatusParam;
 import com.fuint.common.service.CouponGroupService;
 import com.fuint.common.service.UploadService;
 import com.fuint.common.util.TokenUtil;
@@ -193,17 +194,16 @@ public class BackendCouponGroupController extends BaseController {
     @RequestMapping(value = "/updateStatus", method = RequestMethod.POST)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('coupon:group:edit')")
-    public ResponseObject updateStatus(@RequestBody Map<String, Object> params) throws BusinessCheckException {
-        String status = params.get("status") != null ? params.get("status").toString() : StatusEnum.ENABLED.getKey();
-        Integer id = params.get("id") == null ? 0 : Integer.parseInt(params.get("id").toString());
-
+    public ResponseObject updateStatus(@RequestBody StatusParam params) throws BusinessCheckException {
         AccountInfo accountInfo = TokenUtil.getAccountInfo();
+        if (accountInfo.getMerchantId() == null || accountInfo.getMerchantId() <= 0) {
+            getFailureResult(5002);
+        }
         ReqCouponGroupDto groupDto = new ReqCouponGroupDto();
         groupDto.setOperator(accountInfo.getAccountName());
-        groupDto.setId(id);
-        groupDto.setStatus(status);
+        groupDto.setId(params.getId());
+        groupDto.setStatus(params.getStatus());
         couponGroupService.updateCouponGroup(groupDto);
-
         return getSuccessResult(true);
     }
 

@@ -5,6 +5,7 @@ import com.fuint.common.dto.BookDto;
 import com.fuint.common.dto.BookTimeDto;
 import com.fuint.common.enums.StatusEnum;
 import com.fuint.common.param.BookPage;
+import com.fuint.common.param.StatusParam;
 import com.fuint.common.service.BookCateService;
 import com.fuint.common.service.BookService;
 import com.fuint.common.service.SettingService;
@@ -100,12 +101,9 @@ public class BackendBookController extends BaseController {
     @RequestMapping(value = "/updateStatus", method = RequestMethod.POST)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('book:index')")
-    public ResponseObject updateStatus(@RequestBody Map<String, Object> params) throws BusinessCheckException, ParseException {
+    public ResponseObject updateStatus(@RequestBody StatusParam params) throws BusinessCheckException, ParseException {
         AccountInfo accountInfo = TokenUtil.getAccountInfo();
-        String status = params.get("status") != null ? params.get("status").toString() : StatusEnum.ENABLED.getKey();
-        Integer id = params.get("id") == null ? 0 : Integer.parseInt(params.get("id").toString());
-
-        BookDto bookDto = bookService.getBookById(id, false);
+        BookDto bookDto = bookService.getBookById(params.getId(), false);
         if (bookDto == null) {
             return getFailureResult(201);
         }
@@ -114,7 +112,7 @@ public class BackendBookController extends BaseController {
         BeanUtils.copyProperties(bookDto, mtBook);
 
         mtBook.setOperator(accountInfo.getAccountName());
-        mtBook.setStatus(status);
+        mtBook.setStatus(params.getStatus());
         bookService.updateBook(mtBook);
 
         return getSuccessResult(true);
