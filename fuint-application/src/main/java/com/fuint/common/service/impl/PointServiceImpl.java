@@ -171,7 +171,10 @@ public class PointServiceImpl extends ServiceImpl<MtPointMapper, MtPoint> implem
             mtPoint.setStoreId(mtUser.getStoreId());
         }
         mtPoint.setMerchantId(mtUser.getMerchantId());
-        mtUserMapper.updateById(mtUser);
+        int result = mtUserMapper.updateById(mtUser);
+        if (result <= 0) {
+            throw new BusinessCheckException("会员积分修改失败");
+        }
         mtPointMapper.insert(mtPoint);
 
         try {
