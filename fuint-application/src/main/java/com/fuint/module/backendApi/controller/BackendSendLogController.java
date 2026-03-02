@@ -1,25 +1,20 @@
 package com.fuint.module.backendApi.controller;
 
-import com.fuint.common.Constants;
 import com.fuint.common.dto.AccountInfo;
+import com.fuint.common.param.SendLogPage;
 import com.fuint.common.service.CouponService;
-import com.fuint.common.service.MemberService;
 import com.fuint.common.service.SendLogService;
 import com.fuint.common.util.TokenUtil;
 import com.fuint.framework.exception.BusinessCheckException;
-import com.fuint.framework.pagination.PaginationRequest;
 import com.fuint.framework.pagination.PaginationResponse;
 import com.fuint.framework.web.BaseController;
 import com.fuint.framework.web.ResponseObject;
 import com.fuint.repository.model.MtSendLog;
-import com.fuint.repository.model.MtUser;
-import com.fuint.utils.StringUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -41,11 +36,6 @@ public class BackendSendLogController extends BaseController {
     private SendLogService sendLogService;
 
     /**
-     * 会员接口服务
-     * */
-    private MemberService memberService;
-
-    /**
      * 卡券服务接口
      * */
     private CouponService couponService;
@@ -56,45 +46,16 @@ public class BackendSendLogController extends BaseController {
     @ApiOperation(value = "查询发券记录列表")
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     @CrossOrigin
-    public ResponseObject list(HttpServletRequest request) throws BusinessCheckException {
-        String status = request.getParameter("status") == null ? "" : request.getParameter("status");
-        String userId = request.getParameter("userId") == null ? "" : request.getParameter("userId");
-        String mobile = request.getParameter("mobile") == null ? "" : request.getParameter("mobile");
-        String couponId = request.getParameter("couponId") == null ? "" : request.getParameter("couponId");
-        Integer page = request.getParameter("page") == null ? Constants.PAGE_NUMBER : Integer.parseInt(request.getParameter("page"));
-        Integer pageSize = request.getParameter("pageSize") == null ? Constants.PAGE_SIZE : Integer.parseInt(request.getParameter("pageSize"));
-
+    public ResponseObject list(@ModelAttribute SendLogPage sendLogPage) throws BusinessCheckException {
         AccountInfo accountInfo = TokenUtil.getAccountInfo();
-        Map<String, Object> searchParams = new HashMap<>();
-        if (StringUtil.isNotEmpty(status)) {
-            searchParams.put("status", status);
-        }
 
         if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
-            searchParams.put("merchantId", accountInfo.getMerchantId());
+            sendLogPage.setMerchantId(accountInfo.getMerchantId());
         }
-
         if (accountInfo.getStoreId() != null && accountInfo.getStoreId() > 0) {
-            searchParams.put("storeId", accountInfo.getStoreId());
+            sendLogPage.setStoreId(accountInfo.getStoreId());
         }
-
-        if (StringUtil.isNotEmpty(userId)) {
-            searchParams.put("userId", userId);
-        }
-
-        if (StringUtil.isNotEmpty(couponId)) {
-            searchParams.put("couponId", couponId);
-        }
-
-        if (StringUtil.isNotEmpty(mobile)) {
-            MtUser userInfo = memberService.queryMemberByMobile(accountInfo.getMerchantId(), mobile);
-            if (userInfo != null) {
-                searchParams.put("userId", userInfo.getId().toString());
-            } else {
-                searchParams.put("userId", "0");
-            }
-        }
-        PaginationResponse<MtSendLog> paginationResponse = sendLogService.querySendLogListByPagination(new PaginationRequest(page, pageSize, searchParams));
+        PaginationResponse<MtSendLog> paginationResponse = sendLogService.querySendLogListByPagination(sendLogPage);
 
         Map<String, Object> result = new HashMap<>();
         result.put("paginationResponse", paginationResponse);

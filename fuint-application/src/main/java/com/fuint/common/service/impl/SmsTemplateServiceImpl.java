@@ -5,10 +5,10 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fuint.common.dto.SmsTemplateDto;
 import com.fuint.common.enums.StatusEnum;
+import com.fuint.common.param.SmsTemplatePage;
 import com.fuint.common.service.SmsTemplateService;
 import com.fuint.framework.annoation.OperationServiceLog;
 import com.fuint.framework.exception.BusinessCheckException;
-import com.fuint.framework.pagination.PaginationRequest;
 import com.fuint.framework.pagination.PaginationResponse;
 import com.fuint.repository.mapper.MtSmsTemplateMapper;
 import com.fuint.repository.model.MtSmsTemplate;
@@ -41,32 +41,32 @@ public class SmsTemplateServiceImpl extends ServiceImpl<MtSmsTemplateMapper, MtS
     /**
      * 分页查询模板列表
      *
-     * @param paginationRequest
+     * @param smsTemplatePage
      * @return
      */
     @Override
-    public PaginationResponse<MtSmsTemplate> querySmsTemplateListByPagination(PaginationRequest paginationRequest) {
-        Page<MtSmsTemplate> pageHelper = PageHelper.startPage(paginationRequest.getCurrentPage(), paginationRequest.getPageSize());
+    public PaginationResponse<MtSmsTemplate> querySmsTemplateListByPagination(SmsTemplatePage smsTemplatePage) {
+        Page<MtSmsTemplate> pageHelper = PageHelper.startPage(smsTemplatePage.getPage(), smsTemplatePage.getPageSize());
         LambdaQueryWrapper<MtSmsTemplate> lambdaQueryWrapper = Wrappers.lambdaQuery();
         lambdaQueryWrapper.ne(MtSmsTemplate::getStatus, StatusEnum.DISABLE.getKey());
 
-        String merchantId = paginationRequest.getSearchParams().get("merchantId") == null ? "" : paginationRequest.getSearchParams().get("merchantId").toString();
-        if (StringUtils.isNotBlank(merchantId)) {
-            lambdaQueryWrapper.like(MtSmsTemplate::getMerchantId, merchantId);
+        Integer merchantId = smsTemplatePage.getMerchantId();
+        if (merchantId != null) {
+            lambdaQueryWrapper.eq(MtSmsTemplate::getMerchantId, merchantId);
         }
-        String name = paginationRequest.getSearchParams().get("name") == null ? "" : paginationRequest.getSearchParams().get("name").toString();
+        String name = smsTemplatePage.getName();
         if (StringUtils.isNotBlank(name)) {
             lambdaQueryWrapper.like(MtSmsTemplate::getName, name);
         }
-        String uname = paginationRequest.getSearchParams().get("uname") == null ? "" : paginationRequest.getSearchParams().get("uname").toString();
+        String uname = smsTemplatePage.getUname();
         if (StringUtils.isNotBlank(uname)) {
             lambdaQueryWrapper.eq(MtSmsTemplate::getUname, uname);
         }
-        String code = paginationRequest.getSearchParams().get("code") == null ? "" : paginationRequest.getSearchParams().get("code").toString();
+        String code = smsTemplatePage.getCode();
         if (StringUtils.isNotBlank(code)) {
             lambdaQueryWrapper.eq(MtSmsTemplate::getCode, code);
         }
-        String status = paginationRequest.getSearchParams().get("status") == null ? "" : paginationRequest.getSearchParams().get("status").toString();
+        String status = smsTemplatePage.getStatus();
         if (StringUtils.isNotBlank(status)) {
             lambdaQueryWrapper.eq(MtSmsTemplate::getStatus, status);
         }
@@ -74,7 +74,7 @@ public class SmsTemplateServiceImpl extends ServiceImpl<MtSmsTemplateMapper, MtS
         lambdaQueryWrapper.orderByDesc(MtSmsTemplate::getId);
         List<MtSmsTemplate> dataList = mtSmsTemplateMapper.selectList(lambdaQueryWrapper);
 
-        PageRequest pageRequest = PageRequest.of(paginationRequest.getCurrentPage(), paginationRequest.getPageSize());
+        PageRequest pageRequest = PageRequest.of(smsTemplatePage.getPage(), smsTemplatePage.getPageSize());
         PageImpl pageImpl = new PageImpl(dataList, pageRequest, pageHelper.getTotal());
         PaginationResponse<MtSmsTemplate> paginationResponse = new PaginationResponse(pageImpl, MtSmsTemplate.class);
         paginationResponse.setTotalPages(pageHelper.getPages());

@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fuint.common.dto.PointDto;
 import com.fuint.common.enums.StatusEnum;
 import com.fuint.common.enums.WxMessageEnum;
+import com.fuint.common.param.PointPage;
 import com.fuint.common.service.MemberService;
 import com.fuint.common.service.PointService;
 import com.fuint.common.service.SendSmsService;
@@ -14,7 +15,6 @@ import com.fuint.common.util.CommonUtil;
 import com.fuint.common.util.DateUtil;
 import com.fuint.framework.annoation.OperationServiceLog;
 import com.fuint.framework.exception.BusinessCheckException;
-import com.fuint.framework.pagination.PaginationRequest;
 import com.fuint.framework.pagination.PaginationResponse;
 import com.fuint.repository.mapper.MtPointMapper;
 import com.fuint.repository.mapper.MtUserMapper;
@@ -70,49 +70,49 @@ public class PointServiceImpl extends ServiceImpl<MtPointMapper, MtPoint> implem
     /**
      * 分页查询积分列表
      *
-     * @param paginationRequest
+     * @param pointPage
      * @return
      */
     @Override
-    public PaginationResponse<PointDto> queryPointListByPagination(PaginationRequest paginationRequest) {
+    public PaginationResponse<PointDto> queryPointListByPagination(PointPage pointPage) {
         LambdaQueryWrapper<MtPoint> lambdaQueryWrapper = Wrappers.lambdaQuery();
         lambdaQueryWrapper.ne(MtPoint::getStatus, StatusEnum.DISABLE.getKey());
 
-        String description = paginationRequest.getSearchParams().get("description") == null ? "" : paginationRequest.getSearchParams().get("description").toString();
+        String description = pointPage.getDescription();
         if (StringUtils.isNotBlank(description)) {
             lambdaQueryWrapper.like(MtPoint::getDescription, description);
         }
-        String status = paginationRequest.getSearchParams().get("status") == null ? "" : paginationRequest.getSearchParams().get("status").toString();
+        String status = pointPage.getStatus();
         if (StringUtils.isNotBlank(status)) {
             lambdaQueryWrapper.eq(MtPoint::getStatus, status);
         }
-        String userId = paginationRequest.getSearchParams().get("userId") == null ? "" : paginationRequest.getSearchParams().get("userId").toString();
-        if (StringUtils.isNotBlank(userId)) {
+        Integer userId = pointPage.getUserId();
+        if (userId != null) {
             lambdaQueryWrapper.eq(MtPoint::getUserId, userId);
         }
-        String merchantId = paginationRequest.getSearchParams().get("merchantId") == null ? "" : paginationRequest.getSearchParams().get("merchantId").toString();
-        if (StringUtils.isNotBlank(merchantId)) {
+        Integer merchantId = pointPage.getMerchantId();
+        if (merchantId != null) {
             lambdaQueryWrapper.eq(MtPoint::getMerchantId, merchantId);
         }
-        String userNo = paginationRequest.getSearchParams().get("userNo") == null ? "" : paginationRequest.getSearchParams().get("userNo").toString();
+        String userNo = pointPage.getUserNo();
         if (StringUtil.isNotEmpty(userNo)) {
-            if (StringUtil.isEmpty(merchantId)) {
-                merchantId = "0";
+            if (merchantId == null) {
+                merchantId = 0;
             }
-            MtUser userInfo = memberService.queryMemberByUserNo(Integer.parseInt(merchantId), userNo);
+            MtUser userInfo = memberService.queryMemberByUserNo(merchantId, userNo);
             if (userInfo != null) {
                 lambdaQueryWrapper.eq(MtPoint::getUserId, userInfo.getId());
             } else {
                 lambdaQueryWrapper.eq(MtPoint::getUserId, -1);
             }
         }
-        String storeId = paginationRequest.getSearchParams().get("storeId") == null ? "" : paginationRequest.getSearchParams().get("storeId").toString();
-        if (StringUtils.isNotBlank(storeId)) {
+        Integer storeId = pointPage.getStoreId();
+        if (storeId != null) {
             lambdaQueryWrapper.eq(MtPoint::getStoreId, storeId);
         }
 
         lambdaQueryWrapper.orderByDesc(MtPoint::getId);
-        Page<MtPoint> pageHelper = PageHelper.startPage(paginationRequest.getCurrentPage(), paginationRequest.getPageSize());
+        Page<MtPoint> pageHelper = PageHelper.startPage(pointPage.getPage(), pointPage.getPageSize());
         List<MtPoint> pointList = mtPointMapper.selectList(lambdaQueryWrapper);
 
         List<PointDto> dataList = new ArrayList<>();
@@ -126,7 +126,7 @@ public class PointServiceImpl extends ServiceImpl<MtPointMapper, MtPoint> implem
              item.setUserInfo(userInfo);
              dataList.add(item);
         }
-        PageRequest pageRequest = PageRequest.of(paginationRequest.getCurrentPage(), paginationRequest.getPageSize());
+        PageRequest pageRequest = PageRequest.of(pointPage.getPage(), pointPage.getPageSize());
         PageImpl pageImpl = new PageImpl(dataList, pageRequest, pageHelper.getTotal());
         PaginationResponse<PointDto> paginationResponse = new PaginationResponse(pageImpl, PointDto.class);
         paginationResponse.setTotalPages(pageHelper.getPages());

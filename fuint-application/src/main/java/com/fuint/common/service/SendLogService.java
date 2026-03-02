@@ -2,7 +2,7 @@ package com.fuint.common.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.fuint.common.dto.ReqSendLogDto;
-import com.fuint.framework.pagination.PaginationRequest;
+import com.fuint.common.param.SendLogPage;
 import com.fuint.framework.pagination.PaginationResponse;
 import com.fuint.repository.model.MtSendLog;
 
@@ -17,10 +17,10 @@ public interface SendLogService extends IService<MtSendLog> {
     /**
      * 分页查询列表
      *
-     * @param paginationRequest
+     * @param sendLogPage
      * @return
      */
-    PaginationResponse<MtSendLog> querySendLogListByPagination(PaginationRequest paginationRequest);
+    PaginationResponse<MtSendLog> querySendLogListByPagination(SendLogPage sendLogPage);
 
     /**
      * 添加记录

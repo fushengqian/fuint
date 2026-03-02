@@ -1,13 +1,13 @@
 package com.fuint.module.backendApi.controller;
 
-import com.fuint.common.Constants;
 import com.fuint.common.dto.AccountInfo;
 import com.fuint.common.enums.StatusEnum;
+import com.fuint.common.param.GenCodePage;
+import com.fuint.common.param.StatusParam;
 import com.fuint.common.service.GenCodeService;
 import com.fuint.common.util.CommonUtil;
 import com.fuint.common.util.TokenUtil;
 import com.fuint.framework.exception.BusinessCheckException;
-import com.fuint.framework.pagination.PaginationRequest;
 import com.fuint.framework.pagination.PaginationResponse;
 import com.fuint.framework.web.BaseController;
 import com.fuint.framework.web.ResponseObject;
@@ -19,7 +19,6 @@ import lombok.AllArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -47,20 +46,8 @@ public class BackendGenCodeController extends BaseController {
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('system:genCode:index')")
-    public ResponseObject list(HttpServletRequest request) throws BusinessCheckException {
-        Integer page = request.getParameter("page") == null ? Constants.PAGE_NUMBER : Integer.parseInt(request.getParameter("page"));
-        Integer pageSize = request.getParameter("pageSize") == null ? Constants.PAGE_SIZE : Integer.parseInt(request.getParameter("pageSize"));
-        String tableName = request.getParameter("tableName");
-        String status = request.getParameter("status");
-
-        Map<String, Object> params = new HashMap<>();
-        if (StringUtil.isNotEmpty(tableName)) {
-            params.put("tableName", tableName);
-        }
-        if (StringUtil.isNotEmpty(status)) {
-            params.put("status", status);
-        }
-        PaginationResponse<TGenCode> paginationResponse = genCodeService.queryGenCodeListByPagination(new PaginationRequest(page, pageSize, params));
+    public ResponseObject list(@ModelAttribute GenCodePage genCodePage) throws BusinessCheckException {
+        PaginationResponse<TGenCode> paginationResponse = genCodeService.queryGenCodeListByPagination(genCodePage);
 
         Map<String, Object> result = new HashMap<>();
         result.put("dataList", paginationResponse);
@@ -75,16 +62,13 @@ public class BackendGenCodeController extends BaseController {
     @RequestMapping(value = "/updateStatus", method = RequestMethod.POST)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('system:genCode:add')")
-    public ResponseObject updateStatus(@RequestBody Map<String, Object> params) throws BusinessCheckException {
-        String status = params.get("status") != null ? params.get("status").toString() : StatusEnum.ENABLED.getKey();
-        Integer id = params.get("id") == null ? 0 : Integer.parseInt(params.get("id").toString());
-
-        TGenCode tGenCode = genCodeService.queryGenCodeById(id);
+    public ResponseObject updateStatus(@RequestBody StatusParam params) throws BusinessCheckException {
+        TGenCode tGenCode = genCodeService.queryGenCodeById(params.getId());
         if (tGenCode == null) {
             return getFailureResult(201);
         }
-        tGenCode.setId(id);
-        tGenCode.setStatus(status);
+        tGenCode.setId(params.getId());
+        tGenCode.setStatus(params.getStatus());
         genCodeService.updateGenCode(tGenCode);
 
         return getSuccessResult(true);

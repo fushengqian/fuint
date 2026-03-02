@@ -1,8 +1,8 @@
 package com.fuint.common.service;
 
 import com.fuint.common.dto.SettlementDto;
+import com.fuint.common.param.SettlementPage;
 import com.fuint.framework.exception.BusinessCheckException;
-import com.fuint.framework.pagination.PaginationRequest;
 import com.fuint.framework.pagination.PaginationResponse;
 import com.fuint.module.backendApi.request.SettlementRequest;
 import com.fuint.repository.model.MtSettlement;
@@ -18,10 +18,10 @@ public interface SettlementService {
     /**
      * 分页查询结算列表
      *
-     * @param paginationRequest
+     * @param settlementPage
      * @return
      */
-    PaginationResponse<MtSettlement> querySettlementListByPagination(PaginationRequest paginationRequest);
+    PaginationResponse<MtSettlement> querySettlementListByPagination(SettlementPage settlementPage);
 
     /**
      * 提交结算

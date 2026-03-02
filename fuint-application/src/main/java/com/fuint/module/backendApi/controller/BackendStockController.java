@@ -1,10 +1,10 @@
 package com.fuint.module.backendApi.controller;
 
-import com.fuint.common.Constants;
 import com.fuint.common.dto.AccountInfo;
 import com.fuint.common.dto.GoodsDto;
 import com.fuint.common.dto.StockGoodsDto;
 import com.fuint.common.enums.StatusEnum;
+import com.fuint.common.param.StockPage;
 import com.fuint.common.service.SettingService;
 import com.fuint.common.service.StockService;
 import com.fuint.common.service.StoreService;
@@ -12,7 +12,6 @@ import com.fuint.common.util.CommonUtil;
 import com.fuint.common.util.ListUtil;
 import com.fuint.common.util.TokenUtil;
 import com.fuint.framework.exception.BusinessCheckException;
-import com.fuint.framework.pagination.PaginationRequest;
 import com.fuint.framework.pagination.PaginationResponse;
 import com.fuint.framework.web.BaseController;
 import com.fuint.framework.web.ResponseObject;
@@ -26,7 +25,6 @@ import lombok.AllArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.*;
 
 /**
@@ -67,37 +65,16 @@ public class BackendStockController extends BaseController {
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('stock:index')")
-    public ResponseObject list(HttpServletRequest request) throws BusinessCheckException {
-        Integer page = request.getParameter("page") == null ? Constants.PAGE_NUMBER : Integer.parseInt(request.getParameter("page"));
-        Integer pageSize = request.getParameter("pageSize") == null ? Constants.PAGE_SIZE : Integer.parseInt(request.getParameter("pageSize"));
-        String description = request.getParameter("description");
-        String status = request.getParameter("status");
-        String searchStoreId = request.getParameter("storeId");
-        String type = request.getParameter("type");
-
+    public ResponseObject list(@ModelAttribute StockPage stockPage) throws BusinessCheckException {
         AccountInfo accountInfo = TokenUtil.getAccountInfo();
-        Integer storeId = accountInfo.getStoreId() == null ? 0 : accountInfo.getStoreId();
 
-        Map<String, Object> params = new HashMap<>();
-        if (StringUtil.isNotEmpty(description)) {
-            params.put("description", description);
-        }
-        if (StringUtil.isNotEmpty(status)) {
-            params.put("status", status);
-        }
-        if (StringUtil.isNotEmpty(type)) {
-            params.put("type", type);
-        }
         if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
-            params.put("merchantId", accountInfo.getMerchantId());
+            stockPage.setMerchantId(accountInfo.getMerchantId());
         }
-        if (StringUtil.isNotEmpty(searchStoreId)) {
-            params.put("storeId", searchStoreId);
+        if (accountInfo.getStoreId() != null && accountInfo.getStoreId() > 0) {
+            stockPage.setStoreId(accountInfo.getStoreId());
         }
-        if (storeId > 0) {
-            params.put("storeId", storeId);
-        }
-        PaginationResponse<MtStock> paginationResponse = stockService.queryStockListByPagination(new PaginationRequest(page, pageSize, params));
+        PaginationResponse<MtStock> paginationResponse = stockService.queryStockListByPagination(stockPage);
 
         // 店铺列表
         List<MtStore> storeList = storeService.getMyStoreList(accountInfo.getMerchantId(), accountInfo.getStoreId(), StatusEnum.ENABLED.getKey());

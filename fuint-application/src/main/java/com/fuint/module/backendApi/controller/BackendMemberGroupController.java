@@ -1,28 +1,26 @@
 package com.fuint.module.backendApi.controller;
 
-import com.fuint.common.Constants;
 import com.fuint.common.dto.AccountInfo;
 import com.fuint.common.dto.MemberGroupDto;
 import com.fuint.common.dto.UserGroupDto;
 import com.fuint.common.enums.StatusEnum;
+import com.fuint.common.param.MemberGroupPage;
+import com.fuint.common.param.StatusParam;
 import com.fuint.common.service.MemberGroupService;
 import com.fuint.common.util.TokenUtil;
 import com.fuint.framework.exception.BusinessCheckException;
-import com.fuint.framework.pagination.PaginationRequest;
 import com.fuint.framework.pagination.PaginationResponse;
 import com.fuint.framework.web.BaseController;
 import com.fuint.framework.web.ResponseObject;
 import com.fuint.repository.mapper.MtUserMapper;
 import com.fuint.repository.model.MtUser;
 import com.fuint.repository.model.MtUserGroup;
-import com.fuint.utils.StringUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.AllArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -53,31 +51,16 @@ public class BackendMemberGroupController extends BaseController {
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('member:group:index')")
-    public ResponseObject list(HttpServletRequest request) throws BusinessCheckException {
-        Integer page = request.getParameter("page") == null ? 1 : Integer.parseInt(request.getParameter("page"));
-        Integer pageSize = request.getParameter("pageSize") == null ? Constants.PAGE_SIZE : Integer.parseInt(request.getParameter("pageSize"));
-        String name = request.getParameter("name") == null ? "" : request.getParameter("name");
-        String id = request.getParameter("id") == null ? "" : request.getParameter("id");
-        String status = request.getParameter("status") == null ? StatusEnum.ENABLED.getKey() : request.getParameter("status");
-
+    public ResponseObject list(@ModelAttribute MemberGroupPage memberGroupPage) throws BusinessCheckException {
         AccountInfo accountInfo = TokenUtil.getAccountInfo();
-        Map<String, Object> searchParams = new HashMap<>();
-        if (StringUtil.isNotEmpty(name)) {
-            searchParams.put("name", name);
-        }
-        if (StringUtil.isNotEmpty(id)) {
-            searchParams.put("id", id);
-        }
-        if (StringUtil.isNotEmpty(status)) {
-            searchParams.put("status", status);
-        }
+
         if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
-            searchParams.put("merchantId", accountInfo.getMerchantId());
+            memberGroupPage.setMerchantId(accountInfo.getMerchantId());
         }
         if (accountInfo.getStoreId() != null && accountInfo.getStoreId() > 0) {
-            searchParams.put("storeId", accountInfo.getStoreId());
+            memberGroupPage.setStoreId(accountInfo.getStoreId());
         }
-        PaginationResponse<UserGroupDto> paginationResponse = memberGroupService.queryMemberGroupListByPagination(new PaginationRequest(page, pageSize, searchParams));
+        PaginationResponse<UserGroupDto> paginationResponse = memberGroupService.queryMemberGroupListByPagination(memberGroupPage);
 
         Map<String, Object> result = new HashMap<>();
         result.put("paginationResponse", paginationResponse);
@@ -141,15 +124,12 @@ public class BackendMemberGroupController extends BaseController {
     @RequestMapping(value = "/updateStatus", method = RequestMethod.POST)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('member:group:index')")
-    public ResponseObject updateStatus(@RequestBody Map<String, Object> params) throws BusinessCheckException {
-        String status = params.get("status") != null ? params.get("status").toString() : StatusEnum.ENABLED.getKey();
-        Integer id = params.get("id") == null ? 0 : Integer.parseInt(params.get("id").toString());
-
+    public ResponseObject updateStatus(@RequestBody StatusParam params) throws BusinessCheckException {
         AccountInfo accountInfo = TokenUtil.getAccountInfo();
         MemberGroupDto groupDto = new MemberGroupDto();
         groupDto.setOperator(accountInfo.getAccountName());
-        groupDto.setId(id);
-        groupDto.setStatus(status);
+        groupDto.setId(params.getId());
+        groupDto.setStatus(params.getStatus());
         memberGroupService.updateMemberGroup(groupDto);
 
         return getSuccessResult(true);

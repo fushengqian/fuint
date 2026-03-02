@@ -6,12 +6,12 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fuint.common.dto.MemberGroupDto;
 import com.fuint.common.dto.UserGroupDto;
 import com.fuint.common.enums.StatusEnum;
+import com.fuint.common.param.MemberGroupPage;
 import com.fuint.common.service.MemberGroupService;
 import com.fuint.common.service.StoreService;
 import com.fuint.common.util.CommonUtil;
 import com.fuint.framework.annoation.OperationServiceLog;
 import com.fuint.framework.exception.BusinessCheckException;
-import com.fuint.framework.pagination.PaginationRequest;
 import com.fuint.framework.pagination.PaginationResponse;
 import com.fuint.repository.mapper.MtUserGroupMapper;
 import com.fuint.repository.model.MtCouponGroup;
@@ -54,33 +54,33 @@ public class MemberGroupServiceImpl extends ServiceImpl<MtUserGroupMapper, MtUse
     /**
      * 分页查询会员分组列表
      *
-     * @param paginationRequest
+     * @param memberGroupPage
      * @return
      */
     @Override
-    public PaginationResponse<UserGroupDto> queryMemberGroupListByPagination(PaginationRequest paginationRequest) {
-        Page<MtCouponGroup> pageHelper = PageHelper.startPage(paginationRequest.getCurrentPage(), paginationRequest.getPageSize());
+    public PaginationResponse<UserGroupDto> queryMemberGroupListByPagination(MemberGroupPage memberGroupPage) {
+        Page<MtCouponGroup> pageHelper = PageHelper.startPage(memberGroupPage.getPage(), memberGroupPage.getPageSize());
         LambdaQueryWrapper<MtUserGroup> lambdaQueryWrapper = Wrappers.lambdaQuery();
         lambdaQueryWrapper.ne(MtUserGroup::getStatus, StatusEnum.DISABLE.getKey());
         lambdaQueryWrapper.eq(MtUserGroup::getParentId, 0);
-        String name = paginationRequest.getSearchParams().get("name") == null ? "" : paginationRequest.getSearchParams().get("name").toString();
+        String name = memberGroupPage.getName();
         if (StringUtils.isNotBlank(name)) {
             lambdaQueryWrapper.like(MtUserGroup::getName, name);
         }
-        String status = paginationRequest.getSearchParams().get("status") == null ? "" : paginationRequest.getSearchParams().get("status").toString();
+        String status = memberGroupPage.getStatus();
         if (StringUtils.isNotBlank(status)) {
             lambdaQueryWrapper.eq(MtUserGroup::getStatus, status);
         }
-        String id = paginationRequest.getSearchParams().get("id") == null ? "" : paginationRequest.getSearchParams().get("id").toString();
-        if (StringUtils.isNotBlank(id)) {
+        Integer id = memberGroupPage.getId();
+        if (id != null) {
             lambdaQueryWrapper.eq(MtUserGroup::getId, id);
         }
-        String merchantId = paginationRequest.getSearchParams().get("merchantId") == null ? "" : paginationRequest.getSearchParams().get("merchantId").toString();
-        if (StringUtils.isNotBlank(merchantId)) {
+        Integer merchantId = memberGroupPage.getMerchantId();
+        if (merchantId != null) {
             lambdaQueryWrapper.eq(MtUserGroup::getMerchantId, merchantId);
         }
-        String storeId = paginationRequest.getSearchParams().get("storeId") == null ? "" : paginationRequest.getSearchParams().get("storeId").toString();
-        if (StringUtils.isNotBlank(storeId)) {
+        Integer storeId = memberGroupPage.getStoreId();
+        if (storeId != null) {
             lambdaQueryWrapper.eq(MtUserGroup::getStoreId, storeId);
         }
 
@@ -97,7 +97,7 @@ public class MemberGroupServiceImpl extends ServiceImpl<MtUserGroupMapper, MtUse
             }
         }
 
-        PageRequest pageRequest = PageRequest.of(paginationRequest.getCurrentPage(), paginationRequest.getPageSize());
+        PageRequest pageRequest = PageRequest.of(memberGroupPage.getPage(), memberGroupPage.getPageSize());
         PageImpl pageImpl = new PageImpl(dataList, pageRequest, pageHelper.getTotal());
         PaginationResponse<UserGroupDto> paginationResponse = new PaginationResponse(pageImpl, UserGroupDto.class);
         paginationResponse.setTotalPages(pageHelper.getPages());

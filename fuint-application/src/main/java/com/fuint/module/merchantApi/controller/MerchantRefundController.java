@@ -3,14 +3,12 @@ package com.fuint.module.merchantApi.controller;
 import com.fuint.common.dto.RefundDto;
 import com.fuint.common.dto.UserInfo;
 import com.fuint.common.param.RefundDetailParam;
-import com.fuint.common.param.RefundListParam;
+import com.fuint.common.param.RefundPage;
 import com.fuint.common.service.MemberService;
 import com.fuint.common.service.RefundService;
 import com.fuint.common.service.StaffService;
-import com.fuint.common.util.CommonUtil;
 import com.fuint.common.util.TokenUtil;
 import com.fuint.framework.exception.BusinessCheckException;
-import com.fuint.framework.pagination.PaginationRequest;
 import com.fuint.framework.pagination.PaginationResponse;
 import com.fuint.framework.web.BaseController;
 import com.fuint.framework.web.ResponseObject;
@@ -58,17 +56,17 @@ public class MerchantRefundController extends BaseController {
     @ApiOperation(value = "获取售订单后列表")
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @CrossOrigin
-    public ResponseObject list(@RequestBody RefundListParam params) throws BusinessCheckException, IllegalAccessException {
+    public ResponseObject list(@RequestBody RefundPage refundPage) throws BusinessCheckException, IllegalAccessException {
         UserInfo userInfo = TokenUtil.getUserInfo();
         MtStaff staffInfo = staffService.queryStaffByMobile(userInfo.getMobile());
 
         if (staffInfo == null) {
             return getFailureResult(1001);
         } else {
-            params.setMerchantId(staffInfo.getMerchantId());
-            params.setStoreId(staffInfo.getStoreId());
+            refundPage.setMerchantId(staffInfo.getMerchantId());
+            refundPage.setStoreId(staffInfo.getStoreId());
         }
-        PaginationResponse paginationResponse = refundService.getRefundListByPagination(new PaginationRequest(params.getPage(), params.getPageSize(), CommonUtil.convert(params)));
+        PaginationResponse paginationResponse = refundService.getRefundListByPagination(refundPage);
 
         Map<String, Object> result = new HashMap<>();
         result.put("paginationResponse", paginationResponse);

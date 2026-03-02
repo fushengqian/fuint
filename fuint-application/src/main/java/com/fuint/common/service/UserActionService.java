@@ -1,8 +1,8 @@
 package com.fuint.common.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.fuint.common.param.UserActionPage;
 import com.fuint.framework.exception.BusinessCheckException;
-import com.fuint.framework.pagination.PaginationRequest;
 import com.fuint.framework.pagination.PaginationResponse;
 import com.fuint.repository.model.MtUserAction;
 
@@ -17,10 +17,10 @@ public interface UserActionService extends IService<MtUserAction> {
     /**
      * 分页查询列表
      *
-     * @param paginationRequest
+     * @param userActionPage
      * @return
      */
-    PaginationResponse<MtUserAction> queryUserActionListByPagination(PaginationRequest paginationRequest);
+    PaginationResponse<MtUserAction> queryUserActionListByPagination(UserActionPage userActionPage);
 
     /**
      * 新增会员行为

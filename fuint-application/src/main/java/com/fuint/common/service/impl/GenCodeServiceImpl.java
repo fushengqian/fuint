@@ -3,13 +3,13 @@ package com.fuint.common.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.fuint.common.enums.StatusEnum;
+import com.fuint.common.param.GenCodePage;
 import com.fuint.common.service.GenCodeService;
 import com.fuint.common.util.VelocityInitializer;
 import com.fuint.common.util.VelocityUtils;
 import com.fuint.framework.annoation.OperationServiceLog;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.exception.BusinessRuntimeException;
-import com.fuint.framework.pagination.PaginationRequest;
 import com.fuint.framework.pagination.PaginationResponse;
 import com.fuint.repository.bean.ColumnBean;
 import com.fuint.repository.mapper.TGenCodeMapper;
@@ -52,20 +52,20 @@ public class GenCodeServiceImpl implements GenCodeService {
     /**
      * 分页查询生成代码列表
      *
-     * @param paginationRequest
+     * @param genCodePage
      * @return
      */
     @Override
-    public PaginationResponse<TGenCode> queryGenCodeListByPagination(PaginationRequest paginationRequest) {
-        Page<TGenCode> pageHelper = PageHelper.startPage(paginationRequest.getCurrentPage(), paginationRequest.getPageSize());
+    public PaginationResponse<TGenCode> queryGenCodeListByPagination(GenCodePage genCodePage) {
+        Page<TGenCode> pageHelper = PageHelper.startPage(genCodePage.getPage(), genCodePage.getPageSize());
         LambdaQueryWrapper<TGenCode> lambdaQueryWrapper = Wrappers.lambdaQuery();
         lambdaQueryWrapper.ne(TGenCode::getStatus, StatusEnum.DISABLE.getKey());
 
-        String tableName = paginationRequest.getSearchParams().get("tableName") == null ? "" : paginationRequest.getSearchParams().get("tableName").toString();
+        String tableName = genCodePage.getTableName();
         if (org.apache.commons.lang.StringUtils.isNotBlank(tableName)) {
             lambdaQueryWrapper.like(TGenCode::getTableName, tableName);
         }
-        String status = paginationRequest.getSearchParams().get("status") == null ? "" : paginationRequest.getSearchParams().get("status").toString();
+        String status = genCodePage.getStatus();
         if (org.apache.commons.lang.StringUtils.isNotBlank(status)) {
             lambdaQueryWrapper.eq(TGenCode::getStatus, status);
         }
@@ -73,7 +73,7 @@ public class GenCodeServiceImpl implements GenCodeService {
         lambdaQueryWrapper.orderByAsc(TGenCode::getId);
         List<TGenCode> dataList = tGenCodeMapper.selectList(lambdaQueryWrapper);
 
-        PageRequest pageRequest = PageRequest.of(paginationRequest.getCurrentPage(), paginationRequest.getPageSize());
+        PageRequest pageRequest = PageRequest.of(genCodePage.getPage(), genCodePage.getPageSize());
         PageImpl pageImpl = new PageImpl(dataList, pageRequest, pageHelper.getTotal());
         PaginationResponse<TGenCode> paginationResponse = new PaginationResponse(pageImpl, TGenCode.class);
         paginationResponse.setTotalPages(pageHelper.getPages());

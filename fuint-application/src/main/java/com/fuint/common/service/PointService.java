@@ -2,8 +2,8 @@ package com.fuint.common.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.fuint.common.dto.PointDto;
+import com.fuint.common.param.PointPage;
 import com.fuint.framework.exception.BusinessCheckException;
-import com.fuint.framework.pagination.PaginationRequest;
 import com.fuint.framework.pagination.PaginationResponse;
 import com.fuint.repository.model.MtPoint;
 
@@ -18,10 +18,10 @@ public interface PointService extends IService<MtPoint> {
     /**
      * 分页查询积分列表
      *
-     * @param paginationRequest
+     * @param pointPage
      * @return
      */
-    PaginationResponse<PointDto> queryPointListByPagination(PaginationRequest paginationRequest);
+    PaginationResponse<PointDto> queryPointListByPagination(PointPage pointPage);
 
     /**
      * 添加积分

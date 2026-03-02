@@ -1,26 +1,24 @@
 package com.fuint.module.backendApi.controller;
 
-import com.fuint.common.Constants;
 import com.fuint.common.dto.AccountInfo;
 import com.fuint.common.dto.PointDto;
 import com.fuint.common.enums.PointSettingEnum;
 import com.fuint.common.enums.SettingTypeEnum;
 import com.fuint.common.enums.StatusEnum;
 import com.fuint.common.enums.YesOrNoEnum;
+import com.fuint.common.param.PointPage;
 import com.fuint.common.service.MemberService;
 import com.fuint.common.service.PointService;
 import com.fuint.common.service.SettingService;
 import com.fuint.common.util.CommonUtil;
 import com.fuint.common.util.TokenUtil;
 import com.fuint.framework.exception.BusinessCheckException;
-import com.fuint.framework.pagination.PaginationRequest;
 import com.fuint.framework.pagination.PaginationResponse;
 import com.fuint.framework.web.BaseController;
 import com.fuint.framework.web.ResponseObject;
 import com.fuint.repository.model.MtPoint;
 import com.fuint.repository.model.MtSetting;
 import com.fuint.repository.model.MtUser;
-import com.fuint.utils.StringUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.AllArgsConstructor;
@@ -67,40 +65,18 @@ public class BackendPointController extends BaseController {
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('point:list')")
-    public ResponseObject list(HttpServletRequest request) throws BusinessCheckException {
-        Integer page = request.getParameter("page") == null ? Constants.PAGE_NUMBER : Integer.parseInt(request.getParameter("page"));
-        Integer pageSize = request.getParameter("pageSize") == null ? Constants.PAGE_SIZE : Integer.parseInt(request.getParameter("pageSize"));
-        String mobile = request.getParameter("mobile") == null ? "" : request.getParameter("mobile");
-        String userId = request.getParameter("userId") == null ? "" : request.getParameter("userId");
-        String userNo = request.getParameter("userNo") == null ? "" : request.getParameter("userNo");
-        String status = request.getParameter("status") == null ? StatusEnum.ENABLED.getKey() : request.getParameter("status");
-
+    public ResponseObject list(@ModelAttribute PointPage pointPage) throws BusinessCheckException {
         AccountInfo accountInfo = TokenUtil.getAccountInfo();
-        Map<String, Object> searchParams = new HashMap<>();
-        if (StringUtil.isNotEmpty(mobile)) {
-            MtUser userInfo = memberService.queryMemberByMobile(accountInfo.getMerchantId(), mobile);
-            if (userInfo != null) {
-                searchParams.put("userId", userInfo.getId());
-            }
-        }
-        if (StringUtil.isNotEmpty(userId)) {
-            searchParams.put("userId", userId);
-        }
-        if (StringUtil.isNotEmpty(userNo)) {
-            searchParams.put("userNo", userNo);
-        }
-        if (StringUtil.isNotEmpty(status)) {
-            searchParams.put("status", status);
-        }
+
         Integer merchantId = accountInfo.getMerchantId();
         if (merchantId != null && merchantId > 0) {
-            searchParams.put("merchantId", merchantId);
+            pointPage.setMerchantId(merchantId);
         }
         Integer storeId = accountInfo.getStoreId();
         if (storeId != null && storeId > 0) {
-            searchParams.put("storeId", storeId);
+            pointPage.setStoreId(storeId);
         }
-        PaginationResponse<PointDto> paginationResponse = pointService.queryPointListByPagination(new PaginationRequest(page, pageSize, searchParams));
+        PaginationResponse<PointDto> paginationResponse = pointService.queryPointListByPagination(pointPage);
 
         Map<String, Object> result = new HashMap<>();
         result.put("paginationResponse", paginationResponse);

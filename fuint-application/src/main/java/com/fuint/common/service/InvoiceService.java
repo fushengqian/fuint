@@ -1,8 +1,8 @@
 package com.fuint.common.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.fuint.common.param.InvoicePage;
 import com.fuint.common.param.InvoiceParam;
-import com.fuint.framework.pagination.PaginationRequest;
 import com.fuint.framework.pagination.PaginationResponse;
 import com.fuint.repository.model.MtInvoice;
 import com.fuint.framework.exception.BusinessCheckException;
@@ -23,10 +23,10 @@ public interface InvoiceService extends IService<MtInvoice> {
     /**
      * 分页查询列表
      *
-     * @param paginationRequest
+     * @param invoicePage
      * @return
      */
-    PaginationResponse<MtInvoice> queryInvoiceListByPagination(PaginationRequest paginationRequest);
+    PaginationResponse<MtInvoice> queryInvoiceListByPagination(InvoicePage invoicePage);
 
     /**
      * 添加发票

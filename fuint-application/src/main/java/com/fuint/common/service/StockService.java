@@ -2,8 +2,8 @@ package com.fuint.common.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.fuint.common.dto.StockGoodsDto;
+import com.fuint.common.param.StockPage;
 import com.fuint.framework.exception.BusinessCheckException;
-import com.fuint.framework.pagination.PaginationRequest;
 import com.fuint.framework.pagination.PaginationResponse;
 import com.fuint.framework.web.ResponseObject;
 import com.fuint.repository.model.MtStock;
@@ -22,10 +22,10 @@ public interface StockService extends IService<MtStock> {
     /**
      * 分页查询列表
      *
-     * @param paginationRequest
+     * @param stockPage
      * @return
      */
-    PaginationResponse<MtStock> queryStockListByPagination(PaginationRequest paginationRequest);
+    PaginationResponse<MtStock> queryStockListByPagination(StockPage stockPage);
 
     /**
      * 新增库存管理记录

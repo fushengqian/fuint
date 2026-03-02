@@ -1,22 +1,19 @@
 package com.fuint.module.backendApi.controller;
 
-import com.fuint.common.Constants;
 import com.fuint.common.dto.AccountInfo;
 import com.fuint.common.dto.ParamDto;
 import com.fuint.common.dto.RefundDto;
 import com.fuint.common.dto.UserOrderDto;
 import com.fuint.common.enums.RefundStatusEnum;
 import com.fuint.common.enums.RefundTypeEnum;
-import com.fuint.common.service.MemberService;
+import com.fuint.common.param.RefundPage;
 import com.fuint.common.service.OrderService;
 import com.fuint.common.service.RefundService;
 import com.fuint.common.util.TokenUtil;
 import com.fuint.framework.exception.BusinessCheckException;
-import com.fuint.framework.pagination.PaginationRequest;
 import com.fuint.framework.pagination.PaginationResponse;
 import com.fuint.framework.web.BaseController;
 import com.fuint.framework.web.ResponseObject;
-import com.fuint.repository.model.MtUser;
 import com.fuint.utils.StringUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -24,7 +21,6 @@ import lombok.AllArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -52,66 +48,22 @@ public class BackendRefundController extends BaseController {
     private OrderService orderService;
 
     /**
-     * 会员接口服务
-     * */
-    private MemberService memberService;
-
-    /**
      * 售后列表查询
      */
     @ApiOperation(value = "售后列表查询")
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('refund:index')")
-    public ResponseObject list(HttpServletRequest request) throws BusinessCheckException {
-        String orderSn = request.getParameter("orderSn");
-        String mobile = request.getParameter("mobile");
-        String userId = request.getParameter("userId");
-        String status = request.getParameter("status");
-        Integer page = request.getParameter("page") == null ? Constants.PAGE_NUMBER : Integer.parseInt(request.getParameter("page"));
-        Integer pageSize = request.getParameter("pageSize") == null ? Constants.PAGE_SIZE : Integer.parseInt(request.getParameter("pageSize"));
-        String startTime = request.getParameter("startTime") == null ? "" : request.getParameter("startTime");
-        String endTime = request.getParameter("endTime") == null ? "" : request.getParameter("endTime");
-
+    public ResponseObject list(@ModelAttribute RefundPage refundPage) throws BusinessCheckException {
         AccountInfo accountInfo = TokenUtil.getAccountInfo();
-        Integer storeId = accountInfo.getStoreId() == null ? 0 : accountInfo.getStoreId();
 
-        Map<String, Object> params = new HashMap<>();
         if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
-            params.put("merchantId", accountInfo.getMerchantId());
+            refundPage.setMerchantId(accountInfo.getMerchantId());
         }
-        if (StringUtil.isNotEmpty(status)) {
-            params.put("status", status);
+        if (accountInfo.getStoreId() != null && accountInfo.getStoreId() > 0) {
+            refundPage.setStoreId(accountInfo.getStoreId());
         }
-        if (StringUtil.isNotEmpty(orderSn)) {
-            UserOrderDto orderInfo = orderService.getOrderByOrderSn(orderSn);
-            if (orderInfo != null) {
-                params.put("orderId", orderInfo.getId().toString());
-            } else {
-                params.put("orderId", "0");
-            }
-        }
-        if (StringUtil.isNotEmpty(mobile)) {
-            MtUser userInfo = memberService.queryMemberByMobile(accountInfo.getMerchantId(), mobile);
-            if (userInfo != null) {
-                userId = userInfo.getId().toString();
-            } else {
-                userId = "0";
-            }
-        }
-        if (StringUtil.isNotEmpty(userId)) {
-            params.put("userId", userId);
-        }
-        if (storeId != null && storeId > 0) {
-            params.put("storeId", storeId);
-        }
-        if (StringUtil.isNotEmpty(startTime)) {
-            params.put("startTime", startTime);
-        }
-        if (StringUtil.isNotEmpty(endTime)) {
-            params.put("endTime", endTime);
-        }
-        PaginationResponse<RefundDto> paginationResponse = refundService.getRefundListByPagination(new PaginationRequest(page, pageSize, params));
+        PaginationResponse<RefundDto> paginationResponse = refundService.getRefundListByPagination(refundPage);
 
         // 售后状态列表
         List<ParamDto> statusList = RefundStatusEnum.getRefundStatusList();

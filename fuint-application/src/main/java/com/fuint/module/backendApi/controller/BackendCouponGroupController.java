@@ -6,6 +6,7 @@ import com.fuint.common.dto.GroupDataDto;
 import com.fuint.common.dto.GroupDataListDto;
 import com.fuint.common.dto.ReqCouponGroupDto;
 import com.fuint.common.enums.StatusEnum;
+import com.fuint.common.param.CouponGroupPage;
 import com.fuint.common.param.StatusParam;
 import com.fuint.common.service.CouponGroupService;
 import com.fuint.common.service.UploadService;
@@ -13,7 +14,6 @@ import com.fuint.common.util.TokenUtil;
 import com.fuint.common.util.XlsUtil;
 import com.fuint.framework.dto.ExcelExportDto;
 import com.fuint.framework.exception.BusinessCheckException;
-import com.fuint.framework.pagination.PaginationRequest;
 import com.fuint.framework.pagination.PaginationResponse;
 import com.fuint.framework.service.ExportService;
 import com.fuint.framework.web.BaseController;
@@ -21,7 +21,6 @@ import com.fuint.framework.web.ResponseObject;
 import com.fuint.repository.mapper.MtCouponMapper;
 import com.fuint.repository.model.MtCoupon;
 import com.fuint.repository.model.MtCouponGroup;
-import com.fuint.utils.StringUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.AllArgsConstructor;
@@ -79,32 +78,17 @@ public class BackendCouponGroupController extends BaseController {
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('coupon:group:index')")
-    public ResponseObject list(HttpServletRequest request) throws BusinessCheckException {
+    public ResponseObject list(@ModelAttribute CouponGroupPage couponGroupPage) throws BusinessCheckException {
         AccountInfo accountInfo = TokenUtil.getAccountInfo();
-        Integer page = request.getParameter("page") == null ? 1 : Integer.parseInt(request.getParameter("page"));
-        Integer pageSize = request.getParameter("pageSize") == null ? Constants.PAGE_SIZE : Integer.parseInt(request.getParameter("pageSize"));
-        String name = request.getParameter("name") == null ? "" : request.getParameter("name");
-        String id = request.getParameter("id") == null ? "" : request.getParameter("id");
-        String status = request.getParameter("status") == null ? StatusEnum.ENABLED.getKey() : request.getParameter("status");
 
-        Map<String, Object> searchParams = new HashMap<>();
-        if (StringUtil.isNotEmpty(name)) {
-            searchParams.put("name", name);
-        }
-        if (StringUtil.isNotEmpty(id)) {
-            searchParams.put("id", id);
-        }
-        if (StringUtil.isNotEmpty(status)) {
-            searchParams.put("status", status);
-        }
         if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
-            searchParams.put("merchantId", accountInfo.getMerchantId());
+            couponGroupPage.setMerchantId(accountInfo.getMerchantId());
         }
         if (accountInfo.getStoreId() != null && accountInfo.getStoreId() > 0) {
-            searchParams.put("storeId", accountInfo.getStoreId());
+            couponGroupPage.setStoreId(accountInfo.getStoreId());
         }
 
-        PaginationResponse<MtCouponGroup> paginationResponse = couponGroupService.queryCouponGroupListByPagination(new PaginationRequest(page, pageSize, searchParams));
+        PaginationResponse<MtCouponGroup> paginationResponse = couponGroupService.queryCouponGroupListByPagination(couponGroupPage);
 
         // 计算券种类、总价值
         if (paginationResponse.getContent().size() > 0) {
@@ -272,15 +256,17 @@ public class BackendCouponGroupController extends BaseController {
     public ResponseObject quickSearch() {
         AccountInfo accountInfo = TokenUtil.getAccountInfo();
 
-        Map<String, Object> param = new HashMap<>();
-        param.put("status", StatusEnum.ENABLED.getKey());
+        CouponGroupPage couponGroupPage = new CouponGroupPage();
+        couponGroupPage.setPage(Constants.PAGE_NUMBER);
+        couponGroupPage.setPageSize(Constants.ALL_ROWS);
+        couponGroupPage.setStatus(StatusEnum.ENABLED.getKey());
         if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
-            param.put("merchantId", accountInfo.getMerchantId());
+            couponGroupPage.setMerchantId(accountInfo.getMerchantId());
         }
         if (accountInfo.getStoreId() != null && accountInfo.getStoreId() > 0) {
-            param.put("storeId", accountInfo.getStoreId());
+            couponGroupPage.setStoreId(accountInfo.getStoreId());
         }
-        PaginationResponse<MtCouponGroup> paginationResponse = couponGroupService.queryCouponGroupListByPagination(new PaginationRequest(Constants.PAGE_NUMBER, Constants.ALL_ROWS, param));
+        PaginationResponse<MtCouponGroup> paginationResponse = couponGroupService.queryCouponGroupListByPagination(couponGroupPage);
 
         List<MtCouponGroup> groupList = paginationResponse.getContent();
 

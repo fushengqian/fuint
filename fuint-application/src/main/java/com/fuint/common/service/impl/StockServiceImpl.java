@@ -6,10 +6,10 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fuint.common.dto.StockGoodsDto;
 import com.fuint.common.enums.StatusEnum;
 import com.fuint.common.enums.YesOrNoEnum;
+import com.fuint.common.param.StockPage;
 import com.fuint.common.service.StockService;
 import com.fuint.framework.annoation.OperationServiceLog;
 import com.fuint.framework.exception.BusinessCheckException;
-import com.fuint.framework.pagination.PaginationRequest;
 import com.fuint.framework.pagination.PaginationResponse;
 import com.fuint.framework.web.ResponseObject;
 import com.fuint.repository.mapper.MtGoodsMapper;
@@ -56,32 +56,32 @@ public class StockServiceImpl extends ServiceImpl<MtStockMapper, MtStock> implem
     /**
      * 分页查询库存管理记录列表
      *
-     * @param paginationRequest
+     * @param stockPage
      * @return
      */
     @Override
-    public PaginationResponse<MtStock> queryStockListByPagination(PaginationRequest paginationRequest) {
-        Page<MtStock> pageHelper = PageHelper.startPage(paginationRequest.getCurrentPage(), paginationRequest.getPageSize());
+    public PaginationResponse<MtStock> queryStockListByPagination(StockPage stockPage) {
+        Page<MtStock> pageHelper = PageHelper.startPage(stockPage.getPage(), stockPage.getPageSize());
         LambdaQueryWrapper<MtStock> lambdaQueryWrapper = Wrappers.lambdaQuery();
         lambdaQueryWrapper.ne(MtStock::getStatus, StatusEnum.DISABLE.getKey());
 
-        String status = paginationRequest.getSearchParams().get("status") == null ? "" : paginationRequest.getSearchParams().get("status").toString();
+        String status = stockPage.getStatus();
         if (StringUtils.isNotBlank(status)) {
             lambdaQueryWrapper.eq(MtStock::getStatus, status);
         }
-        String type = paginationRequest.getSearchParams().get("type") == null ? "" : paginationRequest.getSearchParams().get("type").toString();
+        String type = stockPage.getType();
         if (StringUtils.isNotBlank(type)) {
             lambdaQueryWrapper.eq(MtStock::getType, type);
         }
-        String merchantId = paginationRequest.getSearchParams().get("merchantId") == null ? "" : paginationRequest.getSearchParams().get("merchantId").toString();
-        if (StringUtils.isNotBlank(merchantId)) {
+        Integer merchantId = stockPage.getMerchantId();
+        if (merchantId != null) {
             lambdaQueryWrapper.eq(MtStock::getMerchantId, merchantId);
         }
-        String storeId = paginationRequest.getSearchParams().get("storeId") == null ? "" : paginationRequest.getSearchParams().get("storeId").toString();
-        if (StringUtils.isNotBlank(storeId)) {
+        Integer storeId = stockPage.getStoreId();
+        if (storeId != null) {
             lambdaQueryWrapper.eq(MtStock::getStoreId, storeId);
         }
-        String description = paginationRequest.getSearchParams().get("description") == null ? "" : paginationRequest.getSearchParams().get("description").toString();
+        String description = stockPage.getDescription();
         if (StringUtils.isNotBlank(description)) {
             lambdaQueryWrapper.like(MtStock::getDescription, description);
         }
@@ -89,7 +89,7 @@ public class StockServiceImpl extends ServiceImpl<MtStockMapper, MtStock> implem
         lambdaQueryWrapper.orderByDesc(MtStock::getId);
         List<MtStock> dataList = mtStockMapper.selectList(lambdaQueryWrapper);
 
-        PageRequest pageRequest = PageRequest.of(paginationRequest.getCurrentPage(), paginationRequest.getPageSize());
+        PageRequest pageRequest = PageRequest.of(stockPage.getPage(), stockPage.getPageSize());
         PageImpl pageImpl = new PageImpl(dataList, pageRequest, pageHelper.getTotal());
         PaginationResponse<MtStock> paginationResponse = new PaginationResponse(pageImpl, MtStock.class);
         paginationResponse.setTotalPages(pageHelper.getPages());

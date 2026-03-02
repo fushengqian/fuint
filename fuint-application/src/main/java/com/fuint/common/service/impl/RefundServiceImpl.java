@@ -10,7 +10,7 @@ import com.fuint.common.service.*;
 import com.fuint.common.util.DateUtil;
 import com.fuint.framework.annoation.OperationServiceLog;
 import com.fuint.framework.exception.BusinessCheckException;
-import com.fuint.framework.pagination.PaginationRequest;
+import com.fuint.common.param.RefundPage;
 import com.fuint.framework.pagination.PaginationResponse;
 import com.fuint.framework.web.ResponseObject;
 import com.fuint.repository.mapper.*;
@@ -100,40 +100,40 @@ public class RefundServiceImpl extends ServiceImpl<MtRefundMapper, MtRefund> imp
     /**
      * 分页查询售后订单列表
      *
-     * @param paginationRequest
+     * @param refundPage
      * @return
      */
     @Override
-    public PaginationResponse<RefundDto> getRefundListByPagination(PaginationRequest paginationRequest) {
-        Page<MtBanner> pageHelper = PageHelper.startPage(paginationRequest.getCurrentPage(), paginationRequest.getPageSize());
+    public PaginationResponse<RefundDto> getRefundListByPagination(RefundPage refundPage) {
+        Page<MtBanner> pageHelper = PageHelper.startPage(refundPage.getPage(), refundPage.getPageSize());
         LambdaQueryWrapper<MtRefund> lambdaQueryWrapper = Wrappers.lambdaQuery();
         lambdaQueryWrapper.ne(MtRefund::getStatus, StatusEnum.DISABLE.getKey());
-        String merchantId = paginationRequest.getSearchParams().get("merchantId") == null ? "" : paginationRequest.getSearchParams().get("merchantId").toString();
-        if (StringUtils.isNotBlank(merchantId)) {
+        Integer merchantId = refundPage.getMerchantId();
+        if (merchantId != null) {
             lambdaQueryWrapper.eq(MtRefund::getMerchantId, merchantId);
         }
-        String remark = paginationRequest.getSearchParams().get("remark") == null ? "" : paginationRequest.getSearchParams().get("remark").toString();
+        String remark = refundPage.getRemark();
         if (StringUtils.isNotBlank(remark)) {
             lambdaQueryWrapper.like(MtRefund::getRemark, remark);
         }
-        String status = paginationRequest.getSearchParams().get("status") == null ? "" : paginationRequest.getSearchParams().get("status").toString();
+        String status = refundPage.getStatus();
         if (StringUtils.isNotBlank(status)) {
             lambdaQueryWrapper.eq(MtRefund::getStatus, status);
         }
-        String orderId = paginationRequest.getSearchParams().get("orderId") == null ? "" : paginationRequest.getSearchParams().get("orderId").toString();
-        if (StringUtils.isNotBlank(orderId)) {
+        Integer orderId = refundPage.getOrderId();
+        if (orderId != null) {
             lambdaQueryWrapper.eq(MtRefund::getOrderId, orderId);
         }
-        String userId = paginationRequest.getSearchParams().get("userId") == null ? "" : paginationRequest.getSearchParams().get("userId").toString();
-        if (StringUtils.isNotBlank(userId) && Integer.parseInt(userId) > 0) {
+        Integer userId = refundPage.getUserId();
+        if (userId != null && userId > 0) {
             lambdaQueryWrapper.eq(MtRefund::getUserId, userId);
         }
-        String storeId = paginationRequest.getSearchParams().get("storeId") == null ? "" : paginationRequest.getSearchParams().get("storeId").toString();
-        if (StringUtils.isNotBlank(storeId)) {
+        Integer storeId = refundPage.getStoreId();
+        if (storeId != null) {
             lambdaQueryWrapper.eq(MtRefund::getStoreId, storeId);
         }
-        String startTime = paginationRequest.getSearchParams().get("startTime") == null ? "" : paginationRequest.getSearchParams().get("startTime").toString();
-        String endTime = paginationRequest.getSearchParams().get("endTime") == null ? "" : paginationRequest.getSearchParams().get("endTime").toString();
+        String startTime = refundPage.getStartTime();
+        String endTime = refundPage.getEndTime();
         if (StringUtil.isNotEmpty(startTime)) {
             lambdaQueryWrapper.ge(MtRefund::getCreateTime, startTime);
         }
@@ -160,7 +160,7 @@ public class RefundServiceImpl extends ServiceImpl<MtRefundMapper, MtRefund> imp
                  dataList.add(refundDto);
             }
         }
-        PageRequest pageRequest = PageRequest.of(paginationRequest.getCurrentPage(), paginationRequest.getPageSize());
+        PageRequest pageRequest = PageRequest.of(refundPage.getPage(), refundPage.getPageSize());
         PageImpl pageImpl = new PageImpl(dataList, pageRequest, pageHelper.getTotal());
         PaginationResponse<RefundDto> paginationResponse = new PaginationResponse(pageImpl, RefundDto.class);
         paginationResponse.setTotalPages(pageHelper.getPages());

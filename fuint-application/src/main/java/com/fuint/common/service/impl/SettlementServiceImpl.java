@@ -8,13 +8,13 @@ import com.fuint.common.dto.SettlementOrderDto;
 import com.fuint.common.dto.UserOrderDto;
 import com.fuint.common.enums.*;
 import com.fuint.common.param.OrderListParam;
+import com.fuint.common.param.SettlementPage;
 import com.fuint.common.service.MerchantService;
 import com.fuint.common.service.OrderService;
 import com.fuint.common.service.SettlementService;
 import com.fuint.common.util.CommonUtil;
 import com.fuint.framework.annoation.OperationServiceLog;
 import com.fuint.framework.exception.BusinessCheckException;
-import com.fuint.framework.pagination.PaginationRequest;
 import com.fuint.framework.pagination.PaginationResponse;
 import com.fuint.module.backendApi.request.SettlementRequest;
 import com.fuint.repository.mapper.MtSettlementMapper;
@@ -63,35 +63,35 @@ public class SettlementServiceImpl implements SettlementService {
     /**
      * 分页查询结算列表
      *
-     * @param paginationRequest
+     * @param settlementPage
      * @return
      */
     @Override
-    public PaginationResponse<MtSettlement> querySettlementListByPagination(PaginationRequest paginationRequest) {
-        Page<MtBanner> pageHelper = PageHelper.startPage(paginationRequest.getCurrentPage(), paginationRequest.getPageSize());
+    public PaginationResponse<MtSettlement> querySettlementListByPagination(SettlementPage settlementPage) {
+        Page<MtBanner> pageHelper = PageHelper.startPage(settlementPage.getPage(), settlementPage.getPageSize());
         LambdaQueryWrapper<MtSettlement> lambdaQueryWrapper = Wrappers.lambdaQuery();
         lambdaQueryWrapper.ne(MtSettlement::getStatus, StatusEnum.DISABLE.getKey());
 
-        String status = paginationRequest.getSearchParams().get("status") == null ? "" : paginationRequest.getSearchParams().get("status").toString();
+        String status = settlementPage.getStatus();
         if (StringUtils.isNotBlank(status)) {
             lambdaQueryWrapper.eq(MtSettlement::getStatus, status);
         }
-        String merchantId = paginationRequest.getSearchParams().get("merchantId") == null ? "" : paginationRequest.getSearchParams().get("merchantId").toString();
-        if (StringUtils.isNotBlank(merchantId)) {
+        Integer merchantId = settlementPage.getMerchantId();
+        if (merchantId != null) {
             lambdaQueryWrapper.eq(MtSettlement::getMerchantId, merchantId);
         }
-        String storeId = paginationRequest.getSearchParams().get("storeId") == null ? "" : paginationRequest.getSearchParams().get("storeId").toString();
-        if (StringUtils.isNotBlank(storeId)) {
+        Integer storeId = settlementPage.getStoreId();
+        if (storeId != null) {
             lambdaQueryWrapper.eq(MtSettlement::getStoreId, storeId);
         }
-        String description = paginationRequest.getSearchParams().get("description") == null ? "" : paginationRequest.getSearchParams().get("description").toString();
+        String description = settlementPage.getDescription();
         if (StringUtils.isNotBlank(description)) {
             lambdaQueryWrapper.like(MtSettlement::getDescription, description);
         }
         lambdaQueryWrapper.orderByDesc(MtSettlement::getId);
         List<MtSettlement> dataList = mtSettlementMapper.selectList(lambdaQueryWrapper);
 
-        PageRequest pageRequest = PageRequest.of(paginationRequest.getCurrentPage(), paginationRequest.getPageSize());
+        PageRequest pageRequest = PageRequest.of(settlementPage.getPage(), settlementPage.getPageSize());
         PageImpl pageImpl = new PageImpl(dataList, pageRequest, pageHelper.getTotal());
         PaginationResponse<MtSettlement> paginationResponse = new PaginationResponse(pageImpl, MtSettlement.class);
         paginationResponse.setTotalPages(pageHelper.getPages());

@@ -1,7 +1,7 @@
 package com.fuint.common.service;
 
+import com.fuint.common.param.GenCodePage;
 import com.fuint.framework.exception.BusinessCheckException;
-import com.fuint.framework.pagination.PaginationRequest;
 import com.fuint.framework.pagination.PaginationResponse;
 import com.fuint.repository.model.TGenCode;
 
@@ -16,10 +16,10 @@ public interface GenCodeService {
     /**
      * 分页查询列表
      *
-     * @param paginationRequest
+     * @param genCodePage
      * @return
      */
-    PaginationResponse<TGenCode> queryGenCodeListByPagination(PaginationRequest paginationRequest);
+    PaginationResponse<TGenCode> queryGenCodeListByPagination(GenCodePage genCodePage);
 
     /**
      * 添加生成代码
