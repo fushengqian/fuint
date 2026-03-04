@@ -1,7 +1,7 @@
 package com.fuint.module.backendApi.controller.member;
 
-import com.fuint.common.dto.AccountInfo;
-import com.fuint.common.dto.PointDto;
+import com.fuint.common.dto.member.PointDto;
+import com.fuint.common.dto.system.AccountInfo;
 import com.fuint.common.enums.PointSettingEnum;
 import com.fuint.common.enums.SettingTypeEnum;
 import com.fuint.common.enums.StatusEnum;

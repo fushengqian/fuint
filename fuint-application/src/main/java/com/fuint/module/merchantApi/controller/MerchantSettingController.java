@@ -1,8 +1,8 @@
 package com.fuint.module.merchantApi.controller;
 
-import com.fuint.common.dto.MerchantSettingDto;
-import com.fuint.common.dto.StaffDto;
-import com.fuint.common.dto.UserInfo;
+import com.fuint.common.dto.member.UserInfo;
+import com.fuint.common.dto.merchant.MerchantSettingDto;
+import com.fuint.common.dto.merchant.StaffDto;
 import com.fuint.common.service.MemberService;
 import com.fuint.common.service.MerchantService;
 import com.fuint.common.service.SettingService;

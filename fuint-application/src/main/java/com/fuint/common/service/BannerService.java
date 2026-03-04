@@ -1,7 +1,7 @@
 package com.fuint.common.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.fuint.common.dto.BannerDto;
+import com.fuint.common.dto.content.BannerDto;
 import com.fuint.common.param.BannerPage;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.pagination.PaginationResponse;

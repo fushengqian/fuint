@@ -1,6 +1,6 @@
 package com.fuint.module.backendApi.controller;
 
-import com.fuint.common.dto.AccountInfo;
+import com.fuint.common.dto.system.AccountInfo;
 import com.fuint.common.util.TokenUtil;
 import com.fuint.framework.web.BaseController;
 import com.fuint.framework.web.ResponseObject;

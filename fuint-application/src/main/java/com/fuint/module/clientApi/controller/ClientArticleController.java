@@ -1,6 +1,6 @@
 package com.fuint.module.clientApi.controller;
 
-import com.fuint.common.dto.ArticleDto;
+import com.fuint.common.dto.content.ArticleDto;
 import com.fuint.common.enums.StatusEnum;
 import com.fuint.common.param.ArticleDetailParam;
 import com.fuint.common.param.ArticlePage;

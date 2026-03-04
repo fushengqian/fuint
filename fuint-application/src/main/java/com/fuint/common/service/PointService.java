@@ -1,7 +1,7 @@
 package com.fuint.common.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.fuint.common.dto.PointDto;
+import com.fuint.common.dto.member.PointDto;
 import com.fuint.common.param.PointPage;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.pagination.PaginationResponse;

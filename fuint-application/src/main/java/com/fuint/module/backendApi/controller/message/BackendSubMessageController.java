@@ -2,9 +2,9 @@ package com.fuint.module.backendApi.controller.message;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.fuint.common.dto.AccountInfo;
-import com.fuint.common.dto.ParamDto;
-import com.fuint.common.dto.SubMessageDto;
+import com.fuint.common.dto.message.SubMessageDto;
+import com.fuint.common.dto.system.AccountInfo;
+import com.fuint.common.dto.common.ParamDto;
 import com.fuint.common.enums.SettingTypeEnum;
 import com.fuint.common.enums.StatusEnum;
 import com.fuint.common.enums.WxMessageEnum;

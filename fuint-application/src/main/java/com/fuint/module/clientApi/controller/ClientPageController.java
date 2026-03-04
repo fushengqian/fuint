@@ -1,7 +1,7 @@
 package com.fuint.module.clientApi.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fuint.common.dto.NavigationDto;
+import com.fuint.common.dto.content.NavigationDto;
 import com.fuint.common.enums.StatusEnum;
 import com.fuint.common.service.BannerService;
 import com.fuint.common.service.MerchantService;

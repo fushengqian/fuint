@@ -2,8 +2,8 @@ package com.fuint.common.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fuint.common.dto.NavigationDto;
-import com.fuint.common.dto.ParamDto;
+import com.fuint.common.dto.common.ParamDto;
+import com.fuint.common.dto.content.NavigationDto;
 import com.fuint.repository.model.MtSetting;
 import java.util.List;
 

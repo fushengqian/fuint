@@ -1,7 +1,7 @@
 package com.fuint.module.backendApi.controller.message;
 
 import com.fuint.common.Constants;
-import com.fuint.common.dto.AccountInfo;
+import com.fuint.common.dto.system.AccountInfo;
 import com.fuint.common.enums.SettingTypeEnum;
 import com.fuint.common.enums.SmsSettingEnum;
 import com.fuint.common.service.SendSmsService;

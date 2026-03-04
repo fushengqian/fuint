@@ -1,10 +1,10 @@
 package com.fuint.module.backendApi.controller.coupon;
 
 import com.fuint.common.Constants;
-import com.fuint.common.dto.AccountInfo;
-import com.fuint.common.dto.GroupDataDto;
-import com.fuint.common.dto.GroupDataListDto;
-import com.fuint.common.dto.ReqCouponGroupDto;
+import com.fuint.common.dto.coupon.GroupDataDto;
+import com.fuint.common.dto.coupon.GroupDataListDto;
+import com.fuint.common.dto.coupon.ReqCouponGroupDto;
+import com.fuint.common.dto.system.AccountInfo;
 import com.fuint.common.enums.StatusEnum;
 import com.fuint.common.param.CouponGroupPage;
 import com.fuint.common.param.StatusParam;

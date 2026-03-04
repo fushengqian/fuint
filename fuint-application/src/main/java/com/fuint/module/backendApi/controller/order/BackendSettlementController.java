@@ -1,9 +1,9 @@
 package com.fuint.module.backendApi.controller.order;
 
 import com.fuint.common.Constants;
-import com.fuint.common.dto.AccountInfo;
-import com.fuint.common.dto.ParamDto;
-import com.fuint.common.dto.SettlementDto;
+import com.fuint.common.dto.order.SettlementDto;
+import com.fuint.common.dto.system.AccountInfo;
+import com.fuint.common.dto.common.ParamDto;
 import com.fuint.common.enums.OrderStatusEnum;
 import com.fuint.common.enums.SettleStatusEnum;
 import com.fuint.common.enums.StatusEnum;

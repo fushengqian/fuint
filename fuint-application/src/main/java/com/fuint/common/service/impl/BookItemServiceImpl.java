@@ -3,7 +3,7 @@ package com.fuint.common.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.fuint.common.dto.BookItemDto;
+import com.fuint.common.dto.book.BookItemDto;
 import com.fuint.common.enums.BookStatusEnum;
 import com.fuint.common.param.BookItemPage;
 import com.fuint.common.param.BookableParam;

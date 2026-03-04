@@ -1,7 +1,7 @@
 package com.fuint.module.backendApi.controller.commission;
 
-import com.fuint.common.dto.AccountInfo;
-import com.fuint.common.dto.CommissionRelationDto;
+import com.fuint.common.dto.system.AccountInfo;
+import com.fuint.common.dto.commission.CommissionRelationDto;
 import com.fuint.common.enums.StatusEnum;
 import com.fuint.common.param.CommissionRelationPage;
 import com.fuint.common.param.StatusParam;

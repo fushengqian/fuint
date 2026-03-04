@@ -1,7 +1,7 @@
 package com.fuint.module.merchantApi.controller;
 
-import com.fuint.common.dto.ReqCouponDto;
-import com.fuint.common.dto.UserInfo;
+import com.fuint.common.dto.coupon.ReqCouponDto;
+import com.fuint.common.dto.member.UserInfo;
 import com.fuint.common.param.CouponListParam;
 import com.fuint.common.param.CouponReceiveParam;
 import com.fuint.common.service.CouponService;

@@ -1,6 +1,6 @@
 package com.fuint.common.service;
 
-import com.fuint.common.dto.SettlementDto;
+import com.fuint.common.dto.order.SettlementDto;
 import com.fuint.common.param.SettlementPage;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.pagination.PaginationResponse;

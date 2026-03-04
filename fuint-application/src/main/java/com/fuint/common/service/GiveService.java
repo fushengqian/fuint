@@ -1,7 +1,7 @@
 package com.fuint.common.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.fuint.common.dto.GiveDto;
+import com.fuint.common.dto.coupon.GiveDto;
 import com.fuint.common.param.GivePage;
 import com.fuint.common.param.GiveParam;
 import com.fuint.framework.exception.BusinessCheckException;

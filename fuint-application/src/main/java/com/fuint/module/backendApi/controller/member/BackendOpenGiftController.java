@@ -1,8 +1,8 @@
 package com.fuint.module.backendApi.controller.member;
 
 import com.fuint.common.Constants;
-import com.fuint.common.dto.AccountInfo;
-import com.fuint.common.dto.OpenGiftDto;
+import com.fuint.common.dto.member.OpenGiftDto;
+import com.fuint.common.dto.system.AccountInfo;
 import com.fuint.common.enums.StatusEnum;
 import com.fuint.common.param.StatusParam;
 import com.fuint.common.service.OpenGiftService;

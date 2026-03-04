@@ -1,7 +1,7 @@
 package com.fuint.common.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.fuint.common.dto.CouponDto;
+import com.fuint.common.dto.coupon.CouponDto;
 import com.fuint.common.param.CouponReceiveParam;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.pagination.PaginationRequest;

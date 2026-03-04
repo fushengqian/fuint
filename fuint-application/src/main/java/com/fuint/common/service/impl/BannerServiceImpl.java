@@ -10,7 +10,7 @@ import com.fuint.framework.annoation.OperationServiceLog;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.pagination.PaginationResponse;
 import com.fuint.repository.model.MtBanner;
-import com.fuint.common.dto.BannerDto;
+import com.fuint.common.dto.content.BannerDto;
 import com.fuint.common.service.BannerService;
 import com.fuint.common.service.SettingService;
 import com.fuint.common.enums.StatusEnum;

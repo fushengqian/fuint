@@ -1,9 +1,9 @@
 package com.fuint.module.clientApi.controller;
 
 import com.alipay.api.AlipayApiException;
-import com.fuint.common.dto.CouponDto;
-import com.fuint.common.dto.UserInfo;
-import com.fuint.common.dto.UserOrderDto;
+import com.fuint.common.dto.coupon.CouponDto;
+import com.fuint.common.dto.member.UserInfo;
+import com.fuint.common.dto.order.UserOrderDto;
 import com.fuint.common.enums.OrderStatusEnum;
 import com.fuint.common.enums.SettingTypeEnum;
 import com.fuint.common.enums.YesOrNoEnum;

@@ -1,8 +1,8 @@
 package com.fuint.module.backendApi.controller.system;
 
-import com.fuint.common.dto.AccountDto;
-import com.fuint.common.dto.AccountInfo;
-import com.fuint.common.dto.RoleDto;
+import com.fuint.common.dto.system.AccountDto;
+import com.fuint.common.dto.system.AccountInfo;
+import com.fuint.common.dto.system.RoleDto;
 import com.fuint.common.enums.StatusEnum;
 import com.fuint.common.param.AccountPage;
 import com.fuint.common.service.AccountService;

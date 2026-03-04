@@ -1,7 +1,7 @@
 package com.fuint.module.clientApi.controller;
 
-import com.fuint.common.dto.AccountInfo;
-import com.fuint.common.dto.UserInfo;
+import com.fuint.common.dto.member.UserInfo;
+import com.fuint.common.dto.system.AccountInfo;
 import com.fuint.common.enums.OrderModeEnum;
 import com.fuint.common.enums.StatusEnum;
 import com.fuint.common.enums.YesOrNoEnum;

@@ -1,8 +1,8 @@
 package com.fuint.module.backendApi.controller.member;
 
-import com.fuint.common.dto.AccountInfo;
-import com.fuint.common.dto.MemberGroupDto;
-import com.fuint.common.dto.UserGroupDto;
+import com.fuint.common.dto.member.MemberGroupDto;
+import com.fuint.common.dto.member.UserGroupDto;
+import com.fuint.common.dto.system.AccountInfo;
 import com.fuint.common.enums.StatusEnum;
 import com.fuint.common.param.MemberGroupPage;
 import com.fuint.common.param.StatusParam;

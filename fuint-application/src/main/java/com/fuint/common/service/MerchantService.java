@@ -1,8 +1,8 @@
 package com.fuint.common.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.fuint.common.dto.MerchantDto;
-import com.fuint.common.dto.MerchantSettingDto;
+import com.fuint.common.dto.merchant.MerchantDto;
+import com.fuint.common.dto.merchant.MerchantSettingDto;
 import com.fuint.common.param.MerchantPage;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.pagination.PaginationResponse;

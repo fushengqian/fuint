@@ -1,7 +1,7 @@
 package com.fuint.common.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.fuint.common.dto.SmsTemplateDto;
+import com.fuint.common.dto.message.SmsTemplateDto;
 import com.fuint.common.param.SmsTemplatePage;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.pagination.PaginationResponse;

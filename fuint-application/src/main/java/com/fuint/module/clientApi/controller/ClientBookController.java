@@ -1,8 +1,8 @@
 package com.fuint.module.clientApi.controller;
 
-import com.fuint.common.dto.BookDto;
-import com.fuint.common.dto.BookItemDto;
-import com.fuint.common.dto.UserInfo;
+import com.fuint.common.dto.book.BookDto;
+import com.fuint.common.dto.book.BookItemDto;
+import com.fuint.common.dto.member.UserInfo;
 import com.fuint.common.enums.BookStatusEnum;
 import com.fuint.common.param.*;
 import com.fuint.common.service.*;

@@ -1,6 +1,6 @@
 package com.fuint.module.backendApi.controller.coupon;
 
-import com.fuint.common.dto.AccountInfo;
+import com.fuint.common.dto.system.AccountInfo;
 import com.fuint.common.param.SendLogPage;
 import com.fuint.common.service.CouponService;
 import com.fuint.common.service.SendLogService;

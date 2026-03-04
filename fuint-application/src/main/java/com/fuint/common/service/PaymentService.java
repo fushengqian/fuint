@@ -1,6 +1,6 @@
 package com.fuint.common.service;
 
-import com.fuint.common.dto.UserOrderDto;
+import com.fuint.common.dto.order.UserOrderDto;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.web.ResponseObject;
 import com.fuint.repository.model.MtOrder;

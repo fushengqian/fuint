@@ -1,7 +1,7 @@
 package com.fuint.module.backendApi.controller.merchant;
 
-import com.fuint.common.dto.AccountInfo;
-import com.fuint.common.dto.UserOrderDto;
+import com.fuint.common.dto.system.AccountInfo;
+import com.fuint.common.dto.order.UserOrderDto;
 import com.fuint.common.enums.PrinterSettingEnum;
 import com.fuint.common.enums.SettingTypeEnum;
 import com.fuint.common.enums.StatusEnum;

@@ -1,8 +1,8 @@
 package com.fuint.module.backendApi.controller.merchant;
 
-import com.fuint.common.dto.AccountInfo;
-import com.fuint.common.dto.ParamDto;
-import com.fuint.common.dto.StaffDto;
+import com.fuint.common.dto.merchant.StaffDto;
+import com.fuint.common.dto.system.AccountInfo;
+import com.fuint.common.dto.common.ParamDto;
 import com.fuint.common.enums.StaffCategoryEnum;
 import com.fuint.common.enums.StatusEnum;
 import com.fuint.common.param.StaffPage;

@@ -1,7 +1,7 @@
 package com.fuint.common.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.fuint.common.dto.UserOrderDto;
+import com.fuint.common.dto.order.UserOrderDto;
 import com.fuint.common.param.PrinterPage;
 import com.fuint.framework.pagination.PaginationResponse;
 import com.fuint.repository.model.MtPrinter;

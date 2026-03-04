@@ -1,7 +1,7 @@
 package com.fuint.common.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.fuint.common.dto.ReqSendLogDto;
+import com.fuint.common.dto.coupon.ReqSendLogDto;
 import com.fuint.common.param.SendLogPage;
 import com.fuint.framework.pagination.PaginationResponse;
 import com.fuint.repository.model.MtSendLog;

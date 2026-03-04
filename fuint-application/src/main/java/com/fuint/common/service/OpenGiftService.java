@@ -1,6 +1,6 @@
 package com.fuint.common.service;
 
-import com.fuint.common.dto.OpenGiftDto;
+import com.fuint.common.dto.member.OpenGiftDto;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.web.ResponseObject;
 import com.fuint.repository.model.MtOpenGift;

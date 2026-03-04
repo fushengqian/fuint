@@ -2,7 +2,12 @@ package com.fuint.module.backendApi.controller.goods;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.fuint.common.dto.*;
+import com.fuint.common.dto.common.ParamDto;
+import com.fuint.common.dto.goods.GoodsDto;
+import com.fuint.common.dto.goods.GoodsSkuDto;
+import com.fuint.common.dto.goods.GoodsSpecChildDto;
+import com.fuint.common.dto.goods.GoodsSpecItemDto;
+import com.fuint.common.dto.system.AccountInfo;
 import com.fuint.common.enums.GoodsTypeEnum;
 import com.fuint.common.enums.StatusEnum;
 import com.fuint.common.enums.YesOrNoEnum;

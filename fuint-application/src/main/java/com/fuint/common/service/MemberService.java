@@ -2,10 +2,10 @@ package com.fuint.common.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.alibaba.fastjson.JSONObject;
-import com.fuint.common.dto.AccountInfo;
-import com.fuint.common.dto.GroupMemberDto;
-import com.fuint.common.dto.MemberTopDto;
-import com.fuint.common.dto.UserDto;
+import com.fuint.common.dto.member.GroupMemberDto;
+import com.fuint.common.dto.system.AccountInfo;
+import com.fuint.common.dto.member.MemberTopDto;
+import com.fuint.common.dto.member.UserDto;
 import com.fuint.common.param.MemberPage;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.pagination.PaginationResponse;

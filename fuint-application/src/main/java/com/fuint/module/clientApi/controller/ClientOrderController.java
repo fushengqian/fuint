@@ -1,8 +1,8 @@
 package com.fuint.module.clientApi.controller;
 
-import com.fuint.common.dto.OrderDto;
-import com.fuint.common.dto.UserInfo;
-import com.fuint.common.dto.UserOrderDto;
+import com.fuint.common.dto.member.UserInfo;
+import com.fuint.common.dto.order.OrderDto;
+import com.fuint.common.dto.order.UserOrderDto;
 import com.fuint.common.enums.OrderStatusEnum;
 import com.fuint.common.param.OrderListParam;
 import com.fuint.common.service.OrderService;

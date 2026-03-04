@@ -1,7 +1,7 @@
 package com.fuint.common.util;
 
 import com.alibaba.ttl.TransmittableThreadLocal;
-import com.fuint.common.dto.AccountInfo;
+import com.fuint.common.dto.system.AccountInfo;
 
 /**
  * 用户认证工具

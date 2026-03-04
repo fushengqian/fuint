@@ -1,7 +1,7 @@
 package com.fuint.common.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.fuint.common.dto.CommissionLogDto;
+import com.fuint.common.dto.commission.CommissionLogDto;
 import com.fuint.common.param.CommissionLogPage;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.pagination.PaginationResponse;

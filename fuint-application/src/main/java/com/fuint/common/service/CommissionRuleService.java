@@ -1,7 +1,7 @@
 package com.fuint.common.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.fuint.common.dto.CommissionRuleDto;
+import com.fuint.common.dto.commission.CommissionRuleDto;
 import com.fuint.common.param.CommissionRulePage;
 import com.fuint.common.param.CommissionRuleParam;
 import com.fuint.framework.exception.BusinessCheckException;

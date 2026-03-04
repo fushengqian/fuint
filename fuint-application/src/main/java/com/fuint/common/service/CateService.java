@@ -1,7 +1,7 @@
 package com.fuint.common.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.fuint.common.dto.GoodsCateDto;
+import com.fuint.common.dto.goods.GoodsCateDto;
 import com.fuint.common.param.GoodsCatePage;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.pagination.PaginationResponse;

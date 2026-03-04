@@ -1,7 +1,7 @@
 package com.fuint.module.backendApi.controller.common;
 
-import com.fuint.common.dto.AccountInfo;
-import com.fuint.common.dto.UserOrderDto;
+import com.fuint.common.dto.system.AccountInfo;
+import com.fuint.common.dto.order.UserOrderDto;
 import com.fuint.common.service.MemberService;
 import com.fuint.common.service.OrderService;
 import com.fuint.common.util.DateUtil;

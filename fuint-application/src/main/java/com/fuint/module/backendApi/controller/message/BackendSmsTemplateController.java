@@ -1,7 +1,7 @@
 package com.fuint.module.backendApi.controller.message;
 
-import com.fuint.common.dto.AccountInfo;
-import com.fuint.common.dto.SmsTemplateDto;
+import com.fuint.common.dto.message.SmsTemplateDto;
+import com.fuint.common.dto.system.AccountInfo;
 import com.fuint.common.param.SmsTemplatePage;
 import com.fuint.common.service.SmsTemplateService;
 import com.fuint.common.util.TokenUtil;

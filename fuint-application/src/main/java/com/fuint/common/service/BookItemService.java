@@ -1,7 +1,7 @@
 package com.fuint.common.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.fuint.common.dto.BookItemDto;
+import com.fuint.common.dto.book.BookItemDto;
 import com.fuint.common.param.BookItemPage;
 import com.fuint.framework.pagination.PaginationResponse;
 import com.fuint.framework.exception.BusinessCheckException;

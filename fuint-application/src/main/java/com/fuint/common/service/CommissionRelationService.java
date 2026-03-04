@@ -1,9 +1,8 @@
 package com.fuint.common.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.fuint.common.dto.CommissionRelationDto;
+import com.fuint.common.dto.commission.CommissionRelationDto;
 import com.fuint.common.param.CommissionRelationPage;
-import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.pagination.PaginationResponse;
 import com.fuint.repository.model.MtCommissionRelation;
 import com.fuint.repository.model.MtUser;

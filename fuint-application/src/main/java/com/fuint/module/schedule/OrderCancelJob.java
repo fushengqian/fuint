@@ -1,6 +1,6 @@
 package com.fuint.module.schedule;
 
-import com.fuint.common.dto.OrderDto;
+import com.fuint.common.dto.order.OrderDto;
 import com.fuint.common.enums.OrderStatusEnum;
 import com.fuint.common.enums.PayStatusEnum;
 import com.fuint.common.service.OrderService;

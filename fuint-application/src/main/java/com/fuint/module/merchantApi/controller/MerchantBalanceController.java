@@ -1,7 +1,7 @@
 package com.fuint.module.merchantApi.controller;
 
-import com.fuint.common.dto.UserInfo;
-import com.fuint.common.dto.UserOrderDto;
+import com.fuint.common.dto.member.UserInfo;
+import com.fuint.common.dto.order.UserOrderDto;
 import com.fuint.common.param.RechargeParam;
 import com.fuint.common.service.*;
 import com.fuint.common.util.TokenUtil;

@@ -1,8 +1,8 @@
 package com.fuint.module.backendApi.controller.coupon;
 
-import com.fuint.common.dto.AccountInfo;
-import com.fuint.common.dto.ParamDto;
-import com.fuint.common.dto.UserCouponDto;
+import com.fuint.common.dto.coupon.UserCouponDto;
+import com.fuint.common.dto.system.AccountInfo;
+import com.fuint.common.dto.common.ParamDto;
 import com.fuint.common.enums.CouponExpireTypeEnum;
 import com.fuint.common.enums.CouponTypeEnum;
 import com.fuint.common.service.ConfirmLogService;

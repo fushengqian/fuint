@@ -1,7 +1,7 @@
 package com.fuint.module.merchantApi.controller;
 
-import com.fuint.common.dto.UserDto;
-import com.fuint.common.dto.UserInfo;
+import com.fuint.common.dto.member.UserDto;
+import com.fuint.common.dto.member.UserInfo;
 import com.fuint.common.enums.StatusEnum;
 import com.fuint.common.param.MemberDetailParam;
 import com.fuint.common.param.MemberInfoParam;

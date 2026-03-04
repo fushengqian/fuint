@@ -2,8 +2,8 @@ package com.fuint.module.backendApi.controller.content;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fuint.common.dto.AccountInfo;
-import com.fuint.common.dto.NavigationDto;
+import com.fuint.common.dto.content.NavigationDto;
+import com.fuint.common.dto.system.AccountInfo;
 import com.fuint.common.enums.SettingTypeEnum;
 import com.fuint.common.enums.StatusEnum;
 import com.fuint.common.service.SettingService;

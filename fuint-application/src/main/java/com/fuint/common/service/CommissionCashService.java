@@ -1,7 +1,7 @@
 package com.fuint.common.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.fuint.common.dto.CommissionCashDto;
+import com.fuint.common.dto.commission.CommissionCashDto;
 import com.fuint.common.param.CommissionCashPage;
 import com.fuint.framework.pagination.PaginationResponse;
 import com.fuint.framework.exception.BusinessCheckException;

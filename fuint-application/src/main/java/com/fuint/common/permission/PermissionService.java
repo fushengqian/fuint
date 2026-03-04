@@ -1,6 +1,6 @@
 package com.fuint.common.permission;
 
-import com.fuint.common.dto.AccountInfo;
+import com.fuint.common.dto.system.AccountInfo;
 import com.fuint.common.service.SourceService;
 import com.fuint.common.util.AuthUserUtil;
 import com.fuint.framework.exception.BusinessCheckException;

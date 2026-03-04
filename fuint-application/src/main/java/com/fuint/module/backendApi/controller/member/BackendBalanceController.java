@@ -1,8 +1,8 @@
 package com.fuint.module.backendApi.controller.member;
 
-import com.fuint.common.dto.AccountInfo;
-import com.fuint.common.dto.BalanceDto;
-import com.fuint.common.dto.RechargeRuleDto;
+import com.fuint.common.dto.recharge.RechargeRuleDto;
+import com.fuint.common.dto.system.AccountInfo;
+import com.fuint.common.dto.member.BalanceDto;
 import com.fuint.common.enums.BalanceSettingEnum;
 import com.fuint.common.enums.SettingTypeEnum;
 import com.fuint.common.enums.StatusEnum;

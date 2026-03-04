@@ -3,7 +3,7 @@ package com.fuint.common.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.fuint.common.dto.SmsTemplateDto;
+import com.fuint.common.dto.message.SmsTemplateDto;
 import com.fuint.common.enums.StatusEnum;
 import com.fuint.common.param.SmsTemplatePage;
 import com.fuint.common.service.SmsTemplateService;

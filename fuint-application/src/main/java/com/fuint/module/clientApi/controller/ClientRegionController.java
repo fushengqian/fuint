@@ -1,7 +1,7 @@
 package com.fuint.module.clientApi.controller;
 
-import com.fuint.common.dto.RegionDto;
-import com.fuint.common.dto.UserInfo;
+import com.fuint.common.dto.common.RegionDto;
+import com.fuint.common.dto.member.UserInfo;
 import com.fuint.common.util.TokenUtil;
 import com.fuint.framework.web.BaseController;
 import com.fuint.framework.web.ResponseObject;

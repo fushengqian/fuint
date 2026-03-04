@@ -2,7 +2,7 @@ package com.fuint.common.aspect;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.fuint.common.dto.AccountInfo;
+import com.fuint.common.dto.system.AccountInfo;
 import com.fuint.common.service.AccountService;
 import com.fuint.common.service.ActionLogService;
 import com.fuint.common.util.CommonUtil;

@@ -1,13 +1,13 @@
 package com.fuint.module.backendApi.controller.content;
 
-import com.fuint.common.dto.AccountInfo;
+import com.fuint.common.dto.system.AccountInfo;
 import com.fuint.common.param.BannerPage;
 import com.fuint.common.param.StatusParam;
 import com.fuint.common.service.StoreService;
 import com.fuint.common.util.TokenUtil;
 import com.fuint.framework.web.BaseController;
 import com.fuint.framework.web.ResponseObject;
-import com.fuint.common.dto.BannerDto;
+import com.fuint.common.dto.content.BannerDto;
 import com.fuint.common.enums.StatusEnum;
 import com.fuint.common.service.SettingService;
 import com.fuint.framework.pagination.PaginationResponse;

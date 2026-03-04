@@ -1,13 +1,12 @@
 package com.fuint.module.clientApi.controller;
 
 import com.alibaba.fastjson.JSONObject;
-import com.fuint.common.dto.UserInfo;
+import com.fuint.common.dto.member.UserInfo;
 import com.fuint.common.enums.SettingTypeEnum;
 import com.fuint.common.service.MerchantService;
 import com.fuint.common.service.MessageService;
 import com.fuint.common.service.SettingService;
 import com.fuint.common.util.TokenUtil;
-import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.web.BaseController;
 import com.fuint.framework.web.ResponseObject;
 import com.fuint.repository.model.MtMessage;

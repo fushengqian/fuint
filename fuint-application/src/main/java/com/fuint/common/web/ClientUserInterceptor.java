@@ -1,7 +1,7 @@
 package com.fuint.common.web;
 
 import com.fuint.common.Constants;
-import com.fuint.common.dto.UserInfo;
+import com.fuint.common.dto.member.UserInfo;
 import com.fuint.common.service.MemberService;
 import com.fuint.common.util.CommonUtil;
 import com.fuint.common.util.TokenUtil;

@@ -1,8 +1,8 @@
 package com.fuint.module.backendApi.controller.common;
 
-import com.fuint.common.dto.AccountInfo;
-import com.fuint.common.dto.GoodsTopDto;
-import com.fuint.common.dto.MemberTopDto;
+import com.fuint.common.dto.goods.GoodsTopDto;
+import com.fuint.common.dto.member.MemberTopDto;
+import com.fuint.common.dto.system.AccountInfo;
 import com.fuint.common.enums.StatusEnum;
 import com.fuint.common.param.StatisticParam;
 import com.fuint.common.service.GoodsService;

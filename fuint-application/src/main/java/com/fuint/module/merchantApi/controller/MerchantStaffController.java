@@ -1,6 +1,6 @@
 package com.fuint.module.merchantApi.controller;
 
-import com.fuint.common.dto.UserInfo;
+import com.fuint.common.dto.member.UserInfo;
 import com.fuint.common.param.StaffPage;
 import com.fuint.common.param.StaffParam;
 import com.fuint.common.service.MemberService;

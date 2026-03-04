@@ -1,9 +1,9 @@
 package com.fuint.common.service;
 
-import com.fuint.common.dto.AccountInfo;
-import com.fuint.common.dto.GoodsDto;
-import com.fuint.common.dto.GoodsSpecValueDto;
-import com.fuint.common.dto.GoodsTopDto;
+import com.fuint.common.dto.goods.GoodsDto;
+import com.fuint.common.dto.goods.GoodsSpecValueDto;
+import com.fuint.common.dto.goods.GoodsTopDto;
+import com.fuint.common.dto.system.AccountInfo;
 import com.fuint.common.param.GoodsListParam;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.pagination.PaginationResponse;

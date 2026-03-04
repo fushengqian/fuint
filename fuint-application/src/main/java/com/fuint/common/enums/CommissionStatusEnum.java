@@ -1,6 +1,6 @@
 package com.fuint.common.enums;
 
-import com.fuint.common.dto.ParamDto;
+import com.fuint.common.dto.common.ParamDto;
 
 import java.util.Arrays;
 import java.util.List;

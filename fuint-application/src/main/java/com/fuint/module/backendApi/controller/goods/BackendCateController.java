@@ -1,7 +1,7 @@
 package com.fuint.module.backendApi.controller.goods;
 
-import com.fuint.common.dto.AccountInfo;
-import com.fuint.common.dto.GoodsCateDto;
+import com.fuint.common.dto.system.AccountInfo;
+import com.fuint.common.dto.goods.GoodsCateDto;
 import com.fuint.common.enums.StatusEnum;
 import com.fuint.common.param.GoodsCatePage;
 import com.fuint.common.param.StatusParam;

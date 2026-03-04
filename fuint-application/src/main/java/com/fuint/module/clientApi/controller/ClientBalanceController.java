@@ -1,9 +1,9 @@
 package com.fuint.module.clientApi.controller;
 
 import com.fuint.common.Constants;
-import com.fuint.common.dto.BalanceDto;
-import com.fuint.common.dto.RechargeRuleDto;
-import com.fuint.common.dto.UserInfo;
+import com.fuint.common.dto.member.BalanceDto;
+import com.fuint.common.dto.member.UserInfo;
+import com.fuint.common.dto.recharge.RechargeRuleDto;
 import com.fuint.common.enums.BalanceSettingEnum;
 import com.fuint.common.enums.PayTypeEnum;
 import com.fuint.common.enums.SettingTypeEnum;

@@ -1,8 +1,8 @@
 package com.fuint.module.merchantApi.controller;
 
-import com.fuint.common.dto.OrderDto;
-import com.fuint.common.dto.UserInfo;
-import com.fuint.common.dto.UserOrderDto;
+import com.fuint.common.dto.member.UserInfo;
+import com.fuint.common.dto.order.OrderDto;
+import com.fuint.common.dto.order.UserOrderDto;
 import com.fuint.common.param.OrderConfirmParam;
 import com.fuint.common.param.OrderDetailParam;
 import com.fuint.common.param.OrderListParam;

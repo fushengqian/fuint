@@ -2,7 +2,7 @@ package com.fuint.module.backendApi.controller.common;
 
 import com.fuint.common.Constants;
 import com.fuint.common.domain.TreeNode;
-import com.fuint.common.dto.AccountInfo;
+import com.fuint.common.dto.system.AccountInfo;
 import com.fuint.common.enums.AdminRoleEnum;
 import com.fuint.common.service.AccountService;
 import com.fuint.common.service.DutyService;

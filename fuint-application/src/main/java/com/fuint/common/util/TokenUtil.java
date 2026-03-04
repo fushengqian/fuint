@@ -2,8 +2,8 @@ package com.fuint.common.util;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fuint.common.Constants;
-import com.fuint.common.dto.AccountInfo;
-import com.fuint.common.dto.UserInfo;
+import com.fuint.common.dto.system.AccountInfo;
+import com.fuint.common.dto.member.UserInfo;
 import com.fuint.utils.StringUtil;
 import nl.bitwalker.useragentutils.UserAgent;
 import org.springframework.stereotype.Component;

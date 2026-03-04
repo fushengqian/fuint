@@ -1,7 +1,7 @@
 package com.fuint.common.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.fuint.common.dto.ArticleDto;
+import com.fuint.common.dto.content.ArticleDto;
 import com.fuint.common.param.ArticlePage;
 import com.fuint.framework.pagination.PaginationResponse;
 import com.fuint.repository.model.MtArticle;

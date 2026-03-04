@@ -1,8 +1,8 @@
 package com.fuint.module.backendApi.controller.book;
 
-import com.fuint.common.dto.AccountInfo;
-import com.fuint.common.dto.BookItemDto;
-import com.fuint.common.dto.ParamDto;
+import com.fuint.common.dto.system.AccountInfo;
+import com.fuint.common.dto.book.BookItemDto;
+import com.fuint.common.dto.common.ParamDto;
 import com.fuint.common.enums.BookStatusEnum;
 import com.fuint.common.enums.StatusEnum;
 import com.fuint.common.param.BookItemPage;

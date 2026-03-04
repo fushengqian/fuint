@@ -1,7 +1,7 @@
 package com.fuint.module.backendApi.controller.book;
 
-import com.fuint.common.dto.AccountInfo;
-import com.fuint.common.dto.BookCateDto;
+import com.fuint.common.dto.book.BookCateDto;
+import com.fuint.common.dto.system.AccountInfo;
 import com.fuint.common.enums.StatusEnum;
 import com.fuint.common.param.BookCatePage;
 import com.fuint.common.service.BookCateService;

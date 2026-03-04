@@ -1,9 +1,9 @@
 package com.fuint.module.backendApi.controller.coupon;
 
 import com.fuint.common.Constants;
-import com.fuint.common.dto.AccountInfo;
-import com.fuint.common.dto.GiveDto;
-import com.fuint.common.dto.GiveItemDto;
+import com.fuint.common.dto.coupon.GiveDto;
+import com.fuint.common.dto.coupon.GiveItemDto;
+import com.fuint.common.dto.system.AccountInfo;
 import com.fuint.common.enums.StatusEnum;
 import com.fuint.common.param.GivePage;
 import com.fuint.common.service.GiveService;

@@ -1,7 +1,7 @@
 package com.fuint.module.clientApi.controller;
 
-import com.fuint.common.dto.PointDto;
-import com.fuint.common.dto.UserInfo;
+import com.fuint.common.dto.member.PointDto;
+import com.fuint.common.dto.member.UserInfo;
 import com.fuint.common.enums.StatusEnum;
 import com.fuint.common.param.GivePointParam;
 import com.fuint.common.param.PointPage;

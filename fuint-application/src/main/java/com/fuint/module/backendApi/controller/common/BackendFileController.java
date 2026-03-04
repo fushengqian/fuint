@@ -1,7 +1,7 @@
 package com.fuint.module.backendApi.controller.common;
 
 import com.aliyun.oss.OSS;
-import com.fuint.common.dto.AccountInfo;
+import com.fuint.common.dto.system.AccountInfo;
 import com.fuint.common.service.SettingService;
 import com.fuint.common.service.UploadService;
 import com.fuint.common.util.AliyunOssUtil;

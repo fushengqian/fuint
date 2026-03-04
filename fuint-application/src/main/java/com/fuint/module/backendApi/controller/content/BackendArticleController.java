@@ -1,7 +1,7 @@
 package com.fuint.module.backendApi.controller.content;
 
-import com.fuint.common.dto.AccountInfo;
-import com.fuint.common.dto.ArticleDto;
+import com.fuint.common.dto.system.AccountInfo;
+import com.fuint.common.dto.content.ArticleDto;
 import com.fuint.common.enums.StatusEnum;
 import com.fuint.common.param.ArticlePage;
 import com.fuint.common.param.StatusParam;

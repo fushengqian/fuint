@@ -1,8 +1,8 @@
 package com.fuint.module.clientApi.controller;
 
 import com.fuint.common.Constants;
-import com.fuint.common.dto.GiveDto;
-import com.fuint.common.dto.UserInfo;
+import com.fuint.common.dto.coupon.GiveDto;
+import com.fuint.common.dto.member.UserInfo;
 import com.fuint.common.param.GiveListParam;
 import com.fuint.common.param.GivePage;
 import com.fuint.common.param.GiveParam;
