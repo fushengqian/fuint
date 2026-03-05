@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fuint.repository.mapper.MtUserTagRelationMapper">
+
+    <select id="getTagIdsByUserId" resultType="java.lang.Integer">
+        SELECT TAG_ID FROM mt_user_tag_relation
+        WHERE USER_ID = #{userId}
+    </select>
+
+    <select id="getUserIdsByTagId" resultType="java.lang.Integer">
+        SELECT USER_ID FROM mt_user_tag_relation
+        WHERE TAG_ID = #{tagId}
+    </select>
+
+    <delete id="removeTagsByUserId">
+        DELETE FROM mt_user_tag_relation WHERE USER_ID = #{userId}
+    </delete>
+
+    <delete id="removeByTagId">
+        DELETE FROM mt_user_tag_relation WHERE TAG_ID = #{tagId}
+    </delete>
+
+</mapper>

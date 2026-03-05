@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fuint.repository.mapper.MtUserTagMapper">
+
+    <select id="getMerchantTagList" resultType="com.fuint.repository.model.MtUserTag">
+        SELECT * FROM mt_user_tag t
+        WHERE t.MERCHANT_ID = #{merchantId}
+        <if test="status != null and status != ''">
+            AND t.STATUS = #{status}
+        </if>
+        ORDER BY t.SORT ASC, t.ID DESC
+    </select>
+
+    <select id="getTagByName" resultType="com.fuint.repository.model.MtUserTag">
+        SELECT * FROM mt_user_tag t
+        WHERE t.MERCHANT_ID = #{merchantId} AND t.NAME = #{name} AND t.STATUS = 'A'
+        LIMIT 1
+    </select>
+
+</mapper>
