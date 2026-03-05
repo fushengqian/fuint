@@ -120,11 +120,10 @@ public class WeixinServiceImpl implements WeixinService {
      * @param merchantId 商户ID
      * @param isMinApp 是否小程序
      * @param useCache 是否读取缓存
-     * @throws BusinessCheckException
      * @return
      * */
     @Override
-    public String getAccessToken(Integer merchantId, boolean isMinApp, boolean useCache) throws BusinessCheckException {
+    public String getAccessToken(Integer merchantId, boolean isMinApp, boolean useCache) {
         String platForm = isMinApp == true ? "minApp" : "mp";
         String wxAppId = env.getProperty("weixin.official.appId");
         String wxAppSecret = env.getProperty("weixin.official.appSecret");

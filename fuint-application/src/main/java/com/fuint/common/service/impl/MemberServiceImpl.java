@@ -396,6 +396,11 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
         Date time = new Date();
         mtUser.setCreateTime(time);
         mtUser.setUpdateTime(time);
+        if (mtUser.getStartTime() != null && mtUser.getEndTime() != null) {
+            if (mtUser.getEndTime().before(mtUser.getStartTime())) {
+                throw new BusinessCheckException("会员结束时间不能早于开始时间");
+            }
+        }
         mtUser.setStartTime(mtUser.getStartTime());
         mtUser.setEndTime(mtUser.getEndTime());
         if (mtUser.getIsStaff() == null) {
@@ -496,6 +501,11 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
         mtUser.setMerchantId(oldUserInfo.getMerchantId());
         if (mtUser.getStoreId() == null || mtUser.getStoreId() <= 0) {
             mtUser.setStoreId(oldUserInfo.getStoreId());
+        }
+        if (mtUser.getStartTime() != null && mtUser.getEndTime() != null) {
+            if (mtUser.getEndTime().before(mtUser.getStartTime())) {
+                throw new BusinessCheckException("会员结束时间不能早于开始时间");
+            }
         }
         Boolean result = updateById(mtUser);
         if (result && mtUser.getGradeId() != null) {
