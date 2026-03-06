@@ -1,7 +1,6 @@
 package com.fuint.common.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.repository.model.MtUserTagRelation;
 
 import java.util.List;
@@ -20,9 +19,9 @@ public interface UserTagRelationService extends IService<MtUserTagRelation> {
      * @param userId 会员ID
      * @param tagIds 标签ID列表
      * @param operator 操作人
-     * @throws BusinessCheckException
+     * @return
      */
-    void setUserTags(Integer userId, List<Integer> tagIds, String operator) throws BusinessCheckException;
+    void setUserTags(Integer userId, List<Integer> tagIds, String operator);
 
     /**
      * 获取会员的标签ID列表
@@ -46,9 +45,9 @@ public interface UserTagRelationService extends IService<MtUserTagRelation> {
      * @param userIds 会员ID列表
      * @param tagIds 标签ID列表
      * @param operator 操作人
-     * @throws BusinessCheckException
+     * @return
      */
-    void batchSetUserTags(List<Integer> userIds, List<Integer> tagIds, String operator) throws BusinessCheckException;
+    void batchSetUserTags(List<Integer> userIds, List<Integer> tagIds, String operator);
 
     /**
      * 删除会员的所有标签

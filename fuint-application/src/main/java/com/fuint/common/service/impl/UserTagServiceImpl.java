@@ -1,6 +1,7 @@
 package com.fuint.common.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.fuint.common.enums.StatusEnum;
 import com.fuint.common.service.UserTagRelationService;
 import com.fuint.common.service.UserTagService;
 import com.fuint.framework.exception.BusinessCheckException;
@@ -45,7 +46,7 @@ public class UserTagServiceImpl extends ServiceImpl<MtUserTagMapper, MtUserTag> 
         if (StringUtil.isEmpty(mtUserTag.getColor())) {
             mtUserTag.setColor("#1890ff");
         }
-        mtUserTag.setStatus("A");
+        mtUserTag.setStatus(StatusEnum.ENABLED.getKey());
         mtUserTag.setCreateTime(new Date());
         mtUserTag.setUpdateTime(new Date());
 
@@ -88,7 +89,7 @@ public class UserTagServiceImpl extends ServiceImpl<MtUserTagMapper, MtUserTag> 
             throw new BusinessCheckException("标签不存在");
         }
 
-        tagInfo.setStatus("D");
+        tagInfo.setStatus(StatusEnum.DISABLE.getKey());
         tagInfo.setOperator(operator);
         tagInfo.setUpdateTime(new Date());
         mtUserTagMapper.updateById(tagInfo);

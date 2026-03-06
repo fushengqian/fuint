@@ -2,6 +2,7 @@ package com.fuint.module.backendApi.controller.member;
 
 import com.fuint.common.dto.member.UserTagDto;
 import com.fuint.common.dto.system.AccountInfo;
+import com.fuint.common.enums.StatusEnum;
 import com.fuint.common.service.*;
 import com.fuint.common.util.TokenUtil;
 import com.fuint.framework.exception.BusinessCheckException;
@@ -38,8 +39,6 @@ public class BackendUserTagController extends BaseController {
 
     private MerchantService merchantService;
 
-    private AccountService accountService;
-
     @ApiOperation(value = "标签列表")
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     @CrossOrigin
@@ -48,7 +47,7 @@ public class BackendUserTagController extends BaseController {
         String token = request.getHeader("Access-Token");
         Integer merchantId = merchantService.getMerchantId(token);
 
-        List<MtUserTag> tagList = userTagService.getMerchantTagList(merchantId, "A");
+        List<MtUserTag> tagList = userTagService.getMerchantTagList(merchantId, StatusEnum.ENABLED.getKey());
 
         List<UserTagDto> result = tagList.stream().map(tag -> {
             UserTagDto dto = new UserTagDto();
@@ -118,7 +117,7 @@ public class BackendUserTagController extends BaseController {
     @RequestMapping(value = "/setUserTags", method = RequestMethod.POST)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('member:tag:edit')")
-    public ResponseObject setUserTags(@RequestBody Map<String, Object> params, HttpServletRequest request) throws BusinessCheckException {
+    public ResponseObject setUserTags(@RequestBody Map<String, Object> params, HttpServletRequest request) {
         String token = request.getHeader("Access-Token");
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
         String operator = accountInfo != null ? accountInfo.getAccountName() : "";
@@ -136,7 +135,7 @@ public class BackendUserTagController extends BaseController {
     @RequestMapping(value = "/batchSetTags", method = RequestMethod.POST)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('member:tag:edit')")
-    public ResponseObject batchSetTags(@RequestBody Map<String, Object> params, HttpServletRequest request) throws BusinessCheckException {
+    public ResponseObject batchSetTags(@RequestBody Map<String, Object> params, HttpServletRequest request) {
         String token = request.getHeader("Access-Token");
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
         String operator = accountInfo != null ? accountInfo.getAccountName() : "";

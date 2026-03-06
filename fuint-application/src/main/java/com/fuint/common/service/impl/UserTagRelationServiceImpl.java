@@ -2,7 +2,6 @@ package com.fuint.common.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fuint.common.service.UserTagRelationService;
-import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.repository.mapper.MtUserTagRelationMapper;
 import com.fuint.repository.model.MtUserTagRelation;
 import lombok.AllArgsConstructor;
@@ -27,7 +26,7 @@ public class UserTagRelationServiceImpl extends ServiceImpl<MtUserTagRelationMap
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void setUserTags(Integer userId, List<Integer> tagIds, String operator) throws BusinessCheckException {
+    public void setUserTags(Integer userId, List<Integer> tagIds, String operator) {
         // 先删除原有标签
         mtUserTagRelationMapper.removeTagsByUserId(userId);
 
@@ -56,7 +55,7 @@ public class UserTagRelationServiceImpl extends ServiceImpl<MtUserTagRelationMap
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void batchSetUserTags(List<Integer> userIds, List<Integer> tagIds, String operator) throws BusinessCheckException {
+    public void batchSetUserTags(List<Integer> userIds, List<Integer> tagIds, String operator) {
         if (userIds == null || userIds.isEmpty() || tagIds == null || tagIds.isEmpty()) {
             return;
         }
@@ -65,7 +64,7 @@ public class UserTagRelationServiceImpl extends ServiceImpl<MtUserTagRelationMap
             // 获取会员已有标签
             List<Integer> existTagIds = mtUserTagRelationMapper.getTagIdsByUserId(userId);
             List<Integer> newTagIds = new ArrayList<>(tagIds);
-            
+
             // 合并标签（去重）
             for (Integer existTagId : existTagIds) {
                 if (!newTagIds.contains(existTagId)) {
