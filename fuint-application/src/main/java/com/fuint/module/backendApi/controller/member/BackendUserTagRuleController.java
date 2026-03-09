@@ -1,10 +1,12 @@
 package com.fuint.module.backendApi.controller.member;
 
+import com.fuint.common.enums.StatusEnum;
 import com.fuint.common.enums.TagRuleOperatorEnum;
 import com.fuint.common.enums.TagRuleTimeRangeEnum;
 import com.fuint.common.dto.system.AccountInfo;
 import com.fuint.common.enums.TagRuleTypeEnum;
-import com.fuint.common.service.*;
+import com.fuint.common.service.MerchantService;
+import com.fuint.common.service.UserTagRuleService;
 import com.fuint.common.util.TokenUtil;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.web.BaseController;
@@ -35,8 +37,6 @@ public class BackendUserTagRuleController extends BaseController {
 
     private MerchantService merchantService;
 
-    private AccountService accountService;
-
     @ApiOperation(value = "规则列表")
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     @CrossOrigin
@@ -45,7 +45,7 @@ public class BackendUserTagRuleController extends BaseController {
         String token = request.getHeader("Access-Token");
         Integer merchantId = merchantService.getMerchantId(token);
 
-        List<MtUserTagRule> ruleList = userTagRuleService.getMerchantRuleList(merchantId, "A");
+        List<MtUserTagRule> ruleList = userTagRuleService.getMerchantRuleList(merchantId, StatusEnum.ENABLED.getKey());
 
         Map<String, Object> data = new HashMap<>();
         data.put("list", ruleList);
@@ -96,7 +96,7 @@ public class BackendUserTagRuleController extends BaseController {
     @RequestMapping(value = "/execute/{id}", method = RequestMethod.GET)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('member:tagRule:edit')")
-    public ResponseObject execute(@PathVariable("id") Integer id) throws BusinessCheckException {
+    public ResponseObject execute(@PathVariable("id") Integer id) {
         // 执行单个规则
         MtUserTagRule rule = userTagRuleService.getById(id);
         if (rule != null) {
@@ -110,7 +110,7 @@ public class BackendUserTagRuleController extends BaseController {
     @RequestMapping(value = "/batchExecute", method = RequestMethod.POST)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('member:tagRule:edit')")
-    public ResponseObject batchExecute(HttpServletRequest request) throws BusinessCheckException {
+    public ResponseObject batchExecute(HttpServletRequest request) {
         String token = request.getHeader("Access-Token");
         Integer merchantId = merchantService.getMerchantId(token);
 

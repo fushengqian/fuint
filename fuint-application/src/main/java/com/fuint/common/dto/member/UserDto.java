@@ -3,6 +3,7 @@ package com.fuint.common.dto.member;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModelProperty;
@@ -52,6 +53,9 @@ public class UserDto implements Serializable {
 
     @ApiModelProperty("等级名称")
     private String gradeName;
+
+    @ApiModelProperty("会员标签")
+    private List<UserTagDto> userTags;
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     @ApiModelProperty("会员开始时间")

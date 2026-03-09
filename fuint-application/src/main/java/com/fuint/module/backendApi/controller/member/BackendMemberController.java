@@ -1,10 +1,7 @@
 package com.fuint.module.backendApi.controller.member;
 
 import com.fuint.common.Constants;
-import com.fuint.common.dto.member.GroupMemberDto;
-import com.fuint.common.dto.member.UserDto;
-import com.fuint.common.dto.member.UserGroupDto;
-import com.fuint.common.dto.member.WxCardDto;
+import com.fuint.common.dto.member.*;
 import com.fuint.common.dto.system.AccountInfo;
 import com.fuint.common.enums.SettingTypeEnum;
 import com.fuint.common.enums.StatusEnum;
@@ -227,20 +224,23 @@ public class BackendMemberController extends BaseController {
             return getFailureResult(201, "会员信息有误");
         }
 
-        UserDto memberInfo = new UserDto();
-        BeanUtils.copyProperties(mtUser, memberInfo);
+        UserDto userDto = new UserDto();
+        BeanUtils.copyProperties(mtUser, userDto);
 
-        MtUserGroup mtUserGroup = memberGroupService.queryMemberGroupById(memberInfo.getGroupId());
+        MtUserGroup mtUserGroup = memberGroupService.queryMemberGroupById(userDto.getGroupId());
         if (mtUserGroup != null) {
             UserGroupDto userGroupDto = new UserGroupDto();
             BeanUtils.copyProperties(mtUserGroup, userGroupDto);
-            memberInfo.setGroupInfo(userGroupDto);
+            userDto.setGroupInfo(userGroupDto);
         }
-        memberInfo.setMobile(CommonUtil.hidePhone(memberInfo.getMobile()));
+        userDto.setMobile(CommonUtil.hidePhone(userDto.getMobile()));
+        List<UserTagDto> userTags = new ArrayList<>();
+        userDto.setUserTags(userTags);
+
         List<MtUserGrade> userGradeList = userGradeService.getMerchantGradeList(accountInfo.getMerchantId(), null);
         Map<String, Object> result = new HashMap<>();
         result.put("userGradeList", userGradeList);
-        result.put("memberInfo", memberInfo);
+        result.put("memberInfo", userDto);
 
         return getSuccessResult(result);
     }
