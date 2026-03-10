@@ -2,8 +2,12 @@ package com.fuint.common.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.fuint.common.enums.*;
-import com.fuint.common.service.*;
+import com.fuint.common.enums.OrderStatusEnum;
+import com.fuint.common.enums.StatusEnum;
+import com.fuint.common.enums.TagRuleTimeRangeEnum;
+import com.fuint.common.service.MemberService;
+import com.fuint.common.service.UserTagRelationService;
+import com.fuint.common.service.UserTagRuleService;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.repository.mapper.MtOrderMapper;
 import com.fuint.repository.mapper.MtUserTagRuleMapper;
@@ -38,8 +42,6 @@ public class UserTagRuleServiceImpl extends ServiceImpl<MtUserTagRuleMapper, MtU
 
     private MemberService memberService;
 
-    private OrderService orderService;
-
     @Override
     public List<MtUserTagRule> getMerchantRuleList(Integer merchantId, String status) {
         return mtUserTagRuleMapper.getMerchantRuleList(merchantId, status);
@@ -53,7 +55,7 @@ public class UserTagRuleServiceImpl extends ServiceImpl<MtUserTagRuleMapper, MtU
             throw new BusinessCheckException("请选择关联标签");
         }
 
-        rule.setStatus("A");
+        rule.setStatus(StatusEnum.ENABLED.getKey());
         rule.setCreateTime(new Date());
         rule.setUpdateTime(new Date());
 
@@ -93,7 +95,7 @@ public class UserTagRuleServiceImpl extends ServiceImpl<MtUserTagRuleMapper, MtU
             throw new BusinessCheckException("规则不存在");
         }
 
-        rule.setStatus("D");
+        rule.setStatus(StatusEnum.DISABLE.getKey());
         rule.setOperator(operator);
         rule.setUpdateTime(new Date());
         mtUserTagRuleMapper.updateById(rule);
@@ -128,11 +130,7 @@ public class UserTagRuleServiceImpl extends ServiceImpl<MtUserTagRuleMapper, MtU
 
         // 更新会员标签
         if (newTagIds.size() != existTagIds.size()) {
-            try {
-                userTagRelationService.setUserTags(user.getId(), newTagIds, "SYSTEM");
-            } catch (BusinessCheckException e) {
-                log.error("更新会员标签失败: {}", e.getMessage());
-            }
+            userTagRelationService.setUserTags(user.getId(), newTagIds, "SYSTEM");
         }
     }
 
@@ -145,7 +143,7 @@ public class UserTagRuleServiceImpl extends ServiceImpl<MtUserTagRuleMapper, MtU
 
         // 获取所有会员
         List<Integer> userIds = memberService.getUserIdList(merchantId, null);
-        
+
         for (Integer userId : userIds) {
             MtUser user = memberService.queryMemberById(userId);
             if (user != null && "A".equals(user.getStatus())) {

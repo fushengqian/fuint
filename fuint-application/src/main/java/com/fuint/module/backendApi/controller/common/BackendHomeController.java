@@ -4,6 +4,7 @@ import com.fuint.common.dto.system.AccountInfo;
 import com.fuint.common.dto.order.UserOrderDto;
 import com.fuint.common.service.MemberService;
 import com.fuint.common.service.OrderService;
+import com.fuint.common.service.ReportService;
 import com.fuint.common.util.DateUtil;
 import com.fuint.common.util.TimeUtils;
 import com.fuint.common.util.TokenUtil;
@@ -49,6 +50,11 @@ public class BackendHomeController extends BaseController {
     private OrderService orderService;
 
     /**
+     * 报表服务接口
+     * */
+    private ReportService reportService;
+
+    /**
      * 首页统计数据
      */
     @ApiOperation(value = "首页统计数据")
@@ -62,37 +68,18 @@ public class BackendHomeController extends BaseController {
         Integer merchantId = accountInfo.getMerchantId();
         Integer storeId = accountInfo.getStoreId();
 
-        // 总会员数
-        Long totalUser = memberService.getUserCount(merchantId, storeId);
-        // 今日新增会员数量
-        Long todayUser = memberService.getUserCount(merchantId, storeId, beginTime, endTime);
-
-        // 总订单数
-        BigDecimal totalOrder = orderService.getOrderCount(merchantId, storeId);
-        // 今日订单数
-        BigDecimal todayOrder = orderService.getOrderCount(merchantId, storeId, beginTime, endTime);
-
-        // 今日交易金额
-        BigDecimal todayPay = orderService.getPayMoney(merchantId, storeId, beginTime, endTime);
-        // 总交易金额
-        BigDecimal totalPay = orderService.getPayMoney(merchantId, storeId);
-
-        // 今日活跃会员数
-        Long todayActiveUser = memberService.getActiveUserCount(merchantId, storeId, beginTime, endTime);
-
-        // 总支付人数
-        Integer totalPayUser = orderService.getPayUserCount(merchantId, storeId);
+        Map<String, Object> data = reportService.getReportOverview(merchantId, storeId, beginTime, endTime);
 
         Map<String, Object> result = new HashMap<>();
+        result.put("todayUser", data.get("userCount"));
+        result.put("totalUser", data.get("totalUserCount"));
+        result.put("todayOrder", data.get("orderCount"));
+        result.put("totalOrder", data.get("totalOrderCount"));
+        result.put("todayPay", data.get("payAmount"));
+        result.put("totalPay", data.get("totalPayAmount"));
+        result.put("todayActiveUser", data.get("activeUserCount"));
+        result.put("totalPayUser", data.get("totalPayUserCount"));
 
-        result.put("todayUser", todayUser);
-        result.put("totalUser", totalUser);
-        result.put("todayOrder", todayOrder);
-        result.put("totalOrder", totalOrder);
-        result.put("todayPay", todayPay);
-        result.put("totalPay", totalPay);
-        result.put("todayActiveUser", todayActiveUser);
-        result.put("totalPayUser", totalPayUser);
 
         return getSuccessResult(result);
     }

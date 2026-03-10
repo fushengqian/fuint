@@ -3,24 +3,20 @@ package com.fuint.module.backendApi.controller.common;
 import com.fuint.common.dto.goods.GoodsTopDto;
 import com.fuint.common.dto.member.MemberTopDto;
 import com.fuint.common.dto.system.AccountInfo;
-import com.fuint.common.enums.StatusEnum;
 import com.fuint.common.param.StatisticParam;
 import com.fuint.common.service.GoodsService;
 import com.fuint.common.service.MemberService;
-import com.fuint.common.service.OrderService;
-import com.fuint.common.service.StoreService;
+import com.fuint.common.service.ReportService;
 import com.fuint.common.util.DateUtil;
 import com.fuint.common.util.TokenUtil;
 import com.fuint.framework.web.BaseController;
 import com.fuint.framework.web.ResponseObject;
-import com.fuint.repository.model.MtStore;
 import com.fuint.utils.StringUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
-import java.math.BigDecimal;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.HashMap;
@@ -45,19 +41,14 @@ public class BackendStatisticController extends BaseController {
     private MemberService memberService;
 
     /**
-     * 订单服务接口
-     * */
-    private OrderService orderService;
-
-    /**
      * 商品服务接口
      * */
     private GoodsService goodsService;
 
     /**
-     * 店铺服务接口
-     */
-    private StoreService storeService;
+     * 报表服务接口
+     * */
+    private ReportService reportService;
 
     /**
      * 数据概况
@@ -80,49 +71,7 @@ public class BackendStatisticController extends BaseController {
             storeId = accountInfo.getStoreId();
         }
 
-        // 总会员数
-        Long totalUserCount = memberService.getUserCount(merchantId, storeId);
-        // 新增会员数量
-        Long userCount = memberService.getUserCount(merchantId, storeId, startTime, endTime);
-
-        // 总订单数
-        BigDecimal totalOrderCount = orderService.getOrderCount(merchantId, storeId);
-        // 订单数
-        BigDecimal orderCount = orderService.getOrderCount(merchantId, storeId, startTime, endTime);
-
-        // 交易金额
-        BigDecimal payAmount = orderService.getPayMoney(merchantId, storeId, startTime, endTime);
-        // 总交易金额
-        BigDecimal totalPayAmount = orderService.getPayMoney(merchantId, storeId);
-
-        // 活跃会员数
-        Long activeUserCount = memberService.getActiveUserCount(merchantId, storeId, startTime, endTime);
-
-        // 总支付人数
-        Integer totalPayUserCount = orderService.getPayUserCount(merchantId, storeId);
-
-        // 店铺列表
-        Map<String, Object> params = new HashMap<>();
-        params.put("status", StatusEnum.ENABLED.getKey());
-        if (accountInfo.getStoreId() != null && accountInfo.getStoreId() > 0) {
-            params.put("storeId", accountInfo.getStoreId().toString());
-        }
-        if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
-            params.put("merchantId", accountInfo.getMerchantId());
-        }
-        List<MtStore> storeList = storeService.queryStoresByParams(params);
-
-        Map<String, Object> result = new HashMap<>();
-        result.put("userCount", userCount);
-        result.put("totalUserCount", totalUserCount);
-        result.put("orderCount", orderCount);
-        result.put("totalOrderCount", totalOrderCount);
-        result.put("payAmount", payAmount);
-        result.put("totalPayAmount", totalPayAmount);
-        result.put("activeUserCount", activeUserCount);
-        result.put("totalPayUserCount", totalPayUserCount);
-        result.put("storeList", storeList);
-
+        Map<String, Object> result = reportService.getReportOverview(merchantId, storeId, startTime, endTime);
         return getSuccessResult(result);
     }
 
