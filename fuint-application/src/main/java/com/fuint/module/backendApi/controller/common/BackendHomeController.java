@@ -61,14 +61,11 @@ public class BackendHomeController extends BaseController {
     @RequestMapping(value = "/index", method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject index() throws BusinessCheckException {
-        Date beginTime = DateUtil.getDayBegin();
-        Date endTime = DateUtil.getDayEnd();
-
         AccountInfo accountInfo = TokenUtil.getAccountInfo();
         Integer merchantId = accountInfo.getMerchantId();
         Integer storeId = accountInfo.getStoreId();
 
-        Map<String, Object> data = reportService.getReportOverview(merchantId, storeId, beginTime, endTime);
+        Map<String, Object> data = reportService.getReportOverview(merchantId, storeId, DateUtil.getDayBegin(), DateUtil.getDayEnd());
 
         Map<String, Object> result = new HashMap<>();
         result.put("todayUser", data.get("userCount"));
@@ -121,11 +118,11 @@ public class BackendHomeController extends BaseController {
             BigDecimal[] userCountData = {new BigDecimal("0"), new BigDecimal("0"), new BigDecimal("0"), new BigDecimal("0"), new BigDecimal("0"), new BigDecimal("0"), new BigDecimal("0")};
 
             for (int i = 0; i < 7; i++) {
-                Date beginTime = DateUtil.getDayBegin((6 - i));
-                Date endTime = DateUtil.getDayEnd((6 - i));
-                orderCountData[i] = orderService.getOrderCount(merchantId, storeId, beginTime, endTime);
-                Long userCount = memberService.getActiveUserCount(merchantId, storeId, beginTime, endTime);
-                userCountData[i] = new BigDecimal(userCount);
+                 Date beginTime = DateUtil.getDayBegin((6 - i));
+                 Date endTime = DateUtil.getDayEnd((6 - i));
+                 orderCountData[i] = orderService.getOrderCount(merchantId, storeId, beginTime, endTime);
+                 Long userCount = memberService.getActiveUserCount(merchantId, storeId, beginTime, endTime);
+                 userCountData[i] = new BigDecimal(userCount);
             }
             BigDecimal data[][] = { orderCountData, userCountData };
             result.put("data", data);

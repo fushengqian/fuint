@@ -63,7 +63,7 @@ public class MerchantMemberController extends BaseController {
     @ApiOperation(value = "查询会员列表")
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @CrossOrigin
-    public ResponseObject list(@RequestBody MemberListParam memberListParam) throws BusinessCheckException, IllegalAccessException {
+    public ResponseObject list(@RequestBody MemberListParam memberListParam) throws BusinessCheckException {
         String dataType = memberListParam.getDataType();
         // 今日注册、今日活跃
         if (dataType.equals("todayRegister")) {

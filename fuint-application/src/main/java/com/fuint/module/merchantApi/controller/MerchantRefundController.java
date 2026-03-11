@@ -56,7 +56,7 @@ public class MerchantRefundController extends BaseController {
     @ApiOperation(value = "获取售订单后列表")
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @CrossOrigin
-    public ResponseObject list(@RequestBody RefundPage refundPage) throws BusinessCheckException, IllegalAccessException {
+    public ResponseObject list(@RequestBody RefundPage refundPage) throws BusinessCheckException {
         UserInfo userInfo = TokenUtil.getUserInfo();
         MtStaff staffInfo = staffService.queryStaffByMobile(userInfo.getMobile());
 
