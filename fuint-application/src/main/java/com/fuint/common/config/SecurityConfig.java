@@ -47,6 +47,7 @@ public class SecurityConfig {
                                 "/**/*.js",
                                 "/profile/**"
                         ).permitAll()
+                        .antMatchers("/swagger-ui.html").permitAll()
                         .antMatchers("/swagger-ui/**").permitAll()
                         .antMatchers("/swagger-resources/**").permitAll()
                         .antMatchers("/webjars/**").permitAll()
