@@ -1,5 +1,8 @@
 package com.fuint.common.service.impl;
 
+import com.fuint.common.dto.report.DailyCashierReportDto;
+import com.fuint.common.dto.report.DailyCateReportDto;
+import com.fuint.common.dto.report.DailySalesReportDto;
 import com.fuint.common.enums.StatusEnum;
 import com.fuint.common.service.MemberService;
 import com.fuint.common.service.OrderService;
@@ -87,5 +90,50 @@ public class ReportServiceImpl implements ReportService {
         result.put("storeList", storeList);
 
         return result;
+    }
+
+    /**
+     * 获取日销售统计报表
+     *
+     * @param merchantId 商户ID
+     * @param storeId 店铺ID
+     * @param startTime 开始时间
+     * @param endTime 结束时间
+     * @return
+     */
+    @Override
+    public DailySalesReportDto getDailySalesReport(Integer merchantId, Integer storeId, Date startTime, Date endTime) {
+        DailySalesReportDto dailySalesReportDto = new DailySalesReportDto();
+        return dailySalesReportDto;
+    }
+
+    /**
+     * 获取日收银统计报表
+     *
+     * @param merchantId 商户ID
+     * @param storeId 店铺ID
+     * @param startTime 开始时间
+     * @param endTime 结束时间
+     * @return
+     */
+    @Override
+    public DailyCashierReportDto getDailyCashierReport(Integer merchantId, Integer storeId, Date startTime, Date endTime) {
+        DailyCashierReportDto dailyCashierReportDto = new DailyCashierReportDto();
+        return dailyCashierReportDto;
+    }
+
+    /**
+     * 获取日分类统计报表
+     *
+     * @param merchantId 商户ID
+     * @param storeId 店铺ID
+     * @param startTime 开始时间
+     * @param endTime 结束时间
+     * @return
+     */
+    @Override
+    public DailyCateReportDto getDailyCateReport(Integer merchantId, Integer storeId, Date startTime, Date endTime) {
+        DailyCateReportDto dailyCateReportDto = new DailyCateReportDto();
+        return dailyCateReportDto;
     }
 }

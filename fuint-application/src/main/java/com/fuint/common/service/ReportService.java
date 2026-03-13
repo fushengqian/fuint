@@ -1,5 +1,9 @@
 package com.fuint.common.service;
 
+import com.fuint.common.dto.report.DailyCashierReportDto;
+import com.fuint.common.dto.report.DailyCateReportDto;
+import com.fuint.common.dto.report.DailySalesReportDto;
+
 import java.util.Date;
 import java.util.Map;
 
@@ -21,5 +25,38 @@ public interface ReportService {
      * @return
      */
     Map<String, Object> getReportOverview(Integer merchantId, Integer storeId, Date startTime, Date endTime);
+
+    /**
+     * 获取日销售统计报表
+     *
+     * @param merchantId 商户ID
+     * @param storeId 店铺ID
+     * @param startTime 开始时间
+     * @param endTime 结束时间
+     * @return
+     */
+    DailySalesReportDto getDailySalesReport(Integer merchantId, Integer storeId, Date startTime, Date endTime);
+
+    /**
+     * 获取日收银统计报表
+     *
+     * @param merchantId 商户ID
+     * @param storeId 店铺ID
+     * @param startTime 开始时间
+     * @param endTime 结束时间
+     * @return
+     */
+    DailyCashierReportDto getDailyCashierReport(Integer merchantId, Integer storeId, Date startTime, Date endTime);
+
+    /**
+     * 获取日分类统计报表
+     *
+     * @param merchantId 商户ID
+     * @param storeId 店铺ID
+     * @param startTime 开始时间
+     * @param endTime 结束时间
+     * @return
+     */
+    DailyCateReportDto getDailyCateReport(Integer merchantId, Integer storeId, Date startTime, Date endTime);
 
 }
