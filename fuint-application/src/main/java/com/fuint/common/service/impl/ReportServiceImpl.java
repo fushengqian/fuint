@@ -8,11 +8,14 @@ import com.fuint.common.service.MemberService;
 import com.fuint.common.service.OrderService;
 import com.fuint.common.service.ReportService;
 import com.fuint.common.service.StoreService;
+import com.fuint.common.util.DateUtil;
 import com.fuint.repository.model.MtStore;
+import com.fuint.utils.StringUtil;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.text.ParseException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -48,12 +51,15 @@ public class ReportServiceImpl implements ReportService {
      *
      * @param merchantId 商户ID
      * @param storeId 店铺ID
-     * @param startTime 开始时间
-     * @param endTime 结束时间
+     * @param begin 开始时间
+     * @param end 结束时间
      * @return
      */
     @Override
-    public Map<String, Object> getReportOverview(Integer merchantId, Integer storeId, Date startTime, Date endTime) {
+    public Map<String, Object> getReportOverview(Integer merchantId, Integer storeId, String begin, String end) throws ParseException {
+        Date startTime = StringUtil.isNotEmpty(begin) ? DateUtil.parseDate(begin) : null;
+        Date endTime = StringUtil.isNotEmpty(end) ? DateUtil.parseDate(end) : null;
+
         Long totalUserCount = memberService.getUserCount(merchantId, storeId);
 
         // 新增会员数量
@@ -102,7 +108,9 @@ public class ReportServiceImpl implements ReportService {
      * @return
      */
     @Override
-    public DailySalesReportDto getDailySalesReport(Integer merchantId, Integer storeId, Date startTime, Date endTime) {
+    public DailySalesReportDto getDailySalesReport(Integer merchantId, Integer storeId, String startTime, String endTime) throws ParseException {
+        Date start = StringUtil.isNotEmpty(startTime) ? DateUtil.parseDate(startTime) : null;
+        Date end = StringUtil.isNotEmpty(endTime) ? DateUtil.parseDate(endTime) : null;
         DailySalesReportDto dailySalesReportDto = new DailySalesReportDto();
         return dailySalesReportDto;
     }
@@ -117,7 +125,9 @@ public class ReportServiceImpl implements ReportService {
      * @return
      */
     @Override
-    public DailyCashierReportDto getDailyCashierReport(Integer merchantId, Integer storeId, Date startTime, Date endTime) {
+    public DailyCashierReportDto getDailyCashierReport(Integer merchantId, Integer storeId, String startTime, String endTime) throws ParseException {
+        Date start = StringUtil.isNotEmpty(startTime) ? DateUtil.parseDate(startTime) : null;
+        Date end = StringUtil.isNotEmpty(endTime) ? DateUtil.parseDate(endTime) : null;
         DailyCashierReportDto dailyCashierReportDto = new DailyCashierReportDto();
         return dailyCashierReportDto;
     }
@@ -132,7 +142,9 @@ public class ReportServiceImpl implements ReportService {
      * @return
      */
     @Override
-    public DailyCateReportDto getDailyCateReport(Integer merchantId, Integer storeId, Date startTime, Date endTime) {
+    public DailyCateReportDto getDailyCateReport(Integer merchantId, Integer storeId, String startTime, String endTime) throws ParseException {
+        Date start = StringUtil.isNotEmpty(startTime) ? DateUtil.parseDate(startTime) : null;
+        Date end = StringUtil.isNotEmpty(endTime) ? DateUtil.parseDate(endTime) : null;
         DailyCateReportDto dailyCateReportDto = new DailyCateReportDto();
         return dailyCateReportDto;
     }

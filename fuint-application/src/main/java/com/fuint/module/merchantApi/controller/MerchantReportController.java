@@ -6,7 +6,6 @@ import com.fuint.common.service.MemberService;
 import com.fuint.common.service.MerchantService;
 import com.fuint.common.service.ReportService;
 import com.fuint.common.service.StaffService;
-import com.fuint.common.util.DateUtil;
 import com.fuint.common.util.TokenUtil;
 import com.fuint.framework.web.BaseController;
 import com.fuint.framework.web.ResponseObject;
@@ -20,7 +19,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.text.ParseException;
-import java.util.Date;
 import java.util.Map;
 
 /**
@@ -72,14 +70,12 @@ public class MerchantReportController extends BaseController {
             return getFailureResult(201, "您没有操作权限");
         }
 
-        String startTimeStr = param.getStartTime();
-        String endTimeStr = param.getEndTime();
         Integer storeId = param.getStoreId();
+        if (staff.getStoreId() != null && staff.getStoreId() > 0) {
+            storeId = staff.getStoreId();
+        }
 
-        Date startTime = StringUtil.isNotEmpty(startTimeStr) ? DateUtil.parseDate(startTimeStr) : null;
-        Date endTime = StringUtil.isNotEmpty(endTimeStr) ? DateUtil.parseDate(endTimeStr) : null;
-
-        Map<String, Object> result = reportService.getReportOverview(merchantId, storeId, startTime, endTime);
+        Map<String, Object> result = reportService.getReportOverview(merchantId, storeId, param.getStartTime(), param.getEndTime());
         return getSuccessResult(result);
     }
 }

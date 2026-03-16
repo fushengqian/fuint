@@ -57,21 +57,13 @@ public class BackendStatisticController extends BaseController {
     @RequestMapping(value = "/main", method = RequestMethod.POST)
     @CrossOrigin
     public ResponseObject main(@RequestBody StatisticParam param) throws ParseException {
-        String startTimeStr = param.getStartTime();
-        String endTimeStr = param.getEndTime();
-        Integer storeId = param.getStoreId();
-
-        Date startTime = StringUtil.isNotEmpty(startTimeStr) ? DateUtil.parseDate(startTimeStr) : null;
-        Date endTime = StringUtil.isNotEmpty(endTimeStr) ? DateUtil.parseDate(endTimeStr) : null;
-
         AccountInfo accountInfo = TokenUtil.getAccountInfo();
-
         Integer merchantId = accountInfo.getMerchantId();
+        Integer storeId = param.getStoreId();
         if (accountInfo.getStoreId() != null && accountInfo.getStoreId() > 0) {
             storeId = accountInfo.getStoreId();
         }
-
-        Map<String, Object> result = reportService.getReportOverview(merchantId, storeId, startTime, endTime);
+        Map<String, Object> result = reportService.getReportOverview(merchantId, storeId, param.getStartTime(), param.getEndTime());
         return getSuccessResult(result);
     }
 

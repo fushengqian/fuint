@@ -4,7 +4,7 @@ import com.fuint.common.dto.report.DailyCashierReportDto;
 import com.fuint.common.dto.report.DailyCateReportDto;
 import com.fuint.common.dto.report.DailySalesReportDto;
 
-import java.util.Date;
+import java.text.ParseException;
 import java.util.Map;
 
 /**
@@ -24,7 +24,7 @@ public interface ReportService {
      * @param endTime 结束时间
      * @return
      */
-    Map<String, Object> getReportOverview(Integer merchantId, Integer storeId, Date startTime, Date endTime);
+    Map<String, Object> getReportOverview(Integer merchantId, Integer storeId, String startTime, String endTime) throws ParseException;
 
     /**
      * 获取日销售统计报表
@@ -35,7 +35,7 @@ public interface ReportService {
      * @param endTime 结束时间
      * @return
      */
-    DailySalesReportDto getDailySalesReport(Integer merchantId, Integer storeId, Date startTime, Date endTime);
+    DailySalesReportDto getDailySalesReport(Integer merchantId, Integer storeId, String startTime, String endTime) throws ParseException;
 
     /**
      * 获取日收银统计报表
@@ -46,7 +46,7 @@ public interface ReportService {
      * @param endTime 结束时间
      * @return
      */
-    DailyCashierReportDto getDailyCashierReport(Integer merchantId, Integer storeId, Date startTime, Date endTime);
+    DailyCashierReportDto getDailyCashierReport(Integer merchantId, Integer storeId, String startTime, String endTime) throws ParseException;
 
     /**
      * 获取日分类统计报表
@@ -57,6 +57,6 @@ public interface ReportService {
      * @param endTime 结束时间
      * @return
      */
-    DailyCateReportDto getDailyCateReport(Integer merchantId, Integer storeId, Date startTime, Date endTime);
+    DailyCateReportDto getDailyCateReport(Integer merchantId, Integer storeId, String startTime, String endTime) throws ParseException;
 
 }
