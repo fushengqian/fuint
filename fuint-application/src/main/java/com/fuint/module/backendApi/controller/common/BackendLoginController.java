@@ -64,8 +64,7 @@ public class BackendLoginController extends BaseController {
     @ApiOperation(value = "后台登录")
     @RequestMapping(value="/doLogin", method = RequestMethod.POST)
     public ResponseObject doLogin(HttpServletRequest request, @RequestBody LoginRequest loginRequest) throws BusinessCheckException {
-        String userAgent = request.getHeader("user-agent");
-        LoginResponse response = accountService.doLogin(loginRequest, userAgent);
+        LoginResponse response = accountService.doLogin(loginRequest, request.getHeader("user-agent"));
         return getSuccessResult(response);
     }
 

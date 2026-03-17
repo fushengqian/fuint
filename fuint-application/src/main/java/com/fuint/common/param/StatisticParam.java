@@ -11,15 +11,12 @@ import java.io.Serializable;
  * CopyRight https://www.fuint.cn
  */
 @Data
-public class StatisticParam implements Serializable {
+public class StatisticParam extends PageParam implements Serializable {
 
     @ApiModelProperty(value="开始时间", name="startTime")
     private String startTime;
 
     @ApiModelProperty(value="结束时间", name="endTime")
     private String endTime;
-
-    @ApiModelProperty(value="店铺ID", name="storeId")
-    private Integer storeId;
 
 }

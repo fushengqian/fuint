@@ -22,6 +22,7 @@ public interface ReportService {
      * @param storeId 店铺ID
      * @param startTime 开始时间
      * @param endTime 结束时间
+     * @throws ParseException
      * @return
      */
     Map<String, Object> getReportOverview(Integer merchantId, Integer storeId, String startTime, String endTime) throws ParseException;
@@ -33,9 +34,12 @@ public interface ReportService {
      * @param storeId 店铺ID
      * @param startTime 开始时间
      * @param endTime 结束时间
+     * @param page 当前页数
+     * @param pageSize 每页数量
+     * @throws ParseException
      * @return
      */
-    DailySalesReportDto getDailySalesReport(Integer merchantId, Integer storeId, String startTime, String endTime) throws ParseException;
+    DailySalesReportDto getDailySalesReport(Integer merchantId, Integer storeId, String startTime, String endTime, Integer page, Integer pageSize) throws ParseException;
 
     /**
      * 获取日收银统计报表
@@ -44,9 +48,12 @@ public interface ReportService {
      * @param storeId 店铺ID
      * @param startTime 开始时间
      * @param endTime 结束时间
+     * @param page 当前页数
+     * @param pageSize 每页数量
+     * @throws ParseException
      * @return
      */
-    DailyCashierReportDto getDailyCashierReport(Integer merchantId, Integer storeId, String startTime, String endTime) throws ParseException;
+    DailyCashierReportDto getDailyCashierReport(Integer merchantId, Integer storeId, String startTime, String endTime, Integer page, Integer pageSize) throws ParseException;
 
     /**
      * 获取日分类统计报表
@@ -55,8 +62,11 @@ public interface ReportService {
      * @param storeId 店铺ID
      * @param startTime 开始时间
      * @param endTime 结束时间
+     * @param page 当前页数
+     * @param pageSize 每页数量
+     * @throws ParseException
      * @return
      */
-    DailyCateReportDto getDailyCateReport(Integer merchantId, Integer storeId, String startTime, String endTime) throws ParseException;
+    DailyCateReportDto getDailyCateReport(Integer merchantId, Integer storeId, String startTime, String endTime, Integer page, Integer pageSize) throws ParseException;
 
 }

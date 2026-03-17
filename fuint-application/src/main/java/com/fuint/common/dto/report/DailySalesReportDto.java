@@ -39,5 +39,8 @@ public class DailySalesReportDto implements Serializable {
 
     @ApiModelProperty("列表数据")
     private List<DailySalesItemDto> dataList;
+
+    @ApiModelProperty("总数量")
+    private Integer total;
 }
 

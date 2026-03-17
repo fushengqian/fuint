@@ -38,25 +38,25 @@ public class BackendReportController extends BaseController {
     @CrossOrigin
     public ResponseObject getDailySalesReport(@ModelAttribute StatisticParam param) throws ParseException {
         AccountInfo accountInfo = TokenUtil.getAccountInfo();
-        DailySalesReportDto reportDto = reportService.getDailySalesReport(accountInfo.getMerchantId(), accountInfo.getStoreId(), param.getStartTime(), param.getEndTime());
+        DailySalesReportDto reportDto = reportService.getDailySalesReport(accountInfo.getMerchantId(), accountInfo.getStoreId(), param.getStartTime(), param.getEndTime(), param.getPage(), param.getPageSize());
         return getSuccessResult(reportDto);
     }
 
     @ApiOperation(value = "获取日收银统计报表")
     @RequestMapping(value = "/getDailyCashierReport", method = RequestMethod.GET)
     @CrossOrigin
-    public ResponseObject getDailyCashierReport() throws ParseException {
+    public ResponseObject getDailyCashierReport(@ModelAttribute StatisticParam param) throws ParseException {
         AccountInfo accountInfo = TokenUtil.getAccountInfo();
-        DailyCashierReportDto reportDto = reportService.getDailyCashierReport(accountInfo.getMerchantId(), accountInfo.getStoreId(), null, null);
+        DailyCashierReportDto reportDto = reportService.getDailyCashierReport(accountInfo.getMerchantId(), accountInfo.getStoreId(), param.getStartTime(), param.getEndTime(), param.getPage(), param.getPageSize());
         return getSuccessResult(reportDto);
     }
 
-    @ApiOperation(value = "获取日收银统计报表")
+    @ApiOperation(value = "获取日分类统计报表")
     @RequestMapping(value = "/getDailyCateReport", method = RequestMethod.GET)
     @CrossOrigin
-    public ResponseObject getDailyCateReport() throws ParseException {
+    public ResponseObject getDailyCateReport(@ModelAttribute StatisticParam param) throws ParseException {
         AccountInfo accountInfo = TokenUtil.getAccountInfo();
-        DailyCateReportDto reportDto = reportService.getDailyCateReport(accountInfo.getMerchantId(), accountInfo.getStoreId(), null, null);
+        DailyCateReportDto reportDto = reportService.getDailyCateReport(accountInfo.getMerchantId(), accountInfo.getStoreId(), param.getStartTime(), param.getEndTime(), param.getPage(), param.getPageSize());
         return getSuccessResult(reportDto);
     }
 }
