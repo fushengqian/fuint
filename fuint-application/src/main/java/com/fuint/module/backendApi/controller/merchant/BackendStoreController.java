@@ -55,9 +55,6 @@ public class BackendStoreController extends BaseController {
      * */
     private SettingService settingService;
 
-    /**
-     * 获取店铺列表
-     */
     @ApiOperation(value = "获取店铺列表")
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     @CrossOrigin
@@ -83,9 +80,6 @@ public class BackendStoreController extends BaseController {
         return getSuccessResult(result);
     }
 
-    /**
-     * 搜索店铺
-     */
     @ApiOperation(value = "搜索店铺")
     @RequestMapping(value = "/searchStore",  method = RequestMethod.GET)
     @CrossOrigin
@@ -95,7 +89,6 @@ public class BackendStoreController extends BaseController {
         String storeName = request.getParameter("name") == null ? "" : request.getParameter("name");
 
         AccountInfo accountInfo = TokenUtil.getAccountInfo();
-
         if (accountInfo.getStoreId() != null && accountInfo.getStoreId() > 0) {
             storeId = accountInfo.getStoreId().toString();
         }
@@ -122,9 +115,6 @@ public class BackendStoreController extends BaseController {
         return getSuccessResult(result);
     }
 
-    /**
-     * 更新店铺状态
-     */
     @ApiOperation(value = "更新店铺状态")
     @RequestMapping(value = "/updateStatus", method = RequestMethod.POST)
     @CrossOrigin
@@ -139,10 +129,7 @@ public class BackendStoreController extends BaseController {
         return getSuccessResult(true);
     }
 
-    /**
-     * 保存店铺
-     */
-    @ApiOperation(value = "保存店铺")
+    @ApiOperation(value = "保存店铺信息")
     @RequestMapping(value = "/save", method = RequestMethod.POST)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('store:add')")
@@ -184,9 +171,6 @@ public class BackendStoreController extends BaseController {
         return getSuccessResult(true);
     }
 
-    /**
-     * 获取店铺详情
-     */
     @ApiOperation(value = "获取店铺详情")
     @RequestMapping(value = "/info/{id}", method = RequestMethod.GET)
     @CrossOrigin
@@ -205,5 +189,14 @@ public class BackendStoreController extends BaseController {
         result.put("storeInfo", storeInfo);
 
         return getSuccessResult(result);
+    }
+
+    @ApiOperation(value = "获取我的店铺列表")
+    @RequestMapping(value = "/getMyStoreList", method = RequestMethod.GET)
+    @CrossOrigin
+    public ResponseObject getMyStoreList() {
+        AccountInfo accountInfo = TokenUtil.getAccountInfo();
+        List<MtStore> storeList = storeService.getMyStoreList(accountInfo.getMerchantId(), accountInfo.getStoreId(), null);
+        return getSuccessResult(storeList);
     }
 }

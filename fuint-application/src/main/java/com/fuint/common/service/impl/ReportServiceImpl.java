@@ -52,15 +52,6 @@ public class ReportServiceImpl implements ReportService {
      */
     private MtOrderMapper mtOrderMapper;
 
-    /**
-     * 统计报表概述数据
-     *
-     * @param merchantId 商户ID
-     * @param storeId 店铺ID
-     * @param begin 开始时间
-     * @param end 结束时间
-     * @return
-     */
     @Override
     public Map<String, Object> getReportOverview(Integer merchantId, Integer storeId, String begin, String end) throws ParseException {
         Date startTime = StringUtil.isNotEmpty(begin) ? DateUtil.parseDate(begin) : null;
@@ -105,13 +96,13 @@ public class ReportServiceImpl implements ReportService {
     }
 
     @Override
-    public DailySalesReportDto getDailySalesReport(Integer merchantId, Integer storeId, String startTime, String endTime, Integer page, Integer pageSize) throws ParseException {
+    public DailySalesReportDto getDailySalesReport(Integer merchantId, List<Integer> storeIds, String startTime, String endTime, Integer page, Integer pageSize) throws ParseException {
         Date start = StringUtil.isNotEmpty(startTime) ? DateUtil.parseDate(startTime) : null;
         Date end = StringUtil.isNotEmpty(endTime) ? DateUtil.parseDate(endTime) : null;
         DailySalesReportDto dailySalesReportDto = new DailySalesReportDto();
 
         // 获取店铺列表
-        List<MtStore> storeList = storeService.getMyStoreList(merchantId, storeId, StatusEnum.ENABLED.getKey());
+        List<MtStore> storeList = storeService.getStoreListByIds(merchantId, storeIds);
 
         // 构建日期列表
         List<String> dateList = new ArrayList<>();
@@ -139,7 +130,7 @@ public class ReportServiceImpl implements ReportService {
         // 如果没有日期范围，默认查询最近7天（过去7天）
         if (dateList.isEmpty()) {
             for (int i = 6; i >= 0; i--) {
-                dateList.add(DateUtil.formatDate(DateUtil.getDayBegin(i), "yyyy-MM-dd"));
+                 dateList.add(DateUtil.formatDate(DateUtil.getDayBegin(i), "yyyy-MM-dd"));
             }
         }
 
@@ -261,7 +252,7 @@ public class ReportServiceImpl implements ReportService {
         int total = allDataList.size();
         int startIndex = (currentPage - 1) * size;
         int endIndex = Math.min(startIndex + size, total);
-        
+
         List<DailySalesItemDto> dataList = new ArrayList<>();
         if (startIndex < total) {
             dataList = allDataList.subList(startIndex, endIndex);
@@ -281,7 +272,7 @@ public class ReportServiceImpl implements ReportService {
     }
 
     @Override
-    public DailyCashierReportDto getDailyCashierReport(Integer merchantId, Integer storeId, String startTime, String endTime, Integer page, Integer pageSize) throws ParseException {
+    public DailyCashierReportDto getDailyCashierReport(Integer merchantId, List<Integer> storeIds, String startTime, String endTime, Integer page, Integer pageSize) throws ParseException {
         Date start = StringUtil.isNotEmpty(startTime) ? DateUtil.parseDate(startTime) : null;
         Date end = StringUtil.isNotEmpty(endTime) ? DateUtil.parseDate(endTime) : null;
         DailyCashierReportDto dailyCashierReportDto = new DailyCashierReportDto();
@@ -289,7 +280,7 @@ public class ReportServiceImpl implements ReportService {
     }
 
     @Override
-    public DailyCateReportDto getDailyCateReport(Integer merchantId, Integer storeId, String startTime, String endTime, Integer page, Integer pageSize) throws ParseException {
+    public DailyCateReportDto getDailyCateReport(Integer merchantId, List<Integer> storeIds, String startTime, String endTime, Integer page, Integer pageSize) throws ParseException {
         Date start = StringUtil.isNotEmpty(startTime) ? DateUtil.parseDate(startTime) : null;
         Date end = StringUtil.isNotEmpty(endTime) ? DateUtil.parseDate(endTime) : null;
         DailyCateReportDto dailyCateReportDto = new DailyCateReportDto();

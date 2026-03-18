@@ -27,4 +27,6 @@ public interface MtStoreMapper extends BaseMapper<MtStore> {
 
     List<MtStore> getMyStoreList(@Param("merchantId") Integer merchantId, @Param("storeId") Integer storeId, @Param("status") String status);
 
+    List<MtStore> getStoreListByIds(@Param("merchantId") Integer merchantId, @Param("storeIds") List<Integer> storeIds);
+
 }

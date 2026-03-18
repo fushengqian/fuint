@@ -15,6 +15,8 @@ import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.text.ParseException;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * 后台报表统计controller
@@ -38,7 +40,11 @@ public class BackendReportController extends BaseController {
     @CrossOrigin
     public ResponseObject getDailySalesReport(@ModelAttribute StatisticParam param) throws ParseException {
         AccountInfo accountInfo = TokenUtil.getAccountInfo();
-        DailySalesReportDto reportDto = reportService.getDailySalesReport(accountInfo.getMerchantId(), accountInfo.getStoreId(), param.getStartTime(), param.getEndTime(), param.getPage(), param.getPageSize());
+        List<Integer> storeIds = param.getStoreIds();
+        if (accountInfo.getStoreId() != null && accountInfo.getStoreId() > 0) {
+            storeIds = Arrays.asList(accountInfo.getStoreId());
+        }
+        DailySalesReportDto reportDto = reportService.getDailySalesReport(accountInfo.getMerchantId(), storeIds, param.getStartTime(), param.getEndTime(), param.getPage(), param.getPageSize());
         return getSuccessResult(reportDto);
     }
 
@@ -47,7 +53,11 @@ public class BackendReportController extends BaseController {
     @CrossOrigin
     public ResponseObject getDailyCashierReport(@ModelAttribute StatisticParam param) throws ParseException {
         AccountInfo accountInfo = TokenUtil.getAccountInfo();
-        DailyCashierReportDto reportDto = reportService.getDailyCashierReport(accountInfo.getMerchantId(), accountInfo.getStoreId(), param.getStartTime(), param.getEndTime(), param.getPage(), param.getPageSize());
+        List<Integer> storeIds = param.getStoreIds();
+        if (accountInfo.getStoreId() != null && accountInfo.getStoreId() > 0) {
+            storeIds = Arrays.asList(accountInfo.getStoreId());
+        }
+        DailyCashierReportDto reportDto = reportService.getDailyCashierReport(accountInfo.getMerchantId(), storeIds, param.getStartTime(), param.getEndTime(), param.getPage(), param.getPageSize());
         return getSuccessResult(reportDto);
     }
 
@@ -56,7 +66,11 @@ public class BackendReportController extends BaseController {
     @CrossOrigin
     public ResponseObject getDailyCateReport(@ModelAttribute StatisticParam param) throws ParseException {
         AccountInfo accountInfo = TokenUtil.getAccountInfo();
-        DailyCateReportDto reportDto = reportService.getDailyCateReport(accountInfo.getMerchantId(), accountInfo.getStoreId(), param.getStartTime(), param.getEndTime(), param.getPage(), param.getPageSize());
+        List<Integer> storeIds = param.getStoreIds();
+        if (accountInfo.getStoreId() != null && accountInfo.getStoreId() > 0) {
+            storeIds = Arrays.asList(accountInfo.getStoreId());
+        }
+        DailyCateReportDto reportDto = reportService.getDailyCateReport(accountInfo.getMerchantId(), storeIds, param.getStartTime(), param.getEndTime(), param.getPage(), param.getPageSize());
         return getSuccessResult(reportDto);
     }
 }
