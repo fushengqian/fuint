@@ -64,13 +64,14 @@ public class MerchantBalanceController extends BaseController {
         UserInfo userInfo = TokenUtil.getUserInfo();
         MtStaff staffInfo = null;
         MtUser mtUser = memberService.queryMemberById(userInfo.getId());
+        MtUser memberInfo = memberService.queryMemberById(rechargeParam.getMemberId());
         if (mtUser != null && mtUser.getMobile() != null) {
             staffInfo = staffService.queryStaffByMobile(mtUser.getMobile());
         }
         if (staffInfo == null) {
             return getFailureResult(201, "您的帐号不是商户，没有操作权限");
         }
-        if (!merchantId.equals(staffInfo.getMerchantId())) {
+        if (!merchantId.equals(staffInfo.getMerchantId()) || !staffInfo.getMerchantId().equals(memberInfo.getMerchantId())) {
             return getFailureResult(201, "您没有操作权限");
         }
         MtOrder mtOrder = orderService.doRecharge(request, rechargeParam);
