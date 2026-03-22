@@ -2,25 +2,25 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.fuint.repository.mapper.MtOrderMapper">
     <select id="getOrderCount" resultType="java.math.BigDecimal">
-        select count(*) from mt_order t where t.STATUS not in('C', 'G', 'H')
+        select count(*) from mt_order t inner join mt_store s on t.STORE_ID = s.ID where t.STATUS not in('C', 'G', 'H') and s.STATUS != 'D'
         <if test="merchantId != null and merchantId > 0">
             AND t.MERCHANT_ID = #{merchantId}
         </if>
     </select>
 
     <select id="getStoreOrderCount" resultType="java.math.BigDecimal">
-        select count(*) from mt_order t where t.STORE_ID = #{storeId} and t.STATUS not in('C', 'G', 'H')
+        select count(*) from mt_order t inner join mt_store s on t.STORE_ID = s.ID where t.STORE_ID = #{storeId} and t.STATUS not in('C', 'G', 'H') and s.STATUS != 'D'
     </select>
 
     <select id="getOrderCountByTime" resultType="java.math.BigDecimal">
-        select count(0) from mt_order t where t.CREATE_TIME &gt;= #{beginTime} and t.CREATE_TIME &lt; #{endTime} and t.STATUS not in('C', 'G', 'H')
+        select count(0) from mt_order t inner join mt_store s on t.STORE_ID = s.ID where t.CREATE_TIME &gt;= #{beginTime} and t.CREATE_TIME &lt; #{endTime} and t.STATUS not in('C', 'G', 'H') and s.STATUS != 'D'
         <if test="merchantId != null and merchantId > 0">
             AND t.MERCHANT_ID = #{merchantId}
         </if>
     </select>
 
     <select id="getStoreOrderCountByTime" resultType="java.math.BigDecimal">
-        select count(0) from mt_order t where t.STORE_ID = #{storeId} and t.CREATE_TIME &lt; #{endTime} and t.CREATE_TIME &gt;= #{beginTime} and t.STATUS not in('C', 'G', 'H')
+        select count(0) from mt_order t inner join mt_store s on t.STORE_ID = s.ID where t.STORE_ID = #{storeId} and t.CREATE_TIME &lt; #{endTime} and t.CREATE_TIME &gt;= #{beginTime} and t.STATUS not in('C', 'G', 'H') and s.STATUS != 'D'
     </select>
 
     <select id="findByOrderSn" resultType="com.fuint.repository.model.MtOrder">
@@ -28,21 +28,21 @@
     </select>
 
     <select id="getPayMoney" resultType="java.math.BigDecimal">
-        SELECT sum(t.PAY_AMOUNT) as num FROM mt_order t where t.PAY_STATUS='B' and t.STATUS not in('C', 'G', 'H')
+        SELECT sum(t.PAY_AMOUNT) as num FROM mt_order t inner join mt_store s on t.STORE_ID = s.ID where t.PAY_STATUS='B' and t.STATUS not in('C', 'G', 'H') and s.STATUS != 'D'
         <if test="merchantId != null and merchantId > 0">
             AND t.MERCHANT_ID = #{merchantId}
         </if>
     </select>
 
     <select id="getPayMoneyByTime" resultType="java.math.BigDecimal">
-        SELECT sum(t.PAY_AMOUNT) as num FROM mt_order t where t.PAY_STATUS='B' and t.CREATE_TIME &lt; #{endTime} and t.CREATE_TIME &gt;= #{beginTime} and t.STATUS not in('C', 'G', 'H')
+        SELECT sum(t.PAY_AMOUNT) as num FROM mt_order t inner join mt_store s on t.STORE_ID = s.ID where t.PAY_STATUS='B' and t.CREATE_TIME &lt; #{endTime} and t.CREATE_TIME &gt;= #{beginTime} and t.STATUS not in('C', 'G', 'H') and s.STATUS != 'D'
         <if test="merchantId != null and merchantId > 0">
             AND t.MERCHANT_ID = #{merchantId}
         </if>
     </select>
 
     <select id="getStorePayMoneyByTime" resultType="java.math.BigDecimal">
-        SELECT sum(t.PAY_AMOUNT) as num FROM mt_order t where t.STORE_ID = #{storeId} and t.PAY_STATUS='B' and t.CREATE_TIME &lt; #{endTime} and t.CREATE_TIME &gt;= #{beginTime} and t.STATUS not in('C', 'G', 'H')
+        SELECT sum(t.PAY_AMOUNT) as num FROM mt_order t inner join mt_store s on t.STORE_ID = s.ID where t.STORE_ID = #{storeId} and t.PAY_STATUS='B' and t.CREATE_TIME &lt; #{endTime} and t.CREATE_TIME &gt;= #{beginTime} and t.STATUS not in('C', 'G', 'H') and s.STATUS != 'D'
     </select>
 
     <select id="getStorePayMoney" resultType="java.math.BigDecimal">
@@ -65,10 +65,10 @@
     </select>
 
     <select id="getUserPayOrderCount" resultType="java.lang.Integer">
-        SELECT COUNT(DISTINCT t.ID) as num FROM mt_order t where t.USER_ID = #{userId} and t.PAY_TYPE !='BALANCE' and t.PAY_STATUS='B' and t.STATUS not in('C', 'G', 'H')
+        SELECT COUNT(DISTINCT t.ID) as num FROM mt_order t inner join mt_store s on t.STORE_ID = s.ID where t.USER_ID = #{userId} and t.PAY_TYPE !='BALANCE' and t.PAY_STATUS='B' and t.STATUS not in('C', 'G', 'H') and s.STATUS != 'D'
     </select>
 
     <select id="getTobeCommissionOrderList" resultType="com.fuint.repository.model.MtOrder">
-        SELECT t.* FROM `mt_order` t WHERE t.PAY_TIME &lt;= #{dateTime} AND t.STATUS = 'I' AND t.PAY_STATUS = 'B' AND t.COMMISSION_STATUS = 'A' ORDER BY t.ID DESC LIMIT 10
+        SELECT t.* FROM `mt_order` t inner join mt_store s on t.STORE_ID = s.ID WHERE t.PAY_TIME &lt;= #{dateTime} AND t.STATUS = 'I' AND t.PAY_STATUS = 'B' AND t.COMMISSION_STATUS = 'A' AND s.STATUS != 'D' ORDER BY t.ID DESC LIMIT 10
     </select>
 </mapper>

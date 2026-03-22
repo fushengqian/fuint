@@ -276,6 +276,37 @@ public class ReportServiceImpl implements ReportService {
         Date start = StringUtil.isNotEmpty(startTime) ? DateUtil.parseDate(startTime) : null;
         Date end = StringUtil.isNotEmpty(endTime) ? DateUtil.parseDate(endTime) : null;
         DailyCashierReportDto dailyCashierReportDto = new DailyCashierReportDto();
+
+        // 构建日期列表
+        List<String> dateList = new ArrayList<>();
+        if (start != null && end != null) {
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(start);
+            calendar.set(Calendar.HOUR_OF_DAY, 0);
+            calendar.set(Calendar.MINUTE, 0);
+            calendar.set(Calendar.SECOND, 0);
+            calendar.set(Calendar.MILLISECOND, 0);
+
+            Calendar endCal = Calendar.getInstance();
+            endCal.setTime(end);
+            endCal.set(Calendar.HOUR_OF_DAY, 23);
+            endCal.set(Calendar.MINUTE, 59);
+            endCal.set(Calendar.SECOND, 59);
+            endCal.set(Calendar.MILLISECOND, 999);
+            Date endDate = endCal.getTime();
+            while (calendar.getTime().before(endDate) || calendar.getTime().equals(endDate)) {
+                dateList.add(DateUtil.formatDate(calendar.getTime(), "yyyy-MM-dd"));
+                calendar.add(Calendar.DATE, 1);
+            }
+        }
+
+        // 如果没有日期范围，默认查询最近7天（过去7天）
+        if (dateList.isEmpty()) {
+            for (int i = 6; i >= 0; i--) {
+                 dateList.add(DateUtil.formatDate(DateUtil.getDayBegin(i), "yyyy-MM-dd"));
+            }
+        }
+
         return dailyCashierReportDto;
     }
 
