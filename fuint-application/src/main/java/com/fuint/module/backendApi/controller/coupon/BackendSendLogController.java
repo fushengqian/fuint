@@ -80,6 +80,9 @@ public class BackendSendLogController extends BaseController {
         if (sendLog == null) {
             return getFailureResult(201, "系统参数有误");
         }
+        if (!sendLog.getMerchantId().equals(accountInfo.getMerchantId())) {
+            return getFailureResult(1004);
+        }
 
         couponService.removeUserCoupon(id, sendLog.getUuid(), accountInfo.getAccountName());
         return getSuccessResult(true);

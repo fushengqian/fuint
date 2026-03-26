@@ -107,10 +107,13 @@ public class BackendBookController extends BaseController {
         if (bookDto == null) {
             return getFailureResult(201);
         }
-
+        if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
+            if (!bookDto.getMerchantId().equals(accountInfo.getMerchantId())) {
+                return getFailureResult(1004);
+            }
+        }
         MtBook mtBook = new MtBook();
         BeanUtils.copyProperties(bookDto, mtBook);
-
         mtBook.setOperator(accountInfo.getAccountName());
         mtBook.setStatus(params.getStatus());
         bookService.updateBook(mtBook);

@@ -84,6 +84,9 @@ public class BackendCommissionRuleController extends BaseController {
         if (commissionRuleDto == null) {
             return getFailureResult(201);
         }
+        if (accountInfo.getMerchantId() > 0 && !commissionRuleDto.getMerchantId().equals(accountInfo.getMerchantId())) {
+            return getFailureResult(1004);
+        }
 
         CommissionRuleParam commissionRule = new CommissionRuleParam();
         commissionRule.setOperator(accountInfo.getAccountName());
@@ -111,6 +114,13 @@ public class BackendCommissionRuleController extends BaseController {
         }
         commissionRule.setOperator(accountInfo.getAccountName());
         if (commissionRule.getId() != null && commissionRule.getId() > 0) {
+            CommissionRuleDto commissionRuleDto = commissionRuleService.queryCommissionRuleById(commissionRule.getId());
+            if (commissionRuleDto == null) {
+                return getFailureResult(201);
+            }
+            if (accountInfo.getMerchantId() > 0 && !commissionRuleDto.getMerchantId().equals(accountInfo.getMerchantId())) {
+                return getFailureResult(1004);
+            }
             commissionRuleService.updateCommissionRule(commissionRule);
         } else {
             commissionRuleService.addCommissionRule(commissionRule);

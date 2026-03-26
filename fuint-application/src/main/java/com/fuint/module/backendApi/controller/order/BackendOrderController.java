@@ -225,6 +225,11 @@ public class BackendOrderController extends BaseController {
             return getFailureResult(201, "系统出错啦，订单ID不能为空");
         }
 
+        UserOrderDto orderInfo = orderService.getOrderById(orderId);
+        if (!orderInfo.getMerchantId().equals(accountInfo.getMerchantId())) {
+            return getFailureResult(1004);
+        }
+
         OrderDto orderDto = new OrderDto();
         orderDto.setId(orderId);
         orderDto.setOperator(accountInfo.getAccountName());
@@ -267,6 +272,11 @@ public class BackendOrderController extends BaseController {
         AccountInfo accountInfo = TokenUtil.getAccountInfo();
         if (orderId < 0) {
             return getFailureResult(201, "系统出错啦，订单ID不能为空");
+        }
+
+        UserOrderDto orderInfo = orderService.getOrderById(orderId);
+        if (!orderInfo.getMerchantId().equals(accountInfo.getMerchantId())) {
+            return getFailureResult(1004);
         }
 
         OrderDto orderDto = new OrderDto();
@@ -320,6 +330,10 @@ public class BackendOrderController extends BaseController {
     @PreAuthorize("@pms.hasPermission('order:delete')")
     public ResponseObject delete(@PathVariable("id") Integer id) throws BusinessCheckException {
         AccountInfo accountInfo = TokenUtil.getAccountInfo();
+        UserOrderDto orderInfo = orderService.getOrderById(id);
+        if (!orderInfo.getMerchantId().equals(accountInfo.getMerchantId())) {
+            return getFailureResult(1004);
+        }
         orderService.deleteOrder(id, accountInfo.getAccountName());
         return getSuccessResult(true);
     }

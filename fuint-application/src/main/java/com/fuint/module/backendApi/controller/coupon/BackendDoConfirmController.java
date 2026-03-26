@@ -1,8 +1,8 @@
 package com.fuint.module.backendApi.controller.coupon;
 
+import com.fuint.common.dto.common.ParamDto;
 import com.fuint.common.dto.coupon.UserCouponDto;
 import com.fuint.common.dto.system.AccountInfo;
-import com.fuint.common.dto.common.ParamDto;
 import com.fuint.common.enums.CouponExpireTypeEnum;
 import com.fuint.common.enums.CouponTypeEnum;
 import com.fuint.common.service.ConfirmLogService;
@@ -23,6 +23,7 @@ import io.swagger.annotations.ApiOperation;
 import lombok.AllArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
@@ -141,6 +142,9 @@ public class BackendDoConfirmController extends BaseController {
         MtUserCoupon mtUserCoupon = mtUserCouponMapper.selectById(Integer.parseInt(userCouponId));
         if (mtUserCoupon.getType().equals(CouponTypeEnum.PRESTORE.getKey()) && StringUtil.isEmpty(amount)) {
             return getFailureResult(201, "储值卡核销金额不能为空");
+        }
+        if (!mtUserCoupon.getMerchantId().equals(accountInfo.getMerchantId())) {
+            return getFailureResult(1004);
         }
 
         couponService.useCoupon(Integer.parseInt(userCouponId), accountInfo.getId(), storeId, 0, new BigDecimal(amount), remark);

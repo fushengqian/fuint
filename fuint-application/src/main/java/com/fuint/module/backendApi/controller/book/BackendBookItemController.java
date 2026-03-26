@@ -108,6 +108,11 @@ public class BackendBookItemController extends BaseController {
         if (mtBookItem == null) {
             return getFailureResult(201, "该数据不存在");
         }
+        if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
+            if (!mtBookItem.getMerchantId().equals(accountInfo.getMerchantId())) {
+                return getFailureResult(1004);
+            }
+        }
 
         mtBookItem.setOperator(accountInfo.getAccountName());
         mtBookItem.setStatus(status);

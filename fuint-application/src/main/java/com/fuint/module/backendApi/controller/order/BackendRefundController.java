@@ -120,6 +120,10 @@ public class BackendRefundController extends BaseController {
         String remark = param.get("remark") == null ? "" : param.get("remark").toString();
         String rejectReason = param.get("rejectReason") == null ? "" : param.get("rejectReason").toString();
         AccountInfo accountInfo = TokenUtil.getAccountInfo();
+        RefundDto refundDto = refundService.getRefundById(refundId);
+        if (!refundDto.getMerchantId().equals(accountInfo.getMerchantId())) {
+            return getFailureResult(1004);
+        }
 
         if (status.equals(RefundStatusEnum.REJECT.getKey())) {
             RefundDto dto = new RefundDto();
@@ -156,7 +160,10 @@ public class BackendRefundController extends BaseController {
         String remark = param.get("remark") == null ? "" : param.get("remark").toString();
         String refundAmount = param.get("refundAmount") == null ? "" : param.get("refundAmount").toString();
         AccountInfo accountInfo = TokenUtil.getAccountInfo();
-
+        UserOrderDto orderInfo = orderService.getOrderById(orderId);
+        if (!orderInfo.getMerchantId().equals(accountInfo.getMerchantId())) {
+            return getFailureResult(1004);
+        }
         if (orderId <= 0 || StringUtil.isEmpty(refundAmount)) {
             return getFailureResult(201, "参数有误，发起退款失败");
         }

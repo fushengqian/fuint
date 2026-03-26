@@ -2,6 +2,7 @@ package com.fuint.module.merchantApi.controller;
 
 import com.fuint.common.dto.coupon.ReqCouponDto;
 import com.fuint.common.dto.member.UserInfo;
+import com.fuint.common.dto.system.AccountInfo;
 import com.fuint.common.param.CouponListParam;
 import com.fuint.common.param.CouponReceiveParam;
 import com.fuint.common.service.CouponService;
@@ -123,7 +124,9 @@ public class MerchantCouponController extends BaseController {
                 return getFailureResult(1003, "抱歉，该卡券存在店铺使用范围限制，您所在的店铺无发券权限！");
             }
         }
-        ResponseObject result = couponService.sendCoupon(receiveParam.getCouponId(), receiveParam.getUserId(), receiveParam.getNum(), true, null, staff.getRealName());
+        AccountInfo accountInfo = new AccountInfo();
+        accountInfo.setAccountName(staff.getRealName());
+        ResponseObject result = couponService.sendCoupon(receiveParam.getCouponId(), receiveParam.getUserId(), receiveParam.getNum(), true, null, accountInfo);
         if (!result.getCode().equals(200)) {
             return getFailureResult(result.getCode(), result.getMessage());
         }

@@ -94,6 +94,11 @@ public class BackendBookCateController extends BaseController {
         if (mtBookCate == null) {
             return getFailureResult(201);
         }
+        if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
+            if (!mtBookCate.getMerchantId().equals(accountInfo.getMerchantId())) {
+                return getFailureResult(1004);
+            }
+        }
 
         mtBookCate.setOperator(accountInfo.getAccountName());
         mtBookCate.setStatus(status);

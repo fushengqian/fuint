@@ -93,6 +93,11 @@ public class BackendBannerController extends BaseController {
         if (mtBanner == null) {
             return getFailureResult(201, "该数据不存在");
         }
+        if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
+            if (!mtBanner.getMerchantId().equals(accountInfo.getMerchantId())) {
+                return getFailureResult(1004);
+            }
+        }
 
         BannerDto bannerDto = new BannerDto();
         bannerDto.setOperator(accountInfo.getAccountName());
@@ -120,6 +125,15 @@ public class BackendBannerController extends BaseController {
             bannerDto.setStoreId(accountInfo.getStoreId());
         }
         if (bannerDto.getId() != null && bannerDto.getId() > 0) {
+            MtBanner mtBanner = bannerService.queryBannerById(bannerDto.getId());
+            if (mtBanner == null) {
+                return getFailureResult(201, "该数据不存在");
+            }
+            if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
+                if (!mtBanner.getMerchantId().equals(accountInfo.getMerchantId())) {
+                    return getFailureResult(1004);
+                }
+            }
             bannerService.updateBanner(bannerDto);
         } else {
             bannerService.addBanner(bannerDto);

@@ -2,6 +2,7 @@ package com.fuint.common.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.fuint.common.dto.coupon.ReqCouponGroupDto;
+import com.fuint.common.dto.system.AccountInfo;
 import com.fuint.common.param.CouponGroupPage;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.pagination.PaginationResponse;
@@ -87,8 +88,9 @@ public interface CouponGroupService extends IService<MtCouponGroup> {
      * 导入发券列表
      *
      * @param file excel文件
-     * @param operator 操作者
+     * @param accountInfo 操作者
+     * @return
      * */
-    String importSendCoupon(MultipartFile file, String operator, String filePath) throws BusinessCheckException;
+    String importSendCoupon(MultipartFile file, AccountInfo accountInfo, String filePath) throws BusinessCheckException;
 
 }

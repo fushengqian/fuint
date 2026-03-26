@@ -205,6 +205,9 @@ public class BackendMemberController extends BaseController {
         if (mtUser.getId() == null) {
             memberService.addMember(mtUser, null);
         } else {
+            if (!mtUser.getMerchantId().equals(accountInfo.getMerchantId())) {
+                return getFailureResult(1004);
+            }
             memberService.updateMember(mtUser, false);
         }
         return getSuccessResult(true);

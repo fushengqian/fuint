@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fuint.common.Constants;
 import com.fuint.common.dto.member.OpenGiftDto;
+import com.fuint.common.dto.system.AccountInfo;
 import com.fuint.common.enums.MessageEnum;
 import com.fuint.common.enums.StatusEnum;
 import com.fuint.common.enums.YesOrNoEnum;
@@ -181,16 +182,20 @@ public class OpenGiftServiceImpl extends ServiceImpl<MtOpenGiftMapper, MtOpenGif
      * 更新开卡赠礼
      *
      * @param  reqDto 实体参数
+     * @param  accountInfo 操作人
      * @throws BusinessCheckException
      * @return
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
     @OperationServiceLog(description = "更新开卡赠礼")
-    public MtOpenGift updateOpenGift(MtOpenGift reqDto) throws BusinessCheckException {
+    public MtOpenGift updateOpenGift(MtOpenGift reqDto, AccountInfo accountInfo) throws BusinessCheckException {
         MtOpenGift mtOpenGift = mtOpenGiftMapper.selectById(reqDto.getId());
         if (mtOpenGift == null) {
             throw new BusinessCheckException("该数据状态异常");
+        }
+        if (!mtOpenGift.getMerchantId().equals(accountInfo.getMerchantId())) {
+            throw new BusinessCheckException("无操作权限");
         }
 
         mtOpenGift.setId(reqDto.getId());
@@ -300,7 +305,7 @@ public class OpenGiftServiceImpl extends ServiceImpl<MtOpenGiftMapper, MtOpenGif
                            param.setCouponId(item.getCouponId());
                            param.setUserId(userId);
                            param.setNum(item.getCouponNum() == null ? 1 : item.getCouponNum());
-                           ResponseObject result = couponService.sendCoupon(item.getCouponId(), userId, param.getNum(), true, SeqUtil.getUUID(), "");
+                           ResponseObject result = couponService.sendCoupon(item.getCouponId(), userId, param.getNum(), true, SeqUtil.getUUID(), new AccountInfo());
                            if (!result.getCode().equals(200)) {
                                logger.error("会员开卡赠礼赠送卡券失败：", result.getMessage());
                            }

@@ -2,6 +2,7 @@ package com.fuint.common.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.fuint.common.dto.coupon.ReqCouponDto;
+import com.fuint.common.dto.system.AccountInfo;
 import com.fuint.common.param.CouponListParam;
 import com.fuint.common.param.CouponPage;
 import com.fuint.framework.exception.BusinessCheckException;
@@ -72,11 +73,11 @@ public interface CouponService extends IService<MtCoupon> {
      * @param num    发放套数
      * @param sendMessage 是否发送消息
      * @param uuid    批次号
-     * @param operator 操作人
+     * @param accountInfo 操作人
      * @throws BusinessCheckException
      * @return
      */
-    ResponseObject sendCoupon(Integer couponId, Integer userId, Integer num, Boolean sendMessage, String uuid, String operator) throws BusinessCheckException;
+    ResponseObject sendCoupon(Integer couponId, Integer userId, Integer num, Boolean sendMessage, String uuid, AccountInfo accountInfo) throws BusinessCheckException;
 
     /**
      * 发放卡券
@@ -85,11 +86,11 @@ public interface CouponService extends IService<MtCoupon> {
      * @param userIds  会员ID
      * @param num      发放套数
      * @param uuid     批次号
-     * @param operator 操作人
+     * @param accountInfo 操作人
      * @throws BusinessCheckException
      * @return
      */
-    Boolean batchSendCoupon(Integer couponId, List<Integer> userIds, Integer num, String uuid, String operator) throws BusinessCheckException;
+    Boolean batchSendCoupon(Integer couponId, List<Integer> userIds, Integer num, String uuid, AccountInfo accountInfo) throws BusinessCheckException;
 
     /**
      * 根据分组获取卡券列表

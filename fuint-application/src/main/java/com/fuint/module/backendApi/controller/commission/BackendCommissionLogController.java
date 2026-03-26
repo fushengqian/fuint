@@ -120,10 +120,15 @@ public class BackendCommissionLogController extends BaseController {
     @PreAuthorize("@pms.hasPermission('commission:log:index')")
     public ResponseObject save(@RequestBody CommissionLogRequest commissionLogRequest) throws BusinessCheckException {
         AccountInfo accountInfo = TokenUtil.getAccountInfo();
-
+        CommissionLogDto commissionLog = commissionLogService.queryCommissionLogById(commissionLogRequest.getId());
+        if (commissionLog == null) {
+            return getFailureResult(201, "该数据不存在");
+        }
+        if (accountInfo.getMerchantId() > 0 && !commissionLog.getMerchantId().equals(accountInfo.getMerchantId())) {
+            return getFailureResult(1004);
+        }
         commissionLogRequest.setOperator(accountInfo.getAccountName());
         commissionLogService.updateCommissionLog(commissionLogRequest);
-
         return getSuccessResult(true);
     }
 

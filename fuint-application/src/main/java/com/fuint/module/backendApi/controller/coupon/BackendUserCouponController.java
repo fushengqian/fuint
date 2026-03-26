@@ -141,16 +141,17 @@ public class BackendUserCouponController extends BaseController {
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('coupon:userCoupon:index')")
     public ResponseObject doConfirm(HttpServletRequest request) throws BusinessCheckException {
+        AccountInfo accountInfo = TokenUtil.getAccountInfo();
         String userCouponId = request.getParameter("userCouponId");
         MtUserCoupon mtUserCoupon = couponService.queryUserCouponById(Integer.parseInt(userCouponId));
 
         if (mtUserCoupon == null || StringUtil.isEmpty(userCouponId)) {
             throw new BusinessCheckException("错误，用户卡券不存在！");
         }
-
-        AccountInfo accountInfo = TokenUtil.getAccountInfo();
+        if (!mtUserCoupon.getMerchantId().equals(accountInfo.getMerchantId())) {
+            return getFailureResult(1004);
+        }
         Integer storeId = accountInfo.getStoreId();
-
         BigDecimal confirmAmount = mtUserCoupon.getAmount();
         if (mtUserCoupon.getType().equals(CouponTypeEnum.PRESTORE.getKey())) {
             confirmAmount = mtUserCoupon.getBalance();

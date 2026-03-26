@@ -243,7 +243,7 @@ public class BackendCouponGroupController extends BaseController {
     public ResponseObject uploadFile(HttpServletRequest request, @RequestParam("fileInput") MultipartFile file) throws Exception {
         AccountInfo accountInfo = TokenUtil.getAccountInfo();
         String filePath = uploadService.saveUploadFile(request, file);
-        String uuid = couponGroupService.importSendCoupon(file, accountInfo.getAccountName(), filePath);
+        String uuid = couponGroupService.importSendCoupon(file, accountInfo, filePath);
         return getSuccessResult(uuid);
     }
 

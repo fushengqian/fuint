@@ -310,6 +310,9 @@ public class BackendAccountController extends BaseController {
         if (tAccount == null || accountInfo == null) {
             return getFailureResult(201, "账户不存在");
         }
+        if (!tAccount.getMerchantId().equals(accountInfo.getMerchantId())) {
+            return getFailureResult(1004);
+        }
 
         tAccount.setAccountStatus(status);
         tAccountService.updateAccount(tAccount);
