@@ -67,7 +67,7 @@ public class BackendSmsTemplateController extends BaseController {
     public ResponseObject saveHandler(@RequestBody SmsTemplateDto smsTemplateDto) throws BusinessCheckException {
         AccountInfo accountInfo = TokenUtil.getAccountInfo();
         smsTemplateDto.setMerchantId(accountInfo.getMerchantId());
-        smsTemplateService.saveSmsTemplate(smsTemplateDto);
+        smsTemplateService.saveSmsTemplate(smsTemplateDto, accountInfo);
         return getSuccessResult(true);
     }
 
@@ -103,7 +103,7 @@ public class BackendSmsTemplateController extends BaseController {
     @PreAuthorize("@pms.hasPermission('smsTemplate:edit')")
     public ResponseObject delete(@PathVariable("id") Integer id) throws BusinessCheckException {
         AccountInfo accountInfo = TokenUtil.getAccountInfo();
-        smsTemplateService.deleteTemplate(id, accountInfo.getAccountName());
+        smsTemplateService.deleteTemplate(id, accountInfo);
         return getSuccessResult(true);
     }
 }

@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fuint.common.dto.message.SmsTemplateDto;
+import com.fuint.common.dto.system.AccountInfo;
 import com.fuint.common.enums.StatusEnum;
 import com.fuint.common.param.SmsTemplatePage;
 import com.fuint.common.service.SmsTemplateService;
@@ -21,6 +22,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -88,12 +90,13 @@ public class SmsTemplateServiceImpl extends ServiceImpl<MtSmsTemplateMapper, MtS
      * 保存模板信息
      *
      * @param mtSmsTemplateDto 短信模板
+     * @param accountInfo 登录账号信息
      * @return
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
     @OperationServiceLog(description = "保存短信模板")
-    public MtSmsTemplate saveSmsTemplate(SmsTemplateDto mtSmsTemplateDto) throws BusinessCheckException {
+    public MtSmsTemplate saveSmsTemplate(SmsTemplateDto mtSmsTemplateDto,  AccountInfo accountInfo) throws BusinessCheckException {
         MtSmsTemplate mtSmsTemplate = new MtSmsTemplate();
         mtSmsTemplate.setMerchantId(mtSmsTemplateDto.getMerchantId());
         mtSmsTemplate.setCode(mtSmsTemplateDto.getCode());
@@ -101,7 +104,7 @@ public class SmsTemplateServiceImpl extends ServiceImpl<MtSmsTemplateMapper, MtS
         mtSmsTemplate.setUname(mtSmsTemplateDto.getUname());
         mtSmsTemplate.setContent(mtSmsTemplateDto.getContent());
         mtSmsTemplate.setStatus(mtSmsTemplateDto.getStatus());
-        mtSmsTemplate.setOperator(mtSmsTemplate.getOperator());
+        mtSmsTemplate.setOperator(accountInfo.getAccountName());
 
         if (mtSmsTemplateDto.getId() == null) {
             mtSmsTemplate.setCreateTime(new Date());
@@ -111,6 +114,9 @@ public class SmsTemplateServiceImpl extends ServiceImpl<MtSmsTemplateMapper, MtS
             MtSmsTemplate oldSmsTemplate = getById(mtSmsTemplateDto.getId());
             if (oldSmsTemplate == null) {
                 throw new BusinessCheckException("该短信模板不存在");
+            }
+            if (!oldSmsTemplate.getMerchantId().equals(accountInfo.getMerchantId())) {
+                throw new BusinessCheckException("无操作权限");
             }
             mtSmsTemplate.setMerchantId(oldSmsTemplate.getMerchantId());
             mtSmsTemplate.setId(mtSmsTemplateDto.getId());
@@ -125,15 +131,18 @@ public class SmsTemplateServiceImpl extends ServiceImpl<MtSmsTemplateMapper, MtS
      * 根据ID删除数据
      *
      * @param id 模板ID
-     * @param operator 操作人
+     * @param accountInfo 操作人
      * @return
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
     @OperationServiceLog(description = "删除短信模板")
-    public void deleteTemplate(Integer id, String operator) {
+    public void deleteTemplate(Integer id, AccountInfo accountInfo) {
         MtSmsTemplate mtTemplate = mtSmsTemplateMapper.selectById(id);
         if (null == mtTemplate) {
+            return;
+        }
+        if (!mtTemplate.getMerchantId().equals(accountInfo.getMerchantId())) {
             return;
         }
 
