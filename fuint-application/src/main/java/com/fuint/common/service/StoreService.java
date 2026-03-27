@@ -3,6 +3,7 @@ package com.fuint.common.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.fuint.common.dto.merchant.StoreDto;
 import com.fuint.common.dto.merchant.StoreInfo;
+import com.fuint.common.dto.system.AccountInfo;
 import com.fuint.common.param.StorePage;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.pagination.PaginationResponse;
@@ -31,10 +32,11 @@ public interface StoreService extends IService<MtStore> {
      * 保存店铺信息
      *
      * @param  reqStoreDto
+     * @param  accountInfo 操作人
      * @throws BusinessCheckException
      * @return
      */
-    MtStore saveStore(StoreDto reqStoreDto) throws BusinessCheckException;
+    MtStore saveStore(StoreDto reqStoreDto, AccountInfo accountInfo) throws BusinessCheckException;
 
     /**
      * 获取系统默认店铺
@@ -72,11 +74,11 @@ public interface StoreService extends IService<MtStore> {
      * 更新店铺状态
      *
      * @param  id       店铺ID
-     * @param  operator 操作人
+     * @param  accountInfo 操作人
      * @param  status   状态
      * @throws BusinessCheckException
      */
-    void updateStatus(Integer id, String operator, String status) throws BusinessCheckException;
+    void updateStatus(Integer id, AccountInfo accountInfo, String status) throws BusinessCheckException;
 
     /**
      * 根据条件查询店铺列表

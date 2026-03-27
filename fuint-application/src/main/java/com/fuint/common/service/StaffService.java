@@ -2,6 +2,7 @@ package com.fuint.common.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.fuint.common.dto.merchant.StaffDto;
+import com.fuint.common.dto.system.AccountInfo;
 import com.fuint.common.param.StaffPage;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.pagination.PaginationResponse;
@@ -29,11 +30,11 @@ public interface StaffService extends IService<MtStaff> {
      * 保存员工信息
      *
      * @param reqStaff 员工信息
-     * @param operator 操作人
+     * @param accountInfo 操作人
      * @throws BusinessCheckException
      * @return
      */
-    MtStaff saveStaff(MtStaff reqStaff, String operator) throws BusinessCheckException;
+    MtStaff saveStaff(MtStaff reqStaff, AccountInfo accountInfo) throws BusinessCheckException;
 
     /**
      * 根据ID获取店铺信息
@@ -48,10 +49,10 @@ public interface StaffService extends IService<MtStaff> {
      *
      * @param staffId 员工ID
      * @param status 状态
-     * @param operator 操作人
+     * @param accountInfo 操作人
      * @return
      */
-    Integer updateAuditedStatus(Integer staffId, String status, String operator);
+    Integer updateAuditedStatus(Integer staffId, String status, AccountInfo accountInfo) throws BusinessCheckException;
 
     /**
      * 根据条件搜索员工

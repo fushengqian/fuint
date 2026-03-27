@@ -8,6 +8,7 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fuint.common.dto.merchant.StoreDto;
 import com.fuint.common.dto.merchant.StoreInfo;
+import com.fuint.common.dto.system.AccountInfo;
 import com.fuint.common.enums.QrCodeEnum;
 import com.fuint.common.enums.StatusEnum;
 import com.fuint.common.enums.YesOrNoEnum;
@@ -142,13 +143,14 @@ public class StoreServiceImpl extends ServiceImpl<MtStoreMapper, MtStore> implem
      * 保存店铺信息
      *
      * @param  storeDto 店铺信息
+     * @param  accountInfo 操作人
      * @throws BusinessCheckException
      * @return
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
     @OperationServiceLog(description = "保存店铺信息")
-    public MtStore saveStore(StoreDto storeDto) throws BusinessCheckException {
+    public MtStore saveStore(StoreDto storeDto, AccountInfo accountInfo) throws BusinessCheckException {
         MtStore mtStore = new MtStore();
 
         // 编辑店铺
@@ -156,6 +158,9 @@ public class StoreServiceImpl extends ServiceImpl<MtStoreMapper, MtStore> implem
             mtStore = queryStoreById(storeDto.getId());
             if (mtStore == null) {
                 throw new BusinessCheckException("该店铺不存在");
+            }
+            if (mtStore.getMerchantId().equals(accountInfo.getMerchantId())) {
+                throw new BusinessCheckException("无权限操作");
             }
         }
 
@@ -338,7 +343,7 @@ public class StoreServiceImpl extends ServiceImpl<MtStoreMapper, MtStore> implem
      * 更新店铺状态
      *
      * @param  id       店铺ID
-     * @param  operator 操作人
+     * @param  accountInfo 操作人
      * @param  status   状态
      * @throws BusinessCheckException
      * @return
@@ -346,15 +351,19 @@ public class StoreServiceImpl extends ServiceImpl<MtStoreMapper, MtStore> implem
     @Override
     @Transactional(rollbackFor = Exception.class)
     @OperationServiceLog(description = "修改店铺状态")
-    public void updateStatus(Integer id, String operator, String status) throws BusinessCheckException {
+    public void updateStatus(Integer id, AccountInfo accountInfo, String status) throws BusinessCheckException {
         MtStore mtStore = queryStoreById(id);
         if (null == mtStore) {
             throw new BusinessCheckException("该店铺不存在.");
         }
 
+        if (!mtStore.getMerchantId().equals(accountInfo.getMerchantId())) {
+            throw new BusinessCheckException("您没有权限操作该店铺.");
+        }
+
         mtStore.setStatus(status);
         mtStore.setUpdateTime(new Date());
-        mtStore.setOperator(operator);
+        mtStore.setOperator(accountInfo.getAccountName());
 
         // 删除店铺
         if (status.equals(StatusEnum.DISABLE.getKey())) {

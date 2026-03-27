@@ -3,6 +3,7 @@ package com.fuint.module.merchantApi.controller;
 import com.fuint.common.dto.member.UserInfo;
 import com.fuint.common.dto.merchant.MerchantSettingDto;
 import com.fuint.common.dto.merchant.StaffDto;
+import com.fuint.common.dto.system.AccountInfo;
 import com.fuint.common.service.MemberService;
 import com.fuint.common.service.MerchantService;
 import com.fuint.common.service.SettingService;
@@ -88,7 +89,9 @@ public class MerchantSettingController extends BaseController {
         }
         params.setMerchantId(staffInfo.getMerchantId());
         params.setStoreId(staffInfo.getStoreId());
-        MerchantSettingDto merchantInfo = merchantService.saveMerchantSetting(params);
+        AccountInfo accountInfo = new AccountInfo();
+        accountInfo.setAccountName(staffInfo.getRealName());
+        MerchantSettingDto merchantInfo = merchantService.saveMerchantSetting(params, accountInfo);
         return getSuccessResult(merchantInfo);
     }
 }

@@ -81,7 +81,7 @@ public class BackendStaffController extends BaseController {
     @PreAuthorize("@pms.hasPermission('staff:list')")
     public ResponseObject updateStatus(@RequestBody StatusParam params) throws BusinessCheckException {
         AccountInfo accountInfo = TokenUtil.getAccountInfo();
-        staffService.updateAuditedStatus(params.getId(), params.getStatus(), accountInfo.getAccountName());
+        staffService.updateAuditedStatus(params.getId(), params.getStatus(), accountInfo);
         return getSuccessResult(true);
     }
 
@@ -129,7 +129,7 @@ public class BackendStaffController extends BaseController {
                 return getFailureResult(201, "该手机号码已经存在");
             }
         }
-        staffService.saveStaff(mtStaff, accountInfo.getAccountName());
+        staffService.saveStaff(mtStaff, accountInfo);
         return getSuccessResult(true);
     }
 
@@ -191,9 +191,9 @@ public class BackendStaffController extends BaseController {
     @RequestMapping(value = "/delete/{id}", method = RequestMethod.GET)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('staff:list')")
-    public ResponseObject deleteStaff(@PathVariable("id") Integer id) {
+    public ResponseObject deleteStaff(@PathVariable("id") Integer id) throws BusinessCheckException {
         AccountInfo accountInfo = TokenUtil.getAccountInfo();
-        staffService.updateAuditedStatus(id, StatusEnum.DISABLE.getKey(), accountInfo.getAccountName());
+        staffService.updateAuditedStatus(id, StatusEnum.DISABLE.getKey(), accountInfo);
         return getSuccessResult(true);
     }
 }

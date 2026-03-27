@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fuint.common.dto.merchant.StaffDto;
+import com.fuint.common.dto.system.AccountInfo;
 import com.fuint.common.enums.StatusEnum;
 import com.fuint.common.enums.YesOrNoEnum;
 import com.fuint.common.param.StaffPage;
@@ -140,14 +141,14 @@ public class StaffServiceImpl extends ServiceImpl<MtStaffMapper, MtStaff> implem
      * 保存员工信息
      *
      * @param  mtStaff 员工参数
-     * @param operator 操作人
+     * @param  accountInfo 操作人
      * @throws BusinessCheckException
      * @return
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
     @OperationServiceLog(description = "保存店铺员工")
-    public MtStaff saveStaff(MtStaff mtStaff, String operator) throws BusinessCheckException {
+    public MtStaff saveStaff(MtStaff mtStaff, AccountInfo accountInfo) throws BusinessCheckException {
         mtStaff.setUpdateTime(new Date());
         if (mtStaff.getId() == null || mtStaff.getId() <= 0) {
             mtStaff.setCreateTime(new Date());
@@ -166,6 +167,10 @@ public class StaffServiceImpl extends ServiceImpl<MtStaffMapper, MtStaff> implem
             mtStaff.setMerchantId(mtStaffOld.getMerchantId());
         }
 
+        if (!mtStaff.getMerchantId().equals(accountInfo.getMerchantId())) {
+            throw new BusinessCheckException("没有操作权限");
+        }
+
         MtUser mtUser = null;
         if (mtStaff.getUserId() != null) {
             mtUser = memberService.queryMemberById(mtStaff.getUserId());
@@ -179,7 +184,7 @@ public class StaffServiceImpl extends ServiceImpl<MtStaffMapper, MtStaff> implem
             userInfo.setStoreId(mtStaff.getStoreId());
             userInfo.setMerchantId(mtStaff.getMerchantId());
             userInfo.setIsStaff(YesOrNoEnum.YES.getKey());
-            userInfo.setOperator(operator);
+            userInfo.setOperator(accountInfo.getAccountName());
             mtUser = memberService.addMember(userInfo, "0");
             if (mtUser != null) {
                 mtStaff.setUserId(mtUser.getId());
@@ -188,13 +193,13 @@ public class StaffServiceImpl extends ServiceImpl<MtStaffMapper, MtStaff> implem
             }
         } else {
             mtUser.setIsStaff(YesOrNoEnum.YES.getKey());
-            mtUser.setOperator(operator);
+            mtUser.setOperator(accountInfo.getAccountName());
             memberService.updateMember(mtUser, false);
         }
 
         // 更新员工
         this.updateById(mtStaff);
-        logger.info("operator：{} 保存员工信息mtStaff：{}", operator, mtStaff);
+        logger.info("operator：{} 保存员工信息mtStaff：{}", accountInfo.getAccountName(), mtStaff);
         return mtStaff;
     }
 
@@ -217,13 +222,16 @@ public class StaffServiceImpl extends ServiceImpl<MtStaffMapper, MtStaff> implem
      *
      * @param  staffId 员工ID
      * @param status 状态
-     * @param operator 操作人
+     * @param accountInfo 操作人
      * @return
      */
     @Override
     @OperationServiceLog(description = "修改店铺员工状态")
-    public Integer updateAuditedStatus(Integer staffId, String status, String operator) {
+    public Integer updateAuditedStatus(Integer staffId, String status, AccountInfo accountInfo) throws BusinessCheckException {
         MtStaff mtStaff = mtStaffMapper.selectById(staffId);
+        if (!mtStaff.getMerchantId().equals(accountInfo.getMerchantId())) {
+            throw new BusinessCheckException("没有操作权限");
+        }
         if (mtStaff != null) {
             mtStaff.setAuditedStatus(status);
             mtStaff.setUpdateTime(new Date());
