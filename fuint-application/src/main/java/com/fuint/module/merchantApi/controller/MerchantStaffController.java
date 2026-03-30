@@ -137,6 +137,7 @@ public class MerchantStaffController extends BaseController {
         }
         AccountInfo accountInfo = new AccountInfo();
         accountInfo.setAccountName(staff.getRealName());
+        accountInfo.setMerchantId(staff.getMerchantId());
         MtStaff staffInfo = staffService.saveStaff(mtStaff, accountInfo);
         return getSuccessResult(staffInfo);
     }

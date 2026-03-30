@@ -90,6 +90,7 @@ public class MerchantSettingController extends BaseController {
         params.setMerchantId(staffInfo.getMerchantId());
         params.setStoreId(staffInfo.getStoreId());
         AccountInfo accountInfo = new AccountInfo();
+        accountInfo.setMerchantId(staffInfo.getMerchantId());
         accountInfo.setAccountName(staffInfo.getRealName());
         MerchantSettingDto merchantInfo = merchantService.saveMerchantSetting(params, accountInfo);
         return getSuccessResult(merchantInfo);

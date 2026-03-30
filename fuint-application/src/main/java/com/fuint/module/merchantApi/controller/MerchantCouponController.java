@@ -126,6 +126,7 @@ public class MerchantCouponController extends BaseController {
         }
         AccountInfo accountInfo = new AccountInfo();
         accountInfo.setAccountName(staff.getRealName());
+        accountInfo.setMerchantId(staff.getMerchantId());
         ResponseObject result = couponService.sendCoupon(receiveParam.getCouponId(), receiveParam.getUserId(), receiveParam.getNum(), true, null, accountInfo);
         if (!result.getCode().equals(200)) {
             return getFailureResult(result.getCode(), result.getMessage());
