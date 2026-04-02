@@ -1,7 +1,7 @@
 package com.fuint.common.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.fuint.framework.pagination.PaginationRequest;
+import com.fuint.common.param.ActionLogPage;
 import com.fuint.framework.pagination.PaginationResponse;
 import com.fuint.repository.model.TActionLog;
 
@@ -24,8 +24,8 @@ public interface ActionLogService extends IService<TActionLog> {
     /**
      * 获取分页查询数据
      *
-     * @param paginationRequest
+     * @param actionLogPage
      * @return
      */
-    PaginationResponse<TActionLog> findLogsByPagination(PaginationRequest paginationRequest);
+    PaginationResponse<TActionLog> findLogsByPagination(ActionLogPage actionLogPage);
 }

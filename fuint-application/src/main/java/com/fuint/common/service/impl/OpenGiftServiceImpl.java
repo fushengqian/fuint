@@ -3,13 +3,13 @@ package com.fuint.common.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.fuint.common.Constants;
 import com.fuint.common.dto.member.OpenGiftDto;
 import com.fuint.common.dto.system.AccountInfo;
 import com.fuint.common.enums.MessageEnum;
 import com.fuint.common.enums.StatusEnum;
 import com.fuint.common.enums.YesOrNoEnum;
 import com.fuint.common.param.CouponReceiveParam;
+import com.fuint.common.param.OpenGiftPage;
 import com.fuint.common.service.*;
 import com.fuint.common.util.DateUtil;
 import com.fuint.common.util.SeqUtil;
@@ -73,31 +73,29 @@ public class OpenGiftServiceImpl extends ServiceImpl<MtOpenGiftMapper, MtOpenGif
 
     /**
      * 获取开卡赠礼列表
-     * @param  paramMap
+     *
+     * @param  openGiftPage
      * @return
      * */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public ResponseObject getOpenGiftList(Map<String, Object> paramMap) {
-        Integer pageNumber = paramMap.get("pageNumber") == null ? Constants.PAGE_NUMBER : Integer.parseInt(paramMap.get("pageNumber").toString());
-        Integer pageSize = paramMap.get("pageSize") == null ? Constants.PAGE_SIZE : Integer.parseInt(paramMap.get("pageSize").toString());
-
-        Page<MtOpenGift> pageHelper = PageHelper.startPage(pageNumber, pageSize);
+    public ResponseObject getOpenGiftList(OpenGiftPage openGiftPage) {
+        Page<MtOpenGift> pageHelper = PageHelper.startPage(openGiftPage.getPage(), openGiftPage.getPageSize());
         LambdaQueryWrapper<MtOpenGift> lambdaQueryWrapper = Wrappers.lambdaQuery();
         lambdaQueryWrapper.ne(MtOpenGift::getStatus, StatusEnum.DISABLE.getKey());
-        String merchantId = paramMap.get("merchantId") == null ? "" : paramMap.get("merchantId").toString();
-        if (StringUtils.isNotBlank(merchantId)) {
+        Integer merchantId = openGiftPage.getMerchantId();
+        if (merchantId != null && merchantId > 0) {
             lambdaQueryWrapper.eq(MtOpenGift::getMerchantId, merchantId);
         }
-        String couponId = paramMap.get("couponId") == null ? "" : paramMap.get("couponId").toString();
-        if (StringUtils.isNotBlank(couponId)) {
+        Integer couponId = openGiftPage.getCouponId();
+        if (couponId != null && couponId > 0) {
             lambdaQueryWrapper.eq(MtOpenGift::getCouponId, couponId);
         }
-        String gradeId = paramMap.get("gradeId") == null ? "" : paramMap.get("gradeId").toString();
-        if (StringUtils.isNotBlank(gradeId)) {
-            lambdaQueryWrapper.eq(MtOpenGift::getGradeId, Integer.parseInt(gradeId));
+        Integer gradeId = openGiftPage.getGradeId();
+        if (gradeId != null && gradeId > 0) {
+            lambdaQueryWrapper.eq(MtOpenGift::getGradeId, gradeId);
         }
-        String status = paramMap.get("status") == null ? "" : paramMap.get("status").toString();
+        String status = openGiftPage.getStatus();
         if (StringUtils.isNotBlank(status)) {
             lambdaQueryWrapper.eq(MtOpenGift::getStatus, status);
         }
@@ -110,7 +108,7 @@ public class OpenGiftServiceImpl extends ServiceImpl<MtOpenGiftMapper, MtOpenGif
             dataList.add(dto);
         }
 
-        PageRequest pageRequest = PageRequest.of(pageNumber, pageSize);
+        PageRequest pageRequest = PageRequest.of(openGiftPage.getPage(), openGiftPage.getPageSize());
         PageImpl pageImpl = new PageImpl(dataList, pageRequest, pageHelper.getTotal());
         PaginationResponse<OpenGiftDto> paginationResponse = new PaginationResponse(pageImpl, OpenGiftDto.class);
         paginationResponse.setTotalPages(pageHelper.getPages());

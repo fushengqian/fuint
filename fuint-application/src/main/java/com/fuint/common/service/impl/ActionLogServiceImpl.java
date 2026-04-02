@@ -3,8 +3,8 @@ package com.fuint.common.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.fuint.common.param.ActionLogPage;
 import com.fuint.common.service.ActionLogService;
-import com.fuint.framework.pagination.PaginationRequest;
 import com.fuint.framework.pagination.PaginationResponse;
 import com.fuint.repository.mapper.TActionLogMapper;
 import com.fuint.repository.model.TActionLog;
@@ -34,34 +34,34 @@ public class ActionLogServiceImpl extends ServiceImpl<TActionLogMapper, TActionL
         tActionLogMapper.insert(actionLog);
     }
 
-    public PaginationResponse<TActionLog> findLogsByPagination(PaginationRequest paginationRequest) {
-        Page<TActionLog> pageHelper = PageHelper.startPage(paginationRequest.getCurrentPage(), paginationRequest.getPageSize());
+    public PaginationResponse<TActionLog> findLogsByPagination(ActionLogPage actionLogPage) {
+        Page<TActionLog> pageHelper = PageHelper.startPage(actionLogPage.getPage(), actionLogPage.getPageSize());
         LambdaQueryWrapper<TActionLog> lambdaQueryWrapper = Wrappers.lambdaQuery();
-        String merchantId = paginationRequest.getSearchParams().get("merchantId") == null ? "" : paginationRequest.getSearchParams().get("merchantId").toString();
-        if (StringUtils.isNotBlank(merchantId)) {
+        Integer merchantId = actionLogPage.getMerchantId();
+        if (merchantId != null && merchantId > 0) {
             lambdaQueryWrapper.eq(TActionLog::getMerchantId, merchantId);
         }
-        String storeId = paginationRequest.getSearchParams().get("storeId") == null ? "" : paginationRequest.getSearchParams().get("storeId").toString();
-        if (StringUtils.isNotBlank(storeId)) {
+        Integer storeId = actionLogPage.getStoreId();
+        if (storeId != null && storeId > 0) {
             lambdaQueryWrapper.eq(TActionLog::getStoreId, storeId);
         }
-        String module = paginationRequest.getSearchParams().get("module") == null ? "" : paginationRequest.getSearchParams().get("module").toString();
-        if (StringUtils.isNotBlank(module)) {
-            lambdaQueryWrapper.like(TActionLog::getModule, module);
+        String keyword = actionLogPage.getKeyword();
+        if (StringUtils.isNotBlank(keyword)) {
+            lambdaQueryWrapper.like(TActionLog::getModule, keyword);
         }
-        String name = paginationRequest.getSearchParams().get("name") == null ? "" : paginationRequest.getSearchParams().get("name").toString();
+        String name = actionLogPage.getAccountName();
         if (StringUtils.isNotBlank(name)) {
             lambdaQueryWrapper.eq(TActionLog::getAcctName, name);
         }
-        String startTime = paginationRequest.getSearchParams().get("startTime") == null ? "" : paginationRequest.getSearchParams().get("startTime").toString();
+        String startTime = actionLogPage.getBeginTime();
         if (StringUtils.isNotBlank(startTime)) {
             lambdaQueryWrapper.gt(TActionLog::getActionTime, startTime);
         }
-        String endTime = paginationRequest.getSearchParams().get("endTime") == null ? "" : paginationRequest.getSearchParams().get("endTime").toString();
+        String endTime = actionLogPage.getEndTime();
         if (StringUtils.isNotBlank(endTime)) {
             lambdaQueryWrapper.lt(TActionLog::getActionTime, endTime);
         }
-        String ip = paginationRequest.getSearchParams().get("ip") == null ? "" : paginationRequest.getSearchParams().get("ip").toString();
+        String ip = actionLogPage.getIp();
         if (StringUtils.isNotBlank(ip)) {
             lambdaQueryWrapper.eq(TActionLog::getClientIp, ip);
         }
@@ -69,7 +69,7 @@ public class ActionLogServiceImpl extends ServiceImpl<TActionLogMapper, TActionL
         lambdaQueryWrapper.orderByDesc(TActionLog::getId);
         List<TActionLog> dataList = tActionLogMapper.selectList(lambdaQueryWrapper);
 
-        PageRequest pageRequest = PageRequest.of(paginationRequest.getCurrentPage(), paginationRequest.getPageSize());
+        PageRequest pageRequest = PageRequest.of(actionLogPage.getPage(), actionLogPage.getPageSize());
         PageImpl pageImpl = new PageImpl(dataList, pageRequest, pageHelper.getTotal());
         PaginationResponse<TActionLog> paginationResponse = new PaginationResponse(pageImpl, TActionLog.class);
         paginationResponse.setTotalPages(pageHelper.getPages());
