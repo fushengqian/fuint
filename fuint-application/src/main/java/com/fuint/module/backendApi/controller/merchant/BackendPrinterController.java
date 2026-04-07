@@ -105,13 +105,10 @@ public class BackendPrinterController extends BaseController {
         if (mtPrinter == null) {
             return getFailureResult(201);
         }
-        if (!mtPrinter.getMerchantId().equals(accountInfo.getMerchantId())) {
-            return getFailureResult(1004);
-        }
 
         mtPrinter.setOperator(accountInfo.getAccountName());
         mtPrinter.setStatus(params.getStatus());
-        printerService.updatePrinter(mtPrinter);
+        printerService.updatePrinter(mtPrinter, accountInfo);
 
         return getSuccessResult(true);
     }
@@ -134,14 +131,7 @@ public class BackendPrinterController extends BaseController {
         }
         if (printer.getId() != null && printer.getId() > 0) {
             mtPrinter.setId(printer.getId());
-            MtPrinter printerInfo = printerService.queryPrinterById(mtPrinter.getId());
-            if (printerInfo == null) {
-                return getFailureResult(201);
-            }
-            if (!printerInfo.getMerchantId().equals(accountInfo.getMerchantId())) {
-                return getFailureResult(1004);
-            }
-            printerService.updatePrinter(mtPrinter);
+            printerService.updatePrinter(mtPrinter, accountInfo);
         } else {
             printerService.addPrinter(mtPrinter);
         }

@@ -95,17 +95,12 @@ public class BackendArticleController extends BaseController {
         if (mtArticle == null) {
             return getFailureResult(201);
         }
-        if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
-            if (!accountInfo.getMerchantId().equals(mtArticle.getMerchantId())) {
-                return getFailureResult(1004);
-            }
-        }
 
         ArticleDto article = new ArticleDto();
         article.setOperator(accountInfo.getAccountName());
         article.setId(params.getId());
         article.setStatus(status);
-        articleService.updateArticle(article);
+        articleService.updateArticle(article, accountInfo);
 
         return getSuccessResult(true);
     }
@@ -128,16 +123,7 @@ public class BackendArticleController extends BaseController {
         }
 
         if (articleDto.getId() != null && articleDto.getId() > 0) {
-            MtArticle mtArticle = articleService.queryArticleById(articleDto.getId());
-            if (mtArticle == null) {
-                return getFailureResult(201);
-            }
-            if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
-                if (!accountInfo.getMerchantId().equals(mtArticle.getMerchantId())) {
-                    return getFailureResult(1004);
-                }
-            }
-            articleService.updateArticle(articleDto);
+            articleService.updateArticle(articleDto, accountInfo);
         } else {
             articleService.addArticle(articleDto);
         }

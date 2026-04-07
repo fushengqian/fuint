@@ -1,8 +1,8 @@
 package com.fuint.module.backendApi.controller.coupon;
 
-import com.fuint.common.dto.system.AccountInfo;
-import com.fuint.common.dto.coupon.ConfirmLogDto;
 import com.fuint.common.dto.common.ParamDto;
+import com.fuint.common.dto.coupon.ConfirmLogDto;
+import com.fuint.common.dto.system.AccountInfo;
 import com.fuint.common.enums.CouponTypeEnum;
 import com.fuint.common.param.ConfirmLogPage;
 import com.fuint.common.service.ConfirmLogService;
@@ -97,9 +97,9 @@ public class BackendConfirmLogController extends BaseController {
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('coupon:confirmLog:index')")
     public ResponseObject rollbackUserCoupon(HttpServletRequest request, @PathVariable("id") Integer id) throws BusinessCheckException {
-        String userCouponId = (request.getParameter("userCouponId") == null || StringUtil.isEmpty(request.getParameter("userCouponId"))) ? "0" : request.getParameter("userCouponId");
         AccountInfo accountInfo = TokenUtil.getAccountInfo();
-        couponService.rollbackUserCoupon(id, Integer.parseInt(userCouponId), accountInfo.getAccountName());
+        String userCouponId = (request.getParameter("userCouponId") == null || StringUtil.isEmpty(request.getParameter("userCouponId"))) ? "0" : request.getParameter("userCouponId");
+        couponService.rollbackUserCoupon(id, Integer.parseInt(userCouponId), accountInfo);
         return getSuccessResult(true);
     }
 }

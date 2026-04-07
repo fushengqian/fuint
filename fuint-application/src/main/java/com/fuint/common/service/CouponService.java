@@ -127,11 +127,11 @@ public interface CouponService extends IService<MtCoupon> {
      *
      * @param id 消费流水ID
      * @param userCouponId 用户卡券ID
-     * @param operator 操作人
+     * @param accountInfo 操作人
      * @throws BusinessCheckException
      * @return
      */
-    void rollbackUserCoupon(Integer id, Integer userCouponId,String operator) throws BusinessCheckException;
+    void rollbackUserCoupon(Integer id, Integer userCouponId, AccountInfo accountInfo) throws BusinessCheckException;
 
     /**
      * 根据ID获取用户卡券信息
