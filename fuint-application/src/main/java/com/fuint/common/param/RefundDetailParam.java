@@ -16,4 +16,10 @@ public class RefundDetailParam implements Serializable {
     @ApiModelProperty(value="售后订单ID", name="refundId")
     private Integer refundId;
 
+    @ApiModelProperty(value="状态", name="status")
+    private String status;
+
+    @ApiModelProperty(value="备注信息", name="remark")
+    private String remark;
+
 }

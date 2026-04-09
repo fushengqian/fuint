@@ -7,6 +7,7 @@ import com.fuint.common.param.RefundPage;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.pagination.PaginationResponse;
 import com.fuint.framework.web.ResponseObject;
+import com.fuint.module.clientApi.request.RefundListRequest;
 import com.fuint.repository.model.MtRefund;
 
 import java.util.Date;
@@ -29,11 +30,12 @@ public interface RefundService extends IService<MtRefund> {
     PaginationResponse<RefundDto> getRefundListByPagination(RefundPage refundPage);
 
     /**
-     * 获取用户的售后订单
-     * @param paramMap 查询参数
+     * 获取用户售后订单
+     *
+     * @param param 查询参数
      * @return
      * */
-    ResponseObject getUserRefundList(Map<String, Object> paramMap);
+    ResponseObject getUserRefundList(RefundListRequest param);
 
     /**
      * 创建售后订单

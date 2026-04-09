@@ -3,20 +3,20 @@ package com.fuint.common.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.fuint.common.Constants;
 import com.fuint.common.dto.order.AddressDto;
 import com.fuint.common.dto.order.OrderDto;
 import com.fuint.common.dto.order.RefundDto;
 import com.fuint.common.dto.order.UserOrderDto;
 import com.fuint.common.dto.system.AccountInfo;
 import com.fuint.common.enums.*;
+import com.fuint.common.param.RefundPage;
 import com.fuint.common.service.*;
 import com.fuint.common.util.DateUtil;
 import com.fuint.framework.annoation.OperationServiceLog;
 import com.fuint.framework.exception.BusinessCheckException;
-import com.fuint.common.param.RefundPage;
 import com.fuint.framework.pagination.PaginationResponse;
 import com.fuint.framework.web.ResponseObject;
+import com.fuint.module.clientApi.request.RefundListRequest;
 import com.fuint.repository.mapper.*;
 import com.fuint.repository.model.*;
 import com.fuint.utils.StringUtil;
@@ -32,6 +32,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.math.BigDecimal;
 import java.util.*;
 
@@ -177,23 +178,30 @@ public class RefundServiceImpl extends ServiceImpl<MtRefundMapper, MtRefund> imp
     /**
      * 获取用户售后订单列表
      *
-     * @param  paramMap 查询参数
+     * @param  param 查询参数
      * @return
      * */
     @Override
-    @Transactional(rollbackFor = Exception.class)
-    public ResponseObject getUserRefundList(Map<String, Object> paramMap) {
-        Integer pageNumber = paramMap.get("pageNumber") == null ? Constants.PAGE_NUMBER : Integer.parseInt(paramMap.get("pageNumber").toString());
-        Integer pageSize = paramMap.get("pageSize") == null ? Constants.PAGE_SIZE : Integer.parseInt(paramMap.get("pageSize").toString());
-        String userId = paramMap.get("userId") == null ? "0" : paramMap.get("userId").toString();
-        String status =  paramMap.get("status") == null ? "": paramMap.get("status").toString();
-
-        Page<MtBanner> pageHelper = PageHelper.startPage(pageNumber, pageSize);
+    public ResponseObject getUserRefundList(RefundListRequest param) {
+        Page<MtBanner> pageHelper = PageHelper.startPage(param.getPage(), param.getPageSize());
         LambdaQueryWrapper<MtRefund> lambdaQueryWrapper = Wrappers.lambdaQuery();
 
-        if (StringUtils.isNotBlank(userId)) {
+        Integer merchantId = param.getMerchantId();
+        if (merchantId != null && merchantId > 0) {
+            lambdaQueryWrapper.like(MtRefund::getMerchantId, merchantId);
+        }
+
+        Integer storeId = param.getStoreId();
+        if (storeId != null && storeId > 0) {
+            lambdaQueryWrapper.like(MtRefund::getStoreId, storeId);
+        }
+
+        Integer userId = param.getUserId();
+        if (userId != null && userId > 0) {
             lambdaQueryWrapper.like(MtRefund::getUserId, userId);
         }
+
+        String status = param.getStatus();
         if (StringUtils.isNotBlank(status)) {
             lambdaQueryWrapper.eq(MtRefund::getStatus, status);
         }
@@ -234,7 +242,7 @@ public class RefundServiceImpl extends ServiceImpl<MtRefundMapper, MtRefund> imp
             }
         }
 
-        PageRequest pageRequest = PageRequest.of(pageNumber, pageSize);
+        PageRequest pageRequest = PageRequest.of(param.getPage(), param.getPageSize());
         PageImpl pageImpl = new PageImpl(dataList, pageRequest, pageHelper.getTotal());
         PaginationResponse<RefundDto> paginationResponse = new PaginationResponse(pageImpl, RefundDto.class);
         paginationResponse.setTotalPages(pageHelper.getPages());
@@ -359,6 +367,10 @@ public class RefundServiceImpl extends ServiceImpl<MtRefundMapper, MtRefund> imp
             throw new BusinessCheckException("该售后订单状态异常");
         }
 
+        if (accountInfo.getMerchantId() > 0 && !accountInfo.getMerchantId().equals(mtRefund.getMerchantId())) {
+            throw new BusinessCheckException("不同商户，没有操作权限");
+        }
+
         // 已同意的不能再设置为已拒绝
         if ((refundDto.getStatus() != null) && (!refundDto.getStatus().equals(RefundStatusEnum.COMPLETE.getKey())) && (mtRefund.getStatus().equals(RefundStatusEnum.COMPLETE.getKey()))) {
             throw new BusinessCheckException("该售后订单已完成，不能再改成其他状态");
@@ -393,7 +405,7 @@ public class RefundServiceImpl extends ServiceImpl<MtRefundMapper, MtRefund> imp
     /**
      * 同意售后订单
      *
-     * @param refundDto
+     * @param  refundDto
      * @throws BusinessCheckException
      * @return
      * */
@@ -404,6 +416,10 @@ public class RefundServiceImpl extends ServiceImpl<MtRefundMapper, MtRefund> imp
         MtRefund refund = mtRefundMapper.selectById(refundDto.getId());
         if (null == refund) {
             throw new BusinessCheckException("该售后订单状态异常");
+        }
+
+        if (accountInfo.getMerchantId() > 0 && !accountInfo.getMerchantId().equals(refund.getMerchantId())) {
+            throw new BusinessCheckException("不同商户，没有操作权限");
         }
 
         // 已经同意过了
