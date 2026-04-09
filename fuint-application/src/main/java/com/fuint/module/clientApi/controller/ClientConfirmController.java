@@ -2,6 +2,7 @@ package com.fuint.module.clientApi.controller;
 
 import com.fuint.common.dto.member.UserInfo;
 import com.fuint.common.enums.StatusEnum;
+import com.fuint.common.enums.UserCouponStatusEnum;
 import com.fuint.common.param.ConfirmParam;
 import com.fuint.common.service.CouponService;
 import com.fuint.common.service.MemberService;
@@ -23,7 +24,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -72,52 +72,53 @@ public class ClientConfirmController extends BaseController {
         }
 
         MtUserCoupon userCoupon = mtUserCouponMapper.findByCode(code);
-        if (null == userCoupon) {
-            return getFailureResult(1003, "该券不存在！");
+        if (userCoupon == null) {
+            return getFailureResult(1003, "该卡券不存在！");
+        }
+
+        if (!userCoupon.getStatus().equals(UserCouponStatusEnum.UNUSED.getKey())) {
+            return getFailureResult(1003, "该卡券状态异常！");
         }
 
         // 券码已过期
         if (couponService.codeExpired(code)) {
             return getFailureResult(1003, "二维码已过期，请重新获取！");
         }
+
         MtUser mtUser = memberService.queryMemberById(loginInfo.getId());
         MtCoupon couponInfo = couponService.queryCouponById(userCoupon.getCouponId());
 
+        // 同商户判断
+        if (!userCoupon.getMerchantId().equals(mtUser.getMerchantId())) {
+            return getFailureResult(1003, "不同商户，无核销权限！");
+        }
+
         // 员工是否已经被审核
-        HashMap params = new HashMap<>();
-        params.put("MOBILE", mtUser.getMobile());
-        params.put("AUDITED_STATUS", StatusEnum.ENABLED.getKey());
-        List<MtStaff> staffList = staffService.queryStaffByParams(params);
-        Integer storeId = 0;
-        if (staffList.size() > 0) {
-            for (MtStaff staff : staffList) {
-                if (staff.getStoreId() > 0) {
-                    storeId = staff.getStoreId();
-                }
-                String storeIdsStr = couponInfo.getStoreIds();
-                if (StringUtil.isNotEmpty(storeIdsStr) && storeId > 0) {
-                    String[] storeIds = couponInfo.getStoreIds().split(",");
-                    Boolean isSameStore = false;
-                    for (String hid : storeIds) {
-                        if (staff.getStoreId().toString().equals(hid)) {
-                            isSameStore = true;
-                            break;
-                        }
-                    }
-                    if (!isSameStore) {
-                        return getFailureResult(1003, "抱歉，该卡券存在店铺使用范围限制，您所在的店铺无法核销！");
-                    }
+        MtStaff staffInfo = staffService.queryStaffByMobile(mtUser.getMobile());
+        if (staffInfo == null || staffInfo.getAuditedStatus().equals(StatusEnum.ENABLED.getKey())) {
+            return getFailureResult(1003, "员工状态异常！");
+        }
+
+        String storeIdsStr = couponInfo.getStoreIds();
+        if (StringUtil.isNotEmpty(storeIdsStr)) {
+            String[] storeIds = couponInfo.getStoreIds().split(",");
+            Boolean isSameStore = false;
+            for (String sid : storeIds) {
+                if (staffInfo.getStoreId().toString().equals(sid)) {
+                    isSameStore = true;
+                    break;
                 }
             }
-        } else {
-            return getFailureResult(1003, "员工状态异常！");
+            if (!isSameStore) {
+                return getFailureResult(1003, "抱歉，该卡券有店铺限制，您所在的店铺无法核销！");
+            }
         }
 
         Integer userCouponId = userCoupon.getId();
         String confirmCode = "";
 
         try {
-            confirmCode = couponService.useCoupon(userCouponId, mtUser.getId(), storeId, 0, new BigDecimal(amount), remark);
+            confirmCode = couponService.useCoupon(userCouponId, mtUser.getId(), staffInfo.getStoreId(), 0, new BigDecimal(amount), remark);
         } catch (BusinessCheckException e) {
             return getFailureResult(1003, e.getMessage());
         }

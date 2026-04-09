@@ -132,7 +132,7 @@ public class BackendRefundController extends BaseController {
             dto.setStatus(RefundStatusEnum.REJECT.getKey());
             dto.setRemark(remark);
             dto.setRejectReason(rejectReason);
-            refundService.updateRefund(dto);
+            refundService.updateRefund(dto, accountInfo);
         } else {
             RefundDto dto = new RefundDto();
             dto.setId(refundId);
@@ -140,9 +140,9 @@ public class BackendRefundController extends BaseController {
             dto.setStatus(status);
             dto.setRemark(remark);
             if (status.equals(RefundStatusEnum.COMPLETE.getKey())) {
-                refundService.agreeRefund(dto);
+                refundService.agreeRefund(dto, accountInfo);
             } else {
-                refundService.updateRefund(dto);
+                refundService.updateRefund(dto, accountInfo);
             }
         }
         return getSuccessResult(true);

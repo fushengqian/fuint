@@ -3,6 +3,7 @@ package com.fuint.module.clientApi.controller;
 import com.fuint.common.dto.member.UserInfo;
 import com.fuint.common.dto.order.RefundDto;
 import com.fuint.common.dto.order.UserOrderDto;
+import com.fuint.common.dto.system.AccountInfo;
 import com.fuint.common.enums.RefundStatusEnum;
 import com.fuint.common.service.OrderService;
 import com.fuint.common.service.RefundService;
@@ -162,7 +163,10 @@ public class ClientRefundController extends BaseController {
         refundDto.setId(Integer.parseInt(refundId));
         refundDto.setExpressName(expressName);
         refundDto.setExpressNo(expressNo);
-        refundService.updateRefund(refundDto);
+        AccountInfo accountInfo = new AccountInfo();
+        accountInfo.setAccountName(mtUser.getMobile());
+        accountInfo.setMerchantId(refundInfo.getMerchantId());
+        refundService.updateRefund(refundDto, accountInfo);
 
         return getSuccessResult(true);
     }

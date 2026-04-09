@@ -2,6 +2,7 @@ package com.fuint.module.merchantApi.controller;
 
 import com.fuint.common.dto.member.UserInfo;
 import com.fuint.common.dto.order.RefundDto;
+import com.fuint.common.dto.system.AccountInfo;
 import com.fuint.common.param.RefundDetailParam;
 import com.fuint.common.param.RefundPage;
 import com.fuint.common.service.MemberService;
@@ -125,7 +126,10 @@ public class MerchantRefundController extends BaseController {
         RefundDto refundDto = new RefundDto();
         refundDto.setId(refundId);
         refundDto.setOperator(staffInfo.getRealName());
-        MtRefund mtRefund = refundService.updateRefund(refundDto);
+        AccountInfo accountInfo = new AccountInfo();
+        accountInfo.setAccountName(staffInfo.getRealName());
+        accountInfo.setMerchantId(staffInfo.getMerchantId());
+        MtRefund mtRefund = refundService.updateRefund(refundDto, accountInfo);
         return getSuccessResult(mtRefund);
     }
 }

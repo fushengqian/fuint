@@ -353,7 +353,7 @@ public class RefundServiceImpl extends ServiceImpl<MtRefundMapper, MtRefund> imp
     @Override
     @Transactional(rollbackFor = Exception.class)
     @OperationServiceLog(description = "更新售后订单")
-    public MtRefund updateRefund(RefundDto refundDto) throws BusinessCheckException {
+    public MtRefund updateRefund(RefundDto refundDto, AccountInfo accountInfo) throws BusinessCheckException {
         MtRefund mtRefund = mtRefundMapper.selectById(refundDto.getId());
         if (mtRefund == null) {
             throw new BusinessCheckException("该售后订单状态异常");
@@ -400,7 +400,7 @@ public class RefundServiceImpl extends ServiceImpl<MtRefundMapper, MtRefund> imp
     @Override
     @Transactional(rollbackFor = Exception.class)
     @OperationServiceLog(description = "同意售后订单")
-    public MtRefund agreeRefund(RefundDto refundDto) throws BusinessCheckException {
+    public MtRefund agreeRefund(RefundDto refundDto, AccountInfo accountInfo) throws BusinessCheckException {
         MtRefund refund = mtRefundMapper.selectById(refundDto.getId());
         if (null == refund) {
             throw new BusinessCheckException("该售后订单状态异常");
@@ -640,7 +640,7 @@ public class RefundServiceImpl extends ServiceImpl<MtRefundMapper, MtRefund> imp
             agreeDto.setId(mtRefund.getId());
             agreeDto.setOperator(accountInfo.getAccountName());
             agreeDto.setStatus(RefundStatusEnum.COMPLETE.getKey());
-            MtRefund refundInfo = agreeRefund(agreeDto);
+            MtRefund refundInfo = agreeRefund(agreeDto, accountInfo);
             if (refundInfo == null) {
                 logger.error("退款审核失败，orderId = " + orderId + ", refundId = " + mtRefund.getId());
                 throw new BusinessCheckException("退款审核失败！");
