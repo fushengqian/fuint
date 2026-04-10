@@ -84,7 +84,7 @@ public class MerchantRefundController extends BaseController {
      * 获取售后订单详情
      */
     @ApiOperation(value = "获取售后订单详情")
-    @RequestMapping(value = "/detail", method = RequestMethod.POST)
+    @RequestMapping(value = "/detail", method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject detail(HttpServletRequest request) throws BusinessCheckException {
         UserInfo userInfo = TokenUtil.getUserInfo();
