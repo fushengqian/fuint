@@ -193,17 +193,30 @@ public class RefundServiceImpl extends ServiceImpl<MtRefundMapper, MtRefund> imp
 
         Integer storeId = param.getStoreId();
         if (storeId != null && storeId > 0) {
-            lambdaQueryWrapper.like(MtRefund::getStoreId, storeId);
+            lambdaQueryWrapper.eq(MtRefund::getStoreId, storeId);
         }
 
         Integer userId = param.getUserId();
         if (userId != null && userId > 0) {
-            lambdaQueryWrapper.like(MtRefund::getUserId, userId);
+            lambdaQueryWrapper.eq(MtRefund::getUserId, userId);
         }
 
         String status = param.getStatus();
         if (StringUtils.isNotBlank(status)) {
             lambdaQueryWrapper.eq(MtRefund::getStatus, status);
+        }
+
+        String keyword = param.getKeyword();
+        if (StringUtils.isNotBlank(keyword)) {
+            MtUser userInfo = memberService.queryMemberByMobile(merchantId, keyword);
+            MtOrder orderInfo = orderService.getOrderInfoByOrderSn(keyword);
+            if (userInfo != null) {
+                lambdaQueryWrapper.eq(MtRefund::getUserId, userInfo.getId());
+            } else if (orderInfo != null) {
+                lambdaQueryWrapper.eq(MtRefund::getOrderId, orderInfo.getId());
+            } else {
+                lambdaQueryWrapper.eq(MtRefund::getOrderId, -1);
+            }
         }
 
         lambdaQueryWrapper.orderByDesc(MtRefund::getId);

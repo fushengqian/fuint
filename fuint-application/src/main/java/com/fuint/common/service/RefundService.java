@@ -11,7 +11,6 @@ import com.fuint.module.clientApi.request.RefundListRequest;
 import com.fuint.repository.model.MtRefund;
 
 import java.util.Date;
-import java.util.Map;
 
 /**
  * 售后业务接口
@@ -63,18 +62,20 @@ public interface RefundService extends IService<MtRefund> {
 
     /**
      * 更新售后订单
-     * @param  reqDto
+     *
+     * @param  refundDto
      * @param  accountInfo
      * @throws BusinessCheckException
      * */
-    MtRefund updateRefund(RefundDto reqDto, AccountInfo accountInfo) throws BusinessCheckException;
+    MtRefund updateRefund(RefundDto refundDto, AccountInfo accountInfo) throws BusinessCheckException;
 
     /**
      * 同意售后订单
-     * @param  reqDto
+     *
+     * @param  refundDto
      * @throws BusinessCheckException
      * */
-    MtRefund agreeRefund(RefundDto reqDto, AccountInfo accountInfo) throws BusinessCheckException;
+    MtRefund agreeRefund(RefundDto refundDto, AccountInfo accountInfo) throws BusinessCheckException;
 
     /**
      * 发起退款

@@ -6,6 +6,7 @@ import com.fuint.common.dto.common.ParamDto;
 import com.fuint.common.dto.order.UserOrderDto;
 import com.fuint.common.enums.RefundStatusEnum;
 import com.fuint.common.enums.RefundTypeEnum;
+import com.fuint.common.param.RefundInfoParam;
 import com.fuint.common.param.RefundPage;
 import com.fuint.common.service.OrderService;
 import com.fuint.common.service.RefundService;
@@ -114,32 +115,28 @@ public class BackendRefundController extends BaseController {
     @RequestMapping(value = "save", method = RequestMethod.POST)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('refund:edit')")
-    public ResponseObject save(@RequestBody Map<String, Object> param) throws BusinessCheckException {
-        Integer refundId = param.get("refundId") == null ? 0 : Integer.parseInt(param.get("refundId").toString());
-        String status = param.get("status") == null ? "" : param.get("status").toString();
-        String remark = param.get("remark") == null ? "" : param.get("remark").toString();
-        String rejectReason = param.get("rejectReason") == null ? "" : param.get("rejectReason").toString();
+    public ResponseObject save(@RequestBody RefundInfoParam param) throws BusinessCheckException {
         AccountInfo accountInfo = TokenUtil.getAccountInfo();
-        RefundDto refundDto = refundService.getRefundById(refundId);
+        RefundDto refundDto = refundService.getRefundById(param.getRefundId());
         if (!refundDto.getMerchantId().equals(accountInfo.getMerchantId())) {
             return getFailureResult(1004);
         }
 
-        if (status.equals(RefundStatusEnum.REJECT.getKey())) {
+        if (param.getStatus().equals(RefundStatusEnum.REJECT.getKey())) {
             RefundDto dto = new RefundDto();
-            dto.setId(refundId);
+            dto.setId(param.getRefundId());
             dto.setOperator(accountInfo.getAccountName());
             dto.setStatus(RefundStatusEnum.REJECT.getKey());
-            dto.setRemark(remark);
-            dto.setRejectReason(rejectReason);
+            dto.setRemark(param.getRemark());
+            dto.setRejectReason(param.getRejectReason());
             refundService.updateRefund(dto, accountInfo);
         } else {
             RefundDto dto = new RefundDto();
-            dto.setId(refundId);
+            dto.setId(param.getRefundId());
             dto.setOperator(accountInfo.getAccountName());
-            dto.setStatus(status);
-            dto.setRemark(remark);
-            if (status.equals(RefundStatusEnum.COMPLETE.getKey())) {
+            dto.setStatus(param.getStatus());
+            dto.setRemark(param.getRemark());
+            if (param.getStatus().equals(RefundStatusEnum.COMPLETE.getKey())) {
                 refundService.agreeRefund(dto, accountInfo);
             } else {
                 refundService.updateRefund(dto, accountInfo);
