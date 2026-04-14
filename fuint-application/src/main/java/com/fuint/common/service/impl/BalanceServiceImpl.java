@@ -164,6 +164,7 @@ public class BalanceServiceImpl extends ServiceImpl<MtBalanceMapper, MtBalance> 
      * @param  mtBalance
      * @param  updateBalance
      * @throws BusinessCheckException
+     * @return
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -253,6 +254,7 @@ public class BalanceServiceImpl extends ServiceImpl<MtBalanceMapper, MtBalance> 
      * @param userIds 会员ID
      * @param amount 发放金额
      * @param remark 备注
+     * @throws BusinessCheckException
      * @return
      */
     @Override
@@ -278,6 +280,13 @@ public class BalanceServiceImpl extends ServiceImpl<MtBalanceMapper, MtBalance> 
         if (userIdList != null && userIdList.size() > 0) {
             for (String userId : userIdList) {
                 if (StringUtil.isNotEmpty(userId) && !userIdArr.contains(Integer.parseInt(userId))) {
+                    MtUser mtUser = mtUserMapper.selectById(Integer.parseInt(userId));
+                    if (mtUser == null) {
+                        throw new BusinessCheckException("会员不存在");
+                    }
+                    if (!mtUser.getMerchantId().equals(accountInfo.getMerchantId())) {
+                        throw new BusinessCheckException("不同商户，无操作权限");
+                    }
                     userIdArr.add(Integer.parseInt(userId));
                 }
             }

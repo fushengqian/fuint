@@ -78,7 +78,7 @@ public class BackendUserBalanceController extends BaseController {
         if (mtUserBalance == null) {
             return getFailureResult(201, "该数据不存在");
         }
-
+        mtUserBalance.setMerchantId(accountInfo.getMerchantId());
         mtUserBalance.setOperator(accountInfo.getAccountName());
         mtUserBalance.setStatus(status);
         userBalanceService.updateUserBalance(mtUserBalance);

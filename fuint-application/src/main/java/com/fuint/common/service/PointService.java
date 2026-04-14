@@ -26,11 +26,11 @@ public interface PointService extends IService<MtPoint> {
     /**
      * 添加积分
      *
-     * @param  reqPointDto
+     * @param  mtPoint
      * @throws BusinessCheckException
      * @return
      */
-    void addPoint(MtPoint reqPointDto) throws BusinessCheckException;
+    void addPoint(MtPoint mtPoint) throws BusinessCheckException;
 
     /**
      * 转赠积分

@@ -99,19 +99,23 @@ public class UserBalanceServiceImpl extends ServiceImpl<MtUserBalanceMapper, MtU
     /**
      * 修改会员余额数据
      *
-     * @param mtUserBalance
+     * @param  userBalance
      * @throws BusinessCheckException
      * @return
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
     @OperationServiceLog(description = "更新会员余额")
-    public MtUserBalance updateUserBalance(MtUserBalance mtUserBalance) throws BusinessCheckException {
-        mtUserBalance = queryUserBalanceById(mtUserBalance.getId());
+    public MtUserBalance updateUserBalance(MtUserBalance userBalance) throws BusinessCheckException {
+        MtUserBalance mtUserBalance = queryUserBalanceById(userBalance.getId());
         if (mtUserBalance == null) {
             throw new BusinessCheckException("该会员余额状态异常");
         }
+        if (!mtUserBalance.getMerchantId().equals(userBalance.getMerchantId())) {
+            throw new BusinessCheckException("不同商户，无操作权限");
+        }
         mtUserBalance.setUpdateTime(new Date());
+        mtUserBalance.setOperator(userBalance.getOperator());
         mtUserBalanceMapper.updateById(mtUserBalance);
         logger.info("更新会员余额数据成功，会员ID:{}", mtUserBalance.getUserId());
         return mtUserBalance;
