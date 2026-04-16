@@ -2,6 +2,7 @@ package com.fuint.common.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.fuint.common.dto.content.BannerDto;
+import com.fuint.common.dto.system.AccountInfo;
 import com.fuint.common.param.BannerPage;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.pagination.PaginationResponse;
@@ -45,11 +46,13 @@ public interface BannerService extends IService<MtBanner> {
 
     /**
      * 更新焦点图
-     * @param bannerDto
+     *
+     * @param  bannerDto
+     * @param  accountInfo
      * @throws BusinessCheckException
      * @return
      * */
-    MtBanner updateBanner(BannerDto bannerDto) throws BusinessCheckException;
+    MtBanner updateBanner(BannerDto bannerDto, AccountInfo accountInfo) throws BusinessCheckException;
 
     /**
      * 根据条件搜索焦点图

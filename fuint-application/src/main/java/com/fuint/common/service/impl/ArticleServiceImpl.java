@@ -211,7 +211,7 @@ public class ArticleServiceImpl extends ServiceImpl<MtArticleMapper, MtArticle> 
             throw new BusinessCheckException("该文章状态异常");
         }
         if (accountInfo.getMerchantId() != null && !mtArticle.getMerchantId().equals(accountInfo.getMerchantId())) {
-            throw new BusinessCheckException("您没有操作权限");
+            throw new BusinessCheckException("不同商户，无操作权限");
         }
         mtArticle.setId(articleDto.getId());
         if (articleDto.getImage() != null) {

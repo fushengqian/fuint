@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 
+import com.fuint.common.dto.system.AccountInfo;
 import com.fuint.common.param.BannerPage;
 import com.fuint.common.service.StoreService;
 import com.fuint.framework.annoation.OperationServiceLog;
@@ -118,9 +119,6 @@ public class BannerServiceImpl extends ServiceImpl<MtBannerMapper, MtBanner> imp
         if (mtBanner.getMerchantId() == null || mtBanner.getMerchantId() <= 0) {
             throw new BusinessCheckException("新增焦点图失败：所属商户不能为空！");
         }
-        if (mtBanner.getMerchantId() == null || mtBanner.getMerchantId() < 1) {
-            throw new BusinessCheckException("平台方帐号无法执行该操作，请使用商户帐号操作");
-        }
         mtBanner.setStoreId(storeId);
         mtBanner.setStatus(StatusEnum.ENABLED.getKey());
         mtBanner.setUpdateTime(new Date());
@@ -146,21 +144,24 @@ public class BannerServiceImpl extends ServiceImpl<MtBannerMapper, MtBanner> imp
     }
 
     /**
-     * 修改Banner图
+     * 修改焦点图
      *
-     * @param bannerDto
+     * @param  bannerDto
+     * @param  accountInfo
      * @throws BusinessCheckException
      * @return
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
     @OperationServiceLog(description = "更新焦点图")
-    public MtBanner updateBanner(BannerDto bannerDto) throws BusinessCheckException {
+    public MtBanner updateBanner(BannerDto bannerDto, AccountInfo accountInfo) throws BusinessCheckException {
         MtBanner mtBanner = queryBannerById(bannerDto.getId());
         if (mtBanner == null) {
-            throw new BusinessCheckException("该Banner状态异常");
+            throw new BusinessCheckException("数据不存在");
         }
-
+        if (mtBanner.getMerchantId() != accountInfo.getMerchantId()) {
+            throw new BusinessCheckException("不同商户，无权限操作");
+        }
         mtBanner.setId(bannerDto.getId());
         if (bannerDto.getImage() != null) {
             mtBanner.setImage(bannerDto.getImage());

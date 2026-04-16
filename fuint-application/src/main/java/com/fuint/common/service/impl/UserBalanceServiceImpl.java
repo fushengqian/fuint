@@ -67,6 +67,7 @@ public class UserBalanceServiceImpl extends ServiceImpl<MtUserBalanceMapper, MtU
      * 添加会员余额
      *
      * @param mtUserBalance 会员余额信息
+     * @throws BusinessCheckException
      * @return
      */
     @Override
