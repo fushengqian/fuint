@@ -201,6 +201,7 @@ public class ClientSignController extends BaseController {
         String shareId = param.get("shareId") == null ? "0" : param.get("shareId").toString();
         Integer storeId = StringUtil.isEmpty(request.getHeader("storeId")) ? 0 : Integer.parseInt(request.getHeader("storeId"));
         String userAgent = request.getHeader("user-agent") == null ? "" : request.getHeader("user-agent");
+        Integer merchantId = merchantService.getMerchantId(merchantNo);
         String ip = CommonUtil.getIPFromHttpRequest(request);
         if (StringUtil.isEmpty(account)) {
             return getFailureResult(201,"用户名不能为空");
@@ -215,12 +216,6 @@ public class ClientSignController extends BaseController {
         if (!captchaVerify) {
             return getFailureResult(201,"图形验证码有误");
         }
-        Integer merchantId = merchantService.getMerchantId(merchantNo);
-        MtUser userData = memberService.queryMemberByName(merchantId, account);
-        if (userData != null) {
-            return getFailureResult(201,"该用户名已存在");
-        }
-
         MtUser mtUser = new MtUser();
         mtUser.setName(account);
         mtUser.setPassword(password);

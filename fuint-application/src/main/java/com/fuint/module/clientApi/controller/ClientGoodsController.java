@@ -96,7 +96,9 @@ public class ClientGoodsController extends BaseController {
              }
              dto.setGoodsList(goodsArr);
              dto.setSort((goodsArr.size() > 0) ? 1 : 0);
-             result.add(dto);
+             if (goodsArr.size() > 0) {
+                 result.add(dto);
+             }
         }
         // 商品数量为0就排在后面
         Collections.sort(result, (p1, p2) -> Integer.compare(p2.getSort(), p1.getSort()));
