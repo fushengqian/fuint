@@ -988,10 +988,26 @@ public class GoodsServiceImpl extends ServiceImpl<MtGoodsMapper, MtGoods> implem
                  if (mtGoods != null) {
                      // 单规格
                      if (mtGoods.getIsSingleSpec().equals(YesOrNoEnum.YES.getKey())) {
-                         mtGoods.setPrice(new BigDecimal(sku.get(4)));
-                         mtGoods.setLinePrice(new BigDecimal(sku.get(5)));
-                         mtGoods.setStock(Double.parseDouble(sku.get(6)));
-                         mtGoods.setWeight(new BigDecimal(sku.get(7)));
+                         if (StringUtil.isNotEmpty((sku.get(4)))) {
+                             mtGoods.setPrice(new BigDecimal(sku.get(4)));
+                         } else {
+                             mtGoods.setPrice(new BigDecimal("0"));
+                         }
+                         if (StringUtil.isNotEmpty((sku.get(5)))) {
+                             mtGoods.setLinePrice(new BigDecimal(sku.get(5)));
+                         } else {
+                             mtGoods.setLinePrice(new BigDecimal("0"));
+                         }
+                         if (StringUtil.isNotEmpty((sku.get(6)))) {
+                             mtGoods.setStock(Double.parseDouble(sku.get(6)));
+                         } else {
+                             mtGoods.setStock(0d);
+                         }
+                         if (StringUtil.isNotEmpty((sku.get(7)))) {
+                             mtGoods.setWeight(new BigDecimal(sku.get(7)));
+                         } else {
+                             mtGoods.setWeight(new BigDecimal("0"));
+                         }
                          mtGoodsMapper.updateById(mtGoods);
                      }
                      // 多规格

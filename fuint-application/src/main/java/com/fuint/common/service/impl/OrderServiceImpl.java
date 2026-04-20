@@ -2231,6 +2231,8 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
         // 使用的卡券
         MtCoupon useCouponInfo = null;
         BigDecimal couponAmount = new BigDecimal("0");
+        // 适用商品的价格（用于按比例计算折扣）
+        BigDecimal couponApplyGoodsAmount = new BigDecimal("0");
         if (couponId > 0) {
             MtUserCoupon userCouponInfo = userCouponService.getUserCouponDetail(couponId);
             if (userCouponInfo != null) {
@@ -2241,8 +2243,35 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
                        couponAmount = useCouponInfo.getAmount();
                        // 折扣券
                        if (useCouponInfo.getContent().equals(CouponContentEnum.PERCENT.getKey())) {
+                           // 检查卡券是否设置了只适用于部分商品
+                           if (useCouponInfo.getApplyGoods() != null && useCouponInfo.getApplyGoods().equals(ApplyGoodsEnum.PARK_GOODS.getKey())) {
+                               // 获取适用商品列表
+                               List<MtCouponGoods> couponGoodsList = mtCouponGoodsMapper.getCouponGoods(useCouponInfo.getId());
+                               if (couponGoodsList != null && couponGoodsList.size() > 0) {
+                                   List<Integer> applyGoodsIds = couponGoodsList.stream().map(MtCouponGoods::getGoodsId).collect(Collectors.toList());
+                                   // 计算购物车中属于适用商品的价格
+                                   for (MtCart mtCart : cartList) {
+                                       if (applyGoodsIds.contains(mtCart.getGoodsId())) {
+                                           MtGoods mtGoodsInfo = goodsService.queryGoodsById(mtCart.getGoodsId());
+                                           if (mtGoodsInfo != null) {
+                                               BigDecimal goodsPrice = mtGoodsInfo.getPrice();
+                                               // 如果有SKU，取SKU价格
+                                               if (mtCart.getSkuId() != null && mtCart.getSkuId() > 0) {
+                                                   MtGoodsSku mtGoodsSku = mtGoodsSkuMapper.selectById(mtCart.getSkuId());
+                                                   if (mtGoodsSku != null && mtGoodsSku.getPrice().compareTo(new BigDecimal("0")) > 0) {
+                                                       goodsPrice = mtGoodsSku.getPrice();
+                                                   }
+                                               }
+                                               couponApplyGoodsAmount = couponApplyGoodsAmount.add(goodsPrice.multiply(new BigDecimal(mtCart.getNum())));
+                                           }
+                                       }
+                                   }
+                               }
+                           }
+                           // 如果没有设置适用商品金额，则使用整单价格
+                           BigDecimal basePrice = couponApplyGoodsAmount.compareTo(new BigDecimal("0")) > 0 ? couponApplyGoodsAmount : totalPrice;
                            BigDecimal disc = userCouponInfo.getAmount().divide(new BigDecimal("100"), BigDecimal.ROUND_CEILING, 4);
-                           couponAmount = totalPrice.multiply(new BigDecimal(1).subtract(disc));
+                           couponAmount = basePrice.multiply(new BigDecimal(1).subtract(disc));
                        }
                    } else if (useCouponInfo.getType().equals(CouponTypeEnum.PRESTORE.getKey())) {
                        BigDecimal couponTotalAmount = userCouponInfo.getBalance();
