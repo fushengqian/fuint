@@ -299,7 +299,7 @@ public class BackendOrderController extends BaseController {
     @ApiOperation(value = "最新订单列表查询")
     @RequestMapping(value = "/latest", method = RequestMethod.POST)
     @CrossOrigin
-    public ResponseObject latest(@RequestBody OrderListParam orderListParam) throws BusinessCheckException {
+    public ResponseObject latest(@RequestBody OrderListParam orderListParam) {
         AccountInfo accountInfo = TokenUtil.getAccountInfo();
 
         Map<String, Object> result = new HashMap<>();
@@ -330,11 +330,7 @@ public class BackendOrderController extends BaseController {
     @PreAuthorize("@pms.hasPermission('order:delete')")
     public ResponseObject delete(@PathVariable("id") Integer id) throws BusinessCheckException {
         AccountInfo accountInfo = TokenUtil.getAccountInfo();
-        UserOrderDto orderInfo = orderService.getOrderById(id);
-        if (!orderInfo.getMerchantId().equals(accountInfo.getMerchantId())) {
-            return getFailureResult(1004);
-        }
-        orderService.deleteOrder(id, accountInfo.getAccountName());
+        orderService.deleteOrder(id, accountInfo);
         return getSuccessResult(true);
     }
 

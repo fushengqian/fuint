@@ -1334,21 +1334,25 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
      * 根据订单ID删除
      *
      * @param orderId 订单ID
-     * @param operator 操作人
+     * @param accountInfo 操作人
      * @return
      */
     @Override
     @OperationServiceLog(description = "删除订单信息")
-    public void deleteOrder(Integer orderId, String operator) {
-        logger.info("orderService.deleteOrder orderId = {}, operator = {}", orderId, operator);
+    public void deleteOrder(Integer orderId, AccountInfo accountInfo) throws BusinessCheckException {
+        logger.info("orderService.deleteOrder orderId = {}, operator = {}", orderId, accountInfo.getAccountName());
         MtOrder mtOrder = mtOrderMapper.selectById(orderId);
         if (mtOrder == null) {
-            return;
+            throw new BusinessCheckException("订单不存在");
+        }
+
+        if (!mtOrder.getMerchantId().equals(accountInfo.getMerchantId())) {
+            throw new BusinessCheckException("不同商户，无操作权限");
         }
 
         mtOrder.setStatus(OrderStatusEnum.DELETED.getKey());
         mtOrder.setUpdateTime(new Date());
-        mtOrder.setOperator(operator);
+        mtOrder.setOperator(accountInfo.getAccountName());
 
         mtOrderMapper.updateById(mtOrder);
     }

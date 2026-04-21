@@ -187,6 +187,9 @@ public class CouponServiceImpl extends ServiceImpl<MtCouponMapper, MtCoupon> imp
         }
         // 固定有效期验证
         if (reqCouponDto.getExpireType().equals(CouponExpireTypeEnum.FIX.getKey())) {
+            if (StringUtil.isBlank(reqCouponDto.getBeginTime()) || StringUtil.isBlank(reqCouponDto.getEndTime())) {
+                throw new BusinessCheckException("生效期开始、结束时间不能为空");
+            }
             if (StringUtil.isNotBlank(reqCouponDto.getBeginTime()) && StringUtil.isNotBlank(reqCouponDto.getEndTime())) {
                 Date startTime = DateUtil.parseDate(reqCouponDto.getBeginTime());
                 Date endTime = DateUtil.parseDate(reqCouponDto.getEndTime());
