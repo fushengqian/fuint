@@ -77,9 +77,6 @@ public class ClientRefundController extends BaseController {
     @CrossOrigin
     public ResponseObject submit(@RequestBody RefundSubmitRequest param) {
         UserInfo mtUser = TokenUtil.getUserInfo();
-        if (null == mtUser) {
-            return getFailureResult(1001);
-        }
         param.setUserId(mtUser.getId());
 
         Integer orderId = param.getOrderId() == null ? 0 : param.getOrderId();
@@ -89,7 +86,7 @@ public class ClientRefundController extends BaseController {
 
         UserOrderDto order = orderService.getOrderById(orderId);
         if (order == null || (!order.getUserId().equals(mtUser.getId()))) {
-            return getFailureResult(2001);
+            return getFailureResult(201);
         }
 
         RefundDto refundDto = new RefundDto();
@@ -126,7 +123,7 @@ public class ClientRefundController extends BaseController {
     public ResponseObject detail(HttpServletRequest request) throws BusinessCheckException {
         String refundId = request.getParameter("refundId");
         if (StringUtil.isEmpty(refundId)) {
-            return getFailureResult(2000, "售后订单ID不能为空");
+            return getFailureResult(201, "售后订单ID不能为空");
         }
         RefundDto refundInfo = refundService.getRefundById(Integer.parseInt(refundId));
         return getSuccessResult(refundInfo);

@@ -111,10 +111,6 @@ public class ClientOrderController extends BaseController {
     @CrossOrigin
     public ResponseObject receipt(HttpServletRequest request) throws BusinessCheckException {
         UserInfo mtUser = TokenUtil.getUserInfo();
-        if (mtUser == null) {
-            return getFailureResult(1001, "用户未登录");
-        }
-
         String orderId = request.getParameter("orderId");
         if (StringUtil.isEmpty(orderId)) {
             return getFailureResult(2000, "订单不能为空");

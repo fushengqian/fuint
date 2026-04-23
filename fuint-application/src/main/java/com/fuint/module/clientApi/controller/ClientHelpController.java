@@ -1,7 +1,5 @@
 package com.fuint.module.clientApi.controller;
 
-import com.fuint.common.dto.member.UserInfo;
-import com.fuint.common.util.TokenUtil;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.web.BaseController;
 import com.fuint.framework.web.ResponseObject;
@@ -32,10 +30,6 @@ public class ClientHelpController extends BaseController {
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject list() throws BusinessCheckException {
-        UserInfo mtUser = TokenUtil.getUserInfo();
-        if (null == mtUser) {
-            return getFailureResult(1001);
-        }
         ArrayList<String> data = new ArrayList<>();
         return getSuccessResult(data);
     }
