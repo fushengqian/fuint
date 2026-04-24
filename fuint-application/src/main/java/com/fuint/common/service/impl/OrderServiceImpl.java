@@ -202,7 +202,7 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
     public PaginationResponse getUserOrderList(OrderListParam orderListParam) {
         Integer page = orderListParam.getPage() == null ? Constants.PAGE_NUMBER : orderListParam.getPage();
         Integer pageSize = orderListParam.getPageSize() == null ? Constants.PAGE_SIZE : orderListParam.getPageSize();
-        String userId = orderListParam.getUserId() == null ? "" : orderListParam.getUserId();
+        Integer userId = orderListParam.getUserId() == null ? 0 : orderListParam.getUserId();
         Integer merchantId = orderListParam.getMerchantId() == null ? 0 : orderListParam.getMerchantId();
         Integer storeId = orderListParam.getStoreId() == null ? 0 : orderListParam.getStoreId();
         String status =  orderListParam.getStatus() == null ? "": orderListParam.getStatus();
@@ -294,10 +294,10 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
         if (StringUtil.isNotEmpty(mobile)) {
             MtUser userInfo = memberService.queryMemberByMobile(merchantId, mobile);
             if (userInfo != null) {
-                userId = userInfo.getId().toString();
+                userId = userInfo.getId();
             }
         }
-        if (StringUtil.isNotBlank(userId) && Integer.parseInt(userId) > 0) {
+        if (userId != null && userId > 0) {
             lambdaQueryWrapper.eq(MtOrder::getUserId, userId);
         }
         if (merchantId != null && merchantId > 0) {

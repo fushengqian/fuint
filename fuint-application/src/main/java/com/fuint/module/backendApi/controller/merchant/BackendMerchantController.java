@@ -115,7 +115,7 @@ public class BackendMerchantController extends BaseController {
         if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
             merchantId = accountInfo.getMerchantId();
         }
-        merchantService.updateStatus(merchantId, accountInfo.getAccountName(), status);
+        merchantService.updateStatus(merchantId, accountInfo, status);
         return getSuccessResult(true);
     }
 

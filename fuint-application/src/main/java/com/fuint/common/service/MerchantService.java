@@ -74,12 +74,12 @@ public interface MerchantService extends IService<MtMerchant> {
      * 更新商户状态
      *
      * @param id       商户ID
-     * @param operator 操作人
+     * @param accountInfo 操作人
      * @param status   状态
      * @throws BusinessCheckException
      * @return
      */
-    void updateStatus(Integer id, String operator, String status) throws BusinessCheckException;
+    void updateStatus(Integer id, AccountInfo accountInfo, String status) throws BusinessCheckException;
 
     /**
      * 根据条件查询商户

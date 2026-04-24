@@ -159,8 +159,8 @@ public class StoreServiceImpl extends ServiceImpl<MtStoreMapper, MtStore> implem
             if (mtStore == null) {
                 throw new BusinessCheckException("该店铺不存在");
             }
-            if (mtStore.getMerchantId().equals(accountInfo.getMerchantId())) {
-                throw new BusinessCheckException("无权限操作");
+            if (!mtStore.getMerchantId().equals(accountInfo.getMerchantId())) {
+                throw new BusinessCheckException("不同商户，无权限操作");
             }
         }
 
@@ -357,8 +357,8 @@ public class StoreServiceImpl extends ServiceImpl<MtStoreMapper, MtStore> implem
             throw new BusinessCheckException("该店铺不存在.");
         }
 
-        if (!mtStore.getMerchantId().equals(accountInfo.getMerchantId())) {
-            throw new BusinessCheckException("您没有权限操作该店铺.");
+        if (accountInfo.getMerchantId() > 0 && !mtStore.getMerchantId().equals(accountInfo.getMerchantId())) {
+            throw new BusinessCheckException("不同商户，无操作权限.");
         }
 
         mtStore.setStatus(status);

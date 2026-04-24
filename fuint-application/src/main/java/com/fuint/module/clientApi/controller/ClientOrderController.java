@@ -48,7 +48,7 @@ public class ClientOrderController extends BaseController {
     @CrossOrigin
     public ResponseObject list(@RequestBody OrderListParam orderListParam) throws BusinessCheckException {
         UserInfo userInfo = TokenUtil.getUserInfo();
-        orderListParam.setUserId(userInfo.getId().toString());
+        orderListParam.setUserId(userInfo.getId());
         PaginationResponse orderData = orderService.getUserOrderList(orderListParam);
         return getSuccessResult(orderData);
     }

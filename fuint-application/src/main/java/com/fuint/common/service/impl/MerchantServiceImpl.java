@@ -251,7 +251,7 @@ public class MerchantServiceImpl extends ServiceImpl<MtMerchantMapper, MtMerchan
      * 更新商户状态
      *
      * @param  id       商户ID
-     * @param  operator 操作人
+     * @param  accountInfo 操作人
      * @param  status   状态
      * @throws BusinessCheckException
      * @return
@@ -259,10 +259,13 @@ public class MerchantServiceImpl extends ServiceImpl<MtMerchantMapper, MtMerchan
     @Override
     @Transactional
     @OperationServiceLog(description = "修改商户状态")
-    public void updateStatus(Integer id, String operator, String status) throws BusinessCheckException {
+    public void updateStatus(Integer id, AccountInfo accountInfo, String status) throws BusinessCheckException {
         MtMerchant mtMerchant = queryMerchantById(id);
         if (null == mtMerchant) {
             throw new BusinessCheckException("该商户不存在.");
+        }
+        if (accountInfo.getMerchantId() > 0 && !accountInfo.getMerchantId().equals(mtMerchant.getId())) {
+            throw new BusinessCheckException("不同商户，无操作权限.");
         }
 
         // 如果是删除，检查是否有商品等数据
@@ -283,7 +286,7 @@ public class MerchantServiceImpl extends ServiceImpl<MtMerchantMapper, MtMerchan
 
         mtMerchant.setStatus(status);
         mtMerchant.setUpdateTime(new Date());
-        mtMerchant.setOperator(operator);
+        mtMerchant.setOperator(accountInfo.getAccountName());
 
         mtMerchantMapper.updateById(mtMerchant);
     }
