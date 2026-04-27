@@ -108,16 +108,10 @@ public class BackendBookItemController extends BaseController {
         if (mtBookItem == null) {
             return getFailureResult(201, "该数据不存在");
         }
-        if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
-            if (!mtBookItem.getMerchantId().equals(accountInfo.getMerchantId())) {
-                return getFailureResult(1004);
-            }
-        }
 
         mtBookItem.setOperator(accountInfo.getAccountName());
         mtBookItem.setStatus(status);
-        bookItemService.updateBookItem(mtBookItem);
-
+        bookItemService.updateBookItem(mtBookItem, accountInfo);
         return getSuccessResult(true);
     }
 
@@ -139,7 +133,7 @@ public class BackendBookItemController extends BaseController {
             mtBookItem.setStoreId(accountInfo.getStoreId());
         }
         if (bookItemDto.getId() != null && mtBookItem.getId() > 0) {
-            bookItemService.updateBookItem(mtBookItem);
+            bookItemService.updateBookItem(mtBookItem, accountInfo);
         } else {
             bookItemService.addBookItem(mtBookItem);
         }

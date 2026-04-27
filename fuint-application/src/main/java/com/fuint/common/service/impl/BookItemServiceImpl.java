@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fuint.common.dto.book.BookItemDto;
+import com.fuint.common.dto.system.AccountInfo;
 import com.fuint.common.enums.BookStatusEnum;
 import com.fuint.common.param.BookItemPage;
 import com.fuint.common.param.BookableParam;
@@ -259,19 +260,21 @@ public class BookItemServiceImpl extends ServiceImpl<MtBookItemMapper, MtBookIte
      * 修改预约订单
      *
      * @param  mtBookItem
+     * @param  accountInfo
      * @throws BusinessCheckException
      * @return
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
     @OperationServiceLog(description = "修改预约订单")
-    public MtBookItem updateBookItem(MtBookItem mtBookItem) throws BusinessCheckException {
+    public MtBookItem updateBookItem(MtBookItem mtBookItem, AccountInfo accountInfo) throws BusinessCheckException {
         MtBookItem bookItem = getBookItemById(mtBookItem.getId());
         if (bookItem == null) {
             throw new BusinessCheckException("该预约订单信息异常");
         }
-
-        bookItem.setId(mtBookItem.getId());
+        if (accountInfo.getMerchantId() > 0 && !mtBookItem.getMerchantId().equals(accountInfo.getMerchantId())) {
+            throw new BusinessCheckException("不同商户，无操作权限");
+        }
         if (mtBookItem.getBookId() != null) {
             bookItem.setBookId(mtBookItem.getBookId());
         }
@@ -346,8 +349,8 @@ public class BookItemServiceImpl extends ServiceImpl<MtBookItemMapper, MtBookIte
     /**
      * 取消预约
      *
-     * @param id 预约ID
-     * @param remark 备注信息
+     * @param  id 预约ID
+     * @param  remark 备注信息
      * @throws BusinessCheckException
      * @return
      * */
