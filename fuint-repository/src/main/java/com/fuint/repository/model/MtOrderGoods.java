@@ -39,7 +39,7 @@ public class MtOrderGoods implements Serializable {
     @ApiModelProperty("价格")
     private BigDecimal price;
 
-    @ApiModelProperty("优惠价")
+    @ApiModelProperty("优惠金额")
     private BigDecimal discount;
 
     @ApiModelProperty("商品数量")

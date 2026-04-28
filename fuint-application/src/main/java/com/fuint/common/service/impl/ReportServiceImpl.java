@@ -3,20 +3,13 @@ package com.fuint.common.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.fuint.common.dto.report.*;
 import com.fuint.common.enums.StatusEnum;
-import com.fuint.common.service.MemberService;
-import com.fuint.common.service.OrderService;
-import com.fuint.common.service.ReportService;
-import com.fuint.common.service.StoreService;
+import com.fuint.common.service.*;
 import com.fuint.common.util.DateUtil;
 import com.fuint.repository.mapper.MtGoodsCateMapper;
 import com.fuint.repository.mapper.MtGoodsMapper;
 import com.fuint.repository.mapper.MtOrderGoodsMapper;
 import com.fuint.repository.mapper.MtOrderMapper;
-import com.fuint.repository.model.MtGoods;
-import com.fuint.repository.model.MtGoodsCate;
-import com.fuint.repository.model.MtOrder;
-import com.fuint.repository.model.MtOrderGoods;
-import com.fuint.repository.model.MtStore;
+import com.fuint.repository.model.*;
 import com.fuint.utils.StringUtil;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -49,6 +42,11 @@ public class ReportServiceImpl implements ReportService {
      * 店铺服务接口
      */
     private StoreService storeService;
+
+    /**
+     * 店铺员工服务接口
+     * */
+    private StaffService staffService;
 
     /**
      * 订单 Mapper
@@ -160,6 +158,7 @@ public class ReportServiceImpl implements ReportService {
         BigDecimal totalAliPayAmount = new BigDecimal("0");
         BigDecimal totalPointAmount = new BigDecimal("0");
         BigDecimal totalCouponAmount = new BigDecimal("0");
+        BigDecimal totalBalanceAmount = new BigDecimal("0");
 
         // 遍历每个日期
         for (String dateStr : dateList) {
@@ -196,6 +195,7 @@ public class ReportServiceImpl implements ReportService {
                 BigDecimal aliPayAmount = new BigDecimal("0");
                 BigDecimal pointAmount = new BigDecimal("0");
                 BigDecimal couponAmount = new BigDecimal("0");
+                BigDecimal balanceAmount = new BigDecimal("0");
 
                 for (MtOrder order : orderList) {
                     // 销售金额
@@ -228,6 +228,9 @@ public class ReportServiceImpl implements ReportService {
                             case "ALISCAN":
                                 aliPayAmount = aliPayAmount.add(payAmount);
                                 break;
+                            case "BALANCE":
+                                balanceAmount = balanceAmount.add(payAmount);
+                                break;
                             default:
                                 break;
                         }
@@ -241,6 +244,7 @@ public class ReportServiceImpl implements ReportService {
                 itemDto.setAliPayAmount(aliPayAmount);
                 itemDto.setPointAmount(pointAmount);
                 itemDto.setCouponAmount(couponAmount);
+                itemDto.setBalanceAmount(balanceAmount);
 
                 allDataList.add(itemDto);
 
@@ -252,6 +256,7 @@ public class ReportServiceImpl implements ReportService {
                 totalAliPayAmount = totalAliPayAmount.add(aliPayAmount);
                 totalPointAmount = totalPointAmount.add(pointAmount);
                 totalCouponAmount = totalCouponAmount.add(couponAmount);
+                totalBalanceAmount = totalBalanceAmount.add(balanceAmount);
             }
         }
 
@@ -283,6 +288,7 @@ public class ReportServiceImpl implements ReportService {
         dailySalesReportDto.setTotalAliPayAmount(totalAliPayAmount);
         dailySalesReportDto.setTotalPointAmount(totalPointAmount);
         dailySalesReportDto.setTotalCouponAmount(totalCouponAmount);
+        dailySalesReportDto.setTotalBalanceAmount(totalBalanceAmount);
         dailySalesReportDto.setDataList(dataList);
         dailySalesReportDto.setTotal(total);
 
@@ -336,6 +342,7 @@ public class ReportServiceImpl implements ReportService {
         BigDecimal totalAliPayAmount = new BigDecimal("0");
         BigDecimal totalPointAmount = new BigDecimal("0");
         BigDecimal totalCouponAmount = new BigDecimal("0");
+        BigDecimal totalBalanceAmount = new BigDecimal("0");
 
         // 遍历每个日期
         for (String dateStr : dateList) {
@@ -358,8 +365,9 @@ public class ReportServiceImpl implements ReportService {
                 wrapper.eq(MtOrder::getStoreId, store.getId());
                 wrapper.ge(MtOrder::getCreateTime, dayBegin);
                 wrapper.le(MtOrder::getCreateTime, dayEnd);
+                wrapper.gt(MtOrder::getStaffId, 0);
                 wrapper.eq(MtOrder::getPayStatus, "B");
-                wrapper.notIn(MtOrder::getStatus, Arrays.asList("C", "G", "H"));
+                wrapper.notIn(MtOrder::getStatus, Arrays.asList("C", "G", "H")); // 去除取消、删除、退款
 
                 List<MtOrder> orderList = mtOrderMapper.selectList(wrapper);
 
@@ -375,6 +383,7 @@ public class ReportServiceImpl implements ReportService {
                 // 遍历每个收银员
                 for (Map.Entry<Integer, List<MtOrder>> entry : staffOrderMap.entrySet()) {
                     Integer staffId = entry.getKey();
+                    MtStaff staffInfo = staffService.queryStaffById(staffId);
                     List<MtOrder> staffOrders = entry.getValue();
 
                     DailyCashierItemDto itemDto = new DailyCashierItemDto();
@@ -382,7 +391,7 @@ public class ReportServiceImpl implements ReportService {
                     itemDto.setStoreId(store.getId());
                     itemDto.setStoreName(store.getName());
                     itemDto.setStaffId(staffId > 0 ? staffId : null);
-                    itemDto.setStaffName(staffId > 0 ? "员工" + staffId : "未知");
+                    itemDto.setStaffName(staffInfo != null ? staffInfo.getRealName() : "未知");
 
                     Integer orderCount = staffOrders.size();
                     BigDecimal salesAmount = new BigDecimal("0");
@@ -391,6 +400,7 @@ public class ReportServiceImpl implements ReportService {
                     BigDecimal aliPayAmount = new BigDecimal("0");
                     BigDecimal pointAmount = new BigDecimal("0");
                     BigDecimal couponAmount = new BigDecimal("0");
+                    BigDecimal balanceAmount = new BigDecimal("0");
 
                     for (MtOrder order : staffOrders) {
                         // 销售金额
@@ -423,6 +433,9 @@ public class ReportServiceImpl implements ReportService {
                                 case "ALISCAN":
                                     aliPayAmount = aliPayAmount.add(payAmount);
                                     break;
+                                case "BALANCE":
+                                    balanceAmount = balanceAmount.add(payAmount);
+                                    break;
                                 default:
                                     break;
                             }
@@ -436,6 +449,7 @@ public class ReportServiceImpl implements ReportService {
                     itemDto.setAliPayAmount(aliPayAmount);
                     itemDto.setPointAmount(pointAmount);
                     itemDto.setCouponAmount(couponAmount);
+                    itemDto.setBalanceAmount(balanceAmount);
 
                     allDataList.add(itemDto);
 
@@ -447,6 +461,7 @@ public class ReportServiceImpl implements ReportService {
                     totalAliPayAmount = totalAliPayAmount.add(aliPayAmount);
                     totalPointAmount = totalPointAmount.add(pointAmount);
                     totalCouponAmount = totalCouponAmount.add(couponAmount);
+                    totalBalanceAmount = totalBalanceAmount.add(balanceAmount);
                 }
             }
         }
@@ -479,6 +494,7 @@ public class ReportServiceImpl implements ReportService {
         dailyCashierReportDto.setTotalAliPayAmount(totalAliPayAmount);
         dailyCashierReportDto.setTotalPointAmount(totalPointAmount);
         dailyCashierReportDto.setTotalCouponAmount(totalCouponAmount);
+        dailyCashierReportDto.setTotalBalanceAmount(totalBalanceAmount);
         dailyCashierReportDto.setDataList(dataList);
         dailyCashierReportDto.setTotal(total);
 
@@ -560,6 +576,8 @@ public class ReportServiceImpl implements ReportService {
             for (MtStore store : storeList) {
                 // 按分类分组统计
                 Map<Integer, DailyCateItemDto> cateDataMap = new HashMap<>();
+                // 按分类分组统计买家ID
+                Map<Integer, Set<Integer>> cateBuyerSetMap = new HashMap<>();
 
                 // 查询该店铺该日期的订单列表
                 LambdaQueryWrapper<MtOrder> orderWrapper = new LambdaQueryWrapper<>();
@@ -614,8 +632,7 @@ public class ReportServiceImpl implements ReportService {
                             itemDto.setStoreId(store.getId());
                             itemDto.setStoreName(store.getName());
                             itemDto.setCateId(cateId);
-                            itemDto.setCateName(cateId != null && cateMap.containsKey(cateId) ? 
-                                cateMap.get(cateId).getName() : "其他");
+                            itemDto.setCateName(cateId != null && cateMap.containsKey(cateId) ? cateMap.get(cateId).getName() : "其他");
                             itemDto.setSalesCount(0);
                             itemDto.setSalesAmount(new BigDecimal("0"));
                             itemDto.setBuyerCount(0);
@@ -623,18 +640,25 @@ public class ReportServiceImpl implements ReportService {
                             itemDto.setProfitAmount(new BigDecimal("0"));
                             itemDto.setRefundCount(new BigDecimal("0"));
                             cateDataMap.put(cateId, itemDto);
+                            cateBuyerSetMap.put(cateId, new HashSet<>());
                         }
 
                         DailyCateItemDto itemDto = cateDataMap.get(cateId);
+                        Set<Integer> cateBuyerSet = cateBuyerSetMap.get(cateId);
+                        
+                        // 收集该分类的买家ID
+                        if (order.getUserId() != null) {
+                            cateBuyerSet.add(order.getUserId());
+                        }
                         
                         // 销售数量
                         if (orderGoods.getNum() != null) {
                             itemDto.setSalesCount(itemDto.getSalesCount() + orderGoods.getNum().intValue());
                         }
                         
-                        // 销售金额（优惠价 * 数量）
-                        if (orderGoods.getDiscount() != null && orderGoods.getNum() != null) {
-                            BigDecimal amount = orderGoods.getDiscount().multiply(new BigDecimal(orderGoods.getNum().toString()));
+                        // 销售金额（价格 * 数量）
+                        if (orderGoods.getPrice() != null && orderGoods.getNum() != null) {
+                            BigDecimal amount = orderGoods.getPrice().multiply(new BigDecimal(orderGoods.getNum().toString()));
                             itemDto.setSalesAmount(itemDto.getSalesAmount().add(amount));
                         }
                         
@@ -647,6 +671,16 @@ public class ReportServiceImpl implements ReportService {
                         // 利润金额 = 销售金额 - 成本金额
                         BigDecimal profitAmount = itemDto.getSalesAmount().subtract(itemDto.getCostAmount());
                         itemDto.setProfitAmount(profitAmount);
+                    }
+                }
+
+                // 设置每个分类的购买人数
+                for (Map.Entry<Integer, DailyCateItemDto> entry : cateDataMap.entrySet()) {
+                    Integer cateId = entry.getKey();
+                    DailyCateItemDto itemDto = entry.getValue();
+                    Set<Integer> cateBuyerSet = cateBuyerSetMap.get(cateId);
+                    if (cateBuyerSet != null) {
+                        itemDto.setBuyerCount(cateBuyerSet.size());
                     }
                 }
 

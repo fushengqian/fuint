@@ -37,6 +37,9 @@ public class DailySalesReportDto implements Serializable {
     @ApiModelProperty("总卡券核销金额")
     private BigDecimal totalCouponAmount;
 
+    @ApiModelProperty("总余额支付金额")
+    private BigDecimal totalBalanceAmount;
+
     @ApiModelProperty("列表数据")
     private List<DailySalesItemDto> dataList;
 

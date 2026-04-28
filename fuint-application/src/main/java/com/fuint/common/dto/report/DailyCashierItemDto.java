@@ -51,5 +51,8 @@ public class DailyCashierItemDto implements Serializable {
     @ApiModelProperty("卡券核销金额")
     private BigDecimal couponAmount;
 
+    @ApiModelProperty("余额支付金额")
+    private BigDecimal balanceAmount;
+
 }
 
