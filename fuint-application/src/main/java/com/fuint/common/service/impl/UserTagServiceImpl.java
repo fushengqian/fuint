@@ -1,6 +1,7 @@
 package com.fuint.common.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.fuint.common.dto.system.AccountInfo;
 import com.fuint.common.enums.StatusEnum;
 import com.fuint.common.service.UserTagRelationService;
 import com.fuint.common.service.UserTagService;
@@ -36,7 +37,12 @@ public class UserTagServiceImpl extends ServiceImpl<MtUserTagMapper, MtUserTag> 
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public MtUserTag addTag(MtUserTag mtUserTag) throws BusinessCheckException {
+    public MtUserTag addTag(MtUserTag mtUserTag, Integer merchantId) throws BusinessCheckException {
+        // 平台账号没有新增权限
+        if (merchantId == null || merchantId <= 0) {
+            throw new BusinessCheckException("抱歉，您没有新增权限");
+        }
+
         // 校验名称是否重复
         MtUserTag existTag = mtUserTagMapper.getTagByName(mtUserTag.getMerchantId(), mtUserTag.getName());
         if (existTag != null) {
@@ -56,10 +62,20 @@ public class UserTagServiceImpl extends ServiceImpl<MtUserTagMapper, MtUserTag> 
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public MtUserTag updateTag(MtUserTag mtUserTag) throws BusinessCheckException {
+    public MtUserTag updateTag(MtUserTag mtUserTag, Integer merchantId) throws BusinessCheckException {
+        // 平台账号没有编辑权限
+        if (merchantId == null || merchantId <= 0) {
+            throw new BusinessCheckException("抱歉，您没有编辑权限");
+        }
+
         MtUserTag tagInfo = mtUserTagMapper.selectById(mtUserTag.getId());
         if (tagInfo == null) {
             throw new BusinessCheckException("标签不存在");
+        }
+
+        // 校验商户权限
+        if (!merchantId.equals(tagInfo.getMerchantId())) {
+            throw new BusinessCheckException("抱歉，您没有编辑权限");
         }
 
         // 校验名称是否重复
@@ -83,10 +99,18 @@ public class UserTagServiceImpl extends ServiceImpl<MtUserTagMapper, MtUserTag> 
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void deleteTag(Integer id, String operator) throws BusinessCheckException {
+    public void deleteTag(Integer id, AccountInfo accountInfo) throws BusinessCheckException {
         MtUserTag tagInfo = mtUserTagMapper.selectById(id);
         if (tagInfo == null) {
             throw new BusinessCheckException("标签不存在");
+        }
+
+        Integer merchantId = accountInfo.getMerchantId();
+        String operator = accountInfo.getAccountName();
+
+        // 校验商户权限
+        if (merchantId != null && merchantId > 0 && !merchantId.equals(tagInfo.getMerchantId())) {
+            throw new BusinessCheckException("抱歉，您没有删除权限");
         }
 
         tagInfo.setStatus(StatusEnum.DISABLE.getKey());

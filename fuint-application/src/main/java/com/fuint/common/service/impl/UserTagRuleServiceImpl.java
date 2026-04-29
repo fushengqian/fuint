@@ -2,6 +2,7 @@ package com.fuint.common.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.fuint.common.dto.system.AccountInfo;
 import com.fuint.common.enums.OrderStatusEnum;
 import com.fuint.common.enums.StatusEnum;
 import com.fuint.common.enums.TagRuleTimeRangeEnum;
@@ -49,7 +50,12 @@ public class UserTagRuleServiceImpl extends ServiceImpl<MtUserTagRuleMapper, MtU
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public MtUserTagRule addRule(MtUserTagRule rule) throws BusinessCheckException {
+    public MtUserTagRule addRule(MtUserTagRule rule, Integer merchantId) throws BusinessCheckException {
+        // 平台账号没有新增权限
+        if (merchantId == null || merchantId <= 0) {
+            throw new BusinessCheckException("抱歉，您没有新增权限");
+        }
+
         // 校验标签是否存在
         if (rule.getTagId() == null || rule.getTagId() <= 0) {
             throw new BusinessCheckException("请选择关联标签");
@@ -65,10 +71,20 @@ public class UserTagRuleServiceImpl extends ServiceImpl<MtUserTagRuleMapper, MtU
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public MtUserTagRule updateRule(MtUserTagRule rule) throws BusinessCheckException {
+    public MtUserTagRule updateRule(MtUserTagRule rule, Integer merchantId) throws BusinessCheckException {
+        // 平台账号没有编辑权限
+        if (merchantId == null || merchantId <= 0) {
+            throw new BusinessCheckException("抱歉，您没有编辑权限");
+        }
+
         MtUserTagRule existRule = mtUserTagRuleMapper.selectById(rule.getId());
         if (existRule == null) {
             throw new BusinessCheckException("规则不存在");
+        }
+
+        // 校验商户权限
+        if (!merchantId.equals(existRule.getMerchantId())) {
+            throw new BusinessCheckException("抱歉，您没有编辑权限");
         }
 
         existRule.setRuleName(rule.getRuleName());
@@ -89,10 +105,18 @@ public class UserTagRuleServiceImpl extends ServiceImpl<MtUserTagRuleMapper, MtU
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void deleteRule(Integer id, String operator) throws BusinessCheckException {
+    public void deleteRule(Integer id, AccountInfo accountInfo) throws BusinessCheckException {
         MtUserTagRule rule = mtUserTagRuleMapper.selectById(id);
         if (rule == null) {
             throw new BusinessCheckException("规则不存在");
+        }
+
+        Integer merchantId = accountInfo.getMerchantId();
+        String operator = accountInfo.getAccountName();
+
+        // 校验商户权限
+        if (merchantId != null && merchantId > 0 && !merchantId.equals(rule.getMerchantId())) {
+            throw new BusinessCheckException("抱歉，您没有删除权限");
         }
 
         rule.setStatus(StatusEnum.DISABLE.getKey());
@@ -146,7 +170,7 @@ public class UserTagRuleServiceImpl extends ServiceImpl<MtUserTagRuleMapper, MtU
 
         for (Integer userId : userIds) {
             MtUser user = memberService.queryMemberById(userId);
-            if (user != null && "A".equals(user.getStatus())) {
+            if (user != null && StatusEnum.ENABLED.getKey().equals(user.getStatus())) {
                 executeRulesForUser(user, null);
             }
         }

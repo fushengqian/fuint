@@ -1,6 +1,7 @@
 package com.fuint.common.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.fuint.common.dto.system.AccountInfo;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.repository.model.MtOrder;
 import com.fuint.repository.model.MtUser;
@@ -29,28 +30,30 @@ public interface UserTagRuleService extends IService<MtUserTagRule> {
      * 添加规则
      *
      * @param rule 规则信息
+     * @param merchantId 当前商户ID
      * @return
      * @throws BusinessCheckException
      */
-    MtUserTagRule addRule(MtUserTagRule rule) throws BusinessCheckException;
+    MtUserTagRule addRule(MtUserTagRule rule, Integer merchantId) throws BusinessCheckException;
 
     /**
      * 编辑规则
      *
      * @param rule 规则信息
+     * @param merchantId 当前商户ID
      * @return
      * @throws BusinessCheckException
      */
-    MtUserTagRule updateRule(MtUserTagRule rule) throws BusinessCheckException;
+    MtUserTagRule updateRule(MtUserTagRule rule, Integer merchantId) throws BusinessCheckException;
 
     /**
      * 删除规则
      *
      * @param id 规则ID
-     * @param operator 操作人
+     * @param accountInfo 当前登录账号信息
      * @throws BusinessCheckException
      */
-    void deleteRule(Integer id, String operator) throws BusinessCheckException;
+    void deleteRule(Integer id, AccountInfo accountInfo) throws BusinessCheckException;
 
     /**
      * 执行单个会员的标签规则

@@ -3,13 +3,14 @@ package com.fuint.module.backendApi.controller.member;
 import com.fuint.common.dto.member.UserTagDto;
 import com.fuint.common.dto.system.AccountInfo;
 import com.fuint.common.enums.StatusEnum;
-import com.fuint.common.service.MerchantService;
+import com.fuint.common.service.MemberService;
 import com.fuint.common.service.UserTagRelationService;
 import com.fuint.common.service.UserTagService;
 import com.fuint.common.util.TokenUtil;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.web.BaseController;
 import com.fuint.framework.web.ResponseObject;
+import com.fuint.repository.model.MtUser;
 import com.fuint.repository.model.MtUserTag;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -17,7 +18,6 @@ import lombok.AllArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -39,15 +39,15 @@ public class BackendUserTagController extends BaseController {
 
     private UserTagRelationService userTagRelationService;
 
-    private MerchantService merchantService;
+    private MemberService memberService;
 
     @ApiOperation(value = "标签列表")
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('member:tag:index')")
-    public ResponseObject list(HttpServletRequest request) throws BusinessCheckException {
-        String token = request.getHeader("Access-Token");
-        Integer merchantId = merchantService.getMerchantId(token);
+    public ResponseObject list() throws BusinessCheckException {
+        AccountInfo accountInfo = TokenUtil.getAccountInfo();
+        Integer merchantId = accountInfo.getMerchantId();
 
         List<MtUserTag> tagList = userTagService.getMerchantTagList(merchantId, StatusEnum.ENABLED.getKey());
 
@@ -75,19 +75,18 @@ public class BackendUserTagController extends BaseController {
     @RequestMapping(value = "/save", method = RequestMethod.POST)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('member:tag:edit')")
-    public ResponseObject save(@RequestBody MtUserTag mtUserTag, HttpServletRequest request) throws BusinessCheckException {
-        String token = request.getHeader("Access-Token");
-        Integer merchantId = merchantService.getMerchantId(token);
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
+    public ResponseObject save(@RequestBody MtUserTag mtUserTag) throws BusinessCheckException {
+        AccountInfo accountInfo = TokenUtil.getAccountInfo();
+        Integer merchantId = accountInfo.getMerchantId();
         String operator = accountInfo != null ? accountInfo.getAccountName() : "";
 
         mtUserTag.setMerchantId(merchantId);
         mtUserTag.setOperator(operator);
 
         if (mtUserTag.getId() != null && mtUserTag.getId() > 0) {
-            userTagService.updateTag(mtUserTag);
+            userTagService.updateTag(mtUserTag, merchantId);
         } else {
-            userTagService.addTag(mtUserTag);
+            userTagService.addTag(mtUserTag, merchantId);
         }
 
         return getSuccessResult(true);
@@ -97,12 +96,10 @@ public class BackendUserTagController extends BaseController {
     @RequestMapping(value = "/delete/{id}", method = RequestMethod.GET)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('member:tag:delete')")
-    public ResponseObject delete(@PathVariable("id") Integer id, HttpServletRequest request) throws BusinessCheckException {
-        String token = request.getHeader("Access-Token");
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
-        String operator = accountInfo != null ? accountInfo.getAccountName() : "";
+    public ResponseObject delete(@PathVariable("id") Integer id) throws BusinessCheckException {
+        AccountInfo accountInfo = TokenUtil.getAccountInfo();
 
-        userTagService.deleteTag(id, operator);
+        userTagService.deleteTag(id, accountInfo);
 
         return getSuccessResult(true);
     }
@@ -111,6 +108,20 @@ public class BackendUserTagController extends BaseController {
     @RequestMapping(value = "/userTags/{userId}", method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject getUserTags(@PathVariable("userId") Integer userId) {
+        AccountInfo accountInfo = TokenUtil.getAccountInfo();
+        Integer merchantId = accountInfo.getMerchantId();
+
+        // 校验商户权限
+        if (merchantId != null && merchantId > 0) {
+            MtUser userInfo = memberService.queryMemberById(userId);
+            if (userInfo == null) {
+                return getFailureResult(201, "会员不存在");
+            }
+            if (!merchantId.equals(userInfo.getMerchantId())) {
+                return getFailureResult(1004, "抱歉，您没有查看权限");
+            }
+        }
+
         List<Integer> tagIds = userTagRelationService.getTagIdsByUserId(userId);
         return getSuccessResult(tagIds);
     }
@@ -119,14 +130,34 @@ public class BackendUserTagController extends BaseController {
     @RequestMapping(value = "/setUserTags", method = RequestMethod.POST)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('member:tag:edit')")
-    public ResponseObject setUserTags(@RequestBody Map<String, Object> params, HttpServletRequest request) {
-        String token = request.getHeader("Access-Token");
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
+    public ResponseObject setUserTags(@RequestBody Map<String, Object> params) {
+        AccountInfo accountInfo = TokenUtil.getAccountInfo();
         String operator = accountInfo != null ? accountInfo.getAccountName() : "";
+        Integer merchantId = accountInfo.getMerchantId();
 
         Integer userId = params.get("userId") == null ? 0 : Integer.parseInt(params.get("userId").toString());
         @SuppressWarnings("unchecked")
         List<Integer> tagIds = (List<Integer>) params.get("tagIds");
+
+        // 校验商户权限
+        if (merchantId != null && merchantId > 0) {
+            MtUser userInfo = memberService.queryMemberById(userId);
+            if (userInfo == null) {
+                return getFailureResult(201, "会员不存在");
+            }
+            if (!merchantId.equals(userInfo.getMerchantId())) {
+                return getFailureResult(1004, "抱歉，您没有操作权限");
+            }
+            // 校验标签是否属于当前商户
+            if (tagIds != null && !tagIds.isEmpty()) {
+                for (Integer tagId : tagIds) {
+                    MtUserTag tagInfo = userTagService.getTagById(tagId);
+                    if (tagInfo != null && !merchantId.equals(tagInfo.getMerchantId())) {
+                        return getFailureResult(1004, "抱歉，您没有操作权限");
+                    }
+                }
+            }
+        }
 
         userTagRelationService.setUserTags(userId, tagIds, operator);
 
@@ -137,15 +168,40 @@ public class BackendUserTagController extends BaseController {
     @RequestMapping(value = "/batchSetTags", method = RequestMethod.POST)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('member:tag:edit')")
-    public ResponseObject batchSetTags(@RequestBody Map<String, Object> params, HttpServletRequest request) {
-        String token = request.getHeader("Access-Token");
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
+    public ResponseObject batchSetTags(@RequestBody Map<String, Object> params) {
+        AccountInfo accountInfo = TokenUtil.getAccountInfo();
         String operator = accountInfo != null ? accountInfo.getAccountName() : "";
+        Integer merchantId = accountInfo.getMerchantId();
 
         @SuppressWarnings("unchecked")
         List<Integer> userIds = (List<Integer>) params.get("userIds");
         @SuppressWarnings("unchecked")
         List<Integer> tagIds = (List<Integer>) params.get("tagIds");
+
+        // 校验商户权限
+        if (merchantId != null && merchantId > 0) {
+            // 校验会员是否属于当前商户
+            if (userIds != null && !userIds.isEmpty()) {
+                for (Integer userId : userIds) {
+                    MtUser userInfo = memberService.queryMemberById(userId);
+                    if (userInfo == null) {
+                        return getFailureResult(201, "会员不存在");
+                    }
+                    if (!merchantId.equals(userInfo.getMerchantId())) {
+                        return getFailureResult(1004, "抱歉，您没有操作权限");
+                    }
+                }
+            }
+            // 校验标签是否属于当前商户
+            if (tagIds != null && !tagIds.isEmpty()) {
+                for (Integer tagId : tagIds) {
+                    MtUserTag tagInfo = userTagService.getTagById(tagId);
+                    if (tagInfo != null && !merchantId.equals(tagInfo.getMerchantId())) {
+                        return getFailureResult(1004, "抱歉，您没有操作权限");
+                    }
+                }
+            }
+        }
 
         userTagRelationService.batchSetUserTags(userIds, tagIds, operator);
 

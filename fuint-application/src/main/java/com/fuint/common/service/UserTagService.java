@@ -1,6 +1,7 @@
 package com.fuint.common.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.fuint.common.dto.system.AccountInfo;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.repository.model.MtUserTag;
 
@@ -27,28 +28,30 @@ public interface UserTagService extends IService<MtUserTag> {
      * 添加标签
      *
      * @param mtUserTag 标签信息
+     * @param merchantId 当前商户ID
      * @return
      * @throws BusinessCheckException
      */
-    MtUserTag addTag(MtUserTag mtUserTag) throws BusinessCheckException;
+    MtUserTag addTag(MtUserTag mtUserTag, Integer merchantId) throws BusinessCheckException;
 
     /**
      * 编辑标签
      *
      * @param mtUserTag 标签信息
+     * @param merchantId 当前商户ID
      * @return
      * @throws BusinessCheckException
      */
-    MtUserTag updateTag(MtUserTag mtUserTag) throws BusinessCheckException;
+    MtUserTag updateTag(MtUserTag mtUserTag, Integer merchantId) throws BusinessCheckException;
 
     /**
      * 删除标签
      *
      * @param id 标签ID
-     * @param operator 操作人
+     * @param accountInfo 当前登录账号信息
      * @throws BusinessCheckException
      */
-    void deleteTag(Integer id, String operator) throws BusinessCheckException;
+    void deleteTag(Integer id, AccountInfo accountInfo) throws BusinessCheckException;
 
     /**
      * 根据ID获取标签

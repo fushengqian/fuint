@@ -1,11 +1,10 @@
 package com.fuint.module.backendApi.controller.member;
 
+import com.fuint.common.dto.system.AccountInfo;
 import com.fuint.common.enums.StatusEnum;
 import com.fuint.common.enums.TagRuleOperatorEnum;
 import com.fuint.common.enums.TagRuleTimeRangeEnum;
-import com.fuint.common.dto.system.AccountInfo;
 import com.fuint.common.enums.TagRuleTypeEnum;
-import com.fuint.common.service.MerchantService;
 import com.fuint.common.service.UserTagRuleService;
 import com.fuint.common.util.TokenUtil;
 import com.fuint.framework.exception.BusinessCheckException;
@@ -18,8 +17,10 @@ import lombok.AllArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 后台会员标签规则管理控制器
@@ -35,15 +36,13 @@ public class BackendUserTagRuleController extends BaseController {
 
     private UserTagRuleService userTagRuleService;
 
-    private MerchantService merchantService;
-
     @ApiOperation(value = "规则列表")
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('member:tagRule:index')")
-    public ResponseObject list(HttpServletRequest request) throws BusinessCheckException {
-        String token = request.getHeader("Access-Token");
-        Integer merchantId = merchantService.getMerchantId(token);
+    public ResponseObject list() throws BusinessCheckException {
+        AccountInfo accountInfo = TokenUtil.getAccountInfo();
+        Integer merchantId = accountInfo.getMerchantId();
 
         List<MtUserTagRule> ruleList = userTagRuleService.getMerchantRuleList(merchantId, StatusEnum.ENABLED.getKey());
 
@@ -60,19 +59,18 @@ public class BackendUserTagRuleController extends BaseController {
     @RequestMapping(value = "/save", method = RequestMethod.POST)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('member:tagRule:edit')")
-    public ResponseObject save(@RequestBody MtUserTagRule rule, HttpServletRequest request) throws BusinessCheckException {
-        String token = request.getHeader("Access-Token");
-        Integer merchantId = merchantService.getMerchantId(token);
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
+    public ResponseObject save(@RequestBody MtUserTagRule rule) throws BusinessCheckException {
+        AccountInfo accountInfo = TokenUtil.getAccountInfo();
+        Integer merchantId = accountInfo.getMerchantId();
         String operator = accountInfo != null ? accountInfo.getAccountName() : "";
 
         rule.setMerchantId(merchantId);
         rule.setOperator(operator);
 
         if (rule.getId() != null && rule.getId() > 0) {
-            userTagRuleService.updateRule(rule);
+            userTagRuleService.updateRule(rule, merchantId);
         } else {
-            userTagRuleService.addRule(rule);
+            userTagRuleService.addRule(rule, merchantId);
         }
 
         return getSuccessResult(true);
@@ -82,12 +80,10 @@ public class BackendUserTagRuleController extends BaseController {
     @RequestMapping(value = "/delete/{id}", method = RequestMethod.GET)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('member:tagRule:delete')")
-    public ResponseObject delete(@PathVariable("id") Integer id, HttpServletRequest request) throws BusinessCheckException {
-        String token = request.getHeader("Access-Token");
-        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
-        String operator = accountInfo != null ? accountInfo.getAccountName() : "";
+    public ResponseObject delete(@PathVariable("id") Integer id) throws BusinessCheckException {
+        AccountInfo accountInfo = TokenUtil.getAccountInfo();
 
-        userTagRuleService.deleteRule(id, operator);
+        userTagRuleService.deleteRule(id, accountInfo);
 
         return getSuccessResult(true);
     }
@@ -97,11 +93,20 @@ public class BackendUserTagRuleController extends BaseController {
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('member:tagRule:edit')")
     public ResponseObject execute(@PathVariable("id") Integer id) {
-        // 执行单个规则
+        AccountInfo accountInfo = TokenUtil.getAccountInfo();
+        Integer merchantId = accountInfo.getMerchantId();
+
+        // 校验商户权限
         MtUserTagRule rule = userTagRuleService.getById(id);
-        if (rule != null) {
-            userTagRuleService.batchExecuteRules(rule.getMerchantId());
+        if (rule == null) {
+            return getFailureResult(201, "规则不存在");
         }
+        if (merchantId != null && merchantId > 0 && !merchantId.equals(rule.getMerchantId())) {
+            return getFailureResult(1004, "抱歉，您没有操作权限");
+        }
+
+        // 执行单个规则
+        userTagRuleService.batchExecuteRules(rule.getMerchantId());
 
         return getSuccessResult(true);
     }
@@ -110,9 +115,9 @@ public class BackendUserTagRuleController extends BaseController {
     @RequestMapping(value = "/batchExecute", method = RequestMethod.POST)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('member:tagRule:edit')")
-    public ResponseObject batchExecute(HttpServletRequest request) {
-        String token = request.getHeader("Access-Token");
-        Integer merchantId = merchantService.getMerchantId(token);
+    public ResponseObject batchExecute() {
+        AccountInfo accountInfo = TokenUtil.getAccountInfo();
+        Integer merchantId = accountInfo.getMerchantId();
 
         userTagRuleService.batchExecuteRules(merchantId);
 
