@@ -1,6 +1,7 @@
 package com.fuint.common.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.fuint.common.dto.system.AccountInfo;
 import com.fuint.common.param.InvoicePage;
 import com.fuint.common.param.InvoiceParam;
 import com.fuint.framework.pagination.PaginationResponse;
@@ -49,10 +50,10 @@ public interface InvoiceService extends IService<MtInvoice> {
      * 根据ID删除发票
      *
      * @param id ID
-     * @param operator 操作人
+     * @param accountInfo 操作人
      * @return
      */
-    void deleteInvoice(Integer id, String operator);
+    void deleteInvoice(Integer id, AccountInfo accountInfo) throws BusinessCheckException ;
 
     /**
      * 更新发票信息

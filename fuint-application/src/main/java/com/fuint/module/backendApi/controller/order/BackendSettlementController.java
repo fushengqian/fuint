@@ -153,7 +153,7 @@ public class BackendSettlementController extends BaseController {
         if (settlementId == null) {
             return getFailureResult(201, "参数有误");
         }
-        settlementService.doConfirm(settlementId, accountInfo.getAccountName());
+        settlementService.doConfirm(settlementId, accountInfo);
         return getSuccessResult(true);
     }
 }

@@ -172,10 +172,9 @@ public class BackendUserCouponController extends BaseController {
         AccountInfo accountInfo = TokenUtil.getAccountInfo();
 
         // 删除会员的卡券
-        couponService.deleteUserCoupon(id, accountInfo.getAccountName());
+        couponService.deleteUserCoupon(id, accountInfo);
 
         // 发券记录，部分作废
-        MtUserCoupon userCoupon = mtUserCouponMapper.selectById(id);
         SendLogPage sendLogPage = new SendLogPage();
         sendLogPage.setPage(Constants.PAGE_NUMBER);
         sendLogPage.setPageSize(Constants.MAX_ROWS);

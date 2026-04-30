@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fuint.common.dto.member.MemberGroupDto;
 import com.fuint.common.dto.member.UserGroupDto;
+import com.fuint.common.dto.system.AccountInfo;
 import com.fuint.common.enums.StatusEnum;
 import com.fuint.common.param.MemberGroupPage;
 import com.fuint.common.service.MemberGroupService;
@@ -151,21 +152,23 @@ public class MemberGroupServiceImpl extends ServiceImpl<MtUserGroupMapper, MtUse
     /**
      * 根据ID删除会员分组
      *
-     * @param  id       分组ID
-     * @param  operator 操作人
+     * @param  id 分组ID
+     * @param  accountInfo 操作人
      * @return
      */
     @Override
     @OperationServiceLog(description = "删除会员分组")
-    public void deleteMemberGroup(Integer id, String operator) {
+    public void deleteMemberGroup(Integer id, AccountInfo accountInfo) throws BusinessCheckException {
         MtUserGroup userGroup = queryMemberGroupById(id);
         if (null == userGroup) {
-            return;
+            throw new BusinessCheckException("该分组不存在");
         }
-
+        if (accountInfo.getMerchantId() != null && !accountInfo.getMerchantId().equals(userGroup.getMerchantId())) {
+            throw new BusinessCheckException("不同商户，无操作权限");
+        }
         userGroup.setStatus(StatusEnum.DISABLE.getKey());
         userGroup.setUpdateTime(new Date());
-        userGroup.setOperator(operator);
+        userGroup.setOperator(accountInfo.getAccountName());
 
         this.updateById(userGroup);
     }
@@ -174,17 +177,21 @@ public class MemberGroupServiceImpl extends ServiceImpl<MtUserGroupMapper, MtUse
      * 修改会员分组
      *
      * @param  memberGroupDto
+     * @param  accountInfo
      * @throws BusinessCheckException
      * @return
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
     @OperationServiceLog(description = "更新会员分组")
-    public MtUserGroup updateMemberGroup(MemberGroupDto memberGroupDto) throws BusinessCheckException {
+    public MtUserGroup updateMemberGroup(MemberGroupDto memberGroupDto, AccountInfo accountInfo) throws BusinessCheckException {
         MtUserGroup userGroup = queryMemberGroupById(memberGroupDto.getId());
         if (null == userGroup || StatusEnum.DISABLE.getKey().equalsIgnoreCase(userGroup.getStatus())) {
             logger.error("该分组不存在或已被删除");
             throw new BusinessCheckException("该分组不存在或已被删除");
+        }
+        if (accountInfo.getMerchantId() != null && !accountInfo.getMerchantId().equals(userGroup.getMerchantId())) {
+            throw new BusinessCheckException("不同商户，无操作权限");
         }
         if (memberGroupDto.getName() != null) {
             userGroup.setName(CommonUtil.replaceXSS(memberGroupDto.getName()));
@@ -234,8 +241,7 @@ public class MemberGroupServiceImpl extends ServiceImpl<MtUserGroupMapper, MtUse
      * */
     public Long getMemberNum(Integer groupId) {
         List<Integer> groupIds = getGroupIds(groupId);
-        Long totalMember = mtUserGroupMapper.getMemberNum(groupIds);
-        return totalMember;
+        return mtUserGroupMapper.getMemberNum(groupIds);
     }
 
     /**

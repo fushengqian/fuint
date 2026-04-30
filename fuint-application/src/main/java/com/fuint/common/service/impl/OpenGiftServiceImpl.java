@@ -158,22 +158,25 @@ public class OpenGiftServiceImpl extends ServiceImpl<MtOpenGiftMapper, MtOpenGif
      * 根据ID删除数据
      *
      * @param  id 开卡赠礼ID
-     * @param  operator 操作人
+     * @param  accountInfo 操作人
      * @throws BusinessCheckException
      * @return
      */
     @Override
     @OperationServiceLog(description = "删除开卡赠礼")
-    public void deleteOpenGift(Integer id, String operator) throws BusinessCheckException {
-        MtOpenGift MtOpenGift = mtOpenGiftMapper.selectById(id);
-        if (null == MtOpenGift) {
+    public void deleteOpenGift(Integer id, AccountInfo accountInfo) throws BusinessCheckException {
+        MtOpenGift mtOpenGift = mtOpenGiftMapper.selectById(id);
+        if (null == mtOpenGift) {
             throw new BusinessCheckException("数据不存在，删除开卡赠礼失败");
         }
+        if (accountInfo.getMerchantId() > 0 && !mtOpenGift.getMerchantId().equals(accountInfo.getMerchantId())) {
+            throw new BusinessCheckException("不同商户，无操作权限");
+        }
 
-        MtOpenGift.setStatus(StatusEnum.DISABLE.getKey());
-        MtOpenGift.setUpdateTime(new Date());
+        mtOpenGift.setStatus(StatusEnum.DISABLE.getKey());
+        mtOpenGift.setUpdateTime(new Date());
 
-        mtOpenGiftMapper.updateById(MtOpenGift);
+        mtOpenGiftMapper.updateById(mtOpenGift);
     }
 
     /**
@@ -193,7 +196,7 @@ public class OpenGiftServiceImpl extends ServiceImpl<MtOpenGiftMapper, MtOpenGif
             throw new BusinessCheckException("该数据状态异常");
         }
         if (!mtOpenGift.getMerchantId().equals(accountInfo.getMerchantId())) {
-            throw new BusinessCheckException("无操作权限");
+            throw new BusinessCheckException("不同商户，无操作权限");
         }
 
         mtOpenGift.setId(reqDto.getId());

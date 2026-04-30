@@ -1,6 +1,7 @@
 package com.fuint.common.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.fuint.common.dto.system.AccountInfo;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.pagination.PaginationRequest;
 import com.fuint.framework.pagination.PaginationResponse;
@@ -57,10 +58,10 @@ public interface UserGradeService extends IService<MtUserGrade> {
      * 根据ID删除会员等级
      *
      * @param  id      ID
-     * @param  operator 操作人
+     * @param  accountInfo 操作人
      * @return
      */
-    Integer deleteUserGrade(Integer id, String operator);
+    Integer deleteUserGrade(Integer id, AccountInfo accountInfo) throws BusinessCheckException;
 
     /**
      * 获取默认的会员等级

@@ -151,11 +151,7 @@ public class BackendGoodsController extends BaseController {
             return getFailureResult(201, "该商品不存在");
         }
 
-        if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0 && !mtGoods.getMerchantId().equals(accountInfo.getMerchantId())) {
-            return getFailureResult(1004);
-        }
-
-        goodsService.updateStatus(goodsId, status, accountInfo.getAccountName());
+        goodsService.updateStatus(goodsId, status, accountInfo);
         logger.info("更新商品状态, goodsId = {},account = {}", goodsId, accountInfo.getAccountName());
 
         return getSuccessResult(true);

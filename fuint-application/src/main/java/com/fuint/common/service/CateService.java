@@ -2,6 +2,7 @@ package com.fuint.common.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.fuint.common.dto.goods.GoodsCateDto;
+import com.fuint.common.dto.system.AccountInfo;
 import com.fuint.common.param.GoodsCatePage;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.pagination.PaginationResponse;
@@ -45,19 +46,20 @@ public interface CateService extends IService<MtGoodsCate> {
      * 根据ID删除
      *
      * @param  id 分类ID
-     * @param  operator 操作人
+     * @param  accountInfo 操作人
      * @throws BusinessCheckException
      * @return
      */
-    void deleteCate(Integer id, String operator) throws BusinessCheckException;
+    void deleteCate(Integer id, AccountInfo accountInfo) throws BusinessCheckException;
 
     /**
      * 更新分类
-     * @param  reqDto 分类参数
+     * @param  mtGoodsCate 分类参数
+     * @param  accountInfo 操作人
      * @throws BusinessCheckException
      * @return
      * */
-    MtGoodsCate updateCate(MtGoodsCate reqDto) throws BusinessCheckException;
+    MtGoodsCate updateCate(MtGoodsCate mtGoodsCate, AccountInfo accountInfo) throws BusinessCheckException;
 
     /**
      * 获取分类列表

@@ -7,8 +7,6 @@ import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.web.ResponseObject;
 import com.fuint.repository.model.MtOpenGift;
 
-import java.util.Map;
-
 /**
  * 开卡赠礼接口
  *
@@ -46,12 +44,12 @@ public interface OpenGiftService {
     /**
      * 根据ID删除开卡赠礼
      *
-     * @param id       ID
-     * @param operator 操作人
+     * @param  id       ID
+     * @param  accountInfo 操作人
      * @throws BusinessCheckException
      * @return
      */
-    void deleteOpenGift(Integer id, String operator) throws BusinessCheckException;
+    void deleteOpenGift(Integer id, AccountInfo accountInfo) throws BusinessCheckException;
 
     /**
      * 更新开卡赠礼

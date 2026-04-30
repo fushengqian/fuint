@@ -52,11 +52,11 @@ public interface CouponService extends IService<MtCoupon> {
      * 删除卡券信息
      *
      * @param id 卡券ID
-     * @param operator 操作人
+     * @param accountInfo 操作人
      * @throws BusinessCheckException
      * @return
      */
-    void deleteCoupon(Long id, String operator) throws BusinessCheckException;
+    void deleteCoupon(Long id, AccountInfo accountInfo) throws BusinessCheckException;
 
     /**
      * 获取卡券列表
@@ -116,11 +116,11 @@ public interface CouponService extends IService<MtCoupon> {
      * 根据券ID删除个人卡券
      *
      * @param id       券ID
-     * @param operator 操作人
+     * @param accountInfo 操作人
      * @throws BusinessCheckException
      * @return
      */
-    void deleteUserCoupon(Integer id, String operator) throws BusinessCheckException;
+    void deleteUserCoupon(Integer id, AccountInfo accountInfo) throws BusinessCheckException;
 
     /**
      * 根据券ID撤销个人卡券消费流水
@@ -146,10 +146,10 @@ public interface CouponService extends IService<MtCoupon> {
      *
      * @param id         ID
      * @param uuid       批次ID
-     * @param operator   操作人
+     * @param accountInfo   操作人
      * @return
      */
-    void removeUserCoupon(Long id, String uuid, String operator);
+    void removeUserCoupon(Long id, String uuid, AccountInfo accountInfo) throws BusinessCheckException ;
 
     /**
      * 判断卡券码是否过期

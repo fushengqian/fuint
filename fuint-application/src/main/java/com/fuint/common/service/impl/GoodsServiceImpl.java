@@ -462,19 +462,22 @@ public class GoodsServiceImpl extends ServiceImpl<MtGoodsMapper, MtGoods> implem
      *
      * @param  goodsId 商品ID
      * @param  status 状态
-     * @param  operator 操作人
+     * @param  accountInfo 操作人
      * @throws BusinessCheckException
      * @return
      */
     @Override
-    public Boolean updateStatus(Integer goodsId, String status, String operator) throws BusinessCheckException {
+    public Boolean updateStatus(Integer goodsId, String status, AccountInfo accountInfo) throws BusinessCheckException {
         MtGoods mtGoods = queryGoodsById(goodsId);
         if (null == mtGoods) {
             throw new BusinessCheckException("该商品不存在");
         }
+        if (accountInfo.getMerchantId() > 0 && !mtGoods.getMerchantId().equals(accountInfo.getMerchantId())) {
+            throw new BusinessCheckException("不同商户，无操作权限");
+        }
         mtGoods.setStatus(status);
         mtGoods.setUpdateTime(new Date());
-        mtGoods.setOperator(operator);
+        mtGoods.setOperator(accountInfo.getAccountName());
         mtGoodsMapper.updateById(mtGoods);
         // 删除商品
         if (status.equals(StatusEnum.DISABLE.getKey())) {

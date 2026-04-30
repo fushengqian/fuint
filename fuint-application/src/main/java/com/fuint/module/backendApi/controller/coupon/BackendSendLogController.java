@@ -69,7 +69,7 @@ public class BackendSendLogController extends BaseController {
     @ApiOperation(value = "废除用户卡券")
     @RequestMapping(value = "/removeUserCoupon/{id}", method = RequestMethod.GET)
     @CrossOrigin
-    public ResponseObject removeUserCoupon(@PathVariable("id") Long id) {
+    public ResponseObject removeUserCoupon(@PathVariable("id") Long id) throws BusinessCheckException {
         AccountInfo accountInfo = TokenUtil.getAccountInfo();
 
         if (id == null) {
@@ -80,11 +80,8 @@ public class BackendSendLogController extends BaseController {
         if (sendLog == null) {
             return getFailureResult(201, "系统参数有误");
         }
-        if (!sendLog.getMerchantId().equals(accountInfo.getMerchantId())) {
-            return getFailureResult(1004);
-        }
 
-        couponService.removeUserCoupon(id, sendLog.getUuid(), accountInfo.getAccountName());
+        couponService.removeUserCoupon(id, sendLog.getUuid(), accountInfo);
         return getSuccessResult(true);
     }
 }

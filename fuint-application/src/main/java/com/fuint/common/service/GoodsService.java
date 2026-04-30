@@ -47,11 +47,11 @@ public interface GoodsService {
      *
      * @param  goodsId 商品ID
      * @param  status 状态
-     * @param  operator 操作人
+     * @param  accountInfo 操作人
      * @throws BusinessCheckException
      * @return
      */
-    Boolean updateStatus(Integer goodsId, String status, String operator) throws BusinessCheckException;
+    Boolean updateStatus(Integer goodsId, String status, AccountInfo accountInfo) throws BusinessCheckException;
 
     /**
      * 根据ID获取商品信息

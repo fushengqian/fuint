@@ -166,20 +166,23 @@ public class CouponGroupServiceImpl extends ServiceImpl<MtCouponGroupMapper, MtC
      * 根据ID删除卡券分组
      *
      * @param  id       分组ID
-     * @param  operator 操作人
+     * @param  accountInfo 操作人
+     * @throws BusinessCheckException
      * @return
      */
     @Override
     @OperationServiceLog(description = "删除卡券分组")
-    public void deleteCouponGroup(Integer id, String operator) {
+    public void deleteCouponGroup(Integer id, AccountInfo accountInfo) throws BusinessCheckException {
         MtCouponGroup couponGroup = queryCouponGroupById(id);
         if (null == couponGroup) {
-            return;
+            throw new BusinessCheckException("该分组不存在");
         }
-
+        if (accountInfo.getMerchantId() > 0 && !accountInfo.getMerchantId().equals(couponGroup.getMerchantId())) {
+            throw new BusinessCheckException("不同商户，无权限操作");
+        }
         couponGroup.setStatus(StatusEnum.DISABLE.getKey());
         couponGroup.setUpdateTime(new Date());
-        couponGroup.setOperator(operator);
+        couponGroup.setOperator(accountInfo.getAccountName());
 
         this.updateById(couponGroup);
     }
@@ -187,14 +190,15 @@ public class CouponGroupServiceImpl extends ServiceImpl<MtCouponGroupMapper, MtC
     /**
      * 修改卡券分组
      *
-     * @param reqCouponGroupDto
+     * @param  reqCouponGroupDto
+     * @param  accountInfo
      * @throws BusinessCheckException
      * @return
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
     @OperationServiceLog(description = "更新卡券分组")
-    public MtCouponGroup updateCouponGroup(ReqCouponGroupDto reqCouponGroupDto) throws BusinessCheckException {
+    public MtCouponGroup updateCouponGroup(ReqCouponGroupDto reqCouponGroupDto, AccountInfo accountInfo) throws BusinessCheckException {
         MtCouponGroup couponGroup = queryCouponGroupById(reqCouponGroupDto.getId());
         if (null == couponGroup || StatusEnum.DISABLE.getKey().equalsIgnoreCase(couponGroup.getStatus())) {
             throw new BusinessCheckException("该分组不存在或已被删除");

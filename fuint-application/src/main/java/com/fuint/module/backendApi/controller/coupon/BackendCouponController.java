@@ -174,14 +174,7 @@ public class BackendCouponController extends BaseController {
     @PreAuthorize("@pms.hasPermission('coupon:coupon:index')")
     public ResponseObject delete(@PathVariable("id") Long id) throws BusinessCheckException {
         AccountInfo accountInfo = TokenUtil.getAccountInfo();
-        MtCoupon mtCoupon = couponService.queryCouponById(id.intValue());
-        if (mtCoupon == null) {
-            return getFailureResult(201);
-        }
-        if (!mtCoupon.getMerchantId().equals(accountInfo.getMerchantId())) {
-            return getFailureResult(1004);
-        }
-        couponService.deleteCoupon(id, accountInfo.getAccountName());
+        couponService.deleteCoupon(id, accountInfo);
         return getSuccessResult(true);
     }
 

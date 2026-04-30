@@ -86,7 +86,7 @@ public class BackendMemberGroupController extends BaseController {
         memberGroupDto.setStoreId(accountInfo.getStoreId());
         memberGroupDto.setOperator(accountInfo.getAccountName());
         if (memberGroupDto.getId() != null && memberGroupDto.getId() > 0) {
-            memberGroupService.updateMemberGroup(memberGroupDto);
+            memberGroupService.updateMemberGroup(memberGroupDto, accountInfo);
         } else {
             memberGroupService.addMemberGroup(memberGroupDto);
         }
@@ -112,7 +112,7 @@ public class BackendMemberGroupController extends BaseController {
             return getFailureResult(201, "该分组下有会员，不能删除");
         }
 
-        memberGroupService.deleteMemberGroup(id, accountInfo.getAccountName());
+        memberGroupService.deleteMemberGroup(id, accountInfo);
 
         return getSuccessResult(true);
     }
@@ -130,7 +130,7 @@ public class BackendMemberGroupController extends BaseController {
         groupDto.setOperator(accountInfo.getAccountName());
         groupDto.setId(params.getId());
         groupDto.setStatus(params.getStatus());
-        memberGroupService.updateMemberGroup(groupDto);
+        memberGroupService.updateMemberGroup(groupDto, accountInfo);
 
         return getSuccessResult(true);
     }

@@ -178,7 +178,7 @@ public class BackendOpenGiftController extends BaseController {
     @PreAuthorize("@pms.hasPermission('openGift:index')")
     public ResponseObject delete(@PathVariable("id") Integer id) throws BusinessCheckException {
         AccountInfo accountInfo = TokenUtil.getAccountInfo();
-        openGiftService.deleteOpenGift(id, accountInfo.getAccountName());
+        openGiftService.deleteOpenGift(id, accountInfo);
         return getSuccessResult(true);
     }
 }

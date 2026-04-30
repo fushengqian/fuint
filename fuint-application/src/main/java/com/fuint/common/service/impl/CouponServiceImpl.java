@@ -435,23 +435,26 @@ public class CouponServiceImpl extends ServiceImpl<MtCouponMapper, MtCoupon> imp
      * 删除卡券
      *
      * @param  id 券ID
-     * @param  operator 操作人
+     * @param  accountInfo 操作人
      * @throws BusinessCheckException
      * @return
      */
     @Override
     @OperationServiceLog(description = "删除卡券")
     @Transactional(rollbackFor = Exception.class)
-    public void deleteCoupon(Long id, String operator) throws BusinessCheckException {
+    public void deleteCoupon(Long id, AccountInfo accountInfo) throws BusinessCheckException {
         MtCoupon couponInfo = queryCouponById(id.intValue());
         if (null == couponInfo) {
             throw new BusinessCheckException("卡券不存在");
+        }
+        if (accountInfo.getMerchantId() > 0 && !couponInfo.getMerchantId().equals(accountInfo.getMerchantId())) {
+            throw new BusinessCheckException("不同商户，无权限操作");
         }
         couponInfo.setStatus(StatusEnum.DISABLE.getKey());
         // 修改时间
         couponInfo.setUpdateTime(new Date());
         // 操作人
-        couponInfo.setOperator(operator);
+        couponInfo.setOperator(accountInfo.getAccountName());
         // 删除会员关联的卡券
         userCouponService.removeUserCouponByCouponId(couponInfo.getId());
 
@@ -1057,18 +1060,20 @@ public class CouponServiceImpl extends ServiceImpl<MtCouponMapper, MtCoupon> imp
      * 根据券ID删除会员卡券
      *
      * @param  id 券ID
-     * @param  operator 操作人
+     * @param  accountInfo 操作人
      * @throws BusinessCheckException
      * @return
      */
     @Override
     @OperationServiceLog(description = "删除会员卡券")
-    public void deleteUserCoupon(Integer id, String operator) throws BusinessCheckException {
+    public void deleteUserCoupon(Integer id, AccountInfo accountInfo) throws BusinessCheckException {
         MtUserCoupon userCoupon = mtUserCouponMapper.selectById(id);
         if (null == userCoupon) {
-            return;
+            throw new BusinessCheckException("卡券不存在！");
         }
-
+        if (accountInfo.getMerchantId() > 0 && !userCoupon.getMerchantId().equals(accountInfo.getMerchantId())) {
+            throw new BusinessCheckException("不同商户，无操作权限");
+        }
         // 未使用状态才能作废删除
         if(!userCoupon.getStatus().equals(UserCouponStatusEnum.UNUSED.getKey())) {
             throw new BusinessCheckException("未使用状态的卡券才能作废");
@@ -1079,7 +1084,7 @@ public class CouponServiceImpl extends ServiceImpl<MtCouponMapper, MtCoupon> imp
         userCoupon.setUpdateTime(new Date());
 
         // 操作人
-        userCoupon.setOperator(operator);
+        userCoupon.setOperator(accountInfo.getAccountName());
 
         // 更新发券日志为部分作废状态
         mtSendLogMapper.updateSingleForRemove(userCoupon.getUuid(),UserCouponStatusEnum.USED.getKey());
@@ -1178,14 +1183,15 @@ public class CouponServiceImpl extends ServiceImpl<MtCouponMapper, MtCoupon> imp
     /**
      * 根据批次撤销卡券
      *
-     * @param uuid       批次ID
-     * @param operator   操作人
+     * @param id 批次ID
+     * @param uuid 批次ID
+     * @param accountInfo   操作人
      * @return
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
     @OperationServiceLog(description = "根据批次撤销卡券")
-    public void removeUserCoupon(Long id, String uuid, String operator) {
+    public void removeUserCoupon(Long id, String uuid, AccountInfo accountInfo) throws BusinessCheckException {
         Map<String, Object> searchParams = new HashMap<>();
         searchParams.put("uuid", uuid);
         List<MtUserCoupon> paginationResponse = mtUserCouponMapper.selectByMap(searchParams);
@@ -1201,12 +1207,18 @@ public class CouponServiceImpl extends ServiceImpl<MtCouponMapper, MtCoupon> imp
         for (int i = 0; i < coupondIdList.size(); i++) {
             Integer couponId = coupondIdList.get(i);
             MtCoupon couponInfo = queryCouponById(couponId);
+            if (couponInfo == null) {
+                throw new BusinessCheckException("卡券不存在");
+            }
+            if (accountInfo.getMerchantId() > 0 && !couponInfo.getMerchantId().equals(accountInfo.getMerchantId())) {
+                throw new BusinessCheckException("不同商户，没有操作权限");
+            }
             if (couponInfo.getStatus().equals(StatusEnum.ENABLED.getKey()) && couponInfo.getEndTime().after(nowDate)) {
                 couponIds.add(couponId);
             }
         }
 
-        Integer row = mtUserCouponMapper.removeUserCoupon(uuid, couponIds, operator);
+        Integer row = mtUserCouponMapper.removeUserCoupon(uuid, couponIds, accountInfo.getAccountName());
         if (row.compareTo( total.intValue()) != -1) {
             mtSendLogMapper.updateForRemove(uuid, UserCouponStatusEnum.DISABLE.getKey(), total.intValue(), 0);
         } else {

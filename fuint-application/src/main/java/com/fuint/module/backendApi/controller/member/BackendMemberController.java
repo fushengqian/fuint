@@ -167,7 +167,7 @@ public class BackendMemberController extends BaseController {
                 return getFailureResult(1004);
             }
         }
-        memberService.deleteMember(id, accountInfo.getAccountName());
+        memberService.deleteMember(id, accountInfo);
         return getSuccessResult(true);
     }
 

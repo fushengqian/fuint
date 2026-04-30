@@ -823,16 +823,19 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
      * 删除会员
      *
      * @param  id 会员ID
-     * @param  operator 操作人
+     * @param  accountInfo 操作人
      * @throws BusinessCheckException
      * @return
      */
     @Override
     @OperationServiceLog(description = "删除会员信息")
-    public Integer deleteMember(Integer id, String operator) throws BusinessCheckException {
+    public Integer deleteMember(Integer id, AccountInfo accountInfo) throws BusinessCheckException {
         MtUser mtUser = mtUserMapper.selectById(id);
         if (null == mtUser) {
             throw new BusinessCheckException("该会员不存在，请确认");
+        }
+        if (accountInfo.getMerchantId() > 0 && !mtUser.getMerchantId().equals(accountInfo.getMerchantId())) {
+            throw new BusinessCheckException("不同商户，没有操作权限");
         }
         // 是否是店铺员工
         MtStaff mtStaff = staffService.queryStaffByUserId(id);
@@ -841,7 +844,7 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
         }
         mtUser.setStatus(StatusEnum.DISABLE.getKey());
         mtUser.setUpdateTime(new Date());
-        mtUser.setOperator(operator);
+        mtUser.setOperator(accountInfo.getAccountName());
         updateById(mtUser);
         return mtUser.getId();
     }

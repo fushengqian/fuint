@@ -3,6 +3,7 @@ package com.fuint.common.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.fuint.common.dto.system.AccountInfo;
 import com.fuint.common.enums.StatusEnum;
 import com.fuint.common.enums.UserGradeCatchTypeEnum;
 import com.fuint.common.service.UserGradeService;
@@ -170,16 +171,19 @@ public class UserGradeServiceImpl extends ServiceImpl<MtUserGradeMapper, MtUserG
      * 根据ID删除会员等级
      *
      * @param id ID
-     * @param operator 操作人
+     * @param accountInfo 操作人
      * @return
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
     @OperationServiceLog(description = "删除会员等级")
-    public Integer deleteUserGrade(Integer id, String operator) {
+    public Integer deleteUserGrade(Integer id, AccountInfo accountInfo) throws BusinessCheckException {
         MtUserGrade mtUserGrade = queryUserGradeById(0, id, 0);
         if (null == mtUserGrade) {
             return 0;
+        }
+        if (accountInfo.getMerchantId() > 0 && !mtUserGrade.getMerchantId().equals(accountInfo.getMerchantId())) {
+            throw new BusinessCheckException("不同商户，没有操作权限");
         }
         mtUserGrade.setStatus(StatusEnum.DISABLE.getKey());
         mtUserGradeMapper.updateById(mtUserGrade);

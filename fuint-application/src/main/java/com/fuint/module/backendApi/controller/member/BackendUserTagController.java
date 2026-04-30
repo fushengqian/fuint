@@ -3,6 +3,8 @@ package com.fuint.module.backendApi.controller.member;
 import com.fuint.common.dto.member.UserTagDto;
 import com.fuint.common.dto.system.AccountInfo;
 import com.fuint.common.enums.StatusEnum;
+import com.fuint.common.param.BatchSetUserTagParam;
+import com.fuint.common.param.SetUserTagParam;
 import com.fuint.common.service.MemberService;
 import com.fuint.common.service.UserTagRelationService;
 import com.fuint.common.service.UserTagService;
@@ -130,14 +132,13 @@ public class BackendUserTagController extends BaseController {
     @RequestMapping(value = "/setUserTags", method = RequestMethod.POST)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('member:tag:edit')")
-    public ResponseObject setUserTags(@RequestBody Map<String, Object> params) {
+    public ResponseObject setUserTags(@RequestBody SetUserTagParam param) {
         AccountInfo accountInfo = TokenUtil.getAccountInfo();
         String operator = accountInfo != null ? accountInfo.getAccountName() : "";
         Integer merchantId = accountInfo.getMerchantId();
 
-        Integer userId = params.get("userId") == null ? 0 : Integer.parseInt(params.get("userId").toString());
-        @SuppressWarnings("unchecked")
-        List<Integer> tagIds = (List<Integer>) params.get("tagIds");
+        Integer userId = param.getUserId();
+        List<Integer> tagIds = param.getTagIds();
 
         // 校验商户权限
         if (merchantId != null && merchantId > 0) {
@@ -168,15 +169,13 @@ public class BackendUserTagController extends BaseController {
     @RequestMapping(value = "/batchSetTags", method = RequestMethod.POST)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('member:tag:edit')")
-    public ResponseObject batchSetTags(@RequestBody Map<String, Object> params) {
+    public ResponseObject batchSetTags(@RequestBody BatchSetUserTagParam param) {
         AccountInfo accountInfo = TokenUtil.getAccountInfo();
         String operator = accountInfo != null ? accountInfo.getAccountName() : "";
         Integer merchantId = accountInfo.getMerchantId();
 
-        @SuppressWarnings("unchecked")
-        List<Integer> userIds = (List<Integer>) params.get("userIds");
-        @SuppressWarnings("unchecked")
-        List<Integer> tagIds = (List<Integer>) params.get("tagIds");
+        List<Integer> userIds = param.getUserIds();
+        List<Integer> tagIds = param.getTagIds();
 
         // 校验商户权限
         if (merchantId != null && merchantId > 0) {

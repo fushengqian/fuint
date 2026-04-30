@@ -6,6 +6,7 @@ import com.fuint.common.Constants;
 import com.fuint.common.dto.order.SettlementDto;
 import com.fuint.common.dto.order.SettlementOrderDto;
 import com.fuint.common.dto.order.UserOrderDto;
+import com.fuint.common.dto.system.AccountInfo;
 import com.fuint.common.enums.*;
 import com.fuint.common.param.OrderListParam;
 import com.fuint.common.param.SettlementPage;
@@ -184,22 +185,25 @@ public class SettlementServiceImpl implements SettlementService {
      * 结算确认
      *
      * @param  settlementId 结算ID
-     * @param  operator 操作人
+     * @param  accountInfo 操作人
      * @throws BusinessCheckException
      * @return
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
     @OperationServiceLog(description = "结算确认")
-    public Boolean doConfirm(Integer settlementId, String operator) throws BusinessCheckException {
+    public Boolean doConfirm(Integer settlementId, AccountInfo accountInfo) throws BusinessCheckException {
        MtSettlement mtSettlement = mtSettlementMapper.selectById(settlementId);
        if (mtSettlement == null) {
            throw new BusinessCheckException("结算数据不存在");
        }
+       if (accountInfo.getMerchantId() > 0 && !mtSettlement.getMerchantId().equals(accountInfo.getMerchantId())) {
+           throw new BusinessCheckException("不同商户，没有操作权限");
+       }
        mtSettlement.setStatus(SettleStatusEnum.COMPLETE.getKey());
        mtSettlement.setPayStatus(PayStatusEnum.SUCCESS.getKey());
        mtSettlement.setUpdateTime(new Date());
-       mtSettlement.setOperator(operator);
+       mtSettlement.setOperator(accountInfo.getAccountName());
        mtSettlementMapper.updateById(mtSettlement);
        return true;
     }

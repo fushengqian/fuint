@@ -3,6 +3,7 @@ package com.fuint.common.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.fuint.common.dto.system.AccountInfo;
 import com.fuint.common.param.InvoicePage;
 import com.fuint.common.param.InvoiceParam;
 import com.fuint.common.service.OrderService;
@@ -150,20 +151,23 @@ public class InvoiceServiceImpl extends ServiceImpl<MtInvoiceMapper, MtInvoice> 
      * 根据ID删除发票
      *
      * @param id 发票ID
-     * @param operator 操作人
+     * @param accountInfo 操作人
      * @return
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
     @OperationServiceLog(description = "删除发票")
-    public void deleteInvoice(Integer id, String operator) {
+    public void deleteInvoice(Integer id, AccountInfo accountInfo) throws BusinessCheckException {
         MtInvoice mtInvoice = queryInvoiceById(id);
         if (null == mtInvoice) {
-            return;
+            throw new BusinessCheckException("该发票不存在");
+        }
+        if (accountInfo.getMerchantId() > 0 && !mtInvoice.getMerchantId().equals(accountInfo.getMerchantId())) {
+            throw new BusinessCheckException("不同商户，没有操作权限");
         }
         mtInvoice.setStatus(StatusEnum.DISABLE.getKey());
         mtInvoice.setUpdateTime(new Date());
-        mtInvoice.setOperator(operator);
+        mtInvoice.setOperator(accountInfo.getAccountName());
         mtInvoiceMapper.updateById(mtInvoice);
         logger.info("删除发票信息");
     }

@@ -1,6 +1,7 @@
 package com.fuint.common.service;
 
 import com.fuint.common.dto.order.SettlementDto;
+import com.fuint.common.dto.system.AccountInfo;
 import com.fuint.common.param.SettlementPage;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.pagination.PaginationResponse;
@@ -36,11 +37,11 @@ public interface SettlementService {
      * 结算确认
      *
      * @param  settlementId
-     * @param  operator
+     * @param  accountInfo
      * @throws BusinessCheckException
      * @return
      */
-    Boolean doConfirm(Integer settlementId, String operator) throws BusinessCheckException;
+    Boolean doConfirm(Integer settlementId, AccountInfo accountInfo) throws BusinessCheckException;
 
     /**
      * 获取结算详情

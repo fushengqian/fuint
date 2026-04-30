@@ -136,7 +136,7 @@ public class BackendUserGradeController extends BaseController {
             return getFailureResult(201, "您没有删除权限");
         }
 
-        userGradeService.deleteUserGrade(id, accountInfo.getAccountName());
+        userGradeService.deleteUserGrade(id, accountInfo);
         return getSuccessResult(true);
     }
 

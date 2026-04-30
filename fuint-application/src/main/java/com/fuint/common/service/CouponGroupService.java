@@ -37,11 +37,12 @@ public interface CouponGroupService extends IService<MtCouponGroup> {
     /**
      * 修改卡券分组
      *
-     * @param reqCouponGroupDto
+     * @param  reqCouponGroupDto
+     * @param  accountInfo 操作人
      * @throws BusinessCheckException
      * @return
      */
-    MtCouponGroup updateCouponGroup(ReqCouponGroupDto reqCouponGroupDto) throws BusinessCheckException;
+    MtCouponGroup updateCouponGroup(ReqCouponGroupDto reqCouponGroupDto, AccountInfo accountInfo) throws BusinessCheckException;
 
     /**
      * 根据组ID获取分组信息
@@ -55,10 +56,11 @@ public interface CouponGroupService extends IService<MtCouponGroup> {
      * 根据分组ID 删除分组信息
      *
      * @param id       分组ID
-     * @param operator 操作人
+     * @param accountInfo 操作人
+     * @throws BusinessCheckException
      * @return
      */
-    void deleteCouponGroup(Integer id, String operator);
+    void deleteCouponGroup(Integer id, AccountInfo accountInfo) throws BusinessCheckException;
 
     /**
      * 根据分组ID 获取券种类数量

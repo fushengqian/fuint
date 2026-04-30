@@ -99,7 +99,7 @@ public class BackendCateController extends BaseController {
         cate.setOperator(accountInfo.getAccountName());
         cate.setId(params.getId());
         cate.setStatus(params.getStatus());
-        cateService.updateCate(cate);
+        cateService.updateCate(cate, accountInfo);
 
         return getSuccessResult(true);
     }
@@ -122,7 +122,7 @@ public class BackendCateController extends BaseController {
         mtGoodsCate.setOperator(accountInfo.getAccountName());
 
         if (cateInfo.getId() != null && cateInfo.getId() > 0) {
-            cateService.updateCate(mtGoodsCate);
+            cateService.updateCate(mtGoodsCate, accountInfo);
         } else {
             cateService.addCate(mtGoodsCate);
         }

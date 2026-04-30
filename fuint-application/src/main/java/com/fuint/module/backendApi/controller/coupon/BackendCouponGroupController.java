@@ -140,7 +140,7 @@ public class BackendCouponGroupController extends BaseController {
         reqCouponGroupDto.setStoreId(accountInfo.getStoreId());
         reqCouponGroupDto.setOperator(accountInfo.getAccountName());
         if (reqCouponGroupDto.getId() != null && reqCouponGroupDto.getId() > 0) {
-            couponGroupService.updateCouponGroup(reqCouponGroupDto);
+            couponGroupService.updateCouponGroup(reqCouponGroupDto, accountInfo);
         } else {
             couponGroupService.addCouponGroup(reqCouponGroupDto);
         }
@@ -166,8 +166,7 @@ public class BackendCouponGroupController extends BaseController {
             return getFailureResult(201, "该分组下有卡券，不能删除");
         }
 
-        couponGroupService.deleteCouponGroup(id, accountInfo.getAccountName());
-
+        couponGroupService.deleteCouponGroup(id, accountInfo);
         return getSuccessResult(true);
     }
 
@@ -187,7 +186,7 @@ public class BackendCouponGroupController extends BaseController {
         groupDto.setOperator(accountInfo.getAccountName());
         groupDto.setId(params.getId());
         groupDto.setStatus(params.getStatus());
-        couponGroupService.updateCouponGroup(groupDto);
+        couponGroupService.updateCouponGroup(groupDto, accountInfo);
         return getSuccessResult(true);
     }
 

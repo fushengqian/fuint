@@ -142,11 +142,11 @@ public interface MemberService extends IService<MtUser> {
      * 根据会员ID删除会员信息
      *
      * @param  id 会员ID
-     * @param  operator 操作人
+     * @param  accountInfo 操作人
      * @throws BusinessCheckException
      * @return
      */
-    Integer deleteMember(Integer id, String operator) throws BusinessCheckException;
+    Integer deleteMember(Integer id, AccountInfo accountInfo) throws BusinessCheckException;
 
     /**
      * 根据条件搜索会员分组
