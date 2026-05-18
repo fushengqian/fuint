@@ -79,12 +79,6 @@ public class UserTagRelationServiceImpl extends ServiceImpl<MtUserTagRelationMap
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void removeTagsByUserId(Integer userId) {
-        mtUserTagRelationMapper.removeTagsByUserId(userId);
-    }
-
-    @Override
-    @Transactional(rollbackFor = Exception.class)
     public void removeByTagId(Integer tagId) {
         mtUserTagRelationMapper.removeByTagId(tagId);
     }

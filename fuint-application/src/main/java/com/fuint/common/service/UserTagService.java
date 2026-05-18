@@ -1,11 +1,13 @@
 package com.fuint.common.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.fuint.common.dto.member.UserTagDto;
 import com.fuint.common.dto.system.AccountInfo;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.repository.model.MtUserTag;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 会员标签服务接口
@@ -23,6 +25,15 @@ public interface UserTagService extends IService<MtUserTag> {
      * @return
      */
     List<MtUserTag> getMerchantTagList(Integer merchantId, String status);
+
+    /**
+     * 批量获取会员标签
+     *
+     * @param merchantId 商户ID
+     * @param userIds 会员ID列表
+     * @return Map<会员ID, 标签DTO列表>
+     */
+    Map<Integer, List<UserTagDto>> getUserTagsByUserIds(Integer merchantId, List<Integer> userIds);
 
     /**
      * 添加标签

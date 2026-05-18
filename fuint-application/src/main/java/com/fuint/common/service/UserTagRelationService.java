@@ -50,13 +50,6 @@ public interface UserTagRelationService extends IService<MtUserTagRelation> {
     void batchSetUserTags(List<Integer> userIds, List<Integer> tagIds, String operator);
 
     /**
-     * 删除会员的所有标签
-     *
-     * @param userId 会员ID
-     */
-    void removeTagsByUserId(Integer userId);
-
-    /**
      * 根据标签ID删除关联
      *
      * @param tagId 标签ID

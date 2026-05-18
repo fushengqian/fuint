@@ -39,6 +39,9 @@ public class UserDto implements Serializable {
     @ApiModelProperty("分组信息")
     private UserGroupDto groupInfo;
 
+    @ApiModelProperty("标签信息")
+    private List<UserTagDto> tags;
+
     @ApiModelProperty("微信open_id")
     private String openId;
 

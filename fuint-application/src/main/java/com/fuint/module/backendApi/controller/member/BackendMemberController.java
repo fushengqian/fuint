@@ -82,6 +82,11 @@ public class BackendMemberController extends BaseController {
     private UserGradeService userGradeService;
 
     /**
+     * 会员标签服务接口
+     **/
+    private UserTagService userTagService;
+
+    /**
      * 查询会员列表
      */
     @ApiOperation(value = "查询会员列表")
@@ -237,8 +242,8 @@ public class BackendMemberController extends BaseController {
             userDto.setGroupInfo(userGroupDto);
         }
         userDto.setMobile(CommonUtil.hidePhone(userDto.getMobile()));
-        List<UserTagDto> userTags = new ArrayList<>();
-        userDto.setUserTags(userTags);
+        Map<Integer, List<UserTagDto>> userTagMap = userTagService.getUserTagsByUserIds(mtUser.getMerchantId(), Arrays.asList(userDto.getId()));
+        userDto.setUserTags(userTagMap.get(userDto.getId()));
 
         List<MtUserGrade> userGradeList = userGradeService.getMerchantGradeList(accountInfo.getMerchantId(), null);
         Map<String, Object> result = new HashMap<>();

@@ -1,6 +1,7 @@
 package com.fuint.common.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.fuint.common.dto.member.UserTagDto;
 import com.fuint.common.dto.system.AccountInfo;
 import com.fuint.common.enums.StatusEnum;
 import com.fuint.common.service.UserTagRelationService;
@@ -15,6 +16,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * 会员标签服务实现类
@@ -33,6 +36,44 @@ public class UserTagServiceImpl extends ServiceImpl<MtUserTagMapper, MtUserTag> 
     @Override
     public List<MtUserTag> getMerchantTagList(Integer merchantId, String status) {
         return mtUserTagMapper.getMerchantTagList(merchantId, status);
+    }
+
+    @Override
+    public Map<Integer, List<UserTagDto>> getUserTagsByUserIds(Integer merchantId, List<Integer> userIds) {
+        Map<Integer, List<UserTagDto>> result = new java.util.HashMap<>();
+
+        if (userIds == null || userIds.isEmpty()) {
+            return result;
+        }
+
+        // 初始化每个会员的标签列表
+        for (Integer userId : userIds) {
+            result.put(userId, new java.util.ArrayList<>());
+        }
+
+        // 获取所有标签（启用状态）
+        List<MtUserTag> allTags = mtUserTagMapper.getMerchantTagList(null, null);
+
+        // 遍历每个会员，获取其标签
+        for (Integer userId : userIds) {
+            List<Integer> tagIds = userTagRelationService.getTagIdsByUserId(userId);
+            List<UserTagDto> tagList = allTags.stream()
+                .filter(tag -> tagIds.contains(tag.getId()))
+                .map(tag -> {
+                    UserTagDto dto = new UserTagDto();
+                    dto.setId(tag.getId());
+                    dto.setName(tag.getName());
+                    dto.setColor(tag.getColor());
+                    dto.setSort(tag.getSort());
+                    dto.setDescription(tag.getDescription());
+                    dto.setCreateTime(tag.getCreateTime());
+                    return dto;
+                })
+                .collect(Collectors.toList());
+            result.put(userId, tagList);
+        }
+
+        return result;
     }
 
     @Override
