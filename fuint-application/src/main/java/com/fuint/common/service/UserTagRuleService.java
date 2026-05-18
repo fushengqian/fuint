@@ -40,11 +40,11 @@ public interface UserTagRuleService extends IService<MtUserTagRule> {
      * 编辑规则
      *
      * @param rule 规则信息
-     * @param merchantId 当前商户ID
+     * @param accountInfo 当前商户ID
      * @return
      * @throws BusinessCheckException
      */
-    MtUserTagRule updateRule(MtUserTagRule rule, Integer merchantId) throws BusinessCheckException;
+    MtUserTagRule updateRule(MtUserTagRule rule, AccountInfo accountInfo) throws BusinessCheckException;
 
     /**
      * 删除规则
@@ -68,7 +68,7 @@ public interface UserTagRuleService extends IService<MtUserTagRule> {
      *
      * @param merchantId 商户ID
      */
-    void batchExecuteRules(Integer merchantId);
+    void executeRules(Integer merchantId);
 
     /**
      * 检查会员是否符合规则

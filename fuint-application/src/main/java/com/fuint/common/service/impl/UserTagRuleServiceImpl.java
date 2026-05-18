@@ -53,7 +53,7 @@ public class UserTagRuleServiceImpl extends ServiceImpl<MtUserTagRuleMapper, MtU
     public MtUserTagRule addRule(MtUserTagRule rule, Integer merchantId) throws BusinessCheckException {
         // 平台账号没有新增权限
         if (merchantId == null || merchantId <= 0) {
-            throw new BusinessCheckException("抱歉，您没有新增权限");
+            throw new BusinessCheckException("平台账号不能执行该操作");
         }
 
         // 校验标签是否存在
@@ -71,9 +71,9 @@ public class UserTagRuleServiceImpl extends ServiceImpl<MtUserTagRuleMapper, MtU
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public MtUserTagRule updateRule(MtUserTagRule rule, Integer merchantId) throws BusinessCheckException {
+    public MtUserTagRule updateRule(MtUserTagRule rule, AccountInfo accountInfo) throws BusinessCheckException {
         // 平台账号没有编辑权限
-        if (merchantId == null || merchantId <= 0) {
+        if (accountInfo == null || accountInfo.getMerchantId() <= 0) {
             throw new BusinessCheckException("抱歉，您没有编辑权限");
         }
 
@@ -83,7 +83,7 @@ public class UserTagRuleServiceImpl extends ServiceImpl<MtUserTagRuleMapper, MtU
         }
 
         // 校验商户权限
-        if (!merchantId.equals(existRule.getMerchantId())) {
+        if (!accountInfo.getMerchantId().equals(existRule.getMerchantId())) {
             throw new BusinessCheckException("抱歉，您没有编辑权限");
         }
 
@@ -159,7 +159,7 @@ public class UserTagRuleServiceImpl extends ServiceImpl<MtUserTagRuleMapper, MtU
     }
 
     @Override
-    public void batchExecuteRules(Integer merchantId) {
+    public void executeRules(Integer merchantId) {
         List<MtUserTagRule> rules = mtUserTagRuleMapper.getAutoRuleList(merchantId);
         if (rules.isEmpty()) {
             return;

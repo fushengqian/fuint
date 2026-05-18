@@ -39,7 +39,7 @@ public class BackendUserTagRuleController extends BaseController {
     @ApiOperation(value = "规则列表")
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     @CrossOrigin
-    @PreAuthorize("@pms.hasPermission('member:tagRule:index')")
+    @PreAuthorize("@pms.hasPermission('member:userTag:index')")
     public ResponseObject list() throws BusinessCheckException {
         AccountInfo accountInfo = TokenUtil.getAccountInfo();
         Integer merchantId = accountInfo.getMerchantId();
@@ -58,7 +58,7 @@ public class BackendUserTagRuleController extends BaseController {
     @ApiOperation(value = "保存规则")
     @RequestMapping(value = "/save", method = RequestMethod.POST)
     @CrossOrigin
-    @PreAuthorize("@pms.hasPermission('member:tagRule:edit')")
+    @PreAuthorize("@pms.hasPermission('member:userTag:index')")
     public ResponseObject save(@RequestBody MtUserTagRule rule) throws BusinessCheckException {
         AccountInfo accountInfo = TokenUtil.getAccountInfo();
         Integer merchantId = accountInfo.getMerchantId();
@@ -68,7 +68,7 @@ public class BackendUserTagRuleController extends BaseController {
         rule.setOperator(operator);
 
         if (rule.getId() != null && rule.getId() > 0) {
-            userTagRuleService.updateRule(rule, merchantId);
+            userTagRuleService.updateRule(rule, accountInfo);
         } else {
             userTagRuleService.addRule(rule, merchantId);
         }
@@ -79,7 +79,7 @@ public class BackendUserTagRuleController extends BaseController {
     @ApiOperation(value = "删除规则")
     @RequestMapping(value = "/delete/{id}", method = RequestMethod.GET)
     @CrossOrigin
-    @PreAuthorize("@pms.hasPermission('member:tagRule:delete')")
+    @PreAuthorize("@pms.hasPermission('member:userTag:index')")
     public ResponseObject delete(@PathVariable("id") Integer id) throws BusinessCheckException {
         AccountInfo accountInfo = TokenUtil.getAccountInfo();
 
@@ -91,35 +91,17 @@ public class BackendUserTagRuleController extends BaseController {
     @ApiOperation(value = "手动执行规则")
     @RequestMapping(value = "/execute/{id}", method = RequestMethod.GET)
     @CrossOrigin
-    @PreAuthorize("@pms.hasPermission('member:tagRule:edit')")
-    public ResponseObject execute(@PathVariable("id") Integer id) {
+    @PreAuthorize("@pms.hasPermission('member:userTag:index')")
+    public ResponseObject execute() {
         AccountInfo accountInfo = TokenUtil.getAccountInfo();
         Integer merchantId = accountInfo.getMerchantId();
 
-        // 校验商户权限
-        MtUserTagRule rule = userTagRuleService.getById(id);
-        if (rule == null) {
-            return getFailureResult(201, "规则不存在");
-        }
-        if (merchantId != null && merchantId > 0 && !merchantId.equals(rule.getMerchantId())) {
+        if (merchantId == null || merchantId <= 0) {
             return getFailureResult(1004, "抱歉，您没有操作权限");
         }
 
         // 执行单个规则
-        userTagRuleService.batchExecuteRules(rule.getMerchantId());
-
-        return getSuccessResult(true);
-    }
-
-    @ApiOperation(value = "批量执行所有规则")
-    @RequestMapping(value = "/batchExecute", method = RequestMethod.POST)
-    @CrossOrigin
-    @PreAuthorize("@pms.hasPermission('member:tagRule:edit')")
-    public ResponseObject batchExecute() {
-        AccountInfo accountInfo = TokenUtil.getAccountInfo();
-        Integer merchantId = accountInfo.getMerchantId();
-
-        userTagRuleService.batchExecuteRules(merchantId);
+        userTagRuleService.executeRules(merchantId);
 
         return getSuccessResult(true);
     }
