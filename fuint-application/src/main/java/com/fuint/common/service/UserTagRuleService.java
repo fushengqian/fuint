@@ -60,15 +60,20 @@ public interface UserTagRuleService extends IService<MtUserTagRule> {
      *
      * @param user 会员信息
      * @param order 订单信息（可选）
+     * @param ruleId 规则ID
+     * @param accountInfo 当前登录账号信息
+     * @return
      */
-    void executeRulesForUser(MtUser user, MtOrder order);
+    void executeRulesForUser(MtUser user, MtOrder order, Integer ruleId, AccountInfo accountInfo);
 
     /**
      * 批量执行标签规则
      *
-     * @param merchantId 商户ID
+     * @param ruleId 规则ID
+     * @param accountInfo 当前登录账号信息
+     * @return
      */
-    void executeRules(Integer merchantId);
+    void executeRules(Integer ruleId, AccountInfo accountInfo);
 
     /**
      * 检查会员是否符合规则

@@ -4,7 +4,10 @@
 
     <select id="getMerchantTagList" resultType="com.fuint.repository.model.MtUserTag">
         SELECT * FROM mt_user_tag t
-        WHERE t.MERCHANT_ID = #{merchantId}
+        WHERE t.STATUS != 'D'
+        <if test="merchantId != null and merchantId > 0">
+            AND t.MERCHANT_ID = #{merchantId}
+        </if>
         <if test="status != null and status != ''">
             AND t.STATUS = #{status}
         </if>

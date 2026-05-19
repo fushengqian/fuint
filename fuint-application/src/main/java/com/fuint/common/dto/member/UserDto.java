@@ -57,9 +57,6 @@ public class UserDto implements Serializable {
     @ApiModelProperty("等级名称")
     private String gradeName;
 
-    @ApiModelProperty("会员标签")
-    private List<UserTagDto> userTags;
-
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     @ApiModelProperty("会员开始时间")
     private Date startTime;

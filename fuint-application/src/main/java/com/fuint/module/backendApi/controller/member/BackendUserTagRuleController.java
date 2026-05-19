@@ -92,16 +92,16 @@ public class BackendUserTagRuleController extends BaseController {
     @RequestMapping(value = "/execute/{id}", method = RequestMethod.GET)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('member:userTag:index')")
-    public ResponseObject execute() {
+    public ResponseObject execute(@PathVariable("id") Integer id) {
         AccountInfo accountInfo = TokenUtil.getAccountInfo();
         Integer merchantId = accountInfo.getMerchantId();
 
         if (merchantId == null || merchantId <= 0) {
-            return getFailureResult(1004, "抱歉，您没有操作权限");
+            return getFailureResult(1002, "您的帐号不是商户，没有操作权限");
         }
 
         // 执行单个规则
-        userTagRuleService.executeRules(merchantId);
+        userTagRuleService.executeRules(id, accountInfo);
 
         return getSuccessResult(true);
     }

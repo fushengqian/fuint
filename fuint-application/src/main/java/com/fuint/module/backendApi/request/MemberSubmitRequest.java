@@ -58,4 +58,7 @@ public class MemberSubmitRequest implements Serializable {
     @ApiModelProperty(value="会员结束时间", name="endTime")
     private String endTime;
 
+    @ApiModelProperty(value="标签ID列表，多个用逗号分隔", name="tagIds")
+    private String tagIds;
+
 }

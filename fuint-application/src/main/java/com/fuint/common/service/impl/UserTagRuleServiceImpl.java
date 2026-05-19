@@ -23,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * 会员标签规则服务实现类
@@ -86,7 +87,7 @@ public class UserTagRuleServiceImpl extends ServiceImpl<MtUserTagRuleMapper, MtU
         if (!accountInfo.getMerchantId().equals(existRule.getMerchantId())) {
             throw new BusinessCheckException("抱歉，您没有编辑权限");
         }
-
+        existRule.setTagId(rule.getTagId());
         existRule.setRuleName(rule.getRuleName());
         existRule.setRuleType(rule.getRuleType());
         existRule.setTimeRange(rule.getTimeRange());
@@ -126,7 +127,7 @@ public class UserTagRuleServiceImpl extends ServiceImpl<MtUserTagRuleMapper, MtU
     }
 
     @Override
-    public void executeRulesForUser(MtUser user, MtOrder order) {
+    public void executeRulesForUser(MtUser user, MtOrder order, Integer ruleId, AccountInfo accountInfo) {
         if (user == null || user.getMerchantId() == null) {
             return;
         }
@@ -134,6 +135,10 @@ public class UserTagRuleServiceImpl extends ServiceImpl<MtUserTagRuleMapper, MtU
         List<MtUserTagRule> rules = mtUserTagRuleMapper.getAutoRuleList(user.getMerchantId());
         if (rules.isEmpty()) {
             return;
+        }
+
+        if (ruleId != null && ruleId > 0) {
+            rules = rules.stream().filter(rule -> rule.getId().equals(ruleId)).collect(Collectors.toList());
         }
 
         // 获取会员已有标签
@@ -154,24 +159,24 @@ public class UserTagRuleServiceImpl extends ServiceImpl<MtUserTagRuleMapper, MtU
 
         // 更新会员标签
         if (newTagIds.size() != existTagIds.size()) {
-            userTagRelationService.setUserTags(user.getId(), newTagIds, "SYSTEM");
+            userTagRelationService.setUserTags(user.getId(), newTagIds, accountInfo.getAccountName());
         }
     }
 
     @Override
-    public void executeRules(Integer merchantId) {
-        List<MtUserTagRule> rules = mtUserTagRuleMapper.getAutoRuleList(merchantId);
+    public void executeRules(Integer ruleId, AccountInfo accountInfo) {
+        List<MtUserTagRule> rules = mtUserTagRuleMapper.getAutoRuleList(accountInfo.getMerchantId());
         if (rules.isEmpty()) {
             return;
         }
 
         // 获取所有会员
-        List<Integer> userIds = memberService.getUserIdList(merchantId, null);
+        List<Integer> userIds = memberService.getUserIdList(accountInfo.getMerchantId(), null);
 
         for (Integer userId : userIds) {
             MtUser user = memberService.queryMemberById(userId);
             if (user != null && StatusEnum.ENABLED.getKey().equals(user.getStatus())) {
-                executeRulesForUser(user, null);
+                executeRulesForUser(user, null, ruleId, accountInfo);
             }
         }
     }

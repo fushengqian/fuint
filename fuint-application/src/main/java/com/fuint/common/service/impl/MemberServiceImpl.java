@@ -105,6 +105,11 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
     private CommissionRelationService commissionRelationService;
 
     /**
+     * 会员标签关联服务接口
+     */
+    private UserTagRelationService userTagRelationService;
+
+    /**
      * 更新活跃时间
      * @param userId 会员ID
      * @param ip IP地址
@@ -259,6 +264,26 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
             List<String> idList = Arrays.asList(groupIds.split(","));
             if (idList.size() > 0) {
                 wrapper.in(MtUser::getGroupId, idList);
+            }
+        }
+        // 会员标签筛选
+        String tagIds = memberPage.getTagIds();
+        if (StringUtils.isNotBlank(tagIds)) {
+            List<String> tagIdList = Arrays.asList(tagIds.split(","));
+            if (tagIdList.size() > 0) {
+                Set<Integer> userIdSet = new HashSet<>();
+                for (String tagId : tagIdList) {
+                    List<Integer> userIds = userTagRelationService.getUserIdsByTagId(Integer.parseInt(tagId.trim()));
+                    if (userIds != null && userIds.size() > 0) {
+                        userIdSet.addAll(userIds);
+                    }
+                }
+                if (userIdSet.size() > 0) {
+                    wrapper.in(MtUser::getId, userIdSet);
+                } else {
+                    // 没有匹配的用户，直接返回空结果
+                    wrapper.eq(MtUser::getId, -1);
+                }
             }
         }
         String status = memberPage.getStatus();

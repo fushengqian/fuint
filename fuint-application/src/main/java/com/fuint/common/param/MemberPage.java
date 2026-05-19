@@ -64,4 +64,7 @@ public class MemberPage extends PageParam implements Serializable {
     @ApiModelProperty("所属分组ID")
     private String groupIds;
 
+    @ApiModelProperty("会员标签ID-多个用逗号分隔")
+    private String tagIds;
+
 }
