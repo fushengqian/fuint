@@ -1,8 +1,8 @@
 package com.fuint.common.service.impl;
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.aliyun.oss.OSS;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fuint.common.Constants;
@@ -15,7 +15,9 @@ import com.fuint.common.dto.order.UserOrderDto;
 import com.fuint.common.enums.*;
 import com.fuint.common.http.HttpRESTDataClient;
 import com.fuint.common.service.*;
-import com.fuint.common.util.*;
+import com.fuint.common.util.AliyunOssUtil;
+import com.fuint.common.util.Base64Util;
+import com.fuint.common.util.RedisUtil;
 import com.fuint.common.vo.printer.OrderStatusType;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.web.ResponseObject;
@@ -41,10 +43,11 @@ import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.core.env.Environment;
 import weixin.popular.util.JsonUtil;
+
 import javax.crypto.Cipher;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
@@ -1316,10 +1319,9 @@ public class WeixinServiceImpl implements WeixinService {
      *
      * @param storeId 店铺ID
      * @param platform 支付平台
-     * @throws BusinessCheckException
      * @return
      * */
-    private WxPayApiConfig getApiConfig(Integer storeId, String platform) throws BusinessCheckException {
+    private WxPayApiConfig getApiConfig(Integer storeId, String platform) {
         WxPayApiConfig apiConfig;
 
         String mchId = wxPayBean.getMchId();
