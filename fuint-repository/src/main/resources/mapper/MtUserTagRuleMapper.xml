@@ -4,7 +4,10 @@
 
     <select id="getMerchantRuleList" resultType="com.fuint.repository.model.MtUserTagRule">
         SELECT * FROM mt_user_tag_rule
-        WHERE MERCHANT_ID = #{merchantId}
+        WHERE STATUS != 'D'
+        <if test="merchantId != null and merchantId > 0">
+            AND MERCHANT_ID = #{merchantId}
+        </if>
         <if test="status != null and status != ''">
             AND STATUS = #{status}
         </if>
@@ -13,9 +16,11 @@
 
     <select id="getAutoRuleList" resultType="com.fuint.repository.model.MtUserTagRule">
         SELECT * FROM mt_user_tag_rule
-        WHERE MERCHANT_ID = #{merchantId}
+        WHERE STATUS = 'A'
+        <if test="merchantId != null and merchantId > 0">
+            AND MERCHANT_ID = #{merchantId}
+        </if>
         AND IS_AUTO = 'Y'
-        AND STATUS = 'A'
         ORDER BY PRIORITY DESC, ID DESC
     </select>
 

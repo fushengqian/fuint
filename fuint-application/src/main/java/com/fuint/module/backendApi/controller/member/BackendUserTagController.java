@@ -46,7 +46,6 @@ public class BackendUserTagController extends BaseController {
     @ApiOperation(value = "标签列表")
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     @CrossOrigin
-    @PreAuthorize("@pms.hasPermission('member:userTag:index')")
     public ResponseObject list() throws BusinessCheckException {
         AccountInfo accountInfo = TokenUtil.getAccountInfo();
         Integer merchantId = accountInfo.getMerchantId();
