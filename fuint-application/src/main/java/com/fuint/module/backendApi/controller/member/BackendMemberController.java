@@ -21,6 +21,7 @@ import com.fuint.utils.StringUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.AllArgsConstructor;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.springframework.beans.BeanUtils;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -33,6 +34,8 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.*;
+
+import static com.fuint.common.util.XlsUtil.objectConvertToString;
 
 /**
  * 会员管理类controller
@@ -455,6 +458,71 @@ public class BackendMemberController extends BaseController {
         AccountInfo accountInfo = TokenUtil.getAccountInfo();
         List<GroupMemberDto> memberList = memberService.searchMembers(accountInfo.getMerchantId(), keyword, groupIds,1, Constants.MAX_ROWS);
         return getSuccessResult(memberList);
+    }
+
+    /**
+     * 导出会员列表
+     */
+    @ApiOperation(value = "导出会员列表")
+    @RequestMapping(value = "/export", method = RequestMethod.GET)
+    @CrossOrigin
+    @PreAuthorize("@pms.hasPermission('member:index')")
+    public void export(HttpServletRequest request, HttpServletResponse response, @ModelAttribute MemberPage memberPage) {
+        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getParameter("token"));
+
+        memberPage.setPage(Constants.PAGE_NUMBER);
+        memberPage.setPageSize(Constants.MAX_ROWS);
+        if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
+            memberPage.setMerchantId(accountInfo.getMerchantId());
+        }
+
+        PaginationResponse<UserDto> result = memberService.queryMemberListByPagination(memberPage);
+
+        // 会员等级映射
+        List<MtUserGrade> userGradeList = userGradeService.getMerchantGradeList(accountInfo.getMerchantId(), null);
+        Map<Integer, String> gradeMap = new HashMap<>();
+        for (MtUserGrade grade : userGradeList) {
+            gradeMap.put(grade.getId(), grade.getName());
+        }
+
+        // excel标题（与导入模板MemberTemplate.xlsx字段一致，不含密码）
+        String[] title = { "姓名", "会员号", "身份证", "性别", "手机号", "生日", "备注", "车牌", "会员等级", "有效期", "积分", "余额", "状态" };
+
+        // excel文件名
+        String fileName = "会员列表" + DateUtil.formatDate(new Date(), "yyyy.MM.dd_HHmm") + ".xls";
+
+        // sheet名
+        String sheetName = "会员列表";
+
+        String[][] content = null;
+        List<UserDto> list = result.getContent();
+
+        if (list.size() > 0) {
+            content = new String[list.size()][title.length];
+        }
+
+        for (int i = 0; i < list.size(); i++) {
+            UserDto userDto = list.get(i);
+            if (userDto != null) {
+                content[i][0] = objectConvertToString(userDto.getName());
+                content[i][1] = objectConvertToString(userDto.getUserNo());
+                content[i][2] = objectConvertToString(userDto.getIdcard());
+                content[i][3] = userDto.getSex() != null && userDto.getSex() == 1 ? "男" : "女";
+                content[i][4] = objectConvertToString(userDto.getMobile());
+                content[i][5] = objectConvertToString(userDto.getBirthday());
+                content[i][6] = objectConvertToString(userDto.getDescription());
+                content[i][7] = objectConvertToString(userDto.getCarNo());
+                content[i][8] = objectConvertToString(gradeMap.get(userDto.getGradeId()));
+                content[i][9] = userDto.getEndTime() != null ? DateUtil.formatDate(userDto.getEndTime(), "yyyy-MM-dd") : "";
+                content[i][10] = objectConvertToString(userDto.getPoint());
+                content[i][11] = objectConvertToString(userDto.getBalance());
+                content[i][12] = StatusEnum.ENABLED.getKey().equals(userDto.getStatus()) ? "正常" : "禁用";
+            }
+        }
+
+        // 创建HSSFWorkbook
+        HSSFWorkbook wb = ExcelUtil.getHSSFWorkbook(sheetName, title, content, null);
+        ExcelUtil.setResponseHeader(response, fileName, wb);
     }
 
     /**

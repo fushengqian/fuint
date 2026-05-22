@@ -44,6 +44,17 @@ public class UserTagRuleServiceImpl extends ServiceImpl<MtUserTagRuleMapper, MtU
 
     private MemberService memberService;
 
+    /**
+     * 有效消费订单状态：已支付、已发货、已签收、已收货、已完成
+     */
+    private static final List<String> VALID_ORDER_STATUSES = Arrays.asList(
+            OrderStatusEnum.PAID.getKey(),
+            OrderStatusEnum.DELIVERY.getKey(),
+            OrderStatusEnum.DELIVERED.getKey(),
+            OrderStatusEnum.RECEIVED.getKey(),
+            OrderStatusEnum.COMPLETE.getKey()
+    );
+
     @Override
     public List<MtUserTagRule> getMerchantRuleList(Integer merchantId, String status) {
         return mtUserTagRuleMapper.getMerchantRuleList(merchantId, status);
@@ -230,6 +241,13 @@ public class UserTagRuleServiceImpl extends ServiceImpl<MtUserTagRuleMapper, MtU
                     actualValue = new BigDecimal(days);
                 }
                 break;
+            case "last_active":
+                // 活跃时间（最近一次更新时间）
+                if (user.getUpdateTime() != null) {
+                    long days = (System.currentTimeMillis() - user.getUpdateTime().getTime()) / (1000 * 60 * 60 * 24);
+                    actualValue = new BigDecimal(days);
+                }
+                break;
             case "single_order_amount":
                 // 单笔订单金额
                 actualValue = getUserMaxOrderAmount(user.getId(), startTime, endTime);
@@ -245,6 +263,10 @@ public class UserTagRuleServiceImpl extends ServiceImpl<MtUserTagRuleMapper, MtU
             case "point_balance":
                 // 积分余额
                 actualValue = new BigDecimal(user.getPoint() == null ? 0 : user.getPoint());
+                break;
+            case "balance":
+                // 钱包余额
+                actualValue = user.getBalance() == null ? BigDecimal.ZERO : user.getBalance();
                 break;
             default:
                 return false;
@@ -272,7 +294,7 @@ public class UserTagRuleServiceImpl extends ServiceImpl<MtUserTagRuleMapper, MtU
     private Integer getUserOrderCount(Integer userId, Date startTime, Date endTime) {
         LambdaQueryWrapper<MtOrder> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(MtOrder::getUserId, userId);
-        wrapper.eq(MtOrder::getStatus, OrderStatusEnum.COMPLETE.getKey());
+        wrapper.in(MtOrder::getStatus, VALID_ORDER_STATUSES);
         if (startTime != null) {
             wrapper.ge(MtOrder::getCreateTime, startTime);
         }
@@ -288,7 +310,7 @@ public class UserTagRuleServiceImpl extends ServiceImpl<MtUserTagRuleMapper, MtU
     private BigDecimal getUserOrderAmount(Integer userId, Date startTime, Date endTime) {
         LambdaQueryWrapper<MtOrder> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(MtOrder::getUserId, userId);
-        wrapper.eq(MtOrder::getStatus, OrderStatusEnum.COMPLETE.getKey());
+        wrapper.in(MtOrder::getStatus, VALID_ORDER_STATUSES);
         if (startTime != null) {
             wrapper.ge(MtOrder::getCreateTime, startTime);
         }
@@ -311,7 +333,7 @@ public class UserTagRuleServiceImpl extends ServiceImpl<MtUserTagRuleMapper, MtU
     private Date getUserLastOrderTime(Integer userId) {
         LambdaQueryWrapper<MtOrder> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(MtOrder::getUserId, userId);
-        wrapper.eq(MtOrder::getStatus, OrderStatusEnum.COMPLETE.getKey());
+        wrapper.in(MtOrder::getStatus, VALID_ORDER_STATUSES);
         wrapper.orderByDesc(MtOrder::getCreateTime);
         wrapper.last("LIMIT 1");
         MtOrder order = mtOrderMapper.selectOne(wrapper);
@@ -324,7 +346,7 @@ public class UserTagRuleServiceImpl extends ServiceImpl<MtUserTagRuleMapper, MtU
     private BigDecimal getUserMaxOrderAmount(Integer userId, Date startTime, Date endTime) {
         LambdaQueryWrapper<MtOrder> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(MtOrder::getUserId, userId);
-        wrapper.eq(MtOrder::getStatus, OrderStatusEnum.COMPLETE.getKey());
+        wrapper.in(MtOrder::getStatus, VALID_ORDER_STATUSES);
         if (startTime != null) {
             wrapper.ge(MtOrder::getCreateTime, startTime);
         }
@@ -343,7 +365,7 @@ public class UserTagRuleServiceImpl extends ServiceImpl<MtUserTagRuleMapper, MtU
     private BigDecimal getUserAvgOrderAmount(Integer userId, Date startTime, Date endTime) {
         LambdaQueryWrapper<MtOrder> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(MtOrder::getUserId, userId);
-        wrapper.eq(MtOrder::getStatus, OrderStatusEnum.COMPLETE.getKey());
+        wrapper.in(MtOrder::getStatus, VALID_ORDER_STATUSES);
         if (startTime != null) {
             wrapper.ge(MtOrder::getCreateTime, startTime);
         }

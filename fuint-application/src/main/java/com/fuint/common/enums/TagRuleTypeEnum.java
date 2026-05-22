@@ -11,10 +11,12 @@ public enum TagRuleTypeEnum {
     CONSUME_AMOUNT("consume_amount", "消费金额"),
     LAST_CONSUME("last_consume", "最后消费时间"),
     REGISTER_TIME("register_time", "注册时间"),
+    LAST_ACTIVE("last_active", "活跃时间"),
     SINGLE_ORDER_AMOUNT("single_order_amount", "单笔订单金额"),
     AVG_ORDER_AMOUNT("avg_order_amount", "平均订单金额"),
     TOTAL_ORDER_COUNT("total_order_count", "累计订单数"),
-    POINT_BALANCE("point_balance", "积分余额");
+    POINT_BALANCE("point_balance", "积分余额"),
+    BALANCE("balance", "钱包余额");
 
     private String key;
     private String value;

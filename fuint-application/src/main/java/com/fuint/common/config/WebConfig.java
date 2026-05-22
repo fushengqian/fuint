@@ -1,17 +1,19 @@
 package com.fuint.common.config;
 
 import com.fuint.common.web.AdminUserInterceptor;
-import com.fuint.common.web.CommandInterceptor;
 import com.fuint.common.web.ClientUserInterceptor;
+import com.fuint.common.web.CommandInterceptor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.CacheControl;
 import org.springframework.web.filter.CharacterEncodingFilter;
-import org.springframework.web.servlet.config.annotation.*;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
+import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.resource.CssLinkResourceTransformer;
 import org.springframework.web.servlet.resource.VersionResourceResolver;
-import org.springframework.web.servlet.view.InternalResourceViewResolver;
-import org.springframework.web.servlet.view.UrlBasedViewResolver;
+
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -71,6 +73,7 @@ public class WebConfig implements WebMvcConfigurer {
                 .excludePathPatterns("/backendApi/captcha/**")
                 .excludePathPatterns("/backendApi/userCoupon/exportList")
                 .excludePathPatterns("/backendApi/order/export")
+                .excludePathPatterns("/backendApi/member/export")
                 .excludePathPatterns("/backendApi/goods/goods/downloadTemplate")
                 .excludePathPatterns("/backendApi/member/downloadTemplate")
                 .excludePathPatterns("/backendApi/login/**");
