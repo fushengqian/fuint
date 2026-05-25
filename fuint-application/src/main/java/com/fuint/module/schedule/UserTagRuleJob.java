@@ -153,27 +153,47 @@ public class UserTagRuleJob {
             return;
         }
 
+        // 获取所有自动规则管理的标签ID集合
+        Set<Integer> autoRuleTagIds = rules.stream()
+                .map(MtUserTagRule::getTagId)
+                .collect(Collectors.toSet());
+
         // 获取会员已有标签
         List<Integer> existTagIds = userTagRelationService.getTagIdsByUserId(user.getId());
-        List<Integer> newTagIds = new ArrayList<>(existTagIds);
-        boolean hasChanges = false;
 
+        // 重建新标签列表：从空开始，而非从已有标签开始
+        List<Integer> newTagIds = new ArrayList<>();
+
+        // 保留手动设置的标签（不在任何自动规则中的标签）
+        for (Integer existTagId : existTagIds) {
+            if (!autoRuleTagIds.contains(existTagId)) {
+                newTagIds.add(existTagId);
+            }
+        }
+
+        // 根据规则匹配结果添加标签
         for (MtUserTagRule rule : rules) {
             try {
                 boolean isMatch = checkUserMatchRule(user, rule);
-                if (isMatch && !newTagIds.contains(rule.getTagId())) {
-                    newTagIds.add(rule.getTagId());
-                    hasChanges = true;
-                    logger.debug("会员[{}]符合规则[{}]，添加标签[{}]", user.getId(), rule.getRuleName(), rule.getTagId());
+                if (isMatch) {
+                    if (!newTagIds.contains(rule.getTagId())) {
+                        newTagIds.add(rule.getTagId());
+                        logger.debug("会员[{}]符合规则[{}]，添加标签[{}]", user.getId(), rule.getRuleName(), rule.getTagId());
+                    }
+                } else {
+                    logger.debug("会员[{}]不再符合规则[{}]，标签[{}]将被移除", user.getId(), rule.getRuleName(), rule.getTagId());
                 }
             } catch (Exception e) {
                 logger.error("执行规则[{}]异常: {}", rule.getId(), e.getMessage());
             }
         }
 
-        // 更新会员标签
-        if (hasChanges) {
+        // 更新会员标签（只要标签有变化就更新）
+        Set<Integer> newSet = new HashSet<>(newTagIds);
+        Set<Integer> existSet = new HashSet<>(existTagIds);
+        if (!newSet.equals(existSet)) {
             userTagRelationService.setUserTags(user.getId(), newTagIds, accountInfo.getAccountName());
+            logger.info("会员[{}]标签已更新，原标签: {} -> 新标签: {}", user.getId(), existTagIds, newTagIds);
         }
     }
 
