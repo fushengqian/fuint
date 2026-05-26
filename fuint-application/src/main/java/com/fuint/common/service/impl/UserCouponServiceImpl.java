@@ -9,6 +9,7 @@ import com.fuint.common.dto.coupon.CouponDto;
 import com.fuint.common.dto.coupon.MyCouponDto;
 import com.fuint.common.enums.*;
 import com.fuint.common.param.CouponReceiveParam;
+import com.fuint.common.param.UserCouponPage;
 import com.fuint.common.service.*;
 import com.fuint.common.util.CommonUtil;
 import com.fuint.common.util.DateUtil;
@@ -88,44 +89,44 @@ public class UserCouponServiceImpl extends ServiceImpl<MtUserCouponMapper, MtUse
     /**
      * 分页查询券列表
      *
-     * @param paginationRequest
+     * @param userCouponPage
      * @return
      */
     @Override
-    public PaginationResponse<MtUserCoupon> queryUserCouponListByPagination(PaginationRequest paginationRequest) {
+    public PaginationResponse<MtUserCoupon> queryUserCouponListByPagination(UserCouponPage userCouponPage) {
         LambdaQueryWrapper<MtUserCoupon> lambdaQueryWrapper = Wrappers.lambdaQuery();
         lambdaQueryWrapper.ne(MtUserCoupon::getStatus, StatusEnum.DISABLE.getKey());
 
-        String status = paginationRequest.getSearchParams().get("status") == null ? "" : paginationRequest.getSearchParams().get("status").toString();
+        String status = userCouponPage.getStatus();
         if (StringUtils.isNotBlank(status)) {
             lambdaQueryWrapper.eq(MtUserCoupon::getStatus, status);
         }
-        String userCouponId = paginationRequest.getSearchParams().get("userCouponId") == null ? "" : paginationRequest.getSearchParams().get("userCouponId").toString();
-        if (StringUtils.isNotBlank(userCouponId)) {
+        Integer userCouponId = userCouponPage.getId();
+        if (userCouponId != null && userCouponId > 0) {
             lambdaQueryWrapper.eq(MtUserCoupon::getId, userCouponId);
         }
-        String userId = paginationRequest.getSearchParams().get("userId") == null ? "" : paginationRequest.getSearchParams().get("userId").toString();
-        if (StringUtils.isNotBlank(userId)) {
+        Integer userId = userCouponPage.getUserId();
+        if (userId != null && userId > 0) {
             lambdaQueryWrapper.eq(MtUserCoupon::getUserId, userId);
         }
-        String couponId = paginationRequest.getSearchParams().get("couponId") == null ? "" : paginationRequest.getSearchParams().get("couponId").toString();
-        if (StringUtils.isNotBlank(couponId)) {
+        Integer couponId = userCouponPage.getCouponId();
+        if (couponId != null && couponId > 0) {
             lambdaQueryWrapper.eq(MtUserCoupon::getCouponId, couponId);
         }
-        String code = paginationRequest.getSearchParams().get("code") == null ? "" : paginationRequest.getSearchParams().get("code").toString();
+        String code = userCouponPage.getCode();
         if (StringUtils.isNotBlank(code)) {
             lambdaQueryWrapper.eq(MtUserCoupon::getCode, code);
         }
-        String mobile = paginationRequest.getSearchParams().get("mobile") == null ? "" : paginationRequest.getSearchParams().get("mobile").toString();
+        String mobile = userCouponPage.getMobile();
         if (StringUtils.isNotBlank(mobile)) {
             lambdaQueryWrapper.eq(MtUserCoupon::getMobile, mobile);
         }
 
         lambdaQueryWrapper.orderByDesc(MtUserCoupon::getId);
-        Page<MtUserCoupon> pageHelper = PageHelper.startPage(paginationRequest.getCurrentPage(), paginationRequest.getPageSize());
+        Page<MtUserCoupon> pageHelper = PageHelper.startPage(userCouponPage.getPage(), userCouponPage.getPageSize());
         List<MtUserCoupon> dataList = mtUserCouponMapper.selectList(lambdaQueryWrapper);
 
-        PageRequest pageRequest = PageRequest.of(paginationRequest.getCurrentPage(), paginationRequest.getPageSize());
+        PageRequest pageRequest = PageRequest.of(userCouponPage.getPage(), userCouponPage.getPageSize());
         PageImpl pageImpl = new PageImpl(dataList, pageRequest, pageHelper.getTotal());
         PaginationResponse<MtUserCoupon> paginationResponse = new PaginationResponse(pageImpl, MtUserCoupon.class);
         paginationResponse.setTotalPages(pageHelper.getPages());
