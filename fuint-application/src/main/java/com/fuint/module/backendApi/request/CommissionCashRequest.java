@@ -19,7 +19,7 @@ public class CommissionCashRequest implements Serializable {
     @ApiModelProperty(value="分佣金额", name="amount")
     private String amount;
 
-    @ApiModelProperty(value="备注说明", name="remark")
+    @ApiModelProperty(value="备注说明", name="description")
     private String description;
 
     @ApiModelProperty(value="状态", name="status")

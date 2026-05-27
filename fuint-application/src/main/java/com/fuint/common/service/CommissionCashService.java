@@ -3,6 +3,7 @@ package com.fuint.common.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.fuint.common.dto.commission.CommissionCashDto;
 import com.fuint.common.param.CommissionCashPage;
+import com.fuint.common.param.WithdrawParam;
 import com.fuint.framework.pagination.PaginationResponse;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.module.backendApi.request.CommissionCashRequest;
@@ -56,7 +57,7 @@ public interface CommissionCashService extends IService<MtCommissionCash> {
     /**
      * 结算确认
      *
-     * @param requestParam 确认参数
+     * @param  requestParam 确认参数
      * @throws BusinessCheckException
      * @return
      */
@@ -65,7 +66,7 @@ public interface CommissionCashService extends IService<MtCommissionCash> {
     /**
      * 取消结算
      *
-     * @param requestParam 取消参数
+     * @param  requestParam 取消参数
      * @throws BusinessCheckException
      * @return
      */
@@ -74,10 +75,19 @@ public interface CommissionCashService extends IService<MtCommissionCash> {
     /**
      * 支付结算金额到用户余额
      *
-     * @param commissionCashRequest 请求参数
+     * @param  commissionCashRequest 请求参数
      * @throws BusinessCheckException
      * @return
      */
     void payToBalance(CommissionCashRequest commissionCashRequest) throws BusinessCheckException;
+
+    /**
+     * 申请提现
+     *
+     * @param  withdrawParam 请求参数
+     * @throws BusinessCheckException
+     * @return
+     */
+    Boolean withdraw(WithdrawParam withdrawParam) throws BusinessCheckException;
 
 }

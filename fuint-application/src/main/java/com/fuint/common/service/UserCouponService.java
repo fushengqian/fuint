@@ -5,7 +5,6 @@ import com.fuint.common.dto.coupon.CouponDto;
 import com.fuint.common.param.CouponReceiveParam;
 import com.fuint.common.param.UserCouponPage;
 import com.fuint.framework.exception.BusinessCheckException;
-import com.fuint.framework.pagination.PaginationRequest;
 import com.fuint.framework.pagination.PaginationResponse;
 import com.fuint.framework.web.ResponseObject;
 import com.fuint.repository.model.MtUserCoupon;
