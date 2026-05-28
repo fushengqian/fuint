@@ -143,7 +143,9 @@ public class ClientBookController extends BaseController {
     @ApiOperation(value="获取预约项目详情", notes="根据ID获取预约项目详情")
     @RequestMapping(value = "/bookable", method = RequestMethod.POST)
     @CrossOrigin
-    public ResponseObject bookable(@RequestBody BookableParam param) throws BusinessCheckException,ParseException {
+    public ResponseObject bookable(@RequestBody BookableParam param) throws BusinessCheckException, ParseException {
+        UserInfo userInfo = TokenUtil.getUserInfo();
+        param.setUserId(userInfo.getId());
         List<String> result = bookService.isBookable(param);
         return getSuccessResult(result);
     }
@@ -231,14 +233,14 @@ public class ClientBookController extends BaseController {
     public ResponseObject cancel(HttpServletRequest request) throws BusinessCheckException {
         String bookId = request.getParameter("bookId");
         String remark = request.getParameter("remark") == null ? "会员取消" : request.getParameter("remark");
-        UserInfo mtUser = TokenUtil.getUserInfo();
+        UserInfo userInfo = TokenUtil.getUserInfo();
 
         if (StringUtil.isEmpty(bookId)) {
             return getFailureResult(2000, "订单不能为空");
         }
 
         MtBookItem bookItem = bookItemService.getBookItemById(Integer.parseInt(bookId));
-        if (bookItem == null || !bookItem.getUserId().equals(mtUser.getId())) {
+        if (bookItem == null || !bookItem.getUserId().equals(userInfo.getId())) {
             return getFailureResult(2000, "预约信息有误");
         }
 

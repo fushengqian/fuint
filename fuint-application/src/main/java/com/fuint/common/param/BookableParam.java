@@ -16,6 +16,9 @@ public class BookableParam implements Serializable {
     @ApiModelProperty(value="预约ID", name="bookId")
     private Integer bookId;
 
+    @ApiModelProperty(value="用户ID", name="userId")
+    private Integer userId;
+
     @ApiModelProperty(value="预约日期", name="date")
     private String date;
 

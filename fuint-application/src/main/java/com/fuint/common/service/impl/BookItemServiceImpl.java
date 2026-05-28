@@ -163,8 +163,9 @@ public class BookItemServiceImpl extends ServiceImpl<MtBookItemMapper, MtBookIte
         param.setBookId(mtBookItem.getBookId());
         param.setDate(mtBookItem.getServiceDate());
         param.setTime(mtBookItem.getServiceTime());
+        param.setUserId(mtBookItem.getUserId());
         List<String> bookable = bookService.isBookable(param);
-        if (bookable.size() <= 0) {
+        if (bookable.size() == 0) {
             throw new BusinessCheckException("当前时间段不可预约，请重新选择！");
         }
 

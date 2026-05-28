@@ -16,4 +16,6 @@ public interface MtBookItemMapper extends BaseMapper<MtBookItem> {
 
     List<String> getBookList(@Param("bookId") Integer bookId, @Param("date") String date, @Param("time") String time);
 
+    MtBookItem getBookItemByUserId(@Param("userId") Integer userId, @Param("bookId") Integer bookId, @Param("date") String date, @Param("time") String time);
+
 }

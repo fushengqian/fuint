@@ -21,6 +21,7 @@ import com.fuint.repository.mapper.MtBookItemMapper;
 import com.fuint.repository.mapper.MtBookMapper;
 import com.fuint.repository.model.MtBanner;
 import com.fuint.repository.model.MtBook;
+import com.fuint.repository.model.MtBookItem;
 import com.fuint.repository.model.MtStore;
 import com.fuint.utils.StringUtil;
 import com.github.pagehelper.Page;
@@ -128,7 +129,7 @@ public class BookServiceImpl extends ServiceImpl<MtBookMapper, MtBook> implement
     /**
      * 添加预约项目
      *
-     * @param bookDto 预约信息
+     * @param  bookDto 预约信息
      * @throws BusinessCheckException
      * @return
      */
@@ -327,52 +328,48 @@ public class BookServiceImpl extends ServiceImpl<MtBookMapper, MtBook> implement
        if (StringUtil.isNotEmpty(param.getDate())) {
            bookList = mtBookItemMapper.getBookList(param.getBookId(), param.getDate(), param.getTime());
        }
-       Integer bookNum = bookList.size();
 
-       Integer limit = 0;
-       String serviceTime = mtBook.getServiceTimes();
-
-       // 未填写时段，则未来
-       if (StringUtil.isEmpty(serviceTime)) {
-           serviceTime = "08:30-12:00-1,14:00-18:00-1";
+       // 未填写时段，则默认上午一约、下午一约
+       if (StringUtil.isEmpty(mtBook.getServiceTimes())) {
+           mtBook.setServiceTimes("08:30-12:00-1,14:00-18:00-1");
        }
 
-       if (StringUtil.isNotEmpty(serviceTime)) {
-           String[] times = serviceTime.split(",");
-           if (times.length > 0) {
-               for (String str : times) {
-                    if (str.indexOf(param.getTime()) >= 0) {
-                        String[] timeArr = str.split("-");
-                        if (timeArr.length > 2) {
-                            limit = Integer.parseInt(timeArr[2]);
-                        }
-                    }
+       Integer bookNum = bookList.size();
+       Date now = new Date();
+       if (StringUtil.isNotEmpty(param.getTime())) {
+           String[] arr = param.getTime().split("-");
+           String dateTime = param.getDate() + " " + arr[1]+":00";
+           Date currentDate = DateUtil.parseDate(dateTime);
+           Boolean hasBook = false;
+           if (param.getUserId() != null && param.getUserId() > 0 && StringUtil.isNotEmpty(param.getDate())) {
+               MtBookItem mtBookItem = mtBookItemMapper.getBookItemByUserId(param.getUserId(), param.getBookId(), param.getDate(), param.getTime());
+               if (mtBookItem != null) {
+                   hasBook = true;
                }
            }
-       }
-       Date now = new Date();
-       if (bookNum < limit) {
-           if (StringUtil.isNotEmpty(param.getTime())) {
-               String[] arr = param.getTime().split("-");
-               String dateTime = param.getDate() + " " + arr[1]+":00";
-               Date currentDate = DateUtil.parseDate(dateTime);
-               if (now.compareTo(currentDate) < 0) {
-                   result.add(param.getTime());
-               }
-           } else {
-               String[] times = mtBook.getServiceTimes().split(",");
-               if (times.length > 0) {
-                   for (String str : times) {
-                        String[] arr = str.split("-");
-                        if (arr.length > 2) {
-                            String item = arr[0] + "-" + arr[1];
-                            String dateTime = param.getDate() + " " + arr[1]+":00";
-                            Date currentDate = DateUtil.parseDate(dateTime);
-                            if (!bookList.contains(item) && now.compareTo(currentDate) < 0) {
-                                result.add(item);
+           if (!hasBook && now.compareTo(currentDate) < 0) {
+               result.add(param.getTime());
+           }
+       } else {
+           String[] times = mtBook.getServiceTimes().split(",");
+           if (times.length > 0) {
+               for (String str : times) {
+                    String[] arr = str.split("-");
+                    if (arr.length > 2) {
+                        String item = arr[0] + "-" + arr[1];
+                        String dateTime = param.getDate() + " " + arr[1]+":00";
+                        Date currentDate = DateUtil.parseDate(dateTime);
+                        Boolean hasBook = false;
+                        if (param.getUserId() != null && param.getUserId() > 0 && StringUtil.isNotEmpty(param.getDate())) {
+                            MtBookItem mtBookItem = mtBookItemMapper.getBookItemByUserId(param.getUserId(), param.getBookId(), param.getDate(), item);
+                            if (mtBookItem != null) {
+                                hasBook = true;
                             }
                         }
-                   }
+                        if ((!bookList.contains(item) || bookNum < Integer.parseInt(arr[2])) && !hasBook && now.compareTo(currentDate) < 0) {
+                            result.add(item);
+                        }
+                    }
                }
            }
        }
@@ -402,7 +399,7 @@ public class BookServiceImpl extends ServiceImpl<MtBookMapper, MtBook> implement
 
         if (dataList.size() > 0) {
             for (MtBook book : dataList) {
-                book.setLogo(baseImage + book.getLogo());
+                 book.setLogo(baseImage + book.getLogo());
             }
         }
 
