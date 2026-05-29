@@ -14,8 +14,6 @@ import java.io.Serializable;
 @Data
 public class GivePage extends PageParam implements Serializable {
 
-    private static final long serialVersionUID = 1L;
-
     @ApiModelProperty("状态，A正常；C取消")
     private String status;
 

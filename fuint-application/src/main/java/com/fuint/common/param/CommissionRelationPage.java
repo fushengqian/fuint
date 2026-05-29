@@ -13,14 +13,8 @@ import java.io.Serializable;
 @Data
 public class CommissionRelationPage extends PageParam implements Serializable {
 
-    @ApiModelProperty("所属商户ID")
-    private Integer merchantId;
-
     @ApiModelProperty("商户号")
     private String merchantNo;
-
-    @ApiModelProperty("所属店铺ID")
-    private Integer storeId;
 
     @ApiModelProperty("用户ID")
     private Integer userId;

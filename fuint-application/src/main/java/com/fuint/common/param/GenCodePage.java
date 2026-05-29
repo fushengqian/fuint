@@ -13,8 +13,6 @@ import java.io.Serializable;
 @Data
 public class GenCodePage extends PageParam implements Serializable {
 
-    private static final long serialVersionUID = 1L;
-
     @ApiModelProperty("表名")
     private String tableName;
 

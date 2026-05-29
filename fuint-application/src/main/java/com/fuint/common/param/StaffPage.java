@@ -13,12 +13,6 @@ import java.io.Serializable;
 @Data
 public class StaffPage extends PageParam implements Serializable {
 
-    @ApiModelProperty("所属商户ID")
-    private Integer merchantId;
-
-    @ApiModelProperty("所属店铺ID")
-    private Integer storeId;
-
     @ApiModelProperty("类别")
     private Integer category;
 

@@ -14,8 +14,6 @@ import java.io.Serializable;
 @Data
 public class MerchantPage extends PageParam implements Serializable {
 
-    private static final long serialVersionUID = 1L;
-
     @ApiModelProperty("商户ID")
     private String id;
 

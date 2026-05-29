@@ -13,8 +13,6 @@ import java.io.Serializable;
 @Data
 public class InvoicePage extends PageParam implements Serializable {
 
-    private static final long serialVersionUID = 1L;
-
     @ApiModelProperty("手机号")
     private String mobile;
 

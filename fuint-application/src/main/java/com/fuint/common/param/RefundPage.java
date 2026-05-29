@@ -13,8 +13,6 @@ import java.io.Serializable;
 @Data
 public class RefundPage extends PageParam implements Serializable {
 
-    private static final long serialVersionUID = 1L;
-
     @ApiModelProperty("备注")
     private String remark;
 

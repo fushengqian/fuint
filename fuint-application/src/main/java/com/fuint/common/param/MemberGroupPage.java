@@ -13,8 +13,6 @@ import java.io.Serializable;
 @Data
 public class MemberGroupPage extends PageParam implements Serializable {
 
-    private static final long serialVersionUID = 1L;
-
     @ApiModelProperty("分组名称")
     private String name;
 

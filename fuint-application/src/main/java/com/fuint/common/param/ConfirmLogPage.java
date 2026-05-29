@@ -13,12 +13,6 @@ import java.io.Serializable;
 @Data
 public class ConfirmLogPage extends PageParam implements Serializable {
 
-    @ApiModelProperty("所属商户ID")
-    private Integer merchantId;
-
-    @ApiModelProperty("所属店铺ID")
-    private Integer storeId;
-
     @ApiModelProperty("会员ID")
     private Integer userId;
 
