@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fuint.common.dto.commission.CommissionLogDto;
+import com.fuint.common.dto.commission.CommissionOverviewDto;
 import com.fuint.common.dto.order.OrderUserDto;
 import com.fuint.common.enums.*;
 import com.fuint.common.param.CommissionLogPage;
@@ -78,6 +79,11 @@ public class CommissionLogServiceImpl extends ServiceImpl<MtCommissionLogMapper,
      * 提成方案规则服务接口
      * */
     private CommissionRuleService commissionRuleService;
+
+    /**
+     * 提现记录 Mapper
+     * */
+    private MtCommissionCashMapper mtCommissionCashMapper;
 
     /**
      * 分页查询分销提成列表
@@ -184,6 +190,38 @@ public class CommissionLogServiceImpl extends ServiceImpl<MtCommissionLogMapper,
         paginationResponse.setContent(dataList);
 
         return paginationResponse;
+    }
+
+    /**
+     * 获取佣金概览数据
+     *
+     * @param userId 会员ID
+     * @return
+     */
+    @Override
+    public CommissionOverviewDto getCommissionOverview(Integer userId) {
+        CommissionOverviewDto overviewDto = new CommissionOverviewDto();
+
+        // 总佣金（待结算佣金）
+        BigDecimal totalAmount = mtCommissionLogMapper.getTotalCommissionAmount(userId);
+        overviewDto.setTotalAmount(totalAmount != null ? totalAmount : BigDecimal.ZERO);
+
+        // 已提现金额
+        BigDecimal withdrawAmount = mtCommissionCashMapper.getWithdrawAmount(userId);
+        overviewDto.setWithdrawAmount(withdrawAmount != null ? withdrawAmount : BigDecimal.ZERO);
+
+        // 待提现金额 = 总佣金 - 已提现金额
+        overviewDto.setAmount(overviewDto.getTotalAmount().subtract(overviewDto.getWithdrawAmount()));
+
+        // 邀请会员数
+        Long userCount = mtCommissionRelationMapper.getInvitedUserCount(userId);
+        overviewDto.setUserCount(userCount != null ? new BigDecimal(userCount) : BigDecimal.ZERO);
+
+        // 订单数
+        Long orderCount = mtCommissionLogMapper.getCommissionOrderCount(userId);
+        overviewDto.setOrderCount(orderCount != null ? new BigDecimal(orderCount) : BigDecimal.ZERO);
+
+        return overviewDto;
     }
 
     /**

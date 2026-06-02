@@ -10,10 +10,14 @@ import org.apache.ibatis.annotations.Param;
  * Created by FSQ
  * CopyRight https://www.fuint.cn
  */
+import java.math.BigDecimal;
+
 public interface MtCommissionCashMapper extends BaseMapper<MtCommissionCash> {
 
     Boolean confirmCommissionCash(@Param("merchantId") Integer merchantId, @Param("uuid") String uuid, @Param("operator") String operator);
 
     Boolean cancelCommissionCash(@Param("merchantId") Integer merchantId, @Param("uuid") String uuid, @Param("operator") String operator);
+
+    BigDecimal getWithdrawAmount(@Param("userId") Integer userId);
 
 }

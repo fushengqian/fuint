@@ -14,4 +14,9 @@
             AND MERCHANT_ID = #{merchantId}
         </if>
     </update>
+
+    <select id="getWithdrawAmount" resultType="java.math.BigDecimal">
+        SELECT IFNULL(SUM(AMOUNT), 0) FROM mt_commission_cash
+        WHERE USER_ID = #{userId} AND STATUS = 'D'
+    </select>
 </mapper>

@@ -44,8 +44,9 @@ public class ClientCommissionController extends BaseController {
      */
     @RequestMapping(value = "/overview", method = RequestMethod.GET)
     @CrossOrigin
-    public ResponseObject overview(@ModelAttribute CommissionLogPage commissionLogPage) {
-        CommissionOverviewDto overviewDto = new CommissionOverviewDto();
+    public ResponseObject overview() {
+        UserInfo userInfo = TokenUtil.getUserInfo();
+        CommissionOverviewDto overviewDto = commissionLogService.getCommissionOverview(userInfo.getId());
         return getSuccessResult(overviewDto);
     }
 

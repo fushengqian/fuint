@@ -2,6 +2,7 @@ package com.fuint.common.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.fuint.common.dto.commission.CommissionLogDto;
+import com.fuint.common.dto.commission.CommissionOverviewDto;
 import com.fuint.common.param.CommissionLogPage;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.pagination.PaginationResponse;
@@ -23,6 +24,14 @@ public interface CommissionLogService extends IService<MtCommissionLog> {
      * @return
      */
     PaginationResponse<CommissionLogDto> queryCommissionLogByPagination(CommissionLogPage commissionLogPage);
+
+    /**
+     * 获取佣金概览数据
+     *
+     * @param userId 会员ID
+     * @return
+     */
+    CommissionOverviewDto getCommissionOverview(Integer userId);
 
     /**
      * 计算订单分销提成

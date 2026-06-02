@@ -10,10 +10,16 @@ import org.apache.ibatis.annotations.Param;
  * Created by FSQ
  * CopyRight https://www.fuint.cn
  */
+import java.math.BigDecimal;
+
 public interface MtCommissionLogMapper extends BaseMapper<MtCommissionLog> {
 
     Boolean confirmCommissionLog(@Param("merchantId") Integer merchantId, @Param("uuid") String uuid, @Param("operator") String operator);
 
     Boolean cancelCommissionLog(@Param("merchantId") Integer merchantId, @Param("uuid") String uuid, @Param("operator") String operator);
+
+    BigDecimal getTotalCommissionAmount(@Param("userId") Integer userId);
+
+    Long getCommissionOrderCount(@Param("userId") Integer userId);
 
 }

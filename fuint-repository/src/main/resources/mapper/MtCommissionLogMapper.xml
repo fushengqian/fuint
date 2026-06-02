@@ -14,4 +14,14 @@
             AND MERCHANT_ID = #{merchantId}
         </if>
     </update>
+
+    <select id="getTotalCommissionAmount" resultType="java.math.BigDecimal">
+        SELECT IFNULL(SUM(AMOUNT), 0) FROM mt_commission_log
+        WHERE USER_ID = #{userId} AND STATUS IN ('A', 'B')
+    </select>
+
+    <select id="getCommissionOrderCount" resultType="java.lang.Long">
+        SELECT COUNT(DISTINCT ORDER_ID) FROM mt_commission_log
+        WHERE USER_ID = #{userId} AND STATUS = 'A'
+    </select>
 </mapper>
