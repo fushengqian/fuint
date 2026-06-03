@@ -206,12 +206,34 @@ public class UserTagRuleServiceImpl extends ServiceImpl<MtUserTagRuleMapper, MtU
         // 获取所有会员
         List<Integer> userIds = memberService.getUserIdList(accountInfo.getMerchantId(), null);
 
-        for (Integer userId : userIds) {
-            MtUser user = memberService.queryMemberById(userId);
-            if (user != null && StatusEnum.ENABLED.getKey().equals(user.getStatus())) {
-                executeRulesForUser(user, null, ruleId, accountInfo);
-            }
+        // 更新时间
+        if (ruleId != null && ruleId > 0) {
+            MtUserTagRule rule = mtUserTagRuleMapper.selectById(ruleId);
+            rule.setUpdateTime(new Date());
+            mtUserTagRuleMapper.updateById(rule);
+        } else {
+            rules.forEach(rule -> {
+                rule.setUpdateTime(new Date());
+                mtUserTagRuleMapper.updateById(rule);
+            });
         }
+
+        for (Integer userId : userIds) {
+             MtUser user = memberService.queryMemberById(userId);
+             if (user != null && StatusEnum.ENABLED.getKey().equals(user.getStatus())) {
+                 executeRulesForUser(user, null, ruleId, accountInfo);
+             }
+        }
+    }
+
+    @Override
+    public MtUserTagRule getRuleByTagId(Integer tagId) {
+        LambdaQueryWrapper<MtUserTagRule> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(MtUserTagRule::getTagId, tagId);
+        wrapper.eq(MtUserTagRule::getStatus, StatusEnum.ENABLED.getKey());
+        wrapper.orderByDesc(MtUserTagRule::getUpdateTime);
+        wrapper.last("LIMIT 1");
+        return mtUserTagRuleMapper.selectOne(wrapper);
     }
 
     @Override

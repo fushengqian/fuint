@@ -7,6 +7,7 @@ import com.fuint.common.param.BatchSetUserTagParam;
 import com.fuint.common.param.SetUserTagParam;
 import com.fuint.common.service.MemberService;
 import com.fuint.common.service.UserTagRelationService;
+import com.fuint.common.service.UserTagRuleService;
 import com.fuint.common.service.UserTagService;
 import com.fuint.common.util.TokenUtil;
 import com.fuint.framework.exception.BusinessCheckException;
@@ -14,6 +15,7 @@ import com.fuint.framework.web.BaseController;
 import com.fuint.framework.web.ResponseObject;
 import com.fuint.repository.model.MtUser;
 import com.fuint.repository.model.MtUserTag;
+import com.fuint.repository.model.MtUserTagRule;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.AllArgsConstructor;
@@ -39,6 +41,8 @@ public class BackendUserTagController extends BaseController {
 
     private UserTagService userTagService;
 
+    private UserTagRuleService userTagRuleService;
+
     private UserTagRelationService userTagRelationService;
 
     private MemberService memberService;
@@ -60,6 +64,14 @@ public class BackendUserTagController extends BaseController {
             dto.setSort(tag.getSort());
             dto.setDescription(tag.getDescription());
             dto.setCreateTime(tag.getCreateTime());
+            dto.setUpdateTime(tag.getUpdateTime());
+            // 如果有关联规则，取规则的更新时间和信息
+            MtUserTagRule rule = userTagRuleService.getRuleByTagId(tag.getId());
+            if (rule != null) {
+                dto.setUpdateTime(rule.getUpdateTime());
+                dto.setRuleId(rule.getId());
+                dto.setRuleName(rule.getRuleName());
+            }
             // 统计会员数量
             List<Integer> userIds = userTagRelationService.getUserIdsByTagId(tag.getId());
             dto.setUserCount(userIds.size());

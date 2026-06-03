@@ -76,6 +76,14 @@ public interface UserTagRuleService extends IService<MtUserTagRule> {
     void executeRules(Integer ruleId, AccountInfo accountInfo);
 
     /**
+     * 根据标签ID获取规则
+     *
+     * @param tagId 标签ID
+     * @return
+     */
+    MtUserTagRule getRuleByTagId(Integer tagId);
+
+    /**
      * 检查会员是否符合规则
      *
      * @param user 会员

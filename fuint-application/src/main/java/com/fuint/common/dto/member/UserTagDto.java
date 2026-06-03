@@ -35,6 +35,15 @@ public class UserTagDto implements Serializable {
     @ApiModelProperty("创建时间")
     private Date createTime;
 
+    @ApiModelProperty("更新时间")
+    private Date updateTime;
+
     @ApiModelProperty("会员数量")
     private Integer userCount;
+
+    @ApiModelProperty("规则ID")
+    private Integer ruleId;
+
+    @ApiModelProperty("规则名称")
+    private String ruleName;
 }
