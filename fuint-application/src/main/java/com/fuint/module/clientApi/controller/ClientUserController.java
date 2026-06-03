@@ -168,6 +168,25 @@ public class ClientUserController extends BaseController {
             }
         }
 
+        // 是否需要强制更新头像或昵称
+        boolean needUpdateAvatar = false;
+        boolean needUpdateNickname = false;
+        if (mtUser != null && merchantId != null) {
+            boolean profileCompleted = YesOrNoEnum.YES.getKey().equals(mtUser.getProfileCompleted());
+            if (!profileCompleted) {
+                MtSetting avatarSetting = settingService.querySettingByName(merchantId, SettingTypeEnum.USER.getKey(), UserSettingEnum.FORCE_UPDATE_AVATAR.getKey());
+                MtSetting nicknameSetting = settingService.querySettingByName(merchantId, SettingTypeEnum.USER.getKey(), UserSettingEnum.FORCE_UPDATE_NICKNAME.getKey());
+                if (avatarSetting != null && YesOrNoEnum.TRUE.getKey().equals(avatarSetting.getValue())) {
+                    needUpdateAvatar = true;
+                }
+                if (nicknameSetting != null && YesOrNoEnum.TRUE.getKey().equals(nicknameSetting.getValue())) {
+                    needUpdateNickname = true;
+                }
+            }
+        }
+
+        outParams.put("needUpdateAvatar", needUpdateAvatar);
+        outParams.put("needUpdateNickname", needUpdateNickname);
         outParams.put("isMerchant", isMerchant);
         outParams.put("openWxCard", openWxCard);
 
@@ -244,6 +263,10 @@ public class ClientUserController extends BaseController {
                 outParams.put(UserSettingEnum.SUBMIT_ORDER_NEED_PHONE.getKey(), setting.getValue());
             } else if (setting.getName().equals(UserSettingEnum.LOGIN_NEED_PHONE.getKey())) {
                 outParams.put(UserSettingEnum.LOGIN_NEED_PHONE.getKey(), setting.getValue());
+            } else if (setting.getName().equals(UserSettingEnum.FORCE_UPDATE_AVATAR.getKey())) {
+                outParams.put(UserSettingEnum.FORCE_UPDATE_AVATAR.getKey(), setting.getValue());
+            } else if (setting.getName().equals(UserSettingEnum.FORCE_UPDATE_NICKNAME.getKey())) {
+                outParams.put(UserSettingEnum.FORCE_UPDATE_NICKNAME.getKey(), setting.getValue());
             }
         }
 
@@ -295,6 +318,23 @@ public class ClientUserController extends BaseController {
         }
 
         MtUser mtUser = memberService.queryMemberById(userInfo.getId());
+
+        // 强制更新校验：开启强制更新头像时，头像不能为空
+        MtSetting avatarSetting = settingService.querySettingByName(merchantId, SettingTypeEnum.USER.getKey(), UserSettingEnum.FORCE_UPDATE_AVATAR.getKey());
+        if (avatarSetting != null && YesOrNoEnum.TRUE.getKey().equals(avatarSetting.getValue())) {
+            if (StringUtil.isEmpty(avatar) && StringUtil.isEmpty(mtUser.getAvatar())) {
+                return getFailureResult(201, "请上传头像");
+            }
+        }
+
+        // 强制更新校验：开启强制修改昵称时，昵称不能为空
+        MtSetting nicknameSetting = settingService.querySettingByName(merchantId, SettingTypeEnum.USER.getKey(), UserSettingEnum.FORCE_UPDATE_NICKNAME.getKey());
+        if (nicknameSetting != null && YesOrNoEnum.TRUE.getKey().equals(nicknameSetting.getValue())) {
+            if (StringUtil.isEmpty(name) && StringUtil.isEmpty(mtUser.getName())) {
+                return getFailureResult(201, "请填写称呼");
+            }
+        }
+
         if (StringUtil.isNotEmpty(name)) {
             mtUser.setName(name);
         }
@@ -319,6 +359,11 @@ public class ClientUserController extends BaseController {
         }
         if (StringUtil.isNotEmpty(avatar)) {
             mtUser.setAvatar(avatar);
+        }
+
+        // 头像和昵称都已设置时，标记资料已完善
+        if (StringUtil.isNotEmpty(mtUser.getAvatar()) && StringUtil.isNotEmpty(mtUser.getName())) {
+            mtUser.setProfileCompleted(YesOrNoEnum.YES.getKey());
         }
 
         MtUser result = memberService.updateMember(mtUser, modifyPassword);

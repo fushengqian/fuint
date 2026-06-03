@@ -12,7 +12,9 @@ public enum UserSettingEnum {
     LOGIN_NEED_PHONE("loginNeedPhone", "登录是否需要手机号"),
     OPEN_WX_CARD("openWxCard", "开通微信会员卡"),
     WX_MEMBER_CARD("wxMemberCard", "微信会员卡设置"),
-    WX_MEMBER_CARD_ID("wxMemberCardId", "微信会员卡ID");
+    WX_MEMBER_CARD_ID("wxMemberCardId", "微信会员卡ID"),
+    FORCE_UPDATE_AVATAR("forceUpdateAvatar", "是否强制用户更新头像"),
+    FORCE_UPDATE_NICKNAME("forceUpdateNickname", "是否强制用户修改昵称");
 
     private String key;
 

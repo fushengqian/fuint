@@ -107,6 +107,9 @@ public class MtUser implements Serializable {
     @ApiModelProperty("状态，A：激活；N：禁用；D：删除")
     private String status;
 
+    @ApiModelProperty("是否已完善资料 Y：是；N：否")
+    private String profileCompleted;
+
     @ApiModelProperty("备注信息")
     private String description;
 

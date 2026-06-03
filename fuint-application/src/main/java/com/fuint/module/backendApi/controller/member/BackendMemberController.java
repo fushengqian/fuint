@@ -291,12 +291,14 @@ public class BackendMemberController extends BaseController {
         String submitOrderNeedPhone = YesOrNoEnum.FALSE.getKey();
         String loginNeedPhone = YesOrNoEnum.FALSE.getKey();
         String openWxCard = YesOrNoEnum.FALSE.getKey();
+        String forceUpdateAvatar = YesOrNoEnum.FALSE.getKey();
+        String forceUpdateNickname = YesOrNoEnum.FALSE.getKey();
         WxCardDto wxMemberCard = null;
         for (MtSetting setting : settingList) {
             if (StringUtil.isNotEmpty(setting.getValue())) {
                 if (setting.getName().equals(UserSettingEnum.GET_COUPON_NEED_PHONE.getKey())) {
                     getCouponNeedPhone = setting.getValue();
-                } else if (setting.getName().equals(UserSettingEnum.GET_COUPON_NEED_PHONE.getKey())) {
+                } else if (setting.getName().equals(UserSettingEnum.SUBMIT_ORDER_NEED_PHONE.getKey())) {
                     submitOrderNeedPhone = setting.getValue();
                 } else if (setting.getName().equals(UserSettingEnum.LOGIN_NEED_PHONE.getKey())) {
                     loginNeedPhone = setting.getValue();
@@ -304,6 +306,10 @@ public class BackendMemberController extends BaseController {
                     openWxCard = setting.getValue();
                 } else if (setting.getName().equals(UserSettingEnum.WX_MEMBER_CARD.getKey())) {
                     wxMemberCard = JsonUtil.parseObject(setting.getValue(), WxCardDto.class);
+                } else if (setting.getName().equals(UserSettingEnum.FORCE_UPDATE_AVATAR.getKey())) {
+                    forceUpdateAvatar = setting.getValue();
+                } else if (setting.getName().equals(UserSettingEnum.FORCE_UPDATE_NICKNAME.getKey())) {
+                    forceUpdateNickname = setting.getValue();
                 }
             }
         }
@@ -316,6 +322,8 @@ public class BackendMemberController extends BaseController {
         result.put("openWxCard", openWxCard);
         result.put("wxMemberCard", wxMemberCard);
         result.put("imagePath", imagePath);
+        result.put("forceUpdateAvatar", forceUpdateAvatar);
+        result.put("forceUpdateNickname", forceUpdateNickname);
 
         return getSuccessResult(result);
     }
@@ -333,6 +341,8 @@ public class BackendMemberController extends BaseController {
         String loginNeedPhone = param.get("loginNeedPhone") != null ? param.get("loginNeedPhone").toString() : null;
         String openWxCard = param.get("openWxCard") != null ? param.get("openWxCard").toString() : null;
         String wxMemberCard = param.get("wxMemberCard") != null ? param.get("wxMemberCard").toString() : null;
+        String forceUpdateAvatar = param.get("forceUpdateAvatar") != null ? param.get("forceUpdateAvatar").toString() : null;
+        String forceUpdateNickname = param.get("forceUpdateNickname") != null ? param.get("forceUpdateNickname").toString() : null;
 
         AccountInfo accountInfo = TokenUtil.getAccountInfo();
         if (accountInfo.getMerchantId() == null || accountInfo.getMerchantId() <= 0) {
@@ -354,6 +364,10 @@ public class BackendMemberController extends BaseController {
                 mtSetting.setValue(openWxCard);
             } else if (setting.getKey().equals(UserSettingEnum.WX_MEMBER_CARD.getKey())) {
                 mtSetting.setValue(wxMemberCard);
+            } else if (setting.getKey().equals(UserSettingEnum.FORCE_UPDATE_AVATAR.getKey())) {
+                mtSetting.setValue(forceUpdateAvatar);
+            } else if (setting.getKey().equals(UserSettingEnum.FORCE_UPDATE_NICKNAME.getKey())) {
+                mtSetting.setValue(forceUpdateNickname);
             }
             mtSetting.setDescription(setting.getValue());
             mtSetting.setOperator(accountInfo.getAccountName());

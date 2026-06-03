@@ -532,6 +532,10 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
                 throw new BusinessCheckException("会员结束时间不能早于开始时间");
             }
         }
+        // 完善资料标记，如果未显式传入则使用旧值
+        if (StringUtil.isEmpty(mtUser.getProfileCompleted())) {
+            mtUser.setProfileCompleted(oldUserInfo.getProfileCompleted());
+        }
         Boolean result = updateById(mtUser);
         if (result && mtUser.getGradeId() != null) {
             // 修改了会员等级，开卡赠礼
