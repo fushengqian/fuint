@@ -62,45 +62,53 @@ public class UserTagRuleJob {
     public void executeUserTagRules() {
         String lockKey = "lock:userTagRuleJob:execute";
         String requestId = SeqUtil.getUUID();
+        boolean locked = false;
 
         try {
             // 尝试加锁，30分钟自动过期
-            if (redisLock.tryLock(lockKey, requestId, 1800)) {
-                String theSwitch = environment.getProperty("userTagRule.job.switch");
-                if (theSwitch != null && theSwitch.equals("1")) {
-                    logger.info("========== UserTagRuleJob 开始执行 ==========");
-                    long startTime = System.currentTimeMillis();
-
-                    // 获取所有启用状态的商户
-                    LambdaQueryWrapper<MtMerchant> merchantWrapper = new LambdaQueryWrapper<>();
-                    merchantWrapper.eq(MtMerchant::getStatus, StatusEnum.ENABLED.getKey());
-                    List<MtMerchant> merchantList = merchantService.list(merchantWrapper);
-
-                    int successCount = 0;
-                    int failCount = 0;
-
-                    for (MtMerchant merchant : merchantList) {
-                        try {
-                            executeRulesForMerchant(merchant.getId());
-                            successCount++;
-                        } catch (Exception e) {
-                            failCount++;
-                            logger.error("处理商户[{}]标签规则失败: {}", merchant.getId(), e.getMessage());
-                        }
-                    }
-
-                    long endTime = System.currentTimeMillis();
-                    logger.info("========== UserTagRuleJob 执行完成 ==========");
-                    logger.info("处理商户数: {}, 成功: {}, 失败: {}, 耗时: {}ms", 
-                        merchantList.size(), successCount, failCount, (endTime - startTime));
-                } else {
-                    logger.info("UserTagRuleJob 开关未开启，跳过执行");
-                }
-            } else {
+            locked = redisLock.tryLock(lockKey, requestId, 1800);
+            if (!locked) {
                 logger.info("UserTagRuleJob 正在执行中，跳过本次任务");
+                return;
+            }
+
+            String theSwitch = environment.getProperty("userTagRule.job.switch");
+            if (theSwitch != null && theSwitch.equals("1")) {
+                logger.info("========== UserTagRuleJob 开始执行 ==========");
+                long startTime = System.currentTimeMillis();
+
+                // 获取所有启用状态的商户
+                LambdaQueryWrapper<MtMerchant> merchantWrapper = new LambdaQueryWrapper<>();
+                merchantWrapper.eq(MtMerchant::getStatus, StatusEnum.ENABLED.getKey());
+                List<MtMerchant> merchantList = merchantService.list(merchantWrapper);
+
+                int successCount = 0;
+                int failCount = 0;
+
+                for (MtMerchant merchant : merchantList) {
+                    try {
+                        executeRulesForMerchant(merchant.getId());
+                        successCount++;
+                    } catch (Exception e) {
+                        failCount++;
+                        logger.error("处理商户[{}]标签规则失败: {}", merchant.getId(), e.getMessage());
+                    }
+                }
+
+                long endTime = System.currentTimeMillis();
+                logger.info("========== UserTagRuleJob 执行完成 ==========");
+                logger.info("处理商户数: {}, 成功: {}, 失败: {}, 耗时: {}ms", 
+                    merchantList.size(), successCount, failCount, (endTime - startTime));
+            } else {
+                logger.info("UserTagRuleJob 开关未开启，跳过执行");
             }
         } catch (Exception e) {
             logger.error("UserTagRuleJob 执行异常: {}", e.getMessage(), e);
+        } finally {
+            // 释放分布式锁
+            if (locked) {
+                redisLock.unlock(lockKey, requestId);
+            }
         }
     }
 
