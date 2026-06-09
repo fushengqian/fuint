@@ -53,7 +53,6 @@ import java.util.*;
 @AllArgsConstructor
 @RequestMapping(value = "/backendApi/goods/goods")
 public class BackendGoodsController extends BaseController {
-
     private static final Logger logger = LoggerFactory.getLogger(BackendGoodsController.class);
 
     private MtGoodsSpecMapper mtGoodsSpecMapper;

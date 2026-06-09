@@ -447,8 +447,8 @@ public class BackendMemberController extends BaseController {
         // 会员分组
         List<UserGroupDto> groupList = new ArrayList<>();
         MemberGroupPage groupPage = new MemberGroupPage();
-        groupPage.setPage(1);
-        groupPage.setPageSize(Constants.ALL_ROWS);
+        groupPage.setPage(Constants.PAGE_NUMBER);
+        groupPage.setPageSize(Constants.MAX_ROWS);
         if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
             groupPage.setMerchantId(accountInfo.getMerchantId());
         }

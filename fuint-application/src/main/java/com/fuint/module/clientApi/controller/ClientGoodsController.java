@@ -114,7 +114,7 @@ public class ClientGoodsController extends BaseController {
     public ResponseObject list(HttpServletRequest request) throws BusinessCheckException {
         Integer storeId = StringUtil.isEmpty(request.getHeader("storeId")) ? 0 : Integer.parseInt(request.getHeader("storeId"));
         String platform = request.getHeader("platform") == null ? "" : request.getHeader("platform");
-        Map<String, Object> goodsData = goodsService.getStoreGoodsList(storeId, "", platform, 0,1, 200);
+        Map<String, Object> goodsData = goodsService.getStoreGoodsList(storeId, "", platform, 0,1, 300);
         return getSuccessResult(goodsData.get("goodsList"));
     }
 
