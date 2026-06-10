@@ -46,6 +46,12 @@ public class CommissionRuleDto implements Serializable {
     @ApiModelProperty("会员值")
     private BigDecimal memberVal;
 
+    @ApiModelProperty("二级散客值")
+    private BigDecimal subVisitorVal;
+
+    @ApiModelProperty("二级会员值")
+    private BigDecimal subMemberVal;
+
     @ApiModelProperty("备注")
     private String description;
 

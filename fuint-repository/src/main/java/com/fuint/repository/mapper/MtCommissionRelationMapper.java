@@ -14,6 +14,8 @@ public interface MtCommissionRelationMapper extends BaseMapper<MtCommissionRelat
 
     Integer getCommissionUserId(@Param("merchantId") Integer merchantId, @Param("userId") Integer userId);
 
+    Integer getSecondLevelCommissionUserId(@Param("merchantId") Integer merchantId, @Param("userId") Integer userId);
+
     Long getInvitedUserCount(@Param("userId") Integer userId);
 
 }

@@ -6,6 +6,10 @@
         select `USER_ID` from mt_commission_relation r where r.MERCHANT_ID = #{merchantId} and r.SUB_USER_ID = #{userId} and `LEVEL` = 1 and `STATUS` = 'A' LIMIT 1;
     </select>
 
+    <select id="getSecondLevelCommissionUserId" resultType="java.lang.Integer">
+        select `USER_ID` from mt_commission_relation r where r.MERCHANT_ID = #{merchantId} and r.SUB_USER_ID = #{userId} and `LEVEL` = 2 and `STATUS` = 'A' LIMIT 1;
+    </select>
+
     <select id="getInvitedUserCount" resultType="java.lang.Long">
         SELECT COUNT(1) FROM mt_commission_relation
         WHERE USER_ID = #{userId} AND STATUS = 'A'
