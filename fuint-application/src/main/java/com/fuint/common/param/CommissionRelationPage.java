@@ -37,4 +37,7 @@ public class CommissionRelationPage extends PageParam implements Serializable {
     @ApiModelProperty("状态，A正常；D作废")
     private String status;
 
+    @ApiModelProperty("等级，1：一级；2：二级")
+    private Integer level;
+
 }
