@@ -136,6 +136,10 @@ public class CommissionLogServiceImpl extends ServiceImpl<MtCommissionLogMapper,
         if (storeId != null && storeId > 0) {
             lambdaQueryWrapper.eq(MtCommissionLog::getStoreId, storeId);
         }
+        Integer userId = commissionLogPage.getUserId();
+        if (userId != null && userId > 0) {
+            lambdaQueryWrapper.eq(MtCommissionLog::getUserId, userId);
+        }
         // 开始时间、结束时间
         String startTime = commissionLogPage.getStartTime();
         String endTime = commissionLogPage.getEndTime();

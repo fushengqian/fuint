@@ -22,6 +22,6 @@
 
     <select id="getCommissionOrderCount" resultType="java.lang.Long">
         SELECT COUNT(DISTINCT ORDER_ID) FROM mt_commission_log
-        WHERE USER_ID = #{userId} AND STATUS = 'A'
+        WHERE USER_ID = #{userId} AND STATUS != 'C'
     </select>
 </mapper>

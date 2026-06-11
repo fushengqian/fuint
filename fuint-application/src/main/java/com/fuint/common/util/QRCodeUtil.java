@@ -37,30 +37,30 @@ public class QRCodeUtil {
      * @param resource     原图
      */
     public static boolean createQrCode(OutputStream outputStream, String content, int width, int height, String imageFormat, String resource) {
-        //设置二维码纠错级别
-        HashMap<EncodeHintType, String> hints = new HashMap<EncodeHintType, String>();
+        //设置二维码纠错级别及编码
+        HashMap<EncodeHintType, Object> hints = new HashMap<>();
         hints.put(EncodeHintType.CHARACTER_SET, "utf-8");
-        width = width + 200;
-        height = height + 200;
+        hints.put(EncodeHintType.MARGIN, 1);
         try {
             //创建比特矩阵(位矩阵)的QR码编码的字符串
             QRCodeWriter qrCodeWriter = new QRCodeWriter();
             BitMatrix byteMatrix = qrCodeWriter.encode(content, BarcodeFormat.QR_CODE, width, height, hints);
 
-            // 使BufferedImage勾画QRCode  (matrixWidth 是行二维码像素点)
+            // 使BufferedImage勾画QRCode
             int matrixWidth = byteMatrix.getWidth();
-            BufferedImage image = new BufferedImage(matrixWidth - 200, matrixWidth - 200, BufferedImage.TYPE_INT_RGB);
+            int matrixHeight = byteMatrix.getHeight();
+            BufferedImage image = new BufferedImage(matrixWidth, matrixHeight, BufferedImage.TYPE_INT_RGB);
 
             // 使用比特矩阵画并保存图像
             image.createGraphics();
             Graphics2D graphics = (Graphics2D) image.getGraphics();
             graphics.setColor(Color.WHITE);
-            graphics.fillRect(0, 0, matrixWidth, matrixWidth);
+            graphics.fillRect(0, 0, matrixWidth, matrixHeight);
             graphics.setColor(Color.BLACK);
             for (int i = 0; i < matrixWidth; i++) {
-                for (int j = 0; j < matrixWidth; j++) {
+                for (int j = 0; j < matrixHeight; j++) {
                     if (byteMatrix.get(i, j)) {
-                        graphics.fillRect(i - 100, j - 100, 1, 1);
+                        graphics.fillRect(i, j, 1, 1);
                     }
                 }
             }
