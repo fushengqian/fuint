@@ -5,10 +5,7 @@ import com.fuint.common.dto.commission.CommissionRelationDto;
 import com.fuint.common.dto.member.UserInfo;
 import com.fuint.common.enums.StatusEnum;
 import com.fuint.common.param.CommissionRelationPage;
-import com.fuint.common.service.CommissionRelationService;
-import com.fuint.common.service.MemberService;
-import com.fuint.common.service.MerchantService;
-import com.fuint.common.service.WeixinService;
+import com.fuint.common.service.*;
 import com.fuint.common.util.AliyunOssUtil;
 import com.fuint.common.util.QRCodeUtil;
 import com.fuint.common.util.TokenUtil;
@@ -67,6 +64,11 @@ public class ClientShareController extends BaseController {
      * 会员服务接口
      * */
     private MemberService memberService;
+
+    /**
+     * 系统设置服务接口
+     * */
+    private SettingService settingService;
 
     /**
      * 获取邀请列表
@@ -162,15 +164,15 @@ public class ClientShareController extends BaseController {
 
         // 如果是相对路径，拼接完整域名
         if (StringUtil.isNotEmpty(qrCodeUrl) && !qrCodeUrl.startsWith("http")) {
-            String uploadUrl = env.getProperty("images.upload.url");
-            if (StringUtil.isNotEmpty(uploadUrl)) {
-                if (uploadUrl.endsWith("/")) {
-                    uploadUrl = uploadUrl.substring(0, uploadUrl.length() - 1);
+            String domain = settingService.getUploadBasePath();
+            if (StringUtil.isNotEmpty(domain)) {
+                if (domain.endsWith("/")) {
+                    domain = domain.substring(0, domain.length() - 1);
                 }
                 if (!qrCodeUrl.startsWith("/")) {
                     qrCodeUrl = "/" + qrCodeUrl;
                 }
-                qrCodeUrl = uploadUrl + qrCodeUrl;
+                qrCodeUrl = domain + qrCodeUrl;
             }
         }
 
@@ -211,7 +213,8 @@ public class ClientShareController extends BaseController {
                 return AliyunOssUtil.upload(ossClient, ossFile, bucketName, folder);
             }
 
-            return baseImage + filePath;
+            String domain = settingService.getUploadBasePath();
+            return domain + baseImage + filePath;
         } catch (Exception e) {
             logger.error("生成 H5 二维码出错：{}", e.getMessage());
             throw new BusinessCheckException("生成 H5 二维码出错");
