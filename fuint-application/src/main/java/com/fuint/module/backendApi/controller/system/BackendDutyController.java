@@ -119,6 +119,13 @@ public class BackendDutyController extends BaseController {
 
         AccountInfo accountInfo = TokenUtil.getAccountInfo();
 
+        // 校验角色层级：只能创建不高于自己层级的角色
+        int currentLevel = getCurrentUserHighestLevel(accountInfo.getId());
+        int targetLevel = Integer.parseInt(type);
+        if (targetLevel < currentLevel) {
+            return getFailureResult(201, "不能创建比自己层级更高的角色");
+        }
+
         // 获取角色所分配的菜单
         List<TSource> sources = null;
 
@@ -197,6 +204,17 @@ public class BackendDutyController extends BaseController {
             return getFailureResult(201, "抱歉，您没有修改权限");
         }
 
+        // 校验角色层级：不能修改比自己层级高的角色，也不能把角色提升到比自己层级高
+        int currentLevel = getCurrentUserHighestLevel(accountInfo.getId());
+        int existingLevel = Integer.parseInt(duty.getDutyType());
+        int newLevel = Integer.parseInt(type);
+        if (existingLevel < currentLevel) {
+            return getFailureResult(201, "不能修改比自己层级更高的角色");
+        }
+        if (newLevel < currentLevel) {
+            return getFailureResult(201, "不能将角色设置为比自己更高的层级");
+        }
+
         duty.setDescription(description);
         duty.setDutyName(name);
         duty.setStatus(status);
@@ -240,5 +258,30 @@ public class BackendDutyController extends BaseController {
         AccountInfo accountInfo = TokenUtil.getAccountInfo();
         tDutyService.updateStatus(accountInfo.getMerchantId(), dutyStatusRequest);
         return getSuccessResult(true);
+    }
+
+    /**
+     * 获取当前登录用户的最高角色层级
+     * 层级数值越小权限越高：1=超级管理员, 2=普通管理员, 3=用户角色
+     * @return 最小 dutyType 值（即最高权限层级），默认返回 Integer.MAX_VALUE
+     */
+    private int getCurrentUserHighestLevel(Integer accountId) {
+        List<Long> dutyIds = tDutyService.findDutiesByAccountId(accountId);
+        if (dutyIds == null || dutyIds.isEmpty()) {
+            return Integer.MAX_VALUE;
+        }
+        int minLevel = Integer.MAX_VALUE;
+        for (Long dutyId : dutyIds) {
+            TDuty duty = tDutyService.getRoleById(dutyId);
+            if (duty != null && StringUtil.isNotEmpty(duty.getDutyType())) {
+                try {
+                    int level = Integer.parseInt(duty.getDutyType());
+                    if (level < minLevel) {
+                        minLevel = level;
+                    }
+                } catch (NumberFormatException ignored) {}
+            }
+        }
+        return minLevel;
     }
 }
