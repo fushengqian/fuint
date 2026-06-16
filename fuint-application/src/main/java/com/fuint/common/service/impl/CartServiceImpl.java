@@ -4,6 +4,8 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fuint.common.enums.StatusEnum;
 import com.fuint.common.service.CartService;
+import com.fuint.common.service.MemberService;
+import com.fuint.common.service.UserGradeService;
 import com.fuint.framework.annoation.OperationServiceLog;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.repository.mapper.MtCartMapper;
@@ -12,6 +14,8 @@ import com.fuint.repository.mapper.MtGoodsSkuMapper;
 import com.fuint.repository.model.MtCart;
 import com.fuint.repository.model.MtGoods;
 import com.fuint.repository.model.MtGoodsSku;
+import com.fuint.repository.model.MtUser;
+import com.fuint.repository.model.MtUserGrade;
 import com.fuint.utils.StringUtil;
 import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Lazy;
@@ -38,6 +42,10 @@ public class CartServiceImpl extends ServiceImpl<MtCartMapper, MtCart> implement
     private MtGoodsMapper mtGoodsMapper;
 
     private MtGoodsSkuMapper mtGoodsSkuMapper;
+
+    private MemberService memberService;
+
+    private UserGradeService userGradeService;
 
     /**
      * 切换购物车给会员
@@ -120,6 +128,11 @@ public class CartServiceImpl extends ServiceImpl<MtCartMapper, MtCart> implement
                 } else {
                     throw new BusinessCheckException(mtGoods.getName() + "库存不足了");
                 }
+            }
+
+            // 校验会员等级购买限制
+            if (reqDto.getUserId() != null && reqDto.getUserId() > 0) {
+                validateGradeIds(mtGoods, reqDto.getUserId(), reqDto.getMerchantId());
             }
         }
 
@@ -318,5 +331,67 @@ public class CartServiceImpl extends ServiceImpl<MtCartMapper, MtCart> implement
             throw new BusinessCheckException("执行挂单失败");
         }
         return mtCart;
+    }
+
+    /**
+     * 校验商品会员等级购买限制
+     *
+     * @param mtGoods 商品信息
+     * @param userId 用户ID
+     * @param merchantId 商户ID
+     * @throws BusinessCheckException
+     */
+    private void validateGradeIds(MtGoods mtGoods, Integer userId, Integer merchantId) throws BusinessCheckException {
+        String gradeIds = mtGoods.getGradeIds();
+        if (StringUtil.isEmpty(gradeIds)) {
+            return;
+        }
+
+        MtUser userInfo = memberService.queryMemberById(userId);
+        Integer userGradeId = (userInfo != null && userInfo.getGradeId() != null) ? userInfo.getGradeId() : null;
+        if (userGradeId == null) {
+            MtUserGrade initGrade = userGradeService.getInitUserGrade(merchantId);
+            userGradeId = (initGrade != null) ? initGrade.getId() : null;
+        }
+        if (userGradeId == null) {
+            throw new BusinessCheckException("该商品是" + buildGradeNames(gradeIds, merchantId) + "会员专属");
+        }
+
+        String[] restrictIds = gradeIds.split(",");
+        boolean allowed = false;
+        for (String id : restrictIds) {
+            if (StringUtil.isNotEmpty(id.trim()) && id.trim().equals(userGradeId.toString())) {
+                allowed = true;
+                break;
+            }
+        }
+
+        if (!allowed) {
+            throw new BusinessCheckException("该商品是" + buildGradeNames(gradeIds, merchantId) + "会员专属");
+        }
+    }
+
+    /**
+     * 构建会员等级名称字符串，用于错误提示
+     *
+     * @param gradeIds 等级限制（逗号分隔的等级ID）
+     * @param merchantId 商户ID
+     * @return 等级名称字符串
+     */
+    private String buildGradeNames(String gradeIds, Integer merchantId) {
+        String[] restrictIds = gradeIds.split(",");
+        StringBuilder names = new StringBuilder();
+        for (String id : restrictIds) {
+            if (StringUtil.isNotEmpty(id.trim())) {
+                MtUserGrade grade = userGradeService.queryUserGradeById(merchantId, Integer.parseInt(id.trim()), null);
+                if (grade != null) {
+                    if (names.length() > 0) {
+                        names.append("、");
+                    }
+                    names.append(grade.getName());
+                }
+            }
+        }
+        return names.length() > 0 ? names.toString() : "指定等级";
     }
 }

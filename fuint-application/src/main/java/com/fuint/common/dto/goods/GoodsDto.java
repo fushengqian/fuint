@@ -99,6 +99,9 @@ public class GoodsDto implements Serializable {
     @ApiModelProperty("会员是否有折扣")
     private String isMemberDiscount;
 
+    @ApiModelProperty("会员等级限制，逗号分隔的等级ID，空表示不限")
+    private String gradeIds;
+
     @ApiModelProperty("排序")
     private Integer sort;
 

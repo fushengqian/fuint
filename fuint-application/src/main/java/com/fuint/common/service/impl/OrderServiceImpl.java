@@ -508,6 +508,45 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
                 cartList.add(mtCart);
             }
 
+            // 校验会员等级购买限制
+            if (!userInfo.getIsStaff().equals(YesOrNoEnum.YES.getKey()) && !orderDto.getIsVisitor().equals(YesOrNoEnum.YES.getKey())) {
+                for (MtCart cart : cartList) {
+                    MtGoods goods = mtGoodsMapper.selectById(cart.getGoodsId());
+                    if (goods != null && StringUtil.isNotEmpty(goods.getGradeIds())) {
+                        boolean gradeAllowed = false;
+                        String[] restrictIds = goods.getGradeIds().split(",");
+                        Integer gradeId = userInfo.getGradeId();
+                        if (gradeId == null) {
+                            MtUserGrade initGrade = userGradeService.getInitUserGrade(orderDto.getMerchantId());
+                            gradeId = (initGrade != null) ? initGrade.getId() : null;
+                        }
+                        if (gradeId != null) {
+                            for (String id : restrictIds) {
+                                if (StringUtil.isNotEmpty(id.trim()) && id.trim().equals(gradeId.toString())) {
+                                    gradeAllowed = true;
+                                    break;
+                                }
+                            }
+                        }
+                        if (!gradeAllowed) {
+                            StringBuilder gradeNames = new StringBuilder();
+                            for (String id : restrictIds) {
+                                if (StringUtil.isNotEmpty(id.trim())) {
+                                    MtUserGrade grade = userGradeService.queryUserGradeById(orderDto.getMerchantId(), Integer.parseInt(id.trim()), null);
+                                    if (grade != null) {
+                                        if (gradeNames.length() > 0) {
+                                            gradeNames.append("、");
+                                        }
+                                        gradeNames.append(grade.getName());
+                                    }
+                                }
+                            }
+                            throw new BusinessCheckException(goods.getName() + "是" + (gradeNames.length() > 0 ? gradeNames.toString() : "指定等级") + "会员专属");
+                        }
+                    }
+                }
+            }
+
             boolean isUsePoint = orderDto.getUsePoint() > 0 ? true : false;
             cartData = calculateCartGoods(orderInfo.getMerchantId(), orderDto.getUserId(), cartList, orderDto.getCouponId(), isUsePoint, orderDto.getPlatform(), orderInfo.getOrderMode());
 

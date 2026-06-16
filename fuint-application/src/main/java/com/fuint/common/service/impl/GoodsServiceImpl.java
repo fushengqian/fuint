@@ -380,6 +380,9 @@ public class GoodsServiceImpl extends ServiceImpl<MtGoodsMapper, MtGoods> implem
         if (StringUtil.isNotEmpty(reqDto.getIsMemberDiscount())) {
             mtGoods.setIsMemberDiscount(reqDto.getIsMemberDiscount());
         }
+        if (reqDto.getGradeIds() != null) {
+            mtGoods.setGradeIds(reqDto.getGradeIds());
+        }
         if (StringUtil.isNotEmpty(reqDto.getImages())) {
             mtGoods.setImages(reqDto.getImages());
         }
