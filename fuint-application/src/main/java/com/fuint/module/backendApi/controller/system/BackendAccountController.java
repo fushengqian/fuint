@@ -188,18 +188,6 @@ public class BackendAccountController extends BaseController {
             if (duties.size() < roleIds.size()) {
                 return getFailureResult(201, "您分配的角色不存在");
             }
-            // 校验不能分配比自己层级更高的角色
-            int currentLevel = getOperatorHighestLevel(account.getId());
-            for (TDuty duty : duties) {
-                if (StringUtil.isNotEmpty(duty.getDutyType())) {
-                    try {
-                        int roleLevel = Integer.parseInt(duty.getDutyType());
-                        if (roleLevel < currentLevel) {
-                            return getFailureResult(201, "不能分配比自己层级更高的角色");
-                        }
-                    } catch (NumberFormatException ignored) {}
-                }
-            }
         }
 
         TAccount tAccount = new TAccount();
@@ -288,18 +276,6 @@ public class BackendAccountController extends BaseController {
             if (duties.size() < roleIds.size()) {
                 return getFailureResult(201, "您分配的角色不存在");
             }
-            // 校验不能分配比自己层级更高的角色
-            int currentLevel = getOperatorHighestLevel(loginAccount.getId());
-            for (TDuty duty : duties) {
-                if (StringUtil.isNotEmpty(duty.getDutyType())) {
-                    try {
-                        int roleLevel = Integer.parseInt(duty.getDutyType());
-                        if (roleLevel < currentLevel) {
-                            return getFailureResult(201, "不能分配比自己层级更高的角色");
-                        }
-                    } catch (NumberFormatException ignored) {}
-                }
-            }
         }
 
         tAccountService.editAccount(tAccount, duties);
@@ -376,30 +352,5 @@ public class BackendAccountController extends BaseController {
         tAccountService.updateAccount(tAccount, accountInfo);
 
         return getSuccessResult(true);
-    }
-
-    /**
-     * 获取当前操作者的最高角色层级
-     * 层级数值越小权限越高：1=超级管理员, 2=普通管理员, 3=用户角色
-     * @return 最小 dutyType 值，默认返回 Integer.MAX_VALUE
-     */
-    private int getOperatorHighestLevel(Integer accountId) {
-        List<Long> dutyIds = tDutyService.findDutiesByAccountId(accountId);
-        if (dutyIds == null || dutyIds.isEmpty()) {
-            return Integer.MAX_VALUE;
-        }
-        int minLevel = Integer.MAX_VALUE;
-        for (Long dutyId : dutyIds) {
-            TDuty duty = tDutyService.getRoleById(dutyId);
-            if (duty != null && StringUtil.isNotEmpty(duty.getDutyType())) {
-                try {
-                    int level = Integer.parseInt(duty.getDutyType());
-                    if (level < minLevel) {
-                        minLevel = level;
-                    }
-                } catch (NumberFormatException ignored) {}
-            }
-        }
-        return minLevel;
     }
 }

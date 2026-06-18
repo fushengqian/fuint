@@ -28,6 +28,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -226,8 +227,13 @@ public class ClientSignController extends BaseController {
         mtUser.setDescription("会员自行注册新账号");
         mtUser.setIsStaff(YesOrNoEnum.NO.getKey());
         mtUser.setIp(ip);
-        MtUser userInfo = memberService.addMember(mtUser, shareId);
 
+        MtUser mtUserExist = memberService.queryMemberByName(mtUser.getMerchantId(), mtUser.getName());
+        if (mtUserExist != null) {
+            return getFailureResult(201,"该用户名已存在");
+        }
+
+        MtUser userInfo = memberService.addMember(mtUser, shareId);
         if (userInfo != null) {
             String token = TokenUtil.generateToken(userAgent, userInfo.getId());
             UserInfo loginInfo = new UserInfo();
