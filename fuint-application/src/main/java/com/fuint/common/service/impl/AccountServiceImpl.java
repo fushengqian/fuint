@@ -9,6 +9,7 @@ import com.fuint.common.enums.StatusEnum;
 import com.fuint.common.param.AccountPage;
 import com.fuint.common.service.AccountService;
 import com.fuint.common.service.CaptchaService;
+import com.fuint.common.service.MerchantService;
 import com.fuint.common.service.StaffService;
 import com.fuint.common.service.StoreService;
 import com.fuint.common.util.TokenUtil;
@@ -65,6 +66,11 @@ public class AccountServiceImpl extends ServiceImpl<TAccountMapper, TAccount> im
      * 店铺服务接口
      * */
     private StoreService storeService;
+
+    /**
+     * 商户服务接口
+     * */
+    private MerchantService merchantService;
 
     /**
      * 验证码服务接口
@@ -411,6 +417,9 @@ public class AccountServiceImpl extends ServiceImpl<TAccountMapper, TAccount> im
                     throw new BusinessCheckException("您的商户已被禁用，请联系平台方");
                 }
             }
+
+            // 商户有效期校验
+            merchantService.checkMerchantValid(tAccount.getMerchantId());
 
             // 店铺已禁用
             if (tAccount.getStoreId() != null && tAccount.getStoreId() > 0) {

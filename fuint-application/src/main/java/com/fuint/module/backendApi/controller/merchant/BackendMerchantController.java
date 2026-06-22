@@ -144,6 +144,12 @@ public class BackendMerchantController extends BaseController {
             return getFailureResult(201, "抱歉，您没有添加商户的权限");
         }
 
+        // 商户自有管理员不能修改有效期，清掉参数以保护原值
+        if (merchantId != null && merchantId > 0) {
+            mtMerchant.setStartTime(null);
+            mtMerchant.setEndTime(null);
+        }
+
         mtMerchant.setOperator(accountInfo.getAccountName());
         merchantService.saveMerchant(mtMerchant);
 

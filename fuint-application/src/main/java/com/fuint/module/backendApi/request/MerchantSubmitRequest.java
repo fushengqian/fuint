@@ -4,6 +4,8 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.Date;
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 /**
  * 提交商户请求参数
@@ -58,5 +60,13 @@ public class MerchantSubmitRequest implements Serializable {
 
     @ApiModelProperty(value="结算比例", name="settleRate")
     private BigDecimal settleRate;
+
+    @ApiModelProperty(value="有效期开始时间", name="startTime")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    private Date startTime;
+
+    @ApiModelProperty(value="有效期结束时间", name="endTime")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    private Date endTime;
 
 }

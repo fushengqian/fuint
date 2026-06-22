@@ -94,6 +94,8 @@ public class ClientSignController extends BaseController {
         JSONObject paramsObj = new JSONObject(param);
         logger.info("微信授权登录参数：{}", param);
         Integer merchantId = merchantService.getMerchantId(merchantNo);
+        // 校验商户是否已过期
+        merchantService.checkMerchantValid(merchantId);
         JSONObject userInfo = paramsObj.getJSONObject("userInfo");
         JSONObject loginInfo = weixinService.getWxProfile(merchantId, param.get("code").toString());
         if (loginInfo == null) {
@@ -152,6 +154,8 @@ public class ClientSignController extends BaseController {
         String platform = request.getHeader("platform") == null ? "" : request.getHeader("platform");
         String shareId = param.get("shareId") == null ? "0" : param.get("shareId").toString();
         Integer merchantId = merchantService.getMerchantId(merchantNo);
+        // 校验商户是否已过期
+        merchantService.checkMerchantValid(merchantId);
         JSONObject userInfo = weixinService.getWxOpenId(merchantId, param.get("code").toString());
         String ip = CommonUtil.getIPFromHttpRequest(request);
         if (userInfo == null) {
@@ -203,6 +207,8 @@ public class ClientSignController extends BaseController {
         Integer storeId = StringUtil.isEmpty(request.getHeader("storeId")) ? 0 : Integer.parseInt(request.getHeader("storeId"));
         String userAgent = request.getHeader("user-agent") == null ? "" : request.getHeader("user-agent");
         Integer merchantId = merchantService.getMerchantId(merchantNo);
+        // 校验商户是否已过期
+        merchantService.checkMerchantValid(merchantId);
         String ip = CommonUtil.getIPFromHttpRequest(request);
         if (StringUtil.isEmpty(account)) {
             return getFailureResult(201,"用户名不能为空");
@@ -283,6 +289,8 @@ public class ClientSignController extends BaseController {
         TokenDto dto = new TokenDto();
         MtUser mtUser = null;
         Integer merchantId = merchantService.getMerchantId(merchantNo);
+        // 校验商户是否已过期
+        merchantService.checkMerchantValid(merchantId);
         // 方式1：通过短信验证码登录
         if (StringUtil.isNotEmpty(mobile) && StringUtil.isNotEmpty(verifyCode)) {
             // 如果已经登录，免输入验证码

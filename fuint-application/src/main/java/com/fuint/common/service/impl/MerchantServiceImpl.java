@@ -180,6 +180,13 @@ public class MerchantServiceImpl extends ServiceImpl<MtMerchantMapper, MtMerchan
         mtMerchant.setPhone(merchant.getPhone());
         mtMerchant.setAddress(merchant.getAddress());
         mtMerchant.setStatus(merchant.getStatus());
+        // 有效期：仅当传入非空值时才更新（平台管理员可设置，商户管理员不可修改）
+        if (merchant.getStartTime() != null) {
+            mtMerchant.setStartTime(merchant.getStartTime());
+        }
+        if (merchant.getEndTime() != null) {
+            mtMerchant.setEndTime(merchant.getEndTime());
+        }
 
         if (mtMerchant.getStatus() == null) {
             mtMerchant.setStatus(StatusEnum.ENABLED.getKey());
@@ -434,5 +441,38 @@ public class MerchantServiceImpl extends ServiceImpl<MtMerchantMapper, MtMerchan
             settingService.saveSetting(mtSetting);
         }
         return getMerchantSettingInfo(params.getMerchantId(), params.getStoreId());
+    }
+
+    /**
+     * 校验商户是否在有效期内
+     * 有效期为空则视为永久有效
+     *
+     * @param merchantId 商户ID
+     * @throws BusinessCheckException 商户已过期时抛出
+     */
+    @Override
+    public void checkMerchantValid(Integer merchantId) throws BusinessCheckException {
+        if (merchantId == null || merchantId <= 0) {
+            return;
+        }
+        MtMerchant merchant = queryMerchantById(merchantId);
+        if (merchant == null) {
+            return;
+        }
+        Date now = new Date();
+        Date startTime = merchant.getStartTime();
+        Date endTime = merchant.getEndTime();
+        // 有效期为空，视为永久有效
+        if (startTime == null && endTime == null) {
+            return;
+        }
+        // 未到开始时间
+        if (startTime != null && now.before(startTime)) {
+            throw new BusinessCheckException("商户使用权尚未生效");
+        }
+        // 已过结束时间
+        if (endTime != null && now.after(endTime)) {
+            throw new BusinessCheckException("商户使用权已过期");
+        }
     }
 }
