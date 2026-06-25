@@ -33,10 +33,11 @@ public interface MerchantService extends IService<MtMerchant> {
      * 保存商户信息
      *
      * @param  mtMerchant
+     * @param accountInfo
      * @throws BusinessCheckException
      * @return
      */
-    MtMerchant saveMerchant(MtMerchant mtMerchant) throws BusinessCheckException;
+    MtMerchant saveMerchant(MtMerchant mtMerchant, AccountInfo accountInfo) throws BusinessCheckException;
 
     /**
      * 根据ID获取商户信息

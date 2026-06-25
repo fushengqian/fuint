@@ -122,13 +122,14 @@ public class MerchantServiceImpl extends ServiceImpl<MtMerchantMapper, MtMerchan
      * 保存商户信息
      *
      * @param  merchant 商户信息
+     * @param  accountInfo 操作人信息
      * @throws BusinessCheckException
      * @return
      */
     @Override
     @Transactional
     @OperationServiceLog(description = "保存商户信息")
-    public MtMerchant saveMerchant(MtMerchant merchant) throws BusinessCheckException {
+    public MtMerchant saveMerchant(MtMerchant merchant, AccountInfo accountInfo) throws BusinessCheckException {
         MtMerchant mtMerchant = queryMerchantByName(merchant.getName());
         if (mtMerchant != null) {
             if ((merchant.getId() != null && !merchant.getId().equals(mtMerchant.getId())) || (merchant.getId() == null || merchant.getId() <= 0)) {
@@ -180,11 +181,11 @@ public class MerchantServiceImpl extends ServiceImpl<MtMerchantMapper, MtMerchan
         mtMerchant.setPhone(merchant.getPhone());
         mtMerchant.setAddress(merchant.getAddress());
         mtMerchant.setStatus(merchant.getStatus());
-        // 有效期：仅当传入非空值时才更新（平台管理员可设置，商户管理员不可修改）
-        if (merchant.getStartTime() != null) {
+        // 平台管理员可设置，商户管理员不可修改
+        if (accountInfo.getMerchantId() == null || accountInfo.getMerchantId() <= 0 ) {
             mtMerchant.setStartTime(merchant.getStartTime());
         }
-        if (merchant.getEndTime() != null) {
+        if (accountInfo.getMerchantId() == null || accountInfo.getMerchantId() <= 0 ) {
             mtMerchant.setEndTime(merchant.getEndTime());
         }
 
