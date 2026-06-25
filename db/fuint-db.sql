@@ -488,6 +488,7 @@ CREATE TABLE `mt_goods` (
   `SALE_POINT` varchar(100) DEFAULT '' COMMENT '商品卖点',
   `CAN_USE_POINT` char(1) DEFAULT 'N' COMMENT '可否使用积分抵扣',
   `IS_MEMBER_DISCOUNT` char(1) DEFAULT 'Y' COMMENT '会员是否有折扣',
+  `GRADE_IDS` varchar(500) DEFAULT '' COMMENT '会员等级限制，逗号分隔的等级ID，空表示不限',
   `SORT` int DEFAULT '0' COMMENT '排序',
   `DESCRIPTION` text COMMENT '商品描述',
   `CREATE_TIME` datetime DEFAULT NULL COMMENT '创建时间',
@@ -569,6 +570,8 @@ CREATE TABLE `mt_merchant` (
   `DESCRIPTION` varchar(2000) DEFAULT '' COMMENT '备注信息',
   `CREATE_TIME` datetime DEFAULT NULL COMMENT '创建时间',
   `UPDATE_TIME` datetime DEFAULT NULL COMMENT '更新时间',
+  `START_TIME` datetime DEFAULT NULL COMMENT '有效期开始时间',
+  `END_TIME` datetime DEFAULT NULL COMMENT '有效期结束时间',
   `STATUS` char(1) DEFAULT 'A' COMMENT '状态，A：有效/启用；D：无效',
   `OPERATOR` varchar(30) DEFAULT '' COMMENT '最后操作人',
   PRIMARY KEY (`ID`)
@@ -1314,6 +1317,8 @@ CREATE TABLE `t_source` (
   KEY `index-parent-id` (`parent_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='菜单表';
 
+/*Table structure for table `mt_user_tag` */
+
 DROP TABLE IF EXISTS `mt_user_tag`;
 
 CREATE TABLE `mt_user_tag` (
@@ -1389,3 +1394,4 @@ CREATE TABLE `mt_user_tag_rule_log` (
   KEY `IDX_RULE_ID` (`RULE_ID`),
   KEY `IDX_USER_ID` (`USER_ID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='标签规则执行记录表';
+
