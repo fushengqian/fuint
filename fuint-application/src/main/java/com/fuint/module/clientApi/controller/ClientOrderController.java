@@ -6,6 +6,7 @@ import com.fuint.common.dto.order.UserOrderDto;
 import com.fuint.common.enums.OrderStatusEnum;
 import com.fuint.common.param.OrderListParam;
 import com.fuint.common.service.OrderService;
+import com.fuint.common.util.QRCodeUtil;
 import com.fuint.common.util.TokenUtil;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.pagination.PaginationResponse;
@@ -16,9 +17,13 @@ import com.fuint.utils.StringUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.AllArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.ByteArrayOutputStream;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -34,6 +39,8 @@ import java.util.Map;
 @AllArgsConstructor
 @RequestMapping(value = "/clientApi/order")
 public class ClientOrderController extends BaseController {
+
+    private static final Logger logger = LoggerFactory.getLogger(ClientOrderController.class);
 
     /**
      * 订单服务接口
@@ -148,5 +155,53 @@ public class ClientOrderController extends BaseController {
         }
 
         return getSuccessResult(result);
+    }
+
+    /**
+     * 生成订单核销二维码
+     */
+    @ApiOperation(value = "生成订单核销二维码")
+    @RequestMapping(value = "/verifyQrCode", method = RequestMethod.GET)
+    @CrossOrigin
+    public ResponseObject verifyQrCode(HttpServletRequest request) throws BusinessCheckException {
+        UserInfo mtUser = TokenUtil.getUserInfo();
+        String orderId = request.getParameter("orderId");
+        if (StringUtil.isEmpty(orderId)) {
+            return getFailureResult(2000, "订单不能为空");
+        }
+
+        UserOrderDto orderInfo;
+        if (orderId.length() >= 12) {
+            orderInfo = orderService.getOrderByOrderSn(orderId);
+        } else {
+            orderInfo = orderService.getMyOrderById(Integer.parseInt(orderId));
+        }
+
+        if (!orderInfo.getUserId().equals(mtUser.getId())) {
+            return getFailureResult(201, "订单信息有误");
+        }
+
+        if (orderInfo.getVerifyCode() == null || StringUtil.isEmpty(orderInfo.getVerifyCode())) {
+            return getFailureResult(201, "该订单无需核销");
+        }
+
+        // 构建二维码内容：JSON格式包含订单ID和核销码
+        String qrContent = "{\"orderId\":" + orderInfo.getId() + ",\"code\":\"" + orderInfo.getVerifyCode() + "\"}";
+
+        // 生成二维码图片并编码为base64
+        try {
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            QRCodeUtil.createQrCode(outputStream, qrContent, 400, 400, "png", null);
+            String base64QrCode = "data:image/png;base64," + Base64.getEncoder().encodeToString(outputStream.toByteArray());
+            outputStream.close();
+
+            Map<String, Object> result = new HashMap<>();
+            result.put("qrCode", base64QrCode);
+            result.put("verifyCode", orderInfo.getVerifyCode());
+            return getSuccessResult(result);
+        } catch (Exception e) {
+            logger.error("生成核销二维码失败：{}", e.getMessage());
+            return getFailureResult(201, "生成核销二维码失败");
+        }
     }
 }
