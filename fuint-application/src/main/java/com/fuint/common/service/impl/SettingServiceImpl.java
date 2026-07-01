@@ -165,6 +165,14 @@ public class SettingServiceImpl extends ServiceImpl<MtSettingMapper, MtSetting> 
             }
         }
 
+        // 确保返回的路径不为 null，并去掉末尾的斜杠
+        if (StringUtil.isEmpty(basePath)) {
+            basePath = "";
+        }
+        if (basePath.endsWith("/")) {
+            basePath = basePath.substring(0, basePath.length() - 1);
+        }
+
         return basePath;
     }
 
