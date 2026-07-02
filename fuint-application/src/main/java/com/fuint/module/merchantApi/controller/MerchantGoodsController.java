@@ -73,9 +73,6 @@ public class MerchantGoodsController extends BaseController {
 
         param.setMerchantId(staffInfo.getMerchantId());
         param.setStoreId(staffInfo.getStoreId());
-        if (StringUtil.isEmpty(param.getStatus())) {
-            param.setStatus(StatusEnum.ENABLED.getKey());
-        }
 
         PaginationResponse<GoodsDto> paginationResponse = goodsService.queryGoodsListByPagination(param);
 
