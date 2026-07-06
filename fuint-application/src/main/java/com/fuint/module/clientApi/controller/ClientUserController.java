@@ -340,8 +340,7 @@ public class ClientUserController extends BaseController {
         }
         if (StringUtil.isNotEmpty(password)) {
             if (StringUtil.isNotEmpty(passwordOld) && StringUtil.isNotEmpty(mtUser.getSalt())) {
-                String pass = memberService.deCodePassword(passwordOld, mtUser.getSalt());
-                if (!pass.equals(mtUser.getPassword())) {
+                if (!memberService.verifyPassword(passwordOld, mtUser.getPassword(), mtUser.getSalt())) {
                     return getFailureResult(201, "旧密码输入有误");
                 }
             }

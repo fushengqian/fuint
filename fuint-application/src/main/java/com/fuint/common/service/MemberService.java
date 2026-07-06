@@ -248,6 +248,16 @@ public interface MemberService extends IService<MtUser> {
     String deCodePassword(String password, String salt);
 
     /**
+     * 验证密码（兼容旧格式）
+     *
+     * @param rawPassword 明文密码
+     * @param storedHash 存储的密码哈希
+     * @param salt 加密盐值
+     * @return
+     */
+    boolean verifyPassword(String rawPassword, String storedHash, String salt);
+
+    /**
      * 获取会员ID列表
      *
      * @param merchantId 商户ID

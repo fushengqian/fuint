@@ -6,14 +6,13 @@ import com.fuint.common.dto.system.AccountInfo;
 import com.fuint.common.dto.member.UserInfo;
 import com.fuint.utils.StringUtil;
 import nl.bitwalker.useragentutils.UserAgent;
-import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpServletRequest;
+import java.security.SecureRandom;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Random;
 
 /**
  * 登录Token服务接口
@@ -21,12 +20,13 @@ import java.util.Random;
  * Created by FSQ
  * CopyRight https://www.fuint.cn
  */
-@Component
 public class TokenUtil {
 
     public static final int TOKEN_OVER_TIME = 604800;
 
     public static final String TOKEN_NAME = "Access-Token";
+
+    private static final SecureRandom SECURE_RANDOM = new SecureRandom();
 
     public static HttpServletRequest getCurrentRequest() {
         ServletRequestAttributes attributes =
@@ -49,13 +49,9 @@ public class TokenUtil {
     }
 
     /**
-     * 生成token
-     *
-     * @param userAgent
-     * @param userId
-     * @return
-     * */
-    public static String generateToken(String userAgent, Integer userId) {
+     * 构建Token源字符串（各生成方法共用）
+     */
+    private static String buildTokenSource(String userAgent, Integer userId) {
         StringBuilder stringBuilder = new StringBuilder();
         UserAgent userAgent1 = UserAgent.parseUserAgentString(userAgent);
         if (userAgent1.getOperatingSystem().isMobileDevice()) {
@@ -63,11 +59,21 @@ public class TokenUtil {
         } else {
             stringBuilder.append("PC_");
         }
-
         stringBuilder.append(userId);
         stringBuilder.append(new SimpleDateFormat("yyyyMMddHHmmssSSS").format(new Date()) + "_");
-        stringBuilder.append(new Random().nextInt((999999 - 111111 + 1)) + 111111);
-        String token = MD5Util.getMD5(stringBuilder.toString()).replace("+", "1").replaceAll("&", "8");
+        stringBuilder.append(SECURE_RANDOM.nextInt(900000) + 100000);
+        return stringBuilder.toString();
+    }
+
+    /**
+     * 生成token
+     *
+     * @param userAgent
+     * @param userId
+     * @return
+     * */
+    public static String generateToken(String userAgent, Integer userId) {
+        String token = SHAUtil.sha256(buildTokenSource(userAgent, userId));
 
         UserInfo userLoginInfo = new UserInfo();
         userLoginInfo.setId(userId);
@@ -85,18 +91,7 @@ public class TokenUtil {
      * @return
      * */
     public static String generateToken(String userAgent, AccountInfo accountInfo) {
-        StringBuilder stringBuilder = new StringBuilder();
-        UserAgent userAgent1 = UserAgent.parseUserAgentString(userAgent);
-        if (userAgent1.getOperatingSystem().isMobileDevice()) {
-            stringBuilder.append("APP_");
-        } else {
-            stringBuilder.append("PC_");
-        }
-
-        stringBuilder.append(accountInfo.getId());
-        stringBuilder.append(new SimpleDateFormat("yyyyMMddHHmmssSSS").format(new Date()) + "_");
-        stringBuilder.append(new Random().nextInt((999999 - 111111 + 1)) + 111111);
-        String token = MD5Util.getMD5(stringBuilder.toString()).replace("+", "1").replaceAll("&", "8");
+        String token = SHAUtil.sha256(buildTokenSource(userAgent, accountInfo.getId()));
 
         accountInfo.setToken(token);
         saveAccountToken(accountInfo);

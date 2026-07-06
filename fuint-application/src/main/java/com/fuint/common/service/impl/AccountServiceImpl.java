@@ -223,7 +223,6 @@ public class AccountServiceImpl extends ServiceImpl<TAccountMapper, TAccount> im
         account.setStoreId(tAccount.getStoreId());
         account.setCreateDate(new Date());
         account.setModifyDate(new Date());
-        account.setStoreId(tAccount.getStoreId());
         account.setStaffId(tAccount.getStaffId());
         account.setPassword(tAccount.getPassword());
         this.entryptPassword(account);

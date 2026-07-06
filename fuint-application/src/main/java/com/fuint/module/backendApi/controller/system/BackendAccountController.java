@@ -134,8 +134,6 @@ public class BackendAccountController extends BaseController {
             accountDto.setMerchantId(tAccount.getMerchantId());
             if (tAccount.getStoreId() > 0) {
                 accountDto.setStoreId(tAccount.getStoreId());
-            }
-            if (tAccount.getStoreId() > 0) {
                 MtStore mtStore = storeService.queryStoreById(tAccount.getStoreId());
                 if (mtStore != null) {
                     accountDto.setStoreName(mtStore.getName());

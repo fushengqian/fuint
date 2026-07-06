@@ -15,6 +15,8 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.*;
@@ -26,6 +28,8 @@ import java.util.*;
  * CopyRight https://www.fuint.cn
  */
 public class HttpClientUtil {
+
+    private static final Logger logger = LoggerFactory.getLogger(HttpClientUtil.class);
 
     public static String doGet(String url) {
         return doGet(url, null);
@@ -59,23 +63,23 @@ public class HttpClientUtil {
             // 通过EntityUtils中的toString方法将结果转换为字符串
             result = org.apache.http.util.EntityUtils.toString(entity);
         } catch (ClientProtocolException e) {
-            e.printStackTrace();
+            logger.error("HTTP GET 协议异常", e);
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error("HTTP GET IO异常", e);
         } finally {
             // 关闭资源
             if (null != response) {
                 try {
                     response.close();
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    logger.error("HTTP 响应关闭异常", e);
                 }
             }
             if (null != httpClient) {
                 try {
                     httpClient.close();
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    logger.error("HTTP 客户端关闭异常", e);
                 }
             }
         }
@@ -130,7 +134,7 @@ public class HttpClientUtil {
             try {
                 httpPost.setEntity(new UrlEncodedFormEntity(nvps, charset));
             } catch (UnsupportedEncodingException e) {
-                e.printStackTrace();
+                logger.error("URL编码异常", e);
             }
         }
         try {
@@ -140,23 +144,23 @@ public class HttpClientUtil {
             HttpEntity entity = httpResponse.getEntity();
             result = org.apache.http.util.EntityUtils.toString(entity);
         } catch (ClientProtocolException e) {
-            e.printStackTrace();
+            logger.error("HTTP POST 协议异常", e);
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error("HTTP POST IO异常", e);
         } finally {
             // 关闭资源
             if (null != httpResponse) {
                 try {
                     httpResponse.close();
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    logger.error("HTTP 响应关闭异常", e);
                 }
             }
             if (null != httpClient) {
                 try {
                     httpClient.close();
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    logger.error("HTTP 客户端关闭异常", e);
                 }
             }
         }
@@ -204,13 +208,13 @@ public class HttpClientUtil {
             };
             return httpClient.execute(httpPost, responseHandler);
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("HTTP POST JSON异常", e);
         } finally {
             if (httpClient != null) {
                 try {
                     httpClient.close();
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    logger.error("HTTP 客户端关闭异常", e);
                 }
             }
         }
@@ -237,7 +241,7 @@ public class HttpClientUtil {
             try {
                 httpPost.setEntity(new UrlEncodedFormEntity(nvps, "UTF-8"));
             } catch (UnsupportedEncodingException e) {
-                e.printStackTrace();
+                logger.error("URL编码异常", e);
             }
         }
 
@@ -248,23 +252,23 @@ public class HttpClientUtil {
                 return httpResponse.getHeaders("Location")[0].getValue();
             }
         } catch (ClientProtocolException e) {
-            e.printStackTrace();
+            logger.error("HTTP POST 协议异常", e);
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error("HTTP POST IO异常", e);
         } finally {
             // 关闭资源
             if (null != httpResponse) {
                 try {
                     httpResponse.close();
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    logger.error("HTTP 响应关闭异常", e);
                 }
             }
             if (null != httpClient) {
                 try {
                     httpClient.close();
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    logger.error("HTTP 客户端关闭异常", e);
                 }
             }
         }

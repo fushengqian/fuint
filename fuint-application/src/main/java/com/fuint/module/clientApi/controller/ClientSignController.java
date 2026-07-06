@@ -340,9 +340,7 @@ public class ClientSignController extends BaseController {
 
             MtUser userInfo = memberService.queryMemberByName(merchantId, account);
             if (userInfo != null) {
-                String myPassword = userInfo.getPassword();
-                String inputPassword = memberService.deCodePassword(password, userInfo.getSalt());
-                if (myPassword.equals(inputPassword)) {
+                if (memberService.verifyPassword(password, userInfo.getPassword(), userInfo.getSalt())) {
                     token = TokenUtil.generateToken(userAgent, userInfo.getId());
                     UserInfo loginInfo = new UserInfo();
                     loginInfo.setToken(token);

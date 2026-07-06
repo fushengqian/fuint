@@ -1053,7 +1053,7 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
      */
     @Override
     public String enCodePassword(String password, String salt) {
-        return MD5Util.getMD5(password + salt);
+        return SHAUtil.sha256(password + salt);
     }
 
     /**
@@ -1065,7 +1065,30 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
      * */
     @Override
     public String deCodePassword(String password, String salt) {
-        return MD5Util.getMD5(password + salt);
+        return SHAUtil.sha256(password + salt);
+    }
+
+    /**
+     * 验证密码（兼容旧 MD5 格式密码）
+     *
+     * @param rawPassword 明文密码
+     * @param storedHash  数据库存储的密码哈希
+     * @param salt        加密盐值
+     * @return 是否验证通过
+     */
+    @Override
+    public boolean verifyPassword(String rawPassword, String storedHash, String salt) {
+        if (storedHash == null || rawPassword == null) {
+            return false;
+        }
+        // 优先 SHA-256 验证
+        String sha256Hash = SHAUtil.sha256(rawPassword + salt);
+        if (sha256Hash != null && sha256Hash.equals(storedHash)) {
+            return true;
+        }
+        // 回退 MD5 兼容历史数据
+        String md5Hash = MD5Util.getMD5(rawPassword + salt);
+        return md5Hash != null && md5Hash.equals(storedHash);
     }
 
     /**

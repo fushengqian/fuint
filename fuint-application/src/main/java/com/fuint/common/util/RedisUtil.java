@@ -109,7 +109,7 @@ public class RedisUtil {
             }
             return true;
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("Redis set操作异常", e);
             return false;
         }
     }

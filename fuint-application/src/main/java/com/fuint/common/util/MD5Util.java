@@ -16,7 +16,7 @@ public class MD5Util {
     private static final Logger logger = LoggerFactory.getLogger(MD5Util.class);
     private static final String CHARSET = "UTF-8";
 
-    public MD5Util() {
+    private MD5Util() {
     }
 
     public static byte[] getMD5(byte[] bytes) {
