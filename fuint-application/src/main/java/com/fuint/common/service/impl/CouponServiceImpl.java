@@ -115,6 +115,11 @@ public class CouponServiceImpl extends ServiceImpl<MtCouponMapper, MtCoupon> imp
     private WeixinService weixinService;
 
     /**
+     * 商户接口
+     */
+    private MerchantService merchantService;
+
+    /**
      * 分页查询券列表
      *
      * @param couponPage
@@ -1037,6 +1042,9 @@ public class CouponServiceImpl extends ServiceImpl<MtCouponMapper, MtCoupon> imp
             params.put("couponName", couponInfo.getName());
             if (mtStore != null){
                 params.put("storeName", mtStore.getName());
+            } else {
+                MtMerchant mtMerchant = merchantService.queryMerchantById(couponInfo.getMerchantId());
+                params.put("storeName", mtMerchant == null ? "" : mtMerchant.getName());
             }
             params.put("sn", code.toString());
             sendSmsService.sendSms(couponInfo.getMerchantId(), "confirm-coupon", mobileList, params);
