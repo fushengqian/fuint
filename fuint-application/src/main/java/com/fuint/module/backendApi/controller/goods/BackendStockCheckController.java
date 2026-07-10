@@ -64,7 +64,7 @@ public class BackendStockCheckController extends BaseController {
     @ApiOperation(value = "获取盘点记录列表")
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     @CrossOrigin
-    @PreAuthorize("@pms.hasPermission('stock:check:index')")
+    @PreAuthorize("@pms.hasPermission('stockCheck:index')")
     public ResponseObject list(@ModelAttribute StockCheckPage stockCheckPage) throws BusinessCheckException {
         AccountInfo accountInfo = TokenUtil.getAccountInfo();
 
@@ -93,7 +93,7 @@ public class BackendStockCheckController extends BaseController {
     @ApiOperation(value = "创建盘点任务")
     @RequestMapping(value = "/create", method = RequestMethod.POST)
     @CrossOrigin
-    @PreAuthorize("@pms.hasPermission('stock:check:index')")
+    @PreAuthorize("@pms.hasPermission('stockCheck:index')")
     public ResponseObject create(@RequestBody Map<String, Object> params) throws BusinessCheckException {
         String description = params.get("description") == null ? "" : CommonUtil.replaceXSS(params.get("description").toString());
         Integer storeId = (params.get("storeId") == null || StringUtil.isEmpty(params.get("storeId").toString())) ? 0 : Integer.parseInt(params.get("storeId").toString());
@@ -124,7 +124,7 @@ public class BackendStockCheckController extends BaseController {
     @ApiOperation(value = "获取盘点详情")
     @RequestMapping(value = "/info/{id}", method = RequestMethod.GET)
     @CrossOrigin
-    @PreAuthorize("@pms.hasPermission('stock:check:index')")
+    @PreAuthorize("@pms.hasPermission('stockCheck:index')")
     public ResponseObject info(@PathVariable("id") Integer id) throws BusinessCheckException {
         MtStockCheck mtStockCheck = stockCheckService.queryCheckById(id);
         if (mtStockCheck == null) {
@@ -150,6 +150,7 @@ public class BackendStockCheckController extends BaseController {
                  goodsDto.setLogo(mtGoods.getLogo());
                  goodsDto.setStock(checkItem.getSystemStock());
                  goodsDto.setNum(checkItem.getActualStock());
+                 goodsDto.setDescription(checkItem.getDescription());
                  goodsDto.setStatus(mtGoods.getStatus());
                  goodsDto.setIsSingleSpec(mtGoods.getIsSingleSpec());
 
@@ -170,6 +171,7 @@ public class BackendStockCheckController extends BaseController {
         }
 
         Map<String, Object> result = new HashMap<>();
+        result.put("imagePath", settingService.getUploadBasePath());
         result.put("checkInfo", mtStockCheck);
         result.put("goodsList", goodsList);
 
@@ -182,7 +184,7 @@ public class BackendStockCheckController extends BaseController {
     @ApiOperation(value = "提交盘点结果")
     @RequestMapping(value = "/submit", method = RequestMethod.POST)
     @CrossOrigin
-    @PreAuthorize("@pms.hasPermission('stock:check:index')")
+    @PreAuthorize("@pms.hasPermission('stockCheck:index')")
     public ResponseObject submit(@RequestBody Map<String, Object> params) throws BusinessCheckException {
         Integer checkId = params.get("id") == null ? 0 : Integer.parseInt(params.get("id").toString());
 
@@ -209,7 +211,7 @@ public class BackendStockCheckController extends BaseController {
     @ApiOperation(value = "删除盘点记录")
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
     @CrossOrigin
-    @PreAuthorize("@pms.hasPermission('stock:check:index')")
+    @PreAuthorize("@pms.hasPermission('stockCheck:index')")
     public ResponseObject delete(@RequestBody Map<String, Object> params) throws BusinessCheckException {
         Integer id = params.get("id") == null ? 0 : Integer.parseInt(params.get("id").toString());
 
