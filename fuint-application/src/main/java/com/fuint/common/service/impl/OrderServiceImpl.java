@@ -1093,9 +1093,8 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
                                         orderDto.setCouponId(couponId);
                                         // 折扣券
                                         if (couponInfo.getContent().equals(CouponContentEnum.PERCENT.getKey())) {
-                                            BigDecimal discount = new BigDecimal("0");
                                             BigDecimal percent = userCouponInfo.getAmount().divide(new BigDecimal("100"), BigDecimal.ROUND_CEILING, 4);
-                                            discount = discount.multiply(new BigDecimal("1").subtract(percent));
+                                            BigDecimal discount = orderInfo.getAmount().multiply(new BigDecimal("1").subtract(percent));
                                             if (discount.compareTo(new BigDecimal("0")) > 0) {
                                                 orderDto.setDiscount(orderInfo.getDiscount().add(discount));
                                             }
@@ -1133,15 +1132,23 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
         // 生成支付订单
         orderInfo = getOrderInfo(orderInfo.getId());
         BigDecimal realPayAmount = orderInfo.getAmount().subtract(new BigDecimal(orderInfo.getDiscount().toString())).subtract(new BigDecimal(orderInfo.getPointAmount().toString())).add(orderInfo.getDeliveryFee());
+        if (realPayAmount.compareTo(new BigDecimal("0")) < 0) {
+            realPayAmount = new BigDecimal("0");
+        }
 
-        // 支付类的订单，检查余额是否充足
+        logger.info("doSettle结算参数 => orderId={}, userId={}, type={}, payType={}, couponId={}, amount={}, discount={}, pointAmount={}, deliveryFee={}, realPayAmount={}",
+                orderInfo.getId(), userId, type, payType, couponId, orderInfo.getAmount(), orderInfo.getDiscount(), orderInfo.getPointAmount(), orderInfo.getDeliveryFee(), realPayAmount);
+
+        // 支付类的订单，检查余额是否充足（实付金额大于0才需要检查）
         if (type.equals(OrderTypeEnum.PAYMENT.getKey()) && payType.equals(PayTypeEnum.BALANCE.getKey())) {
-            if (userInfo.getBalance() == null || realPayAmount.compareTo(userInfo.getBalance()) > 0) {
-                throw new BusinessCheckException("会员余额不足");
-            }
-            if (StringUtil.isNotEmpty(cashierPayAmount)) {
-                if (userInfo.getBalance() == null || new BigDecimal(cashierPayAmount).compareTo(userInfo.getBalance()) > 0) {
+            if (realPayAmount.compareTo(new BigDecimal("0")) > 0) {
+                if (userInfo.getBalance() == null || realPayAmount.compareTo(userInfo.getBalance()) > 0) {
                     throw new BusinessCheckException("会员余额不足");
+                }
+                if (StringUtil.isNotEmpty(cashierPayAmount)) {
+                    if (userInfo.getBalance() == null || new BigDecimal(cashierPayAmount).compareTo(userInfo.getBalance()) > 0) {
+                        throw new BusinessCheckException("会员余额不足");
+                    }
                 }
             }
         }
@@ -1219,6 +1226,8 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
         weixinService.sendSubscribeMessage(merchantId, userInfo.getId(), userInfo.getOpenId(), WxMessageEnum.ORDER_CREATED.getKey(), "pages/order/index", params, nowTime);
 
         if (StringUtil.isNotEmpty(errorMessage)) {
+            logger.error("doSettle支付失败 => orderId={}, userId={}, type={}, payType={}, couponId={}, realPayAmount={}, errorMessage={}",
+                    orderInfo.getId(), userId, type, payType, couponId, realPayAmount, errorMessage);
             throw new BusinessCheckException(errorMessage);
         } else {
             return outParams;
@@ -1580,12 +1589,25 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
                 for (OrderGoodsDto goodsDto : goodsList) {
                     MtGoods mtGoods = goodsService.queryGoodsById(goodsDto.getGoodsId());
                     if (mtGoods != null) {
-                        // 购买虚拟卡券商品发放处理
-                        if (mtGoods.getType().equals(GoodsTypeEnum.COUPON.getKey()) && mtGoods.getCouponIds() != null && StringUtil.isNotEmpty(mtGoods.getCouponIds())) {
+                        // 购买卡券商品或商品关联卡券发放处理
+                        if (mtGoods.getCouponIds() != null && StringUtil.isNotEmpty(mtGoods.getCouponIds())) {
                             String couponIds[] = mtGoods.getCouponIds().split(",");
                             if (couponIds.length > 0) {
                                 for (int i = 0; i < couponIds.length; i++) {
                                      userCouponService.buyCouponItem(orderInfo.getId(), Integer.parseInt(couponIds[i]), orderInfo.getUserId(), orderInfo.getUserInfo().getMobile(), goodsDto.getNum());
+                                }
+                            }
+                        }
+
+                        // 购买商品SKU附赠卡券发放处理
+                        if (goodsDto.getSkuId() != null && goodsDto.getSkuId() > 0) {
+                            MtGoodsSku mtGoodsSku = mtGoodsSkuMapper.selectById(goodsDto.getSkuId());
+                            if (mtGoodsSku != null && StringUtil.isNotEmpty(mtGoodsSku.getCouponIds())) {
+                                String skuCouponIds[] = mtGoodsSku.getCouponIds().split(",");
+                                if (skuCouponIds.length > 0) {
+                                    for (int i = 0; i < skuCouponIds.length; i++) {
+                                        userCouponService.buyCouponItem(orderInfo.getId(), Integer.parseInt(skuCouponIds[i]), orderInfo.getUserId(), orderInfo.getUserInfo().getMobile(), goodsDto.getNum());
+                                    }
                                 }
                             }
                         }

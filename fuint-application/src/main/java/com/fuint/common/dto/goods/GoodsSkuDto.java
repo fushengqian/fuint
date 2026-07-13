@@ -50,4 +50,7 @@ public class GoodsSkuDto implements Serializable {
     @ApiModelProperty("重量")
     private BigDecimal weight;
 
+    @ApiModelProperty("附赠卡券ID，多个逗号隔开")
+    private String couponIds;
+
 }

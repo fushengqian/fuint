@@ -400,6 +400,9 @@ public class BackendGoodsController extends BaseController {
                 skuWeight = new BigDecimal(skuDto.get("weight").toString());
             }
             sku.setWeight(skuWeight);
+            // 附赠卡券ID
+            String skuCouponIds = skuDto.get("couponIds") == null ? "" : skuDto.get("couponIds").toString();
+            sku.setCouponIds(skuCouponIds);
             sku.setStatus(StatusEnum.ENABLED.getKey());
             if (sku.getId() != null && sku.getId() > 0) {
                 mtGoodsSkuMapper.updateById(sku);
