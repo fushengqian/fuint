@@ -481,7 +481,7 @@ public class CouponServiceImpl extends ServiceImpl<MtCouponMapper, MtCoupon> imp
         String type = couponListParam.getType() == null ? "" : couponListParam.getType();
         Integer userId = couponListParam.getUserId() == null ? 0 : couponListParam.getUserId();
         Integer needPoint = couponListParam.getNeedPoint() == null ? 0 : couponListParam.getNeedPoint();
-        String sendWay = couponListParam.getSendWay() == null ? "front" : couponListParam.getSendWay();
+        String sendWay = couponListParam.getSendWay() == null ? SendWayEnum.FRONT.getKey() : couponListParam.getSendWay();
         Integer merchantId = couponListParam.getMerchantId() == null ? 0 : couponListParam.getMerchantId();
         Integer storeId = couponListParam.getStoreId() == null ? 0 : couponListParam.getStoreId();
         String keyword = couponListParam.getKeyword() == null ? "" : couponListParam.getKeyword();
@@ -497,11 +497,10 @@ public class CouponServiceImpl extends ServiceImpl<MtCouponMapper, MtCoupon> imp
         if (StringUtil.isNotEmpty(sendWay)) {
             lambdaQueryWrapper.eq(MtCoupon::getSendWay, sendWay);
         }
-        if (StringUtil.isNotEmpty(keyword)) {
-            lambdaQueryWrapper.and(wq -> wq
-                    .eq(MtCoupon::getId, keyword)
-                    .or()
-                    .like(MtCoupon::getName, keyword));
+        if (StringUtil.isNotEmpty(keyword) && CommonUtil.isNumeric(keyword)) {
+            lambdaQueryWrapper.eq(MtCoupon::getId, keyword);
+        } else if(StringUtil.isNotEmpty(keyword)) {
+            lambdaQueryWrapper.like(MtCoupon::getName, keyword);
         }
         if (StringUtil.isNotEmpty(type)) {
             lambdaQueryWrapper.eq(MtCoupon::getType, type);
