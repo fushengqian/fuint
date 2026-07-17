@@ -1371,6 +1371,8 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
                              mtGoodsSkuMapper.updateById(mtGoodsSku);
                          }
                      }
+                     // 生成入库记录
+                     stockService.addStockRecord(mtOrder.getMerchantId(), mtOrder.getStoreId(), mtOrderGoods.getGoodsId(), mtOrderGoods.getSkuId(), "increase", mtOrderGoods.getNum().doubleValue(), "订单取消恢复库存，订单号：" + mtOrder.getOrderSn());
                 }
             }
         }

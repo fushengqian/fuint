@@ -103,6 +103,11 @@ public class RefundServiceImpl extends ServiceImpl<MtRefundMapper, MtRefund> imp
     private MemberService memberService;
 
     /**
+     * 库存服务接口
+     * */
+    private StockService stockService;
+
+    /**
      * 分页查询售后订单列表
      *
      * @param refundPage
@@ -601,6 +606,8 @@ public class RefundServiceImpl extends ServiceImpl<MtRefundMapper, MtRefund> imp
                     mtGoodsSku.setStock(mtGoodsSku.getStock() + mtOrderGoods.getNum());
                     mtGoodsSkuMapper.updateById(mtGoodsSku);
                 }
+                // 生成入库记录
+                stockService.addStockRecord(orderInfo.getMerchantId(), orderInfo.getStoreId(), mtOrderGoods.getGoodsId(), mtOrderGoods.getSkuId(), "increase", mtOrderGoods.getNum().doubleValue(), "订单退款恢复库存，订单号：" + orderInfo.getOrderSn());
             }
         }
 

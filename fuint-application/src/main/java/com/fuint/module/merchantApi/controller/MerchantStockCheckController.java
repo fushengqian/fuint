@@ -138,7 +138,7 @@ public class MerchantStockCheckController extends BaseController {
                     if (item.getSkuId() != null && item.getSkuId() > 0) {
                         MtGoodsSku skuInfo = mtGoodsSkuMapper.selectById(item.getSkuId());
                         if (skuInfo != null) {
-                            itemMap.put("skuName", skuInfo.getName());
+                            itemMap.put("skuName", skuInfo.getSkuNo());
                         }
                     }
                 }
