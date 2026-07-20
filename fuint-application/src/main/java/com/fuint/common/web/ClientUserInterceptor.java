@@ -68,7 +68,7 @@ public class ClientUserInterceptor implements AsyncHandlerInterceptor {
             }
         }
 
-        logger.info("根据token未查到用户信息,token={}, url={}, LocaleEvn={}", accessToken, request.getRequestURI(), Locale.getDefault());
+        logger.info("根据token未查到用户信息, token=[MASKED], url={}, LocaleEvn={}", request.getRequestURI(), Locale.getDefault());
         response.setHeader("Content-Type", "application/json;charset=UTF-8");
         response.getOutputStream().print("{\"code\":1001,\"message\":\"" + PropertiesUtil
                 .getResponseErrorMessageByCode(Constants.HTTP_RESPONSE_CODE_NOLOGIN) + "\",\"data\":null}");

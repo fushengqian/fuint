@@ -150,13 +150,16 @@ public class TokenUtil {
     }
 
     /**
-     * 删除登录信息
+     * 删除登录信息（同时清除会员和后台两种可能的token）
      *
      * @param token
      * @return
      * */
     public static boolean removeToken(String token) {
-        RedisUtil.remove(token);
+        if (StringUtil.isNotEmpty(token)) {
+            RedisUtil.remove(Constants.SESSION_USER + token);
+            RedisUtil.remove(Constants.SESSION_ADMIN_USER + token);
+        }
         AuthUserUtil.clean();
         return true;
     }

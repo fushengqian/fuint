@@ -1390,7 +1390,6 @@ public class WeixinServiceImpl implements WeixinService {
         }
 
         WxPayApiConfigKit.setThreadLocalWxPayApiConfig(apiConfig);
-        logger.info("微信支付参数：{}", JsonUtil.toJSONString(apiConfig));
 
         return apiConfig;
     }
