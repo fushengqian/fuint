@@ -27,7 +27,9 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * 文件上传管理控制类
@@ -42,6 +44,20 @@ import java.util.Map;
 public class ClientFileController extends BaseController {
 
     private static final Logger logger = LoggerFactory.getLogger(ClientFileController.class);
+
+    /**
+     * 客户端允许上传的图片类型白名单
+     */
+    private static final Set<String> ALLOWED_IMAGE_EXTENSIONS = new HashSet<>();
+
+    static {
+        ALLOWED_IMAGE_EXTENSIONS.add("jpg");
+        ALLOWED_IMAGE_EXTENSIONS.add("jpeg");
+        ALLOWED_IMAGE_EXTENSIONS.add("png");
+        ALLOWED_IMAGE_EXTENSIONS.add("gif");
+        ALLOWED_IMAGE_EXTENSIONS.add("bmp");
+        ALLOWED_IMAGE_EXTENSIONS.add("webp");
+    }
 
     /**
      * 系统环境变量
@@ -90,14 +106,14 @@ public class ClientFileController extends BaseController {
             return getFailureResult(201, "上传的图片不能大于" + maxSize + "MB");
         }
 
-        String fileType = file.getContentType();
-        if (fileType.indexOf("image") == -1) {
-            return getFailureResult(201, "上传的图片格式有误");
+        // 校验文件扩展名白名单（使用精确后缀匹配，防止 xxx.jpg.jsp 绕过）
+        String ext = null;
+        String lowerName = file.getOriginalFilename().toLowerCase();
+        if (lowerName.contains(".")) {
+            ext = lowerName.substring(lowerName.lastIndexOf(".") + 1);
         }
-
-        String original = file.getOriginalFilename().toLowerCase();
-        if (original.indexOf("jpg") == -1 && original.indexOf("jpeg") == -1 && original.indexOf("png") == -1 && original.indexOf("gif") == -1 && original.indexOf("bmp") == -1) {
-            return getFailureResult(201, "上传的图片格式有误");
+        if (ext == null || !ALLOWED_IMAGE_EXTENSIONS.contains(ext)) {
+            return getFailureResult(201, "上传的图片格式有误，仅支持：" + String.join("、", ALLOWED_IMAGE_EXTENSIONS));
         }
 
         // 保存文件
@@ -151,6 +167,11 @@ public class ClientFileController extends BaseController {
 
     public String saveFile(MultipartFile file) throws Exception {
         String fileName = file.getOriginalFilename();
+        // 防止路径穿越：移除文件名中的路径分隔符
+        if (fileName.contains("/") || fileName.contains("\\")) {
+            fileName = fileName.substring(fileName.lastIndexOf("/") > fileName.lastIndexOf("\\")
+                    ? fileName.lastIndexOf("/") + 1 : fileName.lastIndexOf("\\") + 1);
+        }
         String imageName = fileName.substring(fileName.lastIndexOf("."));
         String pathRoot = env.getProperty("images.root");
         if (pathRoot == null || StringUtil.isEmpty(pathRoot)) {

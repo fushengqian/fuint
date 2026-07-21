@@ -18,6 +18,8 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * 文件上传服务类
@@ -30,6 +32,31 @@ import java.util.Date;
 public class UploadServiceImpl implements UploadService {
 
     private static final Logger logger = LoggerFactory.getLogger(UploadServiceImpl.class);
+
+    /**
+     * 文件上传允许的类型白名单
+     */
+    private static final Set<String> ALLOWED_EXTENSIONS = new HashSet<>();
+
+    static {
+        ALLOWED_EXTENSIONS.add("jpg");
+        ALLOWED_EXTENSIONS.add("jpeg");
+        ALLOWED_EXTENSIONS.add("png");
+        ALLOWED_EXTENSIONS.add("gif");
+        ALLOWED_EXTENSIONS.add("bmp");
+        ALLOWED_EXTENSIONS.add("svg");
+        ALLOWED_EXTENSIONS.add("webp");
+        ALLOWED_EXTENSIONS.add("pdf");
+        ALLOWED_EXTENSIONS.add("doc");
+        ALLOWED_EXTENSIONS.add("docx");
+        ALLOWED_EXTENSIONS.add("xls");
+        ALLOWED_EXTENSIONS.add("xlsx");
+        ALLOWED_EXTENSIONS.add("ppt");
+        ALLOWED_EXTENSIONS.add("pptx");
+        ALLOWED_EXTENSIONS.add("csv");
+        ALLOWED_EXTENSIONS.add("txt");
+        ALLOWED_EXTENSIONS.add("zip");
+    }
 
     /**
      * 环境变量
@@ -48,6 +75,23 @@ public class UploadServiceImpl implements UploadService {
             throw new BusinessCheckException("上传文件出错！");
         }
         String fileName = file.getOriginalFilename();
+
+        // 校验文件类型白名单
+        String ext = null;
+        String lowerName = fileName.toLowerCase();
+        if (lowerName.contains(".")) {
+            ext = lowerName.substring(lowerName.lastIndexOf(".") + 1);
+        }
+        if (ext == null || !ALLOWED_EXTENSIONS.contains(ext)) {
+            throw new BusinessCheckException("不支持该文件类型，仅允许上传：" + String.join("、", ALLOWED_EXTENSIONS));
+        }
+
+        // 防止路径穿越：移除文件名中的路径分隔符
+        if (fileName.contains("/") || fileName.contains("\\")) {
+            fileName = fileName.substring(fileName.lastIndexOf("/") > fileName.lastIndexOf("\\")
+                    ? fileName.lastIndexOf("/") + 1 : fileName.lastIndexOf("\\") + 1);
+        }
+
         String uploadPath = fileName.substring(fileName.lastIndexOf("."));
         String pathRoot = env.getProperty("images.root");
         if (pathRoot == null || StringUtil.isEmpty(pathRoot)) {
