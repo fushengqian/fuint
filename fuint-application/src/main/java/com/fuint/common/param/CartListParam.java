@@ -24,6 +24,9 @@ public class CartListParam extends PageParam implements Serializable {
     @ApiModelProperty(value="卡券ID", name="couponId")
     private Integer couponId;
 
+    @ApiModelProperty(value="卡券ID列表，逗号分隔（储值卡叠加使用）", name="couponIds")
+    private String couponIds;
+
     @ApiModelProperty(value="商品SkuID", name="skuId")
     private Integer skuId;
 

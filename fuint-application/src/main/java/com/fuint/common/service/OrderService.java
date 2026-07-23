@@ -179,7 +179,7 @@ public interface OrderService extends IService<MtOrder> {
      * @param orderMode 订单模式，自取或配送
      * @return
      * */
-    Map<String, Object> calculateCartGoods(Integer merchantId, Integer userId, List<MtCart> cartList, Integer couponId, boolean isUsePoint, String platform, String orderMode);
+    Map<String, Object> calculateCartGoods(Integer merchantId, Integer userId, List<MtCart> cartList, Integer couponId, boolean isUsePoint, String platform, String orderMode, String couponIds);
 
     /**
      * 获取支付金额

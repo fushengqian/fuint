@@ -134,6 +134,9 @@ public class UserOrderDto implements Serializable {
     @ApiModelProperty("使用卡券")
     private UserCouponDto couponInfo;
 
+    @ApiModelProperty("使用卡券列表（储值卡叠加使用场景）")
+    private List<UserCouponDto> couponInfoList;
+
     @ApiModelProperty("所属员工")
     private MtStaff staffInfo;
 

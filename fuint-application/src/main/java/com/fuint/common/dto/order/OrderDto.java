@@ -39,6 +39,9 @@ public class OrderDto implements Serializable {
     @ApiModelProperty("卡券ID")
     private Integer couponId;
 
+    @ApiModelProperty("卡券ID列表，逗号分隔（储值卡叠加使用）")
+    private String couponIds;
+
     @ApiModelProperty("购物车ID")
     private String cartIds;
 
