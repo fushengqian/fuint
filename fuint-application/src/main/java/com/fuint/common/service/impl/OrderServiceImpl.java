@@ -2326,7 +2326,12 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
                         } else {
                             couponDto.setDescription("满" + couponInfo.getOutRule() + "元可用");
                             BigDecimal conditionAmount = new BigDecimal(couponInfo.getOutRule());
-                            if (totalPrice.compareTo(conditionAmount) >= 0 && isEffective) {
+                            // 指定商品卡券的满减门槛基于适用商品金额判断
+                            BigDecimal checkAmount = totalPrice;
+                            if (couponInfo.getApplyGoods() != null && couponInfo.getApplyGoods().equals(ApplyGoodsEnum.PARK_GOODS.getKey())) {
+                                checkAmount = getApplicableGoodsAmount(cartList, couponInfo.getId());
+                            }
+                            if (checkAmount.compareTo(conditionAmount) >= 0 && isEffective) {
                                 couponDto.setStatus(UserCouponStatusEnum.UNUSED.getKey());
                             }
                         }
@@ -2389,14 +2394,25 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
                     if (couponInfo != null) {
                         boolean isEffective = couponService.isCouponEffective(couponInfo, userCouponInfo);
                         if (isEffective && userCouponInfo.getUserId().equals(userId)) {
+                            // 计算卡券适用商品的金额（指定商品时，抵扣上限为适用商品小计）
+                            BigDecimal applicableAmount = totalPrice;
+                            if (couponInfo.getApplyGoods() != null && couponInfo.getApplyGoods().equals(ApplyGoodsEnum.PARK_GOODS.getKey())) {
+                                applicableAmount = getApplicableGoodsAmount(cartList, couponInfo.getId());
+                                if (applicableAmount.compareTo(BigDecimal.ZERO) <= 0) {
+                                    continue;
+                                }
+                                couponApplyGoodsAmount = couponApplyGoodsAmount.add(applicableAmount);
+                            }
                             // 只允许储值卡叠加
                             if (couponInfo.getType().equals(CouponTypeEnum.PRESTORE.getKey()) && userCouponInfo.getBalance().compareTo(BigDecimal.ZERO) > 0) {
                                 useUserCouponMap.put(cid, userCouponInfo);
                                 useCouponInfoMap.put(cid, couponInfo);
                                 BigDecimal availableBalance = userCouponInfo.getBalance();
                                 BigDecimal remaining = totalPrice.subtract(couponAmount);
-                                if (availableBalance.compareTo(remaining) > 0) {
-                                    couponAmount = couponAmount.add(remaining);
+                                // 抵扣上限 = min(剩余应付金额, 适用商品金额)
+                                BigDecimal maxDeduct = remaining.min(applicableAmount);
+                                if (availableBalance.compareTo(maxDeduct) > 0) {
+                                    couponAmount = couponAmount.add(maxDeduct);
                                 } else {
                                     couponAmount = couponAmount.add(availableBalance);
                                 }
@@ -2406,11 +2422,12 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
                                     useUserCouponMap.put(cid, userCouponInfo);
                                     useCouponInfoMap.put(cid, couponInfo);
                                     if (couponInfo.getContent().equals(CouponContentEnum.PERCENT.getKey())) {
-                                        // 折扣券计算
+                                        // 折扣券计算：基于适用商品金额计算折扣
                                         BigDecimal disc = userCouponInfo.getAmount().divide(new BigDecimal("100"), BigDecimal.ROUND_CEILING, 4);
-                                        couponAmount = totalPrice.multiply(new BigDecimal("1").subtract(disc));
+                                        couponAmount = applicableAmount.multiply(new BigDecimal("1").subtract(disc));
                                     } else {
-                                        couponAmount = couponInfo.getAmount();
+                                        // 满减券：面额上限为适用商品金额
+                                        couponAmount = couponInfo.getAmount().min(applicableAmount);
                                     }
                                 }
                             }
@@ -2493,6 +2510,41 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
         }
 
         return result;
+    }
+
+    /**
+     * 计算卡券适用商品的总金额（指定商品类型的卡券）
+     *
+     * @param cartList 购物车列表
+     * @param couponId 卡券ID
+     * @return 适用商品的总金额
+     * */
+    private BigDecimal getApplicableGoodsAmount(List<MtCart> cartList, Integer couponId) {
+        List<MtCouponGoods> couponGoodsList = mtCouponGoodsMapper.getCouponGoods(couponId);
+        if (couponGoodsList == null || couponGoodsList.isEmpty()) {
+            return BigDecimal.ZERO;
+        }
+        List<Integer> applyGoodsIds = couponGoodsList.stream()
+                .map(MtCouponGoods::getGoodsId)
+                .collect(Collectors.toList());
+        BigDecimal applicableAmount = BigDecimal.ZERO;
+        for (MtCart cart : cartList) {
+            if (applyGoodsIds.contains(cart.getGoodsId())) {
+                MtGoods mtGoodsInfo = goodsService.queryGoodsById(cart.getGoodsId());
+                if (mtGoodsInfo == null || !mtGoodsInfo.getStatus().equals(StatusEnum.ENABLED.getKey())) {
+                    continue;
+                }
+                // 取对应sku的价格
+                if (cart.getSkuId() != null && cart.getSkuId() > 0) {
+                    MtGoodsSku mtGoodsSku = mtGoodsSkuMapper.selectById(cart.getSkuId());
+                    if (mtGoodsSku != null && mtGoodsSku.getPrice().compareTo(BigDecimal.ZERO) > 0) {
+                        mtGoodsInfo.setPrice(mtGoodsSku.getPrice());
+                    }
+                }
+                applicableAmount = applicableAmount.add(mtGoodsInfo.getPrice().multiply(new BigDecimal(cart.getNum())));
+            }
+        }
+        return applicableAmount;
     }
 
     /**
