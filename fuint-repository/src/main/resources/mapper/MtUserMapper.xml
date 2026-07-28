@@ -100,7 +100,7 @@
     </select>
 
     <select id="getUserIdList" resultType="java.lang.Integer">
-        select t.ID from mt_user t where t.STATUS = 'A'
+        select t.ID from mt_user t where t.STATUS = 'A' and t.IS_STAFF = 'N'
         <if test="merchantId != null and merchantId > 0">
             AND t.MERCHANT_ID = #{merchantId}
         </if>

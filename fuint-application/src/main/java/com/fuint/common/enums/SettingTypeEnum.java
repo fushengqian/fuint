@@ -15,7 +15,8 @@ public enum SettingTypeEnum {
     PRINTER("printer", "打印设置"),
     SMS_CONFIG("sms_config", "短信配置"),
     KUAIDI100("kuaidi100", "快递100配置"),
-    NAVIGATION("navigation", "导航配置");
+    NAVIGATION("navigation", "导航配置"),
+    SERVICES("services", "服务配置");
 
     private String key;
 

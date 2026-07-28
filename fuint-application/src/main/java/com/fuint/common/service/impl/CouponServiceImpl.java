@@ -1220,7 +1220,7 @@ public class CouponServiceImpl extends ServiceImpl<MtCouponMapper, MtCoupon> imp
             if (accountInfo.getMerchantId() > 0 && !couponInfo.getMerchantId().equals(accountInfo.getMerchantId())) {
                 throw new BusinessCheckException("不同商户，没有操作权限");
             }
-            if (couponInfo.getStatus().equals(StatusEnum.ENABLED.getKey()) && couponInfo.getEndTime().after(nowDate)) {
+            if (couponInfo.getStatus().equals(StatusEnum.ENABLED.getKey()) && couponInfo.getEndTime() != null && couponInfo.getEndTime().after(nowDate)) {
                 couponIds.add(couponId);
             }
         }
