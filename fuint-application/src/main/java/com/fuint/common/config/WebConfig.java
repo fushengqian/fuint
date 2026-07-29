@@ -89,6 +89,7 @@ public class WebConfig implements WebMvcConfigurer {
                 .excludePathPatterns("/clientApi/coupon/detail")
                 .excludePathPatterns("/clientApi/cart/**")
                 .excludePathPatterns("/clientApi/user/**")
+                .excludePathPatterns("/clientApi/service/list")
                 .excludePathPatterns("/clientApi/settlement/submit")
                 .excludePathPatterns("/clientApi/pay/doPay")
                 .excludePathPatterns("/clientApi/pay/weixinCallback")

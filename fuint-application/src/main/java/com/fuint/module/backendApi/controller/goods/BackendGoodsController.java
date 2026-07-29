@@ -429,9 +429,7 @@ public class BackendGoodsController extends BaseController {
 
         MtGoods mtGoods = new MtGoods();
         mtGoods.setId(Integer.parseInt(goodsId));
-        if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
-            mtGoods.setMerchantId(accountInfo.getMerchantId());
-        }
+        mtGoods.setMerchantId(accountInfo.getMerchantId());
         if (StringUtil.isNotEmpty(type)) {
             mtGoods.setType(type);
         }
