@@ -18,7 +18,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.text.ParseException;
 import java.util.Arrays;
@@ -88,7 +87,7 @@ public class BackendReportController extends BaseController {
     @ApiOperation(value = "导出日销售统计报表")
     @RequestMapping(value = "/exportDailySales", method = RequestMethod.GET)
     @CrossOrigin
-    public void exportDailySales(HttpServletRequest request, HttpServletResponse response, @ModelAttribute StatisticParam param) throws ParseException {
+    public void exportDailySales(HttpServletResponse response, @ModelAttribute StatisticParam param) throws ParseException {
         AccountInfo accountInfo = TokenUtil.getAccountInfo();
         List<Integer> storeIds = param.getStoreIds();
         if (accountInfo.getStoreId() != null && accountInfo.getStoreId() > 0) {
@@ -124,7 +123,7 @@ public class BackendReportController extends BaseController {
     @ApiOperation(value = "导出日收银统计报表")
     @RequestMapping(value = "/exportDailyCashier", method = RequestMethod.GET)
     @CrossOrigin
-    public void exportDailyCashier(HttpServletRequest request, HttpServletResponse response, @ModelAttribute StatisticParam param) throws ParseException {
+    public void exportDailyCashier(HttpServletResponse response, @ModelAttribute StatisticParam param) throws ParseException {
         AccountInfo accountInfo = TokenUtil.getAccountInfo();
         List<Integer> storeIds = param.getStoreIds();
         if (accountInfo.getStoreId() != null && accountInfo.getStoreId() > 0) {
@@ -161,7 +160,7 @@ public class BackendReportController extends BaseController {
     @ApiOperation(value = "导出分类统计报表")
     @RequestMapping(value = "/exportDailyCate", method = RequestMethod.GET)
     @CrossOrigin
-    public void exportDailyCate(HttpServletRequest request, HttpServletResponse response, @ModelAttribute StatisticParam param) throws ParseException {
+    public void exportDailyCate(HttpServletResponse response, @ModelAttribute StatisticParam param) throws ParseException {
         AccountInfo accountInfo = TokenUtil.getAccountInfo();
         List<Integer> storeIds = param.getStoreIds();
         if (accountInfo.getStoreId() != null && accountInfo.getStoreId() > 0) {
