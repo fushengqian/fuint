@@ -73,12 +73,15 @@ public class BackendCommonController extends BaseController {
 
         AccountInfo accountInfo = TokenUtil.getAccountInfo();
         Integer merchantId = accountInfo.getMerchantId();
-        String page = QrCodeEnum.STORE.getPage() + "?" + QrCodeEnum.STORE.getKey() + "Id=" + id;
+        String page = QrCodeEnum.STORE.getPage() + "?" + QrCodeEnum.STORE.getKey() + "id=" + id;
         if (type.equals(QrCodeEnum.TABLE.getKey())) {
-            page = QrCodeEnum.TABLE.getPage() + "?" + QrCodeEnum.TABLE.getKey() + "Id=" + id;
+            page = QrCodeEnum.TABLE.getPage() + "?" + QrCodeEnum.TABLE.getKey() + "id=" + id;
         }
         if (type.equals(QrCodeEnum.COUPON.getKey())) {
-            page = QrCodeEnum.COUPON.getPage() + "?" + QrCodeEnum.COUPON.getKey() + "Id=" + id;
+            page = QrCodeEnum.COUPON.getPage() + "?" + QrCodeEnum.COUPON.getKey() + "id=" + id;
+        }
+        if (type.equals(QrCodeEnum.USER_COUPON.getKey())) {
+            page = QrCodeEnum.USER_COUPON.getPage() + "?" + QrCodeEnum.USER_COUPON.getKey() + "id=" + id;
         }
         if (type.equals(QrCodeEnum.STORE.getKey())) {
             MtStore mtStore = storeService.queryStoreById(id);

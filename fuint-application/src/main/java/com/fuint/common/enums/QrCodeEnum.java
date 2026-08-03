@@ -9,7 +9,8 @@ package com.fuint.common.enums;
 public enum QrCodeEnum {
     TABLE("table", "桌码二维码", "pages/category/index"),
     STORE("store", "店铺二维码", "pages/index/index"),
-    COUPON("coupon", "卡券二维码", "subPages/coupon/detail");
+    COUPON("coupon", "卡券二维码", "subPages/coupon/detail"),
+    USER_COUPON("userCoupon", "会员卡券核销二维码", "pages/confirm/doConfirm");
 
     private String key;
 

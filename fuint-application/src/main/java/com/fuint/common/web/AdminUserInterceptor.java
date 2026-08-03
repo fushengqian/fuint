@@ -27,6 +27,10 @@ public class AdminUserInterceptor implements AsyncHandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         String accessToken = request.getHeader("Access-Token");
+        // 导出等场景通过URL参数传递token，请求头没有时回退读取URL参数
+        if (StringUtils.isEmpty(accessToken)) {
+            accessToken = request.getParameter("token");
+        }
 
         // 验证Token
         if (StringUtils.isEmpty(accessToken)) {
