@@ -230,6 +230,14 @@ public class UserCouponServiceImpl extends ServiceImpl<MtUserCouponMapper, MtUse
             }
         }
 
+        // 发行总数量是否已经超额
+        if (couponInfo.getTotal() != null && couponInfo.getTotal() > 0) {
+            Long sendNum = mtUserCouponMapper.getSendNum(couponId);
+            if (sendNum.compareTo(Long.valueOf(couponInfo.getTotal())) >= 0) {
+                throw new BusinessCheckException(Message.COUPON_SEND_OUT);
+            }
+        }
+
         // 可领取多张
         String uuid = SeqUtil.getRandomNumber(16);
         for (int i = 1; i <= num; i++) {
