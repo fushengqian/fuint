@@ -598,16 +598,31 @@ public class RefundServiceImpl extends ServiceImpl<MtRefundMapper, MtRefund> imp
         List<MtOrderGoods> orderGoodsList = mtOrderGoodsMapper.selectByMap(eParam);
         if (orderGoodsList != null && orderGoodsList.size() > 0) {
             for (MtOrderGoods mtOrderGoods : orderGoodsList) {
-                MtGoods mtGoods = mtGoodsMapper.selectById(mtOrderGoods.getGoodsId());
-                mtGoods.setStock(mtOrderGoods.getNum() + mtGoods.getStock());
-                mtGoodsMapper.updateById(mtGoods);
-                if (mtOrderGoods.getSkuId() != null && mtOrderGoods.getSkuId() > 0) {
-                    MtGoodsSku mtGoodsSku = mtGoodsSkuMapper.selectById(mtOrderGoods.getSkuId());
-                    mtGoodsSku.setStock(mtGoodsSku.getStock() + mtOrderGoods.getNum());
-                    mtGoodsSkuMapper.updateById(mtGoodsSku);
+                 MtGoods mtGoods = mtGoodsMapper.selectById(mtOrderGoods.getGoodsId());
+                 mtGoods.setStock(mtOrderGoods.getNum() + mtGoods.getStock());
+                 mtGoodsMapper.updateById(mtGoods);
+                 if (mtOrderGoods.getSkuId() != null && mtOrderGoods.getSkuId() > 0) {
+                     MtGoodsSku mtGoodsSku = mtGoodsSkuMapper.selectById(mtOrderGoods.getSkuId());
+                     mtGoodsSku.setStock(mtGoodsSku.getStock() + mtOrderGoods.getNum());
+                     mtGoodsSkuMapper.updateById(mtGoodsSku);
+                 }
+                 // 生成入库记录
+                 stockService.addStockRecord(orderInfo.getMerchantId(), orderInfo.getStoreId(), mtOrderGoods.getGoodsId(), mtOrderGoods.getSkuId(), "increase", mtOrderGoods.getNum().doubleValue(), "订单退款恢复库存，订单号：" + orderInfo.getOrderSn());
+            }
+        }
+
+        // 回收购买商品附赠的卡券
+        LambdaQueryWrapper<MtUserCoupon> giftCouponWrapper = Wrappers.lambdaQuery();
+        giftCouponWrapper.eq(MtUserCoupon::getOrderId, orderInfo.getId());
+        List<MtUserCoupon> giftCouponList = mtUserCouponMapper.selectList(giftCouponWrapper);
+        if (giftCouponList != null && giftCouponList.size() > 0) {
+            for (MtUserCoupon giftCoupon : giftCouponList) {
+                if (giftCoupon.getStatus().equals(UserCouponStatusEnum.UNUSED.getKey())) {
+                    giftCoupon.setStatus(UserCouponStatusEnum.DISABLE.getKey());
+                    giftCoupon.setUpdateTime(new Date());
+                    giftCoupon.setOperator(refundDto.getOperator() == null ? "" : refundDto.getOperator());
+                    mtUserCouponMapper.updateById(giftCoupon);
                 }
-                // 生成入库记录
-                stockService.addStockRecord(orderInfo.getMerchantId(), orderInfo.getStoreId(), mtOrderGoods.getGoodsId(), mtOrderGoods.getSkuId(), "increase", mtOrderGoods.getNum().doubleValue(), "订单退款恢复库存，订单号：" + orderInfo.getOrderSn());
             }
         }
 

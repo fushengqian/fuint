@@ -306,13 +306,16 @@ public class OpenGiftServiceImpl extends ServiceImpl<MtOpenGiftMapper, MtOpenGif
                            param.setCouponId(item.getCouponId());
                            param.setUserId(userId);
                            param.setNum(item.getCouponNum() == null ? 1 : item.getCouponNum());
-                           ResponseObject result = couponService.sendCoupon(item.getCouponId(), userId, param.getNum(), true, SeqUtil.getUUID(), new AccountInfo());
+                           AccountInfo accountInfo = new AccountInfo();
+                           accountInfo.setAccountName("系统");
+                           accountInfo.setMerchantId(mtCoupon.getMerchantId());
+                           ResponseObject result = couponService.sendCoupon(item.getCouponId(), userId, param.getNum(), true, SeqUtil.getUUID(), accountInfo);
                            if (!result.getCode().equals(200)) {
                                logger.error("会员开卡赠礼赠送卡券失败：", result.getMessage());
                            }
                            totalAmount = totalAmount.add(mtCoupon.getAmount());
                        } catch (Exception e) {
-                           logger.error("会员开卡赠礼异常：", e.getMessage());
+                           logger.error("会员开卡赠礼异常：{}", e.getMessage(), e);
                        }
                    }
                }
