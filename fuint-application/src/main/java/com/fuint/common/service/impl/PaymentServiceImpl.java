@@ -275,11 +275,11 @@ public class PaymentServiceImpl implements PaymentService {
             balance.setOrderSn(orderInfo.getOrderSn());
             balance.setStoreId(orderInfo.getStoreId());
             balance.setUserId(mtUser.getId());
-            BigDecimal balanceAmount = realPayAmount.subtract(realPayAmount).subtract(realPayAmount);
+            BigDecimal balanceAmount = realPayAmount.negate();
             balance.setAmount(balanceAmount);
             boolean isPay = balanceService.addBalance(balance, true);
             if (isPay) {
-                orderService.setOrderPayed(orderInfo.getId(), balanceAmount);
+                orderService.setOrderPayed(orderInfo.getId(), null);
                 OrderDto reqOrder = new OrderDto();
                 reqOrder.setId(orderInfo.getId());
                 reqOrder.setPayAmount(realPayAmount);

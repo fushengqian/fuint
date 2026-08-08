@@ -1171,7 +1171,11 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
                 // discount字段只存卡券折扣，计算差额避免重复扣减
                 BigDecimal diff = totalCouponDiscount.subtract(orderInfo.getDiscount());
                 orderDto.setDiscount(totalCouponDiscount);
-                orderDto.setPayAmount(orderInfo.getPayAmount().subtract(diff));
+                BigDecimal newPayAmount = orderInfo.getPayAmount().subtract(diff);
+                if (newPayAmount.compareTo(new BigDecimal("0")) < 0) {
+                    newPayAmount = new BigDecimal("0");
+                }
+                orderDto.setPayAmount(newPayAmount);
                 updateOrder(orderDto);
             }
         }
@@ -1521,7 +1525,11 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
         }
 
         if (null != orderDto.getPayAmount()) {
-            mtOrder.setPayAmount(orderDto.getPayAmount());
+            if (orderDto.getPayAmount().compareTo(new BigDecimal("0")) < 0) {
+                mtOrder.setPayAmount(new BigDecimal("0"));
+            } else {
+                mtOrder.setPayAmount(orderDto.getPayAmount());
+            }
         }
 
         if (null != orderDto.getAmount()) {
