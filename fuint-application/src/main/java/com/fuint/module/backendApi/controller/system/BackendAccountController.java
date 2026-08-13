@@ -186,6 +186,14 @@ public class BackendAccountController extends BaseController {
             if (duties.size() < roleIds.size()) {
                 return getFailureResult(201, "您分配的角色不存在");
             }
+            // 商户只能分配本商户的角色，防止越权分配平台级角色
+            if (account.getMerchantId() != null && account.getMerchantId() > 0) {
+                for (TDuty duty : duties) {
+                    if (duty.getMerchantId() == null || !duty.getMerchantId().equals(account.getMerchantId())) {
+                        return getFailureResult(201, "只能分配本商户的角色");
+                    }
+                }
+            }
         }
 
         TAccount tAccount = new TAccount();
@@ -200,7 +208,10 @@ public class BackendAccountController extends BaseController {
         if (StringUtil.isNotEmpty(storeId)) {
             tAccount.setStoreId(Integer.parseInt(storeId));
         }
-        if (StringUtil.isNotEmpty(merchantId)) {
+        // 商户创建的账号只能属于本商户，不允许前端指定其他商户
+        if (account.getMerchantId() != null && account.getMerchantId() > 0) {
+            tAccount.setMerchantId(account.getMerchantId());
+        } else if (StringUtil.isNotEmpty(merchantId)) {
             tAccount.setMerchantId(Integer.parseInt(merchantId));
         }
         if (StringUtil.isNotEmpty(staffId)) {
@@ -254,7 +265,10 @@ public class BackendAccountController extends BaseController {
         if (StringUtil.isNotEmpty(staffId)) {
             tAccount.setStaffId(Integer.parseInt(staffId));
         }
-        if (StringUtil.isNotEmpty(merchantId)) {
+        // 商户账号只能属于本商户，不允许修改账号的商户归属
+        if (loginAccount.getMerchantId() != null && loginAccount.getMerchantId() > 0) {
+            tAccount.setMerchantId(loginAccount.getMerchantId());
+        } else if (StringUtil.isNotEmpty(merchantId)) {
             tAccount.setMerchantId(Integer.parseInt(merchantId));
         }
 
@@ -273,6 +287,14 @@ public class BackendAccountController extends BaseController {
             duties = tDutyService.findDatasByIds(ids);
             if (duties.size() < roleIds.size()) {
                 return getFailureResult(201, "您分配的角色不存在");
+            }
+            // 商户只能分配本商户的角色，防止越权分配平台级角色
+            if (loginAccount.getMerchantId() != null && loginAccount.getMerchantId() > 0) {
+                for (TDuty duty : duties) {
+                    if (duty.getMerchantId() == null || !duty.getMerchantId().equals(loginAccount.getMerchantId())) {
+                        return getFailureResult(201, "只能分配本商户的角色");
+                    }
+                }
             }
         }
 

@@ -96,6 +96,12 @@ public class BackendSourceController extends BaseController {
         String sort = param.get("sort").toString();
         Integer isMenu = param.get("isMenu") == null ? 1 : Integer.parseInt(param.get("isMenu").toString());
 
+        // 校验菜单路径合法性，防止注入系统级权限码或通配权限（*:*:*）
+        String pathCheckMsg = checkSourcePath(path);
+        if (pathCheckMsg != null) {
+            return getFailureResult(201, pathCheckMsg);
+        }
+
         TSource tSource = new TSource();
         tSource.setSourceName(name);
         tSource.setMerchantId(accountInfo.getMerchantId());
@@ -146,6 +152,12 @@ public class BackendSourceController extends BaseController {
         String sort = param.get("sort").toString();
         Integer isMenu = param.get("isMenu") == null ? 1 : Integer.parseInt(param.get("isMenu").toString());
         Long id = param.get("id") == null ? 0 : Long.parseLong(param.get("id").toString());
+
+        // 校验菜单路径合法性，防止注入系统级权限码或通配权限（*:*:*）
+        String pathCheckMsg = checkSourcePath(path);
+        if (pathCheckMsg != null) {
+            return getFailureResult(201, pathCheckMsg);
+        }
 
         TSource editSource = sourceService.getById(id);
         if (!editSource.getMerchantId().equals(accountInfo.getMerchantId()) && accountInfo.getMerchantId() > 0) {
@@ -213,5 +225,22 @@ public class BackendSourceController extends BaseController {
         List<TreeSelect> data = sourceService.buildMenuTreeSelect(sources);
 
         return getSuccessResult(data);
+    }
+
+    /**
+     * 校验菜单路径合法性，防止注入系统级权限码或通配权限（*:*:*）
+     * @return 合法返回 null，否则返回错误信息
+     * */
+    private String checkSourcePath(String path) {
+        if (StringUtil.isEmpty(path)) {
+            return "菜单地址不能为空";
+        }
+        if (path.contains("*") || path.toLowerCase().startsWith("system")) {
+            return "菜单地址不合法";
+        }
+        if (!path.matches("^[a-zA-Z0-9_/-]+$")) {
+            return "菜单地址不合法";
+        }
+        return null;
     }
 }

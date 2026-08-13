@@ -29,8 +29,10 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * 后台角色管理控制类
@@ -137,6 +139,9 @@ public class BackendDutyController extends BaseController {
             sources = tSourceService.findDatasByIds(sourceIds);
         }
 
+        // 校验角色可分配的菜单（商户不能分配系统管理菜单或越权菜单）
+        sources = checkAssignableSources(sources, accountInfo);
+
         TDuty tDuty = new TDuty();
         tDuty.setMerchantId(accountInfo.getMerchantId());
         tDuty.setDutyName(name);
@@ -230,6 +235,9 @@ public class BackendDutyController extends BaseController {
             sources = tSourceService.findDatasByIds(sourceIds);
         }
 
+        // 校验角色可分配的菜单（商户不能分配系统管理菜单或越权菜单）
+        sources = checkAssignableSources(sources, accountInfo);
+
         tDutyService.updateDuty(duty, sources);
         return getSuccessResult(true);
     }
@@ -283,5 +291,70 @@ public class BackendDutyController extends BaseController {
             }
         }
         return minLevel;
+    }
+
+    /**
+     * 校验并过滤角色可分配的菜单
+     * 商户（merchantId>0）只能分配：非系统管理菜单、属于平台通用或本商户的菜单、且在自己权限范围内的菜单
+     *
+     * @param sources 待分配的菜单
+     * @param accountInfo 当前登录账号
+     * @return 过滤后的可分配菜单
+     * @throws BusinessCheckException 存在不可分配的菜单时抛出
+     */
+    private List<TSource> checkAssignableSources(List<TSource> sources, AccountInfo accountInfo) throws BusinessCheckException {
+        if (sources == null || sources.size() == 0) {
+            return sources;
+        }
+        // 平台账号（merchantId<=0）不受限制
+        if (accountInfo.getMerchantId() == null || accountInfo.getMerchantId() <= 0) {
+            return sources;
+        }
+        // 操作者自身拥有的菜单
+        List<TSource> mySources = tSourceService.getMenuListByUserId(accountInfo.getMerchantId(), accountInfo.getId());
+        Set<String> myPaths = new HashSet<>();
+        boolean isSuper = false;
+        if (mySources != null && mySources.size() > 0) {
+            for (TSource mySource : mySources) {
+                if (mySource.getPath() != null) {
+                    myPaths.add(mySource.getPath());
+                    if (mySource.getPath().replaceAll("/", ":").equals("*:*:*")) {
+                        isSuper = true;
+                    }
+                }
+            }
+        }
+        // 可分配集合 = 自己拥有的菜单 + 其全部祖先（拥有父级即可分配其子孙菜单）
+        Set<String> assignablePaths = new HashSet<>(myPaths);
+        if (!isSuper) {
+            for (String path : myPaths) {
+                String[] segments = path.split("/");
+                StringBuilder prefix = new StringBuilder();
+                for (int i = 0; i < segments.length - 1; i++) {
+                    prefix.append(segments[i]);
+                    assignablePaths.add(prefix.toString());
+                    prefix.append("/");
+                }
+            }
+        }
+
+        List<TSource> result = new ArrayList<>();
+        for (TSource source : sources) {
+            String path = source.getPath();
+            // 商户不能分配系统管理菜单
+            if (path != null && path.startsWith("system")) {
+                throw new BusinessCheckException("不能分配系统管理相关权限：" + (source.getSourceName() == null ? path : source.getSourceName()));
+            }
+            // 菜单必须属于平台通用或本商户
+            if (source.getMerchantId() == null || (!source.getMerchantId().equals(0) && !source.getMerchantId().equals(accountInfo.getMerchantId()))) {
+                throw new BusinessCheckException("不能分配其他商户的菜单权限");
+            }
+            // 分配的菜单必须在自己权限范围内
+            if (!isSuper && (path == null || !assignablePaths.contains(path))) {
+                throw new BusinessCheckException("没有权限分配菜单：" + (source.getSourceName() == null ? path : source.getSourceName()));
+            }
+            result.add(source);
+        }
+        return result;
     }
 }
