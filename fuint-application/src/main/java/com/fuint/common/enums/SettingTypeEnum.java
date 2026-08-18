@@ -16,7 +16,10 @@ public enum SettingTypeEnum {
     SMS_CONFIG("sms_config", "短信配置"),
     KUAIDI100("kuaidi100", "快递100配置"),
     NAVIGATION("navigation", "导航配置"),
-    SERVICES("services", "服务配置");
+    SERVICES("services", "服务配置"),
+    THEME("theme", "主题配置"),
+    TABBAR("tabbar", "底部导航配置"),
+    USER_PAGE("user_page", "个人中心配置");
 
     private String key;
 
