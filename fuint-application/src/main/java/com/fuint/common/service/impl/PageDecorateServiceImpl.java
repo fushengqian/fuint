@@ -146,7 +146,7 @@ public class PageDecorateServiceImpl extends ServiceImpl<MtPageMapper, MtPage> i
         LambdaQueryWrapper<MtPage> lambdaQueryWrapper = Wrappers.lambdaQuery();
         lambdaQueryWrapper.eq(MtPage::getStatus, StatusEnum.ENABLED.getKey());
         lambdaQueryWrapper.eq(MtPage::getPageType, StringUtil.isBlank(pageType) ? "index" : pageType);
-        lambdaQueryWrapper.eq(MtPage::getIsDefault, "Y");
+        lambdaQueryWrapper.eq(MtPage::getIsDefault, YesOrNoEnum.YES);
         lambdaQueryWrapper.eq(MtPage::getStoreId, storeId == null ? 0 : storeId);
         if (merchantId != null && merchantId > 0) {
             lambdaQueryWrapper.eq(MtPage::getMerchantId, merchantId);
@@ -210,10 +210,10 @@ public class PageDecorateServiceImpl extends ServiceImpl<MtPageMapper, MtPage> i
         } else {
             // 新增
             mtPage.setCreateTime(new Date());
-            if ("Y".equals(pageDto.getIsDefault())) {
+            if (YesOrNoEnum.YES.getKey().equals(pageDto.getIsDefault())) {
                 clearDefault(mtPage.getMerchantId(), mtPage.getStoreId(), mtPage.getPageType());
             } else if (isFirstPage(mtPage.getMerchantId(), mtPage.getStoreId(), mtPage.getPageType())) {
-                mtPage.setIsDefault("Y");
+                mtPage.setIsDefault(YesOrNoEnum.YES.getKey());
             }
             mtPageMapper.insert(mtPage);
         }
@@ -428,7 +428,7 @@ public class PageDecorateServiceImpl extends ServiceImpl<MtPageMapper, MtPage> i
         lambdaQueryWrapper.eq(MtPage::getMerchantId, merchantId == null ? 0 : merchantId);
         lambdaQueryWrapper.eq(MtPage::getStoreId, storeId == null ? 0 : storeId);
         lambdaQueryWrapper.eq(MtPage::getPageType, StringUtil.isBlank(pageType) ? "index" : pageType);
-        lambdaQueryWrapper.eq(MtPage::getIsDefault, "Y");
+        lambdaQueryWrapper.eq(MtPage::getIsDefault, YesOrNoEnum.YES.getKey());
         List<MtPage> pageList = mtPageMapper.selectList(lambdaQueryWrapper);
         for (MtPage mtPage : pageList) {
             mtPage.setIsDefault("N");

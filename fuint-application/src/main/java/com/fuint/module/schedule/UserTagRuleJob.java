@@ -3,6 +3,7 @@ package com.fuint.module.schedule;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.fuint.common.dto.system.AccountInfo;
 import com.fuint.common.enums.StatusEnum;
+import com.fuint.common.enums.YesOrNoEnum;
 import com.fuint.common.service.MemberService;
 import com.fuint.common.service.MerchantService;
 import com.fuint.common.service.UserTagRelationService;
@@ -97,7 +98,7 @@ public class UserTagRuleJob {
 
                 long endTime = System.currentTimeMillis();
                 logger.info("========== UserTagRuleJob 执行完成 ==========");
-                logger.info("处理商户数: {}, 成功: {}, 失败: {}, 耗时: {}ms", 
+                logger.info("处理商户数: {}, 成功: {}, 失败: {}, 耗时: {}ms",
                     merchantList.size(), successCount, failCount, (endTime - startTime));
             } else {
                 logger.info("UserTagRuleJob 开关未开启，跳过执行");
@@ -124,7 +125,7 @@ public class UserTagRuleJob {
 
         // 过滤出isAuto为Y的规则
         rules = rules.stream()
-            .filter(rule -> "Y".equals(rule.getIsAuto()))
+            .filter(rule -> YesOrNoEnum.YES.getKey().equals(rule.getIsAuto()))
             .collect(Collectors.toList());
 
         if (rules.isEmpty()) {

@@ -71,6 +71,10 @@ public class BackendFileController extends BaseController {
         ALLOWED_EXTENSIONS.add("txt");
         // 压缩包
         ALLOWED_EXTENSIONS.add("zip");
+        // 证书（微信支付 apiclient_cert.p12 等）
+        ALLOWED_EXTENSIONS.add("p12");
+        ALLOWED_EXTENSIONS.add("pem");
+        ALLOWED_EXTENSIONS.add("cer");
     }
 
     /**

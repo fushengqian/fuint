@@ -1,8 +1,16 @@
 package com.fuint.common.param;
 
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonToken;
+import com.fasterxml.jackson.databind.DeserializationContext;
+import com.fasterxml.jackson.databind.JsonDeserializer;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import java.io.IOException;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * 订单结算请求参数
@@ -13,6 +21,7 @@ import java.io.Serializable;
 public class SettlementParam implements Serializable {
 
     @ApiModelProperty(value="购物车Id，逗号分隔", name="cartIds")
+    @JsonDeserialize(using = StringOrCsvDeserializer.class)
     private String cartIds;
 
     @ApiModelProperty(value="购买对象，购买储值卡、升级会员等级必填", name="targetId")
@@ -77,5 +86,26 @@ public class SettlementParam implements Serializable {
 
     @ApiModelProperty(value="员工ID", name="staffId")
     private Integer staffId;
+
+    /**
+     * 兼容逗号分隔字符串（"1,2,3"）和数组（[1,2,3]）两种格式，统一转为逗号分隔字符串
+     */
+    public static class StringOrCsvDeserializer extends JsonDeserializer<String> {
+
+        @Override
+        public String deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
+            if (p.currentToken() == JsonToken.START_ARRAY) {
+                List<String> ids = new ArrayList<>();
+                while (p.nextToken() != JsonToken.END_ARRAY) {
+                    String value = p.getValueAsString();
+                    if (value != null && value.length() > 0) {
+                        ids.add(value);
+                    }
+                }
+                return String.join(",", ids);
+            }
+            return p.getValueAsString();
+        }
+    }
 
 }

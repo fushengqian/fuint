@@ -56,6 +56,9 @@ public class UploadServiceImpl implements UploadService {
         ALLOWED_EXTENSIONS.add("csv");
         ALLOWED_EXTENSIONS.add("txt");
         ALLOWED_EXTENSIONS.add("zip");
+        ALLOWED_EXTENSIONS.add("p12");
+        ALLOWED_EXTENSIONS.add("pem");
+        ALLOWED_EXTENSIONS.add("cer");
     }
 
     /**

@@ -44,7 +44,15 @@ public class SecurityConfig {
                                 "/**/*.html",
                                 "/**/*.css",
                                 "/**/*.js",
-                                "/profile/**"
+                                "/profile/**",
+                                // Swagger接口文档
+                                "/swagger-ui.html",
+                                "/swagger-ui/**",
+                                "/v2/api-docs",
+                                "/v3/api-docs",
+                                "/swagger-resources/**",
+                                "/webjars/**",
+                                "/favicon.ico"
                         ).permitAll()
                         // 业务API由自定义拦截器统一进行Token认证
                         .antMatchers("/clientApi/**", "/backendApi/**", "/merchantApi/**").permitAll()
