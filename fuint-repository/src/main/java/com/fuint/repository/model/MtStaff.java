@@ -38,6 +38,9 @@ public class MtStaff implements Serializable {
     @ApiModelProperty("真实姓名")
     private String realName;
 
+    @ApiModelProperty("头像")
+    private String avatar;
+
     @ApiModelProperty("微信号")
     private String wechat;
 

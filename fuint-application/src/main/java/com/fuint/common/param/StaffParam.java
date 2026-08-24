@@ -3,15 +3,17 @@ package com.fuint.common.param;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import java.io.Serializable;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 /**
- * 订单列表请求参数
+ * 员工请求参数
  *
  * Created by FSQ
  * CopyRight https://www.fuint.cn
  */
 @Data
-public class StaffParam extends PageParam implements Serializable {
+@JsonIgnoreProperties(ignoreUnknown = true)
+public class StaffParam implements Serializable {
 
     @ApiModelProperty(value="ID", name="id")
     private Integer id;
@@ -30,6 +32,9 @@ public class StaffParam extends PageParam implements Serializable {
 
     @ApiModelProperty(value="真实姓名", name="realName")
     private String realName;
+
+    @ApiModelProperty(value="头像", name="avatar")
+    private String avatar;
 
     @ApiModelProperty(value="备注信息", name="description")
     private String description;

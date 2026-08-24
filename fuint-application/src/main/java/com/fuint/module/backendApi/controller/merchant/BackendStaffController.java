@@ -8,6 +8,7 @@ import com.fuint.common.enums.StatusEnum;
 import com.fuint.common.param.StaffPage;
 import com.fuint.common.param.StaffParam;
 import com.fuint.common.param.StatusParam;
+import com.fuint.common.service.SettingService;
 import com.fuint.common.service.StaffService;
 import com.fuint.common.util.CommonUtil;
 import com.fuint.common.util.PhoneFormatCheckUtils;
@@ -46,6 +47,11 @@ public class BackendStaffController extends BaseController {
     private StaffService staffService;
 
     /**
+     * 配置服务
+     */
+    private SettingService settingService;
+
+    /**
      * 获取员工列表
      */
     @ApiOperation(value = "获取员工列表")
@@ -68,6 +74,7 @@ public class BackendStaffController extends BaseController {
         Map<String, Object> result = new HashMap<>();
         result.put("paginationResponse", paginationResponse);
         result.put("categoryList", categoryList);
+        result.put("imagePath", settingService.getUploadBasePath());
 
         return getSuccessResult(result);
     }
@@ -114,6 +121,7 @@ public class BackendStaffController extends BaseController {
         }
         mtStaff.setStoreId(storeId);
         mtStaff.setRealName(staffParam.getRealName());
+        mtStaff.setAvatar(staffParam.getAvatar());
         if (PhoneFormatCheckUtils.isChinaPhoneLegal(staffParam.getMobile())) {
             mtStaff.setMobile(staffParam.getMobile());
         }
