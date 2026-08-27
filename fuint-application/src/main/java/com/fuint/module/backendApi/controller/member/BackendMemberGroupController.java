@@ -77,18 +77,10 @@ public class BackendMemberGroupController extends BaseController {
     @PreAuthorize("@pms.hasPermission('member:group:index')")
     public ResponseObject save(@RequestBody MemberGroupDto memberGroupDto) throws BusinessCheckException {
         AccountInfo accountInfo = TokenUtil.getAccountInfo();
-
-        if (accountInfo.getMerchantId() == null || accountInfo.getMerchantId() <= 0) {
-            return getFailureResult(5002);
-        }
-
-        memberGroupDto.setMerchantId(accountInfo.getMerchantId());
-        memberGroupDto.setStoreId(accountInfo.getStoreId());
-        memberGroupDto.setOperator(accountInfo.getAccountName());
         if (memberGroupDto.getId() != null && memberGroupDto.getId() > 0) {
             memberGroupService.updateMemberGroup(memberGroupDto, accountInfo);
         } else {
-            memberGroupService.addMemberGroup(memberGroupDto);
+            memberGroupService.addMemberGroup(memberGroupDto, accountInfo);
         }
         return getSuccessResult(true);
     }

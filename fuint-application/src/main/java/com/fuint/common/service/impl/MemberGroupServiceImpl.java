@@ -111,29 +111,37 @@ public class MemberGroupServiceImpl extends ServiceImpl<MtUserGroupMapper, MtUse
     /**
      * 添加会员分组
      *
-     * @param  memberGroupDto 会员分组
+     * @param memberGroupDto 会员分组
+     * @param accountInfo 操作人
+     * @throws BusinessCheckException
      * @return
      */
     @Override
     @OperationServiceLog(description = "新增会员分组")
-    public MtUserGroup addMemberGroup(MemberGroupDto memberGroupDto) {
+    public MtUserGroup addMemberGroup(MemberGroupDto memberGroupDto, AccountInfo accountInfo) throws BusinessCheckException {
+        if (accountInfo.getMerchantId() == null || accountInfo.getMerchantId() <= 0) {
+            throw new BusinessCheckException("平台方帐号无法执行该操作，请使用商户帐号操作");
+        }
+
         MtUserGroup userGroup = new MtUserGroup();
-        Integer storeId = memberGroupDto.getStoreId() == null ? 0 : memberGroupDto.getStoreId();
+        Integer storeId = accountInfo.getStoreId() == null ? 0 : accountInfo.getStoreId();
         if (memberGroupDto.getMerchantId() == null || memberGroupDto.getMerchantId() <= 0) {
             MtStore mtStore = storeService.queryStoreById(storeId);
             if (mtStore != null) {
                 memberGroupDto.setMerchantId(mtStore.getMerchantId());
             }
         }
-        userGroup.setMerchantId(memberGroupDto.getMerchantId());
+        userGroup.setMerchantId(accountInfo.getMerchantId());
         userGroup.setStoreId(storeId);
         userGroup.setParentId(memberGroupDto.getParentId());
-        userGroup.setName(CommonUtil.replaceXSS(memberGroupDto.getName()));
+        String name = CommonUtil.replaceXSS(memberGroupDto.getName());
+        checkGroupName(accountInfo.getMerchantId(), memberGroupDto.getParentId(), name, null);
+        userGroup.setName(name);
         userGroup.setDescription(CommonUtil.replaceXSS(memberGroupDto.getDescription()));
         userGroup.setStatus(StatusEnum.ENABLED.getKey());
         userGroup.setCreateTime(new Date());
         userGroup.setUpdateTime(new Date());
-        userGroup.setOperator(memberGroupDto.getOperator());
+        userGroup.setOperator(accountInfo.getAccountName());
         this.save(userGroup);
         return userGroup;
     }
@@ -194,7 +202,9 @@ public class MemberGroupServiceImpl extends ServiceImpl<MtUserGroupMapper, MtUse
             throw new BusinessCheckException("不同商户，无操作权限");
         }
         if (memberGroupDto.getName() != null) {
-            userGroup.setName(CommonUtil.replaceXSS(memberGroupDto.getName()));
+            String name = CommonUtil.replaceXSS(memberGroupDto.getName());
+            checkGroupName(userGroup.getMerchantId(), userGroup.getParentId(), name, userGroup.getId());
+            userGroup.setName(name);
         }
         if (memberGroupDto.getDescription() != null) {
             userGroup.setDescription(CommonUtil.replaceXSS(memberGroupDto.getDescription()));
@@ -242,6 +252,33 @@ public class MemberGroupServiceImpl extends ServiceImpl<MtUserGroupMapper, MtUse
     public Long getMemberNum(Integer groupId) {
         List<Integer> groupIds = getGroupIds(groupId);
         return mtUserGroupMapper.getMemberNum(groupIds);
+    }
+
+    /**
+     * 检查分组名称是否重复（同一商户、同一父分组下唯一）
+     *
+     * @param merchantId 商户ID
+     * @param parentId   父分组ID
+     * @param name       分组名称
+     * @param excludeId  排除的分组ID（编辑时传入自身ID）
+     * @throws BusinessCheckException
+     * */
+    private void checkGroupName(Integer merchantId, Integer parentId, String name, Integer excludeId) throws BusinessCheckException {
+        if (StringUtils.isBlank(name)) {
+            return;
+        }
+        // 同一商户、同一父分组下分组名称唯一
+        LambdaQueryWrapper<MtUserGroup> lambdaQueryWrapper = Wrappers.lambdaQuery();
+        lambdaQueryWrapper.eq(MtUserGroup::getMerchantId, merchantId);
+        lambdaQueryWrapper.eq(MtUserGroup::getParentId, parentId == null ? 0 : parentId);
+        lambdaQueryWrapper.eq(MtUserGroup::getName, name);
+        lambdaQueryWrapper.ne(MtUserGroup::getStatus, StatusEnum.DISABLE.getKey());
+        if (excludeId != null) {
+            lambdaQueryWrapper.ne(MtUserGroup::getId, excludeId);
+        }
+        if (mtUserGroupMapper.selectCount(lambdaQueryWrapper) > 0) {
+            throw new BusinessCheckException("该分组名称已存在");
+        }
     }
 
     /**
