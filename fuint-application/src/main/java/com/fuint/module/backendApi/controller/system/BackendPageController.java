@@ -4,6 +4,7 @@ import com.fuint.common.dto.decorate.PageDecorationDto;
 import com.fuint.common.dto.system.AccountInfo;
 import com.fuint.common.param.PagePage;
 import com.fuint.common.service.PageDecorateService;
+import com.fuint.common.service.SettingService;
 import com.fuint.common.util.TokenUtil;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.pagination.PaginationResponse;
@@ -15,6 +16,9 @@ import io.swagger.annotations.ApiOperation;
 import lombok.AllArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * 页面装修管理类controller
@@ -34,12 +38,17 @@ public class BackendPageController extends BaseController {
     private PageDecorateService pageDecorateService;
 
     /**
+     * 配置服务
+     */
+    private SettingService settingService;
+
+    /**
      * 装修页面列表查询
      */
     @ApiOperation(value = "装修页面列表查询")
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     @CrossOrigin
-    @PreAuthorize("@pms.hasPermission('decorate:index:list')")
+    @PreAuthorize("@pms.hasPermission('decorate:page')")
     public ResponseObject list(@ModelAttribute PagePage pagePage) throws BusinessCheckException {
         AccountInfo accountInfo = TokenUtil.getAccountInfo();
         if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
@@ -49,7 +58,12 @@ public class BackendPageController extends BaseController {
             pagePage.setStoreId(accountInfo.getStoreId());
         }
         PaginationResponse<MtPage> paginationResponse = pageDecorateService.queryPageListByPagination(pagePage);
-        return getSuccessResult(paginationResponse);
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("paginationResponse", paginationResponse);
+        result.put("imagePath", settingService.getUploadBasePath());
+
+        return getSuccessResult(result);
     }
 
     /**
@@ -58,7 +72,7 @@ public class BackendPageController extends BaseController {
     @ApiOperation(value = "保存装修页面")
     @RequestMapping(value = "/save", method = RequestMethod.POST)
     @CrossOrigin
-    @PreAuthorize("@pms.hasPermission('decorate:index:edit')")
+    @PreAuthorize("@pms.hasPermission('decorate:page')")
     public ResponseObject saveHandler(@RequestBody PageDecorationDto pageDto) throws BusinessCheckException {
         AccountInfo accountInfo = TokenUtil.getAccountInfo();
         pageDecorateService.savePage(pageDto, accountInfo);
@@ -71,7 +85,7 @@ public class BackendPageController extends BaseController {
     @ApiOperation(value = "获取装修页面详情")
     @RequestMapping(value = "/detail/{id}", method = RequestMethod.GET)
     @CrossOrigin
-    @PreAuthorize("@pms.hasPermission('decorate:index:list')")
+    @PreAuthorize("@pms.hasPermission('decorate:page')")
     public ResponseObject detail(@PathVariable("id") Integer id) throws BusinessCheckException {
         AccountInfo accountInfo = TokenUtil.getAccountInfo();
         PageDecorationDto pageDto = pageDecorateService.getPageDetail(id);
@@ -82,7 +96,12 @@ public class BackendPageController extends BaseController {
                 && !pageDto.getMerchantId().equals(accountInfo.getMerchantId())) {
             return getFailureResult(1004);
         }
-        return getSuccessResult(pageDto);
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("pageInfo", pageDto);
+        result.put("imagePath", settingService.getUploadBasePath());
+
+        return getSuccessResult(result);
     }
 
     /**
@@ -91,7 +110,7 @@ public class BackendPageController extends BaseController {
     @ApiOperation(value = "设为默认页面")
     @RequestMapping(value = "/setDefault/{id}", method = RequestMethod.POST)
     @CrossOrigin
-    @PreAuthorize("@pms.hasPermission('decorate:index:edit')")
+    @PreAuthorize("@pms.hasPermission('decorate:page')")
     public ResponseObject setDefault(@PathVariable("id") Integer id) throws BusinessCheckException {
         AccountInfo accountInfo = TokenUtil.getAccountInfo();
         pageDecorateService.setDefaultPage(id, accountInfo);
@@ -104,7 +123,7 @@ public class BackendPageController extends BaseController {
     @ApiOperation(value = "删除装修页面")
     @RequestMapping(value = "/delete/{id}", method = RequestMethod.POST)
     @CrossOrigin
-    @PreAuthorize("@pms.hasPermission('decorate:index:edit')")
+    @PreAuthorize("@pms.hasPermission('decorate:page')")
     public ResponseObject delete(@PathVariable("id") Integer id) throws BusinessCheckException {
         AccountInfo accountInfo = TokenUtil.getAccountInfo();
         pageDecorateService.deletePage(id, accountInfo);

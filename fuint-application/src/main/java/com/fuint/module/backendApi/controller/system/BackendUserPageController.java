@@ -3,6 +3,7 @@ package com.fuint.module.backendApi.controller.system;
 import com.fuint.common.dto.decorate.UserPageDto;
 import com.fuint.common.dto.system.AccountInfo;
 import com.fuint.common.service.PageDecorateService;
+import com.fuint.common.service.SettingService;
 import com.fuint.common.util.TokenUtil;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.web.BaseController;
@@ -12,6 +13,8 @@ import io.swagger.annotations.ApiOperation;
 import lombok.AllArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * 个人中心设置管理类controller
@@ -31,12 +34,17 @@ public class BackendUserPageController extends BaseController {
     private PageDecorateService pageDecorateService;
 
     /**
+     * 系统设置服务接口
+     */
+    private SettingService settingService;
+
+    /**
      * 获取个人中心配置
      */
     @ApiOperation(value = "获取个人中心配置")
     @RequestMapping(value = "/info", method = RequestMethod.GET)
     @CrossOrigin
-    @PreAuthorize("@pms.hasPermission('decorate:userPage:list')")
+    @PreAuthorize("@pms.hasPermission('decorate:userPage')")
     public ResponseObject info() throws BusinessCheckException {
         AccountInfo accountInfo = TokenUtil.getAccountInfo();
         Integer merchantId = accountInfo.getMerchantId() == null ? 0 : accountInfo.getMerchantId();
@@ -45,7 +53,10 @@ public class BackendUserPageController extends BaseController {
         if (userPageDto == null) {
             userPageDto = new UserPageDto();
         }
-        return getSuccessResult(userPageDto);
+        Map<String, Object> result = new HashMap<>();
+        result.put("userPage", userPageDto);
+        result.put("imagePath", settingService.getUploadBasePath());
+        return getSuccessResult(result);
     }
 
     /**
@@ -54,7 +65,7 @@ public class BackendUserPageController extends BaseController {
     @ApiOperation(value = "保存个人中心配置")
     @RequestMapping(value = "/save", method = RequestMethod.POST)
     @CrossOrigin
-    @PreAuthorize("@pms.hasPermission('decorate:userPage:edit')")
+    @PreAuthorize("@pms.hasPermission('decorate:userPage')")
     public ResponseObject save(@RequestBody UserPageDto userPageDto) throws BusinessCheckException {
         AccountInfo accountInfo = TokenUtil.getAccountInfo();
         pageDecorateService.saveUserPage(userPageDto, accountInfo);

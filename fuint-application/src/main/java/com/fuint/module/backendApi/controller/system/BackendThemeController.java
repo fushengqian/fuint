@@ -36,7 +36,7 @@ public class BackendThemeController extends BaseController {
     @ApiOperation(value = "获取主题配置")
     @RequestMapping(value = "/info", method = RequestMethod.GET)
     @CrossOrigin
-    @PreAuthorize("@pms.hasPermission('decorate:theme:list')")
+    @PreAuthorize("@pms.hasPermission('decorate:theme')")
     public ResponseObject info() throws BusinessCheckException {
         AccountInfo accountInfo = TokenUtil.getAccountInfo();
         Integer merchantId = accountInfo.getMerchantId() == null ? 0 : accountInfo.getMerchantId();
@@ -54,7 +54,7 @@ public class BackendThemeController extends BaseController {
     @ApiOperation(value = "保存主题配置")
     @RequestMapping(value = "/save", method = RequestMethod.POST)
     @CrossOrigin
-    @PreAuthorize("@pms.hasPermission('decorate:theme:edit')")
+    @PreAuthorize("@pms.hasPermission('decorate:theme')")
     public ResponseObject save(@RequestBody ThemeDto themeDto) throws BusinessCheckException {
         AccountInfo accountInfo = TokenUtil.getAccountInfo();
         pageDecorateService.saveTheme(themeDto, accountInfo);
