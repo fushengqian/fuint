@@ -3,12 +3,16 @@ package com.fuint.module.clientApi.controller;
 import com.fuint.common.dto.member.UserInfo;
 import com.fuint.common.enums.UserCouponStatusEnum;
 import com.fuint.common.service.CouponService;
+import com.fuint.common.service.MemberService;
+import com.fuint.common.service.StaffService;
 import com.fuint.common.service.UserCouponService;
 import com.fuint.common.util.TokenUtil;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.web.BaseController;
 import com.fuint.framework.web.ResponseObject;
 import com.fuint.module.clientApi.request.MyCouponRequest;
+import com.fuint.repository.model.MtStaff;
+import com.fuint.repository.model.MtUser;
 import com.fuint.repository.model.MtUserCoupon;
 import com.fuint.utils.StringUtil;
 import io.swagger.annotations.Api;
@@ -43,6 +47,16 @@ public class ClientMyCouponController extends BaseController {
     private UserCouponService userCouponService;
 
     /**
+     * 会员服务接口
+     * */
+    private MemberService memberService;
+
+    /**
+     * 员工服务接口
+     * */
+    private StaffService staffService;
+
+    /**
      * 查询我的卡券
      */
     @ApiOperation(value = "查询我的卡券")
@@ -54,12 +68,33 @@ public class ClientMyCouponController extends BaseController {
         String userId = request.getParameter("userId") == null ? "" : request.getParameter("userId");
 
         UserInfo mtUser = TokenUtil.getUserInfo();
-        if (StringUtil.isNotEmpty(userId)) {
-            mtUser.setId(Integer.parseInt(userId));
+        if (null == mtUser) {
+            return getFailureResult(1001);
+        }
+
+        // 目标用户ID，默认当前登录用户
+        Integer targetUserId = mtUser.getId();
+
+        // 传入 userId 参数时，仅允许登录用户本人，或同商户的店员（员工）代查，防止越权查看/核销他人卡券
+        if (StringUtil.isNotEmpty(userId) && !String.valueOf(mtUser.getId()).equals(userId)) {
+            MtUser loginInfo = memberService.queryMemberById(mtUser.getId());
+            if (null == loginInfo) {
+                return getFailureResult(1001);
+            }
+            MtStaff staffInfo = staffService.queryStaffByMobile(loginInfo.getMobile());
+            if (null == staffInfo) {
+                return getFailureResult(1004);
+            }
+            // 校验店员与目标会员是否同商户
+            MtUser targetUser = memberService.queryMemberById(Integer.parseInt(userId));
+            if (null == targetUser || !targetUser.getMerchantId().equals(staffInfo.getMerchantId())) {
+                return getFailureResult(1004);
+            }
+            targetUserId = targetUser.getId();
         }
 
         Map<String, Object> param = new HashMap<>();
-        param.put("userId", mtUser.getId());
+        param.put("userId", targetUserId);
         param.put("status", status);
         param.put("type", type);
 

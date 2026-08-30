@@ -201,20 +201,40 @@ public class ClientUserController extends BaseController {
     @CrossOrigin
     public ResponseObject asset(HttpServletRequest request) {
         String userId = request.getParameter("userId");
+
         UserInfo mtUser = TokenUtil.getUserInfo();
-        if (StringUtil.isNotEmpty(userId)) {
-            MtUser userInfo = memberService.queryMemberById(Integer.parseInt(userId));
-            if (userInfo != null) {
-                mtUser.setId(userInfo.getId());
-            }
+        if (null == mtUser) {
+            return getFailureResult(1001);
         }
+
+        // 目标用户ID，默认当前登录用户
+        Integer targetUserId = mtUser.getId();
+
+        // 传入 userId 参数时，仅允许登录用户本人，或同商户的店员（员工）代查，防止越权查询他人资产
+        if (StringUtil.isNotEmpty(userId) && !String.valueOf(mtUser.getId()).equals(userId)) {
+            MtUser loginInfo = memberService.queryMemberById(mtUser.getId());
+            if (null == loginInfo) {
+                return getFailureResult(1001);
+            }
+            MtStaff staffInfo = staffService.queryStaffByMobile(loginInfo.getMobile());
+            if (null == staffInfo) {
+                return getFailureResult(1004);
+            }
+            // 校验店员与目标会员是否同商户
+            MtUser targetUser = memberService.queryMemberById(Integer.parseInt(userId));
+            if (null == targetUser || !targetUser.getMerchantId().equals(staffInfo.getMerchantId())) {
+                return getFailureResult(1004);
+            }
+            targetUserId = targetUser.getId();
+        }
+
         Integer couponNum = 0;
         Integer preStoreNum = 0;
         Integer timerNum = 0;
 
         if (mtUser != null) {
             List<String> statusList = Arrays.asList(UserCouponStatusEnum.UNUSED.getKey());
-            List<MtUserCoupon> dataList = userCouponService.getUserCouponList(mtUser.getId(), statusList);
+            List<MtUserCoupon> dataList = userCouponService.getUserCouponList(targetUserId, statusList);
             for (int i = 0; i < dataList.size(); i++) {
                 MtCoupon couponInfo = couponService.queryCouponById(dataList.get(i).getCouponId());
                 if (couponInfo == null) {
