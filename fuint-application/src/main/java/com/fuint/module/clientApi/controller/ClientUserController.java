@@ -201,10 +201,15 @@ public class ClientUserController extends BaseController {
     @CrossOrigin
     public ResponseObject asset(HttpServletRequest request) {
         String userId = request.getParameter("userId");
-
+        AssetDto asset = new AssetDto();
+        asset.setCoupon(0);
+        asset.setPrestore(0);
+        asset.setTimer(0);
         UserInfo mtUser = TokenUtil.getUserInfo();
         if (null == mtUser) {
-            return getFailureResult(1001);
+            Map<String, Object> outParams = new HashMap<>();
+            outParams.put("asset", asset);
+            return getSuccessResult(outParams);
         }
 
         // 目标用户ID，默认当前登录用户
@@ -252,14 +257,11 @@ public class ClientUserController extends BaseController {
             }
         }
 
-        AssetDto asset = new AssetDto();
+        Map<String, Object> outParams = new HashMap<>();
         asset.setCoupon(couponNum);
         asset.setPrestore(preStoreNum);
         asset.setTimer(timerNum);
-
-        Map<String, Object> outParams = new HashMap<>();
         outParams.put("asset", asset);
-
         return getSuccessResult(outParams);
     }
 
