@@ -58,6 +58,12 @@ public class PaginationResponse<T> implements Serializable {
     private List<T> content;
 
     /**
+     * 无参构造方法
+     */
+    public PaginationResponse() {
+    }
+
+    /**
      * 构造方法
      */
     public <T> PaginationResponse(final Page<T> page, final Class<? extends T> clz) {

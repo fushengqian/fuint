@@ -23,10 +23,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.ByteArrayOutputStream;
-import java.util.Base64;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * 订单类controller
@@ -55,6 +52,12 @@ public class ClientOrderController extends BaseController {
     @CrossOrigin
     public ResponseObject list(@RequestBody OrderListParam orderListParam) throws BusinessCheckException {
         UserInfo userInfo = TokenUtil.getUserInfo();
+        if (userInfo == null) {
+            PaginationResponse empty = new PaginationResponse();
+            empty.setContent(Collections.emptyList());
+            empty.setTotalElements(0);
+            return getSuccessResult(empty);
+        }
         orderListParam.setUserId(userInfo.getId());
         PaginationResponse orderData = orderService.getUserOrderList(orderListParam);
         return getSuccessResult(orderData);
@@ -163,7 +166,7 @@ public class ClientOrderController extends BaseController {
     @ApiOperation(value = "生成订单核销二维码")
     @RequestMapping(value = "/verifyQrCode", method = RequestMethod.GET)
     @CrossOrigin
-    public ResponseObject verifyQrCode(HttpServletRequest request) throws BusinessCheckException {
+    public ResponseObject verifyQrCode(HttpServletRequest request) {
         UserInfo mtUser = TokenUtil.getUserInfo();
         String orderId = request.getParameter("orderId");
         if (StringUtil.isEmpty(orderId)) {

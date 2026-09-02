@@ -138,7 +138,9 @@ public interface PageDecorateService extends IService<MtPage> {
     /**
      * 获取页面组件明细列表
      *
-     * @param pageId 页面ID
+     * @param merchantId 商户ID
+     * @param storeId 店铺ID
+     * @param pageType 页面类型：index首页
      * @return
      */
     List<PageDecorationDto> getPageList(Integer merchantId, Integer storeId, String pageType);
