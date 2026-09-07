@@ -19,8 +19,10 @@ import com.fuint.common.service.PageDecorateService;
 import com.fuint.common.service.SettingService;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.pagination.PaginationResponse;
+import com.fuint.repository.mapper.MtGoodsMapper;
 import com.fuint.repository.mapper.MtPageItemMapper;
 import com.fuint.repository.mapper.MtPageMapper;
+import com.fuint.repository.model.MtGoods;
 import com.fuint.repository.model.MtPage;
 import com.fuint.repository.model.MtPageItem;
 import com.fuint.repository.model.MtSetting;
@@ -39,6 +41,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -57,6 +60,8 @@ public class PageDecorateServiceImpl extends ServiceImpl<MtPageMapper, MtPage> i
     private MtPageMapper mtPageMapper;
 
     private MtPageItemMapper mtPageItemMapper;
+
+    private MtGoodsMapper mtGoodsMapper;
 
     /**
      * 系统设置服务接口
@@ -487,7 +492,70 @@ public class PageDecorateServiceImpl extends ServiceImpl<MtPageMapper, MtPage> i
             components.add(component);
         }
         pageDto.setComponents(components);
+        // 商品推荐组件销量实时回填，避免快照数据过期导致展示为0
+        fillGoodsSales(pageDto);
         return pageDto;
+    }
+
+    /**
+     * 回填商品推荐组件中商品的最新销量（取自 mt_goods.INIT_SALE，与小程序商品列表/详情口径一致）
+     */
+    private void fillGoodsSales(PageDecorationDto pageDto) {
+        if (pageDto == null || pageDto.getComponents() == null || pageDto.getComponents().size() == 0) {
+            return;
+        }
+        for (PageComponentDto component : pageDto.getComponents()) {
+            if (component == null || !"goods".equals(component.getType())) {
+                continue;
+            }
+            Map<String, Object> data = component.getData();
+            if (data == null || !(data.get("goodsList") instanceof List)) {
+                continue;
+            }
+            List<?> goodsList = (List<?>) data.get("goodsList");
+            if (goodsList == null || goodsList.size() == 0) {
+                continue;
+            }
+            List<Integer> goodsIds = new ArrayList<>();
+            for (Object obj : goodsList) {
+                if (obj instanceof Map) {
+                    Object id = ((Map<?, ?>) obj).get("id");
+                    if (id instanceof Number) {
+                        goodsIds.add(((Number) id).intValue());
+                    }
+                }
+            }
+            if (goodsIds.size() == 0) {
+                continue;
+            }
+            List<MtGoods> goodsEntities = mtGoodsMapper.selectList(Wrappers.lambdaQuery(MtGoods.class).in(MtGoods::getId, goodsIds));
+            Map<Integer, Double> saleMap = new HashMap<>();
+            if (goodsEntities != null) {
+                for (MtGoods goodsEntity : goodsEntities) {
+                    saleMap.put(goodsEntity.getId(), goodsEntity.getInitSale());
+                }
+            }
+            if (saleMap.size() == 0) {
+                continue;
+            }
+            for (Object obj : goodsList) {
+                if (!(obj instanceof Map)) {
+                    continue;
+                }
+                Map<String, Object> item = (Map<String, Object>) obj;
+                Object id = item.get("id");
+                if (!(id instanceof Number)) {
+                    continue;
+                }
+                Double sale = saleMap.get(((Number) id).intValue());
+                if (sale == null) {
+                    continue;
+                }
+                int saleInt = (int) Math.round(sale);
+                item.put("initSale", saleInt);
+                item.put("saleNum", saleInt);
+            }
+        }
     }
 
     /**

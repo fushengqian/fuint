@@ -28,6 +28,8 @@ public interface MtGoodsMapper extends BaseMapper<MtGoods> {
 
     List<GoodsBean> selectGoodsList(@Param("merchantId") Integer merchantId, @Param("storeId") Integer storeId, @Param("cateId") Integer cateId, @Param("keyword") String keyword);
 
+    List<GoodsBean> selectGoodsListOnly(@Param("merchantId") Integer merchantId, @Param("storeId") Integer storeId, @Param("cateId") Integer cateId, @Param("keyword") String keyword);
+
     List<GoodsTopBean> getGoodsSaleTopList(@Param("merchantId") Integer merchantId, @Param("storeId") Integer storeId, @Param("startTime") Date startTime, @Param("endTime") Date endTime);
 
     void removeMerchantGoods(@Param("merchantId") Integer merchantId);

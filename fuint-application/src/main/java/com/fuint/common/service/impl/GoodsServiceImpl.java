@@ -779,7 +779,15 @@ public class GoodsServiceImpl extends ServiceImpl<MtGoodsMapper, MtGoods> implem
         Page<MtGoods> pageHelper = PageHelper.startPage(page, pageSize);
         List<GoodsDto> dataList = new ArrayList<>();
 
-        List<GoodsBean> goodsList = mtGoodsMapper.selectGoodsList(merchantId, storeId, cateId, keyword);
+        // onlyGoods=true时仅返回商品列表（每个商品一行，不展开SKU），用于页面装修等只选商品的场景
+        String onlyGoods = params.get("onlyGoods") == null ? "" : params.get("onlyGoods").toString();
+        boolean onlyGoodsFlag = "true".equalsIgnoreCase(onlyGoods) || "1".equals(onlyGoods);
+        List<GoodsBean> goodsList;
+        if (onlyGoodsFlag) {
+            goodsList = mtGoodsMapper.selectGoodsListOnly(merchantId, storeId, cateId, keyword);
+        } else {
+            goodsList = mtGoodsMapper.selectGoodsList(merchantId, storeId, cateId, keyword);
+        }
 
         for (GoodsBean goodsBean : goodsList) {
              GoodsDto goodsDto = new GoodsDto();
@@ -791,6 +799,7 @@ public class GoodsServiceImpl extends ServiceImpl<MtGoodsMapper, MtGoods> implem
              goodsDto.setPrice(goodsBean.getPrice());
              goodsDto.setCateId(goodsBean.getCateId());
              goodsDto.setStock(goodsBean.getStock());
+             goodsDto.setInitSale(goodsBean.getInitSale());
              if (goodsBean.getSpecIds() != null) {
                  Map<String, Object> param = new HashMap<>();
                  param.put("GOODS_ID", goodsBean.getGoodsId());

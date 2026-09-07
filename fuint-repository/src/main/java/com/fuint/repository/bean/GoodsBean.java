@@ -39,6 +39,9 @@ public class GoodsBean implements Serializable {
     @ApiModelProperty("商品价格")
     private BigDecimal price;
 
+    @ApiModelProperty("初始销量")
+    private Double initSale;
+
     @ApiModelProperty("商品库存")
     private Double stock;
 
