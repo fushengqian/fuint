@@ -196,7 +196,7 @@ public class SettingServiceImpl extends ServiceImpl<MtSettingMapper, MtSetting> 
         ParamDto balance = new ParamDto(PayTypeEnum.BALANCE.getKey(), PayTypeEnum.BALANCE.getValue(), PayTypeEnum.BALANCE.getKey());
         payTypeList.add(balance);
 
-        // 前台支付
+        // 到店支付
         MtSetting mtSetting = settingService.querySettingByName(merchantId, storeId, SettingTypeEnum.ORDER.getKey(), OrderSettingEnum.PAY_OFF_LINE.getKey());
         if (mtSetting != null && mtSetting.getValue().equals(YesOrNoEnum.YES.getKey())) {
             ParamDto store = new ParamDto(PayTypeEnum.STORE.getKey(), PayTypeEnum.STORE.getValue(), PayTypeEnum.STORE.getKey());
