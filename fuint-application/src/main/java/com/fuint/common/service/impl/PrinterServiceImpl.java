@@ -9,6 +9,7 @@ import com.fuint.common.dto.order.UserOrderDto;
 import com.fuint.common.dto.system.AccountInfo;
 import com.fuint.common.enums.*;
 import com.fuint.common.param.PrinterPage;
+import com.fuint.common.service.MemberService;
 import com.fuint.common.service.PrinterService;
 import com.fuint.common.service.SettingService;
 import com.fuint.common.util.HashSignUtil;
@@ -22,6 +23,7 @@ import com.fuint.repository.mapper.MtPrinterMapper;
 import com.fuint.repository.model.MtPrinter;
 import com.fuint.repository.model.MtSetting;
 import com.fuint.repository.model.MtStore;
+import com.fuint.repository.model.MtUser;
 import com.fuint.utils.StringUtil;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
@@ -57,6 +59,11 @@ public class PrinterServiceImpl extends ServiceImpl<MtPrinterMapper, MtPrinter> 
      * 系统配置服务接口
      * */
     private SettingService settingService;
+
+    /**
+     * 会员服务接口
+     * */
+    private MemberService memberService;
 
     /**
      * 环境变量
@@ -222,6 +229,31 @@ public class PrinterServiceImpl extends ServiceImpl<MtPrinterMapper, MtPrinter> 
                          }
                      }
                      printContent.append(NoteFormatter.formatPrintOrderItemForNewLine80(name, goodsDto.getNum(), Double.parseDouble(goodsDto.getPrice())));
+                }
+            }
+
+            // 会员订单，打印会员信息
+            if (!YesOrNoEnum.YES.getKey().equals(orderInfo.getIsVisitor()) && orderInfo.getUserId() != null && orderInfo.getUserId() > 0) {
+                String memberName = "";
+                String memberMobile = "";
+                MtUser memberInfo = memberService.queryMemberById(orderInfo.getUserId());
+                if (memberInfo != null) {
+                    memberName = StringUtil.isNotEmpty(memberInfo.getName()) ? memberInfo.getName() : "";
+                    memberMobile = StringUtil.isNotEmpty(memberInfo.getMobile()) ? memberInfo.getMobile() : "";
+                }
+                // 会员信息为空时，取订单上已带的用户信息
+                if (StringUtil.isEmpty(memberName) && orderInfo.getUserInfo() != null && StringUtil.isNotEmpty(orderInfo.getUserInfo().getName())) {
+                    memberName = orderInfo.getUserInfo().getName();
+                }
+                if (StringUtil.isEmpty(memberMobile) && orderInfo.getUserInfo() != null && StringUtil.isNotEmpty(orderInfo.getUserInfo().getMobile())) {
+                    memberMobile = orderInfo.getUserInfo().getMobile();
+                }
+                if (StringUtil.isNotEmpty(memberName) || StringUtil.isNotEmpty(memberMobile)) {
+                    // 分割线
+                    printContent.append(org.apache.commons.lang3.StringUtils.repeat("-", 32)).append("<BR>");
+                    printContent.append("<L>")
+                            .append("会员名称：").append(StringUtil.isNotEmpty(memberName) ? memberName : "-").append("<BR>")
+                            .append("会员手机：").append(StringUtil.isNotEmpty(memberMobile) ? memberMobile : "-").append("<BR>");
                 }
             }
 
