@@ -1005,6 +1005,9 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
 
             orderDto.setParam(orderParam);
             orderDto.setAmount(totalAmount);
+            // 预存订单应付金额 = 预存本金合计，必须写入 payAmount，
+            // 否则订单 payAmount 为 0，会被判定为"无需支付"直接置为已支付
+            orderDto.setPayAmount(totalAmount);
             payAmount = totalAmount.toString();
         }
 
