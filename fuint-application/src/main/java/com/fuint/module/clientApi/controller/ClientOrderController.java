@@ -70,17 +70,7 @@ public class ClientOrderController extends BaseController {
     @RequestMapping(value = "/detail", method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject detail(HttpServletRequest request) throws BusinessCheckException {
-        String orderId = request.getParameter("orderId");
-        if (StringUtil.isEmpty(orderId)) {
-            return getFailureResult(2000, "订单不能为空");
-        }
-        UserOrderDto orderInfo;
-        if (orderId.length() >= 12) {
-            orderInfo = orderService.getOrderByOrderSn(orderId);
-        } else {
-            orderInfo = orderService.getMyOrderById(Integer.parseInt(orderId));
-        }
-        return getSuccessResult(orderInfo);
+        return getSuccessResult(getOrderInfo(request));
     }
 
     /**
@@ -92,19 +82,7 @@ public class ClientOrderController extends BaseController {
     public ResponseObject cancel(HttpServletRequest request) throws BusinessCheckException {
         UserInfo mtUser = TokenUtil.getUserInfo();
 
-        String orderId = request.getParameter("orderId");
-        if (StringUtil.isEmpty(orderId)) {
-            return getFailureResult(201, "订单不能为空");
-        }
-
-        if (orderId.length() >= 12) {
-            MtOrder mtOrder = orderService.getOrderInfoByOrderSn(orderId);
-            if (mtOrder != null) {
-                orderId = mtOrder.getId().toString();
-            }
-        }
-
-        UserOrderDto order = orderService.getOrderById(Integer.parseInt(orderId));
+        UserOrderDto order = getOrderInfo(request);
         if (!order.getUserId().equals(mtUser.getId())) {
             return getFailureResult(201, "订单信息有误");
         }
@@ -121,18 +99,14 @@ public class ClientOrderController extends BaseController {
     @CrossOrigin
     public ResponseObject receipt(HttpServletRequest request) throws BusinessCheckException {
         UserInfo mtUser = TokenUtil.getUserInfo();
-        String orderId = request.getParameter("orderId");
-        if (StringUtil.isEmpty(orderId)) {
-            return getFailureResult(2000, "订单不能为空");
-        }
 
-        UserOrderDto order = orderService.getOrderById(Integer.parseInt(orderId));
+        UserOrderDto order = getOrderInfo(request);
         if (!order.getUserId().equals(mtUser.getId())) {
             return getFailureResult(2000, "订单信息有误");
         }
 
         OrderDto reqDto = new OrderDto();
-        reqDto.setId(Integer.parseInt(orderId));
+        reqDto.setId(order.getId());
         reqDto.setStatus(OrderStatusEnum.RECEIVED.getKey());
         MtOrder orderInfo = orderService.updateOrder(reqDto);
 
@@ -166,19 +140,9 @@ public class ClientOrderController extends BaseController {
     @ApiOperation(value = "生成订单核销二维码")
     @RequestMapping(value = "/verifyQrCode", method = RequestMethod.GET)
     @CrossOrigin
-    public ResponseObject verifyQrCode(HttpServletRequest request) {
+    public ResponseObject verifyQrCode(HttpServletRequest request) throws BusinessCheckException {
         UserInfo mtUser = TokenUtil.getUserInfo();
-        String orderId = request.getParameter("orderId");
-        if (StringUtil.isEmpty(orderId)) {
-            return getFailureResult(2000, "订单不能为空");
-        }
-
-        UserOrderDto orderInfo;
-        if (orderId.length() >= 12) {
-            orderInfo = orderService.getOrderByOrderSn(orderId);
-        } else {
-            orderInfo = orderService.getMyOrderById(Integer.parseInt(orderId));
-        }
+        UserOrderDto orderInfo = getOrderInfo(request);
 
         if (!orderInfo.getUserId().equals(mtUser.getId())) {
             return getFailureResult(201, "订单信息有误");
@@ -206,5 +170,19 @@ public class ClientOrderController extends BaseController {
             logger.error("生成核销二维码失败：{}", e.getMessage());
             return getFailureResult(201, "生成核销二维码失败");
         }
+    }
+
+    private UserOrderDto getOrderInfo(HttpServletRequest request) throws BusinessCheckException {
+        String orderId = request.getParameter("orderId");
+        if (StringUtil.isEmpty(orderId)) {
+            throw new BusinessCheckException("订单不能为空");
+        }
+        UserOrderDto orderInfo;
+        if (orderId.length() >= 12) {
+            orderInfo = orderService.getOrderByOrderSn(orderId);
+        } else {
+            orderInfo = orderService.getMyOrderById(Integer.parseInt(orderId));
+        }
+        return orderInfo;
     }
 }
