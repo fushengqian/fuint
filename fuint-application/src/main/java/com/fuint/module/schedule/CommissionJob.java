@@ -6,6 +6,7 @@ import com.fuint.common.service.OrderService;
 import com.fuint.common.util.DateUtil;
 import com.fuint.common.util.RedisLock;
 import com.fuint.common.util.SeqUtil;
+import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.repository.model.MtOrder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -66,7 +67,7 @@ public class CommissionJob {
 
     @Scheduled(cron = "${commission.job.time:0 0/5 * * * ?}")
     @Transactional(rollbackFor = Exception.class)
-    public void dealOrder() {
+    public void dealOrder() throws BusinessCheckException {
         String lockKey = "lock:commissionJob:deal";
         // 唯一标识当前请求/线程
         String requestId = SeqUtil.getUUID();

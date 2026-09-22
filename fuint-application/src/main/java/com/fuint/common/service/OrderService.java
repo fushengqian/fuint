@@ -115,19 +115,20 @@ public interface OrderService extends IService<MtOrder> {
     /**
      * 更新订单
      *
-     * @param  reqDto
+     * @param  orderDto
      * @throws BusinessCheckException
      * @return
      * */
-    MtOrder updateOrder(OrderDto reqDto) throws BusinessCheckException;
+    MtOrder updateOrder(OrderDto orderDto) throws BusinessCheckException;
 
     /**
      * 更新订单
      *
      * @param  mtOrder
+     * @throws BusinessCheckException
      * @return
      * */
-    MtOrder updateOrder(MtOrder mtOrder);
+    MtOrder updateOrder(MtOrder mtOrder) throws BusinessCheckException;
 
     /**
      * 把订单置为已支付

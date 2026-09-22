@@ -37,9 +37,10 @@ public interface CommissionLogService extends IService<MtCommissionLog> {
      * 计算订单分销提成
      *
      * @param  orderId 订单ID
+     * @throws BusinessCheckException
      * @return
      */
-    void calculateCommission(Integer orderId);
+    void calculateCommission(Integer orderId) throws BusinessCheckException;
 
     /**
      * 根据ID获取记录信息

@@ -237,7 +237,7 @@ public class CommissionLogServiceImpl extends ServiceImpl<MtCommissionLogMapper,
     @Override
     @Transactional
     @OperationServiceLog(description = "计算订单分销提成")
-    public void calculateCommission(Integer orderId) {
+    public void calculateCommission(Integer orderId) throws BusinessCheckException {
         if (orderId != null && orderId > 0) {
             MtOrder mtOrder = orderService.getById(orderId);
             // 获取一级邀请关系

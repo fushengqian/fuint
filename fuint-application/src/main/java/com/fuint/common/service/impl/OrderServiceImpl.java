@@ -1588,12 +1588,17 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
     /**
      * 更新订单
      *
-     * @param mtOrder 订单信息
+     * @param  mtOrder 订单信息
+     * @throws BusinessCheckException
      * @return
      * */
     @Override
+    @OperationServiceLog(description = "修改订单信息")
     @Transactional(rollbackFor = Exception.class)
-    public MtOrder updateOrder(MtOrder mtOrder) {
+    public MtOrder updateOrder(MtOrder mtOrder) throws BusinessCheckException {
+        if (mtOrder.getId() == null || mtOrder.getId() <= 0) {
+            throw new BusinessCheckException("订单ID无效，更新订单失败.");
+        }
         mtOrder.setUpdateTime(new Date());
         Integer id = mtOrderMapper.updateById(mtOrder);
         if (id > 0) {
