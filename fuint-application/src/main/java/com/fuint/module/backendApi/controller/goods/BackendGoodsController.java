@@ -294,6 +294,9 @@ public class BackendGoodsController extends BaseController {
         Double initSale = param.get("initSale") == null ? 0 : Double.parseDouble(param.get("initSale").toString());
         String salePoint = param.get("salePoint") == null ? "" : param.get("salePoint").toString();
         String canUsePoint = param.get("canUsePoint") == null ? "" : param.get("canUsePoint").toString();
+        String isPointGoods = param.get("isPointGoods") == null ? "" : param.get("isPointGoods").toString();
+        Integer pointPrice = (param.get("pointPrice") == null || StringUtil.isEmpty(param.get("pointPrice").toString())) ? 0 : new BigDecimal(param.get("pointPrice").toString()).intValue();
+        Integer exchangeLimit = (param.get("exchangeLimit") == null || StringUtil.isEmpty(param.get("exchangeLimit").toString())) ? 0 : new BigDecimal(param.get("exchangeLimit").toString()).intValue();
         String isMemberDiscount = param.get("isMemberDiscount") == null ? "" : param.get("isMemberDiscount").toString();
         String gradeIds = param.get("gradeIds") != null ? param.get("gradeIds").toString() : null;
         String platform = param.get("platform") == null ? "" : param.get("platform").toString();
@@ -486,6 +489,12 @@ public class BackendGoodsController extends BaseController {
         if (StringUtil.isNotEmpty(canUsePoint)) {
             mtGoods.setCanUsePoint(canUsePoint);
         }
+        if (StringUtil.isNotEmpty(isPointGoods)) {
+            mtGoods.setIsPointGoods(isPointGoods);
+        }
+        // 积分商品的两个数值字段即使为 0 也要写入，便于取消积分商品时清零
+        mtGoods.setPointPrice(pointPrice);
+        mtGoods.setExchangeLimit(exchangeLimit);
         if (StringUtil.isNotEmpty(isMemberDiscount)) {
             mtGoods.setIsMemberDiscount(isMemberDiscount);
         }

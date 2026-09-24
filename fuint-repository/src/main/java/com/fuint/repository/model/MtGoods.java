@@ -91,6 +91,15 @@ public class MtGoods implements Serializable {
     @ApiModelProperty("可否使用积分抵扣")
     private String canUsePoint;
 
+    @ApiModelProperty("是否积分兑换商品：Y是 N否")
+    private String isPointGoods;
+
+    @ApiModelProperty("兑换所需积分数量")
+    private Integer pointPrice;
+
+    @ApiModelProperty("每人限兑数量，0表示不限")
+    private Integer exchangeLimit;
+
     @ApiModelProperty("会员是否有折扣")
     private String isMemberDiscount;
 

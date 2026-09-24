@@ -20,7 +20,8 @@ public enum PayTypeEnum {
     BALANCE("BALANCE", "余额支付"),
     ALISCAN("ALISCAN", "支付宝扫码"),
     STORE("STORE", "到店支付"),
-    UNIONPAY("UNIONPAY", "云闪付支付");
+    UNIONPAY("UNIONPAY", "云闪付支付"),
+    POINT("POINT", "积分兑换");
 
     private String key;
 

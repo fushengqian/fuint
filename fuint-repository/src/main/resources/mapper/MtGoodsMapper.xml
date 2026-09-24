@@ -4,7 +4,7 @@
     <sql id="Base_Column_List">
         `ID`, `TYPE`, `MERCHANT_ID`, `STORE_ID`, `NAME`, `CATE_ID`, `GOODS_NO`, `PLATFORM`, `IS_SINGLE_SPEC`,
         `LOGO`, `PRICE`, `LINE_PRICE`, `COST_PRICE`, `STOCK`, `WEIGHT`, `COUPON_IDS`, `INIT_SALE`, `SALE_POINT`,
-        `CAN_USE_POINT`, `IS_MEMBER_DISCOUNT`, `GRADE_IDS`, `SORT`, `CREATE_TIME`, `UPDATE_TIME`, `OPERATOR`, `STATUS`
+        `CAN_USE_POINT`, `IS_POINT_GOODS`, `POINT_PRICE`, `EXCHANGE_LIMIT`, `IS_MEMBER_DISCOUNT`, `GRADE_IDS`, `SORT`, `CREATE_TIME`, `UPDATE_TIME`, `OPERATOR`, `STATUS`
     </sql>
     <select id="getStoreGoodsList" resultType="com.fuint.repository.model.MtGoods">
         select <include refid="Base_Column_List" /> from mt_goods t where (t.STORE_ID = #{storeId} or (t.STORE_ID = 0 AND t.id IN( SELECT s.GOODS_ID FROM mt_store_goods s WHERE s.STORE_ID = #{storeId} AND s.STATUS = 'A')))
@@ -19,6 +19,7 @@
         </if>
         and t.MERCHANT_ID = #{merchantId}
         and t.PRICE > 0
+        and (t.IS_POINT_GOODS = 'N' or t.IS_POINT_GOODS is null)
         and t.STATUS = 'A' order by t.sort asc
     </select>
 
@@ -37,6 +38,7 @@
             AND t.platform IN(0, 2)
         </if>
         and t.PRICE > 0
+        and (t.IS_POINT_GOODS = 'N' or t.IS_POINT_GOODS is null)
         and (t.name like concat('%',#{keyword},'%') or t.goods_no = #{keyword} or t.ID = #{keyword} or t.description like concat('%',#{keyword},'%'))
         order by t.sort asc
     </select>

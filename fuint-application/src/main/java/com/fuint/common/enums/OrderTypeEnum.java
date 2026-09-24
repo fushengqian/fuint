@@ -18,7 +18,8 @@ public enum OrderTypeEnum {
     PAYMENT("payment", "付款订单"),
     RECHARGE("recharge", "充值订单"),
     PRESTORE("prestore", "储值卡订单"),
-    MEMBER("member", "会员升级订单");
+    MEMBER("member", "会员升级订单"),
+    EXCHANGE("exchange", "积分兑换订单");
 
     private String key;
 

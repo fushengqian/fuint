@@ -49,6 +49,9 @@ public class GoodsListParam extends PageParam implements Serializable {
     @ApiModelProperty(value="是否有价格", name="hasPrice")
     private String hasPrice;
 
+    @ApiModelProperty(value="积分商品筛选，Y：只查积分兑换商品，N或不传：只查非积分商品", name="pointGoods")
+    private String pointGoods;
+
     @ApiModelProperty(value="排序方式", name="sortType")
     private String sortType;
 

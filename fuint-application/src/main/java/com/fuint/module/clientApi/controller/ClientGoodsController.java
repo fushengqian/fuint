@@ -140,6 +140,38 @@ public class ClientGoodsController extends BaseController {
         }
         params.setStatus(StatusEnum.ENABLED.getKey());
         params.setHasPrice(YesOrNoEnum.YES.getKey());
+        // 会员端默认排除积分兑换商品，避免与普通商品混在一起（需查积分商品请走 pointList）
+        if (StringUtil.isEmpty(params.getPointGoods())) {
+            params.setPointGoods(YesOrNoEnum.NO.getKey());
+        }
+        PaginationResponse<GoodsDto> paginationResponse = goodsService.queryGoodsListByPagination(params);
+        return getSuccessResult(paginationResponse);
+    }
+
+    /**
+     * 获取积分兑换商品列表
+     */
+    @ApiOperation(value = "获取积分兑换商品列表")
+    @RequestMapping(value = "/pointList", method = RequestMethod.POST)
+    @CrossOrigin
+    public ResponseObject pointList(HttpServletRequest request, @RequestBody GoodsListParam params) {
+        Integer storeId = StringUtil.isEmpty(request.getHeader("storeId")) ? 0 : Integer.parseInt(request.getHeader("storeId"));
+        String merchantNo = request.getHeader("merchantNo") == null ? "" : request.getHeader("merchantNo");
+        String platform = request.getHeader("platform") == null ? "" : request.getHeader("platform");
+        Integer merchantId = merchantService.getMerchantId(merchantNo);
+        if (merchantId > 0) {
+            params.setMerchantId(merchantId);
+        }
+        if (storeId > 0) {
+            params.setStoreId(storeId);
+        }
+        if (StringUtil.isNotBlank(platform)) {
+            params.setPlatform(platform);
+        }
+        params.setStatus(StatusEnum.ENABLED.getKey());
+        // 只查积分兑换商品；积分商品可以没有现金价，因此不做 hasPrice 过滤
+        params.setPointGoods(YesOrNoEnum.YES.getKey());
+        params.setHasPrice(YesOrNoEnum.NO.getKey());
         PaginationResponse<GoodsDto> paginationResponse = goodsService.queryGoodsListByPagination(params);
         return getSuccessResult(paginationResponse);
     }
@@ -168,6 +200,9 @@ public class ClientGoodsController extends BaseController {
         goodsDetailDto.setSalePoint(goodsDto.getSalePoint());
         goodsDetailDto.setSort(goodsDto.getSort());
         goodsDetailDto.setCanUsePoint(goodsDto.getCanUsePoint());
+        goodsDetailDto.setIsPointGoods(goodsDto.getIsPointGoods());
+        goodsDetailDto.setPointPrice(goodsDto.getPointPrice());
+        goodsDetailDto.setExchangeLimit(goodsDto.getExchangeLimit());
         goodsDetailDto.setIsMemberDiscount(goodsDto.getIsMemberDiscount());
         goodsDetailDto.setGradeIds(goodsDto.getGradeIds());
 
