@@ -13,6 +13,7 @@ import com.fuint.common.service.SendSmsService;
 import com.fuint.common.service.WeixinService;
 import com.fuint.common.util.CommonUtil;
 import com.fuint.common.util.DateUtil;
+import com.fuint.common.util.TransactionUtils;
 import com.fuint.framework.annoation.OperationServiceLog;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.pagination.PaginationResponse;
@@ -177,29 +178,32 @@ public class PointServiceImpl extends ServiceImpl<MtPointMapper, MtPoint> implem
         }
         mtPointMapper.insert(mtPoint);
 
-        try {
-            List<String> mobileList = new ArrayList<>();
-            mobileList.add(mtUser.getMobile());
-            Map<String, String> params = new HashMap<>();
-            String action = "";
-            if (mtPoint.getAmount() > 0) {
-                action = "+";
+        // 短信与订阅消息属于外部 HTTP 调用，放到事务提交之后执行，避免长时间占用 mt_user 行锁
+        TransactionUtils.runAfterCommit(() -> {
+            try {
+                List<String> mobileList = new ArrayList<>();
+                mobileList.add(mtUser.getMobile());
+                Map<String, String> smsParams = new HashMap<>();
+                String action = "";
+                if (mtPoint.getAmount() > 0) {
+                    action = "+";
+                }
+                smsParams.put("amount", action + mtPoint.getAmount().toString());
+                smsParams.put("balance", mtUser.getPoint().toString());
+                sendSmsService.sendSms(mtUser.getMerchantId(), "points-change", mobileList, smsParams);
+            } catch (Exception e) {
+                logger.error("积分变动短信发送失败:{}", e.getMessage());
             }
-            params.put("amount", action + mtPoint.getAmount().toString());
-            params.put("balance", mtUser.getPoint().toString());
-            sendSmsService.sendSms(mtUser.getMerchantId(), "points-change", mobileList, params);
-        } catch (Exception e) {
-            logger.error("积分变动短信发送失败:{}", e.getMessage());
-        }
 
-        // 发送小程序订阅消息
-        Date nowTime = new Date();
-        Map<String, Object> params = new HashMap<>();
-        String dateTime = DateUtil.formatDate(Calendar.getInstance().getTime(), "yyyy-MM-dd HH:mm");
-        params.put("amount", mtPoint.getAmount());
-        params.put("time", dateTime);
-        params.put("remark", "您的积分发生了变动，请留意~");
-        weixinService.sendSubscribeMessage(mtPoint.getMerchantId(), mtPoint.getUserId(), mtUser.getOpenId(), WxMessageEnum.POINT_CHANGE.getKey(), "pages/user/index", params, nowTime);
+            // 发送小程序订阅消息
+            Date nowTime = new Date();
+            Map<String, Object> params = new HashMap<>();
+            String dateTime = DateUtil.formatDate(Calendar.getInstance().getTime(), "yyyy-MM-dd HH:mm");
+            params.put("amount", mtPoint.getAmount());
+            params.put("time", dateTime);
+            params.put("remark", "您的积分发生了变动，请留意~");
+            weixinService.sendSubscribeMessage(mtPoint.getMerchantId(), mtPoint.getUserId(), mtUser.getOpenId(), WxMessageEnum.POINT_CHANGE.getKey(), "pages/user/index", params, nowTime);
+        });
     }
 
     /**

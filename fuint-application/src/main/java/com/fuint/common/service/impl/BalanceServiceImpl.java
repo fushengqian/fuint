@@ -12,6 +12,7 @@ import com.fuint.common.service.*;
 import com.fuint.common.util.CommonUtil;
 import com.fuint.common.util.DateUtil;
 import com.fuint.common.util.PhoneFormatCheckUtils;
+import com.fuint.common.util.TransactionUtils;
 import com.fuint.framework.annoation.OperationServiceLog;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.pagination.PaginationResponse;
@@ -219,29 +220,32 @@ public class BalanceServiceImpl extends ServiceImpl<MtBalanceMapper, MtBalance> 
             }
         }
         mtUser = mtUserMapper.selectById(mtBalance.getUserId());
-        try {
-            List<String> mobileList = new ArrayList<>();
-            mobileList.add(mtUser.getMobile());
-            Map<String, String> params = new HashMap<>();
-            String action = "";
-            if (mtBalance.getAmount().compareTo(new BigDecimal("0")) > 0) {
-                action = "+";
+        // 短信与订阅消息属于外部 HTTP 调用，放到事务提交之后执行，避免长时间占用 mt_user 行锁
+        TransactionUtils.runAfterCommit(() -> {
+            try {
+                List<String> mobileList = new ArrayList<>();
+                mobileList.add(mtUser.getMobile());
+                Map<String, String> smsParams = new HashMap<>();
+                String action = "";
+                if (mtBalance.getAmount().compareTo(new BigDecimal("0")) > 0) {
+                    action = "+";
+                }
+                smsParams.put("amount", action + String.format("%.2f", mtBalance.getAmount()));
+                smsParams.put("balance", String.format("%.2f", mtUser.getBalance()));
+                sendSmsService.sendSms(mtUser.getMerchantId(), "balance-change", mobileList, smsParams);
+            } catch (Exception e) {
+                logger.error("余额变动短信发送失败:{}", e.getMessage());
             }
-            params.put("amount", action + String.format("%.2f", mtBalance.getAmount()));
-            params.put("balance", String.format("%.2f", mtUser.getBalance()));
-            sendSmsService.sendSms(mtUser.getMerchantId(), "balance-change", mobileList, params);
-        } catch (Exception e) {
-            logger.error("余额变动短信发送失败:{}", e.getMessage());
-        }
 
-        // 发送小程序订阅消息
-        Date nowTime = new Date();
-        Map<String, Object> params = new HashMap<>();
-        String dateTime = DateUtil.formatDate(Calendar.getInstance().getTime(), "yyyy-MM-dd HH:mm");
-        params.put("amount", mtBalance.getAmount());
-        params.put("time", dateTime);
-        params.put("tips", "您的余额发生了变动，请留意~");
-        weixinService.sendSubscribeMessage(mtBalance.getMerchantId(), mtBalance.getUserId(), mtUser.getOpenId(), WxMessageEnum.BALANCE_CHANGE.getKey(), "pages/user/index", params, nowTime);
+            // 发送小程序订阅消息
+            Date nowTime = new Date();
+            Map<String, Object> params = new HashMap<>();
+            String dateTime = DateUtil.formatDate(Calendar.getInstance().getTime(), "yyyy-MM-dd HH:mm");
+            params.put("amount", mtBalance.getAmount());
+            params.put("time", dateTime);
+            params.put("tips", "您的余额发生了变动，请留意~");
+            weixinService.sendSubscribeMessage(mtBalance.getMerchantId(), mtBalance.getUserId(), mtUser.getOpenId(), WxMessageEnum.BALANCE_CHANGE.getKey(), "pages/user/index", params, nowTime);
+        });
 
         return true;
     }

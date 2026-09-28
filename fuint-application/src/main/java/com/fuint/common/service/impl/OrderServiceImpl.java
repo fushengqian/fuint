@@ -40,6 +40,8 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 import weixin.popular.util.JsonUtil;
 
 import javax.servlet.http.HttpServletRequest;
@@ -1831,6 +1833,30 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
             }
         }
 
+        // 打印订单与短信通知涉及外部 HTTP 调用，放到事务提交之后执行。
+        // 否则外部调用会把事务拉长，长时间占用 mt_user 行锁，导致其它请求 Lock wait timeout
+        if (TransactionSynchronizationManager.isActualTransactionActive()) {
+            TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+                @Override
+                public void afterCommit() {
+                    printOrderAndSendSms(orderInfo, mtOrder);
+                }
+            });
+        } else {
+            printOrderAndSendSms(orderInfo, mtOrder);
+        }
+
+        return true;
+    }
+
+    /**
+     * 打印订单并给商家发送通知短信
+     * 说明：包含外部 HTTP 调用，必须在事务提交之后执行，避免长事务占用行锁
+     *
+     * @param orderInfo 订单信息
+     * @param mtOrder 订单实体
+     */
+    private void printOrderAndSendSms(UserOrderDto orderInfo, MtOrder mtOrder) {
         try {
             // 打印订单
             printerService.printOrder(orderInfo, true);
@@ -1847,8 +1873,6 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
         } catch (Exception e) {
             logger.info("打印订单或给商家发送短信出错啦，message = {}", e.getMessage());
         }
-
-        return true;
     }
 
     /**

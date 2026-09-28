@@ -15,6 +15,7 @@ import com.fuint.common.service.*;
 import com.fuint.common.util.CommonUtil;
 import com.fuint.common.util.DateUtil;
 import com.fuint.common.util.SeqUtil;
+import com.fuint.common.util.TransactionUtils;
 import com.fuint.framework.annoation.OperationServiceLog;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.pagination.PaginationResponse;
@@ -781,30 +782,33 @@ public class CouponServiceImpl extends ServiceImpl<MtCouponMapper, MtCoupon> imp
         sendLogService.addSendLog(sendLogDto);
 
         if (sendMessage && couponInfo.getAmount() != null && couponInfo.getAmount().compareTo(new BigDecimal("0")) > 0) {
-            try {
-                // 发送手机短信
-                if (StringUtil.isNotEmpty(mobile)) {
-                    List<String> mobileList = new ArrayList<>();
-                    mobileList.add(mobile);
-                    BigDecimal totalMoney = (couponInfo.getAmount() == null) ? (new BigDecimal("0.00")) : couponInfo.getAmount();
-                    Map<String, String> params = new HashMap<>();
-                    params.put("totalNum", num.toString());
-                    params.put("totalMoney", totalMoney.toString());
-                    sendSmsService.sendSms(couponInfo.getMerchantId(), "received-coupon", mobileList, params);
+            // 短信与订阅消息属于外部 HTTP 调用，放到事务提交之后执行，避免长时间占用行锁
+            TransactionUtils.runAfterCommit(() -> {
+                try {
+                    // 发送手机短信
+                    if (StringUtil.isNotEmpty(mobile)) {
+                        List<String> mobileList = new ArrayList<>();
+                        mobileList.add(mobile);
+                        BigDecimal totalMoney = (couponInfo.getAmount() == null) ? (new BigDecimal("0.00")) : couponInfo.getAmount();
+                        Map<String, String> params = new HashMap<>();
+                        params.put("totalNum", num.toString());
+                        params.put("totalMoney", totalMoney.toString());
+                        sendSmsService.sendSms(couponInfo.getMerchantId(), "received-coupon", mobileList, params);
+                    }
+                    // 发送小程序订阅消息
+                    if (userInfo != null && couponInfo != null && couponInfo.getAmount().compareTo(new BigDecimal("0")) > 0) {
+                        Date nowTime = new Date();
+                        Date sendTime = new Date(nowTime.getTime());
+                        Map<String, Object> params = new HashMap<>();
+                        params.put("name", couponInfo.getName());
+                        params.put("amount", couponInfo.getAmount());
+                        params.put("tips", "您的卡券已到账，请查收~");
+                        weixinService.sendSubscribeMessage(userInfo.getMerchantId(), userInfo.getId(), userInfo.getOpenId(), WxMessageEnum.COUPON_ARRIVAL.getKey(), "pages/user/index", params, sendTime);
+                    }
+                } catch (Exception e) {
+                    logger.error("卡券发放消息发送失败：{}", e.getMessage());
                 }
-                // 发送小程序订阅消息
-                if (userInfo != null && couponInfo != null && couponInfo.getAmount().compareTo(new BigDecimal("0")) > 0) {
-                    Date nowTime = new Date();
-                    Date sendTime = new Date(nowTime.getTime());
-                    Map<String, Object> params = new HashMap<>();
-                    params.put("name", couponInfo.getName());
-                    params.put("amount", couponInfo.getAmount());
-                    params.put("tips", "您的卡券已到账，请查收~");
-                    weixinService.sendSubscribeMessage(userInfo.getMerchantId(), userInfo.getId(), userInfo.getOpenId(), WxMessageEnum.COUPON_ARRIVAL.getKey(), "pages/user/index", params, sendTime);
-                }
-            } catch (Exception e) {
-                logger.error("卡券发放消息发送失败：{}", e.getMessage());
-            }
+            });
         }
         return response;
     }
@@ -1041,32 +1045,36 @@ public class CouponServiceImpl extends ServiceImpl<MtCouponMapper, MtCoupon> imp
         confirmLog.setRemark(remark);
         mtConfirmLogMapper.insert(confirmLog);
 
-        try {
-            // 发送核销短信
-            List<String> mobileList = new ArrayList<>();
-            mobileList.add(userCoupon.getMobile());
-            Map<String, String> params = new HashMap<>();
-            params.put("couponName", couponInfo.getName());
-            if (mtStore != null){
-                params.put("storeName", mtStore.getName());
-            } else {
-                MtMerchant mtMerchant = merchantService.queryMerchantById(couponInfo.getMerchantId());
-                params.put("storeName", mtMerchant == null ? "" : mtMerchant.getName());
-            }
-            params.put("sn", code.toString());
-            sendSmsService.sendSms(couponInfo.getMerchantId(), "confirm-coupon", mobileList, params);
+        // 核销短信与订阅消息属于外部 HTTP 调用，放到事务提交之后执行，
+        // 核销是门店高频操作，放在事务内会长时间占用行锁
+        TransactionUtils.runAfterCommit(() -> {
+            try {
+                // 发送核销短信
+                List<String> mobileList = new ArrayList<>();
+                mobileList.add(userCoupon.getMobile());
+                Map<String, String> params = new HashMap<>();
+                params.put("couponName", couponInfo.getName());
+                if (mtStore != null){
+                    params.put("storeName", mtStore.getName());
+                } else {
+                    MtMerchant mtMerchant = merchantService.queryMerchantById(couponInfo.getMerchantId());
+                    params.put("storeName", mtMerchant == null ? "" : mtMerchant.getName());
+                }
+                params.put("sn", code.toString());
+                sendSmsService.sendSms(couponInfo.getMerchantId(), "confirm-coupon", mobileList, params);
 
-            // 发送小程序订阅消息
-            Date nowTime = new Date();
-            Date sendTime = new Date(nowTime.getTime());
-            Map<String, Object> param = new HashMap<>();
-            String dateTime = DateUtil.formatDate(Calendar.getInstance().getTime(), "yyyy-MM-dd HH:mm");
-            param.put("name", couponInfo.getName());
-            param.put("time", dateTime);
-            weixinService.sendSubscribeMessage(userInfo.getMerchantId(), userInfo.getId(), userInfo.getOpenId(), WxMessageEnum.COUPON_CONFIRM.getKey(), "pages/user/index", param, sendTime);
-        } catch (Exception e) {
-            logger.error("核销卡券发送通知消息出错：", e.getMessage());
-        }
+                // 发送小程序订阅消息
+                Date nowTime = new Date();
+                Date sendTime = new Date(nowTime.getTime());
+                Map<String, Object> param = new HashMap<>();
+                String dateTime = DateUtil.formatDate(Calendar.getInstance().getTime(), "yyyy-MM-dd HH:mm");
+                param.put("name", couponInfo.getName());
+                param.put("time", dateTime);
+                weixinService.sendSubscribeMessage(userInfo.getMerchantId(), userInfo.getId(), userInfo.getOpenId(), WxMessageEnum.COUPON_CONFIRM.getKey(), "pages/user/index", param, sendTime);
+            } catch (Exception e) {
+                logger.error("核销卡券发送通知消息出错：", e.getMessage());
+            }
+        });
 
         return confirmLog.getCode();
     }

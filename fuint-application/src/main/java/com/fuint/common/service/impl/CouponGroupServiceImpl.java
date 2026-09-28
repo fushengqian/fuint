@@ -13,6 +13,7 @@ import com.fuint.common.service.*;
 import com.fuint.common.util.CommonUtil;
 import com.fuint.common.util.SeqUtil;
 import com.fuint.common.util.XlsUtil;
+import com.fuint.common.util.TransactionUtils;
 import com.fuint.framework.annoation.OperationServiceLog;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.pagination.PaginationResponse;
@@ -477,17 +478,27 @@ public class CouponGroupServiceImpl extends ServiceImpl<MtCouponGroupMapper, MtC
                 dto.setUuid(uuid);
                 sendLogService.addSendLog(dto);
 
-                // 发送短信
-                try {
-                    List<String> mobileList = new ArrayList<>();
-                    mobileList.add(cellDto.getMobile());
-                    Map<String, String> params = new HashMap<>();
-                    params.put("totalNum", totalNum+"");
-                    params.put("totalMoney", totalMoney+"");
-                    sendSmsService.sendSms(cellDto.getMerchantId(), "received-coupon", mobileList, params);
-                } catch (Exception e) {
-                    log.error("发券发送短信出错：", e.getMessage());
-                }
+                // 发送短信：外部 HTTP 调用，批量导入时逐条发送会把事务拖到几分钟，
+                // 这里改为注册到事务提交之后执行
+                final String smsMobile = cellDto.getMobile();
+                final Integer smsMerchantId = cellDto.getMerchantId();
+                final String smsTotalNum = totalNum + "";
+                final String smsTotalMoney = totalMoney + "";
+                TransactionUtils.runAfterCommit(() -> {
+                    try {
+                        if (StringUtil.isEmpty(smsMobile)) {
+                            return;
+                        }
+                        List<String> mobileList = new ArrayList<>();
+                        mobileList.add(smsMobile);
+                        Map<String, String> params = new HashMap<>();
+                        params.put("totalNum", smsTotalNum);
+                        params.put("totalMoney", smsTotalMoney);
+                        sendSmsService.sendSms(smsMerchantId, "received-coupon", mobileList, params);
+                    } catch (Exception e) {
+                        log.error("发券发送短信出错：", e.getMessage());
+                    }
+                });
             }
         } catch (BusinessCheckException e) {
             throw new BusinessCheckException(e.getMessage());
