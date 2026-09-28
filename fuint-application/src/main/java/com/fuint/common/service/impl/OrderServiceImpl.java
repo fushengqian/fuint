@@ -481,10 +481,10 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
             mtOrder.setCreateTime(new Date());
         }
 
-        // 计算商品订单总金额
+        // 计算商品订单总金额（积分兑换订单同样需要取商品/购物车数据）
         List<MtCart> cartList = new ArrayList<>();
         Map<String, Object> cartData = new HashMap<>();
-        if (orderDto.getType().equals(OrderTypeEnum.GOODS.getKey())) {
+        if (orderDto.getType().equals(OrderTypeEnum.GOODS.getKey()) || orderDto.getType().equals(OrderTypeEnum.EXCHANGE.getKey())) {
             if (StringUtil.isNotEmpty(orderDto.getCartIds())) {
                 Map<String, Object> param = new HashMap<>();
                 param.put("status", StatusEnum.ENABLED.getKey());
@@ -612,7 +612,7 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
                     }
                     if (userCouponInfo != null && userCouponInfo.getBalance().compareTo(BigDecimal.ZERO) > 0) {
                         BigDecimal deductAmount = remainingDiscount.min(userCouponInfo.getBalance());
-                        String useCode = couponService.useCoupon(cid, mtOrder.getUserId(), mtOrder.getStoreId(), mtOrder.getId(), deductAmount, "购物使用卡券");
+                        String useCode = couponService.useCoupon(cid, mtOrder.getUserId(), mtOrder.getStoreId(), mtOrder.getId(), deductAmount, "购物使用卡券", orderDto.getOperator());
                         if (StringUtil.isNotEmpty(useCode)) {
                             totalDeducted = totalDeducted.add(deductAmount);
                             remainingDiscount = remainingDiscount.subtract(deductAmount);
@@ -671,8 +671,8 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
             }
         }
 
-        // 如果是商品订单，生成订单商品
-        if (orderDto.getType().equals(OrderTypeEnum.GOODS.getKey()) && cartList.size() > 0) {
+        // 如果是商品订单或积分兑换订单，生成订单商品
+        if ((orderDto.getType().equals(OrderTypeEnum.GOODS.getKey()) || orderDto.getType().equals(OrderTypeEnum.EXCHANGE.getKey())) && cartList.size() > 0) {
             Object listObject = cartData.get("list");
             List<ResCartDto> lists =(ArrayList<ResCartDto>)listObject;
             BigDecimal memberDiscount = new BigDecimal("0");
@@ -1102,8 +1102,8 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
             orderDto.setCouponId(couponId);
         }
 
-        // 商品订单且配送要加上配送费用
-        if (orderDto.getType().equals(OrderTypeEnum.GOODS.getKey()) && orderDto.getOrderMode().equals(OrderModeEnum.EXPRESS.getKey())) {
+        // 商品订单且配送要加上配送费用（积分兑换订单选择物流配送时同样计费）
+        if ((orderDto.getType().equals(OrderTypeEnum.GOODS.getKey()) || orderDto.getType().equals(OrderTypeEnum.EXCHANGE.getKey())) && orderDto.getOrderMode().equals(OrderModeEnum.EXPRESS.getKey())) {
             MtSetting mtSetting = settingService.querySettingByName(merchantId, SettingTypeEnum.ORDER.getKey(), OrderSettingEnum.DELIVERY_FEE.getKey());
             if (mtSetting != null && StringUtil.isNotEmpty(mtSetting.getValue())) {
                 BigDecimal deliveryFee = new BigDecimal(mtSetting.getValue());
@@ -1200,7 +1200,7 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
                                     }
                                 }
                                 if (canUse) {
-                                    String useCode = couponService.useCoupon(cid, orderDto.getUserId(), orderDto.getStoreId(), orderInfo.getId(), userCouponInfo.getAmount(), "核销");
+                                    String useCode = couponService.useCoupon(cid, orderDto.getUserId(), orderDto.getStoreId(), orderInfo.getId(), userCouponInfo.getAmount(), "核销", operator);
                                     if (StringUtil.isNotEmpty(useCode)) {
                                         hasProcessed = true;
                                         orderDto.setCouponId(cid);
@@ -1219,7 +1219,7 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
                                 // 储值卡：依次扣减，支持叠加
                                 BigDecimal deductAmount = remainPayAmount.min(userCouponInfo.getBalance());
                                 try {
-                                    String useCode = couponService.useCoupon(cid, orderDto.getUserId(), orderDto.getStoreId(), orderInfo.getId(), deductAmount, "核销");
+                                    String useCode = couponService.useCoupon(cid, orderDto.getUserId(), orderDto.getStoreId(), orderInfo.getId(), deductAmount, "核销", operator);
                                     if (StringUtil.isNotEmpty(useCode)) {
                                         hasProcessed = true;
                                         if (totalCouponDiscount.compareTo(BigDecimal.ZERO) == 0) {
@@ -1897,7 +1897,7 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
             userOrderDto.setConfirmTime(DateUtil.formatDate(orderInfo.getConfirmTime(), "yyyy.MM.dd HH:mm"));
         }
 
-        if (orderInfo.getType().equals(OrderTypeEnum.GOODS.getKey()) && orderInfo.getPayStatus().equals(PayStatusEnum.SUCCESS.getKey()) && orderInfo.getConfirmStatus().equals(YesOrNoEnum.NO.getKey())) {
+        if ((orderInfo.getType().equals(OrderTypeEnum.GOODS.getKey()) || orderInfo.getType().equals(OrderTypeEnum.EXCHANGE.getKey())) && orderInfo.getPayStatus().equals(PayStatusEnum.SUCCESS.getKey()) && orderInfo.getConfirmStatus().equals(YesOrNoEnum.NO.getKey())) {
             userOrderDto.setIsVerify(false);
         } else {
             userOrderDto.setIsVerify(true);
@@ -1990,8 +1990,8 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
             }
         }
 
-        // 商品订单
-        if (orderInfo.getType().equals(OrderTypeEnum.GOODS.getKey())) {
+        // 商品订单（积分兑换订单同样需要返回商品明细）
+        if (orderInfo.getType().equals(OrderTypeEnum.GOODS.getKey()) || orderInfo.getType().equals(OrderTypeEnum.EXCHANGE.getKey())) {
             Map<String, Object> params = new HashMap<>();
             params.put("ORDER_ID", orderInfo.getId());
             List<MtOrderGoods> orderGoodsList = mtOrderGoodsMapper.selectByMap(params);

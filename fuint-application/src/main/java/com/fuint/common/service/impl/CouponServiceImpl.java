@@ -849,13 +849,14 @@ public class CouponServiceImpl extends ServiceImpl<MtCouponMapper, MtCoupon> imp
      * @param orderId 订单ID
      * @param amount 核销金额
      * @param remark 核销备注
+     * @param operator 核销人
      * @throws BusinessCheckException
      * @return
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
     @OperationServiceLog(description = "核销卡券")
-    public String useCoupon(Integer userCouponId, Integer userId, Integer storeId, Integer orderId, BigDecimal amount, String remark) throws BusinessCheckException {
+    public String useCoupon(Integer userCouponId, Integer userId, Integer storeId, Integer orderId, BigDecimal amount, String remark, String operator) throws BusinessCheckException {
         MtUserCoupon userCoupon = mtUserCouponMapper.selectById(userCouponId.intValue());
         MtOrder orderInfo = null;
         if (orderId != null && orderId > 0) {
@@ -866,6 +867,10 @@ public class CouponServiceImpl extends ServiceImpl<MtCouponMapper, MtCoupon> imp
             throw new BusinessCheckException("该卡券不存在！");
         } else if (!userCoupon.getStatus().equals(UserCouponStatusEnum.UNUSED.getKey()) && !userCoupon.getStatus().equals(UserCouponStatusEnum.UNSEND.getKey())) {
             throw new BusinessCheckException("该卡券状态有误，可能已使用或已过期！");
+        }
+
+        if (userCoupon.getType().equals(CouponTypeEnum.PRESTORE.getKey()) && (amount == null) || (amount.compareTo(new BigDecimal("0")) <= 0)) {
+            throw new BusinessCheckException("储值卡核销金额不能为空！");
         }
 
         MtStore mtStore = null;
@@ -1020,6 +1025,9 @@ public class CouponServiceImpl extends ServiceImpl<MtCouponMapper, MtCoupon> imp
             if (userInfo != null) {
                 confirmLog.setOperator(userInfo.getName());
             }
+        }
+        if (StringUtil.isNotBlank(operator)) {
+            confirmLog.setOperator(operator);
         }
         confirmLog.setStoreId(storeId);
         confirmLog.setStatus(StatusEnum.ENABLED.getKey());

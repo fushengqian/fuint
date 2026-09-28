@@ -118,7 +118,7 @@ public class ClientConfirmController extends BaseController {
         String confirmCode = "";
 
         try {
-            confirmCode = couponService.useCoupon(userCouponId, mtUser.getId(), staffInfo.getStoreId(), 0, new BigDecimal(amount), remark);
+            confirmCode = couponService.useCoupon(userCouponId, mtUser.getId(), staffInfo.getStoreId(), 0, new BigDecimal(amount), remark, mtUser.getName());
         } catch (BusinessCheckException e) {
             return getFailureResult(1003, e.getMessage());
         }

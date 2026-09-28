@@ -107,10 +107,11 @@ public interface CouponService extends IService<MtCoupon> {
      * @param orderId 订单ID
      * @param amount 核销金额
      * @param remark 核销备注
+     * @param operator 操作人
      * @throws BusinessCheckException
      * @return
      * */
-    String useCoupon(Integer userCouponId, Integer userId, Integer storeId, Integer orderId, BigDecimal amount, String remark) throws BusinessCheckException;
+    String useCoupon(Integer userCouponId, Integer userId, Integer storeId, Integer orderId, BigDecimal amount, String remark, String operator) throws BusinessCheckException;
 
     /**
      * 根据券ID删除个人卡券

@@ -8,10 +8,7 @@ import com.fuint.common.enums.StatusEnum;
 import com.fuint.common.enums.UserCouponStatusEnum;
 import com.fuint.common.param.SendLogPage;
 import com.fuint.common.param.UserCouponPage;
-import com.fuint.common.service.CouponService;
-import com.fuint.common.service.SendLogService;
-import com.fuint.common.service.StoreService;
-import com.fuint.common.service.UserCouponService;
+import com.fuint.common.service.*;
 import com.fuint.common.util.DateUtil;
 import com.fuint.common.util.ExcelUtil;
 import com.fuint.common.util.TokenUtil;
@@ -20,10 +17,7 @@ import com.fuint.framework.pagination.PaginationResponse;
 import com.fuint.framework.web.BaseController;
 import com.fuint.framework.web.ResponseObject;
 import com.fuint.repository.mapper.MtSendLogMapper;
-import com.fuint.repository.model.MtCoupon;
-import com.fuint.repository.model.MtSendLog;
-import com.fuint.repository.model.MtStore;
-import com.fuint.repository.model.MtUserCoupon;
+import com.fuint.repository.model.*;
 import com.fuint.utils.StringUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -79,6 +73,11 @@ public class BackendUserCouponController extends BaseController {
      * 卡券发放记录接口
      * */
     private SendLogService sendLogService;
+
+    /**
+     * 店铺员工服务接口
+     * */
+    private StaffService staffService;
 
     /**
      * 查询会员卡券列表
@@ -153,8 +152,14 @@ public class BackendUserCouponController extends BaseController {
         if (mtUserCoupon.getType().equals(CouponTypeEnum.PRESTORE.getKey())) {
             confirmAmount = mtUserCoupon.getBalance();
         }
-
-        couponService.useCoupon(Integer.parseInt(userCouponId), accountInfo.getId(), storeId, 0, confirmAmount, "后台核销");
+        Integer userId = 0;
+        if (accountInfo.getStaffId() != null && accountInfo.getStaffId() > 0) {
+            MtStaff staff = staffService.queryStaffById(accountInfo.getStaffId());
+            if (staff != null) {
+                userId = staff.getUserId();
+            }
+        }
+        couponService.useCoupon(Integer.parseInt(userCouponId), userId, storeId, 0, confirmAmount, "后台核销", accountInfo.getAccountName());
         return getSuccessResult(true);
     }
 

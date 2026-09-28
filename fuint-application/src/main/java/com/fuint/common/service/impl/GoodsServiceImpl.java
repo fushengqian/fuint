@@ -392,12 +392,16 @@ public class GoodsServiceImpl extends ServiceImpl<MtGoodsMapper, MtGoods> implem
         if (StringUtil.isNotEmpty(reqDto.getCanUsePoint())) {
             mtGoods.setCanUsePoint(reqDto.getCanUsePoint());
         }
-        // 积分兑换商品标记与数值（数值字段即使为 0 也写入，便于取消积分商品时清零）
+        // 积分兑换商品标记与数值：未提交的字段保持原值，避免被其它 tab 的保存覆盖
         if (StringUtil.isNotEmpty(reqDto.getIsPointGoods())) {
             mtGoods.setIsPointGoods(reqDto.getIsPointGoods());
         }
-        mtGoods.setPointPrice(reqDto.getPointPrice() == null ? 0 : reqDto.getPointPrice());
-        mtGoods.setExchangeLimit(reqDto.getExchangeLimit() == null ? 0 : reqDto.getExchangeLimit());
+        if (reqDto.getPointPrice() != null) {
+            mtGoods.setPointPrice(reqDto.getPointPrice());
+        }
+        if (reqDto.getExchangeLimit() != null) {
+            mtGoods.setExchangeLimit(reqDto.getExchangeLimit());
+        }
         if (StringUtil.isNotEmpty(reqDto.getIsMemberDiscount())) {
             mtGoods.setIsMemberDiscount(reqDto.getIsMemberDiscount());
         }
