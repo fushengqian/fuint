@@ -218,8 +218,10 @@ public class WeixinServiceImpl implements WeixinService {
             }
         }
 
-        // JSAPI支付
-        if (orderInfo.getPayType().equals(PayTypeEnum.JSAPI.getKey())) {
+        // JSAPI支付（小程序、公众号内支付）
+        // 注意：积分兑换订单的 payType 是 POINT，但其剩余金额（如运费）仍需走微信支付，
+        // 因此除刷卡支付(MICROPAY)外统一按 JSAPI 下单，避免 trade_type 缺失导致下单失败
+        if (!PayTypeEnum.MICROPAY.getKey().equals(orderInfo.getPayType())) {
             reqData.put("trade_type", PayTypeEnum.JSAPI.getKey());
             reqData.put("openid", userInfo.getOpenId() == null ? "" : userInfo.getOpenId());
         }

@@ -6,11 +6,15 @@ import com.fuint.common.dto.goods.GoodsDto;
 import com.fuint.common.dto.goods.GoodsSkuDto;
 import com.fuint.common.dto.goods.GoodsSpecChildDto;
 import com.fuint.common.dto.goods.GoodsSpecItemDto;
+import com.fuint.common.dto.recharge.RechargeRuleDto;
 import com.fuint.common.dto.system.AccountInfo;
+import com.fuint.common.enums.BalanceSettingEnum;
 import com.fuint.common.enums.OrderModeEnum;
 import com.fuint.common.enums.PlatformTypeEnum;
+import com.fuint.common.enums.SettingTypeEnum;
 import com.fuint.common.enums.StatusEnum;
 import com.fuint.common.enums.YesOrNoEnum;
+import com.fuint.common.param.RechargeParam;
 import com.fuint.common.service.*;
 import com.fuint.common.util.DateUtil;
 import com.fuint.common.util.PhoneFormatCheckUtils;
@@ -430,5 +434,88 @@ public class BackendCashierController extends BaseController {
         data.put("gradeList", gradeList);
 
         return getSuccessResult(data);
+    }
+
+    /**
+     * 获取会员充值方案
+     */
+    @ApiOperation(value = "获取会员充值方案")
+    @RequestMapping(value = "/rechargeSetting", method = RequestMethod.GET)
+    @CrossOrigin
+    @PreAuthorize("@pms.hasPermission('cashier:index')")
+    public ResponseObject rechargeSetting() {
+        AccountInfo accountInfo = TokenUtil.getAccountInfo();
+        if (accountInfo == null) {
+            return getFailureResult(1001);
+        }
+
+        List<MtSetting> settingList = settingService.getSettingList(accountInfo.getMerchantId(), SettingTypeEnum.BALANCE.getKey());
+        List<RechargeRuleDto> ruleList = new ArrayList<>();
+        String status = StatusEnum.DISABLE.getKey();
+        String remark = "";
+        for (MtSetting setting : settingList) {
+            if (setting.getName().equals(BalanceSettingEnum.RECHARGE_RULE.getKey())) {
+                status = setting.getStatus();
+                if (StatusEnum.ENABLED.getKey().equals(setting.getStatus()) && StringUtil.isNotEmpty(setting.getValue())) {
+                    String[] items = setting.getValue().split(",");
+                    for (String value : items) {
+                        String[] el = value.split("_");
+                        if (el.length >= 2) {
+                            RechargeRuleDto ruleDto = new RechargeRuleDto();
+                            ruleDto.setRechargeAmount(el[0]);
+                            ruleDto.setGiveAmount(el[1]);
+                            if (el.length >= 3) {
+                                ruleDto.setGiveCouponIds(el[2]);
+                            }
+                            ruleList.add(ruleDto);
+                        }
+                    }
+                }
+            } else if (setting.getName().equals(BalanceSettingEnum.RECHARGE_REMARK.getKey())) {
+                remark = setting.getValue();
+            }
+        }
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("ruleList", ruleList);
+        result.put("status", status);
+        result.put("remark", remark);
+
+        return getSuccessResult(result);
+    }
+
+    /**
+     * 收银台提交会员充值订单
+     */
+    @ApiOperation(value = "提交会员充值订单")
+    @RequestMapping(value = "/doRecharge", method = RequestMethod.POST)
+    @CrossOrigin
+    @PreAuthorize("@pms.hasPermission('cashier:index')")
+    public ResponseObject doRecharge(HttpServletRequest request, @RequestBody RechargeParam rechargeParam) throws BusinessCheckException {
+        AccountInfo accountInfo = TokenUtil.getAccountInfo();
+        if (accountInfo == null || accountInfo.getMerchantId() == null || accountInfo.getMerchantId() <= 0) {
+            return getFailureResult(201, "平台账号不能执行该操作");
+        }
+
+        Integer memberId = rechargeParam.getMemberId() == null ? 0 : rechargeParam.getMemberId();
+        if (memberId <= 0) {
+            return getFailureResult(201, "请先选择要充值的会员");
+        }
+
+        MtUser memberInfo = memberService.queryMemberById(memberId);
+        if (memberInfo == null) {
+            return getFailureResult(201, "该会员信息不存在");
+        }
+        if (!accountInfo.getMerchantId().equals(memberInfo.getMerchantId())) {
+            return getFailureResult(201, "该会员不属于当前商户");
+        }
+
+        // 生成充值订单，返回后由收银台发起支付（扫码枪收款等）
+        MtOrder mtOrder = orderService.doRecharge(request, rechargeParam);
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("orderInfo", mtOrder);
+
+        return getSuccessResult(result);
     }
 }

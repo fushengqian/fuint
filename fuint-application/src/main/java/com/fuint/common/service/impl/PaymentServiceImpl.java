@@ -146,43 +146,7 @@ public class PaymentServiceImpl implements PaymentService {
             userCouponService.preStore(param);
         }
 
-        // 充值订单
-        if (orderInfo.getType().equals(OrderTypeEnum.RECHARGE.getKey())) {
-            // 余额支付
-            MtBalance mtBalance = new MtBalance();
-            OrderUserDto userDto = orderInfo.getUserInfo();
-            if (userDto.getMobile() != null && StringUtil.isNotEmpty(userDto.getMobile())) {
-                mtBalance.setMobile(userDto.getMobile());
-            }
-            mtBalance.setOrderSn(orderInfo.getOrderSn());
-            mtBalance.setUserId(orderInfo.getUserId());
-            mtBalance.setMerchantId(orderInfo.getMerchantId());
-            String param = orderInfo.getParam();
-            if (StringUtil.isNotEmpty(param)) {
-                String params[] = param.split("_");
-                if (params.length >= 2) {
-                    BigDecimal amount = new BigDecimal(params[0]).add(new BigDecimal(params[1]));
-                    mtBalance.setAmount(amount);
-                    balanceService.addBalance(mtBalance, true);
-                }
-                // 充值赠送卡券
-                if (params.length == 3) {
-                    try {
-                        String[] couponIds = params[2].split("\\|");
-                        if (couponIds != null && couponIds.length > 0) {
-                            for (int i = 0; i < couponIds.length; i++) {
-                                 ResponseObject result = couponService.sendCoupon(Integer.parseInt(couponIds[i]), orderInfo.getUserId(), 1, true, null, null);
-                                 if (!result.getCode().equals(200)) {
-                                     logger.error("充值赠送卡券失败：", result.getMessage());
-                                }
-                            }
-                        }
-                    } catch (Exception e) {
-                        logger.error("sendCoupon error", e);
-                    }
-                }
-            }
-        }
+        // 充值订单的余额入账统一在 orderService.setOrderPayed 中处理，避免与支付回调重复入账
 
         logger.info("PaymentService paymentCallback Success orderSn {}", orderInfo.getOrderSn());
         return true;

@@ -1115,8 +1115,8 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
             }
         }
 
-        // 使用积分抵扣
-        if (usePoint > 0) {
+        // 使用积分抵扣（积分兑换订单的积分是兑换商品的对价，不能再当现金抵扣，否则会吃掉运费）
+        if (usePoint > 0 && !isPointExchange) {
             List<MtSetting> settingList = settingService.getSettingList(merchantId, SettingTypeEnum.POINT.getKey());
             String canUsedAsMoney = YesOrNoEnum.FALSE.getKey();
             String exchangeNeedPoint = "0";
@@ -1296,7 +1296,15 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
             } else  if (payType.equals(PayTypeEnum.STORE.getKey())) {
                 // 门店支付，不做任何操作
             } else if(payType.equals(PayTypeEnum.BALANCE.getKey())) {
-                // 余额支付
+                // 余额支付：实际支付方式为余额，需同步订单 payType。
+                // 积分兑换订单的 payType 会被记为 POINT，不纠正会导致后续按"积分支付"处理（如误返积分）
+                if (!PayTypeEnum.BALANCE.getKey().equals(orderInfo.getPayType())) {
+                    OrderDto payTypeDto = new OrderDto();
+                    payTypeDto.setId(orderInfo.getId());
+                    payTypeDto.setPayType(PayTypeEnum.BALANCE.getKey());
+                    updateOrder(payTypeDto);
+                    orderInfo.setPayType(PayTypeEnum.BALANCE.getKey());
+                }
                 MtBalance balance = new MtBalance();
                 balance.setMobile(userInfo.getMobile());
                 balance.setOrderSn(orderInfo.getOrderSn());
@@ -1753,9 +1761,51 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
             }
         }
 
+        // 处理充值订单：支付成功后把充值金额（含赠送金额）写入会员余额
+        // 说明：入账放在这里而不是支付回调里，收银台现金充值、余额充值等不走回调的场景也能正确到账
+        if (mtOrder.getType().equals(OrderTypeEnum.RECHARGE.getKey())) {
+            String rechargeParam = mtOrder.getParam();
+            if (StringUtil.isNotEmpty(rechargeParam)) {
+                String params[] = rechargeParam.split("_");
+                if (params.length >= 2) {
+                    MtUser rechargeUser = memberService.queryMemberById(mtOrder.getUserId());
+                    MtBalance mtBalance = new MtBalance();
+                    if (rechargeUser != null && StringUtil.isNotEmpty(rechargeUser.getMobile())) {
+                        mtBalance.setMobile(rechargeUser.getMobile());
+                    }
+                    mtBalance.setOrderSn(mtOrder.getOrderSn());
+                    mtBalance.setUserId(mtOrder.getUserId());
+                    mtBalance.setMerchantId(mtOrder.getMerchantId());
+                    mtBalance.setStoreId(mtOrder.getStoreId());
+                    BigDecimal amount = new BigDecimal(params[0]).add(new BigDecimal(params[1]));
+                    mtBalance.setAmount(amount);
+                    balanceService.addBalance(mtBalance, true);
+                    // 充值赠送卡券
+                    if (params.length == 3 && StringUtil.isNotEmpty(params[2])) {
+                        try {
+                            String[] couponIds = params[2].split("\\|");
+                            if (couponIds.length > 0) {
+                                for (String couponId : couponIds) {
+                                     ResponseObject result = couponService.sendCoupon(Integer.parseInt(couponId), mtOrder.getUserId(), 1, true, null, null);
+                                     if (!result.getCode().equals(200)) {
+                                         logger.error("充值赠送卡券失败：", result.getMessage());
+                                     }
+                                }
+                            }
+                        } catch (Exception e) {
+                            logger.error("sendCoupon error", e);
+                        }
+                    }
+                }
+            }
+        }
+
         // 处理消费返积分，查询返1积分所需消费金额
         MtSetting setting = settingService.querySettingByName(mtOrder.getMerchantId(), SettingTypeEnum.POINT.getKey(), PointSettingEnum.POINT_NEED_CONSUME.getKey());
-        if (setting != null && !orderInfo.getPayType().equals(PayTypeEnum.BALANCE.getKey()) && orderInfo.getIsVisitor().equals(YesOrNoEnum.NO.getKey())) {
+        // 积分兑换订单不返积分：兑换本身已消耗会员积分，即便运费是用微信/余额支付的也不再返
+        boolean isPointExchangeOrder = PayTypeEnum.POINT.getKey().equals(orderInfo.getPayType())
+                || OrderTypeEnum.EXCHANGE.getKey().equals(orderInfo.getType());
+        if (setting != null && !isPointExchangeOrder && !orderInfo.getPayType().equals(PayTypeEnum.BALANCE.getKey()) && orderInfo.getIsVisitor().equals(YesOrNoEnum.NO.getKey())) {
             String needPayAmount = setting.getValue();
             Integer needPayAmountInt = Math.round(Integer.parseInt(needPayAmount));
             Double pointNum = 0d;
@@ -2724,6 +2774,14 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
         }
 
         Integer merchantId = merchantService.getMerchantId(merchantNo);
+        // 收银台等后台场景不会传 merchantNo，此时取当前登录账号所属商户、店铺
+        AccountInfo accountInfo = TokenUtil.getAccountInfo();
+        if ((merchantId == null || merchantId <= 0) && accountInfo != null) {
+            merchantId = accountInfo.getMerchantId();
+        }
+        if ((storeId == null || storeId <= 0) && accountInfo != null && accountInfo.getStoreId() != null) {
+            storeId = accountInfo.getStoreId();
+        }
 
         // 充值赠送金额
         String ruleParam = "";
@@ -2746,10 +2804,26 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
             }
         }
 
-        // 自定义充值没有赠送金额
-        if (StringUtil.isNotEmpty(customAmount) && Integer.parseInt(customAmount) > 0 && (StringUtil.isEmpty(rechargeAmount) || Integer.parseInt(rechargeAmount) <= 0)) {
-            rechargeAmount = customAmount;
-            ruleParam = customAmount + "_0";
+        // 自定义充值没有赠送金额（金额支持小数，不能用整型解析否则会抛异常）
+        BigDecimal customAmountDecimal = new BigDecimal("0");
+        if (StringUtil.isNotEmpty(customAmount)) {
+            try {
+                customAmountDecimal = new BigDecimal(customAmount);
+            } catch (Exception e) {
+                throw new BusinessCheckException("请确认充值金额");
+            }
+        }
+        BigDecimal planAmount = new BigDecimal("0");
+        if (StringUtil.isNotEmpty(rechargeAmount)) {
+            try {
+                planAmount = new BigDecimal(rechargeAmount);
+            } catch (Exception e) {
+                throw new BusinessCheckException("请确认充值金额");
+            }
+        }
+        if (customAmountDecimal.compareTo(new BigDecimal("0")) > 0 && planAmount.compareTo(new BigDecimal("0")) <= 0) {
+            rechargeAmount = customAmountDecimal.toPlainString();
+            ruleParam = rechargeAmount + "_0";
         }
 
         if (StringUtil.isEmpty(ruleParam)) {
@@ -2766,6 +2840,11 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
         orderDto.setUserId(rechargeParam.getMemberId());
         orderDto.setStoreId(storeId);
         orderDto.setAmount(amount);
+        // 充值订单应付金额 = 充值金额，避免 payAmount 为 0 被当作无需支付
+        orderDto.setPayAmount(amount);
+        orderDto.setDiscount(new BigDecimal("0"));
+        orderDto.setDeliveryFee(new BigDecimal("0"));
+        orderDto.setOperator(accountInfo == null ? "" : accountInfo.getAccountName());
         orderDto.setUsePoint(0);
         orderDto.setRemark("会员充值");
         orderDto.setParam(ruleParam);
