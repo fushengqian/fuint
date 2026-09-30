@@ -424,6 +424,77 @@ public class BackendOrderController extends BaseController {
     }
 
     /**
+     * 快递100配置详情
+     */
+    @ApiOperation(value = "快递100配置详情")
+    @RequestMapping(value = "/expressSetting", method = RequestMethod.GET)
+    @CrossOrigin
+    @PreAuthorize("@pms.hasPermission('order:setting')")
+    public ResponseObject expressSetting() throws BusinessCheckException {
+        AccountInfo accountInfo = TokenUtil.getAccountInfo();
+
+        List<MtSetting> settingList = settingService.getSettingList(accountInfo.getMerchantId(), SettingTypeEnum.KUAIDI100.getKey());
+        Map<String, Object> result = new HashMap();
+        String customer = "";
+        String secretKey = "";
+        String enable = StatusEnum.ENABLED.getKey();
+
+        for (MtSetting setting : settingList) {
+            if (setting.getName().equals(Kuaidi100SettingEnum.CUSTOMER.getKey())) {
+                customer = setting.getValue();
+            } else if (setting.getName().equals(Kuaidi100SettingEnum.SECRET_KEY.getKey())) {
+                secretKey = setting.getValue();
+            } else if (setting.getName().equals(Kuaidi100SettingEnum.ENABLE.getKey())) {
+                enable = setting.getValue();
+            }
+        }
+
+        result.put("customer", customer);
+        result.put("secretKey", secretKey);
+        result.put("enable", enable);
+
+        return getSuccessResult(result);
+    }
+
+    /**
+     * 保存快递100配置
+     */
+    @ApiOperation(value = "保存快递100配置")
+    @RequestMapping(value = "/saveExpressSetting", method = RequestMethod.POST)
+    @CrossOrigin
+    @PreAuthorize("@pms.hasPermission('order:setting')")
+    public ResponseObject saveExpressSetting(@RequestBody Map<String, Object> param) throws BusinessCheckException {
+        String customer = param.get("customer") != null ? param.get("customer").toString() : "";
+        String secretKey = param.get("secretKey") != null ? param.get("secretKey").toString() : "";
+        String enable = param.get("enable") != null ? param.get("enable").toString() : StatusEnum.ENABLED.getKey();
+
+        AccountInfo accountInfo = TokenUtil.getAccountInfo();
+        Kuaidi100SettingEnum[] settingList = Kuaidi100SettingEnum.values();
+        for (Kuaidi100SettingEnum setting : settingList) {
+            MtSetting info = new MtSetting();
+            info.setType(SettingTypeEnum.KUAIDI100.getKey());
+            info.setName(setting.getKey());
+            if (setting.getKey().equals(Kuaidi100SettingEnum.CUSTOMER.getKey())) {
+                info.setValue(customer);
+            } else if (setting.getKey().equals(Kuaidi100SettingEnum.SECRET_KEY.getKey())) {
+                info.setValue(secretKey);
+            } else if (setting.getKey().equals(Kuaidi100SettingEnum.ENABLE.getKey())) {
+                info.setValue(enable);
+            }
+            info.setMerchantId(accountInfo.getMerchantId());
+            info.setStoreId(accountInfo.getStoreId());
+            info.setDescription(setting.getValue());
+            info.setStatus(StatusEnum.ENABLED.getKey());
+            info.setOperator(accountInfo.getAccountName());
+            info.setUpdateTime(new Date());
+
+            settingService.saveSetting(info);
+        }
+
+        return getSuccessResult(true);
+    }
+
+    /**
      * 导出订单
      */
     @ApiOperation(value = "导出订单")
@@ -445,7 +516,7 @@ public class BackendOrderController extends BaseController {
         PaginationResponse<UserOrderDto> result = orderService.getUserOrderList(params);
 
         // excel标题
-        String[] title = { "订单号", "会员名称", "手机号", "订单类型", "所属门店", "总金额", "支付状态", "订单状态" };
+        String[] title = { "订单号", "会员名称", "手机号", "订单类型", "配送方式", "所属门店", "总金额", "支付状态", "订单状态", "支付金额", "优惠金额", "积分金额", "所属员工", "下单时间", "更新时间" };
 
         // excel文件名
         String fileName = "订单列表"+ DateUtil.formatDate(new Date(), "yyyy.MM.dd_HHmm") +".xls";
@@ -467,6 +538,8 @@ public class BackendOrderController extends BaseController {
                 String storeName = "";
                 String userName = "";
                 String mobile = "";
+                String orderModeText = "";
+                String staffName = "";
                 if (orderDto.getStoreInfo() != null) {
                     storeName = orderDto.getStoreInfo().getName();
                 }
@@ -478,14 +551,32 @@ public class BackendOrderController extends BaseController {
                 } else if(orderDto.getUserInfo() != null) {
                     mobile = orderDto.getUserInfo().getMobile();
                 }
+                if (orderDto.getOrderMode() != null) {
+                    for (OrderModeEnum mode : OrderModeEnum.values()) {
+                        if (mode.getKey().equals(orderDto.getOrderMode())) {
+                            orderModeText = mode.getValue();
+                            break;
+                        }
+                    }
+                }
+                if (orderDto.getStaffInfo() != null) {
+                    staffName = orderDto.getStaffInfo().getRealName();
+                }
                 content[i][0] = objectConvertToString(orderDto.getOrderSn());
                 content[i][1] = objectConvertToString(userName);
                 content[i][2] = objectConvertToString(mobile);
                 content[i][3] = objectConvertToString(orderDto.getTypeName());
-                content[i][4] = objectConvertToString(storeName);
-                content[i][5] = objectConvertToString(orderDto.getAmount());
-                content[i][6] = objectConvertToString(orderDto.getPayStatus());
-                content[i][7] = objectConvertToString(orderDto.getStatusText());
+                content[i][4] = objectConvertToString(orderModeText);
+                content[i][5] = objectConvertToString(storeName);
+                content[i][6] = objectConvertToString(orderDto.getAmount());
+                content[i][7] = objectConvertToString(orderDto.getPayStatus());
+                content[i][8] = objectConvertToString(orderDto.getStatusText());
+                content[i][9] = objectConvertToString(orderDto.getPayAmount());
+                content[i][10] = objectConvertToString(orderDto.getDiscount());
+                content[i][11] = objectConvertToString(orderDto.getPointAmount());
+                content[i][12] = objectConvertToString(staffName);
+                content[i][13] = objectConvertToString(orderDto.getCreateTime());
+                content[i][14] = objectConvertToString(orderDto.getUpdateTime());
             }
         }
 

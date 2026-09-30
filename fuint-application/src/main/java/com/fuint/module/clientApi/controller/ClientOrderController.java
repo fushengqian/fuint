@@ -1,10 +1,12 @@
 package com.fuint.module.clientApi.controller;
 
 import com.fuint.common.dto.member.UserInfo;
+import com.fuint.common.dto.order.ExpressTraceResultDto;
 import com.fuint.common.dto.order.OrderDto;
 import com.fuint.common.dto.order.UserOrderDto;
 import com.fuint.common.enums.OrderStatusEnum;
 import com.fuint.common.param.OrderListParam;
+import com.fuint.common.service.ExpressService;
 import com.fuint.common.service.OrderService;
 import com.fuint.common.util.QRCodeUtil;
 import com.fuint.common.util.TokenUtil;
@@ -45,6 +47,11 @@ public class ClientOrderController extends BaseController {
     private OrderService orderService;
 
     /**
+     * 物流查询服务接口
+     * */
+    private ExpressService expressService;
+
+    /**
      * 获取我的订单列表
      */
     @ApiOperation(value = "获取我的订单列表")
@@ -71,6 +78,39 @@ public class ClientOrderController extends BaseController {
     @CrossOrigin
     public ResponseObject detail(HttpServletRequest request) throws BusinessCheckException {
         return getSuccessResult(getOrderInfo(request));
+    }
+
+    /**
+     * 查询订单物流信息(快递100)
+     */
+    @ApiOperation(value = "查询订单物流信息")
+    @RequestMapping(value = "/express", method = RequestMethod.GET)
+    @CrossOrigin
+    public ResponseObject express(HttpServletRequest request) {
+        UserInfo mtUser = TokenUtil.getUserInfo();
+        if (mtUser == null) {
+            return getFailureResult(1001, "请先登录");
+        }
+
+        String orderId = request.getParameter("orderId");
+        if (StringUtil.isEmpty(orderId)) {
+            return getFailureResult(201, "订单不能为空");
+        }
+
+        try {
+            ExpressTraceResultDto result;
+            if (orderId.length() >= 12) {
+                result = expressService.queryExpressTraceByOrderSn(orderId, mtUser);
+            } else {
+                result = expressService.queryExpressTrace(Integer.parseInt(orderId), mtUser);
+            }
+            return getSuccessResult(result);
+        } catch (BusinessCheckException e) {
+            return getFailureResult(201, e.getMessage());
+        } catch (Exception e) {
+            logger.error("查询订单物流信息失败：{}", e.getMessage());
+            return getFailureResult(201, "物流信息查询失败，请稍后再试");
+        }
     }
 
     /**

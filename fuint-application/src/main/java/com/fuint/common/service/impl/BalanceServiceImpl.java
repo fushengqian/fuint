@@ -221,30 +221,34 @@ public class BalanceServiceImpl extends ServiceImpl<MtBalanceMapper, MtBalance> 
         }
         mtUser = mtUserMapper.selectById(mtBalance.getUserId());
         // 短信与订阅消息属于外部 HTTP 调用，放到事务提交之后执行，避免长时间占用 mt_user 行锁
+        MtUser finalMtUser = mtUser;
         TransactionUtils.runAfterCommit(() -> {
             try {
                 List<String> mobileList = new ArrayList<>();
-                mobileList.add(mtUser.getMobile());
+                mobileList.add(finalMtUser.getMobile());
                 Map<String, String> smsParams = new HashMap<>();
                 String action = "";
                 if (mtBalance.getAmount().compareTo(new BigDecimal("0")) > 0) {
                     action = "+";
                 }
                 smsParams.put("amount", action + String.format("%.2f", mtBalance.getAmount()));
-                smsParams.put("balance", String.format("%.2f", mtUser.getBalance()));
-                sendSmsService.sendSms(mtUser.getMerchantId(), "balance-change", mobileList, smsParams);
+                smsParams.put("balance", String.format("%.2f", finalMtUser.getBalance()));
+                sendSmsService.sendSms(finalMtUser.getMerchantId(), "balance-change", mobileList, smsParams);
             } catch (Exception e) {
                 logger.error("余额变动短信发送失败:{}", e.getMessage());
             }
-
             // 发送小程序订阅消息
-            Date nowTime = new Date();
-            Map<String, Object> params = new HashMap<>();
-            String dateTime = DateUtil.formatDate(Calendar.getInstance().getTime(), "yyyy-MM-dd HH:mm");
-            params.put("amount", mtBalance.getAmount());
-            params.put("time", dateTime);
-            params.put("tips", "您的余额发生了变动，请留意~");
-            weixinService.sendSubscribeMessage(mtBalance.getMerchantId(), mtBalance.getUserId(), mtUser.getOpenId(), WxMessageEnum.BALANCE_CHANGE.getKey(), "pages/user/index", params, nowTime);
+            try {
+                Date nowTime = new Date();
+                Map<String, Object> params = new HashMap<>();
+                String dateTime = DateUtil.formatDate(Calendar.getInstance().getTime(), "yyyy-MM-dd HH:mm");
+                params.put("amount", mtBalance.getAmount());
+                params.put("time", dateTime);
+                params.put("tips", "您的余额发生了变动，请留意~");
+                weixinService.sendSubscribeMessage(mtBalance.getMerchantId(), mtBalance.getUserId(), finalMtUser.getOpenId(), WxMessageEnum.BALANCE_CHANGE.getKey(), "pages/user/index", params, nowTime);
+            } catch (Exception e) {
+                logger.error("发送小程序订阅消息失败:{}", e.getMessage());
+            }
         });
 
         return true;

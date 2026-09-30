@@ -877,7 +877,7 @@ public class CouponServiceImpl extends ServiceImpl<MtCouponMapper, MtCoupon> imp
             throw new BusinessCheckException("储值卡核销金额不能为空！");
         }
 
-        MtStore mtStore = null;
+        MtStore mtStore;
         if (storeId != null && storeId > 0) {
             mtStore = mtStoreMapper.selectById(storeId);
             if (null == mtStore) {
@@ -885,6 +885,8 @@ public class CouponServiceImpl extends ServiceImpl<MtCouponMapper, MtCoupon> imp
             } else if (!mtStore.getStatus().equals(StatusEnum.ENABLED.getKey())) {
                 throw new BusinessCheckException("该店铺状态有误，可能已禁用");
             }
+        } else {
+            mtStore = null;
         }
 
         // 判断有效期
@@ -1023,12 +1025,14 @@ public class CouponServiceImpl extends ServiceImpl<MtCouponMapper, MtCoupon> imp
         confirmLog.setUpdateTime(new Date());
         confirmLog.setUserId(userCoupon.getUserId());
         confirmLog.setOperatorUserId(userId);
-        MtUser userInfo = null;
+        MtUser userInfo;
         if (userId > 0) {
             userInfo = memberService.queryMemberById(userId);
             if (userInfo != null) {
                 confirmLog.setOperator(userInfo.getName());
             }
+        } else {
+            userInfo = null;
         }
         if (StringUtil.isNotBlank(operator)) {
             confirmLog.setOperator(operator);
