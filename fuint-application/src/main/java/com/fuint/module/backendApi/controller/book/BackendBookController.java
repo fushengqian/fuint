@@ -18,8 +18,8 @@ import com.fuint.framework.web.ResponseObject;
 import com.fuint.repository.model.MtBookCate;
 import com.fuint.repository.model.MtStore;
 import com.fuint.utils.StringUtil;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.AllArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -37,7 +37,7 @@ import java.util.stream.Collectors;
  * Created by FSQ
  * CopyRight https://www.fuint.cn
  */
-@Api(tags="管理端-预约相关接口")
+@Tag(name="管理端-预约相关接口")
 @RestController
 @AllArgsConstructor
 @RequestMapping(value = "/backendApi/book")
@@ -66,7 +66,7 @@ public class BackendBookController extends BaseController {
     /**
      * 预约项目列表查询
      */
-    @ApiOperation(value = "预约项目列表查询")
+    @Operation(summary="预约项目列表查询")
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('book:index')")
@@ -95,7 +95,7 @@ public class BackendBookController extends BaseController {
     /**
      * 更新预约项目状态
      */
-    @ApiOperation(value = "更新预约项目状态")
+    @Operation(summary="更新预约项目状态")
     @RequestMapping(value = "/updateStatus", method = RequestMethod.POST)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('book:index')")
@@ -115,15 +115,12 @@ public class BackendBookController extends BaseController {
     /**
      * 保存预约项目
      */
-    @ApiOperation(value = "保存预约项目")
+    @Operation(summary="保存预约项目")
     @RequestMapping(value = "/save", method = RequestMethod.POST)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('book:index')")
     public ResponseObject saveHandler(@RequestBody BookDto bookDto) throws BusinessCheckException {
         AccountInfo accountInfo = TokenUtil.getAccountInfo();
-        if (accountInfo.getMerchantId() == null || accountInfo.getMerchantId() < 1) {
-            getFailureResult(5002);
-        }
         if (accountInfo.getStoreId() != null && accountInfo.getStoreId() > 0) {
             bookDto.setStoreId(accountInfo.getStoreId());
         }
@@ -159,7 +156,7 @@ public class BackendBookController extends BaseController {
     /**
      * 获取预约项目详情
      */
-    @ApiOperation(value = "获取预约项目详情")
+    @Operation(summary="获取预约项目详情")
     @RequestMapping(value = "/info/{id}", method = RequestMethod.GET)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('book:index')")

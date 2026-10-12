@@ -1,6 +1,6 @@
 package com.fuint.common.dto.order;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -14,21 +14,21 @@ import java.io.Serializable;
 @Data
 public class ExpressTraceDto implements Serializable {
 
-    @ApiModelProperty("轨迹时间(格式化)")
+    @Schema(description="轨迹时间(格式化)")
     private String time;
 
-    @ApiModelProperty("轨迹时间(原始)")
+    @Schema(description="轨迹时间(原始)")
     private String ftime;
 
-    @ApiModelProperty("轨迹内容")
+    @Schema(description="轨迹内容")
     private String context;
 
-    @ApiModelProperty("物流状态")
+    @Schema(description="物流状态")
     private String status;
 
-    @ApiModelProperty("所在区域名称")
+    @Schema(description="所在区域名称")
     private String areaName;
 
-    @ApiModelProperty("所在区域编码")
+    @Schema(description="所在区域编码")
     private String areaCode;
 }

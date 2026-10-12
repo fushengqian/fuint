@@ -1,6 +1,6 @@
 package com.fuint.common.param;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -15,13 +15,13 @@ import java.util.List;
 @Data
 public class StatisticParam extends PageParam implements Serializable {
 
-    @ApiModelProperty(value="开始时间", name="startTime")
+    @Schema(description="开始时间", name="startTime")
     private String startTime;
 
-    @ApiModelProperty(value="结束时间", name="endTime")
+    @Schema(description="结束时间", name="endTime")
     private String endTime;
 
-    @ApiModelProperty(value="店铺ID", name="storeIds")
+    @Schema(description="店铺ID", name="storeIds")
     private List<Integer> storeIds;
 
 }

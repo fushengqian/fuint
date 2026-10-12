@@ -1,6 +1,6 @@
 package com.fuint.common.param;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -14,25 +14,25 @@ import java.io.Serializable;
 @Data
 public class GoodsCateInfo implements Serializable {
 
-    @ApiModelProperty("分类ID")
+    @Schema(description="分类ID")
     private Integer id;
 
-    @ApiModelProperty("名称")
+    @Schema(description="名称")
     private String name;
 
-    @ApiModelProperty("描述信息")
+    @Schema(description="描述信息")
     private String description;
 
-    @ApiModelProperty("分类LOGO")
+    @Schema(description="分类LOGO")
     private String logo;
 
-    @ApiModelProperty("排序")
+    @Schema(description="排序")
     private Integer sort;
 
-    @ApiModelProperty("店铺ID")
+    @Schema(description="店铺ID")
     private Integer storeId;
 
-    @ApiModelProperty("状态，A正常；D作废")
+    @Schema(description="状态，A正常；D作废")
     private String status;
 
 }

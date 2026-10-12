@@ -16,14 +16,14 @@ import com.fuint.framework.web.BaseController;
 import com.fuint.framework.web.ResponseObject;
 import com.fuint.repository.model.MtSetting;
 import com.fuint.utils.StringUtil;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.AllArgsConstructor;
 import org.springframework.core.env.Environment;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import java.io.UnsupportedEncodingException;
 import java.util.*;
 
@@ -33,7 +33,7 @@ import java.util.*;
  * Created by FSQ
  * CopyRight https://www.fuint.cn
  */
-@Api(tags="管理端-小程序订阅消息相关接口")
+@Tag(name="管理端-小程序订阅消息相关接口")
 @RestController
 @AllArgsConstructor
 @RequestMapping(value = "/backendApi/subMessage")
@@ -52,7 +52,7 @@ public class BackendSubMessageController extends BaseController {
     /**
      * 订阅消息模板列表
      */
-    @ApiOperation(value = "订阅消息模板列表")
+    @Operation(summary="订阅消息模板列表")
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('subMessage:index')")
@@ -109,7 +109,7 @@ public class BackendSubMessageController extends BaseController {
     /**
      * 订阅消息模板详情
      */
-    @ApiOperation(value = "订阅消息模板详情")
+    @Operation(summary="订阅消息模板详情")
     @RequestMapping(value = "/info/{key}", method = RequestMethod.GET)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('subMessage:index')")
@@ -177,7 +177,7 @@ public class BackendSubMessageController extends BaseController {
     /**
      * 保存订阅消息模板
      */
-    @ApiOperation(value = "保存订阅消息模板")
+    @Operation(summary="保存订阅消息模板")
     @RequestMapping(value = "/save", method = RequestMethod.POST)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('subMessage:edit')")

@@ -5,8 +5,7 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import java.io.Serializable;
 import java.util.Date;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 /**
@@ -17,40 +16,40 @@ import lombok.Data;
  */
 @Data
 @TableName("mt_order_address")
-@ApiModel(value = "MtOrderAddress对象", description = "订单收货地址记录表")
+@Schema(name="MtOrderAddress对象", description="订单收货地址记录表")
 public class MtOrderAddress implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @ApiModelProperty("地址ID")
+    @Schema(description="地址ID")
     @TableId(value = "ID", type = IdType.AUTO)
     private Integer id;
 
-    @ApiModelProperty("收货人姓名")
+    @Schema(description="收货人姓名")
     private String name;
 
-    @ApiModelProperty("联系电话")
+    @Schema(description="联系电话")
     private String mobile;
 
-    @ApiModelProperty("省份ID")
+    @Schema(description="省份ID")
     private Integer provinceId;
 
-    @ApiModelProperty("城市ID")
+    @Schema(description="城市ID")
     private Integer cityId;
 
-    @ApiModelProperty("区/县ID")
+    @Schema(description="区/县ID")
     private Integer regionId;
 
-    @ApiModelProperty("详细地址")
+    @Schema(description="详细地址")
     private String detail;
 
-    @ApiModelProperty("订单ID")
+    @Schema(description="订单ID")
     private Integer orderId;
 
-    @ApiModelProperty("用户ID")
+    @Schema(description="用户ID")
     private Integer userId;
 
-    @ApiModelProperty("创建时间")
+    @Schema(description="创建时间")
     private Date createTime;
 
 

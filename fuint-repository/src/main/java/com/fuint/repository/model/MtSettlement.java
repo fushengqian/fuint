@@ -6,8 +6,7 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 /**
@@ -18,49 +17,49 @@ import lombok.Data;
  */
 @Data
 @TableName("mt_settlement")
-@ApiModel(value = "MtSettlement对象", description = "结算表")
+@Schema(name="MtSettlement对象", description="结算表")
 public class MtSettlement implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @ApiModelProperty("自增ID")
+    @Schema(description="自增ID")
     @TableId(value = "ID", type = IdType.AUTO)
     private Integer id;
 
-    @ApiModelProperty("结算单号")
+    @Schema(description="结算单号")
     private String settlementNo;
 
-    @ApiModelProperty("商户ID")
+    @Schema(description="商户ID")
     private Integer merchantId;
 
-    @ApiModelProperty("店铺ID")
+    @Schema(description="店铺ID")
     private Integer storeId;
 
-    @ApiModelProperty("结算比例")
+    @Schema(description="结算比例")
     private BigDecimal settleRate;
 
-    @ApiModelProperty("订单总金额")
+    @Schema(description="订单总金额")
     private BigDecimal totalOrderAmount;
 
-    @ApiModelProperty("结算金额")
+    @Schema(description="结算金额")
     private BigDecimal amount;
 
-    @ApiModelProperty("创建时间")
+    @Schema(description="创建时间")
     private Date createTime;
 
-    @ApiModelProperty("更新时间")
+    @Schema(description="更新时间")
     private Date updateTime;
 
-    @ApiModelProperty("备注说明")
+    @Schema(description="备注说明")
     private String description;
 
-    @ApiModelProperty("最后操作人")
+    @Schema(description="最后操作人")
     private String operator;
 
-    @ApiModelProperty("支付状态，A待支付；B已支付")
+    @Schema(description="支付状态，A待支付；B已支付")
     private String payStatus;
 
-    @ApiModelProperty("状态，A正常；D删除")
+    @Schema(description="状态，A正常；D删除")
     private String status;
 
 }

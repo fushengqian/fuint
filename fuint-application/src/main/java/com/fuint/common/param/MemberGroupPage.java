@@ -1,6 +1,6 @@
 package com.fuint.common.param;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import java.io.Serializable;
 
@@ -13,12 +13,12 @@ import java.io.Serializable;
 @Data
 public class MemberGroupPage extends PageParam implements Serializable {
 
-    @ApiModelProperty("分组名称")
+    @Schema(description="分组名称")
     private String name;
 
-    @ApiModelProperty("状态")
+    @Schema(description="状态")
     private String status;
 
-    @ApiModelProperty("分组ID")
+    @Schema(description="分组ID")
     private Integer id;
 }

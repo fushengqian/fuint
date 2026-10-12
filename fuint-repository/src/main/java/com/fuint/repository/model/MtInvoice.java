@@ -6,8 +6,7 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 /**
@@ -18,76 +17,76 @@ import lombok.Data;
  */
 @Data
 @TableName("mt_invoice")
-@ApiModel(value = "invoice表对象", description = "invoice表对象")
+@Schema(name="invoice表对象", description="invoice表对象")
 public class MtInvoice implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @ApiModelProperty("自增ID")
+    @Schema(description="自增ID")
     @TableId(value = "ID", type = IdType.AUTO)
     private Integer id;
 
-    @ApiModelProperty("商户ID")
+    @Schema(description="商户ID")
     private Integer merchantId;
 
-    @ApiModelProperty("店铺ID")
+    @Schema(description="店铺ID")
     private Integer storeId;
 
-    @ApiModelProperty("用户ID")
+    @Schema(description="用户ID")
     private Integer userId;
 
-    @ApiModelProperty("订单ID")
+    @Schema(description="订单ID")
     private Integer orderId;
 
-    @ApiModelProperty("订单号")
+    @Schema(description="订单号")
     private String orderSn;
 
-    @ApiModelProperty("开票时间")
+    @Schema(description="开票时间")
     private Date InvoiceTime;
 
-    @ApiModelProperty("开票金额")
+    @Schema(description="开票金额")
     private BigDecimal invoiceAmount;
 
-    @ApiModelProperty("发票抬头")
+    @Schema(description="发票抬头")
     private String title;
 
-    @ApiModelProperty("发票下载地址")
+    @Schema(description="发票下载地址")
     private String downloadUrl;
 
-    @ApiModelProperty("发票类型")
+    @Schema(description="发票类型")
     private String type;
 
-    @ApiModelProperty("纳税人识别码")
+    @Schema(description="纳税人识别码")
     private String taxCode;
 
-    @ApiModelProperty("开户行")
+    @Schema(description="开户行")
     private String bankName;
 
-    @ApiModelProperty("开户卡号")
+    @Schema(description="开户卡号")
     private String bankCardNo;
 
-    @ApiModelProperty("开户户名")
+    @Schema(description="开户户名")
     private String bankCardName;
 
-    @ApiModelProperty("开票备注")
+    @Schema(description="开票备注")
     private String description;
 
-    @ApiModelProperty("接收邮箱")
+    @Schema(description="接收邮箱")
     private String email;
 
-    @ApiModelProperty("联系电话")
+    @Schema(description="联系电话")
     private String mobile;
 
-    @ApiModelProperty("创建时间")
+    @Schema(description="创建时间")
     private Date createTime;
 
-    @ApiModelProperty("更新时间")
+    @Schema(description="更新时间")
     private Date updateTime;
 
-    @ApiModelProperty("最后操作人")
+    @Schema(description="最后操作人")
     private String operator;
 
-    @ApiModelProperty("状态，A开票中，B开票成功，C已冲红")
+    @Schema(description="状态，A开票中，B开票成功，C已冲红")
     private String status;
 
 }

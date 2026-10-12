@@ -7,12 +7,12 @@ import com.fuint.common.service.SettingService;
 import com.fuint.framework.web.BaseController;
 import com.fuint.framework.web.ResponseObject;
 import com.fuint.utils.StringUtil;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -22,7 +22,7 @@ import java.util.Map;
  * Created by FSQ
  * CopyRight https://www.fuint.cn
  */
-@Api(tags="会员端-底部导航相关接口")
+@Tag(name="会员端-底部导航相关接口")
 @RestController
 @AllArgsConstructor
 @RequestMapping(value = "/clientApi/tabbar")
@@ -46,7 +46,7 @@ public class ClientTabbarController extends BaseController {
     /**
      * 获取底部导航配置
      */
-    @ApiOperation(value = "获取底部导航配置")
+    @Operation(summary="获取底部导航配置")
     @RequestMapping(value = "/info", method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject info(HttpServletRequest request) {

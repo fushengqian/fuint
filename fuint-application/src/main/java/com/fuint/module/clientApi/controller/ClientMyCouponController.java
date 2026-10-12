@@ -15,12 +15,12 @@ import com.fuint.repository.model.MtStaff;
 import com.fuint.repository.model.MtUser;
 import com.fuint.repository.model.MtUserCoupon;
 import com.fuint.utils.StringUtil;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -30,7 +30,7 @@ import java.util.Map;
  * Created by FSQ
  * CopyRight https://www.fuint.cn
  */
-@Api(tags="会员端-我的卡券相关接口")
+@Tag(name="会员端-我的卡券相关接口")
 @RestController
 @AllArgsConstructor
 @RequestMapping(value = "/clientApi/myCoupon")
@@ -59,7 +59,7 @@ public class ClientMyCouponController extends BaseController {
     /**
      * 查询我的卡券
      */
-    @ApiOperation(value = "查询我的卡券")
+    @Operation(summary="查询我的卡券")
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject list(HttpServletRequest request) throws BusinessCheckException {
@@ -105,7 +105,7 @@ public class ClientMyCouponController extends BaseController {
     /**
      * 查询我的卡券是否已使用
      */
-    @ApiOperation(value = "查询我的卡券是否已使用")
+    @Operation(summary="查询我的卡券是否已使用")
     @RequestMapping(value = "/isUsed", method = RequestMethod.POST)
     @CrossOrigin
     public ResponseObject isUsed(@RequestBody MyCouponRequest requestParam) {
@@ -123,7 +123,7 @@ public class ClientMyCouponController extends BaseController {
     /**
      * 删除我的卡券
      */
-    @ApiOperation(value = "删除我的卡券")
+    @Operation(summary="删除我的卡券")
     @RequestMapping(value = "/remove", method = RequestMethod.POST)
     @CrossOrigin
     public ResponseObject remove(@RequestBody MyCouponRequest requestParam) throws BusinessCheckException {

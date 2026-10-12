@@ -18,12 +18,12 @@ import com.fuint.repository.model.MtCart;
 import com.fuint.repository.model.MtGoodsSku;
 import com.fuint.repository.model.MtUser;
 import com.fuint.utils.StringUtil;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -35,7 +35,7 @@ import java.util.Map;
  * Created by FSQ
  * CopyRight https://www.fuint.cn
  */
-@Api(tags="会员端-购物车相关接口")
+@Tag(name="会员端-购物车相关接口")
 @RestController
 @AllArgsConstructor
 @RequestMapping(value = "/clientApi/cart")
@@ -71,7 +71,7 @@ public class ClientCartController extends BaseController {
     /**
      * 保存购物车
      */
-    @ApiOperation(value = "保存购物车")
+    @Operation(summary="保存购物车")
     @RequestMapping(value = "/save", method = RequestMethod.POST)
     @CrossOrigin
     public ResponseObject save(HttpServletRequest request, @RequestBody CartSaveParam saveParam) throws BusinessCheckException {
@@ -164,7 +164,7 @@ public class ClientCartController extends BaseController {
     /**
      * 删除购物车
      */
-    @ApiOperation(value = "删除/清空购物车")
+    @Operation(summary="删除/清空购物车")
     @RequestMapping(value = "/clear", method = RequestMethod.POST)
     @CrossOrigin
     public ResponseObject clear(HttpServletRequest request, @RequestBody CartClearParam clearParam) throws BusinessCheckException {
@@ -200,7 +200,7 @@ public class ClientCartController extends BaseController {
     /**
      * 获取购物车列表
      */
-    @ApiOperation(value = "获取购物车列表")
+    @Operation(summary="获取购物车列表")
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @CrossOrigin
     public ResponseObject list(HttpServletRequest request, @RequestBody CartListParam params) throws BusinessCheckException {

@@ -6,8 +6,7 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 /**
@@ -18,58 +17,58 @@ import lombok.Data;
  */
 @Data
 @TableName("mt_refund")
-@ApiModel(value = "MtRefund对象", description = "售后表")
+@Schema(name="MtRefund对象", description="售后表")
 public class MtRefund implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @ApiModelProperty("自增ID")
+    @Schema(description="自增ID")
     @TableId(value = "ID", type = IdType.AUTO)
     private Integer id;
 
-    @ApiModelProperty("订单ID")
+    @Schema(description="订单ID")
     private Integer orderId;
 
-    @ApiModelProperty("商户ID")
+    @Schema(description="商户ID")
     private Integer merchantId;
 
-    @ApiModelProperty("店铺ID")
+    @Schema(description="店铺ID")
     private Integer storeId;
 
-    @ApiModelProperty("会员ID")
+    @Schema(description="会员ID")
     private Integer userId;
 
-    @ApiModelProperty("退款金额")
+    @Schema(description="退款金额")
     private BigDecimal amount;
 
-    @ApiModelProperty("售后类型")
+    @Schema(description="售后类型")
     private String type;
 
-    @ApiModelProperty("退款备注")
+    @Schema(description="退款备注")
     private String remark;
 
-    @ApiModelProperty("物流公司名称")
+    @Schema(description="物流公司名称")
     private String expressName;
 
-    @ApiModelProperty("物流单号")
+    @Schema(description="物流单号")
     private String expressNo;
 
-    @ApiModelProperty("拒绝原因")
+    @Schema(description="拒绝原因")
     private String rejectReason;
 
-    @ApiModelProperty("创建时间")
+    @Schema(description="创建时间")
     private Date createTime;
 
-    @ApiModelProperty("更新时间")
+    @Schema(description="更新时间")
     private Date updateTime;
 
-    @ApiModelProperty("状态")
+    @Schema(description="状态")
     private String status;
 
-    @ApiModelProperty("图片")
+    @Schema(description="图片")
     private String images;
 
-    @ApiModelProperty("最后操作人")
+    @Schema(description="最后操作人")
     private String operator;
 
 }

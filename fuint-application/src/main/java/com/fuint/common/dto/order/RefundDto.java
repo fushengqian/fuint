@@ -1,7 +1,7 @@
 package com.fuint.common.dto.order;
 
 import com.fuint.repository.model.MtStore;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -16,67 +16,67 @@ import java.util.List;
 @Data
 public class RefundDto implements Serializable {
 
-    @ApiModelProperty("自增ID")
+    @Schema(description="自增ID")
     private Integer id;
 
-    @ApiModelProperty("订单ID")
+    @Schema(description="订单ID")
     private Integer orderId;
 
-    @ApiModelProperty("商户ID")
+    @Schema(description="商户ID")
     private Integer merchantId;
 
-    @ApiModelProperty("店铺ID")
+    @Schema(description="店铺ID")
     private Integer storeId;
 
-    @ApiModelProperty("退款金额")
+    @Schema(description="退款金额")
     private BigDecimal amount;
 
-    @ApiModelProperty("售后类型")
+    @Schema(description="售后类型")
     private String type;
 
-    @ApiModelProperty("会员ID")
+    @Schema(description="会员ID")
     private Integer userId;
 
-    @ApiModelProperty("用户备注")
+    @Schema(description="用户备注")
     private String remark;
 
-    @ApiModelProperty("物流公司名称")
+    @Schema(description="物流公司名称")
     private String expressName;
 
-    @ApiModelProperty("物流单号")
+    @Schema(description="物流单号")
     private String expressNo;
 
-    @ApiModelProperty("拒绝原因")
+    @Schema(description="拒绝原因")
     private String rejectReason;
 
-    @ApiModelProperty("申请凭证图片")
+    @Schema(description="申请凭证图片")
     private List<String> imageList;
 
-    @ApiModelProperty("申请凭证图片")
+    @Schema(description="申请凭证图片")
     private String images;
 
-    @ApiModelProperty("最后操作人")
+    @Schema(description="最后操作人")
     private String operator;
 
-    @ApiModelProperty("订单详情")
+    @Schema(description="订单详情")
     private UserOrderDto orderInfo;
 
-    @ApiModelProperty("退货地址")
+    @Schema(description="退货地址")
     private AddressDto address;
 
-    @ApiModelProperty("店铺信息")
+    @Schema(description="店铺信息")
     private MtStore storeInfo;
 
-    @ApiModelProperty("创建时间")
+    @Schema(description="创建时间")
     private String createTime;
 
-    @ApiModelProperty("更新时间")
+    @Schema(description="更新时间")
     private String updateTime;
 
-    @ApiModelProperty("状态")
+    @Schema(description="状态")
     private String status;
 
-    @ApiModelProperty("状态说明")
+    @Schema(description="状态说明")
     private String statusText;
 
 }

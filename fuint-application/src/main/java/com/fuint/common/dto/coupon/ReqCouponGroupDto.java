@@ -1,6 +1,6 @@
 package com.fuint.common.dto.coupon;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -14,31 +14,31 @@ import java.math.BigDecimal;
 @Data
 public class ReqCouponGroupDto implements Serializable {
 
-    @ApiModelProperty("自增ID")
+    @Schema(description="自增ID")
     private Integer id;
 
-    @ApiModelProperty("商户ID")
+    @Schema(description="商户ID")
     private Integer merchantId;
 
-    @ApiModelProperty("店铺ID")
+    @Schema(description="店铺ID")
     private Integer storeId;
 
-    @ApiModelProperty("分组名称")
+    @Schema(description="分组名称")
     private String name;
 
-    @ApiModelProperty("价值金额")
+    @Schema(description="价值金额")
     private BigDecimal money;
 
-    @ApiModelProperty("发行数量")
+    @Schema(description="发行数量")
     private Integer total;
 
-    @ApiModelProperty("分组描述")
+    @Schema(description="分组描述")
     private String description;
 
-    @ApiModelProperty("操作人")
+    @Schema(description="操作人")
     private String operator;
 
-    @ApiModelProperty("状态")
+    @Schema(description="状态")
     private String status;
 
 }

@@ -1,6 +1,6 @@
 package com.fuint.module.backendApi.request;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import java.io.Serializable;
 
@@ -13,13 +13,13 @@ import java.io.Serializable;
 @Data
 public class CommissionSettleConfirmRequest implements Serializable {
 
-    @ApiModelProperty(value="结算uuid", name="uuid")
+    @Schema(description="结算uuid", name="uuid")
     private String uuid;
 
-    @ApiModelProperty(value="商户ID", name="merchantId")
+    @Schema(description="商户ID", name="merchantId")
     private Integer merchantId;
 
-    @ApiModelProperty(value="操作人", name="operator")
+    @Schema(description="操作人", name="operator")
     private String operator;
 
 }

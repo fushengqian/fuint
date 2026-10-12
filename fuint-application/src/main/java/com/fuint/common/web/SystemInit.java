@@ -9,8 +9,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.ServletContextAware;
-import javax.annotation.Resource;
-import javax.servlet.ServletContext;
+import jakarta.annotation.Resource;
+import jakarta.servlet.ServletContext;
 import java.util.List;
 
 /**

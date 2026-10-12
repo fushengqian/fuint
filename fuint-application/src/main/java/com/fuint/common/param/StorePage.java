@@ -1,6 +1,6 @@
 package com.fuint.common.param;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -14,10 +14,10 @@ import java.io.Serializable;
 @Data
 public class StorePage extends PageParam implements Serializable {
 
-    @ApiModelProperty("店铺名称")
+    @Schema(description="店铺名称")
     private String name;
 
-    @ApiModelProperty("状态")
+    @Schema(description="状态")
     private String status;
 
 }

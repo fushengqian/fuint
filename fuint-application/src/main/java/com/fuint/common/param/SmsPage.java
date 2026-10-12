@@ -1,6 +1,6 @@
 package com.fuint.common.param;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import java.io.Serializable;
 
@@ -13,13 +13,13 @@ import java.io.Serializable;
 @Data
 public class SmsPage extends PageParam implements Serializable {
 
-    @ApiModelProperty("手机号")
+    @Schema(description="手机号")
     private String mobile;
 
-    @ApiModelProperty("内容")
+    @Schema(description="内容")
     private String content;
 
-    @ApiModelProperty("状态")
+    @Schema(description="状态")
     private String status;
 
 }

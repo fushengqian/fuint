@@ -1,6 +1,6 @@
 package com.fuint.common.dto.coupon;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 /**
@@ -12,10 +12,10 @@ import lombok.Data;
 @Data
 public class GroupDataListDto {
 
-    @ApiModelProperty("键值")
+    @Schema(description="键值")
     private String key;
 
-    @ApiModelProperty("数据")
+    @Schema(description="数据")
     private GroupDataDto data;
 
 }

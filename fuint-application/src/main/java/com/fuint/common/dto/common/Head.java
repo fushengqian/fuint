@@ -1,6 +1,6 @@
 package com.fuint.common.dto.common;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import java.io.Serializable;
 
@@ -13,16 +13,16 @@ import java.io.Serializable;
 @Data
 public class Head implements Serializable {
 
-    @ApiModelProperty("服务编号，用于确定唯一的服务")
+    @Schema(description="服务编号，用于确定唯一的服务")
     private String serviceId;
 
-    @ApiModelProperty("授权Token信息")
+    @Schema(description="授权Token信息")
     private String token;
 
-    @ApiModelProperty("服务执行返回码(000000:正常)")
+    @Schema(description="服务执行返回码(000000:正常)")
     private String returnCode;
 
-    @ApiModelProperty("服务执行返回信息")
+    @Schema(description="服务执行返回信息")
     private String returnDesc;
 
     @Override

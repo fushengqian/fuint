@@ -14,8 +14,8 @@ import com.fuint.framework.web.ResponseObject;
 import com.fuint.repository.mapper.MtUserCouponMapper;
 import com.fuint.repository.model.*;
 import com.fuint.utils.StringUtil;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,7 +34,7 @@ import java.util.Map;
  * Created by FSQ
  * CopyRight https://www.fuint.cn
  */
-@Api(tags="会员端-会员卡券相关接口")
+@Tag(name="会员端-会员卡券相关接口")
 @RestController
 @AllArgsConstructor
 @RequestMapping(value = "/clientApi/userCouponApi")
@@ -77,7 +77,7 @@ public class ClientUserCouponController extends BaseController {
     /**
      * 查询会员卡券详情
      */
-    @ApiOperation(value = "查询会员卡券详情")
+    @Operation(summary="查询会员卡券详情")
     @RequestMapping(value = "/detail", method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject detail(@RequestParam Map<String, Object> param) throws BusinessCheckException {

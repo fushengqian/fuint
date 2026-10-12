@@ -29,7 +29,7 @@ import com.fuint.utils.QRCodeUtil;
 import com.fuint.utils.StringUtil;
 import com.ijpay.core.enums.SignType;
 import com.ijpay.core.enums.TradeType;
-import com.ijpay.core.kit.HttpKit;
+import com.fuint.common.util.CommonUtil;
 import com.ijpay.core.kit.WxPayKit;
 import com.ijpay.wxpay.WxPayApi;
 import com.ijpay.wxpay.WxPayApiConfig;
@@ -51,8 +51,8 @@ import weixin.popular.util.JsonUtil;
 import javax.crypto.Cipher;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.math.BigDecimal;
 import java.security.AlgorithmParameters;
@@ -286,7 +286,7 @@ public class WeixinServiceImpl implements WeixinService {
      * */
     public Map<String, String> processResXml(HttpServletRequest request) {
         try {
-            String xmlMsg = HttpKit.readData(request);
+            String xmlMsg = CommonUtil.readRequestBody(request);
             Map<String, String> result = WxPayKit.xmlToMap(xmlMsg);
             String returnCode = result.get("return_code");
             String orderSn = result.get("out_trade_no");

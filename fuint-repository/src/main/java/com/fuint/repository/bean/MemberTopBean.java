@@ -2,8 +2,7 @@ package com.fuint.repository.bean;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 /**
@@ -13,7 +12,7 @@ import lombok.Data;
  * CopyRight https://www.fuint.cn
  */
 @Data
-@ApiModel(value = "会员排行对象", description = "会员排行对象")
+@Schema(name="会员排行对象", description="会员排行对象")
 public class MemberTopBean implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -21,25 +20,25 @@ public class MemberTopBean implements Serializable {
     /**
      * 会员ID
      */
-    @ApiModelProperty("卡券ID")
+    @Schema(description="卡券ID")
     private Integer id;
 
     /**
      * 会员名称
      */
-    @ApiModelProperty("卡券ID")
+    @Schema(description="卡券ID")
     private String name;
 
     /**
      * 会员号
      */
-    @ApiModelProperty("卡券ID")
+    @Schema(description="卡券ID")
     private String userNo;
 
     /**
      * 消费金额
      */
-    @ApiModelProperty("卡券ID")
+    @Schema(description="卡券ID")
     private BigDecimal amount;
 
     /**

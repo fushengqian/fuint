@@ -18,8 +18,8 @@ import com.fuint.framework.web.ResponseObject;
 import com.fuint.module.backendApi.request.MemberSubmitRequest;
 import com.fuint.repository.model.*;
 import com.fuint.utils.StringUtil;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.AllArgsConstructor;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.springframework.beans.BeanUtils;
@@ -29,8 +29,8 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import weixin.popular.util.JsonUtil;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.*;
@@ -43,7 +43,7 @@ import static com.fuint.common.util.XlsUtil.objectConvertToString;
  * Created by FSQ
  * CopyRight https://www.fuint.cn
  */
-@Api(tags="管理端-会员相关接口")
+@Tag(name="管理端-会员相关接口")
 @RestController
 @AllArgsConstructor
 @RequestMapping(value = "/backendApi/member")
@@ -97,7 +97,7 @@ public class BackendMemberController extends BaseController {
     /**
      * 查询会员列表
      */
-    @ApiOperation(value = "查询会员列表")
+    @Operation(summary="查询会员列表")
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('member:index')")
@@ -140,7 +140,7 @@ public class BackendMemberController extends BaseController {
     /**
      * 更新会员状态
      */
-    @ApiOperation(value = "更新会员状态")
+    @Operation(summary="更新会员状态")
     @RequestMapping(value = "/updateStatus", method = RequestMethod.POST)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('member:index')")
@@ -168,7 +168,7 @@ public class BackendMemberController extends BaseController {
     /**
      * 删除会员
      */
-    @ApiOperation(value = "删除会员")
+    @Operation(summary="删除会员")
     @RequestMapping(value = "/delete/{id}", method = RequestMethod.GET)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('member:index')")
@@ -244,7 +244,7 @@ public class BackendMemberController extends BaseController {
     /**
      * 获取会员详情
      */
-    @ApiOperation(value = "获取会员详情")
+    @Operation(summary="获取会员详情")
     @RequestMapping(value = "/info/{id}", method = RequestMethod.GET)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('member:index')")
@@ -279,7 +279,7 @@ public class BackendMemberController extends BaseController {
     /**
      * 获取会员设置
      */
-    @ApiOperation(value = "获取会员设置")
+    @Operation(summary="获取会员设置")
     @RequestMapping(value = "/setting", method = RequestMethod.GET)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('member:setting')")
@@ -331,7 +331,7 @@ public class BackendMemberController extends BaseController {
     /**
      * 保存会员设置
      */
-    @ApiOperation(value = "保存会员设置")
+    @Operation(summary="保存会员设置")
     @RequestMapping(value = "/saveSetting", method = RequestMethod.POST)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('member:setting')")
@@ -405,7 +405,7 @@ public class BackendMemberController extends BaseController {
     /**
      * 重置会员密码
      */
-    @ApiOperation(value = "重置会员密码")
+    @Operation(summary="重置会员密码")
     @RequestMapping(value = "/resetPwd", method = RequestMethod.POST)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('member:add')")
@@ -438,7 +438,7 @@ public class BackendMemberController extends BaseController {
     /**
      * 获取会员分组
      */
-    @ApiOperation(value = "获取会员分组")
+    @Operation(summary="获取会员分组")
     @RequestMapping(value = "/groupList", method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject groupList() {
@@ -463,7 +463,7 @@ public class BackendMemberController extends BaseController {
     /**
      * 查找会员列表
      */
-    @ApiOperation(value = "查找会员列表")
+    @Operation(summary="查找会员列表")
     @RequestMapping(value = "/searchMembers", method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject searchMembers(HttpServletRequest request) {
@@ -477,7 +477,7 @@ public class BackendMemberController extends BaseController {
     /**
      * 导出会员列表
      */
-    @ApiOperation(value = "导出会员列表")
+    @Operation(summary="导出会员列表")
     @RequestMapping(value = "/export", method = RequestMethod.GET)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('member:index')")
@@ -542,7 +542,7 @@ public class BackendMemberController extends BaseController {
     /**
      * 下载会员导入模板
      */
-    @ApiOperation(value = "下载会员导入模板")
+    @Operation(summary="下载会员导入模板")
     @RequestMapping(value = "/downloadTemplate", method = RequestMethod.GET)
     @CrossOrigin
     public void downloadTemplate(HttpServletResponse response) throws IOException {
@@ -552,7 +552,7 @@ public class BackendMemberController extends BaseController {
     /**
      * 上传会员导入文件
      */
-    @ApiOperation(value = "上传会员导入文件")
+    @Operation(summary="上传会员导入文件")
     @RequestMapping(value = "/uploadMemberFile", method = RequestMethod.POST)
     @CrossOrigin
     public ResponseObject uploadMemberFile(HttpServletRequest request) throws Exception {

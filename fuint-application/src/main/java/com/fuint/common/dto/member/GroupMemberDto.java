@@ -1,6 +1,6 @@
 package com.fuint.common.dto.member;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import java.io.Serializable;
 
@@ -13,16 +13,16 @@ import java.io.Serializable;
 @Data
 public class GroupMemberDto implements Serializable {
 
-    @ApiModelProperty("会员ID")
+    @Schema(description="会员ID")
     private Integer id;
 
-    @ApiModelProperty("会员名称")
+    @Schema(description="会员名称")
     private String name;
 
-    @ApiModelProperty("会员号")
+    @Schema(description="会员号")
     private String userNo;
 
-    @ApiModelProperty("会员名称")
+    @Schema(description="会员名称")
     private String mobile;
 }
 

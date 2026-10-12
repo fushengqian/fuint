@@ -7,8 +7,8 @@ import com.fuint.common.util.TokenUtil;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.web.BaseController;
 import com.fuint.framework.web.ResponseObject;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.AllArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.*;
  * Created by FSQ
  * CopyRight https://www.fuint.cn
  */
-@Api(tags = "管理端-主题设置相关接口")
+@Tag(name="管理端-主题设置相关接口")
 @RestController
 @AllArgsConstructor
 @RequestMapping(value = "/backendApi/theme")
@@ -33,7 +33,7 @@ public class BackendThemeController extends BaseController {
     /**
      * 获取主题配置
      */
-    @ApiOperation(value = "获取主题配置")
+    @Operation(summary="获取主题配置")
     @RequestMapping(value = "/info", method = RequestMethod.GET)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('decorate:theme')")
@@ -51,7 +51,7 @@ public class BackendThemeController extends BaseController {
     /**
      * 保存主题配置
      */
-    @ApiOperation(value = "保存主题配置")
+    @Operation(summary="保存主题配置")
     @RequestMapping(value = "/save", method = RequestMethod.POST)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('decorate:theme')")

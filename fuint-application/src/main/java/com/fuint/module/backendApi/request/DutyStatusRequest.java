@@ -1,6 +1,6 @@
 package com.fuint.module.backendApi.request;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import java.io.Serializable;
 
@@ -13,10 +13,10 @@ import java.io.Serializable;
 @Data
 public class DutyStatusRequest implements Serializable {
 
-    @ApiModelProperty(value="角色ID", name="roleId")
+    @Schema(description="角色ID", name="roleId")
     private Integer roleId;
 
-    @ApiModelProperty(value="状态", name="status")
+    @Schema(description="状态", name="status")
     private String status;
 
 }

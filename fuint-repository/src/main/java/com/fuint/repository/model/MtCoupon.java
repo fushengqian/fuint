@@ -6,8 +6,7 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 /**
@@ -18,109 +17,109 @@ import lombok.Data;
  */
 @Data
 @TableName("mt_coupon")
-@ApiModel(value = "MtCoupon对象", description = "卡券信息表")
+@Schema(name="MtCoupon对象", description="卡券信息表")
 public class MtCoupon implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @ApiModelProperty("自增ID")
+    @Schema(description="自增ID")
     @TableId(value = "ID", type = IdType.AUTO)
     private Integer id;
 
-    @ApiModelProperty("券组ID")
+    @Schema(description="券组ID")
     private Integer groupId;
 
-    @ApiModelProperty("所属商户ID")
+    @Schema(description="所属商户ID")
     private Integer merchantId;
 
-    @ApiModelProperty("店铺ID")
+    @Schema(description="店铺ID")
     private Integer storeId;
 
-    @ApiModelProperty("券类型，C优惠券；P储值卡；T计次卡")
+    @Schema(description="券类型，C优惠券；P储值卡；T计次卡")
     private String type;
 
-    @ApiModelProperty("券内容，如：0表示满减券、1表示折扣券")
+    @Schema(description="券内容，如：0表示满减券、1表示折扣券")
     private Integer content;
 
-    @ApiModelProperty("券名称")
+    @Schema(description="券名称")
     private String name;
 
-    @ApiModelProperty("是否允许转赠")
+    @Schema(description="是否允许转赠")
     private Boolean isGive;
 
-    @ApiModelProperty("获得卡券所消耗积分")
+    @Schema(description="获得卡券所消耗积分")
     private Integer point;
 
-    @ApiModelProperty("适用商品：allGoods、parkGoods")
+    @Schema(description="适用商品：allGoods、parkGoods")
     private String applyGoods;
 
-    @ApiModelProperty("领取码")
+    @Schema(description="领取码")
     private String receiveCode;
 
-    @ApiModelProperty("使用专项")
+    @Schema(description="使用专项")
     private String useFor;
 
-    @ApiModelProperty("过期类型")
+    @Schema(description="过期类型")
     private String expireType;
 
-    @ApiModelProperty("有效天数")
+    @Schema(description="有效天数")
     private Integer expireTime;
 
-    @ApiModelProperty("开始有效期")
+    @Schema(description="开始有效期")
     private Date beginTime;
 
-    @ApiModelProperty("结束有效期")
+    @Schema(description="结束有效期")
     private Date endTime;
 
-    @ApiModelProperty("面额")
+    @Schema(description="面额")
     private BigDecimal amount;
 
-    @ApiModelProperty("发放方式")
+    @Schema(description="发放方式")
     private String sendWay;
 
-    @ApiModelProperty("每次发放数量")
+    @Schema(description="每次发放数量")
     private Integer sendNum;
 
-    @ApiModelProperty("发行数量")
+    @Schema(description="发行数量")
     private Integer total;
 
-    @ApiModelProperty("每人拥有数量限制")
+    @Schema(description="每人拥有数量限制")
     private Integer limitNum;
 
-    @ApiModelProperty("不可用日期，逗号隔开。周末：weekend；其他：2019-01-02_2019-02-09")
+    @Schema(description="不可用日期，逗号隔开。周末：weekend；其他：2019-01-02_2019-02-09")
     private String exceptTime;
 
-    @ApiModelProperty("适用店铺ID,逗号隔开")
+    @Schema(description="适用店铺ID,逗号隔开")
     private String storeIds;
 
-    @ApiModelProperty("适用会员等级,逗号隔开")
+    @Schema(description="适用会员等级,逗号隔开")
     private String gradeIds;
 
-    @ApiModelProperty("描述信息")
+    @Schema(description="描述信息")
     private String description;
 
-    @ApiModelProperty("效果图片")
+    @Schema(description="效果图片")
     private String image;
 
-    @ApiModelProperty("后台备注")
+    @Schema(description="后台备注")
     private String remarks;
 
-    @ApiModelProperty("获取券的规则")
+    @Schema(description="获取券的规则")
     private String inRule;
 
-    @ApiModelProperty("核销券的规则")
+    @Schema(description="核销券的规则")
     private String outRule;
 
-    @ApiModelProperty("创建时间")
+    @Schema(description="创建时间")
     private Date createTime;
 
-    @ApiModelProperty("更新时间")
+    @Schema(description="更新时间")
     private Date updateTime;
 
-    @ApiModelProperty("最后操作人")
+    @Schema(description="最后操作人")
     private String operator;
 
-    @ApiModelProperty("A：正常；D：删除")
+    @Schema(description="A：正常；D：删除")
     private String status;
 
 

@@ -16,12 +16,12 @@ import com.fuint.module.clientApi.request.RefundListRequest;
 import com.fuint.module.clientApi.request.RefundSubmitRequest;
 import com.fuint.repository.model.MtRefund;
 import com.fuint.utils.StringUtil;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -33,7 +33,7 @@ import java.util.Map;
  * Created by FSQ
  * CopyRight https://www.fuint.cn
  */
-@Api(tags="会员端-售后相关接口")
+@Tag(name="会员端-售后相关接口")
 @RestController
 @AllArgsConstructor
 @RequestMapping(value = "/clientApi/refund")
@@ -52,7 +52,7 @@ public class ClientRefundController extends BaseController {
     /**
      * 获取售后订单列表
      */
-    @ApiOperation(value = "获取售后订单列表")
+    @Operation(summary="获取售后订单列表")
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject list(@ModelAttribute RefundListRequest param) throws BusinessCheckException {
@@ -72,7 +72,7 @@ public class ClientRefundController extends BaseController {
     /**
      * 售后订单提交
      */
-    @ApiOperation(value = "售后订单提交")
+    @Operation(summary="售后订单提交")
     @RequestMapping(value = "/submit", method = RequestMethod.POST)
     @CrossOrigin
     public ResponseObject submit(@RequestBody RefundSubmitRequest param) {
@@ -117,7 +117,7 @@ public class ClientRefundController extends BaseController {
     /**
      * 获取售后订单详情
      */
-    @ApiOperation(value = "获取售后订单详情")
+    @Operation(summary="获取售后订单详情")
     @RequestMapping(value = "/detail", method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject detail(HttpServletRequest request) throws BusinessCheckException {
@@ -132,7 +132,7 @@ public class ClientRefundController extends BaseController {
     /**
      * 售后用户发货
      */
-    @ApiOperation(value = "售后用户发货")
+    @Operation(summary="售后用户发货")
     @RequestMapping(value = "/delivery", method = RequestMethod.POST)
     @CrossOrigin
     public ResponseObject delivery(@RequestBody RefundInfoParam params) throws BusinessCheckException {

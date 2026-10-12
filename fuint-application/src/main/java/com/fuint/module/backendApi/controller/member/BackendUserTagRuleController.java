@@ -11,8 +11,8 @@ import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.web.BaseController;
 import com.fuint.framework.web.ResponseObject;
 import com.fuint.repository.model.MtUserTagRule;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.AllArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -28,7 +28,7 @@ import java.util.Map;
  * Created by FSQ
  * CopyRight https://www.fuint.cn
  */
-@Api(tags = "后台-会员标签规则管理")
+@Tag(name="后台-会员标签规则管理")
 @RestController
 @AllArgsConstructor
 @RequestMapping(value = "/backendApi/userTagRule")
@@ -36,7 +36,7 @@ public class BackendUserTagRuleController extends BaseController {
 
     private UserTagRuleService userTagRuleService;
 
-    @ApiOperation(value = "规则列表")
+    @Operation(summary="规则列表")
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('member:userTag:index')")
@@ -55,7 +55,7 @@ public class BackendUserTagRuleController extends BaseController {
         return getSuccessResult(data);
     }
 
-    @ApiOperation(value = "保存规则")
+    @Operation(summary="保存规则")
     @RequestMapping(value = "/save", method = RequestMethod.POST)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('member:userTag:index')")
@@ -76,7 +76,7 @@ public class BackendUserTagRuleController extends BaseController {
         return getSuccessResult(true);
     }
 
-    @ApiOperation(value = "删除规则")
+    @Operation(summary="删除规则")
     @RequestMapping(value = "/delete/{id}", method = RequestMethod.GET)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('member:userTag:index')")
@@ -88,7 +88,7 @@ public class BackendUserTagRuleController extends BaseController {
         return getSuccessResult(true);
     }
 
-    @ApiOperation(value = "手动执行规则")
+    @Operation(summary="手动执行规则")
     @RequestMapping(value = "/execute/{id}", method = RequestMethod.GET)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('member:userTag:index')")

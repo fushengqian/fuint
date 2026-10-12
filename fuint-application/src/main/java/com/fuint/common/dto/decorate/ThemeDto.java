@@ -1,6 +1,6 @@
 package com.fuint.common.dto.decorate;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import java.io.Serializable;
 import java.util.Map;
@@ -16,12 +16,12 @@ public class ThemeDto implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @ApiModelProperty("主题ID")
+    @Schema(description="主题ID")
     private String themeId;
 
-    @ApiModelProperty("主题名称")
+    @Schema(description="主题名称")
     private String themeName;
 
-    @ApiModelProperty("颜色配置")
+    @Schema(description="颜色配置")
     private Map<String, String> colors;
 }

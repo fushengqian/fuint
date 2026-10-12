@@ -1,6 +1,6 @@
 package com.fuint.common.dto.coupon;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import java.io.Serializable;
 
@@ -13,10 +13,10 @@ import java.io.Serializable;
 @Data
 public class PreStoreRuleDto implements Serializable {
 
-    @ApiModelProperty("预存金额")
+    @Schema(description="预存金额")
     private String preStoreAmount;
 
-    @ApiModelProperty("目标金额")
+    @Schema(description="目标金额")
     private String targetAmount;
 
 }

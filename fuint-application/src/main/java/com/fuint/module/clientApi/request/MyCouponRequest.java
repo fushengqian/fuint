@@ -1,6 +1,6 @@
 package com.fuint.module.clientApi.request;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import java.io.Serializable;
 
@@ -13,10 +13,10 @@ import java.io.Serializable;
 @Data
 public class MyCouponRequest implements Serializable {
 
-    @ApiModelProperty(value="卡券ID", name="id")
+    @Schema(description="卡券ID", name="id")
     private Integer id;
 
-    @ApiModelProperty(value="会员卡券ID", name="userCouponId")
+    @Schema(description="会员卡券ID", name="userCouponId")
     private Integer userCouponId;
 
 }

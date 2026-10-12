@@ -4,8 +4,7 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import java.io.Serializable;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 /**
@@ -16,25 +15,25 @@ import lombok.Data;
  */
 @Data
 @TableName("t_platform")
-@ApiModel(value = "TPlatform对象", description = "平台")
+@Schema(name="TPlatform对象", description="平台")
 public class TPlatform implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @ApiModelProperty("主键")
+    @Schema(description="主键")
     @TableId(value = "owner_id", type = IdType.AUTO)
     private Integer ownerId;
 
-    @ApiModelProperty("平台名称")
+    @Schema(description="平台名称")
     private String name;
 
-    @ApiModelProperty("状态 0 无效 1 有效")
+    @Schema(description="状态 0 无效 1 有效")
     private Integer status;
 
-    @ApiModelProperty("描述")
+    @Schema(description="描述")
     private String description;
 
-    @ApiModelProperty("平台类型")
+    @Schema(description="平台类型")
     private Integer platformType;
 
 }

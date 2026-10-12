@@ -1,6 +1,6 @@
 package com.fuint.common.dto.message;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 /**
@@ -12,13 +12,13 @@ import lombok.Data;
 @Data
 public class MessageResDto {
 
-    @ApiModelProperty("发送ID")
+    @Schema(description="发送ID")
     private String[] sendIds;
 
-    @ApiModelProperty("发送结果")
+    @Schema(description="发送结果")
     private Boolean result;
 
-    @ApiModelProperty("短信ID")
+    @Schema(description="短信ID")
     private String[] smsId;
 
 }

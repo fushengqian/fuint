@@ -1,6 +1,6 @@
 package com.fuint.common.param;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import java.io.Serializable;
 
@@ -13,22 +13,22 @@ import java.io.Serializable;
 @Data
 public class ActionLogPage extends PageParam implements Serializable {
 
-    @ApiModelProperty("账号名称")
+    @Schema(description="账号名称")
     private String accountName;
 
-    @ApiModelProperty("ip地址")
+    @Schema(description="ip地址")
     private String ip;
 
-    @ApiModelProperty("模块")
+    @Schema(description="模块")
     private String module;
 
-    @ApiModelProperty("搜索关键字")
+    @Schema(description="搜索关键字")
     private String keyword;
 
-    @ApiModelProperty("开始时间")
+    @Schema(description="开始时间")
     private String beginTime;
 
-    @ApiModelProperty("结束时间")
+    @Schema(description="结束时间")
     private String endTime;
 
 }

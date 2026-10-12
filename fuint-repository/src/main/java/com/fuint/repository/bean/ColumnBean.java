@@ -1,6 +1,6 @@
 package com.fuint.repository.bean;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import java.io.Serializable;
 
@@ -13,16 +13,16 @@ import java.io.Serializable;
 @Data
 public class ColumnBean implements Serializable {
 
-    @ApiModelProperty("字段名称")
+    @Schema(description="字段名称")
     private String field;
 
-    @ApiModelProperty("类型")
+    @Schema(description="类型")
     private String type;
 
-    @ApiModelProperty("是否为空")
+    @Schema(description="是否为空")
     private String isNull;
 
-    @ApiModelProperty("备注信息")
+    @Schema(description="备注信息")
     private String comment;
 
 }

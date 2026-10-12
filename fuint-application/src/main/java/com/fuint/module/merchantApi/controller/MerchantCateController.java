@@ -16,8 +16,8 @@ import com.fuint.repository.model.MtGoodsCate;
 import com.fuint.repository.model.MtStaff;
 import com.fuint.repository.model.MtUser;
 import com.fuint.utils.StringUtil;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -31,7 +31,7 @@ import java.util.Map;
  * Created by FSQ
  * CopyRight https://www.fuint.cn
  */
-@Api(tags="商户端-商品分类管理相关接口")
+@Tag(name="商户端-商品分类管理相关接口")
 @RestController
 @AllArgsConstructor
 @RequestMapping(value = "/merchantApi/cate")
@@ -60,7 +60,7 @@ public class MerchantCateController extends BaseController {
     /**
      * 获取商品分类列表
      */
-    @ApiOperation(value = "获取商品分类列表")
+    @Operation(summary="获取商品分类列表")
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject list() throws BusinessCheckException {
@@ -92,7 +92,7 @@ public class MerchantCateController extends BaseController {
     /**
      * 保存商品分类（新增/编辑）
      */
-    @ApiOperation(value = "保存商品分类")
+    @Operation(summary="保存商品分类")
     @RequestMapping(value = "/save", method = RequestMethod.POST)
     @CrossOrigin
     public ResponseObject save(@RequestBody Map<String, Object> param) throws BusinessCheckException {
@@ -139,7 +139,7 @@ public class MerchantCateController extends BaseController {
     /**
      * 更新商品分类状态
      */
-    @ApiOperation(value = "更新商品分类状态")
+    @Operation(summary="更新商品分类状态")
     @RequestMapping(value = "/updateStatus", method = RequestMethod.POST)
     @CrossOrigin
     public ResponseObject updateStatus(@RequestBody StatusParam params) throws BusinessCheckException {
@@ -168,7 +168,7 @@ public class MerchantCateController extends BaseController {
     /**
      * 获取分类详情
      */
-    @ApiOperation(value = "获取分类详情")
+    @Operation(summary="获取分类详情")
     @RequestMapping(value = "/info/{id}", method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject info(@PathVariable("id") Integer id) throws BusinessCheckException {

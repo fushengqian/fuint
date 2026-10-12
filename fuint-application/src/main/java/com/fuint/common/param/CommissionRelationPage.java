@@ -1,6 +1,6 @@
 package com.fuint.common.param;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import java.io.Serializable;
 
@@ -13,31 +13,31 @@ import java.io.Serializable;
 @Data
 public class CommissionRelationPage extends PageParam implements Serializable {
 
-    @ApiModelProperty("商户号")
+    @Schema(description="商户号")
     private String merchantNo;
 
-    @ApiModelProperty("用户ID")
+    @Schema(description="用户ID")
     private Integer userId;
 
-    @ApiModelProperty("手机号")
+    @Schema(description="手机号")
     private String mobile;
 
-    @ApiModelProperty("姓名")
+    @Schema(description="姓名")
     private String realName;
 
-    @ApiModelProperty("类型")
+    @Schema(description="类型")
     private String subUserId;
 
-    @ApiModelProperty("开始时间")
+    @Schema(description="开始时间")
     private String startTime;
 
-    @ApiModelProperty("结束时间")
+    @Schema(description="结束时间")
     private String endTime;
 
-    @ApiModelProperty("状态，A正常；D作废")
+    @Schema(description="状态，A正常；D作废")
     private String status;
 
-    @ApiModelProperty("等级，1：一级；2：二级")
+    @Schema(description="等级，1：一级；2：二级")
     private Integer level;
 
 }

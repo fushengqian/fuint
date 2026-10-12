@@ -1,6 +1,6 @@
 package com.fuint.common.param;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import java.io.Serializable;
 
@@ -13,28 +13,28 @@ import java.io.Serializable;
 @Data
 public class CommissionCashPage extends PageParam implements Serializable {
 
-    @ApiModelProperty("所属商户ID")
+    @Schema(description="所属商户ID")
     private Integer merchantId;
 
-    @ApiModelProperty("所属店铺ID")
+    @Schema(description="所属店铺ID")
     private Integer storeId;
 
-    @ApiModelProperty("手机号")
+    @Schema(description="手机号")
     private String mobile;
 
-    @ApiModelProperty("姓名")
+    @Schema(description="姓名")
     private String realName;
 
-    @ApiModelProperty("批次号")
+    @Schema(description="批次号")
     private String uuid;
 
-    @ApiModelProperty("开始时间")
+    @Schema(description="开始时间")
     private String startTime;
 
-    @ApiModelProperty("结束时间")
+    @Schema(description="结束时间")
     private String endTime;
 
-    @ApiModelProperty("状态，A正常；D作废")
+    @Schema(description="状态，A正常；D作废")
     private String status;
 
 }

@@ -1,7 +1,7 @@
 package com.fuint.common.service;
 
 import org.springframework.web.multipart.MultipartFile;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * 文件上传服务类

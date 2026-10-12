@@ -8,8 +8,8 @@ import com.fuint.common.util.TokenUtil;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.web.BaseController;
 import com.fuint.framework.web.ResponseObject;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.AllArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -22,7 +22,7 @@ import java.util.Map;
  * Created by FSQ
  * CopyRight https://www.fuint.cn
  */
-@Api(tags = "管理端-底部导航设置相关接口")
+@Tag(name="管理端-底部导航设置相关接口")
 @RestController
 @AllArgsConstructor
 @RequestMapping(value = "/backendApi/tabbar")
@@ -41,7 +41,7 @@ public class BackendTabbarController extends BaseController {
     /**
      * 获取底部导航配置
      */
-    @ApiOperation(value = "获取底部导航配置")
+    @Operation(summary="获取底部导航配置")
     @RequestMapping(value = "/info", method = RequestMethod.GET)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('decorate:tabbar')")
@@ -62,7 +62,7 @@ public class BackendTabbarController extends BaseController {
     /**
      * 保存底部导航配置
      */
-    @ApiOperation(value = "保存底部导航配置")
+    @Operation(summary="保存底部导航配置")
     @RequestMapping(value = "/save", method = RequestMethod.POST)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('decorate:tabbar')")

@@ -1,6 +1,6 @@
 package com.fuint.common.dto.report;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -16,28 +16,28 @@ import java.util.List;
 @Data
 public class DailyCateReportDto implements Serializable {
 
-    @ApiModelProperty("总销售数量")
+    @Schema(description="总销售数量")
     private Integer totalSalesCount;
 
-    @ApiModelProperty("总销售金额")
+    @Schema(description="总销售金额")
     private BigDecimal totalSalesAmount;
 
-    @ApiModelProperty("总购买人数")
+    @Schema(description="总购买人数")
     private Integer totalBuyerCount;
 
-    @ApiModelProperty("总销售成本")
+    @Schema(description="总销售成本")
     private BigDecimal totalCostAmount;
 
-    @ApiModelProperty("总利润金额")
+    @Schema(description="总利润金额")
     private BigDecimal totalProfitAmount;
 
-    @ApiModelProperty("总退款数量")
+    @Schema(description="总退款数量")
     private BigDecimal totalRefundCount;
 
-    @ApiModelProperty("列表数据")
+    @Schema(description="列表数据")
     private List<DailyCateItemDto> dataList;
 
-    @ApiModelProperty("总数量")
+    @Schema(description="总数量")
     private Integer total;
 }
 

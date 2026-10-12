@@ -8,8 +8,8 @@ import com.fuint.framework.pagination.PaginationResponse;
 import com.fuint.framework.web.BaseController;
 import com.fuint.framework.web.ResponseObject;
 import com.fuint.repository.model.TActionLog;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
  * Created by FSQ
  * CopyRight https://www.fuint.cn
  */
-@Api(tags="管理端-日志相关接口")
+@Tag(name="管理端-日志相关接口")
 @RestController
 @AllArgsConstructor
 @RequestMapping(value = "/backendApi/actlog")
@@ -36,7 +36,7 @@ public class BackendActionLogController extends BaseController {
     /**
      * 操作日志列表
      */
-    @ApiOperation(value = "操作日志列表")
+    @Operation(summary="操作日志列表")
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     public ResponseObject list(@ModelAttribute ActionLogPage actionLogPage) {
         AccountInfo accountInfo = TokenUtil.getAccountInfo();

@@ -1,6 +1,6 @@
 package com.fuint.common.dto.member;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -15,19 +15,19 @@ import java.math.BigDecimal;
 @Data
 public class MemberTopDto implements Serializable {
 
-    @ApiModelProperty("会员ID")
+    @Schema(description="会员ID")
     private Integer id;
 
-    @ApiModelProperty("会员名称")
+    @Schema(description="会员名称")
     private String name;
 
-    @ApiModelProperty("会员号")
+    @Schema(description="会员号")
     private String userNo;
 
-    @ApiModelProperty("消费金额")
+    @Schema(description="消费金额")
     private BigDecimal amount;
 
-    @ApiModelProperty("购买数量")
+    @Schema(description="购买数量")
     private Integer num;
 
 }

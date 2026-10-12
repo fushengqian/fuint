@@ -2,7 +2,7 @@ package com.fuint.common.dto.order;
 
 import com.fuint.common.dto.goods.GoodsSpecValueDto;
 import com.fuint.repository.model.MtGoods;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -17,28 +17,28 @@ import java.util.List;
 @Data
 public class ResCartDto implements Serializable {
 
-    @ApiModelProperty("自增ID")
+    @Schema(description="自增ID")
     private Integer id;
 
-    @ApiModelProperty("会员ID")
+    @Schema(description="会员ID")
     private Integer userId;
 
-    @ApiModelProperty("商品ID")
+    @Schema(description="商品ID")
     private Integer goodsId;
 
-    @ApiModelProperty("skuId")
+    @Schema(description="skuId")
     private Integer skuId;
 
-    @ApiModelProperty("数量")
+    @Schema(description="数量")
     private Double num;
 
-    @ApiModelProperty("是否有效")
+    @Schema(description="是否有效")
     private Boolean isEffect;
 
-    @ApiModelProperty("商品规格")
+    @Schema(description="商品规格")
     private List<GoodsSpecValueDto> specList;
 
-    @ApiModelProperty("商品数据")
+    @Schema(description="商品数据")
     private MtGoods goodsInfo;
 
 }

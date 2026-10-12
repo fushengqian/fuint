@@ -6,8 +6,7 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 /**
@@ -18,45 +17,45 @@ import lombok.Data;
  */
 @Data
 @TableName("t_action_log")
-@ApiModel(value = "TActionLog对象", description = "后台操作日志表")
+@Schema(name="TActionLog对象", description="后台操作日志表")
 public class TActionLog implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @ApiModelProperty("主键")
+    @Schema(description="主键")
     @TableId(value = "id", type = IdType.AUTO)
     private Integer id;
 
-    @ApiModelProperty("商户ID")
+    @Schema(description="商户ID")
     private Integer merchantId;
 
-    @ApiModelProperty("所属店铺ID")
+    @Schema(description="所属店铺ID")
     private Integer storeId;
 
-    @ApiModelProperty("操作时间")
+    @Schema(description="操作时间")
     private Date actionTime;
 
-    @ApiModelProperty("耗时")
+    @Schema(description="耗时")
     private BigDecimal timeConsuming;
 
-    @ApiModelProperty("客户端IP")
+    @Schema(description="客户端IP")
     private String clientIp;
 
-    @ApiModelProperty("操作模块")
+    @Schema(description="操作模块")
     private String module;
 
-    @ApiModelProperty("请求URL")
+    @Schema(description="请求URL")
     private String url;
 
-    @ApiModelProperty("操作用户账户")
+    @Schema(description="操作用户账户")
     private String acctName;
 
-    @ApiModelProperty("用户系统以及浏览器信息")
+    @Schema(description="用户系统以及浏览器信息")
     private String userAgent;
 
-    @ApiModelProperty("端口号")
+    @Schema(description="端口号")
     private Integer clientPort;
 
-    @ApiModelProperty("操作参数")
+    @Schema(description="操作参数")
     private String param;
 }

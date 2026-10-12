@@ -3,8 +3,7 @@ package com.fuint.repository.model;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -19,109 +18,109 @@ import java.util.Date;
  */
 @Data
 @TableName("mt_goods")
-@ApiModel(value = "MtGoods对象", description = "MtGoods对象")
+@Schema(name="MtGoods对象", description="MtGoods对象")
 public class MtGoods implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @ApiModelProperty("自增ID")
+    @Schema(description="自增ID")
     @TableId(value = "ID", type = IdType.AUTO)
     private Integer id;
 
-    @ApiModelProperty("商户ID")
+    @Schema(description="商户ID")
     private Integer merchantId;
 
-    @ApiModelProperty("所属店铺ID")
+    @Schema(description="所属店铺ID")
     private Integer storeId;
 
-    @ApiModelProperty("商品名称")
+    @Schema(description="商品名称")
     private String name;
 
-    @ApiModelProperty("商品类型")
+    @Schema(description="商品类型")
     private String type;
 
-    @ApiModelProperty("分类ID")
+    @Schema(description="分类ID")
     private Integer cateId;
 
-    @ApiModelProperty("预约项目ID")
+    @Schema(description="预约项目ID")
     private Integer bookId;
 
-    @ApiModelProperty("商品编码")
+    @Schema(description="商品编码")
     private String goodsNo;
 
-    @ApiModelProperty("可用平台，0：不限，1：仅会员端（小程序和h5）；2：仅收银端")
+    @Schema(description="可用平台，0：不限，1：仅会员端（小程序和h5）；2：仅收银端")
     private Integer platform;
 
-    @ApiModelProperty("是否单规格")
+    @Schema(description="是否单规格")
     private String isSingleSpec;
 
-    @ApiModelProperty("主图地址")
+    @Schema(description="主图地址")
     private String logo;
 
-    @ApiModelProperty("图片地址")
+    @Schema(description="图片地址")
     private String images;
 
-    @ApiModelProperty("销售价格")
+    @Schema(description="销售价格")
     private BigDecimal price;
 
-    @ApiModelProperty("划线价格")
+    @Schema(description="划线价格")
     private BigDecimal linePrice;
 
-    @ApiModelProperty("成本价格")
+    @Schema(description="成本价格")
     private BigDecimal costPrice;
 
-    @ApiModelProperty("库存")
+    @Schema(description="库存")
     private Double stock;
 
-    @ApiModelProperty("关联卡券")
+    @Schema(description="关联卡券")
     private String couponIds;
 
-    @ApiModelProperty("服务时长")
+    @Schema(description="服务时长")
     private Integer serviceTime;
 
-    @ApiModelProperty("重量")
+    @Schema(description="重量")
     private BigDecimal weight;
 
-    @ApiModelProperty("初始销量")
+    @Schema(description="初始销量")
     private Double initSale;
 
-    @ApiModelProperty("商品卖点")
+    @Schema(description="商品卖点")
     private String salePoint;
 
-    @ApiModelProperty("可否使用积分抵扣")
+    @Schema(description="可否使用积分抵扣")
     private String canUsePoint;
 
-    @ApiModelProperty("是否积分兑换商品：Y是 N否")
+    @Schema(description="是否积分兑换商品：Y是 N否")
     private String isPointGoods;
 
-    @ApiModelProperty("兑换所需积分数量")
+    @Schema(description="兑换所需积分数量")
     private Integer pointPrice;
 
-    @ApiModelProperty("每人限兑数量，0表示不限")
+    @Schema(description="每人限兑数量，0表示不限")
     private Integer exchangeLimit;
 
-    @ApiModelProperty("会员是否有折扣")
+    @Schema(description="会员是否有折扣")
     private String isMemberDiscount;
 
-    @ApiModelProperty("会员等级限制，逗号分隔的等级ID，空表示不限")
+    @Schema(description="会员等级限制，逗号分隔的等级ID，空表示不限")
     private String gradeIds;
 
-    @ApiModelProperty("排序")
+    @Schema(description="排序")
     private Integer sort;
 
-    @ApiModelProperty("商品描述")
+    @Schema(description="商品描述")
     private String description;
 
-    @ApiModelProperty("创建时间")
+    @Schema(description="创建时间")
     private Date createTime;
 
-    @ApiModelProperty("更新时间")
+    @Schema(description="更新时间")
     private Date updateTime;
 
-    @ApiModelProperty("最后操作人")
+    @Schema(description="最后操作人")
     private String operator;
 
-    @ApiModelProperty("A：正常；D：删除")
+    @Schema(description="A：正常；D：删除")
     private String status;
 
 }

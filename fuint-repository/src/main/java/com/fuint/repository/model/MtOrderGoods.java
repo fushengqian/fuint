@@ -6,8 +6,7 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 /**
@@ -18,40 +17,40 @@ import lombok.Data;
  */
 @Data
 @TableName("mt_order_goods")
-@ApiModel(value = "MtOrderGoods对象", description = "订单商品表")
+@Schema(name="MtOrderGoods对象", description="订单商品表")
 public class MtOrderGoods implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @ApiModelProperty("自增ID")
+    @Schema(description="自增ID")
     @TableId(value = "ID", type = IdType.AUTO)
     private Integer id;
 
-    @ApiModelProperty("订单ID")
+    @Schema(description="订单ID")
     private Integer orderId;
 
-    @ApiModelProperty("商品ID")
+    @Schema(description="商品ID")
     private Integer goodsId;
 
-    @ApiModelProperty("skuID")
+    @Schema(description="skuID")
     private Integer skuId;
 
-    @ApiModelProperty("价格")
+    @Schema(description="价格")
     private BigDecimal price;
 
-    @ApiModelProperty("优惠金额")
+    @Schema(description="优惠金额")
     private BigDecimal discount;
 
-    @ApiModelProperty("商品数量")
+    @Schema(description="商品数量")
     private Double num;
 
-    @ApiModelProperty("创建时间")
+    @Schema(description="创建时间")
     private Date createTime;
 
-    @ApiModelProperty("更新时间")
+    @Schema(description="更新时间")
     private Date updateTime;
 
-    @ApiModelProperty("A：正常；D：删除")
+    @Schema(description="A：正常；D：删除")
     private String status;
 
 }

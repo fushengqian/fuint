@@ -1,6 +1,6 @@
 package com.fuint.common.dto.coupon;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import java.util.List;
 
@@ -13,16 +13,16 @@ import java.util.List;
 @Data
 public class CouponCellDto {
 
-    @ApiModelProperty("手机号")
+    @Schema(description="手机号")
     private String mobile;
 
-    @ApiModelProperty("商户ID")
+    @Schema(description="商户ID")
     private Integer merchantId;
 
-    @ApiModelProperty("分组ID")
+    @Schema(description="分组ID")
     private List<Integer> groupId;
 
-    @ApiModelProperty("发放数量")
+    @Schema(description="发放数量")
     private List<Integer> num;
 
 }

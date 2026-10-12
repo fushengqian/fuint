@@ -1,7 +1,7 @@
 package com.fuint.common.dto.message;
 
 import com.fuint.common.dto.common.ParamDto;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -16,24 +16,24 @@ import java.util.List;
 @Data
 public class SubMessageDto implements Serializable {
 
-    @ApiModelProperty("键值")
+    @Schema(description="键值")
     private String key;
 
-    @ApiModelProperty("模板ID")
+    @Schema(description="模板ID")
     private String templateId;
 
-    @ApiModelProperty("TID")
+    @Schema(description="TID")
     private String tid;
 
-    @ApiModelProperty("标题")
+    @Schema(description="标题")
     private String title;
 
-    @ApiModelProperty("内容")
+    @Schema(description="内容")
     private String content;
 
-    @ApiModelProperty("状态")
+    @Schema(description="状态")
     private String status;
 
-    @ApiModelProperty("模板参数")
+    @Schema(description="模板参数")
     private List<ParamDto> params;
 }

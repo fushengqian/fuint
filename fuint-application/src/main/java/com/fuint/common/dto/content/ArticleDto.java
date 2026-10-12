@@ -1,6 +1,6 @@
 package com.fuint.common.dto.content;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import java.io.Serializable;
 import java.util.Date;
@@ -14,46 +14,46 @@ import java.util.Date;
 @Data
 public class ArticleDto implements Serializable {
 
-    @ApiModelProperty("账户主键ID")
+    @Schema(description="账户主键ID")
     private Integer id;
 
-    @ApiModelProperty("标题")
+    @Schema(description="标题")
     private String title;
 
-    @ApiModelProperty("简介")
+    @Schema(description="简介")
     private String brief;
 
-    @ApiModelProperty("所属商户ID")
+    @Schema(description="所属商户ID")
     private Integer merchantId;
 
-    @ApiModelProperty("所属店铺")
+    @Schema(description="所属店铺")
     private Integer storeId;
 
-    @ApiModelProperty("链接地址")
+    @Schema(description="链接地址")
     private String url;
 
-    @ApiModelProperty("点击数")
+    @Schema(description="点击数")
     private Long click;
 
-    @ApiModelProperty("图片地址")
+    @Schema(description="图片地址")
     private String image;
 
-    @ApiModelProperty("描述")
+    @Schema(description="描述")
     private String description;
 
-    @ApiModelProperty("创建时间")
+    @Schema(description="创建时间")
     private Date createTime;
 
-    @ApiModelProperty("更新时间")
+    @Schema(description="更新时间")
     private Date updateTime;
 
-    @ApiModelProperty("最后操作人")
+    @Schema(description="最后操作人")
     private String operator;
 
-    @ApiModelProperty("状态 A：正常；D：删除")
+    @Schema(description="状态 A：正常；D：删除")
     private String status;
 
-    @ApiModelProperty("排序")
+    @Schema(description="排序")
     private Integer sort;
 
 }

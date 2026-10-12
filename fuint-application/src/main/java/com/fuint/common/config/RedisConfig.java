@@ -5,7 +5,7 @@ import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.cache.annotation.CachingConfigurerSupport;
+import org.springframework.cache.annotation.CachingConfigurer;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cache.interceptor.KeyGenerator;
 import org.springframework.context.annotation.Bean;
@@ -28,7 +28,8 @@ import org.springframework.session.data.redis.config.annotation.web.http.EnableR
 @AllArgsConstructor
 @EnableRedisHttpSession
 @ConditionalOnProperty(name = "spring.redis.enabled", havingValue = "true", matchIfMissing = true)
-public class RedisConfig extends CachingConfigurerSupport {
+// Spring Framework 6 移除了 CachingConfigurerSupport，改为实现 CachingConfigurer 接口
+public class RedisConfig implements CachingConfigurer {
 
     private static final Logger logger = LoggerFactory.getLogger(RedisConfig.class);
 
@@ -59,10 +60,9 @@ public class RedisConfig extends CachingConfigurerSupport {
 
     @Bean
     Jackson2JsonRedisSerializer<Object> jackson2JsonRedisSerializer() {
-        Jackson2JsonRedisSerializer<Object> jackson2JsonRedisSerializer = new Jackson2JsonRedisSerializer<>(
-                Object.class);
-        jackson2JsonRedisSerializer.setObjectMapper(objectMapper());
-        return jackson2JsonRedisSerializer;
+        // Spring Data Redis 3.x 移除了 new Jackson2JsonRedisSerializer(Class) 与 setObjectMapper，
+        // 改为构造时传入 ObjectMapper
+        return new Jackson2JsonRedisSerializer<>(objectMapper(), Object.class);
     }
 
     @Bean
@@ -75,8 +75,8 @@ public class RedisConfig extends CachingConfigurerSupport {
             redisTemplate.setKeySerializer(stringRedisSerializer);
             redisTemplate.setHashKeySerializer(stringRedisSerializer);
 
-            // 测试连接
-            redisTemplate.getConnectionFactory().getConnection().ping();
+            // 测试连接 - 增加重试机制
+            testRedisConnectionWithRetry(redisTemplate, 3);
             logger.info("Redis连接配置成功");
 
             return redisTemplate;
@@ -84,7 +84,20 @@ public class RedisConfig extends CachingConfigurerSupport {
             // 打印详细的Redis连接配置信息
             printRedisConfigInfo();
             logger.error("Redis连接配置失败: {}", e.getMessage(), e);
-            throw new RuntimeException("Redis连接配置失败，请检查Redis服务是否启动", e);
+
+            // 提供更详细的错误信息
+            String errorMsg = buildDetailedErrorMessage(e);
+            logger.error(errorMsg);
+
+            // 如果是开发环境，可以选择降级处理而不是直接抛出异常
+            String envProfile = System.getProperty("env.profile", "dev");
+            if ("dev".equals(envProfile)) {
+                logger.warn("开发环境检测到Redis连接失败，系统将继续运行但部分功能可能受限");
+                // 返回一个mock的RedisTemplate或者禁用Redis功能
+                return createMockRedisTemplate();
+            } else {
+                throw new RuntimeException("Redis连接配置失败，请检查Redis服务是否启动和配置是否正确", e);
+            }
         }
     }
 
@@ -171,5 +184,88 @@ public class RedisConfig extends CachingConfigurerSupport {
         } catch (Exception e) {
             return 2000L;
         }
+    }
+
+    /**
+     * 测试Redis连接（带重试机制）
+     */
+    private void testRedisConnectionWithRetry(RedisTemplate<String, Object> redisTemplate, int maxRetries) {
+        Exception lastException = null;
+
+        for (int i = 1; i <= maxRetries; i++) {
+            try {
+                logger.info("第{}次尝试连接Redis...", i);
+                redisTemplate.getConnectionFactory().getConnection().ping();
+                logger.info("Redis连接测试成功");
+                return; // 成功则返回
+            } catch (Exception e) {
+                lastException = e;
+                logger.warn("第{}次Redis连接尝试失败: {}", i, e.getMessage());
+                if (i < maxRetries) {
+                    try {
+                        Thread.sleep(1000 * i); // 递增延迟
+                    } catch (InterruptedException ie) {
+                        Thread.currentThread().interrupt();
+                        throw new RuntimeException("连接重试被中断", ie);
+                    }
+                }
+            }
+        }
+
+        // 所有重试都失败
+        throw new RuntimeException("Redis连接重试" + maxRetries + "次后仍然失败", lastException);
+    }
+
+    /**
+     * 构建详细的错误信息
+     */
+    private String buildDetailedErrorMessage(Exception e) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("\n=== Redis连接详细错误信息 ===\n");
+
+        // 基础错误信息
+        sb.append("错误类型: ").append(e.getClass().getSimpleName()).append("\n");
+        sb.append("错误消息: ").append(e.getMessage()).append("\n");
+
+        // 常见问题诊断
+        sb.append("\n可能的原因:\n");
+        sb.append("1. Redis服务未启动或端口被占用\n");
+        sb.append("2. Redis配置的主机地址或端口不正确\n");
+        sb.append("3. Redis密码配置错误\n");
+        sb.append("4. 网络连接问题或防火墙阻止\n");
+        sb.append("5. Redis连接超时设置过短\n");
+
+        sb.append("\n建议解决方案:\n");
+        sb.append("1. 检查Redis服务状态: net start redis 或 redis-server\n");
+        sb.append("2. 验证端口是否监听: netstat -an | findstr 6379\n");
+        sb.append("3. 检查配置文件中的Redis密码是否正确\n");
+        sb.append("4. 尝试telnet 127.0.0.1 6379测试连接\n");
+        sb.append("===============================\n");
+
+        return sb.toString();
+    }
+
+    /**
+     * 创建Mock的RedisTemplate用于开发环境降级
+     */
+    private RedisTemplate<String, Object> createMockRedisTemplate() {
+        logger.warn("创建Mock RedisTemplate，Redis相关功能将不可用");
+
+        RedisTemplate<String, Object> mockTemplate = new RedisTemplate<String, Object>() {
+            @Override
+            public void afterPropertiesSet() {
+                // 不执行实际初始化
+                logger.debug("Mock RedisTemplate已创建");
+            }
+        };
+
+        // 设置基本序列化器
+        StringRedisSerializer stringRedisSerializer = new StringRedisSerializer();
+        Jackson2JsonRedisSerializer<Object> jacksonSerializer = jackson2JsonRedisSerializer();
+        mockTemplate.setKeySerializer(stringRedisSerializer);
+        mockTemplate.setHashKeySerializer(stringRedisSerializer);
+        mockTemplate.setDefaultSerializer(jacksonSerializer);
+
+        return mockTemplate;
     }
 }

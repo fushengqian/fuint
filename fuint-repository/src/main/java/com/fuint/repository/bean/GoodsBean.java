@@ -2,8 +2,7 @@ package com.fuint.repository.bean;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 /**
@@ -13,45 +12,45 @@ import lombok.Data;
  * CopyRight https://www.fuint.cn
  */
 @Data
-@ApiModel(value = "商品对象", description = "商品对象")
+@Schema(name="商品对象", description="商品对象")
 public class GoodsBean implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @ApiModelProperty("商品图片")
+    @Schema(description="商品图片")
     private String logo;
 
-    @ApiModelProperty("店铺ID")
+    @Schema(description="店铺ID")
     private Integer storeId;
 
-    @ApiModelProperty("分类ID")
+    @Schema(description="分类ID")
     private Integer cateId;
 
-    @ApiModelProperty("商品ID")
+    @Schema(description="商品ID")
     private Integer goodsId;
 
-    @ApiModelProperty("商品编码")
+    @Schema(description="商品编码")
     private String goodsNo;
 
-    @ApiModelProperty("商品名称")
+    @Schema(description="商品名称")
     private String name;
 
-    @ApiModelProperty("商品价格")
+    @Schema(description="商品价格")
     private BigDecimal price;
 
-    @ApiModelProperty("初始销量")
+    @Schema(description="初始销量")
     private Double initSale;
 
-    @ApiModelProperty("商品库存")
+    @Schema(description="商品库存")
     private Double stock;
 
-    @ApiModelProperty("商品规格")
+    @Schema(description="商品规格")
     private String specIds;
 
-    @ApiModelProperty("sku价格")
+    @Schema(description="sku价格")
     private String skuPrice;
 
-    @ApiModelProperty("sk库存")
+    @Schema(description="sk库存")
     private Integer skuStock;
 
 }

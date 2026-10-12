@@ -5,8 +5,7 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import java.io.Serializable;
 import java.util.Date;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 /**
@@ -17,13 +16,13 @@ import lombok.Data;
  */
 @Data
 @TableName("${tablePrefix}_${tableName}")
-@ApiModel(value = "${tableName}表对象", description = "${tableName}表对象")
+@Schema(name="${tableName}表对象", description="${tableName}表对象")
 public class ${modelName} implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
 #foreach ($column in $columns)
-    @ApiModelProperty("$column.comment")
+    @Schema(description="$column.comment")
     #if($column.field == 'id')
     @TableId(value = "ID", type = IdType.AUTO)
     #end

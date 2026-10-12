@@ -1,6 +1,6 @@
 package com.fuint.common.param;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import java.io.Serializable;
 
@@ -13,13 +13,13 @@ import java.io.Serializable;
 @Data
 public class GivePointParam implements Serializable {
 
-    @ApiModelProperty(value="手机号", name="mobile")
+    @Schema(description="手机号", name="mobile")
     private String mobile;
 
-    @ApiModelProperty(value="转赠数量", name="amount")
+    @Schema(description="转赠数量", name="amount")
     private Integer amount;
 
-    @ApiModelProperty(value="转赠备注", name="remark")
+    @Schema(description="转赠备注", name="remark")
     private String remark;
 
 }

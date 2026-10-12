@@ -12,7 +12,7 @@ import com.fuint.framework.pagination.PaginationResponse;
 import com.fuint.repository.model.MtCart;
 import com.fuint.repository.model.MtOrder;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;

@@ -1,6 +1,6 @@
 package com.fuint.common.param;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -13,25 +13,25 @@ import java.math.BigDecimal;
 @Data
 public class CommissionRuleItemParam implements Serializable {
 
-    @ApiModelProperty("商品ID")
+    @Schema(description="商品ID")
     private Integer goodsId;
 
-    @ApiModelProperty("商品名称")
+    @Schema(description="商品名称")
     private String goodsName;
 
-    @ApiModelProperty("提成方式")
+    @Schema(description="提成方式")
     private String method;
 
-    @ApiModelProperty("散客值")
+    @Schema(description="散客值")
     private BigDecimal visitorVal;
 
-    @ApiModelProperty("会员值")
+    @Schema(description="会员值")
     private BigDecimal memberVal;
 
-    @ApiModelProperty("二级散客值")
+    @Schema(description="二级散客值")
     private BigDecimal subVisitorVal;
 
-    @ApiModelProperty("二级会员值")
+    @Schema(description="二级会员值")
     private BigDecimal subMemberVal;
 
 }

@@ -17,12 +17,12 @@ import com.fuint.repository.model.MtRefund;
 import com.fuint.repository.model.MtStaff;
 import com.fuint.repository.model.MtUser;
 import com.fuint.utils.StringUtil;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * 售后类controller
@@ -30,7 +30,7 @@ import javax.servlet.http.HttpServletRequest;
  * Created by FSQ
  * CopyRight https://www.fuint.cn
  */
-@Api(tags="商户端-售后管理相关接口")
+@Tag(name="商户端-售后管理相关接口")
 @RestController
 @AllArgsConstructor
 @RequestMapping(value = "/merchantApi/refund")
@@ -54,7 +54,7 @@ public class MerchantRefundController extends BaseController {
     /**
      * 获取售后订单列表
      */
-    @ApiOperation(value = "获取售订单后列表")
+    @Operation(summary="获取售订单后列表")
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @CrossOrigin
     public ResponseObject list(@RequestBody RefundListRequest param) throws BusinessCheckException {
@@ -83,7 +83,7 @@ public class MerchantRefundController extends BaseController {
     /**
      * 获取售后订单详情
      */
-    @ApiOperation(value = "获取售后订单详情")
+    @Operation(summary="获取售后订单详情")
     @RequestMapping(value = "/detail", method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject detail(HttpServletRequest request) throws BusinessCheckException {
@@ -106,7 +106,7 @@ public class MerchantRefundController extends BaseController {
     /**
      * 更新售后订单
      */
-    @ApiOperation(value = "更新售后订单")
+    @Operation(summary="更新售后订单")
     @RequestMapping(value = "/update", method = RequestMethod.POST)
     @CrossOrigin
     public ResponseObject update(@RequestBody RefundDetailParam param) throws BusinessCheckException {

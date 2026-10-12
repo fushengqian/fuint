@@ -1,6 +1,6 @@
 package com.fuint.common.dto.commission;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -14,19 +14,19 @@ import java.math.BigDecimal;
 @Data
 public class CommissionOverviewDto implements Serializable {
 
-    @ApiModelProperty("总佣金")
+    @Schema(description="总佣金")
     private BigDecimal totalAmount;
 
-    @ApiModelProperty("待提现金额")
+    @Schema(description="待提现金额")
     private BigDecimal amount;
 
-    @ApiModelProperty("已提现金额")
+    @Schema(description="已提现金额")
     private BigDecimal withdrawAmount;
 
-    @ApiModelProperty("邀请会员数")
+    @Schema(description="邀请会员数")
     private BigDecimal userCount;
 
-    @ApiModelProperty("订单数")
+    @Schema(description="订单数")
     private BigDecimal orderCount;
 
 }

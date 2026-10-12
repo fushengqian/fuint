@@ -1,6 +1,6 @@
 package com.fuint.common.dto.content;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import java.io.Serializable;
 
@@ -13,25 +13,25 @@ import java.io.Serializable;
 @Data
 public class NavigationDto implements Serializable {
 
-    @ApiModelProperty("导航名称")
+    @Schema(description="导航名称")
     private String name;
 
-    @ApiModelProperty("导航提示")
+    @Schema(description="导航提示")
     private String tips;
 
-    @ApiModelProperty("URL")
+    @Schema(description="URL")
     private String url;
 
-    @ApiModelProperty("图标")
+    @Schema(description="图标")
     private String icon;
 
-    @ApiModelProperty("图标完整路径")
+    @Schema(description="图标完整路径")
     private String iconUrl;
 
-    @ApiModelProperty("导航排序")
+    @Schema(description="导航排序")
     private Integer sort;
 
-    @ApiModelProperty("状态")
+    @Schema(description="状态")
     private String status;
 
 }

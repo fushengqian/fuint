@@ -10,14 +10,14 @@ import com.fuint.framework.web.BaseController;
 import com.fuint.framework.web.ResponseObject;
 import com.fuint.repository.model.MtVerifyCode;
 import com.fuint.utils.StringUtil;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.AllArgsConstructor;
 import org.springframework.core.env.Environment;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -29,7 +29,7 @@ import java.util.Map;
  * Created by FSQ
  * CopyRight https://www.fuint.cn
  */
-@Api(tags="会员端-手机短信相关接口")
+@Tag(name="会员端-手机短信相关接口")
 @RestController
 @AllArgsConstructor
 @RequestMapping(value = "/clientApi/sms")
@@ -63,7 +63,7 @@ public class ClientSmsController extends BaseController {
     /**
      * 发送验证码短信
      */
-    @ApiOperation(value = "发送验证码短信")
+    @Operation(summary="发送验证码短信")
     @RequestMapping(value = "/sendVerifyCode", method = RequestMethod.POST)
     @CrossOrigin
     public ResponseObject sendVerifyCode(HttpServletRequest request, @RequestBody Map<String, Object> param) throws Exception {

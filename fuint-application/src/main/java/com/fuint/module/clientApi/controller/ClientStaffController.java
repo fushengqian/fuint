@@ -13,8 +13,8 @@ import com.fuint.framework.web.ResponseObject;
 import com.fuint.repository.model.MtStaff;
 import com.fuint.repository.model.MtUser;
 import com.fuint.utils.StringUtil;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,7 +26,7 @@ import java.util.Date;
  * Created by FSQ
  * CopyRight https://www.fuint.cn
  */
-@Api(tags="会员端-员工相关接口")
+@Tag(name="会员端-员工相关接口")
 @RestController
 @AllArgsConstructor
 @RequestMapping(value = "/clientApi/staff")
@@ -45,7 +45,7 @@ public class ClientStaffController extends BaseController {
     /**
      * 申请成为员工
      */
-    @ApiOperation(value = "申请成为员工")
+    @Operation(summary="申请成为员工")
     @RequestMapping(value = "/apply", method = RequestMethod.POST)
     @CrossOrigin
     public ResponseObject apply(@RequestBody StaffParam params) throws BusinessCheckException {

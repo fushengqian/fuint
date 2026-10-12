@@ -14,8 +14,8 @@ import com.fuint.framework.web.ResponseObject;
 import com.fuint.repository.model.MtSetting;
 import com.fuint.repository.model.MtSmsSendedLog;
 import com.fuint.utils.StringUtil;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.AllArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -31,7 +31,7 @@ import java.util.Map;
  * Created by FSQ
  * CopyRight https://www.fuint.cn
  */
-@Api(tags="管理端-短信相关接口")
+@Tag(name="管理端-短信相关接口")
 @RestController
 @AllArgsConstructor
 @RequestMapping(value = "/backendApi/smsManager")
@@ -50,7 +50,7 @@ public class BackendSmsController extends BaseController {
     /**
      * 查询已发短信列表
      */
-    @ApiOperation(value = "查询已发短信列表")
+    @Operation(summary="查询已发短信列表")
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject list(@ModelAttribute SmsPage smsPage) throws BusinessCheckException {
@@ -72,7 +72,7 @@ public class BackendSmsController extends BaseController {
     /**
      * 获取短信设置
      */
-    @ApiOperation(value = "获取短信设置")
+    @Operation(summary="获取短信设置")
     @RequestMapping(value = "/setting", method = RequestMethod.GET)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('smsTemplate:edit')")
@@ -111,7 +111,7 @@ public class BackendSmsController extends BaseController {
     /**
      * 保存短信设置
      */
-    @ApiOperation(value = "保存短信设置")
+    @Operation(summary="保存短信设置")
     @RequestMapping(value = "/saveSetting", method = RequestMethod.POST)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('smsTemplate:edit')")

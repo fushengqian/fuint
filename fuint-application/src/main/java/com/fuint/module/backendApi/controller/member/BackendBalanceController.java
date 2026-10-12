@@ -22,8 +22,8 @@ import com.fuint.repository.model.MtCoupon;
 import com.fuint.repository.model.MtSetting;
 import com.fuint.repository.model.MtUser;
 import com.fuint.utils.StringUtil;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.AllArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -37,7 +37,7 @@ import java.util.*;
  * Created by FSQ
  * CopyRight https://www.fuint.cn
  */
-@Api(tags="管理端-余额相关接口")
+@Tag(name="管理端-余额相关接口")
 @RestController
 @AllArgsConstructor
 @RequestMapping(value = "/backendApi/balance")
@@ -66,7 +66,7 @@ public class BackendBalanceController extends BaseController {
     /**
      * 余额明细列表查询
      */
-    @ApiOperation(value = "余额明细列表查询")
+    @Operation(summary="余额明细列表查询")
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('balance:list')")
@@ -89,7 +89,7 @@ public class BackendBalanceController extends BaseController {
     /**
      * 提交充值（单个会员）
      */
-    @ApiOperation(value = "提交充值")
+    @Operation(summary="提交充值")
     @RequestMapping(value = "/doRecharge", method = RequestMethod.POST)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('balance:modify')")
@@ -134,7 +134,7 @@ public class BackendBalanceController extends BaseController {
     /**
      * 发放余额
      */
-    @ApiOperation(value = "发放余额")
+    @Operation(summary="发放余额")
     @RequestMapping(value = "/distribute", method = RequestMethod.POST)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('balance:distribute')")
@@ -152,7 +152,7 @@ public class BackendBalanceController extends BaseController {
     /**
      * 充值设置详情
      */
-    @ApiOperation(value = "充值设置详情")
+    @Operation(summary="充值设置详情")
     @RequestMapping(value = "/setting", method = RequestMethod.GET)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('balance:setting')")
@@ -200,7 +200,7 @@ public class BackendBalanceController extends BaseController {
     /**
      * 保存充值设置
      */
-    @ApiOperation(value = "保存充值设置")
+    @Operation(summary="保存充值设置")
     @RequestMapping(value = "/saveSetting", method = RequestMethod.POST)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('balance:setting')")

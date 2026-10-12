@@ -16,15 +16,15 @@ import com.fuint.framework.web.BaseController;
 import com.fuint.framework.web.ResponseObject;
 import com.fuint.repository.model.MtUser;
 import com.fuint.utils.StringUtil;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.env.Environment;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.util.Base64;
@@ -37,7 +37,7 @@ import java.util.Map;
  * Created by FSQ
  * CopyRight https://www.fuint.cn
  */
-@Api(tags="会员端-邀请相关接口")
+@Tag(name="会员端-邀请相关接口")
 @RestController
 @AllArgsConstructor
 @RequestMapping(value = "/clientApi/share")
@@ -75,7 +75,7 @@ public class ClientShareController extends BaseController {
     /**
      * 获取邀请列表
      */
-    @ApiOperation(value="获取邀请列表", notes="获取邀请列表")
+    @Operation(summary="获取邀请列表", description="获取邀请列表")
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @CrossOrigin
     public ResponseObject list(HttpServletRequest request,  @RequestBody CommissionRelationPage commissionRelationPage) throws BusinessCheckException {
@@ -100,7 +100,7 @@ public class ClientShareController extends BaseController {
     /**
      * 生成小程序链接
      */
-    @ApiOperation(value = "生成小程序链接")
+    @Operation(summary="生成小程序链接")
     @RequestMapping(value = "/getMiniAppLink", method = RequestMethod.POST)
     @CrossOrigin
     public ResponseObject getMiniAppLink(HttpServletRequest request, @RequestBody Map<String, Object> param) {
@@ -128,7 +128,7 @@ public class ClientShareController extends BaseController {
     /**
      * 获取分享海报二维码
      */
-    @ApiOperation(value = "获取分享海报二维码")
+    @Operation(summary="获取分享海报二维码")
     @RequestMapping(value = "/getShareQrCode", method = RequestMethod.POST)
     @CrossOrigin
     public ResponseObject getShareQrCode(HttpServletRequest request, @RequestBody Map<String, Object> param) throws BusinessCheckException {

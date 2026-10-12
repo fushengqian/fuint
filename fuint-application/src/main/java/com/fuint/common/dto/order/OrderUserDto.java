@@ -1,6 +1,6 @@
 package com.fuint.common.dto.order;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import java.io.Serializable;
 
@@ -13,28 +13,28 @@ import java.io.Serializable;
 @Data
 public class OrderUserDto implements Serializable {
 
-    @ApiModelProperty("会员ID")
+    @Schema(description="会员ID")
     private Integer id;
 
-    @ApiModelProperty("会员号")
+    @Schema(description="会员号")
     private String no;
 
-    @ApiModelProperty("会员姓名")
+    @Schema(description="会员姓名")
     private String name;
 
-    @ApiModelProperty("会员手机")
+    @Schema(description="会员手机")
     private String mobile;
 
-    @ApiModelProperty("证件类型")
+    @Schema(description="证件类型")
     private String cardType;
 
-    @ApiModelProperty("证件号")
+    @Schema(description="证件号")
     private String cardNo;
 
-    @ApiModelProperty("地址")
+    @Schema(description="地址")
     private String address;
 
-    @ApiModelProperty("openId")
+    @Schema(description="openId")
     private String openId;
 
 }

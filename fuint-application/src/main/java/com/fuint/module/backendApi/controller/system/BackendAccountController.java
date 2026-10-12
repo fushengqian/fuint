@@ -20,8 +20,8 @@ import com.fuint.repository.model.MtStore;
 import com.fuint.repository.model.TAccount;
 import com.fuint.repository.model.TDuty;
 import com.fuint.utils.StringUtil;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.AllArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -37,7 +37,7 @@ import java.util.Map;
  * Created by FSQ
  * CopyRight https://www.fuint.cn
  */
-@Api(tags="管理端-管理员相关接口")
+@Tag(name="管理端-管理员相关接口")
 @RestController
 @AllArgsConstructor
 @RequestMapping(value = "/backendApi/account")
@@ -66,7 +66,7 @@ public class BackendAccountController extends BaseController {
     /**
      * 账户信息列表
      */
-    @ApiOperation(value = "账户信息列表")
+    @Operation(summary="账户信息列表")
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('system:account:index')")
@@ -85,7 +85,7 @@ public class BackendAccountController extends BaseController {
     /**
      * 获取账户详情
      */
-    @ApiOperation(value = "获取账户详情")
+    @Operation(summary="获取账户详情")
     @RequestMapping(value = "/info/{userId}", method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject info(@PathVariable("userId") Long userId) throws BusinessCheckException {
@@ -154,7 +154,7 @@ public class BackendAccountController extends BaseController {
     /**
      * 新增账户
      */
-    @ApiOperation(value = "新增账户")
+    @Operation(summary="新增账户")
     @RequestMapping(value = "/doCreate", method = RequestMethod.POST)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('system:account:add')")
@@ -225,7 +225,7 @@ public class BackendAccountController extends BaseController {
     /**
      * 修改账户信息
      */
-    @ApiOperation(value = "修改账户信息")
+    @Operation(summary="修改账户信息")
     @RequestMapping(value = "/update", method = RequestMethod.POST)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('system:account:edit')")
@@ -305,7 +305,7 @@ public class BackendAccountController extends BaseController {
     /**
      * 删除账户信息
      */
-    @ApiOperation(value = "删除账户信息")
+    @Operation(summary="删除账户信息")
     @RequestMapping(value = "/delete/{userIds}", method = RequestMethod.GET)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('system:account:delete')")
@@ -338,7 +338,7 @@ public class BackendAccountController extends BaseController {
     /**
      * 更新账户状态
      */
-    @ApiOperation(value = "更新账户状态")
+    @Operation(summary="更新账户状态")
     @RequestMapping(value = "/updateStatus", method = RequestMethod.POST)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('system:account:edit')")
@@ -357,7 +357,7 @@ public class BackendAccountController extends BaseController {
     /**
      * 修改账户密码
      */
-    @ApiOperation(value = "修改账户密码")
+    @Operation(summary="修改账户密码")
     @RequestMapping(value = "/resetPwd", method = RequestMethod.POST)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('system:account:edit')")

@@ -13,8 +13,8 @@ import com.fuint.framework.web.BaseController;
 import com.fuint.framework.web.ResponseObject;
 import com.fuint.repository.model.MtCoupon;
 import com.fuint.repository.model.MtStore;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,7 +31,7 @@ import java.util.Map;
  * Created by FSQ
  * CopyRight https://www.fuint.cn
  */
-@Api(tags="管理端-公共接口")
+@Tag(name="管理端-公共接口")
 @RestController
 @AllArgsConstructor
 @RequestMapping(value = "/backendApi/common")
@@ -64,7 +64,7 @@ public class BackendCommonController extends BaseController {
     /**
      * 生成二维码
      */
-    @ApiOperation(value = "生成二维码")
+    @Operation(summary="生成二维码")
     @RequestMapping(value = "/createQrCode", method = RequestMethod.POST)
     @CrossOrigin
     public ResponseObject createQrCode(@RequestBody Map<String, Object> params) throws Exception {
@@ -73,15 +73,15 @@ public class BackendCommonController extends BaseController {
 
         AccountInfo accountInfo = TokenUtil.getAccountInfo();
         Integer merchantId = accountInfo.getMerchantId();
-        String page = QrCodeEnum.STORE.getPage() + "?" + QrCodeEnum.STORE.getKey() + "id=" + id;
+        String page = QrCodeEnum.STORE.getPage() + "?" + QrCodeEnum.STORE.getKey() + "Id=" + id;
         if (type.equals(QrCodeEnum.TABLE.getKey())) {
-            page = QrCodeEnum.TABLE.getPage() + "?" + QrCodeEnum.TABLE.getKey() + "id=" + id;
+            page = QrCodeEnum.TABLE.getPage() + "?" + QrCodeEnum.TABLE.getKey() + "Id=" + id;
         }
         if (type.equals(QrCodeEnum.COUPON.getKey())) {
-            page = QrCodeEnum.COUPON.getPage() + "?" + QrCodeEnum.COUPON.getKey() + "id=" + id;
+            page = QrCodeEnum.COUPON.getPage() + "?" + QrCodeEnum.COUPON.getKey() + "Id=" + id;
         }
         if (type.equals(QrCodeEnum.USER_COUPON.getKey())) {
-            page = QrCodeEnum.USER_COUPON.getPage() + "?" + QrCodeEnum.USER_COUPON.getKey() + "id=" + id;
+            page = QrCodeEnum.USER_COUPON.getPage() + "?id=" + id;
         }
         if (type.equals(QrCodeEnum.STORE.getKey())) {
             MtStore mtStore = storeService.queryStoreById(id);

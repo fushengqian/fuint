@@ -15,8 +15,8 @@ import com.fuint.framework.web.ResponseObject;
 import com.fuint.repository.mapper.MtUserMapper;
 import com.fuint.repository.model.MtUser;
 import com.fuint.repository.model.MtUserGroup;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.AllArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -31,7 +31,7 @@ import java.util.Map;
  * Created by FSQ
  * CopyRight https://www.fuint.cn
  */
-@Api(tags="管理端-会员分组相关接口")
+@Tag(name="管理端-会员分组相关接口")
 @RestController
 @AllArgsConstructor
 @RequestMapping(value = "/backendApi/memberGroup")
@@ -47,7 +47,7 @@ public class BackendMemberGroupController extends BaseController {
     /**
      * 查询会员分组列表
      */
-    @ApiOperation(value = "查询会员分组列表")
+    @Operation(summary="查询会员分组列表")
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('member:group:index')")
@@ -71,7 +71,7 @@ public class BackendMemberGroupController extends BaseController {
     /**
      * 保存分组信息
      */
-    @ApiOperation(value = "保存分组信息")
+    @Operation(summary="保存分组信息")
     @RequestMapping(value = "/save", method = RequestMethod.POST)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('member:group:index')")
@@ -88,7 +88,7 @@ public class BackendMemberGroupController extends BaseController {
     /**
      * 删除会员分组
      */
-    @ApiOperation(value = "删除会员分组")
+    @Operation(summary="删除会员分组")
     @RequestMapping(value = "/delete/{id}", method = RequestMethod.GET)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('member:group:index')")
@@ -112,7 +112,7 @@ public class BackendMemberGroupController extends BaseController {
     /**
      * 更新分组状态
      */
-    @ApiOperation(value = "更新分组状态")
+    @Operation(summary="更新分组状态")
     @RequestMapping(value = "/updateStatus", method = RequestMethod.POST)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('member:group:index')")
@@ -130,7 +130,7 @@ public class BackendMemberGroupController extends BaseController {
     /**
      * 获取分组详情
      */
-    @ApiOperation(value = "获取分组详情")
+    @Operation(summary="获取分组详情")
     @RequestMapping(value = "/info/{id}", method = RequestMethod.GET)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('member:group:index')")

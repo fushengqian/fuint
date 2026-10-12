@@ -1,6 +1,6 @@
 package com.fuint.common.param;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import java.io.Serializable;
 import java.util.Date;
@@ -14,46 +14,46 @@ import java.util.Date;
 @Data
 public class PrinterParam implements Serializable {
 
-    @ApiModelProperty("自增ID")
+    @Schema(description="自增ID")
     private Integer id;
 
-    @ApiModelProperty("所属商户ID")
+    @Schema(description="所属商户ID")
     private Integer merchantId;
 
-    @ApiModelProperty("所属店铺ID")
+    @Schema(description="所属店铺ID")
     private Integer storeId;
 
-    @ApiModelProperty("打印机编号")
+    @Schema(description="打印机编号")
     private String sn;
 
-    @ApiModelProperty("打印机类型，order：订单小票，label：标签小票")
+    @Schema(description="打印机类型，order：订单小票，label：标签小票")
     private String type;
 
-    @ApiModelProperty("打印机名称")
+    @Schema(description="打印机名称")
     private String name;
 
-    @ApiModelProperty("是否自动打印机")
+    @Schema(description="是否自动打印机")
     private String autoPrint;
 
-    @ApiModelProperty("支付前打印")
+    @Schema(description="支付前打印")
     private String beforePay;
 
-    @ApiModelProperty("支付后打印")
+    @Schema(description="支付后打印")
     private String afterPay;
 
-    @ApiModelProperty("创建时间")
+    @Schema(description="创建时间")
     private Date createTime;
 
-    @ApiModelProperty("更新时间")
+    @Schema(description="更新时间")
     private Date updateTime;
 
-    @ApiModelProperty("备注说明")
+    @Schema(description="备注说明")
     private String description;
 
-    @ApiModelProperty("最后操作人")
+    @Schema(description="最后操作人")
     private String operator;
 
-    @ApiModelProperty("状态，A正常；D作废")
+    @Schema(description="状态，A正常；D作废")
     private String status;
 
 }

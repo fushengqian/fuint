@@ -23,8 +23,8 @@ import com.fuint.repository.mapper.MtCouponGroupMapper;
 import com.fuint.repository.model.*;
 import com.fuint.utils.SeqUtil;
 import com.fuint.utils.StringUtil;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.AllArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -39,7 +39,7 @@ import java.util.regex.Pattern;
  * Created by FSQ
  * CopyRight https://www.fuint.cn
  */
-@Api(tags="管理端-卡券管理相关接口")
+@Tag(name="管理端-卡券管理相关接口")
 @RestController
 @AllArgsConstructor
 @RequestMapping(value = "/backendApi/coupon")
@@ -87,7 +87,7 @@ public class BackendCouponController extends BaseController {
     /**
      * 查询卡券列表
      */
-    @ApiOperation(value = "查询卡券列表")
+    @Operation(summary="查询卡券列表")
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('coupon:coupon:index')")
@@ -170,7 +170,7 @@ public class BackendCouponController extends BaseController {
     /**
      * 删除卡券
      */
-    @ApiOperation(value = "删除卡券")
+    @Operation(summary="删除卡券")
     @RequestMapping(value = "/delete/{id}", method = RequestMethod.GET)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('coupon:coupon:index')")
@@ -183,7 +183,7 @@ public class BackendCouponController extends BaseController {
     /**
      * 保存卡券
      */
-    @ApiOperation(value = "保存卡券")
+    @Operation(summary="保存卡券")
     @RequestMapping(value = "/save", method = RequestMethod.POST)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('coupon:coupon:add')")
@@ -216,7 +216,7 @@ public class BackendCouponController extends BaseController {
     /**
      * 卡券详情
      */
-    @ApiOperation(value = "卡券详情")
+    @Operation(summary="卡券详情")
     @RequestMapping(value = "/info/{id}", method = RequestMethod.GET)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('coupon:coupon:index')")
@@ -304,7 +304,7 @@ public class BackendCouponController extends BaseController {
     /**
      * 发放卡券
      */
-    @ApiOperation(value = "发放卡券")
+    @Operation(summary="发放卡券")
     @RequestMapping(value = "/sendCoupon", method = RequestMethod.POST)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('coupon:coupon:index')")

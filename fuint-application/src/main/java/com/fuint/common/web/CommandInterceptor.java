@@ -2,8 +2,8 @@ package com.fuint.common.web;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.web.servlet.AsyncHandlerInterceptor;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 /**
  * Created by FSQ

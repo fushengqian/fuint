@@ -20,12 +20,12 @@ import com.fuint.repository.model.TAccount;
 import com.fuint.repository.model.TDuty;
 import com.fuint.repository.model.TSource;
 import com.fuint.utils.StringUtil;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -37,7 +37,7 @@ import java.util.Map;
  * Created by FSQ
  * CopyRight https://www.fuint.cn
  */
-@Api(tags="管理端-后台登录相关接口")
+@Tag(name="管理端-后台登录相关接口")
 @RestController
 @AllArgsConstructor
 @RequestMapping("/backendApi/login")
@@ -61,7 +61,7 @@ public class BackendLoginController extends BaseController {
     /**
      * 后台登录
      * */
-    @ApiOperation(value = "后台登录")
+    @Operation(summary="后台登录")
     @RequestMapping(value="/doLogin", method = RequestMethod.POST)
     public ResponseObject doLogin(HttpServletRequest request, @RequestBody LoginRequest loginRequest) throws BusinessCheckException {
         LoginResponse response = accountService.doLogin(loginRequest, request.getHeader("user-agent"));
@@ -71,7 +71,7 @@ public class BackendLoginController extends BaseController {
     /**
      * 获取登录信息接口
      * */
-    @ApiOperation(value = "获取登录信息")
+    @Operation(summary="获取登录信息")
     @RequestMapping(value = "/getInfo", method = RequestMethod.GET)
     public ResponseObject getInfo() {
         AccountInfo accountInfo = TokenUtil.getAccountInfo();
@@ -119,7 +119,7 @@ public class BackendLoginController extends BaseController {
     /**
      * 获取登录路由菜单接口
      */
-    @ApiOperation(value = "获取登录路由菜单接口")
+    @Operation(summary="获取登录路由菜单接口")
     @RequestMapping(value = "/getRouters", method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject getRouters() {
@@ -159,7 +159,7 @@ public class BackendLoginController extends BaseController {
     /**
      * 退出后台登录
      * */
-    @ApiOperation(value = "退出后台登录")
+    @Operation(summary="退出后台登录")
     @RequestMapping(value = "/logout", method = RequestMethod.POST)
     @OperationServiceLog(description = "退出后台系统")
     public ResponseObject logout(HttpServletRequest request) {

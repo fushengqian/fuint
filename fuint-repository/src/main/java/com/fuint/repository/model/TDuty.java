@@ -4,8 +4,7 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import java.io.Serializable;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 /**
@@ -16,27 +15,27 @@ import lombok.Data;
  */
 @Data
 @TableName("t_duty")
-@ApiModel(value = "TDuty对象", description = "角色表")
+@Schema(name="TDuty对象", description="角色表")
 public class TDuty implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @ApiModelProperty("角色ID")
+    @Schema(description="角色ID")
     @TableId(value = "duty_id", type = IdType.AUTO)
     private Integer dutyId;
 
-    @ApiModelProperty("商户ID")
+    @Schema(description="商户ID")
     private Integer merchantId;
 
-    @ApiModelProperty("角色名称")
+    @Schema(description="角色名称")
     private String dutyName;
 
-    @ApiModelProperty("状态(A: 可用  D: 禁用)")
+    @Schema(description="状态(A: 可用  D: 禁用)")
     private String status;
 
-    @ApiModelProperty("描述")
+    @Schema(description="描述")
     private String description;
 
-    @ApiModelProperty("角色类型")
+    @Schema(description="角色类型")
     private String dutyType;
 }

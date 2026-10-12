@@ -16,8 +16,8 @@ import com.fuint.framework.web.ResponseObject;
 import com.fuint.repository.model.MtUser;
 import com.fuint.repository.model.MtUserTag;
 import com.fuint.repository.model.MtUserTagRule;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.AllArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -33,7 +33,7 @@ import java.util.stream.Collectors;
  * Created by FSQ
  * CopyRight https://www.fuint.cn
  */
-@Api(tags = "后台-会员标签管理")
+@Tag(name="后台-会员标签管理")
 @RestController
 @AllArgsConstructor
 @RequestMapping(value = "/backendApi/userTag")
@@ -47,7 +47,7 @@ public class BackendUserTagController extends BaseController {
 
     private MemberService memberService;
 
-    @ApiOperation(value = "标签列表")
+    @Operation(summary="标签列表")
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject list() throws BusinessCheckException {
@@ -84,7 +84,7 @@ public class BackendUserTagController extends BaseController {
         return getSuccessResult(data);
     }
 
-    @ApiOperation(value = "保存标签")
+    @Operation(summary="保存标签")
     @RequestMapping(value = "/save", method = RequestMethod.POST)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('member:userTag:index')")
@@ -103,7 +103,7 @@ public class BackendUserTagController extends BaseController {
         return getSuccessResult(true);
     }
 
-    @ApiOperation(value = "删除标签")
+    @Operation(summary="删除标签")
     @RequestMapping(value = "/delete/{id}", method = RequestMethod.GET)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('member:userTag:index')")
@@ -115,7 +115,7 @@ public class BackendUserTagController extends BaseController {
         return getSuccessResult(true);
     }
 
-    @ApiOperation(value = "获取会员标签")
+    @Operation(summary="获取会员标签")
     @RequestMapping(value = "/userTags/{userId}", method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject getUserTags(@PathVariable("userId") Integer userId) {
@@ -137,7 +137,7 @@ public class BackendUserTagController extends BaseController {
         return getSuccessResult(tagIds);
     }
 
-    @ApiOperation(value = "设置会员标签")
+    @Operation(summary="设置会员标签")
     @RequestMapping(value = "/setUserTags", method = RequestMethod.POST)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('member:userTag:index')")
@@ -174,7 +174,7 @@ public class BackendUserTagController extends BaseController {
         return getSuccessResult(true);
     }
 
-    @ApiOperation(value = "批量设置会员标签")
+    @Operation(summary="批量设置会员标签")
     @RequestMapping(value = "/batchSetTags", method = RequestMethod.POST)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('member:userTag:index')")

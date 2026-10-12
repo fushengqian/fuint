@@ -1,7 +1,7 @@
 package com.fuint.common.dto.goods;
 
 import com.fuint.repository.model.MtGoodsSpec;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -17,40 +17,40 @@ import java.math.BigDecimal;
 @Data
 public class GoodsSkuDto implements Serializable {
 
-    @ApiModelProperty("自增ID")
+    @Schema(description="自增ID")
     private Integer id;
 
-    @ApiModelProperty("sku编码")
+    @Schema(description="sku编码")
     private String skuNo;
 
-    @ApiModelProperty("图片")
+    @Schema(description="图片")
     private String logo;
 
-    @ApiModelProperty("商品ID")
+    @Schema(description="商品ID")
     private Integer goodsId;
 
-    @ApiModelProperty("规格ID")
+    @Schema(description="规格ID")
     private String specIds;
 
-    @ApiModelProperty("规格列表")
+    @Schema(description="规格列表")
     private List<MtGoodsSpec> specList;
 
-    @ApiModelProperty("库存")
+    @Schema(description="库存")
     private Double stock;
 
-    @ApiModelProperty("价格")
+    @Schema(description="价格")
     private BigDecimal price;
 
-    @ApiModelProperty("划线价格")
+    @Schema(description="划线价格")
     private BigDecimal linePrice;
 
-    @ApiModelProperty("成本价格")
+    @Schema(description="成本价格")
     private BigDecimal costPrice;
 
-    @ApiModelProperty("重量")
+    @Schema(description="重量")
     private BigDecimal weight;
 
-    @ApiModelProperty("附赠卡券ID，多个逗号隔开")
+    @Schema(description="附赠卡券ID，多个逗号隔开")
     private String couponIds;
 
 }

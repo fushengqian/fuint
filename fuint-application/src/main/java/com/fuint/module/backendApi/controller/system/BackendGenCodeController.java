@@ -13,8 +13,8 @@ import com.fuint.framework.web.BaseController;
 import com.fuint.framework.web.ResponseObject;
 import com.fuint.repository.model.TGenCode;
 import com.fuint.utils.StringUtil;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.AllArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -28,7 +28,7 @@ import java.util.Map;
  * Created by FSQ
  * CopyRight https://www.fuint.cn
  */
-@Api(tags="管理端-代码生成相关接口")
+@Tag(name="管理端-代码生成相关接口")
 @RestController
 @AllArgsConstructor
 @RequestMapping(value = "/backendApi/genCode")
@@ -42,7 +42,7 @@ public class BackendGenCodeController extends BaseController {
     /**
      * 代码生成列表
      */
-    @ApiOperation(value = "代码生成列表查询")
+    @Operation(summary="代码生成列表查询")
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('system:genCode:index')")
@@ -58,7 +58,7 @@ public class BackendGenCodeController extends BaseController {
     /**
      * 更新代码生成状态
      */
-    @ApiOperation(value = "更新代码状态")
+    @Operation(summary="更新代码状态")
     @RequestMapping(value = "/updateStatus", method = RequestMethod.POST)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('system:genCode:add')")
@@ -77,7 +77,7 @@ public class BackendGenCodeController extends BaseController {
     /**
      * 保存代码生成
      */
-    @ApiOperation(value = "保存代码生成")
+    @Operation(summary="保存代码生成")
     @RequestMapping(value = "/save", method = RequestMethod.POST)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('system:genCode:add')")
@@ -118,7 +118,7 @@ public class BackendGenCodeController extends BaseController {
     /**
      * 获取代码生成详情
      */
-    @ApiOperation(value = "获取代码生成详情")
+    @Operation(summary="获取代码生成详情")
     @RequestMapping(value = "/info/{id}", method = RequestMethod.GET)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('system:genCode:index')")
@@ -134,7 +134,7 @@ public class BackendGenCodeController extends BaseController {
     /**
      * 生成代码
      */
-    @ApiOperation(value = "生成代码")
+    @Operation(summary="生成代码")
     @RequestMapping(value = "/gen/{id}", method = RequestMethod.GET)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('system:genCode:gen')")

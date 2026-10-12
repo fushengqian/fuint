@@ -1,6 +1,6 @@
 package com.fuint.common.param;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import java.io.Serializable;
 
@@ -13,22 +13,22 @@ import java.io.Serializable;
 @Data
 public class BalancePage extends PageParam implements Serializable {
 
-    @ApiModelProperty("会员ID")
+    @Schema(description="会员ID")
     private Integer userId;
 
-    @ApiModelProperty("订单号")
+    @Schema(description="订单号")
     private String orderSn;
 
-    @ApiModelProperty("会员号")
+    @Schema(description="会员号")
     private String userNo;
 
-    @ApiModelProperty("手机号")
+    @Schema(description="手机号")
     private String mobile;
 
-    @ApiModelProperty("备注信息")
+    @Schema(description="备注信息")
     private String description;
 
-    @ApiModelProperty("状态，A正常；D作废")
+    @Schema(description="状态，A正常；D作废")
     private String status;
 
 }

@@ -1,6 +1,6 @@
 package com.fuint.module.backendApi.request;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -16,56 +16,56 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 @Data
 public class MerchantSubmitRequest implements Serializable {
 
-    @ApiModelProperty(value="商户ID", name="id")
+    @Schema(description="商户ID", name="id")
     private Integer id;
 
-    @ApiModelProperty(value="商户名称", name="name")
+    @Schema(description="商户名称", name="name")
     private String name;
 
-    @ApiModelProperty(value="商户号", name="no")
+    @Schema(description="商户号", name="no")
     private String no;
 
-    @ApiModelProperty(value="联系人", name="contact")
+    @Schema(description="联系人", name="contact")
     private String contact;
 
-    @ApiModelProperty(value="手机号", name="phone")
+    @Schema(description="手机号", name="phone")
     private String phone;
 
-    @ApiModelProperty(value="备注信息", name="description")
+    @Schema(description="备注信息", name="description")
     private String description;
 
-    @ApiModelProperty(value="地址", name="address")
+    @Schema(description="地址", name="address")
     private String address;
 
-    @ApiModelProperty(value="状态", name="status")
+    @Schema(description="状态", name="status")
     private String status;
 
-    @ApiModelProperty(value="图片", name="logo")
+    @Schema(description="图片", name="logo")
     private String logo;
 
-    @ApiModelProperty(value="类型", name="type")
+    @Schema(description="类型", name="type")
     private String type;
 
-    @ApiModelProperty(value="小程序appId", name="wxAppId")
+    @Schema(description="小程序appId", name="wxAppId")
     private String wxAppId;
 
-    @ApiModelProperty(value="小程序appSecret", name="wxAppSecret")
+    @Schema(description="小程序appSecret", name="wxAppSecret")
     private String wxAppSecret;
 
-    @ApiModelProperty(value="公众号appId", name="wxOfficialAppId")
+    @Schema(description="公众号appId", name="wxOfficialAppId")
     private String wxOfficialAppId;
 
-    @ApiModelProperty(value="公众号AppSecret", name="wxOfficialAppSecret")
+    @Schema(description="公众号AppSecret", name="wxOfficialAppSecret")
     private String wxOfficialAppSecret;
 
-    @ApiModelProperty(value="结算比例", name="settleRate")
+    @Schema(description="结算比例", name="settleRate")
     private BigDecimal settleRate;
 
-    @ApiModelProperty(value="有效期开始时间", name="startTime")
+    @Schema(description="有效期开始时间", name="startTime")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date startTime;
 
-    @ApiModelProperty(value="有效期结束时间", name="endTime")
+    @Schema(description="有效期结束时间", name="endTime")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date endTime;
 

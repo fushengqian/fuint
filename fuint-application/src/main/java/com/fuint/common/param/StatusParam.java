@@ -1,10 +1,10 @@
 package com.fuint.common.param;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import java.io.Serializable;
 
 /**
@@ -18,11 +18,11 @@ public class StatusParam implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @ApiModelProperty(value="数据ID", name="id", required = true)
+    @Schema(description="数据ID", name="id", requiredMode=Schema.RequiredMode.REQUIRED)
     @NotNull(message = "ID 不能为空")
     private Integer id;
 
-    @ApiModelProperty(value="修改状态", name="status", required = true)
+    @Schema(description="修改状态", name="status", requiredMode=Schema.RequiredMode.REQUIRED)
     @NotBlank(message = "状态不能为空")
     private String status;
 

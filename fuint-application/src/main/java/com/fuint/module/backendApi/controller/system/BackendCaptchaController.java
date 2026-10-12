@@ -2,8 +2,8 @@ package com.fuint.module.backendApi.controller.system;
 
 import com.fuint.common.service.CaptchaService;
 import com.fuint.common.util.SeqUtil;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,9 +14,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.imageio.ImageIO;
-import javax.servlet.ServletOutputStream;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.ServletOutputStream;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
@@ -26,7 +26,7 @@ import java.io.IOException;
  * Created by FSQ
  * CopyRight https://www.fuint.cn
  */
-@Api(tags="管理端-图形验证码相关接口")
+@Tag(name="管理端-图形验证码相关接口")
 @Controller
 @AllArgsConstructor
 @RequestMapping("/backendApi/captcha")
@@ -36,7 +36,7 @@ public class BackendCaptchaController {
 
     private CaptchaService captchaService;
 
-    @ApiOperation(value = "获取图形验证码")
+    @Operation(summary="获取图形验证码")
     @RequestMapping(value="/getCode", method = RequestMethod.GET)
     public void getCode(HttpServletResponse response) throws Exception {
         // 生成验证码
@@ -68,7 +68,7 @@ public class BackendCaptchaController {
         }
     }
 
-    @ApiOperation(value = "验证图形验证码")
+    @Operation(summary="验证图形验证码")
     @RequestMapping(value="/checkCode", method = RequestMethod.POST)
     @ResponseBody
     public String checkCode(@RequestParam String code, HttpServletRequest request) {

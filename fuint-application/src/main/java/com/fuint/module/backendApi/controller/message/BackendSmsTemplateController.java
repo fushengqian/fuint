@@ -10,8 +10,8 @@ import com.fuint.framework.pagination.PaginationResponse;
 import com.fuint.framework.web.BaseController;
 import com.fuint.framework.web.ResponseObject;
 import com.fuint.repository.model.MtSmsTemplate;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.AllArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -25,7 +25,7 @@ import java.util.Map;
  * Created by FSQ
  * CopyRight https://www.fuint.cn
  */
-@Api(tags="管理端-短信模板相关接口")
+@Tag(name="管理端-短信模板相关接口")
 @RestController
 @AllArgsConstructor
 @RequestMapping(value = "/backendApi/smsTemplate")
@@ -39,7 +39,7 @@ public class BackendSmsTemplateController extends BaseController {
     /**
      * 查询短信模板列表
      */
-    @ApiOperation(value = "查询短信模板列表")
+    @Operation(summary="查询短信模板列表")
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('smsTemplate:index')")
@@ -60,7 +60,7 @@ public class BackendSmsTemplateController extends BaseController {
     /**
      * 保存短信模板
      */
-    @ApiOperation(value = "保存短信模板")
+    @Operation(summary="保存短信模板")
     @RequestMapping(value = "/save", method = RequestMethod.POST)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('smsTemplate:edit')")
@@ -74,7 +74,7 @@ public class BackendSmsTemplateController extends BaseController {
     /**
      * 模板详情
      */
-    @ApiOperation(value = "模板详情")
+    @Operation(summary="模板详情")
     @RequestMapping(value = "/info/{id}", method = RequestMethod.GET)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('smsTemplate:index')")
@@ -97,7 +97,7 @@ public class BackendSmsTemplateController extends BaseController {
     /**
      * 删除短信模板
      */
-    @ApiOperation(value = "删除短信模板")
+    @Operation(summary="删除短信模板")
     @RequestMapping(value = "/delete/{id}", method = RequestMethod.GET)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('smsTemplate:edit')")

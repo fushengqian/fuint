@@ -1,7 +1,7 @@
 package com.fuint.common.dto.system;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import java.util.Date;
 
@@ -14,54 +14,54 @@ import java.util.Date;
 @Data
 public class AccountDto {
 
-    @ApiModelProperty("账户主键id")
+    @Schema(description="账户主键id")
     private Integer id;
 
-    @ApiModelProperty("账户编码")
+    @Schema(description="账户编码")
     private String accountKey;
 
-    @ApiModelProperty("账户名称")
+    @Schema(description="账户名称")
     private String accountName;
 
-    @ApiModelProperty("密码")
+    @Schema(description="密码")
     private String password;
 
-    @ApiModelProperty("状态 : 0 无效 1 有效")
+    @Schema(description="状态 : 0 无效 1 有效")
     private int accountStatus;
 
-    @ApiModelProperty("激活状态 : 0 未激活 1已激活")
+    @Schema(description="激活状态 : 0 未激活 1已激活")
     private int isActive;
 
-    @ApiModelProperty("创建时间")
+    @Schema(description="创建时间")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date createDate;
 
-    @ApiModelProperty("修改时间")
+    @Schema(description="修改时间")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date modifyDate;
 
-    @ApiModelProperty("随机码（公盐）")
+    @Schema(description="随机码（公盐）")
     private String salt;
 
-    @ApiModelProperty("是否被锁定")
+    @Schema(description="是否被锁定")
     private int locked;
 
-    @ApiModelProperty("真实姓名")
+    @Schema(description="真实姓名")
     private String realName;
 
-    @ApiModelProperty("所属商户ID")
+    @Schema(description="所属商户ID")
     private Integer merchantId;
 
-    @ApiModelProperty("所属商户名称")
+    @Schema(description="所属商户名称")
     private String merchantName;
 
-    @ApiModelProperty("所属店铺ID")
+    @Schema(description="所属店铺ID")
     private Integer storeId;
 
-    @ApiModelProperty("所属店铺名称")
+    @Schema(description="所属店铺名称")
     private String storeName;
 
-    @ApiModelProperty("关联员工ID")
+    @Schema(description="关联员工ID")
     private Integer staffId;
 
 }

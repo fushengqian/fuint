@@ -2,7 +2,7 @@ package com.fuint.common.dto.order;
 
 import java.io.Serializable;
 import java.util.Date;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 /**
@@ -14,31 +14,31 @@ import lombok.Data;
 @Data
 public class SettlementOrderDto implements Serializable {
 
-    @ApiModelProperty("自增ID")
+    @Schema(description="自增ID")
     private Integer id;
 
-    @ApiModelProperty("结算ID")
+    @Schema(description="结算ID")
     private Integer settlementId;
 
-    @ApiModelProperty("订单ID")
+    @Schema(description="订单ID")
     private Integer orderId;
 
-    @ApiModelProperty("订单信息")
+    @Schema(description="订单信息")
     private UserOrderDto orderInfo;
 
-    @ApiModelProperty("创建时间")
+    @Schema(description="创建时间")
     private Date createTime;
 
-    @ApiModelProperty("更新时间")
+    @Schema(description="更新时间")
     private Date updateTime;
 
-    @ApiModelProperty("备注说明")
+    @Schema(description="备注说明")
     private String description;
 
-    @ApiModelProperty("最后操作人")
+    @Schema(description="最后操作人")
     private String operator;
 
-    @ApiModelProperty("状态，A正常；D删除")
+    @Schema(description="状态，A正常；D删除")
     private String status;
 
 }

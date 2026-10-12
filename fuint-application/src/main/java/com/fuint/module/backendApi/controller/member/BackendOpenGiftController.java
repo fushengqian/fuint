@@ -14,8 +14,8 @@ import com.fuint.framework.web.ResponseObject;
 import com.fuint.repository.model.MtOpenGift;
 import com.fuint.repository.model.MtUserGrade;
 import com.fuint.utils.StringUtil;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.AllArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -30,7 +30,7 @@ import java.util.Map;
  * Created by FSQ
  * CopyRight https://www.fuint.cn
  */
-@Api(tags="管理端-开卡赠礼相关接口")
+@Tag(name="管理端-开卡赠礼相关接口")
 @RestController
 @AllArgsConstructor
 @RequestMapping(value = "/backendApi/openGift")
@@ -49,7 +49,7 @@ public class BackendOpenGiftController extends BaseController {
     /**
      * 开卡赠礼列表查询
      */
-    @ApiOperation(value = "开卡赠礼列表查询")
+    @Operation(summary="开卡赠礼列表查询")
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('openGift:index')")
@@ -73,7 +73,7 @@ public class BackendOpenGiftController extends BaseController {
     /**
      * 开卡赠礼详情
      * */
-    @ApiOperation(value = "开卡赠礼详情")
+    @Operation(summary="开卡赠礼详情")
     @RequestMapping(value = "/info/{id}", method = RequestMethod.GET)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('openGift:index')")
@@ -92,7 +92,7 @@ public class BackendOpenGiftController extends BaseController {
     /**
      * 提交开卡赠礼
      */
-    @ApiOperation(value = "提交开卡赠礼")
+    @Operation(summary="提交开卡赠礼")
     @RequestMapping(value = "/save", method = RequestMethod.POST)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('openGift:add')")
@@ -154,7 +154,7 @@ public class BackendOpenGiftController extends BaseController {
     /**
      * 更新开卡赠礼
      */
-    @ApiOperation(value = "更新开卡赠礼")
+    @Operation(summary="更新开卡赠礼")
     @RequestMapping(value = "/updateStatus", method = RequestMethod.POST)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('openGift:index')")
@@ -172,7 +172,7 @@ public class BackendOpenGiftController extends BaseController {
     /**
      * 删除开卡赠礼
      */
-    @ApiOperation(value = "删除开卡赠礼")
+    @Operation(summary="删除开卡赠礼")
     @RequestMapping(value = "/delete/{id}", method = RequestMethod.GET)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('openGift:index')")

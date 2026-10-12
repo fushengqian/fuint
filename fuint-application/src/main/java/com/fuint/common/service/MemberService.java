@@ -13,7 +13,7 @@ import com.fuint.repository.model.MtUser;
 import com.fuint.repository.model.MtUserGrade;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.List;

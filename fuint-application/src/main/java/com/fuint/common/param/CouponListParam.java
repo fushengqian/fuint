@@ -1,6 +1,6 @@
 package com.fuint.common.param;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import java.io.Serializable;
 
@@ -13,34 +13,34 @@ import java.io.Serializable;
 @Data
 public class CouponListParam extends PageParam implements Serializable {
 
-    @ApiModelProperty(value="关键字", name="keyword")
+    @Schema(description="关键字", name="keyword")
     private String keyword;
 
-    @ApiModelProperty(value="卡券类型", name="type")
+    @Schema(description="卡券类型", name="type")
     private String type;
 
-    @ApiModelProperty(value="商户ID", name="merchantId")
+    @Schema(description="商户ID", name="merchantId")
     private Integer merchantId;
 
-    @ApiModelProperty(value="店铺ID", name="storeId")
+    @Schema(description="店铺ID", name="storeId")
     private Integer storeId;
 
-    @ApiModelProperty(value="领取所需积分", name="needPoint")
+    @Schema(description="领取所需积分", name="needPoint")
     private Integer needPoint;
 
-    @ApiModelProperty(value="发放方式", name="sendWay")
+    @Schema(description="发放方式", name="sendWay")
     private String sendWay;
 
-    @ApiModelProperty(value="排序类型", name="sortType")
+    @Schema(description="排序类型", name="sortType")
     private String sortType;
 
-    @ApiModelProperty(value="面额排序", name="sortPrice")
+    @Schema(description="面额排序", name="sortPrice")
     private String sortPrice;
 
-    @ApiModelProperty(value="下单会员ID", name="userId")
+    @Schema(description="下单会员ID", name="userId")
     private Integer userId;
 
-    @ApiModelProperty(value="状态", name="status")
+    @Schema(description="状态", name="status")
     private String status;
 
 }

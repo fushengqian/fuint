@@ -1,7 +1,7 @@
 package com.fuint.common.dto.order;
 
 import com.fuint.common.dto.goods.GoodsSpecValueDto;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -16,40 +16,40 @@ import java.util.List;
 @Data
 public class OrderGoodsDto implements Serializable {
 
-    @ApiModelProperty("自增ID")
+    @Schema(description="自增ID")
     private Integer id;
 
-    @ApiModelProperty("商品ID")
+    @Schema(description="商品ID")
     private Integer goodsId;
 
-    @ApiModelProperty("预约项目ID")
+    @Schema(description="预约项目ID")
     private Integer bookId;
 
-    @ApiModelProperty("我的预约ID")
+    @Schema(description="我的预约ID")
     private Integer myBookId;
 
-    @ApiModelProperty("订单类型")
+    @Schema(description="订单类型")
     private String type;
 
-    @ApiModelProperty("商品名称")
+    @Schema(description="商品名称")
     private String name;
 
-    @ApiModelProperty("价格")
+    @Schema(description="价格")
     private String price;
 
-    @ApiModelProperty("折扣")
+    @Schema(description="折扣")
     private String discount;
 
-    @ApiModelProperty("购买数量")
+    @Schema(description="购买数量")
     private Double num;
 
-    @ApiModelProperty("图片")
+    @Schema(description="图片")
     private String image;
 
-    @ApiModelProperty("skuId")
+    @Schema(description="skuId")
     private Integer skuId;
 
-    @ApiModelProperty("规格列表")
+    @Schema(description="规格列表")
     private List<GoodsSpecValueDto> specList;
 
 }

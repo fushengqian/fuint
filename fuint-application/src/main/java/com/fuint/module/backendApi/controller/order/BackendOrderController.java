@@ -21,8 +21,8 @@ import com.fuint.repository.model.MtStore;
 import com.fuint.repository.model.MtUser;
 import com.fuint.utils.StringUtil;
 import com.fuint.utils.TimeUtils;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.AllArgsConstructor;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.slf4j.Logger;
@@ -30,8 +30,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.math.BigDecimal;
 import java.util.*;
 
@@ -43,7 +43,7 @@ import static com.fuint.common.util.XlsUtil.objectConvertToString;
  * Created by FSQ
  * CopyRight https://www.fuint.cn
  */
-@Api(tags="管理端-订单相关接口")
+@Tag(name="管理端-订单相关接口")
 @RestController
 @AllArgsConstructor
 @RequestMapping(value = "/backendApi/order")
@@ -79,7 +79,7 @@ public class BackendOrderController extends BaseController {
     /**
      * 订单列表查询
      **/
-    @ApiOperation(value = "订单列表查询")
+    @Operation(summary="订单列表查询")
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('order:index')")
@@ -130,7 +130,7 @@ public class BackendOrderController extends BaseController {
     /**
      * 获取订单详情
      * */
-    @ApiOperation(value = "获取订单详情")
+    @Operation(summary="获取订单详情")
     @RequestMapping(value = "/info/{orderId}", method = RequestMethod.GET)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('order:detail')")
@@ -153,7 +153,7 @@ public class BackendOrderController extends BaseController {
     /**
      * 确认发货
      * */
-    @ApiOperation(value = "确认发货")
+    @Operation(summary="确认发货")
     @RequestMapping(value = "/delivered", method = RequestMethod.POST)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('order:delivery')")
@@ -209,7 +209,7 @@ public class BackendOrderController extends BaseController {
     /**
      * 修改订单
      * */
-    @ApiOperation(value = "修改订单")
+    @Operation(summary="修改订单")
     @RequestMapping(value = "/save", method = RequestMethod.POST)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('order:edit')")
@@ -260,7 +260,7 @@ public class BackendOrderController extends BaseController {
     /**
      * 验证并核销订单
      * */
-    @ApiOperation(value = "验证并核销订单")
+    @Operation(summary="验证并核销订单")
     @RequestMapping(value = "/verify", method = RequestMethod.POST)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('order:edit')")
@@ -296,7 +296,7 @@ public class BackendOrderController extends BaseController {
     /**
      * 最新订单列表查询
      */
-    @ApiOperation(value = "最新订单列表查询")
+    @Operation(summary="最新订单列表查询")
     @RequestMapping(value = "/latest", method = RequestMethod.POST)
     @CrossOrigin
     public ResponseObject latest(@RequestBody OrderListParam orderListParam) {
@@ -324,7 +324,7 @@ public class BackendOrderController extends BaseController {
     /**
      * 删除订单
      */
-    @ApiOperation(value = "删除订单")
+    @Operation(summary="删除订单")
     @RequestMapping(value = "/delete/{id}", method = RequestMethod.GET)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('order:delete')")
@@ -337,7 +337,7 @@ public class BackendOrderController extends BaseController {
     /**
      * 订单设置详情
      */
-    @ApiOperation(value = "订单设置详情")
+    @Operation(summary="订单设置详情")
     @RequestMapping(value = "/setting", method = RequestMethod.GET)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('order:setting')")
@@ -382,7 +382,7 @@ public class BackendOrderController extends BaseController {
     /**
      * 保存交易设置
      */
-    @ApiOperation(value = "保存交易设置")
+    @Operation(summary="保存交易设置")
     @RequestMapping(value = "/saveSetting", method = RequestMethod.POST)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('order:setting')")
@@ -426,7 +426,7 @@ public class BackendOrderController extends BaseController {
     /**
      * 快递100配置详情
      */
-    @ApiOperation(value = "快递100配置详情")
+    @Operation(summary="快递100配置详情")
     @RequestMapping(value = "/expressSetting", method = RequestMethod.GET)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('order:setting')")
@@ -459,7 +459,7 @@ public class BackendOrderController extends BaseController {
     /**
      * 保存快递100配置
      */
-    @ApiOperation(value = "保存快递100配置")
+    @Operation(summary="保存快递100配置")
     @RequestMapping(value = "/saveExpressSetting", method = RequestMethod.POST)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('order:setting')")
@@ -497,7 +497,7 @@ public class BackendOrderController extends BaseController {
     /**
      * 导出订单
      */
-    @ApiOperation(value = "导出订单")
+    @Operation(summary="导出订单")
     @RequestMapping(value = "/export", method = RequestMethod.GET)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('order:index')")

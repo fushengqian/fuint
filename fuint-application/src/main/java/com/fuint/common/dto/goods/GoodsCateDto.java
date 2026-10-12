@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 /**
@@ -16,44 +16,44 @@ import lombok.Data;
 @Data
 public class GoodsCateDto implements Serializable {
 
-    @ApiModelProperty("自增ID")
+    @Schema(description="自增ID")
     private Integer id;
 
-    @ApiModelProperty("所属商户ID")
+    @Schema(description="所属商户ID")
     private Integer merchantId;
 
-    @ApiModelProperty("所属商户名称")
+    @Schema(description="所属商户名称")
     private String merchantName;
 
-    @ApiModelProperty("所属店铺ID")
+    @Schema(description="所属店铺ID")
     private Integer storeId;
 
-    @ApiModelProperty("所属店铺名称")
+    @Schema(description="所属店铺名称")
     private String storeName;
 
-    @ApiModelProperty("分类名称")
+    @Schema(description="分类名称")
     private String name;
 
-    @ApiModelProperty("LOGO地址")
+    @Schema(description="LOGO地址")
     private String logo;
 
-    @ApiModelProperty("分类描述")
+    @Schema(description="分类描述")
     private String description;
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
-    @ApiModelProperty("创建时间")
+    @Schema(description="创建时间")
     private Date createTime;
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
-    @ApiModelProperty("更新时间")
+    @Schema(description="更新时间")
     private Date updateTime;
 
-    @ApiModelProperty("最后操作人")
+    @Schema(description="最后操作人")
     private String operator;
 
-    @ApiModelProperty("排序")
+    @Schema(description="排序")
     private Integer sort;
 
-    @ApiModelProperty("A：正常；D：删除")
+    @Schema(description="A：正常；D：删除")
     private String status;
 }

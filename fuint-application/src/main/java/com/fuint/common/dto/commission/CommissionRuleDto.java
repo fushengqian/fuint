@@ -1,6 +1,6 @@
 package com.fuint.common.dto.commission;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -16,55 +16,55 @@ import java.util.List;
 @Data
 public class CommissionRuleDto implements Serializable {
 
-    @ApiModelProperty("自增ID")
+    @Schema(description="自增ID")
     private Integer id;
 
-    @ApiModelProperty("规则名称")
+    @Schema(description="规则名称")
     private String name;
 
-    @ApiModelProperty("方案类型,goods:商品销售；coupon：卡券销售；recharge：会员充值")
+    @Schema(description="方案类型,goods:商品销售；coupon：卡券销售；recharge：会员充值")
     private String type;
 
-    @ApiModelProperty("分佣对象,member:会员分销；staff：员工提成")
+    @Schema(description="分佣对象,member:会员分销；staff：员工提成")
     private String target;
 
-    @ApiModelProperty("商户ID")
+    @Schema(description="商户ID")
     private Integer merchantId;
 
-    @ApiModelProperty("店铺ID")
+    @Schema(description="店铺ID")
     private Integer storeId;
 
-    @ApiModelProperty("适用店铺ID列表")
+    @Schema(description="适用店铺ID列表")
     private List<Integer> storeIdList;
 
-    @ApiModelProperty("具体项目列表")
+    @Schema(description="具体项目列表")
     private List<CommissionRuleItemDto> detailList;
 
-    @ApiModelProperty("散客值")
+    @Schema(description="散客值")
     private BigDecimal visitorVal;
 
-    @ApiModelProperty("会员值")
+    @Schema(description="会员值")
     private BigDecimal memberVal;
 
-    @ApiModelProperty("二级散客值")
+    @Schema(description="二级散客值")
     private BigDecimal subVisitorVal;
 
-    @ApiModelProperty("二级会员值")
+    @Schema(description="二级会员值")
     private BigDecimal subMemberVal;
 
-    @ApiModelProperty("备注")
+    @Schema(description="备注")
     private String description;
 
-    @ApiModelProperty("创建时间")
+    @Schema(description="创建时间")
     private Date createTime;
 
-    @ApiModelProperty("更新时间")
+    @Schema(description="更新时间")
     private Date updateTime;
 
-    @ApiModelProperty("最后操作人")
+    @Schema(description="最后操作人")
     private String operator;
 
-    @ApiModelProperty("状态")
+    @Schema(description="状态")
     private String status;
 
 }

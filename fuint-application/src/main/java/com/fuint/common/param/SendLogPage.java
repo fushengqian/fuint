@@ -1,6 +1,6 @@
 package com.fuint.common.param;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import java.io.Serializable;
 
@@ -13,15 +13,15 @@ import java.io.Serializable;
 @Data
 public class SendLogPage extends PageParam implements Serializable {
 
-    @ApiModelProperty("状态")
+    @Schema(description="状态")
     private String status;
 
-    @ApiModelProperty("会员ID")
+    @Schema(description="会员ID")
     private Integer userId;
 
-    @ApiModelProperty("卡券ID")
+    @Schema(description="卡券ID")
     private Integer couponId;
 
-    @ApiModelProperty("手机号")
+    @Schema(description="手机号")
     private String mobile;
 }

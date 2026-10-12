@@ -12,8 +12,8 @@ import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.pagination.PaginationResponse;
 import com.fuint.framework.web.BaseController;
 import com.fuint.framework.web.ResponseObject;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.*;
  * Created by FSQ
  * CopyRight https://www.fuint.cn
  */
-@Api(tags="会员端-店铺相关接口")
+@Tag(name="会员端-店铺相关接口")
 @RestController
 @AllArgsConstructor
 @RequestMapping(value = "/clientApi/commission")
@@ -65,7 +65,7 @@ public class ClientCommissionController extends BaseController {
     /**
      * 申请提现
      */
-    @ApiOperation(value = "申请提现")
+    @Operation(summary="申请提现")
     @RequestMapping(value = "/withdraw", method = RequestMethod.POST)
     @CrossOrigin
     public ResponseObject withdraw(@RequestBody WithdrawParam withdrawParam) throws BusinessCheckException {

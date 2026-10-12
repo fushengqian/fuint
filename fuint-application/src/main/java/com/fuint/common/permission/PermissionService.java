@@ -8,7 +8,7 @@ import com.fuint.repository.model.TSource;
 import com.fuint.utils.StringUtil;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.Resource;
+import jakarta.annotation.Resource;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;

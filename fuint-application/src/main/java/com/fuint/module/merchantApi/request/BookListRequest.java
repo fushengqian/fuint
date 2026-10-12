@@ -1,7 +1,7 @@
 package com.fuint.module.merchantApi.request;
 
 import com.fuint.common.param.PageParam;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import java.io.Serializable;
 
@@ -14,13 +14,13 @@ import java.io.Serializable;
 @Data
 public class BookListRequest extends PageParam implements Serializable {
 
-    @ApiModelProperty(value="商户ID", name="merchantId")
+    @Schema(description="商户ID", name="merchantId")
     private Integer merchantId;
 
-    @ApiModelProperty(value="店铺ID", name="storeId")
+    @Schema(description="店铺ID", name="storeId")
     private Integer storeId;
 
-    @ApiModelProperty(value="状态", name="status")
+    @Schema(description="状态", name="status")
     private String status;
 
 }

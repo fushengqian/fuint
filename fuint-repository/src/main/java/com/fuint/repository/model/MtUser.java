@@ -7,8 +7,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 /**
@@ -19,103 +18,103 @@ import lombok.Data;
  */
 @Data
 @TableName("mt_user")
-@ApiModel(value = "MtUser对象", description = "会员个人信息")
+@Schema(name="MtUser对象", description="会员个人信息")
 public class MtUser implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @ApiModelProperty("会员ID")
+    @Schema(description="会员ID")
     @TableId(value = "ID", type = IdType.AUTO)
     private Integer id;
 
-    @ApiModelProperty("会员号")
+    @Schema(description="会员号")
     private String userNo;
 
-    @ApiModelProperty("头像")
+    @Schema(description="头像")
     private String avatar;
 
-    @ApiModelProperty("分组ID")
+    @Schema(description="分组ID")
     private Integer groupId;
 
-    @ApiModelProperty("称呼")
+    @Schema(description="称呼")
     private String name;
 
-    @ApiModelProperty("微信open_id")
+    @Schema(description="微信open_id")
     private String openId;
 
-    @ApiModelProperty("手机号码")
+    @Schema(description="手机号码")
     private String mobile;
 
-    @ApiModelProperty("证件号码")
+    @Schema(description="证件号码")
     private String idcard;
 
-    @ApiModelProperty("等级ID")
+    @Schema(description="等级ID")
     private Integer gradeId;
 
-    @ApiModelProperty("会员开始时间")
+    @Schema(description="会员开始时间")
     @TableField(whereStrategy = FieldStrategy.NOT_EMPTY)
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date startTime;
 
-    @ApiModelProperty("会员结束时间")
+    @Schema(description="会员结束时间")
     @TableField(whereStrategy = FieldStrategy.NOT_EMPTY)
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date endTime;
 
-    @ApiModelProperty("余额")
+    @Schema(description="余额")
     private BigDecimal balance;
 
-    @ApiModelProperty("积分")
+    @Schema(description="积分")
     private Integer point;
 
-    @ApiModelProperty("性别 1男；0女")
+    @Schema(description="性别 1男；0女")
     private Integer sex;
 
-    @ApiModelProperty("出生日期")
+    @Schema(description="出生日期")
     private String birthday;
 
-    @ApiModelProperty("车牌号")
+    @Schema(description="车牌号")
     private String carNo;
 
-    @ApiModelProperty("来源渠道")
+    @Schema(description="来源渠道")
     private String source;
 
-    @ApiModelProperty("密码")
+    @Schema(description="密码")
     private String password;
 
-    @ApiModelProperty("salt")
+    @Schema(description="salt")
     private String salt;
 
-    @ApiModelProperty("地址")
+    @Schema(description="地址")
     private String address;
 
-    @ApiModelProperty("所属商户ID")
+    @Schema(description="所属商户ID")
     private Integer merchantId;
 
-    @ApiModelProperty("默认店铺")
+    @Schema(description="默认店铺")
     private Integer storeId;
 
-    @ApiModelProperty("是否员工")
+    @Schema(description="是否员工")
     private String isStaff;
 
-    @ApiModelProperty("创建时间")
+    @Schema(description="创建时间")
     private Date createTime;
 
-    @ApiModelProperty("更新时间")
+    @Schema(description="更新时间")
     private Date updateTime;
 
-    @ApiModelProperty("状态，A：激活；N：禁用；D：删除")
+    @Schema(description="状态，A：激活；N：禁用；D：删除")
     private String status;
 
-    @ApiModelProperty("是否已完善资料 Y：是；N：否")
+    @Schema(description="是否已完善资料 Y：是；N：否")
     private String profileCompleted;
 
-    @ApiModelProperty("备注信息")
+    @Schema(description="备注信息")
     private String description;
 
-    @ApiModelProperty("注册IP")
+    @Schema(description="注册IP")
     private String ip;
 
-    @ApiModelProperty("最后操作人")
+    @Schema(description="最后操作人")
     private String operator;
 }

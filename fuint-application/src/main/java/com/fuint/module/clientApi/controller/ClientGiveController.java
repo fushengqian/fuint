@@ -15,8 +15,8 @@ import com.fuint.framework.web.BaseController;
 import com.fuint.framework.web.ResponseObject;
 import com.fuint.repository.model.MtUser;
 import com.fuint.utils.StringUtil;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,7 +29,7 @@ import java.util.Map;
  * Created by FSQ
  * CopyRight https://www.fuint.cn
  */
-@Api(tags="会员端-卡券转赠相关接口")
+@Tag(name="会员端-卡券转赠相关接口")
 @RestController
 @AllArgsConstructor
 @RequestMapping(value = "/clientApi/give")
@@ -48,7 +48,7 @@ public class ClientGiveController extends BaseController {
     /**
      * 转赠卡券
      */
-    @ApiOperation(value = "转赠卡券")
+    @Operation(summary="转赠卡券")
     @RequestMapping(value = "/doGive", method = RequestMethod.POST)
     @CrossOrigin
     public ResponseObject doGive(@RequestBody GiveParam giveParam) throws BusinessCheckException {
@@ -64,7 +64,7 @@ public class ClientGiveController extends BaseController {
     /**
      * 查询转赠记录
      */
-    @ApiOperation(value = "查询转赠记录")
+    @Operation(summary="查询转赠记录")
     @RequestMapping(value = "/giveLog", method = RequestMethod.POST)
     @CrossOrigin
     public ResponseObject giveLog(@RequestBody GiveListParam giveListParam) {

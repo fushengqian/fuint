@@ -5,14 +5,14 @@ import com.fuint.common.util.Base64Util;
 import com.fuint.framework.web.BaseController;
 import com.fuint.framework.web.ResponseObject;
 import com.fuint.utils.SeqUtil;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import javax.imageio.ImageIO;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -25,7 +25,7 @@ import java.util.Map;
  * Created by FSQ
  * CopyRight https://www.fuint.cn
  */
-@Api(tags="会员端-图形验证码相关接口")
+@Tag(name="会员端-图形验证码相关接口")
 @RestController
 @AllArgsConstructor
 @RequestMapping("/clientApi/captcha")
@@ -36,7 +36,7 @@ public class ClientCaptchaController extends BaseController {
      * */
     private CaptchaService captchaService;
 
-    @ApiOperation(value = "获取图形验证码")
+    @Operation(summary="获取图形验证码")
     @RequestMapping(value = "/getCode", method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject getCode(HttpServletResponse response) {
@@ -65,7 +65,7 @@ public class ClientCaptchaController extends BaseController {
         return getSuccessResult(outParams);
     }
 
-    @ApiOperation(value = "校验图形验证码")
+    @Operation(summary="校验图形验证码")
     @RequestMapping(value = "/checkCode", method = RequestMethod.POST)
     @CrossOrigin
     public ResponseObject checkCode(@RequestParam String code, HttpServletRequest request) {

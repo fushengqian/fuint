@@ -1,6 +1,6 @@
 package com.fuint.common.dto.member;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 /**
@@ -12,22 +12,22 @@ import lombok.Data;
 @Data
 public class OpenWxCardDto {
 
-    @ApiModelProperty("会员编码")
+    @Schema(description="会员编码")
     private String code;
 
-    @ApiModelProperty("会员openId")
+    @Schema(description="会员openId")
     private String openId;
 
-    @ApiModelProperty("时间戳")
+    @Schema(description="时间戳")
     private String timestamp;
 
-    @ApiModelProperty("随机字符串")
+    @Schema(description="随机字符串")
     private String nonceStr;
 
-    @ApiModelProperty("签名")
+    @Schema(description="签名")
     private String signature;
 
-    @ApiModelProperty("微信会员卡ID")
+    @Schema(description="微信会员卡ID")
     private String cardId;
 
 }

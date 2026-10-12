@@ -19,8 +19,8 @@ import com.fuint.framework.web.ResponseObject;
 import com.fuint.repository.model.MtStaff;
 import com.fuint.repository.model.MtUser;
 import com.fuint.repository.model.MtUserGrade;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.web.bind.annotation.*;
@@ -36,7 +36,7 @@ import java.util.Map;
  * Created by FSQ
  * CopyRight https://www.fuint.cn
  */
-@Api(tags="商户端-会员管理相关接口")
+@Tag(name="商户端-会员管理相关接口")
 @RestController
 @AllArgsConstructor
 @RequestMapping(value = "/merchantApi/member")
@@ -60,7 +60,7 @@ public class MerchantMemberController extends BaseController {
     /**
      * 会员列表查询
      */
-    @ApiOperation(value = "查询会员列表")
+    @Operation(summary="查询会员列表")
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @CrossOrigin
     public ResponseObject list(@RequestBody MemberListParam memberListParam) throws BusinessCheckException {
@@ -107,7 +107,7 @@ public class MerchantMemberController extends BaseController {
     /**
      * 会员详情
      */
-    @ApiOperation(value = "查询会员详情")
+    @Operation(summary="查询会员详情")
     @RequestMapping(value = "/info", method = RequestMethod.POST)
     @CrossOrigin
     public ResponseObject info(@RequestBody MemberDetailParam memberParam) throws BusinessCheckException {
@@ -134,7 +134,7 @@ public class MerchantMemberController extends BaseController {
     /**
      * 保存会员信息
      */
-    @ApiOperation(value = "保存会员信息")
+    @Operation(summary="保存会员信息")
     @RequestMapping(value = "/save", method = RequestMethod.POST)
     @CrossOrigin
     public ResponseObject save(@RequestBody MemberInfoParam memberInfoParam) throws BusinessCheckException {

@@ -1,6 +1,6 @@
 package com.fuint.common.param;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import java.io.Serializable;
 
@@ -13,52 +13,52 @@ import java.io.Serializable;
 @Data
 public class MemberPage extends PageParam implements Serializable {
 
-    @ApiModelProperty("会员ID")
+    @Schema(description="会员ID")
     private Integer id;
 
-    @ApiModelProperty("会员名称")
+    @Schema(description="会员名称")
     private String name;
 
-    @ApiModelProperty("查询关键字")
+    @Schema(description="查询关键字")
     private String keyword;
 
-    @ApiModelProperty("查询关键字")
+    @Schema(description="查询关键字")
     private String birthday;
 
-    @ApiModelProperty("会员等级ID")
+    @Schema(description="会员等级ID")
     private Integer gradeId;
 
-    @ApiModelProperty("会员号")
+    @Schema(description="会员号")
     private String userNo;
 
-    @ApiModelProperty("手机号")
+    @Schema(description="手机号")
     private String mobile;
 
-    @ApiModelProperty("会员开始时间")
+    @Schema(description="会员开始时间")
     private String startTime;
 
-    @ApiModelProperty("会员结束时间")
+    @Schema(description="会员结束时间")
     private String endTime;
 
-    @ApiModelProperty("注册时间")
+    @Schema(description="注册时间")
     private String regTime;
 
-    @ApiModelProperty("会员活跃时间")
+    @Schema(description="会员活跃时间")
     private String activeTime;
 
-    @ApiModelProperty("会员有效期")
+    @Schema(description="会员有效期")
     private String memberTime;
 
-    @ApiModelProperty("状态")
+    @Schema(description="状态")
     private String status;
 
-    @ApiModelProperty("所属店铺ID-多店铺")
+    @Schema(description="所属店铺ID-多店铺")
     private String storeIds;
 
-    @ApiModelProperty("所属分组ID")
+    @Schema(description="所属分组ID")
     private String groupIds;
 
-    @ApiModelProperty("会员标签ID-多个用逗号分隔")
+    @Schema(description="会员标签ID-多个用逗号分隔")
     private String tagIds;
 
 }

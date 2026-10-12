@@ -1,6 +1,6 @@
 package com.fuint.common.dto.common;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 /**
@@ -12,9 +12,9 @@ import lombok.Data;
 @Data
 public class DateDto {
 
-    @ApiModelProperty("开始时间")
+    @Schema(description="开始时间")
     private String startDate;
 
-    @ApiModelProperty("结束时间")
+    @Schema(description="结束时间")
     private String endDate;
 }

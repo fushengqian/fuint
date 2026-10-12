@@ -1,6 +1,6 @@
 package com.fuint.module.clientApi.request;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import java.io.Serializable;
 import java.util.List;
@@ -14,19 +14,19 @@ import java.util.List;
 @Data
 public class RefundSubmitRequest implements Serializable {
 
-    @ApiModelProperty(value="会员ID", name="userId")
+    @Schema(description="会员ID", name="userId")
     private Integer userId;
 
-    @ApiModelProperty(value="订单ID", name="orderId")
+    @Schema(description="订单ID", name="orderId")
     private Integer orderId;
 
-    @ApiModelProperty(value="备注信息", name="remark")
+    @Schema(description="备注信息", name="remark")
     private String remark;
 
-    @ApiModelProperty(value="售后类型", name="type")
+    @Schema(description="售后类型", name="type")
     private String type;
 
-    @ApiModelProperty(value="售后图片", name="images")
+    @Schema(description="售后图片", name="images")
     private List<String> images;
 
 }

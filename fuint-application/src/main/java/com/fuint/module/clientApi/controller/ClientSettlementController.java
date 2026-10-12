@@ -7,12 +7,12 @@ import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.web.BaseController;
 import com.fuint.framework.web.ResponseObject;
 import com.fuint.utils.StringUtil;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.Map;
 
 /**
@@ -21,7 +21,7 @@ import java.util.Map;
  * Created by FSQ
  * CopyRight https://www.fuint.cn
  */
-@Api(tags="会员端-订单结算相关接口")
+@Tag(name="会员端-订单结算相关接口")
 @RestController
 @AllArgsConstructor
 @RequestMapping(value = "/clientApi/settlement")
@@ -40,7 +40,7 @@ public class ClientSettlementController extends BaseController {
     /**
      * 订单结算
      */
-    @ApiOperation(value = "提交订单结算")
+    @Operation(summary="提交订单结算")
     @RequestMapping(value = "/submit", method = RequestMethod.POST)
     @CrossOrigin
     public ResponseObject submit(HttpServletRequest request, @RequestBody SettlementParam param) throws BusinessCheckException {

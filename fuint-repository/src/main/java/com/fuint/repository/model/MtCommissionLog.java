@@ -6,8 +6,7 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 /**
@@ -18,73 +17,73 @@ import lombok.Data;
  */
 @Data
 @TableName("mt_commission_log")
-@ApiModel(value = "MtCommissionLog对象", description = "佣金记录表")
+@Schema(name="MtCommissionLog对象", description="佣金记录表")
 public class MtCommissionLog implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @ApiModelProperty("自增ID")
+    @Schema(description="自增ID")
     @TableId(value = "ID", type = IdType.AUTO)
     private Integer id;
 
-    @ApiModelProperty("分佣对象,member:会员分销；staff：员工提成")
+    @Schema(description="分佣对象,member:会员分销；staff：员工提成")
     private String target;
 
-    @ApiModelProperty("分佣类型")
+    @Schema(description="分佣类型")
     private String type;
 
-    @ApiModelProperty("分佣等级")
+    @Schema(description="分佣等级")
     private Integer level;
 
-    @ApiModelProperty("会员ID")
+    @Schema(description="会员ID")
     private Integer userId;
 
-    @ApiModelProperty("商户ID")
+    @Schema(description="商户ID")
     private Integer merchantId;
 
-    @ApiModelProperty("店铺ID")
+    @Schema(description="店铺ID")
     private Integer storeId;
 
-    @ApiModelProperty("员工ID")
+    @Schema(description="员工ID")
     private Integer staffId;
 
-    @ApiModelProperty("订单ID")
+    @Schema(description="订单ID")
     private Integer orderId;
 
-    @ApiModelProperty("分佣金额")
+    @Schema(description="分佣金额")
     private BigDecimal amount;
 
-    @ApiModelProperty("规则ID")
+    @Schema(description="规则ID")
     private Integer ruleId;
 
-    @ApiModelProperty("规则项ID")
+    @Schema(description="规则项ID")
     private Integer ruleItemId;
 
-    @ApiModelProperty("备注")
+    @Schema(description="备注")
     private String description;
 
-    @ApiModelProperty("结算uuid")
+    @Schema(description="结算uuid")
     private String settleUuid;
 
-    @ApiModelProperty("提现记录ID")
+    @Schema(description="提现记录ID")
     private Integer cashId;
 
-    @ApiModelProperty("最后操作人")
+    @Schema(description="最后操作人")
     private String isCash;
 
-    @ApiModelProperty("提现时间")
+    @Schema(description="提现时间")
     private Date cashTime;
 
-    @ApiModelProperty("是否提现")
+    @Schema(description="是否提现")
     private Date createTime;
 
-    @ApiModelProperty("更新时间")
+    @Schema(description="更新时间")
     private Date updateTime;
 
-    @ApiModelProperty("最后操作人")
+    @Schema(description="最后操作人")
     private String operator;
 
-    @ApiModelProperty("状态，A：待结算；B：已结算；C：已作废")
+    @Schema(description="状态，A：待结算；B：已结算；C：已作废")
     private String status;
 
 }

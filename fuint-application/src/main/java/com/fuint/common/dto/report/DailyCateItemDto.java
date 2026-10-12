@@ -1,6 +1,6 @@
 package com.fuint.common.dto.report;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -15,37 +15,37 @@ import java.math.BigDecimal;
 @Data
 public class DailyCateItemDto implements Serializable {
 
-    @ApiModelProperty("日期")
+    @Schema(description="日期")
     private String dateTime;
 
-    @ApiModelProperty("店铺ID")
+    @Schema(description="店铺ID")
     private Integer storeId;
 
-    @ApiModelProperty("店铺名称")
+    @Schema(description="店铺名称")
     private String storeName;
 
-    @ApiModelProperty("分类ID")
+    @Schema(description="分类ID")
     private Integer cateId;
 
-    @ApiModelProperty("分类名称")
+    @Schema(description="分类名称")
     private String cateName;
 
-    @ApiModelProperty("销售数量")
+    @Schema(description="销售数量")
     private Integer salesCount;
 
-    @ApiModelProperty("销售金额")
+    @Schema(description="销售金额")
     private BigDecimal salesAmount;
 
-    @ApiModelProperty("购买人数")
+    @Schema(description="购买人数")
     private Integer buyerCount;
 
-    @ApiModelProperty("销售成本")
+    @Schema(description="销售成本")
     private BigDecimal costAmount;
 
-    @ApiModelProperty("利润金额")
+    @Schema(description="利润金额")
     private BigDecimal profitAmount;
 
-    @ApiModelProperty("退款数量")
+    @Schema(description="退款数量")
     private BigDecimal refundCount;
 
 }

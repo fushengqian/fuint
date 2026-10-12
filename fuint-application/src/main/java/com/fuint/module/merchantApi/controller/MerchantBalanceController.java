@@ -11,11 +11,11 @@ import com.fuint.framework.web.ResponseObject;
 import com.fuint.repository.model.MtOrder;
 import com.fuint.repository.model.MtStaff;
 import com.fuint.repository.model.MtUser;
-import io.swagger.annotations.Api;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * 余额接口controller
@@ -23,7 +23,7 @@ import javax.servlet.http.HttpServletRequest;
  * Created by FSQ
  * CopyRight https://www.fuint.cn
  */
-@Api(tags="商户端-余额相关接口")
+@Tag(name="商户端-余额相关接口")
 @RestController
 @AllArgsConstructor
 @RequestMapping(value = "/merchantApi/balance")

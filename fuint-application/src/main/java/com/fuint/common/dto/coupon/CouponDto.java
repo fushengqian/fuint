@@ -1,6 +1,6 @@
 package com.fuint.common.dto.coupon;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -14,67 +14,67 @@ import java.math.BigDecimal;
 @Data
 public class CouponDto implements Serializable {
 
-    @ApiModelProperty("自增ID")
+    @Schema(description="自增ID")
     private Integer id;
 
-    @ApiModelProperty("卡券名称")
+    @Schema(description="卡券名称")
     private String name;
 
-    @ApiModelProperty("卡券类型")
+    @Schema(description="卡券类型")
     private String type;
 
-    @ApiModelProperty("内容")
+    @Schema(description="内容")
     private Integer content;
 
-    @ApiModelProperty("状态")
+    @Schema(description="状态")
     private String status;
 
-    @ApiModelProperty("获取规则")
+    @Schema(description="获取规则")
     private String inRule;
 
-    @ApiModelProperty("使用规则")
+    @Schema(description="使用规则")
     private String outRule;
 
-    @ApiModelProperty("图片")
+    @Schema(description="图片")
     private String image;
 
-    @ApiModelProperty("面额")
+    @Schema(description="面额")
     private BigDecimal amount;
 
-    @ApiModelProperty("领取需要积分数量")
+    @Schema(description="领取需要积分数量")
     private Integer point;
 
-    @ApiModelProperty("卖点")
+    @Schema(description="卖点")
     private String sellingPoint;
 
-    @ApiModelProperty("已领取、预存数量")
+    @Schema(description="已领取、预存数量")
     private Integer gotNum;
 
-    @ApiModelProperty("剩余数量")
+    @Schema(description="剩余数量")
     private Integer leftNum;
 
-    @ApiModelProperty("发行数量")
+    @Schema(description="发行数量")
     private Integer total;
 
-    @ApiModelProperty("限制数量")
+    @Schema(description="限制数量")
     private Integer limitNum;
 
-    @ApiModelProperty("适用店铺")
+    @Schema(description="适用店铺")
     private String storeNames;
 
-    @ApiModelProperty("是否领取")
+    @Schema(description="是否领取")
     private Boolean isReceive;
 
-    @ApiModelProperty("是否需要领取码")
+    @Schema(description="是否需要领取码")
     private boolean needReceiveCode;
 
-    @ApiModelProperty("会员卡券ID")
+    @Schema(description="会员卡券ID")
     private int userCouponId;
 
-    @ApiModelProperty("有效期")
+    @Schema(description="有效期")
     private String effectiveDate;
 
-    @ApiModelProperty("卡券说明")
+    @Schema(description="卡券说明")
     private String description;
 
 }

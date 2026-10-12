@@ -5,8 +5,7 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import java.io.Serializable;
 import java.util.Date;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 /**
@@ -17,25 +16,25 @@ import lombok.Data;
  */
 @Data
 @TableName("mt_open_gift_item")
-@ApiModel(value = "MtOpenGiftItem对象", description = "开卡赠礼明细表")
+@Schema(name="MtOpenGiftItem对象", description="开卡赠礼明细表")
 public class MtOpenGiftItem implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @ApiModelProperty("自增ID")
+    @Schema(description="自增ID")
     @TableId(value = "ID", type = IdType.AUTO)
     private Integer id;
 
-    @ApiModelProperty("会用ID")
+    @Schema(description="会用ID")
     private Integer userId;
 
-    @ApiModelProperty("赠礼ID")
+    @Schema(description="赠礼ID")
     private Integer openGiftId;
 
-    @ApiModelProperty("创建时间")
+    @Schema(description="创建时间")
     private Date createTime;
 
-    @ApiModelProperty("状态")
+    @Schema(description="状态")
     private String status;
 
 

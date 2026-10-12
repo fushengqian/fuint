@@ -1,6 +1,6 @@
 package com.fuint.common.param;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import java.io.Serializable;
 
@@ -13,28 +13,28 @@ import java.io.Serializable;
 @Data
 public class BookSubmitParam implements Serializable {
 
-    @ApiModelProperty(value="预约ID", name="bookId")
+    @Schema(description="预约ID", name="bookId")
     private String bookId;
 
-    @ApiModelProperty(value="订单商品ID", name="orderGoodsId")
+    @Schema(description="订单商品ID", name="orderGoodsId")
     private String orderGoodsId;
 
-    @ApiModelProperty(value="员工ID", name="staffId")
+    @Schema(description="员工ID", name="staffId")
     private String staffId;
 
-    @ApiModelProperty(value="备注", name="remark")
+    @Schema(description="备注", name="remark")
     private String remark;
 
-    @ApiModelProperty(value="手机号", name="mobile")
+    @Schema(description="手机号", name="mobile")
     private String mobile;
 
-    @ApiModelProperty(value="联系人", name="contact")
+    @Schema(description="联系人", name="contact")
     private String contact;
 
-    @ApiModelProperty(value="预约日期", name="date")
+    @Schema(description="预约日期", name="date")
     private String date;
 
-    @ApiModelProperty(value="预约时间", name="time")
+    @Schema(description="预约时间", name="time")
     private String time;
 
 }

@@ -17,13 +17,13 @@ import com.fuint.repository.model.MtCoupon;
 import com.fuint.repository.model.MtStaff;
 import com.fuint.repository.model.MtUser;
 import com.fuint.utils.StringUtil;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * 商户卡券接口controller
@@ -31,7 +31,7 @@ import javax.servlet.http.HttpServletRequest;
  * Created by FSQ
  * CopyRight https://www.fuint.cn
  */
-@Api(tags="商户端-卡券相关接口")
+@Tag(name="商户端-卡券相关接口")
 @RestController
 @AllArgsConstructor
 @RequestMapping(value = "/merchantApi/coupon")
@@ -57,7 +57,7 @@ public class MerchantCouponController extends BaseController {
      */
     private CouponService couponService;
 
-    @ApiOperation(value = "获取卡券列表")
+    @Operation(summary="获取卡券列表")
     @RequestMapping(value = "/couponList", method = RequestMethod.POST)
     @CrossOrigin
     public ResponseObject couponList(HttpServletRequest request, @RequestBody CouponListParam params) {
@@ -77,7 +77,7 @@ public class MerchantCouponController extends BaseController {
         return getSuccessResult(result.getData());
     }
 
-    @ApiOperation(value = "保存卡券信息")
+    @Operation(summary="保存卡券信息")
     @RequestMapping(value = "/saveCoupon", method = RequestMethod.POST)
     @CrossOrigin
     public ResponseObject saveCoupon(HttpServletRequest request, @RequestBody ReqCouponDto reqCouponDto) {
@@ -96,7 +96,7 @@ public class MerchantCouponController extends BaseController {
         return getSuccessResult(couponInfo);
     }
 
-    @ApiOperation(value = "发放卡券")
+    @Operation(summary="发放卡券")
     @RequestMapping(value = "/sendCoupon", method = RequestMethod.POST)
     @CrossOrigin
     public ResponseObject sendCoupon(HttpServletRequest request, @RequestBody CouponReceiveParam receiveParam) throws BusinessCheckException {

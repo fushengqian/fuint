@@ -1,6 +1,6 @@
 package com.fuint.common.dto.order;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import java.io.Serializable;
 
@@ -13,42 +13,42 @@ import java.io.Serializable;
 @Data
 public class AddressDto implements Serializable {
 
-    @ApiModelProperty("账户主键ID")
+    @Schema(description="账户主键ID")
     private Integer id;
 
-    @ApiModelProperty("会员ID")
+    @Schema(description="会员ID")
     private Integer userId;
 
-    @ApiModelProperty("会员名称")
+    @Schema(description="会员名称")
     private String name;
 
-    @ApiModelProperty("会员手机号")
+    @Schema(description="会员手机号")
     private String mobile;
 
-    @ApiModelProperty("省份ID")
+    @Schema(description="省份ID")
     private Integer provinceId;
 
-    @ApiModelProperty("省份名称")
+    @Schema(description="省份名称")
     private String provinceName;
 
-    @ApiModelProperty("城市ID")
+    @Schema(description="城市ID")
     private Integer cityId;
 
-    @ApiModelProperty("城市名称")
+    @Schema(description="城市名称")
     private String cityName;
 
-    @ApiModelProperty("区ID")
+    @Schema(description="区ID")
     private Integer regionId;
 
-    @ApiModelProperty("区名称")
+    @Schema(description="区名称")
     private String regionName;
 
-    @ApiModelProperty("详细地址")
+    @Schema(description="详细地址")
     private String detail;
 
-    @ApiModelProperty("是否默认地址")
+    @Schema(description="是否默认地址")
     private String isDefault;
 
-    @ApiModelProperty("状态")
+    @Schema(description="状态")
     private String status;
 }

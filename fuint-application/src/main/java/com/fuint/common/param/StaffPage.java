@@ -1,6 +1,6 @@
 package com.fuint.common.param;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import java.io.Serializable;
 
@@ -13,19 +13,19 @@ import java.io.Serializable;
 @Data
 public class StaffPage extends PageParam implements Serializable {
 
-    @ApiModelProperty("类别")
+    @Schema(description="类别")
     private Integer category;
 
-    @ApiModelProperty("真实姓名")
+    @Schema(description="真实姓名")
     private String realName;
 
-    @ApiModelProperty("手机号")
+    @Schema(description="手机号")
     private String mobile;
 
-    @ApiModelProperty("搜索关键字")
+    @Schema(description="搜索关键字")
     private String keyword;
 
-    @ApiModelProperty("认证状态")
+    @Schema(description="认证状态")
     private String auditedStatus;
 
 }

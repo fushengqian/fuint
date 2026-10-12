@@ -1,6 +1,6 @@
 package com.fuint.common.param;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -14,13 +14,13 @@ import java.math.BigDecimal;
 @Data
 public class WithdrawParam implements Serializable {
 
-    @ApiModelProperty(value="用户ID")
+    @Schema(description="用户ID")
     private Integer userId;
 
-    @ApiModelProperty("提现金额")
+    @Schema(description="提现金额")
     private BigDecimal amount;
 
-    @ApiModelProperty(value="备注说明")
+    @Schema(description="备注说明")
     private String remark;
 
 }

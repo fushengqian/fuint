@@ -1,7 +1,7 @@
 package com.fuint.common.dto.coupon;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -16,60 +16,60 @@ import java.math.BigDecimal;
 @Data
 public class GiveDto implements Serializable {
 
-    @ApiModelProperty("自增ID")
+    @Schema(description="自增ID")
     private Integer id;
 
-    @ApiModelProperty("获赠者会员ID")
+    @Schema(description="获赠者会员ID")
     private Integer userId;
 
-    @ApiModelProperty("店铺ID")
+    @Schema(description="店铺ID")
     private Integer storeId;
 
-    @ApiModelProperty("赠送者会员ID")
+    @Schema(description="赠送者会员ID")
     private Integer giveUserId;
 
-    @ApiModelProperty("获赠者手机号")
+    @Schema(description="获赠者手机号")
     private String mobile;
 
-    @ApiModelProperty("转赠者手机号")
+    @Schema(description="转赠者手机号")
     private String userMobile;
 
-    @ApiModelProperty("分组ID，逗号隔开")
+    @Schema(description="分组ID，逗号隔开")
     private String groupIds;
 
-    @ApiModelProperty("分组名称，逗号隔开")
+    @Schema(description="分组名称，逗号隔开")
     private String groupNames;
 
-    @ApiModelProperty("图片")
+    @Schema(description="图片")
     private String image;
 
-    @ApiModelProperty("券ID，逗号隔开")
+    @Schema(description="券ID，逗号隔开")
     private String couponIds;
 
-    @ApiModelProperty("券名称，逗号隔开")
+    @Schema(description="券名称，逗号隔开")
     private String couponNames;
 
-    @ApiModelProperty("数量")
+    @Schema(description="数量")
     private Integer num;
 
-    @ApiModelProperty("总金额")
+    @Schema(description="总金额")
     private BigDecimal money;
 
-    @ApiModelProperty("备注")
+    @Schema(description="备注")
     private String note;
 
-    @ApiModelProperty("留言")
+    @Schema(description="留言")
     private String message;
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
-    @ApiModelProperty("赠送时间")
+    @Schema(description="赠送时间")
     private String createTime;
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
-    @ApiModelProperty("更新时间")
+    @Schema(description="更新时间")
     private String updateTime;
 
-    @ApiModelProperty("状态，A正常；C取消 ")
+    @Schema(description="状态，A正常；C取消 ")
     private String status;
 
 }

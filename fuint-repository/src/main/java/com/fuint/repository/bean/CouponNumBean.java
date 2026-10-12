@@ -1,8 +1,7 @@
 package com.fuint.repository.bean;
 
 import java.io.Serializable;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 /**
@@ -12,15 +11,15 @@ import lombok.Data;
  * CopyRight https://www.fuint.cn
  */
 @Data
-@ApiModel(value = "卡券数量对象", description = "卡券数量对象")
+@Schema(name="卡券数量对象", description="卡券数量对象")
 public class CouponNumBean implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @ApiModelProperty("卡券ID")
+    @Schema(description="卡券ID")
     private Integer couponId;
 
-    @ApiModelProperty("数量")
+    @Schema(description="数量")
     private Long num;
 
 }

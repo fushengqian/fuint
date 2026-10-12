@@ -1,6 +1,6 @@
 package com.fuint.common.param;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import java.io.Serializable;
 
@@ -13,22 +13,22 @@ import java.io.Serializable;
 @Data
 public class UserCouponPage extends PageParam implements Serializable {
 
-    @ApiModelProperty("会员卡券ID")
+    @Schema(description="会员卡券ID")
     private Integer id;
 
-    @ApiModelProperty("会员ID")
+    @Schema(description="会员ID")
     private Integer userId;
 
-    @ApiModelProperty("卡券ID")
+    @Schema(description="卡券ID")
     private Integer couponId;
 
-    @ApiModelProperty("核销码")
+    @Schema(description="核销码")
     private String code;
 
-    @ApiModelProperty("手机号")
+    @Schema(description="手机号")
     private String mobile;
 
-    @ApiModelProperty("状态，A正常；D作废")
+    @Schema(description="状态，A正常；D作废")
     private String status;
 
 }

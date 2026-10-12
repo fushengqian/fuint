@@ -17,8 +17,8 @@ import com.fuint.repository.model.MtMerchant;
 import com.fuint.repository.model.MtStore;
 import com.fuint.repository.model.MtUser;
 import com.fuint.utils.StringUtil;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -26,7 +26,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -38,7 +38,7 @@ import java.util.Map;
  * Created by FSQ
  * CopyRight https://www.fuint.cn
  */
-@Api(tags="会员端-系统配置相关接口")
+@Tag(name="会员端-系统配置相关接口")
 @RestController
 @AllArgsConstructor
 @RequestMapping(value = "/clientApi/system")
@@ -67,7 +67,7 @@ public class ClientSystemController extends BaseController {
     /**
      * 获取系统配置
      */
-    @ApiOperation(value = "获取系统配置")
+    @Operation(summary="获取系统配置")
     @RequestMapping(value = "/config", method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject config(HttpServletRequest request) throws BusinessCheckException {

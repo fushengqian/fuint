@@ -9,7 +9,7 @@ import nl.bitwalker.useragentutils.UserAgent;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import java.security.SecureRandom;
 import java.text.SimpleDateFormat;
 import java.util.Date;

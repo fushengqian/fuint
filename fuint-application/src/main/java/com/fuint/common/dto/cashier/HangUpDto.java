@@ -1,7 +1,7 @@
 package com.fuint.common.dto.cashier;
 
 import com.fuint.repository.model.MtUser;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 import java.math.BigDecimal;
@@ -15,22 +15,22 @@ import java.math.BigDecimal;
 @Data
 public class HangUpDto {
 
-    @ApiModelProperty("挂单号")
+    @Schema(description="挂单号")
     private String hangNo;
 
-    @ApiModelProperty("是否空白")
+    @Schema(description="是否空白")
     private Boolean isEmpty;
 
-    @ApiModelProperty("会员信息")
+    @Schema(description="会员信息")
     private MtUser memberInfo;
 
-    @ApiModelProperty("件数")
+    @Schema(description="件数")
     private Double num;
 
-    @ApiModelProperty("金额")
+    @Schema(description="金额")
     private BigDecimal amount;
 
-    @ApiModelProperty("时间")
+    @Schema(description="时间")
     private String dateTime;
 
 }

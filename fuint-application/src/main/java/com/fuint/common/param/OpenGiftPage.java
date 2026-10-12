@@ -1,6 +1,6 @@
 package com.fuint.common.param;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import java.io.Serializable;
 
@@ -13,12 +13,12 @@ import java.io.Serializable;
 @Data
 public class OpenGiftPage extends PageParam implements Serializable {
 
-    @ApiModelProperty("卡券ID")
+    @Schema(description="卡券ID")
     private Integer couponId;
 
-    @ApiModelProperty("会员等级")
+    @Schema(description="会员等级")
     private Integer gradeId;
 
-    @ApiModelProperty("状态")
+    @Schema(description="状态")
     private String status;
 }

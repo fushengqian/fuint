@@ -1,6 +1,6 @@
 package com.fuint.common.dto.common;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import java.io.Serializable;
 
@@ -13,12 +13,12 @@ import java.io.Serializable;
 @Data
 public class DayDto implements Serializable {
 
-    @ApiModelProperty("星期")
+    @Schema(description="星期")
     private String week;
 
-    @ApiModelProperty("日期")
+    @Schema(description="日期")
     private String date;
 
-    @ApiModelProperty("是否可预订")
+    @Schema(description="是否可预订")
     private Boolean enable;
 }

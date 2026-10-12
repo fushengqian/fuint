@@ -1,6 +1,6 @@
 package com.fuint.module.clientApi.request;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import java.io.Serializable;
 
@@ -13,22 +13,22 @@ import java.io.Serializable;
 @Data
 public class GoodsSearchRequest implements Serializable {
 
-    @ApiModelProperty(value="当前页码", name="page")
+    @Schema(description="当前页码", name="page")
     private Integer page;
 
-    @ApiModelProperty(value="每页数量", name="pageSize")
+    @Schema(description="每页数量", name="pageSize")
     private Integer pageSize;
 
-    @ApiModelProperty(value="商品名称", name="name")
+    @Schema(description="商品名称", name="name")
     private String name;
 
-    @ApiModelProperty(value="商品分类", name="cateId")
+    @Schema(description="商品分类", name="cateId")
     private Integer cateId;
 
-    @ApiModelProperty(value="排序类型", name="sortType")
+    @Schema(description="排序类型", name="sortType")
     private String sortType;
 
-    @ApiModelProperty(value="价格排序", name="sortPrice")
+    @Schema(description="价格排序", name="sortPrice")
     private String sortPrice;
 
 }

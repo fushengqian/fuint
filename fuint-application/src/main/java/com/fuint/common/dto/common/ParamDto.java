@@ -1,6 +1,6 @@
 package com.fuint.common.dto.common;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import java.io.Serializable;
 
@@ -13,13 +13,13 @@ import java.io.Serializable;
 @Data
 public class ParamDto implements Serializable {
 
-    @ApiModelProperty("参数键值")
+    @Schema(description="参数键值")
     private String key;
 
-    @ApiModelProperty("参数名称")
+    @Schema(description="参数名称")
     private String name;
 
-    @ApiModelProperty("参数值")
+    @Schema(description="参数值")
     private String value;
 
     public ParamDto(String key, String name, String value) {

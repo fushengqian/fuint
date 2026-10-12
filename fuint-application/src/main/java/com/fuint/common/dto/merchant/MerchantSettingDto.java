@@ -1,7 +1,7 @@
 package com.fuint.common.dto.merchant;
 
 import java.io.Serializable;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 /**
@@ -13,22 +13,22 @@ import lombok.Data;
 @Data
 public class MerchantSettingDto implements Serializable {
 
-    @ApiModelProperty("自增ID")
+    @Schema(description="自增ID")
     private Integer id;
 
-    @ApiModelProperty("商户名称")
+    @Schema(description="商户名称")
     private String name;
 
-    @ApiModelProperty("商户logo")
+    @Schema(description="商户logo")
     private String logo;
 
-    @ApiModelProperty("联系人姓名")
+    @Schema(description="联系人姓名")
     private String contact;
 
-    @ApiModelProperty("联系电话")
+    @Schema(description="联系电话")
     private String phone;
 
-    @ApiModelProperty("营业状态")
+    @Schema(description="营业状态")
     private String status;
 
 }

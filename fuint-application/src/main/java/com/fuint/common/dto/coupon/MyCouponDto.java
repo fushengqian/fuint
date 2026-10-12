@@ -2,7 +2,7 @@ package com.fuint.common.dto.coupon;
 
 import com.fuint.repository.model.MtStore;
 import com.fuint.repository.model.MtUser;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -17,61 +17,61 @@ import java.util.Date;
 @Data
 public class MyCouponDto implements Serializable {
 
-    @ApiModelProperty("自增ID")
+    @Schema(description="自增ID")
     private Integer id;
 
-    @ApiModelProperty("卡券名称")
+    @Schema(description="卡券名称")
     private String name;
 
-    @ApiModelProperty("核销编码")
+    @Schema(description="核销编码")
     private String code;
 
-    @ApiModelProperty("卡券类型")
+    @Schema(description="卡券类型")
     private String type;
 
-    @ApiModelProperty("卡券内容")
+    @Schema(description="卡券内容")
     private Integer content;
 
-    @ApiModelProperty("状态")
+    @Schema(description="状态")
     private String status;
 
-    @ApiModelProperty("卡券ID")
+    @Schema(description="卡券ID")
     private Integer couponId;
 
-    @ApiModelProperty("使用规则")
+    @Schema(description="使用规则")
     private String useRule;
 
-    @ApiModelProperty("图片")
+    @Schema(description="图片")
     private String image;
 
-    @ApiModelProperty("面额")
+    @Schema(description="面额")
     private BigDecimal amount;
 
-    @ApiModelProperty("余额")
+    @Schema(description="余额")
     private BigDecimal balance;
 
-    @ApiModelProperty("剩余次数")
+    @Schema(description="剩余次数")
     private Integer num;
 
-    @ApiModelProperty("是否可用")
+    @Schema(description="是否可用")
     private boolean canUse;
 
-    @ApiModelProperty("有效期")
+    @Schema(description="有效期")
     private String effectiveDate;
 
-    @ApiModelProperty("提示信息")
+    @Schema(description="提示信息")
     private String tips;
 
-    @ApiModelProperty("使用时间")
+    @Schema(description="使用时间")
     private Date usedTime;
 
-    @ApiModelProperty("领券时间")
+    @Schema(description="领券时间")
     private Date createTime;
 
-    @ApiModelProperty("会员信息")
+    @Schema(description="会员信息")
     private MtUser userInfo;
 
-    @ApiModelProperty("使用店铺")
+    @Schema(description="使用店铺")
     private MtStore storeInfo;
 
 }

@@ -1,7 +1,7 @@
 package com.fuint.module.clientApi.request;
 
 import com.fuint.common.param.PageParam;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import java.io.Serializable;
 
@@ -14,13 +14,13 @@ import java.io.Serializable;
 @Data
 public class RefundListRequest extends PageParam implements Serializable {
 
-    @ApiModelProperty(value="会员ID", name="userId")
+    @Schema(description="会员ID", name="userId")
     private Integer userId;
 
-    @ApiModelProperty(value="关键字", name="keyword")
+    @Schema(description="关键字", name="keyword")
     private String keyword;
 
-    @ApiModelProperty(value="状态", name="status")
+    @Schema(description="状态", name="status")
     private String status;
 
 }

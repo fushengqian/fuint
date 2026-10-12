@@ -1,6 +1,6 @@
 package com.fuint.common.param;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import java.io.Serializable;
 
@@ -12,7 +12,7 @@ import java.io.Serializable;
 @Data
 public class OrderDetailParam implements Serializable {
 
-    @ApiModelProperty(value="订单ID", name="orderId")
+    @Schema(description="订单ID", name="orderId")
     private String orderId;
 
 }

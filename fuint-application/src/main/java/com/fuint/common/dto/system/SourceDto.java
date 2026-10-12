@@ -1,6 +1,6 @@
 package com.fuint.common.dto.system;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import java.io.Serializable;
 import java.util.List;
@@ -14,58 +14,58 @@ import java.util.List;
 @Data
 public class SourceDto implements Serializable {
 
-    @ApiModelProperty("自增ID")
+    @Schema(description="自增ID")
     private long id;
 
-    @ApiModelProperty("商户ID")
+    @Schema(description="商户ID")
     private Integer merchantId;
 
-    @ApiModelProperty("菜单名称")
+    @Schema(description="菜单名称")
     private String name;
 
-    @ApiModelProperty("菜单名称(字母)")
+    @Schema(description="菜单名称(字母)")
     private String ename;
 
-    @ApiModelProperty("节点是否打开")
+    @Schema(description="节点是否打开")
     private Boolean open;
 
-    @ApiModelProperty("是否菜单")
+    @Schema(description="是否菜单")
     private int isMenu;
 
-    @ApiModelProperty("节点是否选中")
+    @Schema(description="节点是否选中")
     private Boolean checked;
 
-    @ApiModelProperty("url")
+    @Schema(description="url")
     private String url;
 
-    @ApiModelProperty("路径")
+    @Schema(description="路径")
     private String path;
 
-    @ApiModelProperty("权限标识")
+    @Schema(description="权限标识")
     private String perms;
 
-    @ApiModelProperty("菜单级别")
+    @Schema(description="菜单级别")
     private int level;
 
-    @ApiModelProperty("上级菜单")
+    @Schema(description="上级菜单")
     private long parentId;
 
-    @ApiModelProperty("子菜单")
+    @Schema(description="子菜单")
     private List<SourceDto> children;
 
-    @ApiModelProperty("图标")
+    @Schema(description="图标")
     private String icon;
 
-    @ApiModelProperty("新图标")
+    @Schema(description="新图标")
     private String newIcon;
 
-    @ApiModelProperty("描述信息")
+    @Schema(description="描述信息")
     private String description;
 
-    @ApiModelProperty("排序")
+    @Schema(description="排序")
     private String sort;
 
-    @ApiModelProperty("状态")
+    @Schema(description="状态")
     private String status;
 
 }

@@ -1,6 +1,6 @@
 package com.fuint.common.dto.report;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -16,34 +16,34 @@ import java.util.List;
 @Data
 public class DailySalesReportDto implements Serializable {
 
-    @ApiModelProperty("总订单数量")
+    @Schema(description="总订单数量")
     private Integer totalOrderCount;
 
-    @ApiModelProperty("总销售金额")
+    @Schema(description="总销售金额")
     private BigDecimal totalSalesAmount;
 
-    @ApiModelProperty("总现金支付金额")
+    @Schema(description="总现金支付金额")
     private BigDecimal totalCashAmount;
 
-    @ApiModelProperty("总微信支付金额")
+    @Schema(description="总微信支付金额")
     private BigDecimal totalWechatAmount;
 
-    @ApiModelProperty("总支付宝支付金额")
+    @Schema(description="总支付宝支付金额")
     private BigDecimal totalAliPayAmount;
 
-    @ApiModelProperty("总积分支付金额")
+    @Schema(description="总积分支付金额")
     private BigDecimal totalPointAmount;
 
-    @ApiModelProperty("总卡券核销金额")
+    @Schema(description="总卡券核销金额")
     private BigDecimal totalCouponAmount;
 
-    @ApiModelProperty("总余额支付金额")
+    @Schema(description="总余额支付金额")
     private BigDecimal totalBalanceAmount;
 
-    @ApiModelProperty("列表数据")
+    @Schema(description="列表数据")
     private List<DailySalesItemDto> dataList;
 
-    @ApiModelProperty("总数量")
+    @Schema(description="总数量")
     private Integer total;
 }
 

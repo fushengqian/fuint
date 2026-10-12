@@ -1,6 +1,6 @@
 package com.fuint.common.param;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import java.io.Serializable;
 
@@ -13,25 +13,25 @@ import java.io.Serializable;
 @Data
 public class MemberInfoParam extends PageParam implements Serializable {
 
-    @ApiModelProperty(value="ID", name="id")
+    @Schema(description="ID", name="id")
     private Integer id;
 
-    @ApiModelProperty(value="手机号", name="mobile")
+    @Schema(description="手机号", name="mobile")
     private String mobile;
 
-    @ApiModelProperty(value="头像", name="avatar")
+    @Schema(description="头像", name="avatar")
     private String avatar;
 
-    @ApiModelProperty(value="称呼", name="name")
+    @Schema(description="称呼", name="name")
     private String name;
 
-    @ApiModelProperty(value="性别", name="sex")
+    @Schema(description="性别", name="sex")
     private Integer sex;
 
-    @ApiModelProperty(value="生日", name="birthday")
+    @Schema(description="生日", name="birthday")
     private String birthday;
 
-    @ApiModelProperty(value="会员号", name="userNo")
+    @Schema(description="会员号", name="userNo")
     private String userNo;
 
 }

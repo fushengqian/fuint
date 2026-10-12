@@ -3,10 +3,13 @@ package com.fuint.common.util;
 import com.fuint.utils.StringUtil;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
 import java.net.InetAddress;
@@ -528,5 +531,55 @@ public class CommonUtil {
         }
 
         return result.toString();
+    }
+
+    /**
+     * 读取请求体内容（微信支付/退款回调的 xml 报文）
+     *
+     * 替代 IJPay 的 HttpKit.readData：后者的方法签名是 javax.servlet.http.HttpServletRequest，
+     * Spring Boot 3 迁移到 jakarta.servlet 后无法传入，故在此自行实现。
+     *
+     * @param request 请求
+     * @return 请求体字符串，读取失败时返回空串
+     */
+    public static String readRequestBody(HttpServletRequest request) {
+        if (request == null) {
+            return "";
+        }
+        try (InputStream inputStream = request.getInputStream()) {
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            byte[] buffer = new byte[1024];
+            int length;
+            while ((length = inputStream.read(buffer)) != -1) {
+                outputStream.write(buffer, 0, length);
+            }
+            return new String(outputStream.toByteArray(), StandardCharsets.UTF_8);
+        } catch (IOException e) {
+            return "";
+        }
+    }
+
+    /**
+     * 将请求参数转换为 Map（支付宝回调的表单参数）
+     *
+     * 替代 IJPay 的 AliPayApi.toMap：同上，其签名依赖 javax.servlet。
+     *
+     * @param request 请求
+     * @return 参数 Map
+     */
+    public static Map<String, String> requestParamsToMap(HttpServletRequest request) {
+        Map<String, String> params = new HashMap<>();
+        if (request == null) {
+            return params;
+        }
+        Map<String, String[]> parameterMap = request.getParameterMap();
+        if (parameterMap == null) {
+            return params;
+        }
+        for (Map.Entry<String, String[]> entry : parameterMap.entrySet()) {
+            String[] values = entry.getValue();
+            params.put(entry.getKey(), values != null && values.length > 0 ? values[0] : "");
+        }
+        return params;
     }
 }

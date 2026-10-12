@@ -1,6 +1,6 @@
 package com.fuint.common.param;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import java.io.Serializable;
 import java.util.List;
@@ -13,13 +13,13 @@ import java.util.List;
 @Data
 public class CartClearParam extends PageParam implements Serializable {
 
-    @ApiModelProperty(value="购物车ID", name="cartId")
+    @Schema(description="购物车ID", name="cartId")
     private List<String> cartId;
 
-    @ApiModelProperty(value="挂单编码", name="hangNo")
+    @Schema(description="挂单编码", name="hangNo")
     private String hangNo;
 
-    @ApiModelProperty(value="下单会员ID", name="userId")
+    @Schema(description="下单会员ID", name="userId")
     private Integer userId;
 
 }

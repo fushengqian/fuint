@@ -6,8 +6,7 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 /**
@@ -18,64 +17,64 @@ import lombok.Data;
  */
 @Data
 @TableName("mt_give")
-@ApiModel(value = "MtGive对象", description = "转赠记录表")
+@Schema(name="MtGive对象", description="转赠记录表")
 public class MtGive implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @ApiModelProperty("自增")
+    @Schema(description="自增")
     @TableId(value = "ID", type = IdType.AUTO)
     private Integer id;
 
-    @ApiModelProperty("获赠者用户ID")
+    @Schema(description="获赠者用户ID")
     private Integer userId;
 
-    @ApiModelProperty("商户ID")
+    @Schema(description="商户ID")
     private Integer merchantId;
 
-    @ApiModelProperty("店铺ID")
+    @Schema(description="店铺ID")
     private Integer storeId;
 
-    @ApiModelProperty("赠送者用户ID")
+    @Schema(description="赠送者用户ID")
     private Integer giveUserId;
 
-    @ApiModelProperty("赠予对象手机号")
+    @Schema(description="赠予对象手机号")
     private String mobile;
 
-    @ApiModelProperty("用户手机")
+    @Schema(description="用户手机")
     private String userMobile;
 
-    @ApiModelProperty("券组ID，逗号隔开")
+    @Schema(description="券组ID，逗号隔开")
     private String groupIds;
 
-    @ApiModelProperty("券组名称，逗号隔开")
+    @Schema(description="券组名称，逗号隔开")
     private String groupNames;
 
-    @ApiModelProperty("券ID，逗号隔开")
+    @Schema(description="券ID，逗号隔开")
     private String couponIds;
 
-    @ApiModelProperty("券名称，逗号隔开")
+    @Schema(description="券名称，逗号隔开")
     private String couponNames;
 
-    @ApiModelProperty("数量")
+    @Schema(description="数量")
     private Integer num;
 
-    @ApiModelProperty("总金额")
+    @Schema(description="总金额")
     private BigDecimal money;
 
-    @ApiModelProperty("备注")
+    @Schema(description="备注")
     private String note;
 
-    @ApiModelProperty("留言")
+    @Schema(description="留言")
     private String message;
 
-    @ApiModelProperty("赠送时间")
+    @Schema(description="赠送时间")
     private Date createTime;
 
-    @ApiModelProperty("更新时间")
+    @Schema(description="更新时间")
     private Date updateTime;
 
-    @ApiModelProperty("状态，A正常；C取消")
+    @Schema(description="状态，A正常；C取消")
     private String status;
 
 

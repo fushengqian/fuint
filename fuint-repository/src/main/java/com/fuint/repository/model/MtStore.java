@@ -6,8 +6,7 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 /**
@@ -18,97 +17,97 @@ import lombok.Data;
  */
 @Data
 @TableName("mt_store")
-@ApiModel(value = "MtStore对象", description = "店铺表")
+@Schema(name="MtStore对象", description="店铺表")
 public class MtStore implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @ApiModelProperty("自增ID")
+    @Schema(description="自增ID")
     @TableId(value = "ID", type = IdType.AUTO)
     private Integer id;
 
-    @ApiModelProperty("所属商户ID")
+    @Schema(description="所属商户ID")
     private Integer merchantId;
 
-    @ApiModelProperty("店铺名称")
+    @Schema(description="店铺名称")
     private String name;
 
-    @ApiModelProperty("商户logo")
+    @Schema(description="商户logo")
     private String logo;
 
-    @ApiModelProperty("店铺二维码")
+    @Schema(description="店铺二维码")
     private String qrCode;
 
-    @ApiModelProperty("是否默认")
+    @Schema(description="是否默认")
     private String isDefault;
 
-    @ApiModelProperty("联系人姓名")
+    @Schema(description="联系人姓名")
     private String contact;
 
-    @ApiModelProperty("微信支付商户号")
+    @Schema(description="微信支付商户号")
     private String wxMchId;
 
-    @ApiModelProperty("微信支付APIv2密钥")
+    @Schema(description="微信支付APIv2密钥")
     private String wxApiV2;
 
-    @ApiModelProperty("微信支付证书")
+    @Schema(description="微信支付证书")
     private String wxCertPath;
 
-    @ApiModelProperty("支付宝appId")
+    @Schema(description="支付宝appId")
     private String alipayAppId;
 
-    @ApiModelProperty("支付宝应用私钥")
+    @Schema(description="支付宝应用私钥")
     private String alipayPrivateKey;
 
-    @ApiModelProperty("支付宝应用公钥")
+    @Schema(description="支付宝应用公钥")
     private String alipayPublicKey;
 
-    @ApiModelProperty("联系电话")
+    @Schema(description="联系电话")
     private String phone;
 
-    @ApiModelProperty("地址")
+    @Schema(description="地址")
     private String address;
 
-    @ApiModelProperty("经度")
+    @Schema(description="经度")
     private String latitude;
 
-    @ApiModelProperty("维度")
+    @Schema(description="维度")
     private String longitude;
 
-    @ApiModelProperty("距离")
+    @Schema(description="距离")
     private BigDecimal distance;
 
-    @ApiModelProperty("营业时间")
+    @Schema(description="营业时间")
     private String hours;
 
-    @ApiModelProperty("营业执照")
+    @Schema(description="营业执照")
     private String license;
 
-    @ApiModelProperty("统一社会信用代码")
+    @Schema(description="统一社会信用代码")
     private String creditCode;
 
-    @ApiModelProperty("银行名称")
+    @Schema(description="银行名称")
     private String bankName;
 
-    @ApiModelProperty("银行卡账户名")
+    @Schema(description="银行卡账户名")
     private String bankCardName;
 
-    @ApiModelProperty("银行卡卡号")
+    @Schema(description="银行卡卡号")
     private String bankCardNo;
 
-    @ApiModelProperty("备注信息")
+    @Schema(description="备注信息")
     private String description;
 
-    @ApiModelProperty("创建时间")
+    @Schema(description="创建时间")
     private Date createTime;
 
-    @ApiModelProperty("更新时间")
+    @Schema(description="更新时间")
     private Date updateTime;
 
-    @ApiModelProperty("状态，A：有效/启用；D：无效")
+    @Schema(description="状态，A：有效/启用；D：无效")
     private String status;
 
-    @ApiModelProperty("最后操作人")
+    @Schema(description="最后操作人")
     private String operator;
 
 }

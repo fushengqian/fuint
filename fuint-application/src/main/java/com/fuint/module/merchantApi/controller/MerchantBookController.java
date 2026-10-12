@@ -19,8 +19,8 @@ import com.fuint.repository.model.MtBookItem;
 import com.fuint.repository.model.MtStaff;
 import com.fuint.repository.model.MtUser;
 import com.fuint.utils.StringUtil;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -33,7 +33,7 @@ import java.util.Map;
  * Created by FSQ
  * CopyRight https://www.fuint.cn
  */
-@Api(tags="商户端-预约管理相关接口")
+@Tag(name="商户端-预约管理相关接口")
 @RestController
 @AllArgsConstructor
 @RequestMapping(value = "/merchantApi/book")
@@ -57,7 +57,7 @@ public class MerchantBookController extends BaseController {
     /**
      * 获取预约单列表
      */
-    @ApiOperation(value = "获取预约单列表")
+    @Operation(summary="获取预约单列表")
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @CrossOrigin
     public ResponseObject list(@RequestBody BookListRequest requestParams) throws BusinessCheckException {
@@ -95,7 +95,7 @@ public class MerchantBookController extends BaseController {
     /**
      * 获取预约单详情
      */
-    @ApiOperation(value = "获取预约单详情")
+    @Operation(summary="获取预约单详情")
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @CrossOrigin
     public ResponseObject detail(@RequestBody BookDetailParam param) throws BusinessCheckException {
@@ -119,7 +119,7 @@ public class MerchantBookController extends BaseController {
     /**
      * 取消预约
      */
-    @ApiOperation(value = "取消预约")
+    @Operation(summary="取消预约")
     @RequestMapping(value = "/cancel", method = RequestMethod.POST)
     @CrossOrigin
     public ResponseObject cancel(@RequestBody BookDetailParam param) throws BusinessCheckException {
@@ -149,7 +149,7 @@ public class MerchantBookController extends BaseController {
     /**
      * 确定预约
      */
-    @ApiOperation(value = "确定预约")
+    @Operation(summary="确定预约")
     @RequestMapping(value = "/confirm", method = RequestMethod.POST)
     @CrossOrigin
     public ResponseObject confirm(@RequestBody BookConfirmParam param) throws BusinessCheckException {

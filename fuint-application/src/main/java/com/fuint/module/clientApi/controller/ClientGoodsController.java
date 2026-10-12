@@ -20,12 +20,12 @@ import com.fuint.repository.model.MtGoodsCate;
 import com.fuint.repository.model.MtGoodsSku;
 import com.fuint.repository.model.MtGoodsSpec;
 import com.fuint.utils.StringUtil;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.*;
 
 /**
@@ -34,7 +34,7 @@ import java.util.*;
  * Created by FSQ
  * CopyRight https://www.fuint.cn
  */
-@Api(tags="会员端-商品相关接口")
+@Tag(name="会员端-商品相关接口")
 @RestController
 @AllArgsConstructor
 @RequestMapping(value = "/clientApi/goodsApi")
@@ -63,7 +63,7 @@ public class ClientGoodsController extends BaseController {
     /**
      * 获取商品分类列表
      */
-    @ApiOperation(value = "获取商品分类列表")
+    @Operation(summary="获取商品分类列表")
     @RequestMapping(value = "/cateList", method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject cateList(HttpServletRequest request) {
@@ -108,7 +108,7 @@ public class ClientGoodsController extends BaseController {
     /**
      * 获取商品列表
      */
-    @ApiOperation(value = "获取商品列表")
+    @Operation(summary="获取商品列表")
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject list(HttpServletRequest request) throws BusinessCheckException {
@@ -121,7 +121,7 @@ public class ClientGoodsController extends BaseController {
     /**
      * 搜索商品
      */
-    @ApiOperation(value = "搜索商品")
+    @Operation(summary="搜索商品")
     @RequestMapping(value = "/search", method = RequestMethod.POST)
     @CrossOrigin
     public ResponseObject search(HttpServletRequest request, @RequestBody GoodsListParam params) {
@@ -151,7 +151,7 @@ public class ClientGoodsController extends BaseController {
     /**
      * 获取积分兑换商品列表
      */
-    @ApiOperation(value = "获取积分兑换商品列表")
+    @Operation(summary="获取积分兑换商品列表")
     @RequestMapping(value = "/pointList", method = RequestMethod.POST)
     @CrossOrigin
     public ResponseObject pointList(HttpServletRequest request, @RequestBody GoodsListParam params) {
@@ -179,7 +179,7 @@ public class ClientGoodsController extends BaseController {
     /**
      * 获取商品详情
      */
-    @ApiOperation(value = "获取商品详情")
+    @Operation(summary="获取商品详情")
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @CrossOrigin
     public ResponseObject detail(@RequestBody GoodsInfoParam goodsInfoParam) throws BusinessCheckException {
@@ -303,7 +303,7 @@ public class ClientGoodsController extends BaseController {
     /**
      * 通过sku编码获取商品信息
      * */
-    @ApiOperation(value = "通过sku编码获取商品信息")
+    @Operation(summary="通过sku编码获取商品信息")
     @RequestMapping(value = "/getGoodsInfoBySkuNo", method = RequestMethod.POST)
     @CrossOrigin
     public ResponseObject getGoodsInfoBySkuNo(HttpServletRequest request, @RequestBody GoodsInfoParam goodsInfoParam) throws BusinessCheckException {

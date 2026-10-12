@@ -17,8 +17,8 @@ import com.fuint.framework.web.BaseController;
 import com.fuint.framework.web.ResponseObject;
 import com.fuint.repository.model.*;
 import com.fuint.utils.StringUtil;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -31,7 +31,7 @@ import java.util.*;
  * Created by FSQ
  * CopyRight https://www.fuint.cn
  */
-@Api(tags="商户端-商品管理相关接口")
+@Tag(name="商户端-商品管理相关接口")
 @RestController
 @AllArgsConstructor
 @RequestMapping(value = "/merchantApi/goods")
@@ -65,7 +65,7 @@ public class MerchantGoodsController extends BaseController {
     /**
      * 获取商品列表
      */
-    @ApiOperation(value = "获取商品列表")
+    @Operation(summary="获取商品列表")
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @CrossOrigin
     public ResponseObject list(@RequestBody GoodsListParam param) throws BusinessCheckException {
@@ -95,7 +95,7 @@ public class MerchantGoodsController extends BaseController {
     /**
      * 获取商品详情
      */
-    @ApiOperation(value = "获取商品详情")
+    @Operation(summary="获取商品详情")
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @CrossOrigin
     public ResponseObject detail(@RequestBody Map<String, Object> param) throws BusinessCheckException {
@@ -142,7 +142,7 @@ public class MerchantGoodsController extends BaseController {
     /**
      * 保存商品信息（新增/编辑）
      */
-    @ApiOperation(value = "保存商品信息")
+    @Operation(summary="保存商品信息")
     @RequestMapping(value = "/save", method = RequestMethod.POST)
     @CrossOrigin
     public ResponseObject save(@RequestBody Map<String, Object> param) throws BusinessCheckException {
@@ -214,7 +214,7 @@ public class MerchantGoodsController extends BaseController {
     /**
      * 更新商品状态（启用/禁用/删除）
      */
-    @ApiOperation(value = "更新商品状态")
+    @Operation(summary="更新商品状态")
     @RequestMapping(value = "/updateStatus", method = RequestMethod.POST)
     @CrossOrigin
     public ResponseObject updateStatus(@RequestBody StatusParam params) throws BusinessCheckException {

@@ -1,6 +1,6 @@
 package com.fuint.module.backendApi.request;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import java.io.Serializable;
 
@@ -13,18 +13,18 @@ import java.io.Serializable;
 @Data
 public class CommissionCashRequest implements Serializable {
 
-    @ApiModelProperty(value="ID", name="id")
+    @Schema(description="ID", name="id")
     private Integer id;
 
-    @ApiModelProperty(value="分佣金额", name="amount")
+    @Schema(description="分佣金额", name="amount")
     private String amount;
 
-    @ApiModelProperty(value="备注说明", name="description")
+    @Schema(description="备注说明", name="description")
     private String description;
 
-    @ApiModelProperty(value="状态", name="status")
+    @Schema(description="状态", name="status")
     private String status;
 
-    @ApiModelProperty(value="最后操作人", name="operator")
+    @Schema(description="最后操作人", name="operator")
     private String operator;
 }

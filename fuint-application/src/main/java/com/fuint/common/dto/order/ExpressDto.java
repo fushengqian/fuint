@@ -1,6 +1,6 @@
 package com.fuint.common.dto.order;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 /**
@@ -12,16 +12,16 @@ import lombok.Data;
 @Data
 public class ExpressDto {
 
-    @ApiModelProperty("物流公司名称")
+    @Schema(description="物流公司名称")
     private String expressCompany;
 
-    @ApiModelProperty("物流公司编码")
+    @Schema(description="物流公司编码")
     private String expressCode;
 
-    @ApiModelProperty("物流单号")
+    @Schema(description="物流单号")
     private String expressNo;
 
-    @ApiModelProperty("发货时间")
+    @Schema(description="发货时间")
     private String expressTime;
 
 }

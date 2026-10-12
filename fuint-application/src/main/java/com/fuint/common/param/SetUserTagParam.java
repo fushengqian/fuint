@@ -1,6 +1,6 @@
 package com.fuint.common.param;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -15,10 +15,10 @@ import java.util.List;
 @Data
 public class SetUserTagParam implements Serializable {
 
-    @ApiModelProperty(value="会员ID", name="userId", required = true)
+    @Schema(description="会员ID", name="userId", requiredMode=Schema.RequiredMode.REQUIRED)
     private Integer userId;
 
-    @ApiModelProperty(value="标签ID列表", name="tagIds")
+    @Schema(description="标签ID列表", name="tagIds")
     private List<Integer> tagIds;
 
 }

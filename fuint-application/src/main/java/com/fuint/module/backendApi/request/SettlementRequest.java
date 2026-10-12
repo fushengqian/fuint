@@ -1,6 +1,6 @@
 package com.fuint.module.backendApi.request;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import java.io.Serializable;
 
@@ -13,24 +13,24 @@ import java.io.Serializable;
 @Data
 public class SettlementRequest implements Serializable {
 
-    @ApiModelProperty(value="商户ID", name="merchantId")
+    @Schema(description="商户ID", name="merchantId")
     private Integer merchantId;
 
-    @ApiModelProperty(value="结算ID", name="settlementId")
+    @Schema(description="结算ID", name="settlementId")
     private Integer settlementId;
 
-    @ApiModelProperty(value="店铺ID", name="storeId")
+    @Schema(description="店铺ID", name="storeId")
     private Integer storeId;
 
-    @ApiModelProperty(value="下单开始时间", name="startTime")
+    @Schema(description="下单开始时间", name="startTime")
     private String startTime;
 
-    @ApiModelProperty(value="下单结束时间", name="endTime")
+    @Schema(description="下单结束时间", name="endTime")
     private String endTime;
 
-    @ApiModelProperty(value="备注说明", name="remark")
+    @Schema(description="备注说明", name="remark")
     private String remark;
 
-    @ApiModelProperty(value="最后操作人", name="operator")
+    @Schema(description="最后操作人", name="operator")
     private String operator;
 }

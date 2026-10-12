@@ -19,8 +19,8 @@ import com.fuint.framework.web.ResponseObject;
 import com.fuint.repository.mapper.MtSendLogMapper;
 import com.fuint.repository.model.*;
 import com.fuint.utils.StringUtil;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.AllArgsConstructor;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.slf4j.Logger;
@@ -28,8 +28,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.HashMap;
@@ -44,7 +44,7 @@ import static com.fuint.common.util.XlsUtil.objectConvertToString;
  * Created by FSQ
  * CopyRight https://www.fuint.cn
  */
-@Api(tags="管理端-会员卡券统计相关接口")
+@Tag(name="管理端-会员卡券统计相关接口")
 @RestController
 @AllArgsConstructor
 @RequestMapping(value = "/backendApi/userCoupon")
@@ -82,7 +82,7 @@ public class BackendUserCouponController extends BaseController {
     /**
      * 查询会员卡券列表
      */
-    @ApiOperation(value = "查询会员卡券列表")
+    @Operation(summary="查询会员卡券列表")
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('coupon:userCoupon:index')")
@@ -132,7 +132,7 @@ public class BackendUserCouponController extends BaseController {
     /**
      * 核销用户卡券
      */
-    @ApiOperation(value = "核销用户卡券")
+    @Operation(summary="核销用户卡券")
     @RequestMapping(value = "/doConfirm", method = RequestMethod.GET)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('coupon:userCoupon:index')")
@@ -166,7 +166,7 @@ public class BackendUserCouponController extends BaseController {
     /**
      * 删除会员卡券
      */
-    @ApiOperation(value = "删除会员卡券")
+    @Operation(summary="删除会员卡券")
     @RequestMapping(value = "/delete/{id}", method = RequestMethod.GET)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('coupon:userCoupon:delete')")
@@ -201,7 +201,7 @@ public class BackendUserCouponController extends BaseController {
     /**
      * 导出会员卡券
      */
-    @ApiOperation(value = "导出会员卡券")
+    @Operation(summary="导出会员卡券")
     @RequestMapping(value = "/exportList", method = RequestMethod.GET)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('coupon:userCoupon:index')")

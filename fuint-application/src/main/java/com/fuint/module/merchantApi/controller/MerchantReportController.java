@@ -12,12 +12,12 @@ import com.fuint.framework.web.ResponseObject;
 import com.fuint.repository.model.MtStaff;
 import com.fuint.repository.model.MtUser;
 import com.fuint.utils.StringUtil;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.HashMap;
@@ -30,7 +30,7 @@ import java.util.Map;
  * Created by FSQ
  * CopyRight https://www.fuint.cn
  */
-@Api(tags="商户端-报表相关接口")
+@Tag(name="商户端-报表相关接口")
 @RestController
 @AllArgsConstructor
 @RequestMapping(value = "/merchantApi/report")
@@ -61,7 +61,7 @@ public class MerchantReportController extends BaseController {
      * */
     private GoodsService goodsService;
 
-    @ApiOperation(value = "报表概述")
+    @Operation(summary="报表概述")
     @RequestMapping(value = "/overview", method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject overview(HttpServletRequest request) throws ParseException {
@@ -99,7 +99,7 @@ public class MerchantReportController extends BaseController {
     /**
      * 图表统计数据
      */
-    @ApiOperation(value = "图表统计数据")
+    @Operation(summary="图表统计数据")
     @RequestMapping(value = "/chart", method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject chart(HttpServletRequest request) {
@@ -122,7 +122,7 @@ public class MerchantReportController extends BaseController {
     /**
      * 排行榜数据
      */
-    @ApiOperation(value = "排行榜数据")
+    @Operation(summary="排行榜数据")
     @RequestMapping(value = "/top", method = RequestMethod.POST)
     @CrossOrigin
     public ResponseObject top(HttpServletRequest request, @RequestBody StatisticParam param) throws ParseException {

@@ -1,6 +1,6 @@
 package com.fuint.common.param;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import java.io.Serializable;
 
@@ -13,15 +13,15 @@ import java.io.Serializable;
 @Data
 public class InvoicePage extends PageParam implements Serializable {
 
-    @ApiModelProperty("手机号")
+    @Schema(description="手机号")
     private String mobile;
 
-    @ApiModelProperty("订单号")
+    @Schema(description="订单号")
     private String orderSn;
 
-    @ApiModelProperty("发票抬头")
+    @Schema(description="发票抬头")
     private String title;
 
-    @ApiModelProperty("状态")
+    @Schema(description="状态")
     private String status;
 }

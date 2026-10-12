@@ -10,15 +10,15 @@ import com.fuint.common.util.ExcelUtil;
 import com.fuint.common.util.TokenUtil;
 import com.fuint.framework.web.BaseController;
 import com.fuint.framework.web.ResponseObject;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.AllArgsConstructor;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletResponse;
 import java.text.ParseException;
 import java.util.Arrays;
 import java.util.Date;
@@ -32,7 +32,7 @@ import static com.fuint.common.util.XlsUtil.objectConvertToString;
  * Created by FSQ
  * CopyRight https://www.fuint.cn
  */
-@Api(tags = "管理端-积分相关接口")
+@Tag(name="管理端-积分相关接口")
 @RestController
 @AllArgsConstructor
 @RequestMapping(value = "/backendApi/report")
@@ -45,7 +45,7 @@ public class BackendReportController extends BaseController {
      */
     private ReportService reportService;
 
-    @ApiOperation(value = "获取日销售统计报表")
+    @Operation(summary="获取日销售统计报表")
     @RequestMapping(value = "/getDailySalesReport", method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject getDailySalesReport(@ModelAttribute StatisticParam param) throws ParseException {
@@ -58,7 +58,7 @@ public class BackendReportController extends BaseController {
         return getSuccessResult(reportDto);
     }
 
-    @ApiOperation(value = "获取日收银统计报表")
+    @Operation(summary="获取日收银统计报表")
     @RequestMapping(value = "/getDailyCashierReport", method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject getDailyCashierReport(@ModelAttribute StatisticParam param) throws ParseException {
@@ -71,7 +71,7 @@ public class BackendReportController extends BaseController {
         return getSuccessResult(reportDto);
     }
 
-    @ApiOperation(value = "获取日分类统计报表")
+    @Operation(summary="获取日分类统计报表")
     @RequestMapping(value = "/getDailyCateReport", method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject getDailyCateReport(@ModelAttribute StatisticParam param) throws ParseException {
@@ -84,7 +84,7 @@ public class BackendReportController extends BaseController {
         return getSuccessResult(reportDto);
     }
 
-    @ApiOperation(value = "导出日销售统计报表")
+    @Operation(summary="导出日销售统计报表")
     @RequestMapping(value = "/exportDailySales", method = RequestMethod.GET)
     @CrossOrigin
     public void exportDailySales(HttpServletResponse response, @ModelAttribute StatisticParam param) throws ParseException {
@@ -134,7 +134,7 @@ public class BackendReportController extends BaseController {
         logger.info("导出日销售统计报表成功...");
     }
 
-    @ApiOperation(value = "导出日收银统计报表")
+    @Operation(summary="导出日收银统计报表")
     @RequestMapping(value = "/exportDailyCashier", method = RequestMethod.GET)
     @CrossOrigin
     public void exportDailyCashier(HttpServletResponse response, @ModelAttribute StatisticParam param) throws ParseException {
@@ -185,7 +185,7 @@ public class BackendReportController extends BaseController {
         logger.info("导出日收银统计报表成功...");
     }
 
-    @ApiOperation(value = "导出分类统计报表")
+    @Operation(summary="导出分类统计报表")
     @RequestMapping(value = "/exportDailyCate", method = RequestMethod.GET)
     @CrossOrigin
     public void exportDailyCate(HttpServletResponse response, @ModelAttribute StatisticParam param) throws ParseException {

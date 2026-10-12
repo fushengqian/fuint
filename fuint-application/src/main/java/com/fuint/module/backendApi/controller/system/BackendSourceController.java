@@ -13,8 +13,8 @@ import com.fuint.framework.web.BaseController;
 import com.fuint.framework.web.ResponseObject;
 import com.fuint.repository.model.TSource;
 import com.fuint.utils.StringUtil;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.AllArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -28,7 +28,7 @@ import java.util.Map;
  * Created by FSQ
  * CopyRight https://www.fuint.cn
  */
-@Api(tags="管理端-后台菜单相关接口")
+@Tag(name="管理端-后台菜单相关接口")
 @RestController
 @AllArgsConstructor
 @RequestMapping(value = "/backendApi/source")
@@ -42,7 +42,7 @@ public class BackendSourceController extends BaseController {
     /**
      * 获取菜单列表
      */
-    @ApiOperation(value = "获取菜单列表")
+    @Operation(summary="获取菜单列表")
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     @PreAuthorize("@pms.hasPermission('system:menu:index')")
     public ResponseObject list() {
@@ -54,7 +54,7 @@ public class BackendSourceController extends BaseController {
     /**
      * 获取菜单详情
      */
-    @ApiOperation(value = "获取菜单详情")
+    @Operation(summary="获取菜单详情")
     @RequestMapping(value = "/info/{sourceId}", method = RequestMethod.GET)
     public ResponseObject info( @PathVariable("sourceId") Long sourceId) {
         TSource tSource = sourceService.getById(sourceId);
@@ -82,7 +82,7 @@ public class BackendSourceController extends BaseController {
     /**
      * 新增菜单
      */
-    @ApiOperation(value = "新增菜单")
+    @Operation(summary="新增菜单")
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     @PreAuthorize("@pms.hasPermission('system:menu:add')")
     public ResponseObject addSource(@RequestBody Map<String, Object> param) {
@@ -138,7 +138,7 @@ public class BackendSourceController extends BaseController {
     /**
      * 修改菜单
      */
-    @ApiOperation(value = "修改菜单")
+    @Operation(summary="修改菜单")
     @RequestMapping(value = "/update", method = RequestMethod.POST)
     @PreAuthorize("@pms.hasPermission('system:menu:edit')")
     public ResponseObject update(@RequestBody Map<String, Object> param) {
@@ -200,7 +200,7 @@ public class BackendSourceController extends BaseController {
     /**
      * 删除菜单
      */
-    @ApiOperation(value = "删除菜单")
+    @Operation(summary="删除菜单")
     @RequestMapping(value = "/delete/{sourceId}", method = RequestMethod.GET)
     @PreAuthorize("@pms.hasPermission('system:menu:delete')")
     public ResponseObject delete(@PathVariable("sourceId") Long sourceId) throws BusinessCheckException {
@@ -216,7 +216,7 @@ public class BackendSourceController extends BaseController {
     /**
      * 获取菜单下拉树列表
      * */
-    @ApiOperation(value = "获取菜单下拉树列表")
+    @Operation(summary="获取菜单下拉树列表")
     @RequestMapping(value = "/treeselect", method = RequestMethod.GET)
     public ResponseObject treeselect() {
         AccountInfo accountInfo = TokenUtil.getAccountInfo();

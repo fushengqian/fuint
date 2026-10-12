@@ -1,6 +1,6 @@
 package com.fuint.common.dto.goods;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -15,19 +15,19 @@ import java.math.BigDecimal;
 @Data
 public class GoodsTopDto implements Serializable {
 
-    @ApiModelProperty("商品ID")
+    @Schema(description="商品ID")
     private Integer id;
 
-    @ApiModelProperty("商品名称")
+    @Schema(description="商品名称")
     private String name;
 
-    @ApiModelProperty("商品条码")
+    @Schema(description="商品条码")
     private String goodsNo;
 
-    @ApiModelProperty("销售金额")
+    @Schema(description="销售金额")
     private BigDecimal amount;
 
-    @ApiModelProperty("销售数量")
+    @Schema(description="销售数量")
     private Integer num;
 
 }

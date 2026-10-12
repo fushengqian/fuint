@@ -1,6 +1,6 @@
 package com.fuint.common.param;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import java.io.Serializable;
 
@@ -13,13 +13,13 @@ import java.io.Serializable;
 @Data
 public class RefundDetailParam implements Serializable {
 
-    @ApiModelProperty(value="售后订单ID", name="refundId")
+    @Schema(description="售后订单ID", name="refundId")
     private Integer refundId;
 
-    @ApiModelProperty(value="状态", name="status")
+    @Schema(description="状态", name="status")
     private String status;
 
-    @ApiModelProperty(value="备注信息", name="remark")
+    @Schema(description="备注信息", name="remark")
     private String remark;
 
 }

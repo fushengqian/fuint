@@ -7,8 +7,8 @@ import com.fuint.framework.web.BaseController;
 import com.fuint.framework.web.ResponseObject;
 import com.fuint.repository.mapper.MtRegionMapper;
 import com.fuint.repository.model.MtRegion;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,7 +26,7 @@ import java.util.Map;
  * Created by FSQ
  * CopyRight https://www.fuint.cn
  */
-@Api(tags="会员端-省/市/区相关接口")
+@Tag(name="会员端-省/市/区相关接口")
 @RestController
 @AllArgsConstructor
 @RequestMapping(value = "/clientApi/region")
@@ -37,7 +37,7 @@ public class ClientRegionController extends BaseController {
     /**
      * 获取地区树状结构
      */
-    @ApiOperation(value = "获取地区树状结构")
+    @Operation(summary="获取地区树状结构")
     @RequestMapping(value = "/tree", method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject tree() {

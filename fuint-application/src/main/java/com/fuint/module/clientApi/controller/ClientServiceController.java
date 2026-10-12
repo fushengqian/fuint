@@ -12,12 +12,12 @@ import com.fuint.repository.mapper.MtMerchantMapper;
 import com.fuint.repository.model.MtMerchant;
 import com.fuint.repository.model.MtSetting;
 import com.fuint.utils.StringUtil;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.*;
 
 /**
@@ -26,7 +26,7 @@ import java.util.*;
  * Created by FSQ
  * CopyRight https://www.fuint.cn
  */
-@Api(tags="会员端-服务相关接口")
+@Tag(name="会员端-服务相关接口")
 @RestController
 @AllArgsConstructor
 @RequestMapping(value = "/clientApi/service")
@@ -39,7 +39,7 @@ public class ClientServiceController extends BaseController {
     /**
      * 获取我的服务列表
      */
-    @ApiOperation(value="获取我的服务列表")
+    @Operation(summary="获取我的服务列表")
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @CrossOrigin
     public ResponseObject list(HttpServletRequest request) {

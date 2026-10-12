@@ -1,6 +1,6 @@
 package com.fuint.common.dto.common;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -14,15 +14,15 @@ import java.io.Serializable;
 @Data
 public class TokenDto implements Serializable {
 
-    @ApiModelProperty("token")
+    @Schema(description="token")
     private String token;
 
-    @ApiModelProperty("创建时间")
+    @Schema(description="创建时间")
     private Long tokenCreatedTime;
 
-    @ApiModelProperty("失效时间")
+    @Schema(description="失效时间")
     private Long tokenExpiryTime;
 
-    @ApiModelProperty("是否登录")
+    @Schema(description="是否登录")
     private String isLogin;
 }

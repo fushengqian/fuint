@@ -1,6 +1,6 @@
 package com.fuint.common.param;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import java.io.Serializable;
 
@@ -13,21 +13,21 @@ import java.io.Serializable;
 @Data
 public class RefundPage extends PageParam implements Serializable {
 
-    @ApiModelProperty("备注")
+    @Schema(description="备注")
     private String remark;
 
-    @ApiModelProperty("状态")
+    @Schema(description="状态")
     private String status;
 
-    @ApiModelProperty("订单ID")
+    @Schema(description="订单ID")
     private Integer orderId;
 
-    @ApiModelProperty("会员ID")
+    @Schema(description="会员ID")
     private Integer userId;
 
-    @ApiModelProperty("开始时间")
+    @Schema(description="开始时间")
     private String startTime;
 
-    @ApiModelProperty("结束时间")
+    @Schema(description="结束时间")
     private String endTime;
 }

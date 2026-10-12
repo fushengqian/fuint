@@ -5,8 +5,7 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import java.io.Serializable;
 import java.util.Date;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 /**
@@ -17,49 +16,49 @@ import lombok.Data;
  */
 @Data
 @TableName("mt_message")
-@ApiModel(value = "MtMessage对象", description = "系统消息")
+@Schema(name="MtMessage对象", description="系统消息")
 public class MtMessage implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @ApiModelProperty("自增ID")
+    @Schema(description="自增ID")
     @TableId(value = "ID", type = IdType.AUTO)
     private Integer id;
 
-    @ApiModelProperty("商户ID")
+    @Schema(description="商户ID")
     private Integer merchantId;
 
-    @ApiModelProperty("用户ID")
+    @Schema(description="用户ID")
     private Integer userId;
 
-    @ApiModelProperty("消息类型")
+    @Schema(description="消息类型")
     private String type;
 
-    @ApiModelProperty("消息标题")
+    @Schema(description="消息标题")
     private String title;
 
-    @ApiModelProperty("消息内容")
+    @Schema(description="消息内容")
     private String content;
 
-    @ApiModelProperty("是否已读")
+    @Schema(description="是否已读")
     private String isRead;
 
-    @ApiModelProperty("创建时间")
+    @Schema(description="创建时间")
     private Date createTime;
 
-    @ApiModelProperty("更新时间")
+    @Schema(description="更新时间")
     private Date updateTime;
 
-    @ApiModelProperty("参数信息")
+    @Schema(description="参数信息")
     private String params;
 
-    @ApiModelProperty("是否已发送")
+    @Schema(description="是否已发送")
     private String isSend;
 
-    @ApiModelProperty("发送时间")
+    @Schema(description="发送时间")
     private Date sendTime;
 
-    @ApiModelProperty("状态")
+    @Schema(description="状态")
     private String status;
 
 }

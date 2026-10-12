@@ -1,6 +1,6 @@
 package com.fuint.common.dto.member;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -17,33 +17,33 @@ public class UserTagDto implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @ApiModelProperty("标签ID")
+    @Schema(description="标签ID")
     private Integer id;
 
-    @ApiModelProperty("标签名称")
+    @Schema(description="标签名称")
     private String name;
 
-    @ApiModelProperty("标签颜色")
+    @Schema(description="标签颜色")
     private String color;
 
-    @ApiModelProperty("排序")
+    @Schema(description="排序")
     private Integer sort;
 
-    @ApiModelProperty("标签描述")
+    @Schema(description="标签描述")
     private String description;
 
-    @ApiModelProperty("创建时间")
+    @Schema(description="创建时间")
     private Date createTime;
 
-    @ApiModelProperty("更新时间")
+    @Schema(description="更新时间")
     private Date updateTime;
 
-    @ApiModelProperty("会员数量")
+    @Schema(description="会员数量")
     private Integer userCount;
 
-    @ApiModelProperty("规则ID")
+    @Schema(description="规则ID")
     private Integer ruleId;
 
-    @ApiModelProperty("规则名称")
+    @Schema(description="规则名称")
     private String ruleName;
 }

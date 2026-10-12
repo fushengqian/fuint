@@ -16,14 +16,14 @@ import com.fuint.framework.web.ResponseObject;
 import com.fuint.module.backendApi.request.MerchantSubmitRequest;
 import com.fuint.repository.model.MtMerchant;
 import com.fuint.utils.StringUtil;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -34,7 +34,7 @@ import java.util.Map;
  * Created by FSQ
  * CopyRight https://www.fuint.cn
  */
-@Api(tags="管理端-商户管理相关接口")
+@Tag(name="管理端-商户管理相关接口")
 @RestController
 @AllArgsConstructor
 @RequestMapping(value = "/backendApi/merchant")
@@ -53,7 +53,7 @@ public class BackendMerchantController extends BaseController {
     /**
      * 分页查询商户列表
      */
-    @ApiOperation(value = "分页查询商户列表")
+    @Operation(summary="分页查询商户列表")
     @RequestMapping(value = "/list")
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('merchant:index')")
@@ -78,7 +78,7 @@ public class BackendMerchantController extends BaseController {
     /**
      * 查询商户列表
      * */
-    @ApiOperation(value = "查询商户列表")
+    @Operation(summary="查询商户列表")
     @RequestMapping(value = "/searchMerchant",  method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject searchMerchant(HttpServletRequest request) {
@@ -103,7 +103,7 @@ public class BackendMerchantController extends BaseController {
     /**
      * 更新商户状态
      */
-    @ApiOperation(value = "更新商户状态")
+    @Operation(summary="更新商户状态")
     @RequestMapping(value = "/updateStatus")
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('merchant:index')")
@@ -122,7 +122,7 @@ public class BackendMerchantController extends BaseController {
     /**
      * 保存商户信息
      */
-    @ApiOperation(value = "保存商户信息")
+    @Operation(summary="保存商户信息")
     @RequestMapping(value = "/save", method = RequestMethod.POST)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('merchant:index')")
@@ -153,7 +153,7 @@ public class BackendMerchantController extends BaseController {
     /**
      * 获取商户详情
      */
-    @ApiOperation(value = "获取商户详情")
+    @Operation(summary="获取商户详情")
     @RequestMapping(value = "/info/{id}", method = RequestMethod.GET)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('merchant:index')")

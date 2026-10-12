@@ -1,6 +1,6 @@
 package com.fuint.common.param;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import java.io.Serializable;
 
@@ -12,10 +12,10 @@ import java.io.Serializable;
 @Data
 public class GiveListParam extends PageParam implements Serializable {
 
-    @ApiModelProperty(value="转增对象手机号", name="mobile")
+    @Schema(description="转增对象手机号", name="mobile")
     private String mobile;
 
-    @ApiModelProperty(value="类型，give = 转增，gived = 被转增", name="type")
+    @Schema(description="类型，give = 转增，gived = 被转增", name="type")
     private String type;
 
 }

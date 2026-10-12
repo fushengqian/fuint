@@ -5,8 +5,7 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import java.io.Serializable;
 import java.util.Date;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 /**
@@ -17,43 +16,43 @@ import lombok.Data;
  */
 @Data
 @TableName("mt_stock_check_item")
-@ApiModel(value = "MtStockCheckItem对象", description = "库存盘点明细表")
+@Schema(name="MtStockCheckItem对象", description="库存盘点明细表")
 public class MtStockCheckItem implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @ApiModelProperty("自增ID")
+    @Schema(description="自增ID")
     @TableId(value = "ID", type = IdType.AUTO)
     private Integer id;
 
-    @ApiModelProperty("盘点主表ID")
+    @Schema(description="盘点主表ID")
     private Integer checkId;
 
-    @ApiModelProperty("商品ID")
+    @Schema(description="商品ID")
     private Integer goodsId;
 
-    @ApiModelProperty("skuID")
+    @Schema(description="skuID")
     private Integer skuId;
 
-    @ApiModelProperty("系统库存")
+    @Schema(description="系统库存")
     private Double systemStock;
 
-    @ApiModelProperty("实际库存")
+    @Schema(description="实际库存")
     private Double actualStock;
 
-    @ApiModelProperty("差异数量")
+    @Schema(description="差异数量")
     private Double diffStock;
 
-    @ApiModelProperty("备注说明")
+    @Schema(description="备注说明")
     private String description;
 
-    @ApiModelProperty("创建时间")
+    @Schema(description="创建时间")
     private Date createTime;
 
-    @ApiModelProperty("更新时间")
+    @Schema(description="更新时间")
     private Date updateTime;
 
-    @ApiModelProperty("状态，A正常；D删除")
+    @Schema(description="状态，A正常；D删除")
     private String status;
 
 }

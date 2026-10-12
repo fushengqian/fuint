@@ -1,6 +1,6 @@
 package com.fuint.common.dto.common;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import java.io.Serializable;
 import java.util.Map;
@@ -14,10 +14,10 @@ import java.util.Map;
 @Data
 public class Body implements Serializable {
 
-    @ApiModelProperty("入参信息")
+    @Schema(description="入参信息")
     private Map<String,Object> inParams;
 
-    @ApiModelProperty("出参信息")
+    @Schema(description="出参信息")
     private Map<String,Object> outParams;
 
     @Override

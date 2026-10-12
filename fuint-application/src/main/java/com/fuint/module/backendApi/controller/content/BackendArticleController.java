@@ -15,8 +15,8 @@ import com.fuint.framework.web.BaseController;
 import com.fuint.framework.web.ResponseObject;
 import com.fuint.repository.model.MtArticle;
 import com.fuint.repository.model.MtStore;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.AllArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -31,7 +31,7 @@ import java.util.Map;
  * Created by FSQ
  * CopyRight https://www.fuint.cn
  */
-@Api(tags="管理端-文章相关接口")
+@Tag(name="管理端-文章相关接口")
 @RestController
 @AllArgsConstructor
 @RequestMapping(value = "/backendApi/article")
@@ -55,7 +55,7 @@ public class BackendArticleController extends BaseController {
     /**
      * 文章列表查询
      */
-    @ApiOperation(value = "文章列表查询")
+    @Operation(summary="文章列表查询")
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('content:article:index')")
@@ -83,7 +83,7 @@ public class BackendArticleController extends BaseController {
     /**
      * 更新文章状态
      */
-    @ApiOperation(value = "更新文章状态")
+    @Operation(summary="更新文章状态")
     @RequestMapping(value = "/updateStatus", method = RequestMethod.POST)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('content:article:edit')")
@@ -108,7 +108,7 @@ public class BackendArticleController extends BaseController {
     /**
      * 保存文章
      */
-    @ApiOperation(value = "保存文章")
+    @Operation(summary="保存文章")
     @RequestMapping(value = "/save", method = RequestMethod.POST)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('content:article:add')")
@@ -134,7 +134,7 @@ public class BackendArticleController extends BaseController {
     /**
      * 获取文章详情
      */
-    @ApiOperation(value = "获取文章详情")
+    @Operation(summary="获取文章详情")
     @RequestMapping(value = "/info/{id}", method = RequestMethod.GET)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('content:article:index')")

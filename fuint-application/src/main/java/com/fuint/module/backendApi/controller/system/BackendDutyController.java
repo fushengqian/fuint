@@ -17,8 +17,8 @@ import com.fuint.module.backendApi.request.DutyStatusRequest;
 import com.fuint.repository.model.TDuty;
 import com.fuint.repository.model.TSource;
 import com.fuint.utils.StringUtil;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -26,7 +26,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -40,7 +40,7 @@ import java.util.Set;
  * Created by FSQ
  * CopyRight https://www.fuint.cn
  */
-@Api(tags="管理端-后台角色相关接口")
+@Tag(name="管理端-后台角色相关接口")
 @RestController
 @AllArgsConstructor
 @RequestMapping(value = "/backendApi/duty")
@@ -59,7 +59,7 @@ public class BackendDutyController extends BaseController {
     /**
      * 角色列表
      */
-    @ApiOperation(value = "获取角色列表")
+    @Operation(summary="获取角色列表")
     @RequestMapping(value = "/list")
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('system:role:index')")
@@ -108,7 +108,7 @@ public class BackendDutyController extends BaseController {
     /**
      * 新增角色
      */
-    @ApiOperation(value = "新增角色")
+    @Operation(summary="新增角色")
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('system:role:add')")
@@ -157,7 +157,7 @@ public class BackendDutyController extends BaseController {
     /**
      * 获取角色详情
      */
-    @ApiOperation(value = "获取角色详情")
+    @Operation(summary="获取角色详情")
     @RequestMapping(value = "/info/{roleId}", method = RequestMethod.GET)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('system:role:index')")
@@ -186,7 +186,7 @@ public class BackendDutyController extends BaseController {
     /**
      * 修改角色
      */
-    @ApiOperation(value = "修改角色")
+    @Operation(summary="修改角色")
     @RequestMapping(value = "/update", method = RequestMethod.POST)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('system:role:edit')")
@@ -245,7 +245,7 @@ public class BackendDutyController extends BaseController {
     /**
      * 删除角色信息
      */
-    @ApiOperation(value = "删除角色信息")
+    @Operation(summary="删除角色信息")
     @RequestMapping(value = "/delete/{roleId}", method = RequestMethod.POST)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('system:role:delete')")
@@ -258,7 +258,7 @@ public class BackendDutyController extends BaseController {
     /**
      * 修改角色状态
      */
-    @ApiOperation(value = "修改角色状态")
+    @Operation(summary="修改角色状态")
     @RequestMapping(value = "/changeStatus", method = RequestMethod.POST)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('system:role:edit')")

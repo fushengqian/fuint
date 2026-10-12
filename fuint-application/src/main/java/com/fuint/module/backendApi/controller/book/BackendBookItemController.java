@@ -19,8 +19,8 @@ import com.fuint.framework.web.ResponseObject;
 import com.fuint.repository.model.MtBookCate;
 import com.fuint.repository.model.MtBookItem;
 import com.fuint.repository.model.MtStore;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -37,7 +37,7 @@ import java.util.Map;
  * Created by FSQ
  * CopyRight https://www.fuint.cn
  */
-@Api(tags="管理端-预约订单相关接口")
+@Tag(name="管理端-预约订单相关接口")
 @RestController
 @AllArgsConstructor
 @RequestMapping(value = "/backendApi/bookItem")
@@ -66,7 +66,7 @@ public class BackendBookItemController extends BaseController {
     /**
      * 预约订单列表查询
      */
-    @ApiOperation(value = "预约订单列表查询")
+    @Operation(summary="预约订单列表查询")
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('book:index')")
@@ -97,7 +97,7 @@ public class BackendBookItemController extends BaseController {
     /**
      * 更新预约订单状态
      */
-    @ApiOperation(value = "更新预约订单状态")
+    @Operation(summary="更新预约订单状态")
     @RequestMapping(value = "/updateStatus", method = RequestMethod.POST)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('book:index')")
@@ -118,7 +118,7 @@ public class BackendBookItemController extends BaseController {
     /**
      * 保存预约订单
      */
-    @ApiOperation(value = "保存预约订单")
+    @Operation(summary="保存预约订单")
     @RequestMapping(value = "/save", method = RequestMethod.POST)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('book:index')")
@@ -144,7 +144,7 @@ public class BackendBookItemController extends BaseController {
     /**
      * 获取预约订单详情
      */
-    @ApiOperation(value = "获取预约订单详情")
+    @Operation(summary="获取预约订单详情")
     @RequestMapping(value = "/info/{id}", method = RequestMethod.GET)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('book:index')")

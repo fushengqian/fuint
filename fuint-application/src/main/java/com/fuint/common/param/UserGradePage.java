@@ -1,6 +1,6 @@
 package com.fuint.common.param;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -14,13 +14,13 @@ import java.io.Serializable;
 @Data
 public class UserGradePage extends PageParam implements Serializable {
 
-    @ApiModelProperty("名称")
+    @Schema(description="名称")
     private String name;
 
-    @ApiModelProperty("升级类型")
+    @Schema(description="升级类型")
     private String catchType;
 
-    @ApiModelProperty("状态，A正常；D作废")
+    @Schema(description="状态，A正常；D作废")
     private String status;
 
 }

@@ -1,7 +1,7 @@
 package com.fuint.module.merchantApi.request;
 
 import com.fuint.common.param.PageParam;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import java.io.Serializable;
 
@@ -14,7 +14,7 @@ import java.io.Serializable;
 @Data
 public class StaffListRequest extends PageParam implements Serializable {
 
-    @ApiModelProperty(value="关键字:手机号、姓名", name="keyword")
+    @Schema(description="关键字:手机号、姓名", name="keyword")
     private String keyword;
 
 }

@@ -1,6 +1,6 @@
 package com.fuint.common.param;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import java.io.Serializable;
 
@@ -13,9 +13,9 @@ import java.io.Serializable;
 @Data
 public class GenCodePage extends PageParam implements Serializable {
 
-    @ApiModelProperty("表名")
+    @Schema(description="表名")
     private String tableName;
 
-    @ApiModelProperty("状态")
+    @Schema(description="状态")
     private String status;
 }

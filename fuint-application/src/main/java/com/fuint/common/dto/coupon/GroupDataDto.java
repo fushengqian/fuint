@@ -1,6 +1,6 @@
 package com.fuint.common.dto.coupon;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -14,18 +14,18 @@ import java.io.Serializable;
 @Data
 public class GroupDataDto implements Serializable {
 
-    @ApiModelProperty("发放数量")
+    @Schema(description="发放数量")
     private Integer sendNum;
 
-    @ApiModelProperty("未发放数量")
+    @Schema(description="未发放数量")
     private Integer unSendNum;
 
-    @ApiModelProperty("使用数量")
+    @Schema(description="使用数量")
     private Integer useNum;
 
-    @ApiModelProperty("过期数量")
+    @Schema(description="过期数量")
     private Integer expireNum;
 
-    @ApiModelProperty("取消数量")
+    @Schema(description="取消数量")
     private Integer cancelNum;
 }

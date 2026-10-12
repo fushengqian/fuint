@@ -24,14 +24,14 @@ import com.fuint.framework.web.BaseController;
 import com.fuint.framework.web.ResponseObject;
 import com.fuint.repository.model.*;
 import com.fuint.utils.StringUtil;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -44,7 +44,7 @@ import java.util.Map;
  * Created by FSQ
  * CopyRight https://www.fuint.cn
  */
-@Api(tags="管理端-收银台相关接口")
+@Tag(name="管理端-收银台相关接口")
 @RestController
 @AllArgsConstructor
 @RequestMapping(value = "/backendApi/cashier")
@@ -103,7 +103,7 @@ public class BackendCashierController extends BaseController {
     /**
      * 收银台初始化
      */
-    @ApiOperation(value = "收银台初始化")
+    @Operation(summary="收银台初始化")
     @RequestMapping(value = "/init/{userId}", method = RequestMethod.GET)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('cashier:index')")
@@ -156,7 +156,7 @@ public class BackendCashierController extends BaseController {
     /**
      * 查询商品列表
      */
-    @ApiOperation(value = "查询商品列表")
+    @Operation(summary="查询商品列表")
     @RequestMapping(value = "/searchGoods", method = RequestMethod.POST)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('cashier:index')")
@@ -183,7 +183,7 @@ public class BackendCashierController extends BaseController {
     /**
      * 获取商品详情
      */
-    @ApiOperation(value = "获取商品详情")
+    @Operation(summary="获取商品详情")
     @RequestMapping(value = "/getGoodsInfo/{id}", method = RequestMethod.GET)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('cashier:index')")
@@ -255,7 +255,7 @@ public class BackendCashierController extends BaseController {
     /**
      * 搜索会员信息
      */
-    @ApiOperation(value = "搜索会员信息")
+    @Operation(summary="搜索会员信息")
     @RequestMapping(value = "/getMemberInfo", method = RequestMethod.POST)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('cashier:index')")
@@ -290,7 +290,7 @@ public class BackendCashierController extends BaseController {
     /**
      * 获取会员信息
      */
-    @ApiOperation(value = "获取会员信息")
+    @Operation(summary="获取会员信息")
     @RequestMapping(value = "/getMemberInfoById/{userId}", method = RequestMethod.GET)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('cashier:index')")
@@ -314,7 +314,7 @@ public class BackendCashierController extends BaseController {
     /**
      * 执行挂单
      */
-    @ApiOperation(value = "执行挂单")
+    @Operation(summary="执行挂单")
     @RequestMapping(value = "/doHangUp", method = RequestMethod.POST)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('cashier:index')")
@@ -349,7 +349,7 @@ public class BackendCashierController extends BaseController {
     /**
      * 获取挂单列表
      */
-    @ApiOperation(value = "获取挂单列表")
+    @Operation(summary="获取挂单列表")
     @RequestMapping(value = "/getHangUpList", method = RequestMethod.GET)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('cashier:index')")
@@ -391,7 +391,7 @@ public class BackendCashierController extends BaseController {
     /**
      * 获取会员可付费升级的等级列表
      */
-    @ApiOperation(value = "获取会员可付费升级的等级列表")
+    @Operation(summary="获取会员可付费升级的等级列表")
     @RequestMapping(value = "/gradeList/{userId}", method = RequestMethod.GET)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('cashier:index')")
@@ -439,7 +439,7 @@ public class BackendCashierController extends BaseController {
     /**
      * 获取会员充值方案
      */
-    @ApiOperation(value = "获取会员充值方案")
+    @Operation(summary="获取会员充值方案")
     @RequestMapping(value = "/rechargeSetting", method = RequestMethod.GET)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('cashier:index')")
@@ -487,7 +487,7 @@ public class BackendCashierController extends BaseController {
     /**
      * 收银台提交会员充值订单
      */
-    @ApiOperation(value = "提交会员充值订单")
+    @Operation(summary="提交会员充值订单")
     @RequestMapping(value = "/doRecharge", method = RequestMethod.POST)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('cashier:index')")

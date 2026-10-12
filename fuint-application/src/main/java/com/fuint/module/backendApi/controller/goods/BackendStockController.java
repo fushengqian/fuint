@@ -19,8 +19,8 @@ import com.fuint.repository.mapper.MtGoodsMapper;
 import com.fuint.repository.mapper.MtGoodsSkuMapper;
 import com.fuint.repository.model.*;
 import com.fuint.utils.StringUtil;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.AllArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -33,7 +33,7 @@ import java.util.*;
  * Created by FSQ
  * CopyRight https://www.fuint.cn
  */
-@Api(tags="管理端-商品库存管理相关接口")
+@Tag(name="管理端-商品库存管理相关接口")
 @RestController
 @AllArgsConstructor
 @RequestMapping(value = "/backendApi/stock")
@@ -61,7 +61,7 @@ public class BackendStockController extends BaseController {
     /**
      * 获取库存管理记录列表
      */
-    @ApiOperation(value = "获取库存管理记录列表")
+    @Operation(summary="获取库存管理记录列表")
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('stock:index')")
@@ -90,7 +90,7 @@ public class BackendStockController extends BaseController {
     /**
      * 删除库存管理记录状态
      */
-    @ApiOperation(value = "删除库存管理记录状态")
+    @Operation(summary="删除库存管理记录状态")
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('stock:index')")
@@ -110,7 +110,7 @@ public class BackendStockController extends BaseController {
     /**
      * 保存库存管理记录
      */
-    @ApiOperation(value = "保存库存管理记录")
+    @Operation(summary="保存库存管理记录")
     @RequestMapping(value = "/save", method = RequestMethod.POST)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('stock:index')")
@@ -143,7 +143,7 @@ public class BackendStockController extends BaseController {
     /**
      * 获取库存管理记录详情
      */
-    @ApiOperation(value = "获取库存管理记录详情")
+    @Operation(summary="获取库存管理记录详情")
     @RequestMapping(value = "/info/{id}", method = RequestMethod.GET)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('stock:index')")

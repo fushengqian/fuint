@@ -15,8 +15,8 @@ import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.common.service.BannerService;
 import com.fuint.repository.model.MtBanner;
 import com.fuint.repository.model.MtStore;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.AllArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -31,7 +31,7 @@ import java.util.Map;
  * Created by FSQ
  * CopyRight https://www.fuint.cn
  */
-@Api(tags = "管理端-焦点图相关接口")
+@Tag(name="管理端-焦点图相关接口")
 @RestController
 @AllArgsConstructor
 @RequestMapping(value = "/backendApi/banner")
@@ -55,7 +55,7 @@ public class BackendBannerController extends BaseController {
     /**
      * 焦点图列表查询
      */
-    @ApiOperation(value = "焦点图列表查询")
+    @Operation(summary="焦点图列表查询")
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('content:banner:list')")
@@ -81,7 +81,7 @@ public class BackendBannerController extends BaseController {
     /**
      * 更新焦点图状态
      */
-    @ApiOperation(value = "更新焦点图状态")
+    @Operation(summary="更新焦点图状态")
     @RequestMapping(value = "/updateStatus", method = RequestMethod.POST)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('content:banner:edit')")
@@ -101,7 +101,7 @@ public class BackendBannerController extends BaseController {
     /**
      * 保存焦点图
      */
-    @ApiOperation(value = "保存焦点图")
+    @Operation(summary="保存焦点图")
     @RequestMapping(value = "/save", method = RequestMethod.POST)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('content:banner:add')")
@@ -125,7 +125,7 @@ public class BackendBannerController extends BaseController {
     /**
      * 获取焦点图详情
      */
-    @ApiOperation(value = "获取焦点图详情")
+    @Operation(summary="获取焦点图详情")
     @RequestMapping(value = "/info/{id}", method = RequestMethod.GET)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('content:banner:list')")

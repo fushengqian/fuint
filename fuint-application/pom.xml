@@ -55,15 +55,16 @@
             <artifactId>commons-lang</artifactId>
             <version>2.6</version>
         </dependency>
+        <!-- springfox 3.0.0 基于 javax.servlet，Boot 3 下不可用，改用 springdoc-openapi（OpenAPI 3） -->
         <dependency>
-            <groupId>io.springfox</groupId>
-            <artifactId>springfox-boot-starter</artifactId>
-            <version>${springfox.version}</version>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+            <version>${springdoc.version}</version>
         </dependency>
 
         <dependency>
             <groupId>com.baomidou</groupId>
-            <artifactId>mybatis-plus-boot-starter</artifactId>
+            <artifactId>mybatis-plus-spring-boot3-starter</artifactId>
             <version>${mybatis-plus.version}</version>
         </dependency>
 
@@ -76,7 +77,7 @@
         <dependency>
             <groupId>com.github.pagehelper</groupId>
             <artifactId>pagehelper-spring-boot-starter</artifactId>
-            <version>1.4.7</version>
+            <version>2.1.1</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.mybatis</groupId>
@@ -89,26 +90,22 @@
             </exclusions>
         </dependency>
 
-        <!-- 显式引入兼容的JSqlParser版本 -->
+        <!-- 显式引入兼容的JSqlParser版本（与 mybatis-plus 3.5.7 匹配） -->
         <dependency>
             <groupId>com.github.jsqlparser</groupId>
             <artifactId>jsqlparser</artifactId>
-            <version>4.6</version>
+            <version>${jsqlparser.version}</version>
         </dependency>
 
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>com.github.axet</groupId>
             <artifactId>kaptcha</artifactId>
             <version>${kaptcha.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -175,7 +172,7 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
-                <version>2.7.18</version>
+                <version>3.2.12</version>
                 <executions>
                     <execution>
                         <goals>
@@ -189,8 +186,8 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.8.1</version>
                 <configuration>
-                    <source>1.8</source>
-                    <target>1.8</target>
+                    <source>17</source>
+                    <target>17</target>
                     <encoding>UTF-8</encoding>
                 </configuration>
             </plugin>

@@ -21,11 +21,11 @@ import com.fuint.framework.web.ResponseObject;
 import com.fuint.repository.model.MtOrder;
 import com.fuint.repository.model.MtSetting;
 import com.fuint.repository.model.MtUser;
-import io.swagger.annotations.Api;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -38,7 +38,7 @@ import java.util.Map;
  * Created by FSQ
  * CopyRight https://www.fuint.cn
  */
-@Api(tags="会员端-余额相关接口")
+@Tag(name="会员端-余额相关接口")
 @RestController
 @AllArgsConstructor
 @RequestMapping(value = "/clientApi/balance")

@@ -19,13 +19,13 @@ import com.fuint.framework.web.ResponseObject;
 import com.fuint.repository.model.MtPoint;
 import com.fuint.repository.model.MtSetting;
 import com.fuint.repository.model.MtUser;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.AllArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -37,7 +37,7 @@ import java.util.Map;
  * Created by FSQ
  * CopyRight https://www.fuint.cn
  */
-@Api(tags="管理端-积分相关接口")
+@Tag(name="管理端-积分相关接口")
 @RestController
 @AllArgsConstructor
 @RequestMapping(value = "/backendApi/point")
@@ -61,7 +61,7 @@ public class BackendPointController extends BaseController {
     /**
      * 积分明细列表查询
      */
-    @ApiOperation(value = "积分明细列表查询")
+    @Operation(summary="积分明细列表查询")
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('point:list')")
@@ -87,7 +87,7 @@ public class BackendPointController extends BaseController {
     /**
      * 积分设置详情
      */
-    @ApiOperation(value = "积分设置详情")
+    @Operation(summary="积分设置详情")
     @RequestMapping(value = "/setting", method = RequestMethod.GET)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('point:setting')")
@@ -127,7 +127,7 @@ public class BackendPointController extends BaseController {
     /**
      * 提交积分设置
      */
-    @ApiOperation(value = "提交积分设置")
+    @Operation(summary="提交积分设置")
     @RequestMapping(value = "/saveSetting", method = RequestMethod.POST)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('point:setting')")
@@ -179,7 +179,7 @@ public class BackendPointController extends BaseController {
     /**
      * 提交积分充值
      */
-    @ApiOperation(value = "提交积分充值")
+    @Operation(summary="提交积分充值")
     @RequestMapping(value = "/doRecharge", method = RequestMethod.POST)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('point:modify')")

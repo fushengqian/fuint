@@ -1,6 +1,6 @@
 package com.fuint.common.dto.goods;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -14,13 +14,13 @@ import java.io.Serializable;
 @Data
 public class GoodsSpecChildDto implements Serializable {
 
-   @ApiModelProperty("自增ID")
+   @Schema(description="自增ID")
    private Integer id;
 
-   @ApiModelProperty("规格名称")
+   @Schema(description="规格名称")
    private String name;
 
-   @ApiModelProperty("是否选择")
+   @Schema(description="是否选择")
    private boolean checked;
 
 }

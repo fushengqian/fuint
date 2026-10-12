@@ -16,12 +16,12 @@ import com.fuint.repository.model.MtBookItem;
 import com.fuint.repository.model.MtStore;
 import com.fuint.repository.model.MtUser;
 import com.fuint.utils.StringUtil;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import java.text.ParseException;
 import java.util.HashMap;
 import java.util.List;
@@ -33,7 +33,7 @@ import java.util.Map;
  * Created by FSQ
  * CopyRight https://www.fuint.cn
  */
-@Api(tags="会员端-预约相关接口")
+@Tag(name="会员端-预约相关接口")
 @RestController
 @AllArgsConstructor
 @RequestMapping(value = "/clientApi/book")
@@ -72,7 +72,7 @@ public class ClientBookController extends BaseController {
     /**
      * 获取预约项目列表
      */
-    @ApiOperation(value="获取预约项目列表", notes="获取预约项目列表")
+    @Operation(summary="获取预约项目列表", description="获取预约项目列表")
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @CrossOrigin
     public ResponseObject list(HttpServletRequest request, @RequestBody BookListParam param) throws BusinessCheckException {
@@ -109,7 +109,7 @@ public class ClientBookController extends BaseController {
     /**
      * 获取预约项目详情
      */
-    @ApiOperation(value="获取预约项目详情", notes="根据ID获取预约项目详情")
+    @Operation(summary="获取预约项目详情", description="根据ID获取预约项目详情")
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @CrossOrigin
     public ResponseObject detail(@RequestBody BookDetailParam param) throws BusinessCheckException, ParseException {
@@ -125,7 +125,7 @@ public class ClientBookController extends BaseController {
     /**
      * 获取预约分类列表
      */
-    @ApiOperation(value = "获取预约分类列表")
+    @Operation(summary="获取预约分类列表")
     @RequestMapping(value = "/cateList", method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject cateList(HttpServletRequest request) {
@@ -140,7 +140,7 @@ public class ClientBookController extends BaseController {
     /**
      * 是否可预约
      */
-    @ApiOperation(value="获取预约项目详情", notes="根据ID获取预约项目详情")
+    @Operation(summary="获取预约项目详情", description="根据ID获取预约项目详情")
     @RequestMapping(value = "/bookable", method = RequestMethod.POST)
     @CrossOrigin
     public ResponseObject bookable(@RequestBody BookableParam param) throws BusinessCheckException, ParseException {
@@ -153,7 +153,7 @@ public class ClientBookController extends BaseController {
     /**
      * 预约提交
      */
-    @ApiOperation(value = "预约提交")
+    @Operation(summary="预约提交")
     @RequestMapping(value = "/submit", method = RequestMethod.POST)
     @CrossOrigin
     public ResponseObject submit(HttpServletRequest request, @RequestBody BookSubmitParam param) throws BusinessCheckException, ParseException {
@@ -195,7 +195,7 @@ public class ClientBookController extends BaseController {
     /**
      * 获取我的预约
      */
-    @ApiOperation(value = "获取我的预约")
+    @Operation(summary="获取我的预约")
     @RequestMapping(value = "/myBook", method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject myBook(HttpServletRequest request) {
@@ -227,7 +227,7 @@ public class ClientBookController extends BaseController {
     /**
      * 取消预约
      */
-    @ApiOperation(value = "取消预约")
+    @Operation(summary="取消预约")
     @RequestMapping(value = "/cancel", method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject cancel(HttpServletRequest request) throws BusinessCheckException {
@@ -251,7 +251,7 @@ public class ClientBookController extends BaseController {
     /**
      * 获取我的预约详情
      */
-    @ApiOperation(value="获取我的预约详情", notes="根据ID获取我的预约详情")
+    @Operation(summary="获取我的预约详情", description="根据ID获取我的预约详情")
     @RequestMapping(value = "/myBookDetail", method = RequestMethod.POST)
     @CrossOrigin
     public ResponseObject myBookDetail(@RequestBody BookDetailParam param) {

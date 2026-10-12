@@ -1,7 +1,7 @@
 package com.fuint.common.dto.goods;
 
 import com.fuint.repository.model.MtGoods;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import java.io.Serializable;
 import java.util.List;
@@ -15,19 +15,19 @@ import java.util.List;
 @Data
 public class ResCateDto implements Serializable {
 
-    @ApiModelProperty("分类ID")
+    @Schema(description="分类ID")
     private Integer cateId;
 
-    @ApiModelProperty("分类名称")
+    @Schema(description="分类名称")
     private String name;
 
-    @ApiModelProperty("logo")
+    @Schema(description="logo")
     private String logo;
 
-    @ApiModelProperty("商品列表")
+    @Schema(description="商品列表")
     private List<MtGoods> goodsList;
 
-    @ApiModelProperty("排序")
+    @Schema(description="排序")
     private Integer sort;
 
 }

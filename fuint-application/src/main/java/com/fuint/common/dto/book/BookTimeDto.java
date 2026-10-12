@@ -1,6 +1,6 @@
 package com.fuint.common.dto.book;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import java.io.Serializable;
 
@@ -13,13 +13,13 @@ import java.io.Serializable;
 @Data
 public class BookTimeDto implements Serializable {
 
-    @ApiModelProperty("时间段")
+    @Schema(description="时间段")
     private String startTime;
 
-    @ApiModelProperty("时间段")
+    @Schema(description="时间段")
     private String endTime;
 
-    @ApiModelProperty("可预订数量")
+    @Schema(description="可预订数量")
     private String num;
 
 }

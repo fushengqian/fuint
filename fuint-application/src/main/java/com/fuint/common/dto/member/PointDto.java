@@ -1,7 +1,7 @@
 package com.fuint.common.dto.member;
 
 import com.fuint.repository.model.MtUser;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -16,34 +16,34 @@ import java.util.Date;
 @Data
 public class PointDto implements Serializable {
 
-    @ApiModelProperty("自增ID")
+    @Schema(description="自增ID")
     private Integer id;
 
-    @ApiModelProperty("会员ID")
+    @Schema(description="会员ID")
     private Integer userId;
 
-    @ApiModelProperty("会员信息")
+    @Schema(description="会员信息")
     private MtUser userInfo;
 
-    @ApiModelProperty("订单号")
+    @Schema(description="订单号")
     private String orderSn;
 
-    @ApiModelProperty("积分变化数量")
+    @Schema(description="积分变化数量")
     private Integer amount;
 
-    @ApiModelProperty("创建时间")
+    @Schema(description="创建时间")
     private Date createTime;
 
-    @ApiModelProperty("更新时间")
+    @Schema(description="更新时间")
     private Date updateTime;
 
-    @ApiModelProperty("备注说明")
+    @Schema(description="备注说明")
     private String description;
 
-    @ApiModelProperty("最后操作人")
+    @Schema(description="最后操作人")
     private String operator;
 
-    @ApiModelProperty("状态，A正常；D删除")
+    @Schema(description="状态，A正常；D删除")
     private String status;
 
 }

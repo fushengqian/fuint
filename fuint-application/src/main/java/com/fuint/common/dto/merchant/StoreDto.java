@@ -1,6 +1,6 @@
 package com.fuint.common.dto.merchant;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import java.io.Serializable;
 
@@ -13,34 +13,34 @@ import java.io.Serializable;
 @Data
 public class StoreDto extends StoreInfo implements Serializable {
 
-    @ApiModelProperty("自增ID")
+    @Schema(description="自增ID")
     private Integer id;
 
-    @ApiModelProperty("微信商户号")
+    @Schema(description="微信商户号")
     private String wxMchId;
 
-    @ApiModelProperty("微信支付秘钥")
+    @Schema(description="微信支付秘钥")
     private String wxApiV2;
 
-    @ApiModelProperty("微信支付证书")
+    @Schema(description="微信支付证书")
     private String wxCertPath;
 
-    @ApiModelProperty("支付宝appId")
+    @Schema(description="支付宝appId")
     private String alipayAppId;
 
-    @ApiModelProperty("支付宝应用私钥")
+    @Schema(description="支付宝应用私钥")
     private String alipayPrivateKey;
 
-    @ApiModelProperty("支付宝支付公钥")
+    @Schema(description="支付宝支付公钥")
     private String alipayPublicKey;
 
-    @ApiModelProperty("银行名称")
+    @Schema(description="银行名称")
     private String bankName;
 
-    @ApiModelProperty("银行卡账户名")
+    @Schema(description="银行卡账户名")
     private String bankCardName;
 
-    @ApiModelProperty("银行卡卡号")
+    @Schema(description="银行卡卡号")
     private String bankCardNo;
 
 }

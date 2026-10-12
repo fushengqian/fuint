@@ -5,8 +5,7 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import java.io.Serializable;
 import java.util.Date;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 /**
@@ -17,64 +16,64 @@ import lombok.Data;
  */
 @Data
 @TableName("mt_send_log")
-@ApiModel(value = "MtSendLog对象", description = "卡券发放记录表")
+@Schema(name="MtSendLog对象", description="卡券发放记录表")
 public class MtSendLog implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @ApiModelProperty("自增ID")
+    @Schema(description="自增ID")
     @TableId(value = "ID", type = IdType.AUTO)
     private Integer id;
 
-    @ApiModelProperty("商户ID")
+    @Schema(description="商户ID")
     private Integer merchantId;
 
-    @ApiModelProperty("店铺ID")
+    @Schema(description="店铺ID")
     private Integer storeId;
 
-    @ApiModelProperty("1：单用户发券；2：批量发券")
+    @Schema(description="1：单用户发券；2：批量发券")
     private Integer type;
 
-    @ApiModelProperty("用户ID")
+    @Schema(description="用户ID")
     private Integer userId;
 
-    @ApiModelProperty("导入excel文件名")
+    @Schema(description="导入excel文件名")
     private String fileName;
 
-    @ApiModelProperty("导入excel文件路径")
+    @Schema(description="导入excel文件路径")
     private String filePath;
 
-    @ApiModelProperty("用户手机")
+    @Schema(description="用户手机")
     private String mobile;
 
-    @ApiModelProperty("券组ID")
+    @Schema(description="券组ID")
     private Integer groupId;
 
-    @ApiModelProperty("券组名称")
+    @Schema(description="券组名称")
     private String groupName;
 
-    @ApiModelProperty("卡券ID")
+    @Schema(description="卡券ID")
     private Integer couponId;
 
-    @ApiModelProperty("发放套数")
+    @Schema(description="发放套数")
     private Integer sendNum;
 
-    @ApiModelProperty("操作时间")
+    @Schema(description="操作时间")
     private Date createTime;
 
-    @ApiModelProperty("操作人")
+    @Schema(description="操作人")
     private String operator;
 
-    @ApiModelProperty("导入UUID")
+    @Schema(description="导入UUID")
     private String uuid;
 
-    @ApiModelProperty("作废成功张数")
+    @Schema(description="作废成功张数")
     private Integer removeSuccessNum;
 
-    @ApiModelProperty("作废失败张数")
+    @Schema(description="作废失败张数")
     private Integer removeFailNum;
 
-    @ApiModelProperty("状态，A正常；B：部分作废；D全部作废")
+    @Schema(description="状态，A正常；B：部分作废；D全部作废")
     private String status;
 
 

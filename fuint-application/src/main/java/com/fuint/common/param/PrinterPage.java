@@ -1,6 +1,6 @@
 package com.fuint.common.param;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import java.io.Serializable;
 
@@ -13,16 +13,16 @@ import java.io.Serializable;
 @Data
 public class PrinterPage extends PageParam implements Serializable {
 
-    @ApiModelProperty("打印机编号")
+    @Schema(description="打印机编号")
     private String sn;
 
-    @ApiModelProperty("打印机名称")
+    @Schema(description="打印机名称")
     private String name;
 
-    @ApiModelProperty("是否自动打印机")
+    @Schema(description="是否自动打印机")
     private String autoPrint;
 
-    @ApiModelProperty("状态，A正常；D作废")
+    @Schema(description="状态，A正常；D作废")
     private String status;
 
 }

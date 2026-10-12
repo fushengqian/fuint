@@ -1,6 +1,6 @@
 package com.fuint.common.dto.merchant;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import java.io.Serializable;
 import java.util.Date;
@@ -15,62 +15,62 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 @Data
 public class MerchantDto implements Serializable {
 
-    @ApiModelProperty("自增ID")
+    @Schema(description="自增ID")
     private Integer id;
 
-    @ApiModelProperty("类型")
+    @Schema(description="类型")
     private String type;
 
-    @ApiModelProperty("微信小程序appId")
+    @Schema(description="微信小程序appId")
     private String wxAppId;
 
-    @ApiModelProperty("微信小程序秘钥")
+    @Schema(description="微信小程序秘钥")
     private String wxAppSecret;
 
-    @ApiModelProperty("微信公众号appId")
+    @Schema(description="微信公众号appId")
     private String wxOfficialAppId;
 
-    @ApiModelProperty("微信公众号秘钥")
+    @Schema(description="微信公众号秘钥")
     private String wxOfficialAppSecret;
 
-    @ApiModelProperty("商户号")
+    @Schema(description="商户号")
     private String no;
 
-    @ApiModelProperty("商户名称")
+    @Schema(description="商户名称")
     private String name;
 
-    @ApiModelProperty("商户logo")
+    @Schema(description="商户logo")
     private String logo;
 
-    @ApiModelProperty("联系人姓名")
+    @Schema(description="联系人姓名")
     private String contact;
 
-    @ApiModelProperty("联系电话")
+    @Schema(description="联系电话")
     private String phone;
 
-    @ApiModelProperty("联系地址")
+    @Schema(description="联系地址")
     private String address;
 
-    @ApiModelProperty("备注信息")
+    @Schema(description="备注信息")
     private String description;
 
-    @ApiModelProperty("创建时间")
+    @Schema(description="创建时间")
     private Date createTime;
 
-    @ApiModelProperty("更新时间")
+    @Schema(description="更新时间")
     private Date updateTime;
 
-    @ApiModelProperty("状态，A：有效/启用；D：无效")
+    @Schema(description="状态，A：有效/启用；D：无效")
     private String status;
 
-    @ApiModelProperty("最后操作人")
+    @Schema(description="最后操作人")
     private String operator;
 
-    @ApiModelProperty("有效期开始时间")
+    @Schema(description="有效期开始时间")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date startTime;
 
-    @ApiModelProperty("有效期结束时间")
+    @Schema(description="有效期结束时间")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date endTime;
 

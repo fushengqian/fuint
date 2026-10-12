@@ -7,12 +7,12 @@ import com.fuint.framework.web.BaseController;
 import com.fuint.framework.web.ResponseObject;
 import com.fuint.repository.model.MtStore;
 import com.fuint.utils.StringUtil;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,7 +23,7 @@ import java.util.Map;
  * Created by FSQ
  * CopyRight https://www.fuint.cn
  */
-@Api(tags="会员端-店铺相关接口")
+@Tag(name="会员端-店铺相关接口")
 @RestController
 @AllArgsConstructor
 @RequestMapping(value = "/clientApi/store")
@@ -37,7 +37,7 @@ public class ClientStoreController extends BaseController {
     /**
      * 获取店铺列表（根据距离排序）
      */
-    @ApiOperation(value = "获取店铺列表（根据距离排序）")
+    @Operation(summary="获取店铺列表（根据距离排序）")
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @CrossOrigin
     public ResponseObject list(HttpServletRequest request, @RequestBody Map<String, Object> param) throws BusinessCheckException {
@@ -57,7 +57,7 @@ public class ClientStoreController extends BaseController {
     /**
      * 获取店铺详情
      */
-    @ApiOperation(value = "获取店铺详情")
+    @Operation(summary="获取店铺详情")
     @RequestMapping(value = "/detail", method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject detail(HttpServletRequest request) throws BusinessCheckException {

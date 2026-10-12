@@ -6,12 +6,12 @@ import com.fuint.common.service.PageDecorateService;
 import com.fuint.framework.web.BaseController;
 import com.fuint.framework.web.ResponseObject;
 import com.fuint.utils.StringUtil;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * 会员端个人中心接口controller
@@ -19,7 +19,7 @@ import javax.servlet.http.HttpServletRequest;
  * Created by FSQ
  * CopyRight https://www.fuint.cn
  */
-@Api(tags="会员端-个人中心相关接口")
+@Tag(name="会员端-个人中心相关接口")
 @RestController
 @AllArgsConstructor
 @RequestMapping(value = "/clientApi/userPage")
@@ -38,7 +38,7 @@ public class ClientUserPageController extends BaseController {
     /**
      * 获取个人中心配置
      */
-    @ApiOperation(value = "获取个人中心配置")
+    @Operation(summary="获取个人中心配置")
     @RequestMapping(value = "/info", method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject info(HttpServletRequest request) {

@@ -1,6 +1,6 @@
 package com.fuint.common.param;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import java.io.Serializable;
 
@@ -13,49 +13,49 @@ import java.io.Serializable;
 @Data
 public class GoodsListParam extends PageParam implements Serializable {
 
-    @ApiModelProperty(value="商品名称", name="name")
+    @Schema(description="商品名称", name="name")
     private String name;
 
-    @ApiModelProperty(value="搜索关键字", name="keyword")
+    @Schema(description="搜索关键字", name="keyword")
     private String keyword;
 
-    @ApiModelProperty(value="商品编码", name="goodsNo")
+    @Schema(description="商品编码", name="goodsNo")
     private String goodsNo;
 
-    @ApiModelProperty(value="是否单规格", name="isSingleSpec")
+    @Schema(description="是否单规格", name="isSingleSpec")
     private String isSingleSpec;
 
-    @ApiModelProperty(value="商品类型", name="type")
+    @Schema(description="商品类型", name="type")
     private String type;
 
-    @ApiModelProperty(value="可用平台", name="platform")
+    @Schema(description="可用平台", name="platform")
     private String platform;
 
-    @ApiModelProperty(value="商品状态", name="status")
+    @Schema(description="商品状态", name="status")
     private String status;
 
-    @ApiModelProperty(value="所属商户", name="merchantId")
+    @Schema(description="所属商户", name="merchantId")
     private Integer merchantId;
 
-    @ApiModelProperty(value="所属店铺", name="storeId")
+    @Schema(description="所属店铺", name="storeId")
     private Integer storeId;
 
-    @ApiModelProperty(value="是否有库存", name="stock")
+    @Schema(description="是否有库存", name="stock")
     private String stock;
 
-    @ApiModelProperty(value="商品分类", name="cateId")
+    @Schema(description="商品分类", name="cateId")
     private Integer cateId;
 
-    @ApiModelProperty(value="是否有价格", name="hasPrice")
+    @Schema(description="是否有价格", name="hasPrice")
     private String hasPrice;
 
-    @ApiModelProperty(value="积分商品筛选，Y：只查积分兑换商品，N或不传：只查非积分商品", name="pointGoods")
+    @Schema(description="积分商品筛选，Y：只查积分兑换商品，N或不传：只查非积分商品", name="pointGoods")
     private String pointGoods;
 
-    @ApiModelProperty(value="排序方式", name="sortType")
+    @Schema(description="排序方式", name="sortType")
     private String sortType;
 
-    @ApiModelProperty(value="按价格排序", name="sortPrice")
+    @Schema(description="按价格排序", name="sortPrice")
     private String sortPrice;
 
 }

@@ -14,8 +14,8 @@ import com.fuint.module.clientApi.request.AddressRequest;
 import com.fuint.repository.mapper.MtRegionMapper;
 import com.fuint.repository.model.MtAddress;
 import com.fuint.repository.model.MtRegion;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.web.bind.annotation.*;
@@ -31,7 +31,7 @@ import java.util.Map;
  * Created by FSQ
  * CopyRight https://www.fuint.cn
  */
-@Api(tags="会员端-收货地址相关接口")
+@Tag(name="会员端-收货地址相关接口")
 @RestController
 @AllArgsConstructor
 @RequestMapping(value = "/clientApi/address")
@@ -47,7 +47,7 @@ public class ClientAddressController extends BaseController {
     /**
      * 保存收货地址
      */
-    @ApiOperation(value="保存收货地址", notes="保存会员的收货地址")
+    @Operation(summary="保存收货地址", description="保存会员的收货地址")
     @RequestMapping(value = "/save", method = RequestMethod.POST)
     @CrossOrigin
     public ResponseObject save(@RequestBody AddressRequest address) throws BusinessCheckException {
@@ -81,7 +81,7 @@ public class ClientAddressController extends BaseController {
     /**
      * 获取个人收货地址列表
      */
-    @ApiOperation(value="获取个人收货地址列表", notes="获取个人收货地址列表")
+    @Operation(summary="获取个人收货地址列表", description="获取个人收货地址列表")
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject list() throws BusinessCheckException {
@@ -134,7 +134,7 @@ public class ClientAddressController extends BaseController {
     /**
      * 获取收货地址详情
      */
-    @ApiOperation(value="获取收货地址详情", notes="根据ID获取会员收货地址详情")
+    @Operation(summary="获取收货地址详情", description="根据ID获取会员收货地址详情")
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @CrossOrigin
     public ResponseObject detail(@RequestBody AddressDetailParam addressDetailParam) throws BusinessCheckException {

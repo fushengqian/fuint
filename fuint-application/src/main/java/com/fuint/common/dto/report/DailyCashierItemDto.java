@@ -1,6 +1,6 @@
 package com.fuint.common.dto.report;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -15,43 +15,43 @@ import java.math.BigDecimal;
 @Data
 public class DailyCashierItemDto implements Serializable {
 
-    @ApiModelProperty("日期")
+    @Schema(description="日期")
     private String dateTime;
 
-    @ApiModelProperty("店铺ID")
+    @Schema(description="店铺ID")
     private Integer storeId;
 
-    @ApiModelProperty("店铺名称")
+    @Schema(description="店铺名称")
     private String storeName;
 
-    @ApiModelProperty("收银员ID")
+    @Schema(description="收银员ID")
     private Integer staffId;
 
-    @ApiModelProperty("收银员姓名")
+    @Schema(description="收银员姓名")
     private String staffName;
 
-    @ApiModelProperty("订单数量")
+    @Schema(description="订单数量")
     private Integer orderCount;
 
-    @ApiModelProperty("销售金额")
+    @Schema(description="销售金额")
     private BigDecimal salesAmount;
 
-    @ApiModelProperty("现金支付金额")
+    @Schema(description="现金支付金额")
     private BigDecimal cashAmount;
 
-    @ApiModelProperty("微信支付金额")
+    @Schema(description="微信支付金额")
     private BigDecimal wechatAmount;
 
-    @ApiModelProperty("支付宝支付金额")
+    @Schema(description="支付宝支付金额")
     private BigDecimal aliPayAmount;
 
-    @ApiModelProperty("积分支付金额")
+    @Schema(description="积分支付金额")
     private BigDecimal pointAmount;
 
-    @ApiModelProperty("卡券核销金额")
+    @Schema(description="卡券核销金额")
     private BigDecimal couponAmount;
 
-    @ApiModelProperty("余额支付金额")
+    @Schema(description="余额支付金额")
     private BigDecimal balanceAmount;
 
 }

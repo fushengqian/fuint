@@ -1,6 +1,6 @@
 package com.fuint.common.param;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import java.io.Serializable;
 
@@ -12,37 +12,37 @@ import java.io.Serializable;
 @Data
 public class CartListParam extends PageParam implements Serializable {
 
-    @ApiModelProperty(value="购物车ID", name="cartId")
+    @Schema(description="购物车ID", name="cartId")
     private Integer cartId;
 
-    @ApiModelProperty(value="指定购物车ID，逗号分割", name="cartIds")
+    @Schema(description="指定购物车ID，逗号分割", name="cartIds")
     private String cartIds;
 
-    @ApiModelProperty(value="商品ID", name="goodsId")
+    @Schema(description="商品ID", name="goodsId")
     private Integer goodsId;
 
-    @ApiModelProperty(value="卡券ID", name="couponId")
+    @Schema(description="卡券ID", name="couponId")
     private Integer couponId;
 
-    @ApiModelProperty(value="卡券ID列表，逗号分隔（储值卡叠加使用）", name="couponIds")
+    @Schema(description="卡券ID列表，逗号分隔（储值卡叠加使用）", name="couponIds")
     private String couponIds;
 
-    @ApiModelProperty(value="商品SkuID", name="skuId")
+    @Schema(description="商品SkuID", name="skuId")
     private Integer skuId;
 
-    @ApiModelProperty(value="使用积分", name="point")
+    @Schema(description="使用积分", name="point")
     private String point;
 
-    @ApiModelProperty(value="购买数量", name="buyNum")
+    @Schema(description="购买数量", name="buyNum")
     private Double buyNum;
 
-    @ApiModelProperty(value="挂单编码", name="hangNo")
+    @Schema(description="挂单编码", name="hangNo")
     private String hangNo;
 
-    @ApiModelProperty(value="下单会员ID", name="userId")
+    @Schema(description="下单会员ID", name="userId")
     private Integer userId;
 
-    @ApiModelProperty(value="订单模式", name="orderMode")
+    @Schema(description="订单模式", name="orderMode")
     private String orderMode;
 
 }

@@ -17,8 +17,8 @@ import com.fuint.repository.model.MtStaff;
 import com.fuint.repository.model.MtUser;
 import com.fuint.repository.model.MtUserCoupon;
 import com.fuint.utils.StringUtil;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -32,7 +32,7 @@ import java.util.Map;
  * Created by FSQ
  * CopyRight https://www.fuint.cn
  */
-@Api(tags="会员端-卡券核销相关接口")
+@Tag(name="会员端-卡券核销相关接口")
 @RestController
 @AllArgsConstructor
 @RequestMapping(value = "/clientApi/confirm")
@@ -58,7 +58,7 @@ public class ClientConfirmController extends BaseController {
     /**
      * 核销卡券
      */
-    @ApiOperation(value = "核销卡券")
+    @Operation(summary="核销卡券")
     @RequestMapping(value = "/doConfirm", method = RequestMethod.POST)
     @CrossOrigin
     public ResponseObject doConfirm(@RequestBody ConfirmParam confirmParam) {

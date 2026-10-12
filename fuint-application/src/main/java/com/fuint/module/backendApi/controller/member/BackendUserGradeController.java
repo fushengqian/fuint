@@ -13,8 +13,8 @@ import com.fuint.framework.pagination.PaginationResponse;
 import com.fuint.framework.web.BaseController;
 import com.fuint.framework.web.ResponseObject;
 import com.fuint.repository.model.MtUserGrade;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -31,7 +31,7 @@ import java.util.Map;
  * Created by FSQ
  * CopyRight https://www.fuint.cn
  */
-@Api(tags="管理端-会员等级相关接口")
+@Tag(name="管理端-会员等级相关接口")
 @RestController
 @AllArgsConstructor
 @RequestMapping(value = "/backendApi/userGrade")
@@ -45,7 +45,7 @@ public class BackendUserGradeController extends BaseController {
     /**
      * 会员等级列表查询
      */
-    @ApiOperation(value = "会员等级列表查询")
+    @Operation(summary="会员等级列表查询")
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('userGrade:index')")
@@ -80,7 +80,7 @@ public class BackendUserGradeController extends BaseController {
     /**
      * 更新会员等级状态
      */
-    @ApiOperation(value = "更新会员等级状态")
+    @Operation(summary="更新会员等级状态")
     @RequestMapping(value = "/updateStatus", method = RequestMethod.POST)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('userGrade:index')")
@@ -104,7 +104,7 @@ public class BackendUserGradeController extends BaseController {
     /**
      * 删除会员等级
      */
-    @ApiOperation(value = "删除会员等级")
+    @Operation(summary="删除会员等级")
     @RequestMapping(value = "/delete/{id}", method = RequestMethod.GET)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('userGrade:index')")
@@ -123,7 +123,7 @@ public class BackendUserGradeController extends BaseController {
     /**
      * 保存会员等级
      */
-    @ApiOperation(value = "保存会员等级")
+    @Operation(summary="保存会员等级")
     @RequestMapping(value = "/save", method = RequestMethod.POST)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('userGrade:add')")
@@ -160,7 +160,7 @@ public class BackendUserGradeController extends BaseController {
     /**
      * 获取会员等级信息
      */
-    @ApiOperation(value = "获取会员等级信息")
+    @Operation(summary="获取会员等级信息")
     @RequestMapping(value = "/info/{id}", method = RequestMethod.GET)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('userGrade:index')")

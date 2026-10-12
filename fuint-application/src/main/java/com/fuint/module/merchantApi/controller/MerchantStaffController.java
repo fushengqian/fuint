@@ -15,13 +15,13 @@ import com.fuint.framework.web.ResponseObject;
 import com.fuint.repository.model.MtStaff;
 import com.fuint.repository.model.MtUser;
 import com.fuint.utils.StringUtil;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -31,7 +31,7 @@ import java.util.Map;
  * Created by FSQ
  * CopyRight https://www.fuint.cn
  */
-@Api(tags="商户端-员工相关接口")
+@Tag(name="商户端-员工相关接口")
 @RestController
 @AllArgsConstructor
 @RequestMapping(value = "/merchantApi/staff")
@@ -52,7 +52,7 @@ public class MerchantStaffController extends BaseController {
      * */
     private MerchantService merchantService;
 
-    @ApiOperation(value = "员工列表")
+    @Operation(summary="员工列表")
     @RequestMapping(value = "/staffList", method = RequestMethod.POST)
     @CrossOrigin
     public ResponseObject staffList(HttpServletRequest request, @RequestBody StaffPage staffPage) {
@@ -89,7 +89,7 @@ public class MerchantStaffController extends BaseController {
     /**
      * 查询员工详情
      */
-    @ApiOperation(value = "查询员工详情")
+    @Operation(summary="查询员工详情")
     @RequestMapping(value = "/info", method = RequestMethod.POST)
     @CrossOrigin
     public ResponseObject info(@RequestBody StaffParam params) throws BusinessCheckException {
@@ -110,7 +110,7 @@ public class MerchantStaffController extends BaseController {
         return getSuccessResult(result);
     }
 
-    @ApiOperation(value = "保存员工信息")
+    @Operation(summary="保存员工信息")
     @RequestMapping(value = "/saveStaff", method = RequestMethod.POST)
     @CrossOrigin
     public ResponseObject saveStaff(HttpServletRequest request, @RequestBody StaffParam params) throws BusinessCheckException {

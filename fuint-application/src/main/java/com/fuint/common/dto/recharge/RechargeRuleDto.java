@@ -1,6 +1,6 @@
 package com.fuint.common.dto.recharge;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -14,13 +14,13 @@ import java.io.Serializable;
 @Data
 public class RechargeRuleDto implements Serializable {
 
-    @ApiModelProperty("充值金额")
+    @Schema(description="充值金额")
     private String rechargeAmount;
 
-    @ApiModelProperty("赠送金额")
+    @Schema(description="赠送金额")
     private String giveAmount;
 
-    @ApiModelProperty("赠送卡券ID")
+    @Schema(description="赠送卡券ID")
     private String giveCouponIds;
 
 }

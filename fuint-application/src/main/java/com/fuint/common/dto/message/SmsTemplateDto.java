@@ -1,6 +1,6 @@
 package com.fuint.common.dto.message;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -15,31 +15,31 @@ import java.util.Date;
 @Data
 public class SmsTemplateDto implements Serializable {
 
-    @ApiModelProperty("自增ID")
+    @Schema(description="自增ID")
     private Integer id;
 
-    @ApiModelProperty("商户ID")
+    @Schema(description="商户ID")
     private Integer merchantId;
 
-    @ApiModelProperty("模板名称")
+    @Schema(description="模板名称")
     private String name;
 
-    @ApiModelProperty("模板英文名称")
+    @Schema(description="模板英文名称")
     private String uname;
 
-    @ApiModelProperty("模板编码")
+    @Schema(description="模板编码")
     private String code;
 
-    @ApiModelProperty("模板内容")
+    @Schema(description="模板内容")
     private String content;
 
-    @ApiModelProperty("创建时间")
+    @Schema(description="创建时间")
     private Date createTime;
 
-    @ApiModelProperty("更新时间")
+    @Schema(description="更新时间")
     private Date updateTime;
 
-    @ApiModelProperty("状态，1：正常；2：删除")
+    @Schema(description="状态，1：正常；2：删除")
     private String status;
 
 }

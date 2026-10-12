@@ -12,8 +12,8 @@ import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.web.BaseController;
 import com.fuint.framework.web.ResponseObject;
 import com.fuint.repository.model.MtSetting;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,7 +25,7 @@ import java.util.*;
  * Created by FSQ
  * CopyRight https://www.fuint.cn
  */
-@Api(tags = "管理端-积分相关接口")
+@Tag(name="管理端-积分相关接口")
 @RestController
 @AllArgsConstructor
 @RequestMapping(value = "/backendApi/navigate")
@@ -39,7 +39,7 @@ public class BackendNavigateController extends BaseController {
     /**
      * 导航设置详情
      */
-    @ApiOperation(value = "导航设置详情")
+    @Operation(summary="导航设置详情")
     @RequestMapping(value = "/info", method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject info() throws BusinessCheckException, JsonProcessingException {
@@ -54,7 +54,7 @@ public class BackendNavigateController extends BaseController {
     /**
      * 保存导航设置
      */
-    @ApiOperation(value = "保存导航设置")
+    @Operation(summary="保存导航设置")
     @RequestMapping(value = "/save", method = RequestMethod.POST)
     @CrossOrigin
     public ResponseObject save(@RequestBody NavigationDto navigation) throws BusinessCheckException, JsonProcessingException {

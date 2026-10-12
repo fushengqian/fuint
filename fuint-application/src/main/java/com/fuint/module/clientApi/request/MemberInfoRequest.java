@@ -1,6 +1,6 @@
 package com.fuint.module.clientApi.request;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import java.io.Serializable;
 
@@ -13,37 +13,37 @@ import java.io.Serializable;
 @Data
 public class MemberInfoRequest implements Serializable {
 
-    @ApiModelProperty(value="会员名称", name="name")
+    @Schema(description="会员名称", name="name")
     private String name;
 
-    @ApiModelProperty(value="会员生日", name="birthday")
+    @Schema(description="会员生日", name="birthday")
     private String birthday;
 
-    @ApiModelProperty(value="头像url", name="avatar")
+    @Schema(description="头像url", name="avatar")
     private String avatar;
 
-    @ApiModelProperty(value="性别", name="sex")
+    @Schema(description="性别", name="sex")
     private Integer sex;
 
-    @ApiModelProperty(value="微信手机号授权码", name="code")
+    @Schema(description="微信手机号授权码", name="code")
     private String code;
 
-    @ApiModelProperty(value="微信手机号授权加密数据", name="encryptedData")
+    @Schema(description="微信手机号授权加密数据", name="encryptedData")
     private String encryptedData;
 
-    @ApiModelProperty(value="微信手机号授权码iv", name="iv")
+    @Schema(description="微信手机号授权码iv", name="iv")
     private String iv;
 
-    @ApiModelProperty(value="新密码", name="password")
+    @Schema(description="新密码", name="password")
     private String password;
 
-    @ApiModelProperty(value="旧密码", name="passwordOld")
+    @Schema(description="旧密码", name="passwordOld")
     private String passwordOld;
 
-    @ApiModelProperty(value="手机号", name="mobile")
+    @Schema(description="手机号", name="mobile")
     private String mobile;
 
-    @ApiModelProperty(value="验证码", name="verifyCode")
+    @Schema(description="验证码", name="verifyCode")
     private String verifyCode;
 
 }

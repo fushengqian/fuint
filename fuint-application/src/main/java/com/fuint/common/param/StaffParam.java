@@ -1,6 +1,6 @@
 package com.fuint.common.param;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import java.io.Serializable;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -15,31 +15,31 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class StaffParam implements Serializable {
 
-    @ApiModelProperty(value="ID", name="id")
+    @Schema(description="ID", name="id")
     private Integer id;
 
-    @ApiModelProperty(value="商户ID", name="merchantId")
+    @Schema(description="商户ID", name="merchantId")
     private Integer merchantId;
 
-    @ApiModelProperty(value="店铺ID", name="storeId")
+    @Schema(description="店铺ID", name="storeId")
     private Integer storeId;
 
-    @ApiModelProperty(value="类别", name="category")
+    @Schema(description="类别", name="category")
     private Integer category;
 
-    @ApiModelProperty(value="手机号", name="mobile")
+    @Schema(description="手机号", name="mobile")
     private String mobile;
 
-    @ApiModelProperty(value="真实姓名", name="realName")
+    @Schema(description="真实姓名", name="realName")
     private String realName;
 
-    @ApiModelProperty(value="头像", name="avatar")
+    @Schema(description="头像", name="avatar")
     private String avatar;
 
-    @ApiModelProperty(value="备注信息", name="description")
+    @Schema(description="备注信息", name="description")
     private String description;
 
-    @ApiModelProperty(value="审核状态", name="auditedStatus")
+    @Schema(description="审核状态", name="auditedStatus")
     private String auditedStatus;
 
 }

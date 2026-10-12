@@ -5,8 +5,7 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import java.io.Serializable;
 import java.util.Date;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 /**
@@ -17,42 +16,42 @@ import lombok.Data;
  */
 @Data
 @TableName("mt_user_action")
-@ApiModel(value = "MtUserAction对象", description = "会员行为信息")
+@Schema(name="MtUserAction对象", description="会员行为信息")
 public class MtUserAction implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @ApiModelProperty("自增ID")
+    @Schema(description="自增ID")
     @TableId(value = "ID", type = IdType.AUTO)
     private Integer id;
 
-    @ApiModelProperty("会员ID")
+    @Schema(description="会员ID")
     private Integer userId;
 
-    @ApiModelProperty("商户ID")
+    @Schema(description="商户ID")
     private Integer merchantId;
 
-    @ApiModelProperty("店铺ID")
+    @Schema(description="店铺ID")
     private Integer storeId;
 
-    @ApiModelProperty("行为类别")
+    @Schema(description="行为类别")
     private String action;
 
-    @ApiModelProperty("备注信息")
+    @Schema(description="备注信息")
     private String description;
 
-    @ApiModelProperty("参数")
+    @Schema(description="参数")
     private String param;
 
-    @ApiModelProperty("创建时间")
+    @Schema(description="创建时间")
     private Date createTime;
 
-    @ApiModelProperty("更新时间")
+    @Schema(description="更新时间")
     private Date updateTime;
 
-    @ApiModelProperty("状态，A：激活；N：禁用；D：删除")
+    @Schema(description="状态，A：激活；N：禁用；D：删除")
     private String status;
 
-    @ApiModelProperty("最后操作人")
+    @Schema(description="最后操作人")
     private String operator;
 }

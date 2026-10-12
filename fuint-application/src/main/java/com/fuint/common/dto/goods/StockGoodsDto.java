@@ -1,6 +1,6 @@
 package com.fuint.common.dto.goods;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import java.io.Serializable;
 
@@ -13,34 +13,34 @@ import java.io.Serializable;
 @Data
 public class StockGoodsDto implements Serializable {
 
-    @ApiModelProperty("商品ID")
+    @Schema(description="商品ID")
     private Integer id;
 
-    @ApiModelProperty("店铺ID")
+    @Schema(description="店铺ID")
     private Integer storeId;
 
-    @ApiModelProperty("商品名称")
+    @Schema(description="商品名称")
     private String name;
 
-    @ApiModelProperty("商品编码")
+    @Schema(description="商品编码")
     private String goodsNo;
 
-    @ApiModelProperty("商品分类ID")
+    @Schema(description="商品分类ID")
     private Integer cateId;
 
-    @ApiModelProperty("商品数量")
+    @Schema(description="商品数量")
     private Double num;
 
-    @ApiModelProperty("库存")
+    @Schema(description="库存")
     private Double stock;
 
-    @ApiModelProperty("skuId")
+    @Schema(description="skuId")
     private Integer skuId;
 
-    @ApiModelProperty("商品logo")
+    @Schema(description="商品logo")
     private String logo;
 
-    @ApiModelProperty("状态，A：正常；D：删除")
+    @Schema(description="状态，A：正常；D：删除")
     private String status;
 
 }

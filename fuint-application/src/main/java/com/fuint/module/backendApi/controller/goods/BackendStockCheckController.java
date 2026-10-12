@@ -19,8 +19,8 @@ import com.fuint.repository.mapper.MtGoodsMapper;
 import com.fuint.repository.mapper.MtGoodsSkuMapper;
 import com.fuint.repository.model.*;
 import com.fuint.utils.StringUtil;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.AllArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -33,7 +33,7 @@ import java.util.*;
  * Created by FSQ
  * CopyRight https://www.fuint.cn
  */
-@Api(tags="管理端-库存盘点管理相关接口")
+@Tag(name="管理端-库存盘点管理相关接口")
 @RestController
 @AllArgsConstructor
 @RequestMapping(value = "/backendApi/stockCheck")
@@ -61,7 +61,7 @@ public class BackendStockCheckController extends BaseController {
     /**
      * 获取盘点记录列表
      */
-    @ApiOperation(value = "获取盘点记录列表")
+    @Operation(summary="获取盘点记录列表")
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('stockCheck:index')")
@@ -90,7 +90,7 @@ public class BackendStockCheckController extends BaseController {
     /**
      * 创建盘点任务
      */
-    @ApiOperation(value = "创建盘点任务")
+    @Operation(summary="创建盘点任务")
     @RequestMapping(value = "/create", method = RequestMethod.POST)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('stockCheck:index')")
@@ -121,7 +121,7 @@ public class BackendStockCheckController extends BaseController {
     /**
      * 获取盘点详情
      */
-    @ApiOperation(value = "获取盘点详情")
+    @Operation(summary="获取盘点详情")
     @RequestMapping(value = "/info/{id}", method = RequestMethod.GET)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('stockCheck:index')")
@@ -181,7 +181,7 @@ public class BackendStockCheckController extends BaseController {
     /**
      * 提交盘点结果
      */
-    @ApiOperation(value = "提交盘点结果")
+    @Operation(summary="提交盘点结果")
     @RequestMapping(value = "/submit", method = RequestMethod.POST)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('stockCheck:index')")
@@ -208,7 +208,7 @@ public class BackendStockCheckController extends BaseController {
     /**
      * 删除盘点记录
      */
-    @ApiOperation(value = "删除盘点记录")
+    @Operation(summary="删除盘点记录")
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('stockCheck:index')")

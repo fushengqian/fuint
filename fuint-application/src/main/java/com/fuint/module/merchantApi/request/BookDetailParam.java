@@ -1,6 +1,6 @@
 package com.fuint.module.merchantApi.request;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import java.io.Serializable;
 
@@ -13,7 +13,7 @@ import java.io.Serializable;
 @Data
 public class BookDetailParam implements Serializable {
 
-    @ApiModelProperty(value="预约ID", name="bookId")
+    @Schema(description="预约ID", name="bookId")
     private Integer bookId;
 
 }

@@ -1,6 +1,6 @@
 package com.fuint.module.backendApi.request;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import java.io.Serializable;
 
@@ -13,15 +13,15 @@ import java.io.Serializable;
 @Data
 public class LoginRequest implements Serializable {
 
-    @ApiModelProperty(value="用户名", name="username")
+    @Schema(description="用户名", name="username")
     private String username;
 
-    @ApiModelProperty(value="密码", name="password")
+    @Schema(description="密码", name="password")
     private String password;
 
-    @ApiModelProperty(value="captchaCode", name="captchaCode")
+    @Schema(description="captchaCode", name="captchaCode")
     private String captchaCode;
 
-    @ApiModelProperty(value="图形验证码uuid", name="uuid")
+    @Schema(description="图形验证码uuid", name="uuid")
     private String uuid;
 }
