@@ -215,12 +215,16 @@ public class PageDecorateServiceImpl extends ServiceImpl<MtPageMapper, MtPage> i
                 throw new BusinessCheckException("不同商户，无权限操作");
             }
         }
-
         if (accountInfo != null) {
-            pageDto.setMerchantId(accountInfo.getMerchantId());
-            pageDto.setStoreId(accountInfo.getStoreId());
+            if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
+                pageDto.setMerchantId(accountInfo.getMerchantId());
+            } else {
+                throw new BusinessCheckException("平台账号无操作权限");
+            }
+            if (accountInfo.getStoreId() != null && accountInfo.getStoreId() > 0) {
+                pageDto.setStoreId(accountInfo.getStoreId());
+            }
         }
-        mtPage.setMerchantId(pageDto.getMerchantId() == null ? 0 : pageDto.getMerchantId());
         mtPage.setStoreId(pageDto.getStoreId() == null ? 0 : pageDto.getStoreId());
         mtPage.setPageName(pageDto.getPageName());
         mtPage.setPageType(pageDto.getPageType());
@@ -368,7 +372,12 @@ public class PageDecorateServiceImpl extends ServiceImpl<MtPageMapper, MtPage> i
      * 保存主题配置
      */
     @Override
-    public boolean saveTheme(ThemeDto themeDto, AccountInfo accountInfo) {
+    public boolean saveTheme(ThemeDto themeDto, AccountInfo accountInfo) throws BusinessCheckException {
+        if (accountInfo != null) {
+            if (accountInfo.getMerchantId() == null || accountInfo.getMerchantId() <= 0) {
+                throw new BusinessCheckException("平台账号无操作权限");
+            }
+        }
         saveSetting(accountInfo, SettingTypeEnum.THEME.getKey(), themeDto);
         return true;
     }
@@ -410,6 +419,11 @@ public class PageDecorateServiceImpl extends ServiceImpl<MtPageMapper, MtPage> i
      */
     @Override
     public boolean saveTabbar(TabbarDto tabbarDto, AccountInfo accountInfo) throws BusinessCheckException {
+        if (accountInfo != null) {
+            if (accountInfo.getMerchantId() == null || accountInfo.getMerchantId() <= 0) {
+                throw new BusinessCheckException("平台账号无操作权限");
+            }
+        }
         saveSetting(accountInfo, SettingTypeEnum.TABBAR.getKey(), tabbarDto);
         return true;
     }
@@ -437,6 +451,11 @@ public class PageDecorateServiceImpl extends ServiceImpl<MtPageMapper, MtPage> i
      */
     @Override
     public boolean saveUserPage(UserPageDto userPageDto, AccountInfo accountInfo) throws BusinessCheckException {
+        if (accountInfo != null) {
+            if (accountInfo.getMerchantId() == null || accountInfo.getMerchantId() <= 0) {
+                throw new BusinessCheckException("平台账号无操作权限");
+            }
+        }
         saveSetting(accountInfo, SettingTypeEnum.USER_PAGE.getKey(), userPageDto);
         return true;
     }

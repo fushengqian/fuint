@@ -10,6 +10,7 @@ import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cache.interceptor.KeyGenerator;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
@@ -34,6 +35,8 @@ public class RedisConfig implements CachingConfigurer {
     private static final Logger logger = LoggerFactory.getLogger(RedisConfig.class);
 
     private RedisConnectionFactory redisConnectionFactory;
+
+    private Environment environment;
 
     @Bean
     public KeyGenerator keyGenerator() {
@@ -90,7 +93,11 @@ public class RedisConfig implements CachingConfigurer {
             logger.error(errorMsg);
 
             // 如果是开发环境，可以选择降级处理而不是直接抛出异常
-            String envProfile = System.getProperty("env.profile", "dev");
+            // 注意：env.profile 配置在 application.properties 中，必须通过 Environment 读取，
+            // System.getProperty 取不到（该属性并非 JVM -D 参数），否则生产环境也会被误判为 dev 而静默降级
+            String envProfile = environment != null
+                ? environment.getProperty("env.profile", "dev")
+                : System.getProperty("env.profile", "dev");
             if ("dev".equals(envProfile)) {
                 logger.warn("开发环境检测到Redis连接失败，系统将继续运行但部分功能可能受限");
                 // 返回一个mock的RedisTemplate或者禁用Redis功能
@@ -249,15 +256,12 @@ public class RedisConfig implements CachingConfigurer {
      * 创建Mock的RedisTemplate用于开发环境降级
      */
     private RedisTemplate<String, Object> createMockRedisTemplate() {
-        logger.warn("创建Mock RedisTemplate，Redis相关功能将不可用");
+        logger.warn("创建降级RedisTemplate，Redis相关功能调用时将报错");
 
-        RedisTemplate<String, Object> mockTemplate = new RedisTemplate<String, Object>() {
-            @Override
-            public void afterPropertiesSet() {
-                // 不执行实际初始化
-                logger.debug("Mock RedisTemplate已创建");
-            }
-        };
+        RedisTemplate<String, Object> mockTemplate = new RedisTemplate<>();
+        // 必须保留连接工厂：Spring Data Redis 的 redisKeyValueAdapter 等组件会通过
+        // redisTemplate.getConnectionFactory() 获取连接工厂，为 null 会导致容器启动失败
+        mockTemplate.setConnectionFactory(redisConnectionFactory);
 
         // 设置基本序列化器
         StringRedisSerializer stringRedisSerializer = new StringRedisSerializer();
