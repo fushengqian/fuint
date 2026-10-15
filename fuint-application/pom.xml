@@ -55,7 +55,6 @@
             <artifactId>commons-lang</artifactId>
             <version>2.6</version>
         </dependency>
-        <!-- springfox 3.0.0 基于 javax.servlet，Boot 3 下不可用，改用 springdoc-openapi（OpenAPI 3） -->
         <dependency>
             <groupId>org.springdoc</groupId>
             <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
@@ -90,7 +89,6 @@
             </exclusions>
         </dependency>
 
-        <!-- 显式引入兼容的JSqlParser版本（与 mybatis-plus 3.5.7 匹配） -->
         <dependency>
             <groupId>com.github.jsqlparser</groupId>
             <artifactId>jsqlparser</artifactId>

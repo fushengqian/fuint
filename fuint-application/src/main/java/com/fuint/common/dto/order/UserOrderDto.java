@@ -137,7 +137,7 @@ public class UserOrderDto implements Serializable {
     @Schema(description="使用卡券列表（储值卡叠加使用场景）")
     private List<UserCouponDto> couponInfoList;
 
-    @Schema(description="所属员工")
+    @Schema(description="关联员工")
     private MtStaff staffInfo;
 
     @Schema(description="核销状态")

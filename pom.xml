@@ -30,11 +30,7 @@
         <maven.compiler.target>17</maven.compiler.target>
         <jedis.version>4.3.1</jedis.version>
         <kryo.version>5.4.0</kryo.version>
-        <!-- 3.5.9 起 PaginationInnerInterceptor 被拆到独立的 mybatis-plus-jsqlparser 模块，
-             3.5.7 中该类仍在 mybatis-plus-extension 内，无需额外引入 -->
         <mybatis-plus.version>3.5.7</mybatis-plus.version>
-        <!-- mybatis-plus 3.5.7 需要 jsqlparser 4.9（4.9 中 SelectItem 由类改为接口，
-             用 4.6 会在 PaginationInnerInterceptor 初始化时抛 InstantiationError） -->
         <jsqlparser.version>4.9</jsqlparser.version>
         <springdoc.version>2.3.0</springdoc.version>
         <swagger.annotations.version>2.2.22</swagger.annotations.version>
@@ -81,7 +77,6 @@
             <version>3.0.4</version>
         </dependency>
 
-        <!-- Boot 3 需使用 mybatis-plus-spring-boot3-starter（Boot 2 的 mybatis-plus-boot-starter 基于 spring.factories，Boot 3 已不再识别） -->
         <dependency>
             <groupId>com.baomidou</groupId>
             <artifactId>mybatis-plus-spring-boot3-starter</artifactId>
@@ -100,8 +95,6 @@
             <version>${mybatis-plus.version}</version>
         </dependency>
 
-        <!-- OpenAPI 3 注解（io.swagger.v3.oas.annotations.*），model/param 类需编译期可见；
-             使用 -jakarta 版本以适配 jakarta.validation -->
         <dependency>
             <groupId>io.swagger.core.v3</groupId>
             <artifactId>swagger-annotations-jakarta</artifactId>
@@ -144,7 +137,6 @@
             <artifactId>aspectjweaver</artifactId>
         </dependency>
 
-        <!-- Boot 3 起坐标改为 com.mysql:mysql-connector-j，版本由 spring-boot-dependencies 管理 -->
         <dependency>
             <groupId>com.mysql</groupId>
             <artifactId>mysql-connector-j</artifactId>
@@ -168,13 +160,11 @@
             <artifactId>urlrewritefilter</artifactId>
             <version>5.1.3</version>
         </dependency>
-        <!-- https://mvnrepository.com/artifact/org.projectlombok/lombok -->
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <scope>provided</scope>
         </dependency>
-        <!-- https://mvnrepository.com/artifact/com.squareup.okhttp3/okhttp -->
         <dependency>
             <groupId>com.squareup.okhttp3</groupId>
             <artifactId>okhttp</artifactId>
@@ -195,7 +185,6 @@
                 <artifactId>jsqlparser</artifactId>
                 <version>${jsqlparser.version}</version>
             </dependency>
-            <!-- 强制排除所有可能引入旧版本JSqlParser的依赖 -->
             <dependency>
                 <groupId>com.baomidou</groupId>
                 <artifactId>mybatis-plus-extension</artifactId>

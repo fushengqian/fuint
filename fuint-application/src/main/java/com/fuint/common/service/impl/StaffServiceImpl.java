@@ -280,6 +280,26 @@ public class StaffServiceImpl extends ServiceImpl<MtStaffMapper, MtStaff> implem
     }
 
     /**
+     * 根据商户ID、店铺ID获取员工列表
+     *
+     * @param merchantId 商户ID
+     * @param storeId 店铺ID，为空或不大于0时查询商户下全部员工
+     * @return
+     * */
+    @Override
+    public List<MtStaff> queryStaffList(Integer merchantId, Integer storeId) {
+        if (merchantId == null || merchantId <= 0) {
+            return new ArrayList<>();
+        }
+        LambdaQueryWrapper<MtStaff> lambdaQueryWrapper = Wrappers.lambdaQuery();
+        lambdaQueryWrapper.eq(MtStaff::getMerchantId, merchantId);
+        if (storeId != null && storeId > 0) {
+            lambdaQueryWrapper.eq(MtStaff::getStoreId, storeId);
+        }
+        return mtStaffMapper.selectList(lambdaQueryWrapper);
+    }
+
+    /**
      * 根据手机号获取员工信息
      *
      * @param mobile 手机号

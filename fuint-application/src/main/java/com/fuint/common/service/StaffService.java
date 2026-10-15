@@ -64,6 +64,15 @@ public interface StaffService extends IService<MtStaff> {
     List<MtStaff> queryStaffByParams(Map<String, Object> params);
 
     /**
+     * 根据商户ID、店铺ID获取员工列表
+     *
+     * @param merchantId 商户ID
+     * @param storeId 店铺ID，为空或不大于0时查询商户下全部员工
+     * @return
+     * */
+    List<MtStaff> queryStaffList(Integer merchantId, Integer storeId);
+
+    /**
      * 根据手机号获取员工信息
      *
      * @param  mobile 手机

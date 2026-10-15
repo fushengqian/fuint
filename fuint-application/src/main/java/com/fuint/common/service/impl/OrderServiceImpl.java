@@ -2015,7 +2015,7 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
         MtStore storeInfo = storeService.queryStoreById(orderInfo.getStoreId());
         userOrderDto.setStoreInfo(storeInfo);
 
-        // 所属员工
+        // 关联员工
         if (orderInfo.getStaffId() != null && orderInfo.getStaffId() > 0) {
             MtStaff staffInfo = staffService.queryStaffById(orderInfo.getStaffId());
             userOrderDto.setStaffInfo(staffInfo);

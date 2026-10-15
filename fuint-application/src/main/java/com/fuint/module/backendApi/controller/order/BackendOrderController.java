@@ -17,6 +17,7 @@ import com.fuint.framework.pagination.PaginationResponse;
 import com.fuint.framework.web.BaseController;
 import com.fuint.framework.web.ResponseObject;
 import com.fuint.repository.model.MtSetting;
+import com.fuint.repository.model.MtStaff;
 import com.fuint.repository.model.MtStore;
 import com.fuint.repository.model.MtUser;
 import com.fuint.utils.StringUtil;
@@ -72,6 +73,11 @@ public class BackendOrderController extends BaseController {
     private StoreService storeService;
 
     /**
+     * 员工服务接口
+     */
+    private StaffService staffService;
+
+    /**
      * 配置服务接口
      * */
     private SettingService settingService;
@@ -114,12 +120,16 @@ public class BackendOrderController extends BaseController {
         // 物流公司列表
         List<ParamDto> expressCompanyList = ExpressCompanyEnum.getExpressCompanyList();
 
+        // 员工列表（订单关联员工查询条件）
+        List<MtStaff> staffList = staffService.queryStaffList(accountInfo.getMerchantId(), storeId);
+
         Map<String, Object> result = new HashMap<>();
         result.put("typeList", typeList);
         result.put("statusList", statusList);
         result.put("payStatusList", payStatusList);
         result.put("orderModeList", orderModeList);
         result.put("storeList", storeList);
+        result.put("staffList", staffList);
         result.put("payTypeList", payTypeList);
         result.put("expressCompanyList", expressCompanyList);
         result.put("paginationResponse", response);
@@ -516,7 +526,7 @@ public class BackendOrderController extends BaseController {
         PaginationResponse<UserOrderDto> result = orderService.getUserOrderList(params);
 
         // excel标题
-        String[] title = { "订单号", "会员名称", "手机号", "订单类型", "配送方式", "所属门店", "总金额", "支付状态", "订单状态", "支付金额", "优惠金额", "积分金额", "所属员工", "下单时间", "更新时间" };
+        String[] title = { "订单号", "会员名称", "手机号", "订单类型", "配送方式", "所属门店", "总金额", "支付状态", "订单状态", "支付金额", "优惠金额", "积分金额", "关联员工", "下单时间", "更新时间" };
 
         // excel文件名
         String fileName = "订单列表"+ DateUtil.formatDate(new Date(), "yyyy.MM.dd_HHmm") +".xls";
