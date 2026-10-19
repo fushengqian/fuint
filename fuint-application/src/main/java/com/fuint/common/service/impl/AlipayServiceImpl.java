@@ -90,7 +90,7 @@ public class AlipayServiceImpl implements AlipayService {
         model.setAuthCode(authCode);
         model.setSubject(goodsInfo);
         model.setTotalAmount(payAmount1.toString());
-        model.setOutTradeNo(orderInfo.getOrderSn());
+        model.setOutTradeNo(orderInfo.getPaySn());
         model.setStoreId(orderInfo.getStoreId().toString());
         model.setScene("bar_code");
 
@@ -108,7 +108,7 @@ public class AlipayServiceImpl implements AlipayService {
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
-                    Map<String, String> payResult = queryPaidOrder(orderInfo.getStoreId(), response.getTradeNo(), orderInfo.getOrderSn());
+                    Map<String, String> payResult = queryPaidOrder(orderInfo.getStoreId(), response.getTradeNo(), orderInfo.getPaySn());
                     if (payResult == null) {
                         throw new BusinessCheckException("支付宝支付失败");
                     }
@@ -140,7 +140,7 @@ public class AlipayServiceImpl implements AlipayService {
     public Boolean checkCallBack(Map<String, String> params) throws Exception {
         String orderSn = params.get("out_trade_no") != null ? params.get("out_trade_no") : "";
         Integer storeId = 0;
-        UserOrderDto orderDto = orderService.getOrderByOrderSn(orderSn);
+        UserOrderDto orderDto = orderService.getOrderByPaySn(orderSn);
         if (orderDto != null && orderDto.getStoreInfo() != null) {
             storeId = orderDto.getStoreInfo().getId();
         }

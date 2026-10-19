@@ -32,6 +32,9 @@ public class UserOrderDto implements Serializable {
     @Schema(description="订单号")
     private String orderSn;
 
+    @Schema(description="支付单号")
+    private String paySn;
+
     @Schema(description="订单类型")
     private String type;
 

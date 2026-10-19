@@ -41,6 +41,9 @@ public class MtOrder implements Serializable {
     @Schema(description="订单号")
     private String orderSn;
 
+    @Schema(description="支付单号，每次发起支付生成，用于渠道下单与回调反查")
+    private String paySn;
+
     @Schema(description="卡券ID")
     private Integer couponId;
 

@@ -197,7 +197,7 @@ public class WeixinServiceImpl implements WeixinService {
         // 1. 调用微信接口生成预支付订单
         Map<String, String> reqData = new HashMap<>();
         reqData.put("body", goodsInfo);
-        reqData.put("out_trade_no", orderInfo.getOrderSn());
+        reqData.put("out_trade_no", orderInfo.getPaySn());
         reqData.put("device_info", "");
         reqData.put("fee_type", "CNY");
         reqData.put("total_fee", payAmount.toString());
@@ -295,7 +295,7 @@ public class WeixinServiceImpl implements WeixinService {
             Integer storeId = 0;
             String platform = PlatformTypeEnum.MP_WEIXIN.getCode();
             if (StringUtil.isNotEmpty(orderSn)) {
-                MtOrder mtOrder = orderService.getOrderInfoByOrderSn(orderSn);
+                MtOrder mtOrder = orderService.getOrderInfoByPaySn(orderSn);
                 if (mtOrder != null) {
                     storeId = mtOrder.getStoreId();
                     platform = mtOrder.getPlatform();
@@ -602,7 +602,7 @@ public class WeixinServiceImpl implements WeixinService {
     @Override
     public Map<String, String> queryPaidOrder(Integer storeId, String transactionId, String orderSn) {
         try {
-            MtOrder mtOrder = orderService.getOrderInfoByOrderSn(orderSn);
+            MtOrder mtOrder = orderService.getOrderInfoByPaySn(orderSn);
             String platform = PlatformTypeEnum.MP_WEIXIN.getCode();
             if (mtOrder != null) {
                 platform = mtOrder.getPlatform();
@@ -1206,7 +1206,7 @@ public class WeixinServiceImpl implements WeixinService {
             logger.info("刷卡支付返回>>" + respMap.toString());
 
             if (StringUtil.isNotEmpty(orderSn)) {
-                UserOrderDto orderInfo = orderService.getOrderByOrderSn(orderSn);
+                UserOrderDto orderInfo = orderService.getOrderByPaySn(orderSn);
                 if (orderInfo != null) {
                     if (!orderInfo.getStatus().equals(OrderStatusEnum.DELETED.getKey())) {
                         paymentService.paymentCallback(orderInfo);
@@ -1304,7 +1304,7 @@ public class WeixinServiceImpl implements WeixinService {
                     .nonce_str(WxPayKit.generateStr())
                     .body(reqData.get("body"))
                     .attach(reqData.get("body"))
-                    .out_trade_no(WxPayKit.generateStr())
+                    .out_trade_no(reqData.get("out_trade_no"))
                     .total_fee(reqData.get("total_fee"))
                     .spbill_create_ip(ip)
                     .notify_url(wxPayApiConfig.getDomain() + CALL_BACK_URL)

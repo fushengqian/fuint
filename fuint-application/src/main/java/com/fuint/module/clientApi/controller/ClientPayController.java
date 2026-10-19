@@ -12,24 +12,25 @@ import com.fuint.common.util.TokenUtil;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.web.BaseController;
 import com.fuint.framework.web.ResponseObject;
+import com.fuint.repository.model.MtOrderPay;
 import com.fuint.repository.model.MtSetting;
 import com.fuint.repository.model.MtUser;
 import com.fuint.repository.model.MtUserGrade;
 import com.fuint.utils.StringUtil;
 import com.ijpay.alipay.AliPayApi;
-import com.ijpay.core.kit.HttpKit;
+import com.fuint.common.util.CommonUtil;
 import com.ijpay.core.kit.WxPayKit;
 import com.ijpay.wxpay.WxPayApiConfigKit;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
@@ -41,7 +42,7 @@ import java.util.Map;
  * Created by FSQ
  * CopyRight https://www.fuint.cn
  */
-@Api(tags="会员端-支付相关接口")
+@Tag(name="会员端-支付相关接口")
 @RestController
 @AllArgsConstructor
 @RequestMapping(value = "/clientApi/pay")
@@ -68,6 +69,11 @@ public class ClientPayController extends BaseController {
      * 订单服务接口
      * */
     private OrderService orderService;
+
+    /**
+     * 订单支付单服务接口
+     * */
+    private OrderPayService orderPayService;
 
     /**
      * 会员服务接口
@@ -97,7 +103,7 @@ public class ClientPayController extends BaseController {
     /**
      * 支付前查询
      * */
-    @ApiOperation(value = "支付前查询")
+    @Operation(summary="支付前查询")
     @RequestMapping(value = "/prePay", method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject prePay(HttpServletRequest request) {
@@ -163,7 +169,7 @@ public class ClientPayController extends BaseController {
     /**
      * 发起支付
      * */
-    @ApiOperation(value = "发起支付")
+    @Operation(summary="发起支付")
     @RequestMapping(value = "/doPay", method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject doPay(HttpServletRequest request) throws BusinessCheckException {
@@ -187,15 +193,19 @@ public class ClientPayController extends BaseController {
             BigDecimal tranAmount = new BigDecimal(tranAmt).divide(new BigDecimal("100"), BigDecimal.ROUND_CEILING, 4);
             // 参数校验
             if (StringUtil.isNotEmpty(orderSn) && StringUtil.isNotEmpty(tranAmt) && StringUtil.isNotEmpty(orderId)) {
-                UserOrderDto orderInfo = orderService.getOrderByOrderSn(orderSn);
+                UserOrderDto orderInfo = orderService.getOrderByPaySn(orderSn);
                 if (orderInfo != null) {
                     String result = resData.get("return_code");
                     if (!result.equals("SUCCESS")) {
                         logger.error("微信支付回调接口验签失败");
                         return;
                     }
-                    // 订单金额
+                    // 以发起支付时记录的支付单金额为准，避免运营改价后误判“金额不匹配”
                     BigDecimal payAmount = orderInfo.getPayAmount();
+                    MtOrderPay orderPay = orderPayService.getPayLogByPaySn(orderSn);
+                    if (orderPay != null && orderPay.getAmount() != null) {
+                        payAmount = orderPay.getAmount();
+                    }
                     int compareFlag = tranAmount.compareTo(payAmount);
                     if (compareFlag == 0) { // 支付金额正确
                         if (orderInfo.getStatus().equals(OrderStatusEnum.CREATED.getKey())) {
@@ -225,7 +235,7 @@ public class ClientPayController extends BaseController {
     @RequestMapping(value = "/weixinRefundNotify", method = {RequestMethod.POST, RequestMethod.GET})
     @ResponseBody
     public String weixinRefundNotify(HttpServletRequest request) {
-        String xmlMsg = HttpKit.readData(request);
+        String xmlMsg = CommonUtil.readRequestBody(request);
         logger.info("退款通知 = " + xmlMsg);
         Map<String, String> params = WxPayKit.xmlToMap(xmlMsg);
         String returnCode = params.get("return_code");
@@ -251,7 +261,7 @@ public class ClientPayController extends BaseController {
     public String aliPayCallback(HttpServletRequest request) throws Exception {
         try {
             // 获取支付宝POST过来反馈信息
-            Map<String, String> params = AliPayApi.toMap(request);
+            Map<String, String> params = CommonUtil.requestParamsToMap(request);
             for (Map.Entry<String, String> entry : params.entrySet()) {
                 logger.info("{} = {}", entry.getKey(), entry.getValue());
             }
@@ -262,7 +272,7 @@ public class ClientPayController extends BaseController {
             Boolean verifyResult = alipayService.checkCallBack(params);
             if (verifyResult) {
                 logger.info("支付宝验证成功 success");
-                UserOrderDto orderInfo = orderService.getOrderByOrderSn(orderSn);
+                UserOrderDto orderInfo = orderService.getOrderByPaySn(orderSn);
                 Boolean flag = paymentService.paymentCallback(orderInfo);
                 if (flag) {
                     return "success";

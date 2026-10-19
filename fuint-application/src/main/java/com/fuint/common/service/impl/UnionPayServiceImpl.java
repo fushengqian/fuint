@@ -91,7 +91,7 @@ public class UnionPayServiceImpl implements UnionPayService {
         Map<String, String> params = MicroPayModel.builder()
                 .service(ServiceEnum.MICRO_PAY.toString())
                 .mch_id(unionPayBean.getMachId())
-                .out_trade_no(WxPayKit.generateStr())
+                .out_trade_no(orderInfo.getPaySn())
                 .body(goodsInfo)
                 .attach("云闪付支付")
                 .total_fee(payAmount1.toString())
@@ -118,7 +118,7 @@ public class UnionPayServiceImpl implements UnionPayService {
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
-                    Map<String, String> payResult = queryPaidOrder(orderInfo.getStoreId(), "云闪付单号", orderInfo.getOrderSn());
+                    Map<String, String> payResult = queryPaidOrder(orderInfo.getStoreId(), "云闪付单号", orderInfo.getPaySn());
                     if (payResult == null) {
                         throw new BusinessCheckException("云闪付支付失败");
                     }
@@ -150,7 +150,7 @@ public class UnionPayServiceImpl implements UnionPayService {
     public Boolean checkCallBack(Map<String, String> params) throws Exception {
         String orderSn = params.get("out_trade_no") != null ? params.get("out_trade_no") : "";
         Integer storeId = 0;
-        UserOrderDto orderDto = orderService.getOrderByOrderSn(orderSn);
+        UserOrderDto orderDto = orderService.getOrderByPaySn(orderSn);
         if (orderDto != null && orderDto.getStoreInfo() != null) {
             storeId = orderDto.getStoreInfo().getId();
         }

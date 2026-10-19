@@ -16,6 +16,7 @@ import com.fuint.framework.web.ResponseObject;
 import com.fuint.repository.mapper.MtOrderMapper;
 import com.fuint.repository.model.MtBalance;
 import com.fuint.repository.model.MtOrder;
+import com.fuint.repository.model.MtOrderPay;
 import com.fuint.repository.model.MtUser;
 import com.fuint.utils.StringUtil;
 import lombok.AllArgsConstructor;
@@ -71,6 +72,11 @@ public class PaymentServiceImpl implements PaymentService {
     private OrderService orderService;
 
     /**
+     * 订单支付单服务接口
+     * */
+    private OrderPayService orderPayService;
+
+    /**
      * 余额服务接口
      * */
     private BalanceService balanceService;
@@ -101,6 +107,13 @@ public class PaymentServiceImpl implements PaymentService {
     @Override
     public ResponseObject createPrepayOrder(MtUser userInfo, MtOrder orderInfo, Integer payAmount, String authCode, Integer giveAmount, String ip, String platform, String isWechat) throws BusinessCheckException {
         logger.info("PaymentService createPrepayOrder inParams userInfo={} payAmount={} giveAmount={} goodsInfo={}", userInfo, payAmount, giveAmount, orderInfo);
+
+        // 兜底：下单即支付等未走 doPay 的链路也要保证有支付单号
+        if (StringUtil.isEmpty(orderInfo.getPaySn())) {
+            MtOrderPay payLog = orderPayService.createPayLog(orderInfo, new BigDecimal(payAmount).divide(new BigDecimal("100")));
+            orderInfo.setPaySn(payLog.getPaySn());
+            orderService.updateOrder(orderInfo);
+        }
 
         ResponseObject responseObject;
         if (orderInfo.getPayType().equals(PayTypeEnum.ALISCAN.getKey())) {
@@ -134,6 +147,11 @@ public class PaymentServiceImpl implements PaymentService {
         Boolean isPay = orderService.setOrderPayed(orderInfo.getId(), null);
         if (mtOrder == null || !isPay) {
             return false;
+        }
+
+        // 支付单置为已支付
+        if (StringUtil.isNotEmpty(orderInfo.getPaySn())) {
+            orderPayService.updatePayLogPaid(orderInfo.getPaySn());
         }
 
         // 储值卡订单
@@ -189,12 +207,8 @@ public class PaymentServiceImpl implements PaymentService {
             mtUser = memberService.queryMemberById(loginInfo.getId());
         }
 
-        // 重新生成订单号
-        String orderSn = CommonUtil.createOrderSN(orderInfo.getUserId().toString());
-        orderInfo.setOrderSn(orderSn);
         orderInfo.setPayType(payType);
         orderInfo.setPlatform(platform);
-        orderInfo = orderService.updateOrder(orderInfo);
 
         // 收银员操作
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(token);
@@ -227,6 +241,12 @@ public class PaymentServiceImpl implements PaymentService {
 
         // 实付金额 = 总金额 - 优惠金额 - 积分金额
         BigDecimal realPayAmount = orderInfo.getAmount().subtract(new BigDecimal(orderInfo.getDiscount().toString())).subtract(new BigDecimal(orderInfo.getPointAmount().toString())).add(orderInfo.getDeliveryFee());
+
+        // 订单号全程保持不变，仅生成独立的支付单号：
+        // 既避免运营改价后重复下单被渠道拒绝（OUT_TRADE_NO_USED），也保证回调能稳定反查到订单
+        MtOrderPay payLog = orderPayService.createPayLog(orderInfo, realPayAmount);
+        orderInfo.setPaySn(payLog.getPaySn());
+        orderInfo = orderService.updateOrder(orderInfo);
         Object payment = null;
         Boolean isPaying = false;
         if (payType.equals(PayTypeEnum.BALANCE.getKey())) {

@@ -46,8 +46,8 @@ public interface OrderService extends IService<MtOrder> {
     /**
      * 订单提交结算
      *
-     * @param request 请求参数
-     * @param settlementParam 结算参数
+     * @param  request 请求参数
+     * @param  settlementParam 结算参数
      * @throws BusinessCheckException
      * @return
      * */
@@ -92,6 +92,7 @@ public interface OrderService extends IService<MtOrder> {
      *
      * @param  orderId 订单ID
      * @param  accountInfo 操作人
+     * @throws BusinessCheckException
      * @return
      */
     void deleteOrder(Integer orderId, AccountInfo accountInfo) throws BusinessCheckException;
@@ -111,6 +112,22 @@ public interface OrderService extends IService<MtOrder> {
      * @return
      * */
     MtOrder getOrderInfoByOrderSn(String orderSn);
+
+    /**
+     * 根据支付单号获取订单
+     *
+     * @param paySn 支付单号
+     * @return
+     */
+    UserOrderDto getOrderByPaySn(String paySn);
+
+    /**
+     * 根据支付单号获取订单信息
+     *
+     * @param paySn 支付单号
+     * @return
+     * */
+    MtOrder getOrderInfoByPaySn(String paySn);
 
     /**
      * 更新订单

@@ -174,6 +174,11 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
     private StaffService staffService;
 
     /**
+     * 订单支付单服务接口
+     * */
+    private OrderPayService orderPayService;
+
+    /**
      * 支付服务接口
      * */
     private PaymentService paymentService;
@@ -1567,6 +1572,41 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
     }
 
     /**
+     * 根据支付单号获取订单详情
+     *
+     * @param paySn 支付单号
+     * @return
+     */
+    @Override
+    public UserOrderDto getOrderByPaySn(String paySn) {
+        MtOrder orderInfo = getOrderInfoByPaySn(paySn);
+        if (orderInfo == null) {
+            return null;
+        }
+        return getOrderDetail(orderInfo, true, true);
+    }
+
+    /**
+     * 根据支付单号获取订单信息
+     *
+     * @param paySn 支付单号
+     * @return
+     * */
+    @Override
+    public MtOrder getOrderInfoByPaySn(String paySn) {
+        if (StringUtil.isEmpty(paySn)) {
+            return null;
+        }
+        // 优先按支付单号反查，支持同一订单的多笔支付单（运营改价后重新发起支付）
+        MtOrderPay mtOrderPay = orderPayService.getPayLogByPaySn(paySn);
+        if (mtOrderPay != null && mtOrderPay.getOrderId() != null) {
+            return mtOrderMapper.selectById(mtOrderPay.getOrderId());
+        }
+        // 兼容历史数据：老订单没有支付单，退化为按订单号匹配
+        return mtOrderMapper.findByOrderSn(paySn);
+    }
+
+    /**
      * 更新订单
      *
      * @param  orderDto 订单参数
@@ -1953,6 +1993,7 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
         userOrderDto.setUserId(orderInfo.getUserId());
         userOrderDto.setCouponId(orderInfo.getCouponId());
         userOrderDto.setOrderSn(orderInfo.getOrderSn());
+        userOrderDto.setPaySn(orderInfo.getPaySn());
         userOrderDto.setRemark(orderInfo.getRemark());
         userOrderDto.setType(orderInfo.getType());
         userOrderDto.setPayType(orderInfo.getPayType());
