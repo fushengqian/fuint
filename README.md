@@ -2,7 +2,7 @@
 
 #### 介绍
 fuint会员营销系统是一套开源的实体店铺会员管理和营销系统。系统基于前后端分离的架构，后端采用Java SpringBoot3 + Mysql，前端基于当前流行的Uniapp，Vue3、Element UI Plus，支持小程序、h5。主要功能包含电子优惠券、储值卡、实体卡、集次卡（计次卡）、短信发送、储值卡、会员积分、会员等级权益体系，支付收款等会员日常营销工具。本系统适用于各类实体店铺，如生鲜、零售超市、酒吧、酒店、汽车4S店、鲜花店、奶茶店、甜品店、餐饮店、农家乐等，是实体店铺会员营销必备的一款利器。
-以下是前台的页面展示：
+以下是会员端前台的页面展示：
 ![fuint会员端前台页面1](assets/g1.png)
 
 ![fuint会员端前台页面2](assets/g2.png)
@@ -38,14 +38,14 @@ fuint侧重于线下实体店的私域流量的运营，同时提供会员端小
 ![fuint登录界面](assets/login.png)
 ![fuint后台首页界面](assets/homeV2.png)
 
-前端使用技术：
+#### 前端使用技术：
 2.1 Vue3 Vite；
 2.2 Uniapp；
 2.3 Element UI Plus；
 2.4 Nodejs；
-2.5 ElectronJs；
+2.5 Electron Js；
 
-后端使用技术：
+#### 后端使用技术：
 1.1 SpringBoot3.2；
 1.2 Mybatis Plus；
 1.3 Maven；
@@ -102,7 +102,7 @@ fuint侧重于线下实体店的私域流量的运营，同时提供会员端小
 ![收银界面](assets/cashier.png)
 
 收银发起结算：
-![收银界面](assets/cashier-1.png)
+![收银界面-发起结算](assets/cashier-1.png)
 
 #### 开发计划
 1. 更完善的报表统计；
@@ -125,7 +125,7 @@ fuint侧重于线下实体店的私域流量的运营，同时提供会员端小
 ![公众号二维码](assets/qr.png)
 
 
-特别鸣谢：
+#### 特别鸣谢：
 Mybaits Plus: https://github.com/baomidou/mybatis-plus；
 Vue: https://github.com/vuejs/vue；
 Element UI: https://element.eleme.cn；
