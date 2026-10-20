@@ -1,7 +1,7 @@
 # fuint会员营销系统介绍
 
 #### 介绍
-fuint会员营销系统是一套开源的实体店铺会员管理和营销系统。系统基于前后端分离的架构，后端采用Java SpringBoot3 + Mysql，前端基于当前流行的Uniapp，Vue3、Element UI Plus，支持小程序、h5。主要功能包含电子优惠券、储值卡、实体卡、集次卡（计次卡）、短信发送、储值卡、会员积分、会员等级权益体系，支付收款等会员日常营销工具。本系统适用于各类实体店铺，如生鲜、零售超市、酒吧、酒店、汽车4S店、鲜花店、奶茶店、甜品店、餐饮店、农家乐等，是实体店铺会员营销必备的一款利器。
+fuint会员营销系统是延禾技术（www.fuint.cn）完全自研的一套开源的实体店铺会员管理和营销系统。系统基于前后端分离的架构，后端采用Java SpringBoot3 + Mysql，前端基于当前流行的Uniapp，Vue3、Element UI Plus，支持小程序、h5。主要功能包含电子优惠券、储值卡、实体卡、集次卡（计次卡）、短信发送、储值卡、会员积分、会员等级权益体系，支付收款等会员日常营销工具。本系统适用于各类实体店铺，如生鲜、零售超市、酒吧、酒店、汽车4S店、鲜花店、奶茶店、甜品店、餐饮店、农家乐等，是实体店铺会员营销必备的一款利器。
 以下是会员端前台的页面展示：
 ![fuint会员端前台页面1](assets/g1.png)
 
@@ -61,7 +61,7 @@ fuint侧重于线下实体店的私域流量的运营，同时提供会员端小
 
 
 #### 安装步骤
-软件环境版本：jdk 1.8、jdk11、jdk17、mysql 5.7或5.8、Redis任意版本
+软件环境版本：jdk17+、mysql 5.7或5.8、Redis6+ 任意版本
 1. 导入db目录下的fuint-db.sql数据库文件。
 2. 修改configure目录下的配置文件。
 3. 将工程导入Idea，并安装插件：Lombok Plugin。
@@ -104,12 +104,14 @@ fuint侧重于线下实体店的私域流量的运营，同时提供会员端小
 收银发起结算：
 ![收银界面-发起结算](assets/cashier-1.png)
 
+系统导图：
+![fuint脑图](assets/system.png)
+
 #### 开发计划
 1. 更完善的报表统计；
 2. 分享助力、分享领券、分享获得积分；
 3. 员工提成、分销功能；
 4. 更多营销工具，比如签到等。
-
 
 #### 允许使用范围：
 1.  允许个人学习使用
@@ -126,6 +128,6 @@ fuint侧重于线下实体店的私域流量的运营，同时提供会员端小
 
 
 #### 特别鸣谢：
-Mybaits Plus: https://github.com/baomidou/mybatis-plus；
-Vue: https://github.com/vuejs/vue；
-Element UI: https://element.eleme.cn；
+1. Mybaits Plus: https://github.com/baomidou/mybatis-plus；
+2. Vue: https://github.com/vuejs/vue；
+3. Element UI: https://element.eleme.cn；
