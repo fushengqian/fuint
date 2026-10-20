@@ -14,51 +14,50 @@ fuint会员营销系统是一套开源的实体店铺会员管理和营销系统
 ![fuint会员端前台页面5](assets/g5.png)
 
 fuint侧重于线下实体店的私域流量的运营，同时提供会员端小程序和收银系统的线上线下统一渠道，帮助商户降低获客成本。顾客通过扫码支付成为私域流量，支付即可成为会员。积分和卡券功能建立起会员等级体系，通过消息推送和短信营销方便触达用户。
-<p>1、会员运营自动化：商家通过日常活动设置，如开卡礼设置，沉睡唤醒等，成为会员后自动给顾客送优惠券，让顾客更有黏性，提升会员运营效率。</p>
-<p>2、打通收银系统和会员营销的壁垒，代客下单收银，支付即成为会员。</p>
-<p>3、会员体系完整化：积分兑换、积分转赠、会员等级权益、积分加速、买单折扣。</p>
-<p>4、会员卡券齐全：储值卡、电子券、优惠券、集次卡、计次卡、实体卡购买并兑换、会员充值、余额支付。</p>
-<p>5、线上代客下单收银系统，后台管理员可帮助临柜的会员下单、扫码支付。</p>
-<p>6、支持手机短信、站内弹框消息、微信订阅消息：支持包括发货消息、卡券到期提醒、活动提醒、会员到期提醒、积分余额变动提醒等消息。</p>
-<p>7、具有门店预约、到店支付等线上线下结合的o2o能力。</p>
-<p>小程序前端仓库：https://gitee.com/fuint/fuintStoreSystemFront</p>
+1、会员运营自动化：商家通过日常活动设置，如开卡礼设置，沉睡唤醒等，成为会员后自动给顾客送优惠券，让顾客更有黏性，提升会员运营效率。
+2、打通收银系统和会员营销的壁垒，代客下单收银，支付即成为会员。
+3、会员体系完整化：积分兑换、积分转赠、会员等级权益、积分加速、买单折扣。
+4、会员卡券齐全：储值卡、电子券、优惠券、集次卡、计次卡、实体卡购买并兑换、会员充值、余额支付。
+5、线上代客下单收银系统，后台管理员可帮助临柜的会员下单、扫码支付。
+6、支持手机短信、站内弹框消息、微信订阅消息：支持包括发货消息、卡券到期提醒、活动提醒、会员到期提醒、积分余额变动提醒等消息。
+7、具有门店预约、到店支付等线上线下结合的o2o能力。
+小程序前端仓库：https://gitee.com/fuint/fuintStoreSystemFront
 
 扫码小程序演示：
 ![fuint小程序演示](assets/miniapp.png)
 
-<b>官网演示地址：</b><br>
-<p>
-   1、官网：<a target="_blank" href="https://www.fuint.cn">https://www.fuint.cn</a> 点击 -> 系统演示，演示账号：fuint / 123456<br>
-   2、swagger接口文档：<a target="_blank" href="https://www.fuint.cn/fuint-application/swagger-ui.html">https://www.fuint.cn/fuint-application/swagger-ui.html</a>
-</p>
+官网演示地址：
+1、官网：https://www.fuint.cn 点击 -> 系统演示，演示账号：fuint / 123456
+2、swagger接口文档：https://www.fuint.cn/fuint-application/swagger-ui.html
 
 #### 软件架构
 后端：JAVA SpringBoot3 + MYSQL Mybatis Plus + Redis
 前端：采用基于Vue3的Uniapp、Element UI Plus，前后端分离，支持微信小程序、h5等
-<p>后台截图：</p>
-<p><img src="https://fuint-cn.oss-cn-shenzhen.aliyuncs.com/screenshots/login.png?v=fuint" alt="登录界面"></p>
-<p><img src="https://fuint-cn.oss-cn-shenzhen.aliyuncs.com/screenshots/homeV2.png?v=fuint" alt="首页"></p>
 
-前端使用技术<br>
-2.1 Vue3 Vite<br>
-2.2 Uniapp<br>
-2.3 Element UI Plus
-2.4 Nodejs
-2.5 Electron
+后台截图：
+![fuint登录界面](assets/login.png)
+![fuint后台首页界面](assets/homeV2.png)
 
-后端使用技术<br>
-1.1 SpringBoot3.2<br>
-1.2 Mybatis Plus<br>
-1.3 Maven<br>
-1.4 SpringSecurity<br>
-1.5 Druid<br>
-1.6 Slf4j<br>
-1.7 Fastjson<br>
-1.8 JWT<br>
-1.9 Redis<br>
-1.10 Quartz<br>
-1.11 Mysql 5.7或8版<br>
-1.12 Swagger UI<br>
+前端使用技术：
+2.1 Vue3 Vite；
+2.2 Uniapp；
+2.3 Element UI Plus；
+2.4 Nodejs；
+2.5 ElectronJs；
+
+后端使用技术：
+1.1 SpringBoot3.2；
+1.2 Mybatis Plus；
+1.3 Maven；
+1.4 SpringSecurity；
+1.5 Druid；
+1.6 Slf4j；
+1.7 Fastjson；
+1.8 JWT；
+1.9 Redis；
+1.10 Quartz；
+1.11 Mysql 5.7或8版；
+1.12 Swagger UI；
 
 
 #### 安装步骤
@@ -68,7 +67,7 @@ fuint侧重于线下实体店的私域流量的运营，同时提供会员端小
 3. 将工程导入Idea，并安装插件：Lombok Plugin。
 3. 使用maven执行install，打jar包（在fuint-application/target目录），把jar包上传并执行启动：
    nohup java -Dfile.encoding=UTF-8 -Xmx2048m -Xms2048m -Xss256k -Xmn1024m -jar fuint-application-1.0.0.jar
-<p>提示：无后端和linux基础的朋友，可以使用<b>宝塔</b>部署，非常方便简单。</p>
+提示：无后端和linux基础的朋友，可以使用<b>宝塔</b>部署，非常方便简单。
 
 
 #### 前台使用说明
@@ -77,8 +76,9 @@ fuint侧重于线下实体店的私域流量的运营，同时提供会员端小
 3.  核销卡券，会员在前台出示二维码，管理员用微信扫一扫即可核销。
 4.  卡券转赠，会员可将自己的卡券转赠给其他用户，输入对方的手机号即可完成转赠，获赠的好友会收到卡券赠送的短信。
 
-<p><img src="https://fuint-cn.oss-cn-shenzhen.aliyuncs.com/screenshots/create.png?v=fuint" alt="卡券创建界面"></p>
-<p><img src="https://fuint-cn.oss-cn-shenzhen.aliyuncs.com/screenshots/member.png?v=fuint" alt="卡券创建界面"></p>
+![卡券创建界面](assets/create.png)
+
+![会员管理界面](assets/member.png)
 
 #### 后台使用
 1. 会员管理：会员等级、会员新增、导入、禁用等。
@@ -95,13 +95,14 @@ fuint侧重于线下实体店的私域流量的运营，同时提供会员端小
 12. 操作日志主要针对电子券系统后台的一些关键操作进行日志记录，方便排查相关操作人的行为等问题。
 13. 发券记录主要根据发券的实际操作情况来记录，分为单用户发券和批量发券，同时可针对该次发券记录进行作废操作。
 14. 代客下单、收银功能，支持小票打印，包括本地打印和云打印（对接芯烨云打印服务）。
-<p>卡券营销：</p>
-<p><img src="https://fuint-cn.oss-cn-shenzhen.aliyuncs.com/screenshots/coupon-list.png?v=fuint" alt="卡券列表"></p>
+卡券营销：
+![卡券管理界面](assets/coupon-list.png)
 
-<p>收银代客下单功能：店员角色登录后台，从首页的“下单首页”菜单可进入代客收银下单界面，完成代客下单收银的流程。</p>
-<p><img src="https://fuint-cn.oss-cn-shenzhen.aliyuncs.com/screenshots/cashier.png?v=fuint3.0.8" alt="收银界面"></p>
-<p>发起结算：</p>
-<p><img src="https://fuint-cn.oss-cn-shenzhen.aliyuncs.com/screenshots/cashier-1.png?v=fuint3.0.8" alt="收银结算"></p>
+收银代客下单功能：店员角色登录后台，从首页的“下单首页”菜单可进入代客收银下单界面，完成代客下单收银的流程。
+![收银界面](assets/cashier.png)
+
+收银发起结算：
+![收银界面](assets/cashier-1.png)
 
 #### 开发计划
 1. 更完善的报表统计；
@@ -117,14 +118,14 @@ fuint侧重于线下实体店的私域流量的运营，同时提供会员端小
 4.  希望大家多多支持原创软件
 5.  请勿去除版权标签，要商用请购买源码授权（非常便宜），感谢理解！
 
-不足和待完善之处请谅解！源码仅供学习交流，更多功能欢迎进群咨询讨论，或需安装帮助请联系我们（<b>麻烦先点star！！！！！！</b>）。<br>
-官方网站：https://www.fuint.cn <br>
-开源不易，感谢支持！<br>
-<b>作者wx：fsq_better：</b><br>
-<p><img src="https://fuint-cn.oss-cn-shenzhen.aliyuncs.com/screenshots/qr.png" alt="公众号二维码"></p>
+不足和待完善之处请谅解！源码仅供学习交流，更多功能欢迎进群咨询讨论，或需安装帮助请联系我们（麻烦先点star！Thanks♪(･ω･)ﾉ）。
+官方网站：https://www.fuint.cn 
+开源不易，感谢支持！
+作者wx：fsq_better
+![公众号二维码](assets/qr.png)
 
 
-特别鸣谢：<br>
-Mybaits Plus: https://github.com/baomidou/mybatis-plus<br>
-Vue: https://github.com/vuejs/vue<br>
-Element UI: https://element.eleme.cn
+特别鸣谢：
+Mybaits Plus: https://github.com/baomidou/mybatis-plus；
+Vue: https://github.com/vuejs/vue；
+Element UI: https://element.eleme.cn；
