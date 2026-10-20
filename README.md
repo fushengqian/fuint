@@ -3,12 +3,11 @@
 #### 介绍
 fuint会员营销系统是一套开源的实体店铺会员管理和营销系统。系统基于前后端分离的架构，后端采用<b>Java SpringBoot3</b> + <b>Mysql</b>，前端基于当前流行的<b>Uniapp</b>，<b>Vue3</b>、<b>Element UI Plus</b>，支持小程序、h5。主要功能包含电子优惠券、储值卡、实体卡、集次卡（计次卡）、短信发送、储值卡、会员积分、会员等级权益体系，支付收款等会员日常营销工具。本系统适用于各类实体店铺，如生鲜、零售超市、酒吧、酒店、汽车4S店、鲜花店、奶茶店、甜品店、餐饮店、农家乐等，是实体店铺会员营销必备的一款利器。
 以下是前台的页面展示：
-<p><img src="https://fuint-cn.oss-cn-shenzhen.aliyuncs.com/screenshots/g1.png?v=1" alt="前台页面1"></p>
-<p><img src="https://fuint-cn.oss-cn-shenzhen.aliyuncs.com/screenshots/g2.png?v=2" alt="前台页面2"></p>
-<p><img src="https://fuint-cn.oss-cn-shenzhen.aliyuncs.com/screenshots/g3.png?v=2" alt="前台页面3"></p>
-<p><img src="https://fuint-cn.oss-cn-shenzhen.aliyuncs.com/screenshots/g6.png?v=1" alt="前台页面6"></p>
-<p><img src="https://fuint-cn.oss-cn-shenzhen.aliyuncs.com/screenshots/g5.png?v=1" alt="前台页面4"></p>
-
+![fuint会员端前台页面1](assets/g1.png)
+![fuint会员端前台页面2](assets/g2.png)
+![fuint会员端前台页面3](assets/g3.png)
+![fuint会员端前台页面4](assets/g6.png)
+![fuint会员端前台页面5](assets/g5.png)
 fuint侧重于线下实体店的私域流量的运营，同时提供会员端小程序和收银系统的线上线下统一渠道，帮助商户降低获客成本。顾客通过扫码支付成为私域流量，支付即可成为会员。积分和卡券功能建立起会员等级体系，通过消息推送和短信营销方便触达用户。
 <p>1、会员运营自动化：商家通过日常活动设置，如开卡礼设置，沉睡唤醒等，成为会员后自动给顾客送优惠券，让顾客更有黏性，提升会员运营效率。</p>
 <p>2、打通收银系统和会员营销的壁垒，代客下单收银，支付即成为会员。</p>
@@ -19,7 +18,7 @@ fuint侧重于线下实体店的私域流量的运营，同时提供会员端小
 <p>7、具有门店预约、到店支付等线上线下结合的o2o能力。</p>
 <p>小程序前端仓库：https://gitee.com/fuint/fuintStoreSystemFront</p>
 <b>扫码小程序演示：</b><br>
-<p><img src="https://fuint-cn.oss-cn-shenzhen.aliyuncs.com/screenshots/miniapp.png" alt="小程序演示"></p>
+![fuint小程序演示](assets/miniapp.png)
 <br>
 <b>官网演示地址：</b><br>
 <p>
