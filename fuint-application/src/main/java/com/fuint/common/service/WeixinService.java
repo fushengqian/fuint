@@ -54,6 +54,16 @@ public interface WeixinService {
     Map<String,String> processResXml(HttpServletRequest request);
 
     /**
+     * 解密微信支付 APIv3 回调通知
+     *
+     * APIv3 回调 resource 为密文，需验签后解密取得明文
+     *
+     * @param request 请求体
+     * @return 解密后的明文，验签或解密失败返回 null
+     * */
+    String decryptNotify(HttpServletRequest request);
+
+    /**
      * 处理返回的xml数据
      *
      * @param response 返回相应

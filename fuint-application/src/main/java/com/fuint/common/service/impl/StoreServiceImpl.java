@@ -177,6 +177,18 @@ public class StoreServiceImpl extends ServiceImpl<MtStoreMapper, MtStore> implem
         if (storeDto.getWxCertPath() != null) {
             mtStore.setWxCertPath(storeDto.getWxCertPath());
         }
+        if (storeDto.getWxApiV3() != null) {
+            mtStore.setWxApiV3(storeDto.getWxApiV3());
+        }
+        if (storeDto.getWxCertSerialNo() != null) {
+            mtStore.setWxCertSerialNo(storeDto.getWxCertSerialNo());
+        }
+        if (storeDto.getWxPrivateKeyPath() != null) {
+            mtStore.setWxPrivateKeyPath(storeDto.getWxPrivateKeyPath());
+        }
+        if (storeDto.getWxPayPublicKeyPath() != null) {
+            mtStore.setWxPayPublicKeyPath(storeDto.getWxPayPublicKeyPath());
+        }
         if (storeDto.getAlipayAppId() != null) {
             mtStore.setAlipayAppId(storeDto.getAlipayAppId());
         }

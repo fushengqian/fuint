@@ -27,18 +27,27 @@ import com.fuint.repository.mapper.MtUploadShippingLogMapper;
 import com.fuint.repository.model.*;
 import com.fuint.utils.QRCodeUtil;
 import com.fuint.utils.StringUtil;
+import com.ijpay.core.IJPayHttpResponse;
+import com.ijpay.core.enums.AuthTypeEnum;
+import com.ijpay.core.enums.RequestMethodEnum;
 import com.ijpay.core.enums.SignType;
 import com.ijpay.core.enums.TradeType;
 import com.fuint.common.util.CommonUtil;
+import com.ijpay.core.kit.PayKit;
+import com.ijpay.core.kit.RsaKit;
 import com.ijpay.core.kit.WxPayKit;
 import com.ijpay.wxpay.WxPayApi;
 import com.ijpay.wxpay.WxPayApiConfig;
 import com.ijpay.wxpay.WxPayApiConfigKit;
+import com.ijpay.wxpay.enums.WxDomainEnum;
+import com.ijpay.wxpay.enums.v3.BasePayApiEnum;
 import com.ijpay.wxpay.model.MicroPayModel;
 import com.ijpay.wxpay.model.OrderQueryModel;
 import com.ijpay.wxpay.model.RefundModel;
 import com.ijpay.wxpay.model.UnifiedOrderModel;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,7 +64,10 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.math.BigDecimal;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.security.AlgorithmParameters;
+import java.security.PrivateKey;
 import java.security.Security;
 import java.util.*;
 
@@ -70,6 +82,35 @@ import java.util.*;
 public class WeixinServiceImpl implements WeixinService {
 
     private static final Logger logger = LoggerFactory.getLogger(WeixinServiceImpl.class);
+
+    /**
+     * 微信支付 APIv3 配置，按线程隔离，由 getApiConfig 装配
+     * */
+    private static final ThreadLocal<WxPayV3Config> V3_CONFIG_HOLDER = new ThreadLocal<>();
+
+    /**
+     * 微信支付 APIv3 配置
+     *
+     * 包含商户私钥、商户API证书序列号、APIv3密钥、微信支付公钥
+     * */
+    @Data
+    @Builder
+    public static class WxPayV3Config {
+        /** 应用编号 */
+        private String appId;
+        /** 商户号 */
+        private String mchId;
+        /** 商户API证书序列号 */
+        private String serialNo;
+        /** APIv3密钥，用于解密回调resource */
+        private String apiV3;
+        /** 商户API私钥证书文件路径 */
+        private String privateKeyPath;
+        /** 微信支付公钥证书文件路径，用于验证回调签名与加密敏感信息 */
+        private String payPublicKeyPath;
+        /** 回调域名 */
+        private String domain;
+    }
 
     private MtUploadShippingLogMapper uploadShippingLogMapper;
 
@@ -262,8 +303,10 @@ public class WeixinServiceImpl implements WeixinService {
             if (respData.get("trade_type").equals(PayTypeEnum.JSAPI.getKey())) {
                 String prepayId = respData.get("prepay_id");
                 getApiConfig(orderInfo.getStoreId(), platform);
-                WxPayApiConfig wxPayApiConfig = WxPayApiConfigKit.getWxPayApiConfig();
-                respData = WxPayKit.miniAppPrepayIdCreateSign(wxPayApiConfig.getAppId(), prepayId, wxPayApiConfig.getPartnerKey(), SignType.MD5);
+                WxPayV3Config v3Config = getV3Config();
+                PrivateKey privateKey = getV3PrivateKey(v3Config);
+                // APIv3 使用商户私钥进行 RSA 签名，前端 signType 需为 RSA
+                respData = WxPayKit.jsApiCreateSign(v3Config.getAppId(), prepayId, privateKey);
                 String jsonStr = JSON.toJSONString(respData);
                 logger.info("小程序支付的参数:" + jsonStr);
             }
@@ -286,32 +329,102 @@ public class WeixinServiceImpl implements WeixinService {
      * */
     public Map<String, String> processResXml(HttpServletRequest request) {
         try {
-            String xmlMsg = CommonUtil.readRequestBody(request);
-            Map<String, String> result = WxPayKit.xmlToMap(xmlMsg);
-            String returnCode = result.get("return_code");
-            String orderSn = result.get("out_trade_no");
-            logger.info("支付通知，xml = {}, orderSn = {}", xmlMsg, orderSn);
-
-            Integer storeId = 0;
-            String platform = PlatformTypeEnum.MP_WEIXIN.getCode();
-            if (StringUtil.isNotEmpty(orderSn)) {
-                MtOrder mtOrder = orderService.getOrderInfoByPaySn(orderSn);
-                if (mtOrder != null) {
-                    storeId = mtOrder.getStoreId();
-                    platform = mtOrder.getPlatform();
-                }
+            String plainText = decryptNotify(request);
+            if (StringUtil.isEmpty(plainText)) {
+                return null;
             }
+            logger.info("支付通知解密后明文 = {}", plainText);
 
-            getApiConfig(storeId, platform);
-            if (WxPayKit.verifyNotify(result, WxPayApiConfigKit.getWxPayApiConfig().getPartnerKey(), SignType.MD5)) {
-                if (WxPayKit.codeIsOk(returnCode)) {
-                    return result;
-                }
-            }
+            JSONObject plainJson = JSONObject.parseObject(plainText);
+            String orderSn = plainJson.getString("out_trade_no");
+            Map<String, String> result = new HashMap<>();
+            result.put("out_trade_no", orderSn);
+            result.put("transaction_id", plainJson.getString("transaction_id"));
+            result.put("trade_state", plainJson.getString("trade_state"));
+            result.put("return_code", "SUCCESS");
+            result.put("result_code", "SUCCESS");
+            logger.info("支付通知处理完成，orderSn = {}", orderSn);
+            return result;
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
         }
         return null;
+    }
+
+    /**
+     * 解密微信支付 APIv3 回调通知
+     *
+     * @param request 请求体
+     * @return 解密后的明文，验签或解密失败返回 null
+     * */
+    @Override
+    public String decryptNotify(HttpServletRequest request) {
+        try {
+            String body = CommonUtil.readRequestBody(request);
+            logger.info("微信支付回调，body = {}", body);
+            String signature = request.getHeader("Wechatpay-Signature");
+            String timestamp = request.getHeader("Wechatpay-Timestamp");
+            String nonce = request.getHeader("Wechatpay-Nonce");
+
+            // resource 为密文，解密前无法得知订单号与所属门店，故逐个尝试可用配置
+            for (WxPayV3Config candidate : listV3ConfigCandidates()) {
+                try {
+                    String plainText = WxPayKit.verifyNotify(body, signature, nonce, timestamp,
+                            candidate.getApiV3(), readCertFile(candidate.getPayPublicKeyPath()));
+                    if (StringUtil.isNotEmpty(plainText)) {
+                        return plainText;
+                    }
+                } catch (Exception ignore) {
+                    // 该配置与本次回调不匹配，尝试下一个
+                }
+            }
+            logger.error("微信支付回调验签或解密失败，未找到匹配的支付配置");
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+        }
+        return null;
+    }
+
+    /**
+     * 列出可用于回调验签的 APIv3 配置候选（全局配置 + 各门店配置）
+     *
+     * 支付回调 resource 为密文，解密前无法得知订单号与所属门店，因此需逐个尝试
+     * */
+    private List<WxPayV3Config> listV3ConfigCandidates() {
+        List<WxPayV3Config> candidates = new ArrayList<>();
+        if (StringUtil.isNotEmpty(wxPayBean.getApiV3()) && StringUtil.isNotEmpty(wxPayBean.getPayPublicKey())) {
+            candidates.add(WxPayV3Config.builder()
+                    .appId(wxPayBean.getAppId())
+                    .mchId(wxPayBean.getMchId())
+                    .serialNo(wxPayBean.getCertSerialNo())
+                    .apiV3(wxPayBean.getApiV3())
+                    .privateKeyPath(wxPayBean.getPrivateKeyPath())
+                    .payPublicKeyPath(wxPayBean.getPayPublicKeyPath())
+                    .domain(wxPayBean.getDomain())
+                    .build());
+        }
+        try {
+            String basePath = env.getProperty("images.root");
+            List<MtStore> stores = storeService.queryStoresByParams(new HashMap<>());
+            if (stores != null) {
+                for (MtStore store : stores) {
+                    if (StringUtil.isNotEmpty(store.getWxApiV3()) && StringUtil.isNotEmpty(store.getWxPayPublicKey())) {
+                        candidates.add(WxPayV3Config.builder()
+                                .appId(wxPayBean.getAppId())
+                                .mchId(store.getWxMchId())
+                                .serialNo(store.getWxCertSerialNo())
+                                .apiV3(store.getWxApiV3())
+                                .privateKeyPath(basePath + store.getWxPrivateKeyPath())
+                                .payPublicKeyPath(basePath + store.getWxPayPublicKeyPath())
+                                .domain(wxPayBean.getDomain())
+                                .build());
+                    }
+                }
+            }
+        } catch (Exception e) {
+            logger.error("查询门店支付配置失败", e);
+        }
+        return candidates;
     }
 
     /**
@@ -322,19 +435,22 @@ public class WeixinServiceImpl implements WeixinService {
      * @return
      * */
     public void processRespXml(HttpServletResponse response, boolean flag){
-        Map<String,String> respData = new HashMap<>();
+        // APIv3 回调应答为 JSON，成功返回 2xx，失败返回非 2xx
+        JSONObject respData = new JSONObject();
         if (flag) {
-            respData.put("return_code", "SUCCESS");
-            respData.put("return_msg", "OK");
-        }else{
-            respData.put("return_code", "FAIL");
-            respData.put("return_msg", "FAIL");
+            response.setStatus(HttpServletResponse.SC_OK);
+            respData.put("code", "SUCCESS");
+            respData.put("message", "成功");
+        } else {
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            respData.put("code", "FAIL");
+            respData.put("message", "失败");
         }
         OutputStream outputStream = null;
         try {
-            String respXml = WxPayKit.toXml(respData);
+            response.setContentType("application/json;charset=UTF-8");
             outputStream = response.getOutputStream();
-            outputStream.write(respXml.getBytes("UTF-8"));
+            outputStream.write(respData.toJSONString().getBytes("UTF-8"));
             outputStream.flush();
         } catch (Exception e) {
             e.printStackTrace();
@@ -608,20 +724,35 @@ public class WeixinServiceImpl implements WeixinService {
                 platform = mtOrder.getPlatform();
             }
             getApiConfig(storeId, platform);
-            WxPayApiConfig wxPayApiConfig = WxPayApiConfigKit.getWxPayApiConfig();
-            Map<String, String> params = OrderQueryModel.builder()
-                    .appid(wxPayApiConfig.getAppId())
-                    .mch_id(wxPayApiConfig.getMchId())
-                    .transaction_id(transactionId)
-                    .out_trade_no(orderSn)
-                    .nonce_str(WxPayKit.generateStr())
-                    .build()
-                    .createSign(wxPayApiConfig.getPartnerKey(), SignType.MD5);
-            logger.info("请求参数：{}", WxPayKit.toXml(params));
-            String query = WxPayApi.orderQuery(params);
-            Map<String, String> result = WxPayKit.xmlToMap(query);
-            logger.info("查询结果: {}", result);
-            if (result.get("result_code").equals("FAIL")) {
+            WxPayV3Config v3Config = getV3Config();
+            PrivateKey privateKey = getV3PrivateKey(v3Config);
+
+            // APIv3 商户订单号查询
+            Map<String, String> params = new HashMap<>();
+            params.put("mchid", v3Config.getMchId());
+            String urlSuffix = String.format(BasePayApiEnum.ORDER_QUERY_BY_OUT_TRADE_NO.getUrl(), orderSn);
+            IJPayHttpResponse response = WxPayApi.v3(RequestMethodEnum.GET,
+                    WxDomainEnum.CHINA.getDomain(),
+                    urlSuffix,
+                    v3Config.getMchId(),
+                    v3Config.getSerialNo(),
+                    null,
+                    privateKey,
+                    params);
+            logger.info("查询结果: {}", response.getBody());
+
+            Map<String, String> result = new HashMap<>();
+            JSONObject respJson = JSONObject.parseObject(response.getBody());
+            result.put("out_trade_no", respJson.getString("out_trade_no"));
+            result.put("transaction_id", respJson.getString("transaction_id"));
+            result.put("trade_state", respJson.getString("trade_state"));
+            if (response.getStatus() >= 200 && response.getStatus() < 300) {
+                result.put("return_code", "SUCCESS");
+                result.put("result_code", "SUCCESS");
+            } else {
+                result.put("return_code", "FAIL");
+                result.put("result_code", "FAIL");
+                result.put("return_msg", respJson.getString("message"));
                 result.put("trade_state", "FAIL");
             }
             return result;
@@ -660,30 +791,41 @@ public class WeixinServiceImpl implements WeixinService {
 
             // 支付配置
             getApiConfig(storeId, platform);
-            WxPayApiConfig wxPayApiConfig = WxPayApiConfigKit.getWxPayApiConfig();
-            Map<String, String> params = RefundModel.builder()
-                    .appid(wxPayApiConfig.getAppId())
-                    .mch_id(wxPayApiConfig.getMchId())
-                    .nonce_str(WxPayKit.generateStr())
-                    .transaction_id("")
-                    .out_trade_no(orderSn)
-                    .out_refund_no(orderSn)
-                    .total_fee(totalFeeInt.toString())
-                    .refund_fee(refundFeeInt.toString())
-                    .notify_url(wxPayApiConfig.getDomain() + REFUND_NOTIFY_URL)
-                    .build()
-                    .createSign(wxPayApiConfig.getPartnerKey(), SignType.MD5);
-            logger.info("WeixinService doRefund params: {}", params);
-            String refundStr = WxPayApi.orderRefundByProtocol(false, params, wxPayApiConfig.getCertPath(), wxPayApiConfig.getMchId(), "");
-            logger.info("WeixinService doRefund return: {}", refundStr);
-            Map<String, String> result = WxPayKit.xmlToMap(refundStr);
-            String returnCode = result.get("return_code");
-            String returnMsg = result.get("return_msg");
-            if (!WxPayKit.codeIsOk(returnCode)) {
-                logger.error(returnMsg);
-                return false;
+            WxPayV3Config v3Config = getV3Config();
+            PrivateKey privateKey = getV3PrivateKey(v3Config);
+
+            // APIv3 申请退款，amount 单位为分
+            JSONObject amount = new JSONObject();
+            amount.put("refund", refundFeeInt);
+            amount.put("total", totalFeeInt);
+            amount.put("currency", "CNY");
+            JSONObject reqBody = new JSONObject();
+            reqBody.put("out_trade_no", orderSn);
+            reqBody.put("out_refund_no", orderSn);
+            reqBody.put("notify_url", v3Config.getDomain() + REFUND_NOTIFY_URL);
+            reqBody.put("amount", amount);
+
+            logger.info("WeixinService doRefund params: {}", reqBody.toJSONString());
+            IJPayHttpResponse response = WxPayApi.v3(RequestMethodEnum.POST,
+                    WxDomainEnum.CHINA.getDomain(),
+                    BasePayApiEnum.REFUND.getUrl(),
+                    v3Config.getMchId(),
+                    v3Config.getSerialNo(),
+                    null,
+                    privateKey,
+                    reqBody.toJSONString());
+            logger.info("WeixinService doRefund return: {}", response.getBody());
+
+            // APIv3 以 HTTP 状态码判定业务结果，非 2xx 表示退款失败
+            if (response.getStatus() < 200 || response.getStatus() >= 300) {
+                JSONObject result = JSONObject.parseObject(response.getBody());
+                String message = result != null ? result.getString("message") : response.getBody();
+                logger.error("微信退款业务失败，message = {}", message);
+                throw new BusinessCheckException("微信退款失败：" + message);
             }
             return true;
+        } catch (BusinessCheckException e) {
+            throw e;
         } catch (Exception e) {
             throw new BusinessCheckException("WeixinService.doRefund 微信退款失败：" + e.getMessage());
         }
@@ -1154,53 +1296,71 @@ public class WeixinServiceImpl implements WeixinService {
 
             // 支付配置
             getApiConfig(storeId, platform);
-            WxPayApiConfig wxPayApiConfig = WxPayApiConfigKit.getWxPayApiConfig();
-            Map<String, String> params = MicroPayModel.builder()
-                    .appid(wxPayApiConfig.getAppId())
-                    .mch_id(wxPayApiConfig.getMchId())
-                    .nonce_str(WxPayKit.generateStr())
-                    .body(reqData.get("body"))
-                    .attach(reqData.get("body"))
-                    .out_trade_no(orderSn)
-                    .total_fee(reqData.get("total_fee"))
-                    .spbill_create_ip(ip)
-                    .auth_code(reqData.get("auth_code"))
-                    .build()
-                    .createSign(wxPayApiConfig.getPartnerKey(), SignType.MD5);
-            String xmlResult = WxPayApi.microPay(false, params);
+            WxPayV3Config v3Config = getV3Config();
+            PrivateKey privateKey = getV3PrivateKey(v3Config);
+
+            // APIv3 付款码支付，auth_code 属敏感信息，需使用微信支付公钥加密
+            JSONObject amount = new JSONObject();
+            amount.put("total", Integer.parseInt(reqData.get("total_fee")));
+            amount.put("currency", "CNY");
+            JSONObject payer = new JSONObject();
+            payer.put("auth_code", RsaKit.encryptByPublicKeyByWx(reqData.get("auth_code"), readCertFile(v3Config.getPayPublicKeyPath())));
+            JSONObject reqBody = new JSONObject();
+            reqBody.put("appid", v3Config.getAppId());
+            reqBody.put("mchid", v3Config.getMchId());
+            reqBody.put("description", reqData.get("body"));
+            reqBody.put("out_trade_no", orderSn);
+            reqBody.put("amount", amount);
+            reqBody.put("payer", payer);
+
+            IJPayHttpResponse response = WxPayApi.v3(RequestMethodEnum.POST,
+                    WxDomainEnum.CHINA.getDomain(),
+                    BasePayApiEnum.CODE_PAY.getUrl(),
+                    v3Config.getMchId(),
+                    v3Config.getSerialNo(),
+                    null,
+                    privateKey,
+                    reqBody.toJSONString());
 
             // 同步返回结果
-            logger.info("xmlResult:" + xmlResult);
-            Map<String, String> respMap = WxPayKit.xmlToMap(xmlResult);
-            String returnCode = respMap.get("return_code");
-            String returnMsg = respMap.get("return_msg");
-            String errCode = respMap.get("err_code");
-            if (!WxPayKit.codeIsOk(returnCode)) {
-                Map<String, String> payResult = null;
-                if (StringUtil.isNotEmpty(errCode)) {
-                    // 用户支付中，需要输入密码
-                    if (errCode.equals("USERPAYING")) {
-                        // 等待10秒后查询订单
-                        try {
-                            Thread.sleep(10000);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                        payResult = queryPaidOrder(storeId, respMap.get("transaction_id"), orderSn);
-                    }
+            String jsonResult = response.getBody();
+            logger.info("codePayResult:" + jsonResult);
+            JSONObject respJson = JSONObject.parseObject(jsonResult);
+            String tradeState = respJson.getString("trade_state");
+            String transactionId = respJson.getString("transaction_id");
+            Map<String, String> respMap = new HashMap<>();
+            respMap.put("out_trade_no", orderSn);
+            respMap.put("transaction_id", transactionId);
+            respMap.put("trade_state", tradeState);
+
+            boolean userPaying = "USERPAYING".equals(tradeState)
+                    || (response.getStatus() != 200 && "USERPAYING".equals(respJson.getString("code")));
+            if (userPaying) {
+                // 用户支付中，等待10秒后查询订单
+                try {
+                    Thread.sleep(10000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
-                if (payResult == null || !payResult.get("trade_state").equals("SUCCESS")) {
-                    logger.info("提交刷卡支付失败>>" + xmlResult);
+                Map<String, String> payResult = queryPaidOrder(storeId, transactionId, orderSn);
+                if (payResult == null || !"SUCCESS".equals(payResult.get("trade_state"))) {
+                    logger.info("提交刷卡支付失败>>" + jsonResult);
+                    respMap.put("return_code", "FAIL");
+                    respMap.put("result_code", "FAIL");
+                    respMap.put("return_msg", respJson.getString("message"));
                     return respMap;
                 }
-            }
-
-            String resultCode = respMap.get("result_code");
-            if (!WxPayKit.codeIsOk(resultCode)) {
-                logger.info("支付失败>>" + xmlResult);
-                logger.error(returnMsg);
+            } else if (response.getStatus() != 200 || !"SUCCESS".equals(tradeState)) {
+                logger.info("支付失败>>" + jsonResult);
+                logger.error(respJson.getString("message"));
+                respMap.put("return_code", "FAIL");
+                respMap.put("result_code", "FAIL");
+                respMap.put("return_msg", respJson.getString("message"));
                 return respMap;
             }
+
+            respMap.put("return_code", "SUCCESS");
+            respMap.put("result_code", "SUCCESS");
 
             // 支付成功
             logger.info("刷卡支付返回>>" + respMap.toString());
@@ -1235,36 +1395,49 @@ public class WeixinServiceImpl implements WeixinService {
             logger.info("调用微信支付下单接口入参：{}，请求平台：{}", JsonUtil.toJSONString(reqData), platform);
             // 获取支付配置
             getApiConfig(storeId, platform);
-            WxPayApiConfig wxPayApiConfig = WxPayApiConfigKit.getWxPayApiConfig();
-            Map<String, String> params = UnifiedOrderModel
-                    .builder()
-                    .appid(wxPayApiConfig.getAppId())
-                    .mch_id(wxPayApiConfig.getMchId())
-                    .nonce_str(WxPayKit.generateStr())
-                    .body(reqData.get("body"))
-                    .attach(reqData.get("body"))
-                    .out_trade_no(reqData.get("out_trade_no"))
-                    .total_fee(reqData.get("total_fee"))
-                    .spbill_create_ip(ip)
-                    .notify_url(wxPayApiConfig.getDomain() + CALL_BACK_URL)
-                    .trade_type(reqData.get("trade_type"))
-                    .openid(reqData.get("openid"))
-                    .build()
-                    .createSign(wxPayApiConfig.getPartnerKey(), SignType.MD5);
-            String xmlResult = WxPayApi.pushOrder(false, params);
+            WxPayV3Config v3Config = getV3Config();
+            PrivateKey privateKey = getV3PrivateKey(v3Config);
 
-            logger.info("调用微信支付回调地址：{}", wxPayApiConfig.getDomain() + CALL_BACK_URL);
-            logger.info("调用微信支付下单接口返回xml：{}", xmlResult);
-            Map<String, String> result = WxPayKit.xmlToMap(xmlResult);
+            // APIv3 JSAPI下单，amount.total 单位为分
+            JSONObject amount = new JSONObject();
+            amount.put("total", Integer.parseInt(reqData.get("total_fee")));
+            amount.put("currency", "CNY");
+            JSONObject payer = new JSONObject();
+            payer.put("openid", reqData.get("openid"));
+            JSONObject reqBody = new JSONObject();
+            reqBody.put("appid", v3Config.getAppId());
+            reqBody.put("mchid", v3Config.getMchId());
+            reqBody.put("description", reqData.get("body"));
+            reqBody.put("out_trade_no", reqData.get("out_trade_no"));
+            reqBody.put("notify_url", v3Config.getDomain() + CALL_BACK_URL);
+            reqBody.put("amount", amount);
+            reqBody.put("payer", payer);
 
-            String returnCode = result.get("return_code");
-            String returnMsg = result.get("return_msg");
-            if (!WxPayKit.codeIsOk(returnCode)) {
-                logger.error(returnMsg);
-            }
-            String resultCode = result.get("result_code");
-            if (!WxPayKit.codeIsOk(resultCode)) {
-                logger.error(returnMsg);
+            logger.info("调用微信支付回调地址：{}", v3Config.getDomain() + CALL_BACK_URL);
+            IJPayHttpResponse response = WxPayApi.v3(RequestMethodEnum.POST,
+                    WxDomainEnum.CHINA.getDomain(),
+                    BasePayApiEnum.JS_API_PAY.getUrl(),
+                    v3Config.getMchId(),
+                    v3Config.getSerialNo(),
+                    null,
+                    privateKey,
+                    reqBody.toJSONString());
+
+            logger.info("调用微信支付下单接口返回：{}", response.getBody());
+            Map<String, String> result = new HashMap<>();
+            result.put("trade_type", PayTypeEnum.JSAPI.getKey());
+            JSONObject respJson = JSONObject.parseObject(response.getBody());
+            String prepayId = respJson.getString("prepay_id");
+            if (StringUtil.isNotEmpty(prepayId)) {
+                result.put("return_code", "SUCCESS");
+                result.put("result_code", "SUCCESS");
+                result.put("prepay_id", prepayId);
+            } else {
+                result.put("return_code", "FAIL");
+                result.put("result_code", "FAIL");
+                result.put("return_msg", respJson.getString("message"));
+                result.put("err_code_des", respJson.getString("message"));
+                logger.error("微信支付下单失败：{}", response.getBody());
             }
 
             logger.info("调用微信支付下单接口返回数据：{}", JsonUtil.toJSONString(result));
@@ -1289,43 +1462,55 @@ public class WeixinServiceImpl implements WeixinService {
             logger.info("调用微信h5支付下单接口入参{}，请求平台：{}", JsonUtil.toJSONString(reqData), platform);
             // 支付配置
             getApiConfig(storeId, platform);
-            WxPayApiConfig wxPayApiConfig = WxPayApiConfigKit.getWxPayApiConfig();
-            H5SceneInfo sceneInfo = new H5SceneInfo();
-            H5SceneInfo.H5 h5Info = new H5SceneInfo.H5();
-            h5Info.setType("Wap");
-            // 支付域名必须在商户平台->"产品中心"->"开发配置"中添加
-            h5Info.setWap_url(wxPayApiConfig.getDomain());
-            h5Info.setWap_name("WEB");
-            sceneInfo.setH5Info(h5Info);
-            Map<String, String> params = UnifiedOrderModel
-                    .builder()
-                    .appid(wxPayApiConfig.getAppId())
-                    .mch_id(wxPayApiConfig.getMchId())
-                    .nonce_str(WxPayKit.generateStr())
-                    .body(reqData.get("body"))
-                    .attach(reqData.get("body"))
-                    .out_trade_no(reqData.get("out_trade_no"))
-                    .total_fee(reqData.get("total_fee"))
-                    .spbill_create_ip(ip)
-                    .notify_url(wxPayApiConfig.getDomain() + CALL_BACK_URL)
-                    .trade_type(TradeType.MWEB.getTradeType())
-                    .scene_info(JSON.toJSONString(sceneInfo))
-                    .build()
-                    .createSign(wxPayApiConfig.getPartnerKey(), SignType.HMACSHA256);
+            WxPayV3Config v3Config = getV3Config();
+            PrivateKey privateKey = getV3PrivateKey(v3Config);
 
-            String xmlResult = WxPayApi.pushOrder(false, params);
-            logger.info("调用微信h5支付接口返回xml：{}", xmlResult);
+            // APIv3 H5下单，支付域名必须在商户平台->"产品中心"->"开发配置"中添加
+            JSONObject amount = new JSONObject();
+            amount.put("total", Integer.parseInt(reqData.get("total_fee")));
+            amount.put("currency", "CNY");
+            JSONObject h5Info = new JSONObject();
+            h5Info.put("type", "Wap");
+            h5Info.put("wap_url", v3Config.getDomain());
+            h5Info.put("wap_name", "WEB");
+            JSONObject sceneInfo = new JSONObject();
+            sceneInfo.put("payer_client_ip", ip);
+            sceneInfo.put("h5_info", h5Info);
+            JSONObject reqBody = new JSONObject();
+            reqBody.put("appid", v3Config.getAppId());
+            reqBody.put("mchid", v3Config.getMchId());
+            reqBody.put("description", reqData.get("body"));
+            reqBody.put("out_trade_no", reqData.get("out_trade_no"));
+            reqBody.put("notify_url", v3Config.getDomain() + CALL_BACK_URL);
+            reqBody.put("amount", amount);
+            reqBody.put("scene_info", sceneInfo);
 
-            Map<String, String> result = WxPayKit.xmlToMap(xmlResult);
+            IJPayHttpResponse response = WxPayApi.v3(RequestMethodEnum.POST,
+                    WxDomainEnum.CHINA.getDomain(),
+                    BasePayApiEnum.H5_PAY.getUrl(),
+                    v3Config.getMchId(),
+                    v3Config.getSerialNo(),
+                    null,
+                    privateKey,
+                    reqBody.toJSONString());
 
-            String return_code = result.get("return_code");
-            String return_msg = result.get("return_msg");
-            if (!WxPayKit.codeIsOk(return_code)) {
-                throw new RuntimeException(return_msg);
-            }
-            String result_code = result.get("result_code");
-            if (!WxPayKit.codeIsOk(result_code)) {
-                throw new RuntimeException(return_msg);
+            logger.info("调用微信h5支付接口返回：{}", response.getBody());
+            Map<String, String> result = new HashMap<>();
+            result.put("trade_type", TradeType.MWEB.getTradeType());
+            JSONObject respJson = JSONObject.parseObject(response.getBody());
+            String h5Url = respJson.getString("h5_url");
+            if (StringUtil.isNotEmpty(h5Url)) {
+                result.put("return_code", "SUCCESS");
+                result.put("result_code", "SUCCESS");
+                // v3 返回 h5_url，沿用 v2 的 mweb_url 键名以免前端改动
+                result.put("mweb_url", h5Url);
+                result.put("h5_url", h5Url);
+            } else {
+                result.put("return_code", "FAIL");
+                result.put("result_code", "FAIL");
+                result.put("return_msg", respJson.getString("message"));
+                logger.error("微信h5支付下单失败：{}", response.getBody());
+                throw new RuntimeException(respJson.getString("message"));
             }
             result.put("backUrl", env.getProperty("website.url"));
             logger.info("调用微信h5支付接口返回数据：{}", JsonUtil.toJSONString(result));
@@ -1350,18 +1535,36 @@ public class WeixinServiceImpl implements WeixinService {
         String apiV2 = wxPayBean.getApiV2();
         String certPath = wxPayBean.getCertPath();
         String appId = wxPayBean.getAppId();
+        // 微信支付 APIv3 配置，证书取上传后的文件路径
+        String apiV3 = wxPayBean.getApiV3();
+        String certSerialNo = wxPayBean.getCertSerialNo();
+        String privateKeyPath = wxPayBean.getPrivateKeyPath();
+        String payPublicKeyPath = wxPayBean.getPayPublicKeyPath();
 
         MtStore mtStore = storeService.queryStoreById(storeId);
         logger.info("微信支付店铺信息：{}", JsonUtil.toJSONString(mtStore));
-        if (mtStore != null && StringUtil.isNotEmpty(mtStore.getWxApiV2()) && StringUtil.isNotEmpty(mtStore.getWxMchId())) {
+        // 门店需配齐 APIv3 全部要素才启用门店级配置，否则整组回落 configure 全局配置。
+        // 逐项回落会让商户号与证书来自不同配置，签名必然失败且报错难以定位
+        boolean useStoreConfig = mtStore != null
+                && StringUtil.isNotEmpty(mtStore.getWxMchId())
+                && StringUtil.isNotEmpty(mtStore.getWxApiV3())
+                && StringUtil.isNotEmpty(mtStore.getWxCertSerialNo())
+                && StringUtil.isNotEmpty(mtStore.getWxPrivateKeyPath())
+                && StringUtil.isNotEmpty(mtStore.getWxPayPublicKeyPath());
+        if (useStoreConfig) {
+            logger.info("使用门店级支付配置，mchId = {}", mtStore.getWxMchId());
             mchId = mtStore.getWxMchId();
-            apiV2 = mtStore.getWxApiV2();
+            apiV3 = mtStore.getWxApiV3();
+            certSerialNo = mtStore.getWxCertSerialNo();
             String basePath = env.getProperty("images.root");
-            certPath = basePath + mtStore.getWxCertPath();
+            privateKeyPath = basePath + mtStore.getWxPrivateKeyPath();
+            payPublicKeyPath = basePath + mtStore.getWxPayPublicKeyPath();
             MtMerchant mtMerchant = merchantService.queryMerchantById(mtStore.getMerchantId());
             if (mtMerchant != null && StringUtil.isNotEmpty(mtMerchant.getWxAppId())) {
                 appId = mtMerchant.getWxAppId();
             }
+        } else if (mtStore != null) {
+            logger.info("门店未配齐 APIv3 支付参数，回落至全局配置，storeId = {}", storeId);
         }
 
         apiConfig = WxPayApiConfig.builder()
@@ -1393,6 +1596,52 @@ public class WeixinServiceImpl implements WeixinService {
 
         WxPayApiConfigKit.setThreadLocalWxPayApiConfig(apiConfig);
 
+        // 装配 APIv3 配置
+        V3_CONFIG_HOLDER.set(WxPayV3Config.builder()
+                .appId(apiConfig.getAppId())
+                .mchId(mchId)
+                .serialNo(certSerialNo)
+                .apiV3(apiV3)
+                .privateKeyPath(privateKeyPath)
+                .payPublicKeyPath(payPublicKeyPath)
+                .domain(wxPayBean.getDomain())
+                .build());
+
         return apiConfig;
+    }
+
+    /**
+     * 获取当前线程的微信支付 APIv3 配置
+     * */
+    private WxPayV3Config getV3Config() {
+        return V3_CONFIG_HOLDER.get();
+    }
+
+    /**
+     * 获取商户API私钥
+     *
+     * @param v3Config APIv3配置
+     * @return 商户API私钥
+     * */
+    private PrivateKey getV3PrivateKey(WxPayV3Config v3Config) throws Exception {
+        return PayKit.getPrivateKeyByKeyContent(readCertFile(v3Config.getPrivateKeyPath()), AuthTypeEnum.RSA.getCode());
+    }
+
+    /**
+     * 读取证书文件内容
+     *
+     * @param path 证书文件路径
+     * @return 证书 PEM 内容
+     * */
+    private String readCertFile(String path) throws Exception {
+        if (StringUtil.isEmpty(path)) {
+            throw new BusinessCheckException("微信支付证书未配置");
+        }
+        File certFile = new File(path);
+        if (!certFile.exists()) {
+            logger.error("微信支付证书文件不存在：{}", path);
+            throw new BusinessCheckException("微信支付证书文件不存在");
+        }
+        return new String(Files.readAllBytes(certFile.toPath()), StandardCharsets.UTF_8);
     }
 }

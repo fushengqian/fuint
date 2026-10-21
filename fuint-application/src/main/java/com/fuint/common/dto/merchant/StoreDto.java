@@ -25,6 +25,18 @@ public class StoreDto extends StoreInfo implements Serializable {
     @Schema(description="微信支付证书")
     private String wxCertPath;
 
+    @Schema(description="微信支付APIv3密钥")
+    private String wxApiV3;
+
+    @Schema(description="微信支付商户API证书序列号")
+    private String wxCertSerialNo;
+
+    @Schema(description="微信支付商户API私钥证书上传地址")
+    private String wxPrivateKeyPath;
+
+    @Schema(description="微信支付公钥证书上传地址")
+    private String wxPayPublicKeyPath;
+
     @Schema(description="支付宝appId")
     private String alipayAppId;
 

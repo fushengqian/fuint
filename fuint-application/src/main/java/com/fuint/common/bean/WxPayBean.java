@@ -2,6 +2,7 @@ package com.fuint.common.bean;
 
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Component;
 
 /**
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Component;
  */
 @Data
 @Component
+@PropertySource("file:${env.properties.path}/${env.profile}/application.properties")
 @ConfigurationProperties(prefix = "wxpay")
 public class WxPayBean {
 
@@ -20,6 +22,10 @@ public class WxPayBean {
     private String mchId;
     private String apiV2;
     private String certPath;
+    private String apiV3;
+    private String certSerialNo;
+    private String privateKeyPath;
+    private String payPublicKeyPath;
     private String domain; // 填写完整的回调地址
 
 
