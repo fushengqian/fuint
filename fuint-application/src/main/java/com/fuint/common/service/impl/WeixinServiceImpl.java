@@ -6,7 +6,6 @@ import com.alibaba.fastjson.JSONObject;
 import com.aliyun.oss.OSS;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fuint.common.Constants;
-import com.fuint.common.bean.H5SceneInfo;
 import com.fuint.common.bean.WxPayBean;
 import com.fuint.common.bean.shoppingOrders.*;
 import com.fuint.common.dto.member.WxCardDto;
@@ -30,7 +29,6 @@ import com.fuint.utils.StringUtil;
 import com.ijpay.core.IJPayHttpResponse;
 import com.ijpay.core.enums.AuthTypeEnum;
 import com.ijpay.core.enums.RequestMethodEnum;
-import com.ijpay.core.enums.SignType;
 import com.ijpay.core.enums.TradeType;
 import com.fuint.common.util.CommonUtil;
 import com.ijpay.core.kit.PayKit;
@@ -41,10 +39,6 @@ import com.ijpay.wxpay.WxPayApiConfig;
 import com.ijpay.wxpay.WxPayApiConfigKit;
 import com.ijpay.wxpay.enums.WxDomainEnum;
 import com.ijpay.wxpay.enums.v3.BasePayApiEnum;
-import com.ijpay.wxpay.model.MicroPayModel;
-import com.ijpay.wxpay.model.OrderQueryModel;
-import com.ijpay.wxpay.model.RefundModel;
-import com.ijpay.wxpay.model.UnifiedOrderModel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -306,7 +300,12 @@ public class WeixinServiceImpl implements WeixinService {
                 WxPayV3Config v3Config = getV3Config();
                 PrivateKey privateKey = getV3PrivateKey(v3Config);
                 // APIv3 使用商户私钥进行 RSA 签名，前端 signType 需为 RSA
-                respData = WxPayKit.jsApiCreateSign(v3Config.getAppId(), prepayId, privateKey);
+                try {
+                    respData = WxPayKit.jsApiCreateSign(v3Config.getAppId(), prepayId, privateKey);
+                } catch (Exception e) {
+                    logger.error("微信支付唤起签名失败", e);
+                    throw new BusinessCheckException("微信支付唤起签名失败：" + e.getMessage());
+                }
                 String jsonStr = JSON.toJSONString(respData);
                 logger.info("小程序支付的参数:" + jsonStr);
             }
@@ -392,7 +391,7 @@ public class WeixinServiceImpl implements WeixinService {
      * */
     private List<WxPayV3Config> listV3ConfigCandidates() {
         List<WxPayV3Config> candidates = new ArrayList<>();
-        if (StringUtil.isNotEmpty(wxPayBean.getApiV3()) && StringUtil.isNotEmpty(wxPayBean.getPayPublicKey())) {
+        if (StringUtil.isNotEmpty(wxPayBean.getApiV3()) && StringUtil.isNotEmpty(wxPayBean.getPayPublicKeyPath())) {
             candidates.add(WxPayV3Config.builder()
                     .appId(wxPayBean.getAppId())
                     .mchId(wxPayBean.getMchId())
@@ -408,7 +407,7 @@ public class WeixinServiceImpl implements WeixinService {
             List<MtStore> stores = storeService.queryStoresByParams(new HashMap<>());
             if (stores != null) {
                 for (MtStore store : stores) {
-                    if (StringUtil.isNotEmpty(store.getWxApiV3()) && StringUtil.isNotEmpty(store.getWxPayPublicKey())) {
+                    if (StringUtil.isNotEmpty(store.getWxApiV3()) && StringUtil.isNotEmpty(store.getWxPayPublicKeyPath())) {
                         candidates.add(WxPayV3Config.builder()
                                 .appId(wxPayBean.getAppId())
                                 .mchId(store.getWxMchId())
@@ -1623,25 +1622,37 @@ public class WeixinServiceImpl implements WeixinService {
      * @param v3Config APIv3配置
      * @return 商户API私钥
      * */
-    private PrivateKey getV3PrivateKey(WxPayV3Config v3Config) throws Exception {
-        return PayKit.getPrivateKeyByKeyContent(readCertFile(v3Config.getPrivateKeyPath()), AuthTypeEnum.RSA.getCode());
+    private PrivateKey getV3PrivateKey(WxPayV3Config v3Config) {
+        try {
+            return PayKit.getPrivateKeyByKeyContent(readCertFile(v3Config.getPrivateKeyPath()), AuthTypeEnum.RSA.getCode());
+        } catch (Exception e) {
+            logger.error("加载微信支付商户私钥失败：{}", v3Config.getPrivateKeyPath(), e);
+            throw new RuntimeException("微信支付商户私钥加载失败：" + e.getMessage(), e);
+        }
     }
 
     /**
      * 读取证书文件内容
      *
+     * 证书属系统配置，缺失或损坏时直接抛运行时异常，避免每个调用点都声明受检异常
+     *
      * @param path 证书文件路径
      * @return 证书 PEM 内容
      * */
-    private String readCertFile(String path) throws Exception {
+    private String readCertFile(String path) {
         if (StringUtil.isEmpty(path)) {
-            throw new BusinessCheckException("微信支付证书未配置");
+            throw new RuntimeException("微信支付证书未配置");
         }
         File certFile = new File(path);
         if (!certFile.exists()) {
             logger.error("微信支付证书文件不存在：{}", path);
-            throw new BusinessCheckException("微信支付证书文件不存在");
+            throw new RuntimeException("微信支付证书文件不存在：" + path);
         }
-        return new String(Files.readAllBytes(certFile.toPath()), StandardCharsets.UTF_8);
+        try {
+            return new String(Files.readAllBytes(certFile.toPath()), StandardCharsets.UTF_8);
+        } catch (IOException e) {
+            logger.error("读取微信支付证书失败：{}", path, e);
+            throw new RuntimeException("读取微信支付证书失败：" + path, e);
+        }
     }
 }
