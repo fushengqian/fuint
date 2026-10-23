@@ -964,8 +964,8 @@ CREATE TABLE `mt_stock_item` (
 DROP TABLE IF EXISTS `mt_store`;
 
 CREATE TABLE `mt_store` (
-  `ID` int NOT NULL AUTO_INCREMENT COMMENT '自增ID',
-  `MERCHANT_ID` int unsigned DEFAULT '0' COMMENT '所属商户',
+  `ID` int(11) NOT NULL AUTO_INCREMENT COMMENT '自增ID',
+  `MERCHANT_ID` int(10) unsigned DEFAULT '0' COMMENT '所属商户',
   `NAME` varchar(50) NOT NULL DEFAULT '' COMMENT '店铺名称',
   `QR_CODE` varchar(255) DEFAULT '' COMMENT '店铺二维码',
   `LOGO` varchar(100) DEFAULT '' COMMENT '店铺LOGO',
@@ -974,6 +974,10 @@ CREATE TABLE `mt_store` (
   `WX_MCH_ID` varchar(30) DEFAULT '' COMMENT '微信支付商户号',
   `WX_API_V2` varchar(32) DEFAULT '' COMMENT '微信支付APIv2密钥',
   `WX_CERT_PATH` varchar(255) DEFAULT '' COMMENT '微信支付证书',
+  `WX_API_V3` varchar(32) DEFAULT '' COMMENT '微信支付APIv3密钥',
+  `WX_CERT_SERIAL_NO` varchar(64) DEFAULT '' COMMENT '微信支付商户API证书序列号',
+  `WX_PRIVATE_KEY_PATH` varchar(255) DEFAULT '' COMMENT '微信支付商户API私钥证书上传地址',
+  `WX_PAY_PUBLIC_KEY_PATH` varchar(255) DEFAULT '' COMMENT '微信支付公钥证书上传地址',
   `ALIPAY_APP_ID` varchar(100) DEFAULT '' COMMENT '支付宝appId',
   `ALIPAY_PRIVATE_KEY` varchar(5000) DEFAULT '' COMMENT '支付宝应用私钥',
   `ALIPAY_PUBLIC_KEY` varchar(5000) DEFAULT '' COMMENT '支付宝应用公钥',
@@ -994,7 +998,7 @@ CREATE TABLE `mt_store` (
   `STATUS` char(1) DEFAULT 'A' COMMENT '状态，A：有效/启用；D：无效',
   `OPERATOR` varchar(30) DEFAULT '' COMMENT '最后操作人',
   PRIMARY KEY (`ID`)
-) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPRESSED COMMENT='店铺表';
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPRESSED COMMENT='店铺表';
 
 /*Table structure for table `mt_store_goods` */
 
