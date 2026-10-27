@@ -250,8 +250,6 @@ public class BackendGoodsController extends BaseController {
         // 会员等级列表
         List<MtUserGrade> gradeList = userGradeService.getMerchantGradeList(accountInfo.getMerchantId(), StatusEnum.ENABLED.getKey());
 
-        String imagePath = settingService.getUploadBasePath();
-
         result.put("specData", specArr);
         result.put("skuData", skuArr);
         result.put("typeList", typeList);
@@ -260,7 +258,7 @@ public class BackendGoodsController extends BaseController {
         result.put("bookList", bookList);
         result.put("gradeList", gradeList);
         result.put("cateList", cateList);
-        result.put("imagePath", imagePath);
+        result.put("imagePath", settingService.getUploadBasePath());
 
         return getSuccessResult(result);
     }
@@ -720,7 +718,7 @@ public class BackendGoodsController extends BaseController {
     @Operation(summary="获取选择商品列表")
     @RequestMapping(value = "/selectGoods", method = RequestMethod.POST)
     @CrossOrigin
-    public ResponseObject selectGoods(@RequestBody Map<String, Object> params) throws BusinessCheckException {
+    public ResponseObject selectGoods(@RequestBody Map<String, Object> params) {
         AccountInfo accountInfo = TokenUtil.getAccountInfo();
 
         if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
@@ -730,11 +728,10 @@ public class BackendGoodsController extends BaseController {
             params.put("storeId", accountInfo.getStoreId());
         }
         PaginationResponse<GoodsDto> paginationResponse = goodsService.selectGoodsList(params);
-        String imagePath = settingService.getUploadBasePath();
 
         Map<String, Object> result = new HashMap();
         result.put("paginationResponse", paginationResponse);
-        result.put("imagePath", imagePath);
+        result.put("imagePath", settingService.getUploadBasePath());
 
         return getSuccessResult(result);
     }

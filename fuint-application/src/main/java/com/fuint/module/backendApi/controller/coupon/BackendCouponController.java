@@ -151,10 +151,8 @@ public class BackendCouponController extends BaseController {
         // 会员等级列表
         List<MtUserGrade> gradeList = userGradeService.getMerchantGradeList(accountInfo.getMerchantId(), null);
 
-        String imagePath = settingService.getUploadBasePath();
-
         Map<String, Object> result = new HashMap<>();
-        result.put("imagePath", imagePath);
+        result.put("imagePath", settingService.getUploadBasePath());
         result.put("groupTotal", groupTotal);
         result.put("storeList", storeList);
         result.put("groupList", groupList);

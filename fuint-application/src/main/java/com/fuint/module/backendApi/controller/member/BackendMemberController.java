@@ -314,14 +314,13 @@ public class BackendMemberController extends BaseController {
             }
         }
 
-        String imagePath = settingService.getUploadBasePath();
         Map<String, Object> result = new HashMap<>();
         result.put("getCouponNeedPhone", getCouponNeedPhone);
         result.put("submitOrderNeedPhone", submitOrderNeedPhone);
         result.put("loginNeedPhone", loginNeedPhone);
         result.put("openWxCard", openWxCard);
         result.put("wxMemberCard", wxMemberCard);
-        result.put("imagePath", imagePath);
+        result.put("imagePath", settingService.getUploadBasePath());
         result.put("forceUpdateAvatar", forceUpdateAvatar);
         result.put("forceUpdateNickname", forceUpdateNickname);
 
