@@ -1,9 +1,9 @@
 package com.fuint.common.util;
 
 import org.apache.commons.codec.binary.Base64;
-import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -101,8 +101,8 @@ public class XlsUtil {
                 String str = "";
 
                 if (null != cell) {
-                    if (cell.getCellType() == HSSFCell.CELL_TYPE_NUMERIC) {
-                        cell.setCellType(1);
+                    if (cell.getCellType() == CellType.NUMERIC) {
+                        cell.setCellType(CellType.STRING);
                     }
                     str = getStringCellValue(cell).trim();
                 }
@@ -122,16 +122,16 @@ public class XlsUtil {
     private static String getStringCellValue(Cell cell) {
         String strCell = "";
         switch (cell.getCellType()) {
-            case HSSFCell.CELL_TYPE_STRING:
+            case STRING:
                 strCell = cell.getStringCellValue();
                 break;
-            case HSSFCell.CELL_TYPE_NUMERIC:
+            case NUMERIC:
                 strCell = String.valueOf(cell.getNumericCellValue());
                 break;
-            case HSSFCell.CELL_TYPE_BOOLEAN:
+            case BOOLEAN:
                 strCell = String.valueOf(cell.getBooleanCellValue());
                 break;
-            case HSSFCell.CELL_TYPE_BLANK:
+            case BLANK:
                 strCell = "";
                 break;
             default:
