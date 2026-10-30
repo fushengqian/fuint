@@ -1,5 +1,9 @@
 package com.fuint.module.backendApi.controller.order;
 
+import java.util.stream.Collectors;
+import java.util.Objects;
+import java.io.IOException;
+import com.fuint.common.vo.OrderExportVo;
 import com.fuint.common.Constants;
 import com.fuint.common.dto.common.ParamDto;
 import com.fuint.common.dto.order.ExpressDto;
@@ -25,7 +29,6 @@ import com.fuint.utils.TimeUtils;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.AllArgsConstructor;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -440,7 +443,7 @@ public class BackendOrderController extends BaseController {
     @RequestMapping(value = "/expressSetting", method = RequestMethod.GET)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('order:setting')")
-    public ResponseObject expressSetting() throws BusinessCheckException {
+    public ResponseObject expressSetting() {
         AccountInfo accountInfo = TokenUtil.getAccountInfo();
 
         List<MtSetting> settingList = settingService.getSettingList(accountInfo.getMerchantId(), SettingTypeEnum.KUAIDI100.getKey());
@@ -473,7 +476,7 @@ public class BackendOrderController extends BaseController {
     @RequestMapping(value = "/saveExpressSetting", method = RequestMethod.POST)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('order:setting')")
-    public ResponseObject saveExpressSetting(@RequestBody Map<String, Object> param) throws BusinessCheckException {
+    public ResponseObject saveExpressSetting(@RequestBody Map<String, Object> param) {
         String customer = param.get("customer") != null ? param.get("customer").toString() : "";
         String secretKey = param.get("secretKey") != null ? param.get("secretKey").toString() : "";
         String enable = param.get("enable") != null ? param.get("enable").toString() : StatusEnum.ENABLED.getKey();
@@ -511,7 +514,7 @@ public class BackendOrderController extends BaseController {
     @RequestMapping(value = "/export", method = RequestMethod.GET)
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('order:index')")
-    public void export(HttpServletRequest request, HttpServletResponse response, OrderListParam params) {
+    public void export(HttpServletRequest request, HttpServletResponse response, OrderListParam params) throws IOException {
         AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getParameter("token"));
 
         params.setPage(Constants.PAGE_NUMBER);
@@ -525,74 +528,55 @@ public class BackendOrderController extends BaseController {
 
         PaginationResponse<UserOrderDto> result = orderService.getUserOrderList(params);
 
-        // excel标题
-        String[] title = { "订单号", "会员名称", "手机号", "订单类型", "配送方式", "所属门店", "总金额", "支付状态", "订单状态", "支付金额", "优惠金额", "积分金额", "关联员工", "下单时间", "更新时间" };
-
-        // excel文件名
-        String fileName = "订单列表"+ DateUtil.formatDate(new Date(), "yyyy.MM.dd_HHmm") +".xls";
-
-        // sheet名
-        String sheetName = "订单列表";
-
-        String[][] content = null;
-
-        List<UserOrderDto> list = result.getContent();
-
-        if (list.size() > 0) {
-            content= new String[list.size()][title.length];
-        }
-
-        for (int i = 0; i < list.size(); i++) {
-            UserOrderDto orderDto = list.get(i);
-            if (orderDto != null) {
-                String storeName = "";
-                String userName = "";
-                String mobile = "";
-                String orderModeText = "";
-                String staffName = "";
-                if (orderDto.getStoreInfo() != null) {
-                    storeName = orderDto.getStoreInfo().getName();
-                }
-                if (orderDto.getUserInfo() != null) {
-                    userName = orderDto.getUserInfo().getName();
-                }
-                if (orderDto.getAddress() != null) {
-                    mobile = orderDto.getAddress().getMobile();
-                } else if(orderDto.getUserInfo() != null) {
-                    mobile = orderDto.getUserInfo().getMobile();
-                }
-                if (orderDto.getOrderMode() != null) {
-                    for (OrderModeEnum mode : OrderModeEnum.values()) {
-                        if (mode.getKey().equals(orderDto.getOrderMode())) {
-                            orderModeText = mode.getValue();
-                            break;
-                        }
+        // 组装导出数据（表头由 OrderExportVo 的 @ExcelProperty 声明）
+        List<OrderExportVo> data = result.getContent().stream().filter(Objects::nonNull).map(orderDto -> {
+            String storeName = "";
+            String userName = "";
+            String mobile = "";
+            String orderModeText = "";
+            String staffName = "";
+            if (orderDto.getStoreInfo() != null) {
+                storeName = orderDto.getStoreInfo().getName();
+            }
+            if (orderDto.getUserInfo() != null) {
+                userName = orderDto.getUserInfo().getName();
+            }
+            if (orderDto.getAddress() != null) {
+                mobile = orderDto.getAddress().getMobile();
+            } else if (orderDto.getUserInfo() != null) {
+                mobile = orderDto.getUserInfo().getMobile();
+            }
+            if (orderDto.getOrderMode() != null) {
+                for (OrderModeEnum mode : OrderModeEnum.values()) {
+                    if (mode.getKey().equals(orderDto.getOrderMode())) {
+                        orderModeText = mode.getValue();
+                        break;
                     }
                 }
-                if (orderDto.getStaffInfo() != null) {
-                    staffName = orderDto.getStaffInfo().getRealName();
-                }
-                content[i][0] = objectConvertToString(orderDto.getOrderSn());
-                content[i][1] = objectConvertToString(userName);
-                content[i][2] = objectConvertToString(mobile);
-                content[i][3] = objectConvertToString(orderDto.getTypeName());
-                content[i][4] = objectConvertToString(orderModeText);
-                content[i][5] = objectConvertToString(storeName);
-                content[i][6] = objectConvertToString(orderDto.getAmount());
-                content[i][7] = objectConvertToString(orderDto.getPayStatus());
-                content[i][8] = objectConvertToString(orderDto.getStatusText());
-                content[i][9] = objectConvertToString(orderDto.getPayAmount());
-                content[i][10] = objectConvertToString(orderDto.getDiscount());
-                content[i][11] = objectConvertToString(orderDto.getPointAmount());
-                content[i][12] = objectConvertToString(staffName);
-                content[i][13] = objectConvertToString(orderDto.getCreateTime());
-                content[i][14] = objectConvertToString(orderDto.getUpdateTime());
             }
-        }
+            if (orderDto.getStaffInfo() != null) {
+                staffName = orderDto.getStaffInfo().getRealName();
+            }
+            OrderExportVo vo = new OrderExportVo();
+            vo.setOrderSn(objectConvertToString(orderDto.getOrderSn()));
+            vo.setUserName(objectConvertToString(userName));
+            vo.setMobile(objectConvertToString(mobile));
+            vo.setTypeName(objectConvertToString(orderDto.getTypeName()));
+            vo.setOrderMode(objectConvertToString(orderModeText));
+            vo.setStoreName(objectConvertToString(storeName));
+            vo.setAmount(objectConvertToString(orderDto.getAmount()));
+            vo.setPayStatus(objectConvertToString(orderDto.getPayStatus()));
+            vo.setStatusText(objectConvertToString(orderDto.getStatusText()));
+            vo.setPayAmount(objectConvertToString(orderDto.getPayAmount()));
+            vo.setDiscount(objectConvertToString(orderDto.getDiscount()));
+            vo.setPointAmount(objectConvertToString(orderDto.getPointAmount()));
+            vo.setStaffName(objectConvertToString(staffName));
+            vo.setCreateTime(objectConvertToString(orderDto.getCreateTime()));
+            vo.setUpdateTime(objectConvertToString(orderDto.getUpdateTime()));
+            return vo;
+        }).collect(Collectors.toList());
 
-        // 创建HSSFWorkbook
-        HSSFWorkbook wb = ExcelUtil.getHSSFWorkbook(sheetName, title, content, null);
-        ExcelUtil.setResponseHeader(response, fileName, wb);
+        ExcelUtil.exportXlsx(response, "订单列表" + DateUtil.formatDate(new Date(), "yyyy.MM.dd_HHmm"), "订单列表", OrderExportVo.class, data);
 
         logger.info("导出订单成功...");
     }

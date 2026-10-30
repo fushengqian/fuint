@@ -5,10 +5,15 @@ import org.apache.poi.hssf.usermodel.HSSFCellStyle;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.HorizontalAlignment;
+import com.alibaba.excel.EasyExcel;
 import org.springframework.core.io.ClassPathResource;
 
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.List;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
@@ -54,7 +59,7 @@ public class ExcelUtil {
 
         // 创建单元格样式
         HSSFCellStyle headerStyle = wb.createCellStyle();
-        headerStyle.setAlignment(HSSFCellStyle.ALIGN_CENTER); // 表头居中格式
+        headerStyle.setAlignment(HorizontalAlignment.CENTER); // 表头居中格式
 
         // 汇总行起始行号
         int rowIndex = 0;
@@ -155,5 +160,40 @@ public class ExcelUtil {
         inputStream.close();
         out.close();
         out.flush();
+    }
+
+    /**
+     * 导出 Excel（xlsx，基于注解 VO）
+     *
+     * @param response
+     * @param fileName  文件名（不含扩展名）
+     * @param sheetName sheet名称
+     * @param clazz     导出VO类型，字段用 @ExcelProperty 标注表头
+     * @param data      待导出数据
+     */
+    public static <T> void exportXlsx(HttpServletResponse response, String fileName, String sheetName, Class<T> clazz, List<T> data) throws IOException {
+        response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+        response.setCharacterEncoding("utf-8");
+        String encodedFileName = URLEncoder.encode(fileName, StandardCharsets.UTF_8.name()).replaceAll("\\+", "%20");
+        response.setHeader("Content-Disposition", "attachment;filename*=utf-8''" + encodedFileName + ".xlsx");
+        EasyExcel.write(response.getOutputStream(), clazz).sheet(sheetName).doWrite(data);
+    }
+
+    /**
+     * 导出 Excel（xlsx，自定义多行表头，用于带顶部汇总行的报表）
+     *
+     * @param response
+     * @param fileName  文件名（不含扩展名）
+     * @param sheetName sheet名称
+     * @param head      表头（可多行，第一行即汇总标题行）
+     * @param rows      数据行
+     */
+    public static void exportXlsxWithHead(HttpServletResponse response, String fileName, String sheetName,
+                                          List<List<String>> head, List<List<Object>> rows) throws IOException {
+        response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+        response.setCharacterEncoding("utf-8");
+        String encodedFileName = URLEncoder.encode(fileName, StandardCharsets.UTF_8.name()).replaceAll("\\+", "%20");
+        response.setHeader("Content-Disposition", "attachment;filename*=utf-8''" + encodedFileName + ".xlsx");
+        EasyExcel.write(response.getOutputStream()).head(head).sheet(sheetName).doWrite(rows);
     }
 }

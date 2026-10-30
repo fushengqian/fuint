@@ -1,5 +1,11 @@
 package com.fuint.module.backendApi.controller.report;
 
+
+
+
+import java.io.IOException;
+import java.util.stream.Collectors;
+import java.util.ArrayList;
 import com.fuint.common.Constants;
 import com.fuint.common.dto.report.*;
 import com.fuint.common.dto.system.AccountInfo;
@@ -13,7 +19,6 @@ import com.fuint.framework.web.ResponseObject;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.AllArgsConstructor;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
@@ -87,7 +92,7 @@ public class BackendReportController extends BaseController {
     @Operation(summary="导出日销售统计报表")
     @RequestMapping(value = "/exportDailySales", method = RequestMethod.GET)
     @CrossOrigin
-    public void exportDailySales(HttpServletResponse response, @ModelAttribute StatisticParam param) throws ParseException {
+    public void exportDailySales(HttpServletResponse response, @ModelAttribute StatisticParam param) throws ParseException, IOException {
         AccountInfo accountInfo = TokenUtil.getAccountInfo();
         List<Integer> storeIds = param.getStoreIds();
         if (accountInfo.getStoreId() != null && accountInfo.getStoreId() > 0) {
@@ -95,11 +100,7 @@ public class BackendReportController extends BaseController {
         }
         DailySalesReportDto reportDto = reportService.getDailySalesReport(accountInfo.getMerchantId(), storeIds, param.getStartTime(), param.getEndTime(), Constants.PAGE_NUMBER, Constants.MAX_ROWS);
 
-        String[] title = { "日期", "店铺", "订单数量", "销售金额", "现金支付", "微信支付", "支付宝支付", "积分支付", "卡券核销", "余额支付" };
-        String fileName = "日销售统计报表_" + DateUtil.formatDate(new Date(), "yyyy.MM.dd_HHmm") + ".xls";
-        String sheetName = "日销售统计";
-
-        // 构建顶部汇总行
+        // 汇总行 + 表头（EasyExcel 多行表头）
         String[] summaryTitle = { "总订单笔数", "总销售金额", "总现金支付金额", "总微信支付金额", "总支付宝支付金额", "总积分支付金额", "总卡券核销金额", "总余额支付金额" };
         String[] summaryValue = {
                 objectConvertToString(reportDto.getTotalOrderCount()),
@@ -111,33 +112,33 @@ public class BackendReportController extends BaseController {
                 objectConvertToString(reportDto.getTotalCouponAmount()),
                 objectConvertToString(reportDto.getTotalBalanceAmount())
         };
-        String[][] summary = { summaryTitle, summaryValue };
+        List<List<String>> head = new ArrayList<>();
+        head.add(Arrays.asList(summaryTitle));
+        head.add(Arrays.asList(summaryValue));
+        head.add(Arrays.asList("日期", "店铺", "订单数量", "销售金额", "现金支付", "微信支付", "支付宝支付", "积分支付", "卡券核销", "余额支付"));
 
-        List<DailySalesItemDto> list = reportDto.getDataList();
-        String[][] content = new String[list.size()][title.length];
-        for (int i = 0; i < list.size(); i++) {
-            DailySalesItemDto item = list.get(i);
-            content[i][0] = objectConvertToString(item.getDateTime());
-            content[i][1] = objectConvertToString(item.getStoreName());
-            content[i][2] = objectConvertToString(item.getOrderCount());
-            content[i][3] = objectConvertToString(item.getSalesAmount());
-            content[i][4] = objectConvertToString(item.getCashAmount());
-            content[i][5] = objectConvertToString(item.getWechatAmount());
-            content[i][6] = objectConvertToString(item.getAliPayAmount());
-            content[i][7] = objectConvertToString(item.getPointAmount());
-            content[i][8] = objectConvertToString(item.getCouponAmount());
-            content[i][9] = objectConvertToString(item.getBalanceAmount());
-        }
+        List<List<Object>> rows = reportDto.getDataList().stream()
+                .map(item -> Arrays.<Object>asList(
+                        objectConvertToString(item.getDateTime()),
+                        objectConvertToString(item.getStoreName()),
+                        objectConvertToString(item.getOrderCount()),
+                        objectConvertToString(item.getSalesAmount()),
+                        objectConvertToString(item.getCashAmount()),
+                        objectConvertToString(item.getWechatAmount()),
+                        objectConvertToString(item.getAliPayAmount()),
+                        objectConvertToString(item.getPointAmount()),
+                        objectConvertToString(item.getCouponAmount()),
+                        objectConvertToString(item.getBalanceAmount())))
+                .collect(Collectors.toList());
 
-        HSSFWorkbook wb = ExcelUtil.getHSSFWorkbook(sheetName, title, content, null, summary);
-        ExcelUtil.setResponseHeader(response, fileName, wb);
+        ExcelUtil.exportXlsxWithHead(response, "日销售统计报表_" + DateUtil.formatDate(new Date(), "yyyy.MM.dd_HHmm"), "日销售统计", head, rows);
         logger.info("导出日销售统计报表成功...");
     }
 
     @Operation(summary="导出日收银统计报表")
     @RequestMapping(value = "/exportDailyCashier", method = RequestMethod.GET)
     @CrossOrigin
-    public void exportDailyCashier(HttpServletResponse response, @ModelAttribute StatisticParam param) throws ParseException {
+    public void exportDailyCashier(HttpServletResponse response, @ModelAttribute StatisticParam param) throws ParseException, IOException {
         AccountInfo accountInfo = TokenUtil.getAccountInfo();
         List<Integer> storeIds = param.getStoreIds();
         if (accountInfo.getStoreId() != null && accountInfo.getStoreId() > 0) {
@@ -145,11 +146,7 @@ public class BackendReportController extends BaseController {
         }
         DailyCashierReportDto reportDto = reportService.getDailyCashierReport(accountInfo.getMerchantId(), storeIds, param.getStartTime(), param.getEndTime(), Constants.PAGE_NUMBER, Constants.MAX_ROWS);
 
-        String[] title = { "日期", "店铺", "收银员", "订单数量", "销售金额", "现金支付", "微信支付", "支付宝支付", "积分支付", "卡券核销", "余额支付" };
-        String fileName = "日收银统计报表_" + DateUtil.formatDate(new Date(), "yyyy.MM.dd_HHmm") + ".xls";
-        String sheetName = "日收银统计";
-
-        // 构建顶部汇总行
+        // 汇总行 + 表头（EasyExcel 多行表头）
         String[] summaryTitle = { "总订单笔数", "总销售金额", "总现金支付金额", "总微信支付金额", "总支付宝支付金额", "总积分支付金额", "总卡券核销金额", "总余额支付金额" };
         String[] summaryValue = {
                 objectConvertToString(reportDto.getTotalOrderCount()),
@@ -161,34 +158,34 @@ public class BackendReportController extends BaseController {
                 objectConvertToString(reportDto.getTotalCouponAmount()),
                 objectConvertToString(reportDto.getTotalBalanceAmount())
         };
-        String[][] summary = { summaryTitle, summaryValue };
+        List<List<String>> head = new ArrayList<>();
+        head.add(Arrays.asList(summaryTitle));
+        head.add(Arrays.asList(summaryValue));
+        head.add(Arrays.asList("日期", "店铺", "收银员", "订单数量", "销售金额", "现金支付", "微信支付", "支付宝支付", "积分支付", "卡券核销", "余额支付"));
 
-        List<DailyCashierItemDto> list = reportDto.getDataList();
-        String[][] content = new String[list.size()][title.length];
-        for (int i = 0; i < list.size(); i++) {
-            DailyCashierItemDto item = list.get(i);
-            content[i][0] = objectConvertToString(item.getDateTime());
-            content[i][1] = objectConvertToString(item.getStoreName());
-            content[i][2] = objectConvertToString(item.getStaffName());
-            content[i][3] = objectConvertToString(item.getOrderCount());
-            content[i][4] = objectConvertToString(item.getSalesAmount());
-            content[i][5] = objectConvertToString(item.getCashAmount());
-            content[i][6] = objectConvertToString(item.getWechatAmount());
-            content[i][7] = objectConvertToString(item.getAliPayAmount());
-            content[i][8] = objectConvertToString(item.getPointAmount());
-            content[i][9] = objectConvertToString(item.getCouponAmount());
-            content[i][10] = objectConvertToString(item.getBalanceAmount());
-        }
+        List<List<Object>> rows = reportDto.getDataList().stream()
+                .map(item -> Arrays.<Object>asList(
+                        objectConvertToString(item.getDateTime()),
+                        objectConvertToString(item.getStoreName()),
+                        objectConvertToString(item.getStaffName()),
+                        objectConvertToString(item.getOrderCount()),
+                        objectConvertToString(item.getSalesAmount()),
+                        objectConvertToString(item.getCashAmount()),
+                        objectConvertToString(item.getWechatAmount()),
+                        objectConvertToString(item.getAliPayAmount()),
+                        objectConvertToString(item.getPointAmount()),
+                        objectConvertToString(item.getCouponAmount()),
+                        objectConvertToString(item.getBalanceAmount())))
+                .collect(Collectors.toList());
 
-        HSSFWorkbook wb = ExcelUtil.getHSSFWorkbook(sheetName, title, content, null, summary);
-        ExcelUtil.setResponseHeader(response, fileName, wb);
+        ExcelUtil.exportXlsxWithHead(response, "日收银统计报表_" + DateUtil.formatDate(new Date(), "yyyy.MM.dd_HHmm"), "日收银统计", head, rows);
         logger.info("导出日收银统计报表成功...");
     }
 
     @Operation(summary="导出分类统计报表")
     @RequestMapping(value = "/exportDailyCate", method = RequestMethod.GET)
     @CrossOrigin
-    public void exportDailyCate(HttpServletResponse response, @ModelAttribute StatisticParam param) throws ParseException {
+    public void exportDailyCate(HttpServletResponse response, @ModelAttribute StatisticParam param) throws ParseException, IOException {
         AccountInfo accountInfo = TokenUtil.getAccountInfo();
         List<Integer> storeIds = param.getStoreIds();
         if (accountInfo.getStoreId() != null && accountInfo.getStoreId() > 0) {
@@ -196,11 +193,7 @@ public class BackendReportController extends BaseController {
         }
         DailyCateReportDto reportDto = reportService.getDailyCateReport(accountInfo.getMerchantId(), storeIds, param.getStartTime(), param.getEndTime(), Constants.PAGE_NUMBER, Constants.MAX_ROWS);
 
-        String[] title = { "日期", "店铺", "分类名称", "销售数量", "销售金额", "购买人数", "销售成本", "利润金额", "退款数量" };
-        String fileName = "分类统计报表_" + DateUtil.formatDate(new Date(), "yyyy.MM.dd_HHmm") + ".xls";
-        String sheetName = "分类统计";
-
-        // 构建顶部汇总行
+        // 汇总行 + 表头（EasyExcel 多行表头）
         String[] summaryTitle = { "总销售数量", "总销售金额", "总购买人数", "总销售成本", "总利润金额", "总退款数量" };
         String[] summaryValue = {
                 objectConvertToString(reportDto.getTotalSalesCount()),
@@ -210,25 +203,25 @@ public class BackendReportController extends BaseController {
                 objectConvertToString(reportDto.getTotalProfitAmount()),
                 objectConvertToString(reportDto.getTotalRefundCount())
         };
-        String[][] summary = { summaryTitle, summaryValue };
+        List<List<String>> head = new ArrayList<>();
+        head.add(Arrays.asList(summaryTitle));
+        head.add(Arrays.asList(summaryValue));
+        head.add(Arrays.asList("日期", "店铺", "分类名称", "销售数量", "销售金额", "购买人数", "销售成本", "利润金额", "退款数量"));
 
-        List<DailyCateItemDto> list = reportDto.getDataList();
-        String[][] content = new String[list.size()][title.length];
-        for (int i = 0; i < list.size(); i++) {
-            DailyCateItemDto item = list.get(i);
-            content[i][0] = objectConvertToString(item.getDateTime());
-            content[i][1] = objectConvertToString(item.getStoreName());
-            content[i][2] = objectConvertToString(item.getCateName());
-            content[i][3] = objectConvertToString(item.getSalesCount());
-            content[i][4] = objectConvertToString(item.getSalesAmount());
-            content[i][5] = objectConvertToString(item.getBuyerCount());
-            content[i][6] = objectConvertToString(item.getCostAmount());
-            content[i][7] = objectConvertToString(item.getProfitAmount());
-            content[i][8] = objectConvertToString(item.getRefundCount());
-        }
+        List<List<Object>> rows = reportDto.getDataList().stream()
+                .map(item -> Arrays.<Object>asList(
+                        objectConvertToString(item.getDateTime()),
+                        objectConvertToString(item.getStoreName()),
+                        objectConvertToString(item.getCateName()),
+                        objectConvertToString(item.getSalesCount()),
+                        objectConvertToString(item.getSalesAmount()),
+                        objectConvertToString(item.getBuyerCount()),
+                        objectConvertToString(item.getCostAmount()),
+                        objectConvertToString(item.getProfitAmount()),
+                        objectConvertToString(item.getRefundCount())))
+                .collect(Collectors.toList());
 
-        HSSFWorkbook wb = ExcelUtil.getHSSFWorkbook(sheetName, title, content, null, summary);
-        ExcelUtil.setResponseHeader(response, fileName, wb);
+        ExcelUtil.exportXlsxWithHead(response, "分类统计报表_" + DateUtil.formatDate(new Date(), "yyyy.MM.dd_HHmm"), "分类统计", head, rows);
         logger.info("导出分类统计报表成功...");
     }
 }
