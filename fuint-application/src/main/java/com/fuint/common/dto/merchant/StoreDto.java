@@ -37,6 +37,9 @@ public class StoreDto extends StoreInfo implements Serializable {
     @Schema(description="微信支付公钥证书上传地址")
     private String wxPayPublicKeyPath;
 
+    @Schema(description="微信支付公钥ID，形如 PUB_KEY_ID_xxx")
+    private String wxPubKeyId;
+
     @Schema(description="支付宝appId")
     private String alipayAppId;
 

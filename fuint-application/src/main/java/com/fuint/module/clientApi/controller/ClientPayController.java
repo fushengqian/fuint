@@ -187,9 +187,9 @@ public class ClientPayController extends BaseController {
             String orderSn = resData.get("out_trade_no"); // 商户订单号
             String orderId = resData.get("transaction_id"); // 微信交易单号
             String tranAmt = resData.get("total_fee"); // 交易金额
-            BigDecimal tranAmount = new BigDecimal(tranAmt).divide(new BigDecimal("100"), BigDecimal.ROUND_CEILING, 4);
             // 参数校验
             if (StringUtil.isNotEmpty(orderSn) && StringUtil.isNotEmpty(tranAmt) && StringUtil.isNotEmpty(orderId)) {
+                BigDecimal tranAmount = new BigDecimal(tranAmt).divide(new BigDecimal("100"), BigDecimal.ROUND_CEILING, 4);
                 UserOrderDto orderInfo = orderService.getOrderByPaySn(orderSn);
                 if (orderInfo != null) {
                     String result = resData.get("return_code");

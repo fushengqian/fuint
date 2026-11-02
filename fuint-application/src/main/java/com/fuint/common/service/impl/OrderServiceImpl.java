@@ -2245,30 +2245,37 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
 
         // 查询支付状态
         if (getPayStatus && !orderInfo.getPayStatus().equals(PayStatusEnum.SUCCESS.getKey())) {
+            // 渠道侧的交易号是支付单号 paySn，用业务订单号 orderSn 查询会返回订单不存在
+            String paySn = StringUtil.isNotEmpty(orderInfo.getPaySn()) ? orderInfo.getPaySn() : orderInfo.getOrderSn();
             // 微信支付
             if (orderInfo.getPayType().equals(PayTypeEnum.MICROPAY.getKey()) || orderInfo.getPayType().equals(PayTypeEnum.JSAPI.getKey())) {
                 try {
-                    Map<String, String> payResult = weixinService.queryPaidOrder(orderInfo.getStoreId(), "", orderInfo.getOrderSn());
-                    if (payResult != null && payResult.get("trade_state").equals("SUCCESS")) {
-                        BigDecimal payAmount = new BigDecimal(payResult.get("total_fee")).divide(new BigDecimal("100"));
-                        setOrderPayed(orderInfo.getId(), payAmount);
-                        userOrderDto.setPayStatus(PayStatusEnum.SUCCESS.getKey());
+                    Map<String, String> payResult = weixinService.queryPaidOrder(orderInfo.getStoreId(), "", paySn);
+                    if (payResult != null && "SUCCESS".equals(payResult.get("trade_state"))) {
+                        String totalFee = payResult.get("total_fee");
+                        if (StringUtil.isNotEmpty(totalFee)) {
+                            BigDecimal payAmount = new BigDecimal(totalFee).divide(new BigDecimal("100"));
+                            setOrderPayed(orderInfo.getId(), payAmount);
+                            userOrderDto.setPayStatus(PayStatusEnum.SUCCESS.getKey());
+                        } else {
+                            logger.error("微信支付订单查询成功但未返回金额，orderSn = {}, paySn = {}", orderInfo.getOrderSn(), paySn);
+                        }
                     }
                 } catch (Exception e) {
-                    // empty
+                    logger.error("查询微信支付订单异常，orderSn = {}, paySn = {}", orderInfo.getOrderSn(), paySn, e);
                 }
             }
             // 支付宝支付
             if (orderInfo.getPayType().equals(PayTypeEnum.ALISCAN.getKey())) {
                 try {
-                    Map<String, String> payResult = alipayService.queryPaidOrder(orderInfo.getStoreId(), "", orderInfo.getOrderSn());
+                    Map<String, String> payResult = alipayService.queryPaidOrder(orderInfo.getStoreId(), "", paySn);
                     if (payResult != null) {
                         BigDecimal payAmount = new BigDecimal(payResult.get("payAmount"));
                         setOrderPayed(orderInfo.getId(), payAmount);
                         userOrderDto.setPayStatus(PayStatusEnum.SUCCESS.getKey());
                     }
                 } catch (Exception e) {
-                    // empty
+                    logger.error("查询支付宝支付订单异常，orderSn = {}, paySn = {}", orderInfo.getOrderSn(), paySn, e);
                 }
             }
         }

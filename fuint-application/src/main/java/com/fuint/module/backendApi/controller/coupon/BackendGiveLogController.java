@@ -50,8 +50,8 @@ import static com.fuint.common.util.XlsUtil.objectConvertToString;
 @RequestMapping(value = "/backendApi/give")
 public class BackendGiveLogController extends BaseController {
 
-
     private static final Logger logger = LoggerFactory.getLogger(BackendGiveLogController.class);
+
     private MtUserCouponMapper mtUserCouponMapper;
 
     private MtCouponGroupMapper mtCouponGroupMapper;
