@@ -141,7 +141,14 @@ public class BackendGiveLogController extends BaseController {
     @RequestMapping(value = "/export", method = RequestMethod.GET)
     @ResponseBody
     public void export(HttpServletRequest request, HttpServletResponse response) {
+        AccountInfo accountInfo = TokenUtil.getAccountInfoByToken(request.getParameter("token"));
         GivePage givePage = new GivePage();
+        if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
+            givePage.setMerchantId(accountInfo.getMerchantId());
+        }
+        if (accountInfo.getStoreId() != null && accountInfo.getStoreId() > 0) {
+            givePage.setStoreId(accountInfo.getStoreId());
+        }
         givePage.setPage(Constants.PAGE_NUMBER);
         givePage.setPageSize(Constants.MAX_ROWS);
         PaginationResponse<GiveDto> paginationResponse = giveService.queryGiveListByPagination(givePage);
