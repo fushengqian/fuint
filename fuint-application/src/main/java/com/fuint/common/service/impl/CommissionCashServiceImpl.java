@@ -189,6 +189,8 @@ public class CommissionCashServiceImpl extends ServiceImpl<MtCommissionCashMappe
     public String settleCommission(CommissionSettleRequest commissionSettleRequest) throws BusinessCheckException {
         LambdaQueryWrapper<MtCommissionLog> lambdaQueryWrapper = Wrappers.lambdaQuery();
         lambdaQueryWrapper.eq(MtCommissionLog::getStatus, CommissionStatusEnum.NORMAL.getKey());
+        // 结算只作用于佣金记录；推荐奖励（券/积分）即时到账，不参与结算
+        lambdaQueryWrapper.eq(MtCommissionLog::getScene, "commission");
         if (commissionSettleRequest.getMerchantId() != null && StringUtils.isNotBlank(commissionSettleRequest.getMerchantId().toString())) {
             lambdaQueryWrapper.eq(MtCommissionLog::getMerchantId, commissionSettleRequest.getMerchantId());
         }

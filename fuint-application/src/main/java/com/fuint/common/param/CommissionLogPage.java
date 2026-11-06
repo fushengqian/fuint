@@ -25,6 +25,9 @@ public class CommissionLogPage extends PageParam implements Serializable {
     @Schema(description="类型")
     private String target;
 
+    @Schema(description="记录场景：commission/register/order")
+    private String scene;
+
     @Schema(description="批次号")
     private String uuid;
 

@@ -49,6 +49,10 @@
         SELECT t.COUPON_ID FROM mt_user_coupon t WHERE t.UUID = #{uuid} GROUP BY t.COUPON_ID
     </select>
 
+    <select id="getUserCouponListByUuid" resultType="com.fuint.repository.model.MtUserCoupon">
+        SELECT * FROM mt_user_coupon t WHERE t.UUID = #{uuid} ORDER BY t.ID ASC
+    </select>
+
     <select id="findUserCouponDetail" resultType="com.fuint.repository.model.MtUserCoupon">
         SELECT * FROM mt_user_coupon t WHERE t.COUPON_ID = #{couponId} AND t.USER_ID = #{userId} and t.STATUS != 'D' ORDER BY t.ID DESC
     </select>

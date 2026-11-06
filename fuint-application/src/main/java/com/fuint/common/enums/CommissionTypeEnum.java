@@ -15,7 +15,8 @@ import java.util.stream.Collectors;
 public enum CommissionTypeEnum {
     GOODS("goods", "商品订单"),
     PAYMENT("payment", "付款订单"),
-    RECHARGE("recharge", "充值订单");
+    RECHARGE("recharge", "充值订单"),
+    RECOMMEND("recommend", "推荐奖励");
 
     private String key;
 

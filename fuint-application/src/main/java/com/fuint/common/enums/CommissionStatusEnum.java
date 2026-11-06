@@ -15,7 +15,8 @@ import java.util.stream.Collectors;
 public enum CommissionStatusEnum {
     NORMAL("A", "待结算"),
     SETTLED("B", "已结算"),
-    CANCEL("C", "已作废");
+    CANCEL("C", "已作废"),
+    CLAWBACK("D", "已追回");
 
     private String key;
 

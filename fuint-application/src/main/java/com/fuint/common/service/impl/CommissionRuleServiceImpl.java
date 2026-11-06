@@ -6,11 +6,13 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fuint.common.dto.commission.CommissionRuleDto;
 import com.fuint.common.dto.commission.CommissionRuleItemDto;
 import com.fuint.common.enums.CommissionTypeEnum;
+import com.fuint.common.enums.RewardTypeEnum;
 import com.fuint.common.enums.StatusEnum;
 import com.fuint.common.param.CommissionRuleItemParam;
 import com.fuint.common.param.CommissionRulePage;
 import com.fuint.common.param.CommissionRuleParam;
 import com.fuint.common.service.CommissionRuleService;
+import com.fuint.common.service.CouponService;
 import com.fuint.common.service.GoodsService;
 import com.fuint.common.service.SettingService;
 import com.fuint.framework.annoation.OperationServiceLog;
@@ -20,6 +22,7 @@ import com.fuint.repository.mapper.MtCommissionRuleItemMapper;
 import com.fuint.repository.mapper.MtCommissionRuleMapper;
 import com.fuint.repository.model.MtCommissionRule;
 import com.fuint.repository.model.MtCommissionRuleItem;
+import com.fuint.repository.model.MtCoupon;
 import com.fuint.repository.model.MtGoods;
 import com.fuint.utils.StringUtil;
 import com.github.pagehelper.Page;
@@ -35,6 +38,9 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -64,6 +70,11 @@ public class CommissionRuleServiceImpl extends ServiceImpl<MtCommissionRuleMappe
     private SettingService settingService;
 
     /**
+     * 卡券服务接口（回显推荐奖励的券名称）
+     * */
+    private CouponService couponService;
+
+    /**
      * 分页查询规则列表
      *
      * @param commissionRulePage
@@ -90,6 +101,10 @@ public class CommissionRuleServiceImpl extends ServiceImpl<MtCommissionRuleMappe
         String type = commissionRulePage.getType();
         if (StringUtils.isNotBlank(type)) {
             lambdaQueryWrapper.eq(MtCommissionRule::getType, type);
+        }
+        String scene = commissionRulePage.getScene();
+        if (StringUtils.isNotBlank(scene)) {
+            lambdaQueryWrapper.eq(MtCommissionRule::getScene, scene);
         }
         Integer merchantId = commissionRulePage.getMerchantId();
         if (merchantId != null && merchantId > 0) {
@@ -132,6 +147,30 @@ public class CommissionRuleServiceImpl extends ServiceImpl<MtCommissionRuleMappe
         mtCommissionRule.setMerchantId(mtCommissionRule.getMerchantId()== null ? 0 : mtCommissionRule.getMerchantId());
         String storeIds = StringUtil.join(commissionRule.getStoreIdList().toArray(), ",");
         mtCommissionRule.setStoreIds(storeIds);
+        // 方案场景：默认分佣提成；推荐奖励场景的方案类型固定为 recommend
+        if (StringUtil.isEmpty(mtCommissionRule.getScene())) {
+            mtCommissionRule.setScene(CommissionTypeEnum.GOODS.getKey().equals(mtCommissionRule.getType())
+                    || CommissionTypeEnum.RECHARGE.getKey().equals(mtCommissionRule.getType())
+                    || CommissionTypeEnum.PAYMENT.getKey().equals(mtCommissionRule.getType())
+                    ? "commission" : mtCommissionRule.getType());
+        }
+        if ("recommend".equals(mtCommissionRule.getScene())) {
+            mtCommissionRule.setType(CommissionTypeEnum.RECOMMEND.getKey());
+            if (StringUtil.isEmpty(mtCommissionRule.getRegisterSwitch())) {
+                mtCommissionRule.setRegisterSwitch("N");
+            }
+            if (StringUtil.isEmpty(mtCommissionRule.getOrderSwitch())) {
+                mtCommissionRule.setOrderSwitch("N");
+            }
+            if (mtCommissionRule.getOrderAmount() == null) {
+                mtCommissionRule.setOrderAmount(BigDecimal.ZERO);
+            }
+            if (!"Y".equals(mtCommissionRule.getRegisterSwitch()) && !"Y".equals(mtCommissionRule.getOrderSwitch())) {
+                throw new BusinessCheckException("推荐奖励方案至少开启一种奖励");
+            }
+        }
+        mtCommissionRule.setStartTime(parseTime(commissionRule.getStartTime()));
+        mtCommissionRule.setEndTime(parseTime(commissionRule.getEndTime()));
         boolean result = save(mtCommissionRule);
         if (result) {
             if (mtCommissionRule.getType().equals(CommissionTypeEnum.RECHARGE.getKey()) || mtCommissionRule.getType().equals(CommissionTypeEnum.PAYMENT.getKey())) {
@@ -168,6 +207,15 @@ public class CommissionRuleServiceImpl extends ServiceImpl<MtCommissionRuleMappe
                      mtCommissionRuleItem.setGuest(itemParam.getVisitorVal());
                      mtCommissionRuleItem.setSubMember(itemParam.getSubMemberVal());
                      mtCommissionRuleItem.setSubGuest(itemParam.getSubVisitorVal());
+                     // 推荐奖励明细：场景 + 奖励类型（券/积分）
+                     if ("recommend".equals(mtCommissionRule.getScene())) {
+                         mtCommissionRuleItem.setTargetId(0);
+                         mtCommissionRuleItem.setScene(itemParam.getScene());
+                         mtCommissionRuleItem.setRewardType(itemParam.getRewardType());
+                         mtCommissionRuleItem.setCouponId(itemParam.getCouponId());
+                         mtCommissionRuleItem.setCouponNum(itemParam.getCouponNum());
+                         mtCommissionRuleItem.setPoint(itemParam.getPoint());
+                     }
                      mtCommissionRuleItemMapper.insert(mtCommissionRuleItem);
                 }
             }
@@ -215,6 +263,18 @@ public class CommissionRuleServiceImpl extends ServiceImpl<MtCommissionRuleMappe
                  commissionRuleItemDto.setVisitorVal(item.getGuest());
                  commissionRuleItemDto.setSubMemberVal(item.getSubMember());
                  commissionRuleItemDto.setSubVisitorVal(item.getSubGuest());
+                 // 推荐奖励明细回显
+                 commissionRuleItemDto.setScene(item.getScene());
+                 commissionRuleItemDto.setRewardType(item.getRewardType());
+                 commissionRuleItemDto.setCouponId(item.getCouponId());
+                 commissionRuleItemDto.setCouponNum(item.getCouponNum());
+                 commissionRuleItemDto.setPoint(item.getPoint());
+                 if (item.getCouponId() != null && item.getCouponId() > 0) {
+                     MtCoupon mtCoupon = couponService.queryCouponById(item.getCouponId());
+                     if (mtCoupon != null) {
+                         commissionRuleItemDto.setCouponName(mtCoupon.getName());
+                     }
+                 }
                  detailList.add(commissionRuleItemDto);
             }
         }
@@ -286,6 +346,21 @@ public class CommissionRuleServiceImpl extends ServiceImpl<MtCommissionRuleMappe
                 mtCommissionRuleItemMapper.deleteByRuleId(commissionRule.getId(), new Date());
             }
         }
+        if (commissionRule.getRegisterSwitch() != null) {
+            mtCommissionRule.setRegisterSwitch(commissionRule.getRegisterSwitch());
+        }
+        if (commissionRule.getOrderSwitch() != null) {
+            mtCommissionRule.setOrderSwitch(commissionRule.getOrderSwitch());
+        }
+        if (commissionRule.getOrderAmount() != null) {
+            mtCommissionRule.setOrderAmount(commissionRule.getOrderAmount());
+        }
+        if (commissionRule.getStartTime() != null) {
+            mtCommissionRule.setStartTime(parseTime(commissionRule.getStartTime()));
+        }
+        if (commissionRule.getEndTime() != null) {
+            mtCommissionRule.setEndTime(parseTime(commissionRule.getEndTime()));
+        }
         String storeIds = "";
         if (commissionRule.getStoreIdList() != null && commissionRule.getStoreIdList().size() > 0) {
             storeIds = StringUtil.join(commissionRule.getStoreIdList().toArray(), ",");
@@ -329,8 +404,32 @@ public class CommissionRuleServiceImpl extends ServiceImpl<MtCommissionRuleMappe
                 mtCommissionRuleItem.setGuest(itemParam.getVisitorVal());
                 mtCommissionRuleItem.setSubMember(itemParam.getSubMemberVal());
                 mtCommissionRuleItem.setSubGuest(itemParam.getSubVisitorVal());
-                // 判断是否已经存在，存在则更新
-                if (itemParam.getGoodsId() != null && itemParam.getGoodsId() >= 0) {
+                // 推荐奖励明细：场景 + 奖励类型（券/积分）
+                boolean isRecommend = "recommend".equals(mtCommissionRule.getScene());
+                if (isRecommend) {
+                    mtCommissionRuleItem.setTargetId(0);
+                    mtCommissionRuleItem.setScene(itemParam.getScene());
+                    mtCommissionRuleItem.setRewardType(itemParam.getRewardType());
+                    mtCommissionRuleItem.setCouponId(itemParam.getCouponId());
+                    mtCommissionRuleItem.setCouponNum(itemParam.getCouponNum());
+                    mtCommissionRuleItem.setPoint(itemParam.getPoint());
+                }
+                // 判断是否已经存在，存在则更新；推荐奖励按场景+奖励类型匹配，分佣按商品匹配
+                if (isRecommend) {
+                    Map<String, Object> param = new HashMap();
+                    param.put("RULE_ID", commissionRule.getId());
+                    param.put("SCENE", itemParam.getScene());
+                    param.put("REWARD_TYPE", itemParam.getRewardType());
+                    param.put("STATUS", StatusEnum.ENABLED.getKey());
+                    if (RewardTypeEnum.COUPON.getKey().equals(itemParam.getRewardType()) && itemParam.getCouponId() != null) {
+                        param.put("COUPON_ID", itemParam.getCouponId());
+                    }
+                    List<MtCommissionRuleItem> items = mtCommissionRuleItemMapper.selectByMap(param);
+                    if (items != null && items.size() > 0) {
+                        mtCommissionRuleItem.setId(items.get(0).getId());
+                        itemIds.add(items.get(0).getId());
+                    }
+                } else if (itemParam.getGoodsId() != null && itemParam.getGoodsId() >= 0) {
                     Map<String, Object> param = new HashMap();
                     param.put("RULE_ID", commissionRule.getId());
                     param.put("TARGET_ID", itemParam.getGoodsId());
@@ -365,5 +464,28 @@ public class CommissionRuleServiceImpl extends ServiceImpl<MtCommissionRuleMappe
         mtCommissionRule.setUpdateTime(new Date());
         mtCommissionRuleMapper.updateById(mtCommissionRule);
         return mtCommissionRule;
+    }
+
+    /**
+     * 解析活动时间，支持 yyyy-MM-dd 与 yyyy-MM-dd HH:mm:ss
+     *
+     * @param time 时间字符串
+     * @return 解析失败返回 null
+     * */
+    private Date parseTime(String time) {
+        if (StringUtil.isEmpty(time)) {
+            return null;
+        }
+        String[] patterns = {"yyyy-MM-dd HH:mm:ss", "yyyy-MM-dd"};
+        for (String pattern : patterns) {
+            try {
+                SimpleDateFormat format = new SimpleDateFormat(pattern);
+                format.setLenient(false);
+                return format.parse(time);
+            } catch (ParseException ignore) {
+                // 尝试下一种格式
+            }
+        }
+        return null;
     }
 }

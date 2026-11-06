@@ -32,11 +32,20 @@ public class MtCommissionLog implements Serializable {
     @Schema(description="分佣类型")
     private String type;
 
+    @Schema(description="记录场景：commission 分佣提成；register 注册奖励；order 交易奖励")
+    private String scene;
+
+    @Schema(description="奖励类型：commission 佣金；coupon 卡券；point 积分")
+    private String rewardType;
+
     @Schema(description="分佣等级")
     private Integer level;
 
     @Schema(description="会员ID")
     private Integer userId;
+
+    @Schema(description="被推荐人ID")
+    private Integer inviteeUserId;
 
     @Schema(description="商户ID")
     private Integer merchantId;
@@ -50,8 +59,23 @@ public class MtCommissionLog implements Serializable {
     @Schema(description="订单ID")
     private Integer orderId;
 
+    @Schema(description="业务ID：注册=被推荐人user_id；交易=订单ID；历史佣金为NULL")
+    private Integer bizId;
+
     @Schema(description="分佣金额")
     private BigDecimal amount;
+
+    @Schema(description="奖励卡券ID")
+    private Integer couponId;
+
+    @Schema(description="奖励卡券张数")
+    private Integer couponNum;
+
+    @Schema(description="奖励积分")
+    private Integer point;
+
+    @Schema(description="券发放批次号 RECOMMEND_{logId}，退款时精确定位")
+    private String couponUuid;
 
     @Schema(description="规则ID")
     private Integer ruleId;
@@ -83,7 +107,22 @@ public class MtCommissionLog implements Serializable {
     @Schema(description="最后操作人")
     private String operator;
 
-    @Schema(description="状态，A：待结算；B：已结算；C：已作废")
+    @Schema(description="状态，A：待结算；B：已结算；C：已作废；D：已追回")
     private String status;
+
+    @Schema(description="追回状态：0 无需；1 待追回；2 已追回；3 追回失败")
+    private Integer clawbackStatus;
+
+    @Schema(description="追回时间")
+    private Date clawbackTime;
+
+    @Schema(description="追回说明")
+    private String clawbackRemark;
+
+    @Schema(description="发放重试次数")
+    private Integer retryCount;
+
+    @Schema(description="最后重试时间")
+    private Date lastRetryTime;
 
 }

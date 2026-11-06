@@ -33,6 +33,8 @@ public interface MtUserCouponMapper extends BaseMapper<MtUserCoupon> {
 
     List<Integer> getCouponIdsByUuid(@Param("uuid") String uuid);
 
+    List<MtUserCoupon> getUserCouponListByUuid(@Param("uuid") String uuid);
+
     List<MtUserCoupon> findUserCouponDetail(@Param("couponId") Integer couponId, @Param("userId") Integer userId);
 
     List<MtUserCoupon> getUserCouponListByExpireTime(@Param("userId") Integer userId, @Param("status") String status, @Param("startTime") String startTime, @Param("endTime") String endTime);

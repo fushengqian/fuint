@@ -31,6 +31,21 @@ public class MtCommissionRuleItem implements Serializable {
     @Schema(description="方案类型,goods:商品销售；coupon：卡券销售；recharge：会员充值")
     private String type;
 
+    @Schema(description="奖励场景：register 注册奖励；order 交易奖励；分佣方案为空")
+    private String scene;
+
+    @Schema(description="奖励类型：commission 佣金；coupon 卡券；point 积分")
+    private String rewardType;
+
+    @Schema(description="奖励卡券ID")
+    private Integer couponId;
+
+    @Schema(description="奖励卡券张数")
+    private Integer couponNum;
+
+    @Schema(description="奖励积分")
+    private Integer point;
+
     @Schema(description="分佣对象,member:会员分销；staff：员工提成")
     private String target;
 

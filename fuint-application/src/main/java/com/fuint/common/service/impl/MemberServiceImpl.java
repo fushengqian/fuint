@@ -105,6 +105,11 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
     private CommissionRelationService commissionRelationService;
 
     /**
+     * 分佣记录服务接口（推荐注册奖励）
+     * */
+    private CommissionLogService commissionLogService;
+
+    /**
      * 会员标签关联服务接口
      */
     private UserTagRelationService userTagRelationService;
@@ -464,6 +469,16 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
         // 分佣关系
         commissionRelationService.setCommissionRelation(mtUser, shareId);
 
+        // 推荐注册奖励：先落记录，事务提交后发放（失败由定时任务重试）
+        final Integer rewardInviteeId = mtUser.getId();
+        TransactionUtils.runAfterCommit(() -> {
+            try {
+                commissionLogService.grantRegisterReward(rewardInviteeId);
+            } catch (Exception e) {
+                logger.error("触发推荐注册奖励失败，inviteeUserId = {}", rewardInviteeId, e);
+            }
+        });
+
         // 新增用户发短信通知
         if (mtUser.getId() > 0 && mtUser.getStatus().equals(StatusEnum.ENABLED.getKey())) {
             // 发送短信
@@ -590,6 +605,16 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
 
         // 分佣关系
         commissionRelationService.setCommissionRelation(mtUser, shareId);
+
+        // 推荐注册奖励：先落记录，事务提交后发放（失败由定时任务重试）
+        final Integer mobileRewardInviteeId = mtUser.getId();
+        TransactionUtils.runAfterCommit(() -> {
+            try {
+                commissionLogService.grantRegisterReward(mobileRewardInviteeId);
+            } catch (Exception e) {
+                logger.error("触发推荐注册奖励失败，inviteeUserId = {}", mobileRewardInviteeId, e);
+            }
+        });
 
         return mtUser;
     }
@@ -817,6 +842,16 @@ public class MemberServiceImpl extends ServiceImpl<MtUserMapper, MtUser> impleme
 
             // 分佣关系
             commissionRelationService.setCommissionRelation(mtUser, shareId);
+
+            // 推荐注册奖励：先落记录，事务提交后发放（失败由定时任务重试）
+            final Integer openIdRewardInviteeId = user.getId();
+            TransactionUtils.runAfterCommit(() -> {
+                try {
+                    commissionLogService.grantRegisterReward(openIdRewardInviteeId);
+                } catch (Exception e) {
+                    logger.error("触发推荐注册奖励失败，inviteeUserId = {}", openIdRewardInviteeId, e);
+                }
+            });
         } else {
             // 已被禁用
             if (user.getStatus().equals(StatusEnum.DISABLE.getKey())) {

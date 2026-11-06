@@ -25,6 +25,24 @@ public class CommissionRuleDto implements Serializable {
     @Schema(description="方案类型,goods:商品销售；coupon：卡券销售；recharge：会员充值")
     private String type;
 
+    @Schema(description="方案场景：commission 分佣提成；recommend 推荐奖励")
+    private String scene;
+
+    @Schema(description="注册奖励开关，Y：开；N：关")
+    private String registerSwitch;
+
+    @Schema(description="交易奖励开关，Y：开；N：关")
+    private String orderSwitch;
+
+    @Schema(description="交易奖励单笔实付门槛，0 表示不限")
+    private BigDecimal orderAmount;
+
+    @Schema(description="活动开始时间")
+    private Date startTime;
+
+    @Schema(description="活动结束时间")
+    private Date endTime;
+
     @Schema(description="分佣对象,member:会员分销；staff：员工提成")
     private String target;
 

@@ -19,6 +19,9 @@ public class CommissionRulePage extends PageParam implements Serializable {
     @Schema(description="类型")
     private String type;
 
+    @Schema(description="方案场景：commission 分佣提成；recommend 推荐奖励")
+    private String scene;
+
     @Schema(description="规则名称")
     private String name;
 

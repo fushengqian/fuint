@@ -104,4 +104,25 @@ public class CommissionJob {
             redisLock.unlock(lockKey, requestId);
         }
     }
+
+    /**
+     * 推荐奖励（券/积分）发放重试
+     *
+     * 开关 commission.reward.switch，默认关闭；发放失败的记录最多重试 3 次
+     * */
+    @Scheduled(cron = "${commission.job.time:0 0/5 * * * ?}")
+    public void dealReward() throws BusinessCheckException {
+        String lockKey = "lock:commissionJob:reward";
+        String requestId = SeqUtil.getUUID();
+        try {
+            if (redisLock.tryLock(lockKey, requestId, 60)) {
+                String theSwitch = environment.getProperty("commission.reward.switch");
+                if (theSwitch != null && theSwitch.equals("1")) {
+                    commissionLogService.retryRewards();
+                }
+            }
+        } finally {
+            redisLock.unlock(lockKey, requestId);
+        }
+    }
 }

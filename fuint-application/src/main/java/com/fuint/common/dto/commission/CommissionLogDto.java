@@ -31,6 +31,42 @@ public class CommissionLogDto implements Serializable {
     @Schema(description="分佣类型名称")
     private String typeName;
 
+    @Schema(description="记录场景：commission/register/order")
+    private String scene;
+
+    @Schema(description="奖励类型：commission/coupon/point")
+    private String rewardType;
+
+    @Schema(description="被推荐人ID")
+    private Integer inviteeUserId;
+
+    @Schema(description="业务ID：注册=被推荐人ID；交易=订单ID")
+    private Integer bizId;
+
+    @Schema(description="奖励卡券ID")
+    private Integer couponId;
+
+    @Schema(description="奖励卡券张数")
+    private Integer couponNum;
+
+    @Schema(description="奖励积分")
+    private Integer point;
+
+    @Schema(description="券发放批次号")
+    private String couponUuid;
+
+    @Schema(description="追回状态：0 无需；1 待追回；2 已追回；3 追回失败")
+    private Integer clawbackStatus;
+
+    @Schema(description="追回时间")
+    private Date clawbackTime;
+
+    @Schema(description="追回说明")
+    private String clawbackRemark;
+
+    @Schema(description="发放重试次数")
+    private Integer retryCount;
+
     @Schema(description="分佣等级")
     private Integer level;
 

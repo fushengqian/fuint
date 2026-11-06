@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fuint.common.dto.commission.CommissionLogDto;
 import com.fuint.common.dto.commission.CommissionOverviewDto;
 import com.fuint.common.dto.order.OrderUserDto;
+import com.fuint.common.dto.system.AccountInfo;
 import com.fuint.common.enums.*;
 import com.fuint.common.param.CommissionLogPage;
 import com.fuint.common.service.*;
@@ -13,6 +14,7 @@ import com.fuint.common.util.CommonUtil;
 import com.fuint.framework.annoation.OperationServiceLog;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.pagination.PaginationResponse;
+import com.fuint.framework.web.ResponseObject;
 import com.fuint.module.backendApi.request.CommissionLogRequest;
 import com.fuint.repository.mapper.*;
 import com.fuint.repository.model.*;
@@ -25,6 +27,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.core.env.Environment;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -86,6 +89,26 @@ public class CommissionLogServiceImpl extends ServiceImpl<MtCommissionLogMapper,
     private MtCommissionCashMapper mtCommissionCashMapper;
 
     /**
+     * 会员卡券 Mapper（追回时按发放批次号定位券）
+     * */
+    private MtUserCouponMapper mtUserCouponMapper;
+
+    /**
+     * 卡券服务接口
+     * */
+    private CouponService couponService;
+
+    /**
+     * 积分服务接口
+     * */
+    private PointService pointService;
+
+    /**
+     * 系统环境变量
+     * */
+    private Environment environment;
+
+    /**
      * 分页查询分销提成列表
      *
      * @param commissionLogPage
@@ -98,6 +121,10 @@ public class CommissionLogServiceImpl extends ServiceImpl<MtCommissionLogMapper,
         String target = commissionLogPage.getTarget();
         if (StringUtils.isNotBlank(target)) {
             lambdaQueryWrapper.eq(MtCommissionLog::getTarget, target);
+        }
+        String scene = commissionLogPage.getScene();
+        if (StringUtils.isNotBlank(scene)) {
+            lambdaQueryWrapper.eq(MtCommissionLog::getScene, scene);
         }
         String realName = commissionLogPage.getRealName();
         if (StringUtils.isNotBlank(realName)) {
@@ -449,5 +476,398 @@ public class CommissionLogServiceImpl extends ServiceImpl<MtCommissionLogMapper,
             mtCommissionLog.setOperator(null);
             mtCommissionLogMapper.insert(mtCommissionLog);
         }
+    }
+
+    /**
+     * 被推荐人注册后，给一级邀请人发放注册奖励（券/积分）
+     *
+     * 幂等：同规则项 + 同邀请人 + 同被推荐人只发一次
+     *
+     * @param inviteeUserId 被推荐人会员ID
+     * @return
+     */
+    @Override
+    public void grantRegisterReward(Integer inviteeUserId) {
+        try {
+            if (inviteeUserId == null || inviteeUserId <= 0 || !rewardEnabled()) {
+                return;
+            }
+            MtUser invitee = memberService.queryMemberById(inviteeUserId);
+            if (invitee == null || !StatusEnum.ENABLED.getKey().equals(invitee.getStatus())) {
+                return;
+            }
+            Integer inviterId = mtCommissionRelationMapper.getCommissionUserId(invitee.getMerchantId(), inviteeUserId);
+            if (inviterId == null || inviterId <= 0) {
+                return;
+            }
+            MtUser inviter = memberService.queryMemberById(inviterId);
+            if (inviter == null || !StatusEnum.ENABLED.getKey().equals(inviter.getStatus())) {
+                return;
+            }
+            List<MtCommissionRule> rules = queryActiveRecommendRules(invitee.getMerchantId(), invitee.getStoreId());
+            for (MtCommissionRule rule : rules) {
+                if (!"Y".equals(rule.getRegisterSwitch())) {
+                    continue;
+                }
+                List<MtCommissionRuleItem> items = queryRuleItems(rule.getId());
+                for (MtCommissionRuleItem item : items) {
+                    if (RewardSceneEnum.REGISTER.getKey().equals(item.getScene())) {
+                        createAndGrantRewardLog(rule, item, inviter, inviteeUserId, inviteeUserId);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            logger.error("发放推荐注册奖励异常，inviteeUserId = {}", inviteeUserId, e);
+        }
+    }
+
+    /**
+     * 订单支付成功后，给一级邀请人发放交易奖励（券/积分）
+     *
+     * 幂等：同规则项 + 同邀请人 + 同订单只发一次
+     *
+     * @param orderId 订单ID
+     * @return
+     */
+    @Override
+    public void grantOrderReward(Integer orderId) {
+        try {
+            if (orderId == null || orderId <= 0 || !rewardEnabled()) {
+                return;
+            }
+            MtOrder mtOrder = orderService.getById(orderId);
+            if (mtOrder == null || !PayStatusEnum.SUCCESS.getKey().equals(mtOrder.getPayStatus())) {
+                return;
+            }
+            Integer inviterId = mtCommissionRelationMapper.getCommissionUserId(mtOrder.getMerchantId(), mtOrder.getUserId());
+            if (inviterId == null || inviterId <= 0) {
+                return;
+            }
+            MtUser inviter = memberService.queryMemberById(inviterId);
+            if (inviter == null || !StatusEnum.ENABLED.getKey().equals(inviter.getStatus())) {
+                return;
+            }
+            BigDecimal payAmount = mtOrder.getPayAmount() == null ? BigDecimal.ZERO : mtOrder.getPayAmount();
+            List<MtCommissionRule> rules = queryActiveRecommendRules(mtOrder.getMerchantId(), mtOrder.getStoreId());
+            for (MtCommissionRule rule : rules) {
+                if (!"Y".equals(rule.getOrderSwitch())) {
+                    continue;
+                }
+                BigDecimal threshold = rule.getOrderAmount() == null ? BigDecimal.ZERO : rule.getOrderAmount();
+                if (threshold.compareTo(BigDecimal.ZERO) > 0 && payAmount.compareTo(threshold) < 0) {
+                    continue;
+                }
+                List<MtCommissionRuleItem> items = queryRuleItems(rule.getId());
+                for (MtCommissionRuleItem item : items) {
+                    if (RewardSceneEnum.ORDER.getKey().equals(item.getScene())) {
+                        createAndGrantRewardLog(rule, item, inviter, mtOrder.getUserId(), orderId);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            logger.error("发放推荐交易奖励异常，orderId = {}", orderId, e);
+        }
+    }
+
+    /**
+     * 发放单条奖励记录：成功置 B（已发放），失败置 C（发放失败）交由定时任务重试
+     *
+     * @param logId 奖励记录ID
+     * @return
+     */
+    @Override
+    public void grantRewardLog(Integer logId) {
+        try {
+            MtCommissionLog log = mtCommissionLogMapper.selectById(logId);
+            if (log == null) {
+                return;
+            }
+            if (!CommissionStatusEnum.NORMAL.getKey().equals(log.getStatus())
+                    && !CommissionStatusEnum.CANCEL.getKey().equals(log.getStatus())) {
+                return;
+            }
+            if (RewardTypeEnum.COUPON.getKey().equals(log.getRewardType())) {
+                AccountInfo accountInfo = new AccountInfo();
+                accountInfo.setMerchantId(log.getMerchantId());
+                accountInfo.setAccountName("系统");
+                String uuid = "RECOMMEND_" + log.getId();
+                ResponseObject result = couponService.sendCoupon(log.getCouponId(), log.getUserId(),
+                        log.getCouponNum() == null || log.getCouponNum() < 1 ? 1 : log.getCouponNum(), false, uuid, accountInfo);
+                if (result.getCode() == null || result.getCode() != 200) {
+                    throw new BusinessCheckException(result.getMessage());
+                }
+                log.setCouponUuid(uuid);
+            } else if (RewardTypeEnum.POINT.getKey().equals(log.getRewardType())) {
+                MtPoint mtPoint = new MtPoint();
+                mtPoint.setUserId(log.getUserId());
+                mtPoint.setAmount(log.getPoint() == null ? 0 : log.getPoint());
+                mtPoint.setDescription("推荐奖励-" + RewardSceneEnum.getName(log.getScene()));
+                mtPoint.setOperator("系统");
+                pointService.addPoint(mtPoint);
+            } else {
+                return;
+            }
+            log.setStatus(CommissionStatusEnum.SETTLED.getKey());
+            log.setUpdateTime(new Date());
+            mtCommissionLogMapper.updateById(log);
+            logger.info("推荐奖励发放成功，logId = {}, userId = {}, rewardType = {}", log.getId(), log.getUserId(), log.getRewardType());
+        } catch (Exception e) {
+            MtCommissionLog log = mtCommissionLogMapper.selectById(logId);
+            if (log != null) {
+                logger.error("推荐奖励发放失败，logId = {}, 原因：{}", logId, e.getMessage());
+                String remark = e.getMessage() == null ? "发放失败" : e.getMessage();
+                if (remark.length() > 200) {
+                    remark = remark.substring(0, 200);
+                }
+                log.setStatus(CommissionStatusEnum.CANCEL.getKey());
+                log.setDescription(remark);
+                log.setRetryCount(log.getRetryCount() == null ? 1 : log.getRetryCount() + 1);
+                log.setLastRetryTime(new Date());
+                log.setUpdateTime(new Date());
+                mtCommissionLogMapper.updateById(log);
+            }
+        }
+    }
+
+    /**
+     * 重试待发放/发放失败的推荐奖励记录（CommissionJob 调用）
+     *
+     * @return
+     */
+    @Override
+    public void retryRewards() {
+        if (!rewardEnabled()) {
+            return;
+        }
+        LambdaQueryWrapper<MtCommissionLog> wrapper = Wrappers.lambdaQuery();
+        wrapper.eq(MtCommissionLog::getScene, "recommend");
+        wrapper.in(MtCommissionLog::getStatus, Arrays.asList(CommissionStatusEnum.NORMAL.getKey(), CommissionStatusEnum.CANCEL.getKey()));
+        wrapper.lt(MtCommissionLog::getRetryCount, 3);
+        wrapper.orderByAsc(MtCommissionLog::getId);
+        wrapper.last("LIMIT 10");
+        List<MtCommissionLog> logList = mtCommissionLogMapper.selectList(wrapper);
+        for (MtCommissionLog log : logList) {
+            grantRewardLog(log.getId());
+        }
+    }
+
+    /**
+     * 退款前校验该订单的推荐奖励是否可追回
+     *
+     * @param orderId 订单ID
+     * @return canRefund / blockers / rewards
+     */
+    @Override
+    public Map<String, Object> checkRewardClawback(Integer orderId) {
+        Map<String, Object> result = new HashMap<>();
+        List<String> blockers = new ArrayList<>();
+        List<Map<String, Object>> rewards = new ArrayList<>();
+        result.put("canRefund", true);
+        result.put("blockers", blockers);
+        result.put("rewards", rewards);
+        for (MtCommissionLog log : queryOrderRewardLogs(orderId)) {
+            Map<String, Object> info = new HashMap<>();
+            info.put("logId", log.getId());
+            info.put("rewardType", log.getRewardType());
+            if (RewardTypeEnum.COUPON.getKey().equals(log.getRewardType())) {
+                MtCoupon coupon = couponService.queryCouponById(log.getCouponId());
+                String name = coupon != null ? coupon.getName() : ("券#" + log.getCouponId());
+                int num = log.getCouponNum() == null || log.getCouponNum() < 1 ? 1 : log.getCouponNum();
+                info.put("text", name + " ×" + num);
+                List<MtUserCoupon> userCoupons = mtUserCouponMapper.getUserCouponListByUuid(log.getCouponUuid());
+                boolean used = false;
+                if (userCoupons != null) {
+                    for (MtUserCoupon userCoupon : userCoupons) {
+                        if (UserCouponStatusEnum.USED.getKey().equals(userCoupon.getStatus())) {
+                            used = true;
+                            break;
+                        }
+                    }
+                }
+                info.put("clawable", !used);
+                if (used) {
+                    blockers.add(name + " ×" + num + " 已被推荐人使用，无法追回");
+                }
+            } else if (RewardTypeEnum.POINT.getKey().equals(log.getRewardType())) {
+                int point = log.getPoint() == null ? 0 : log.getPoint();
+                info.put("text", "积分 " + point);
+                MtUser inviter = memberService.queryMemberById(log.getUserId());
+                int balance = inviter == null || inviter.getPoint() == null ? 0 : inviter.getPoint();
+                info.put("clawable", balance >= point);
+                if (balance < point) {
+                    blockers.add("积分 " + point + " 无法扣回：推荐人当前积分 " + balance + "，不足 " + point);
+                }
+            } else {
+                continue;
+            }
+            rewards.add(info);
+        }
+        result.put("canRefund", blockers.isEmpty());
+        return result;
+    }
+
+    /**
+     * 退款成功后追回该订单的推荐奖励：未使用券作废、积分扣回、过期券仅记录
+     *
+     * @param orderId 订单ID
+     * @param operator 操作人
+     * @return
+     */
+    @Override
+    public void clawbackOrderReward(Integer orderId, String operator) {
+        List<MtCommissionLog> logList = queryOrderRewardLogs(orderId);
+        for (MtCommissionLog log : logList) {
+            try {
+                String remark;
+                if (RewardTypeEnum.COUPON.getKey().equals(log.getRewardType())) {
+                    List<MtUserCoupon> userCoupons = mtUserCouponMapper.getUserCouponListByUuid(log.getCouponUuid());
+                    boolean allInvalid = true;
+                    if (userCoupons != null && userCoupons.size() > 0) {
+                        for (MtUserCoupon userCoupon : userCoupons) {
+                            if (UserCouponStatusEnum.UNUSED.getKey().equals(userCoupon.getStatus())) {
+                                userCoupon.setStatus(UserCouponStatusEnum.DISABLE.getKey());
+                                userCoupon.setOperator(operator);
+                                userCoupon.setUpdateTime(new Date());
+                                mtUserCouponMapper.updateById(userCoupon);
+                            } else if (!UserCouponStatusEnum.DISABLE.getKey().equals(userCoupon.getStatus())
+                                    && !UserCouponStatusEnum.EXPIRE.getKey().equals(userCoupon.getStatus())) {
+                                allInvalid = false;
+                            }
+                        }
+                    }
+                    remark = allInvalid ? "退款追回：未使用券已作废（过期券仅记录）" : "退款追回：存在未作废的券，请人工核查";
+                } else if (RewardTypeEnum.POINT.getKey().equals(log.getRewardType())) {
+                    MtPoint mtPoint = new MtPoint();
+                    mtPoint.setUserId(log.getUserId());
+                    mtPoint.setAmount(-1 * (log.getPoint() == null ? 0 : log.getPoint()));
+                    mtPoint.setDescription("退款追回推荐奖励积分");
+                    mtPoint.setOperator(operator);
+                    pointService.addPoint(mtPoint);
+                    remark = "退款追回：积分已扣回";
+                } else {
+                    continue;
+                }
+                log.setClawbackStatus(2);
+                log.setClawbackTime(new Date());
+                log.setClawbackRemark(remark);
+                log.setUpdateTime(new Date());
+                mtCommissionLogMapper.updateById(log);
+            } catch (Exception e) {
+                logger.error("推荐奖励追回失败，logId = {}, 原因：{}", log.getId(), e.getMessage());
+                log.setClawbackStatus(3);
+                log.setClawbackTime(new Date());
+                String remark = e.getMessage() == null ? "追回异常" : e.getMessage();
+                log.setClawbackRemark(remark.length() > 200 ? remark.substring(0, 200) : remark);
+                log.setUpdateTime(new Date());
+                mtCommissionLogMapper.updateById(log);
+            }
+        }
+    }
+
+    /**
+     * 推荐奖励开关（commission.reward.switch，默认关闭）
+     * */
+    private boolean rewardEnabled() {
+        String theSwitch = environment.getProperty("commission.reward.switch");
+        return theSwitch != null && theSwitch.equals("1");
+    }
+
+    /**
+     * 查询生效中的推荐奖励方案（启用中 + 活动时间内 + 店铺匹配）
+     * */
+    private List<MtCommissionRule> queryActiveRecommendRules(Integer merchantId, Integer storeId) {
+        LambdaQueryWrapper<MtCommissionRule> wrapper = Wrappers.lambdaQuery();
+        wrapper.eq(MtCommissionRule::getScene, "recommend");
+        wrapper.eq(MtCommissionRule::getStatus, StatusEnum.ENABLED.getKey());
+        wrapper.eq(MtCommissionRule::getMerchantId, merchantId);
+        Date now = new Date();
+        wrapper.and(w -> w.isNull(MtCommissionRule::getStartTime).or().le(MtCommissionRule::getStartTime, now));
+        wrapper.and(w -> w.isNull(MtCommissionRule::getEndTime).or().ge(MtCommissionRule::getEndTime, now));
+        List<MtCommissionRule> rules = mtCommissionRuleMapper.selectList(wrapper);
+        List<MtCommissionRule> matched = new ArrayList<>();
+        for (MtCommissionRule rule : rules) {
+            if (StringUtil.isEmpty(rule.getStoreIds()) || storeId == null) {
+                matched.add(rule);
+                continue;
+            }
+            for (String storeIdStr : rule.getStoreIds().split(",")) {
+                if (storeIdStr.trim().equals(String.valueOf(storeId))) {
+                    matched.add(rule);
+                    break;
+                }
+            }
+        }
+        return matched;
+    }
+
+    /**
+     * 查询规则生效中的明细
+     * */
+    private List<MtCommissionRuleItem> queryRuleItems(Integer ruleId) {
+        Map<String, Object> param = new HashMap<>();
+        param.put("RULE_ID", ruleId);
+        param.put("STATUS", StatusEnum.ENABLED.getKey());
+        return mtCommissionRuleItemMapper.selectByMap(param);
+    }
+
+    /**
+     * 写奖励记录并立即发放；同规则项+同邀请人+同业务ID只发一次
+     * */
+    private void createAndGrantRewardLog(MtCommissionRule rule, MtCommissionRuleItem item, MtUser inviter, Integer inviteeUserId, Integer bizId) {
+        LambdaQueryWrapper<MtCommissionLog> wrapper = Wrappers.lambdaQuery();
+        wrapper.eq(MtCommissionLog::getRuleItemId, item.getId());
+        wrapper.eq(MtCommissionLog::getUserId, inviter.getId());
+        wrapper.eq(MtCommissionLog::getBizId, bizId);
+        Long count = mtCommissionLogMapper.selectCount(wrapper);
+        if (count != null && count > 0) {
+            return;
+        }
+        MtCommissionLog log = new MtCommissionLog();
+        log.setType(CommissionTypeEnum.RECOMMEND.getKey());
+        log.setTarget(CommissionTargetEnum.MEMBER.getKey());
+        log.setScene(item.getScene());
+        log.setRewardType(item.getRewardType());
+        log.setLevel(1);
+        log.setUserId(inviter.getId());
+        log.setInviteeUserId(inviteeUserId);
+        log.setBizId(bizId);
+        log.setOrderId(RewardSceneEnum.ORDER.getKey().equals(item.getScene()) ? bizId : 0);
+        log.setMerchantId(rule.getMerchantId());
+        log.setStoreId(rule.getStoreId() == null ? 0 : rule.getStoreId());
+        log.setStaffId(0);
+        log.setAmount(BigDecimal.ZERO);
+        log.setRuleId(rule.getId());
+        log.setRuleItemId(item.getId());
+        log.setCashId(0);
+        Date dateTime = new Date();
+        log.setCreateTime(dateTime);
+        log.setUpdateTime(dateTime);
+        log.setStatus(CommissionStatusEnum.NORMAL.getKey());
+        log.setClawbackStatus(0);
+        log.setRetryCount(0);
+        if (RewardTypeEnum.COUPON.getKey().equals(item.getRewardType())) {
+            log.setCouponId(item.getCouponId());
+            log.setCouponNum(item.getCouponNum() == null || item.getCouponNum() < 1 ? 1 : item.getCouponNum());
+            log.setDescription(RewardSceneEnum.getName(item.getScene()) + "奖励：卡券");
+        } else if (RewardTypeEnum.POINT.getKey().equals(item.getRewardType())) {
+            log.setPoint(item.getPoint() == null ? 0 : item.getPoint());
+            log.setDescription(RewardSceneEnum.getName(item.getScene()) + "奖励：积分");
+        } else {
+            return;
+        }
+        mtCommissionLogMapper.insert(log);
+        grantRewardLog(log.getId());
+    }
+
+    /**
+     * 查询订单关联的奖励记录（券/积分）
+     * */
+    private List<MtCommissionLog> queryOrderRewardLogs(Integer orderId) {
+        LambdaQueryWrapper<MtCommissionLog> wrapper = Wrappers.lambdaQuery();
+        wrapper.eq(MtCommissionLog::getOrderId, orderId);
+        wrapper.eq(MtCommissionLog::getScene, RewardSceneEnum.ORDER.getKey());
+        wrapper.in(MtCommissionLog::getRewardType, Arrays.asList(RewardTypeEnum.COUPON.getKey(), RewardTypeEnum.POINT.getKey()));
+        wrapper.orderByAsc(MtCommissionLog::getId);
+        return mtCommissionLogMapper.selectList(wrapper);
     }
 }

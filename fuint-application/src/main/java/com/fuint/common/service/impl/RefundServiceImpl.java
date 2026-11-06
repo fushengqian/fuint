@@ -78,9 +78,19 @@ public class RefundServiceImpl extends ServiceImpl<MtRefundMapper, MtRefund> imp
     private OrderService orderService;
 
     /**
+     * 订单支付单服务接口
+     * */
+    private OrderPayService orderPayService;
+
+    /**
      * 余额服务接口
      * */
     private BalanceService balanceService;
+
+    /**
+     * 分佣记录服务接口（推荐奖励追回）
+     * */
+    private CommissionLogService commissionLogService;
 
     /**
      * 微信服务接口
@@ -468,6 +478,14 @@ public class RefundServiceImpl extends ServiceImpl<MtRefundMapper, MtRefund> imp
             throw new BusinessCheckException("退款金额不能大于订单总金额");
         }
 
+        // 推荐奖励追回校验：任一奖励无法追回（券已被推荐人使用 / 推荐人积分不足）则禁止退款
+        Map<String, Object> clawbackCheck = commissionLogService.checkRewardClawback(orderInfo.getId());
+        if (!Boolean.TRUE.equals(clawbackCheck.get("canRefund"))) {
+            Object blockers = clawbackCheck.get("blockers");
+            String detail = blockers instanceof List ? String.join("；", (List<String>) blockers) : "";
+            throw new BusinessCheckException("该订单存在无法追回的推荐奖励，禁止退款" + (StringUtil.isEmpty(detail) ? "" : "：" + detail));
+        }
+
         OrderDto reqDto = new OrderDto();
         reqDto.setId(orderInfo.getId());
         reqDto.setStatus(OrderStatusEnum.REFUND.getKey());
@@ -626,14 +644,30 @@ public class RefundServiceImpl extends ServiceImpl<MtRefundMapper, MtRefund> imp
             }
         }
 
+        // 渠道退款按支付单号发起：订单号在支付后不会变动，但渠道侧的交易号是 pay_sn，
+        // 同时以支付单锁定的应付金额作为 total_fee，避免运营改价后与渠道实际收款金额不符
+        String paySn = StringUtil.isNotEmpty(orderInfo.getPaySn()) ? orderInfo.getPaySn() : orderInfo.getOrderSn();
+        BigDecimal paidAmount = orderInfo.getPayAmount();
+        MtOrderPay orderPay = orderPayService.getPayLogByPaySn(paySn);
+        if (orderPay != null && orderPay.getAmount() != null) {
+            paidAmount = orderPay.getAmount();
+        }
+
         // 微信支付发起退款
         if (orderInfo.getPayType().equals(PayTypeEnum.JSAPI.getKey()) || orderInfo.getPayType().equals(PayTypeEnum.MICROPAY.getKey())) {
-            weixinService.doRefund(orderInfo.getStoreInfo() != null ? orderInfo.getStoreInfo().getId() : 0, orderInfo.getOrderSn(), orderInfo.getPayAmount(), mtRefund.getAmount(), PlatformTypeEnum.MP_WEIXIN.getCode());
+            weixinService.doRefund(orderInfo.getStoreInfo() != null ? orderInfo.getStoreInfo().getId() : 0, paySn, paidAmount, mtRefund.getAmount(), PlatformTypeEnum.MP_WEIXIN.getCode());
         }
 
         // 支付宝发起退款
         if (orderInfo.getPayType().equals(PayTypeEnum.ALISCAN.getKey())) {
-            alipayService.doRefund(orderInfo.getStoreInfo() != null ? orderInfo.getStoreInfo().getId() : 0, orderInfo.getOrderSn(), orderInfo.getPayAmount(), mtRefund.getAmount(), PlatformTypeEnum.PC.getCode());
+            alipayService.doRefund(orderInfo.getStoreInfo() != null ? orderInfo.getStoreInfo().getId() : 0, paySn, paidAmount, mtRefund.getAmount(), PlatformTypeEnum.PC.getCode());
+        }
+
+        // 渠道退款成功后追回推荐奖励：未使用券作废、积分扣回、过期券仅记录
+        try {
+            commissionLogService.clawbackOrderReward(orderInfo.getId(), refundDto.getOperator() == null ? "系统" : refundDto.getOperator());
+        } catch (Exception e) {
+            logger.error("追回推荐奖励失败，orderId = {}", orderInfo.getId(), e);
         }
 
         return mtRefund;

@@ -114,6 +114,11 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
     private PointService pointService;
 
     /**
+     * 分佣记录服务接口（推荐奖励）
+     * */
+    private CommissionLogService commissionLogService;
+
+    /**
      * 购物车服务接口
      * */
     private CartService cartService;
@@ -1930,10 +1935,21 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
                 @Override
                 public void afterCommit() {
                     printOrderAndSendSms(orderInfo, mtOrder);
+                    // 推荐奖励（券/积分）：事务提交后发放，内部自带幂等与开关校验
+                    try {
+                        commissionLogService.grantOrderReward(orderId);
+                    } catch (Exception e) {
+                        logger.error("触发推荐交易奖励失败，orderId = {}", orderId, e);
+                    }
                 }
             });
         } else {
             printOrderAndSendSms(orderInfo, mtOrder);
+            try {
+                commissionLogService.grantOrderReward(orderId);
+            } catch (Exception e) {
+                logger.error("触发推荐交易奖励失败，orderId = {}", orderId, e);
+            }
         }
 
         return true;
