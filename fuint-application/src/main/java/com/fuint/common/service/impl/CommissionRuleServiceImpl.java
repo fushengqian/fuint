@@ -171,6 +171,10 @@ public class CommissionRuleServiceImpl extends ServiceImpl<MtCommissionRuleMappe
         }
         mtCommissionRule.setStartTime(parseTime(commissionRule.getStartTime()));
         mtCommissionRule.setEndTime(parseTime(commissionRule.getEndTime()));
+        if (mtCommissionRule.getStartTime() != null && mtCommissionRule.getEndTime() != null
+                && mtCommissionRule.getEndTime().before(mtCommissionRule.getStartTime())) {
+            throw new BusinessCheckException("活动结束时间不能早于开始时间");
+        }
         boolean result = save(mtCommissionRule);
         if (result) {
             if (mtCommissionRule.getType().equals(CommissionTypeEnum.RECHARGE.getKey()) || mtCommissionRule.getType().equals(CommissionTypeEnum.PAYMENT.getKey())) {
@@ -360,6 +364,10 @@ public class CommissionRuleServiceImpl extends ServiceImpl<MtCommissionRuleMappe
         }
         if (commissionRule.getEndTime() != null) {
             mtCommissionRule.setEndTime(parseTime(commissionRule.getEndTime()));
+        }
+        if (mtCommissionRule.getStartTime() != null && mtCommissionRule.getEndTime() != null
+                && mtCommissionRule.getEndTime().before(mtCommissionRule.getStartTime())) {
+            throw new BusinessCheckException("活动结束时间不能早于开始时间");
         }
         String storeIds = "";
         if (commissionRule.getStoreIdList() != null && commissionRule.getStoreIdList().size() > 0) {

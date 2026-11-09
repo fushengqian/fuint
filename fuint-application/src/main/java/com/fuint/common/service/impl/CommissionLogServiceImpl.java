@@ -292,8 +292,8 @@ public class CommissionLogServiceImpl extends ServiceImpl<MtCommissionLogMapper,
                          if (commissionRuleItemList != null && commissionRuleItemList.size() > 0) {
                              for (MtCommissionRuleItem mtCommissionRuleItem : commissionRuleItemList) {
                                   MtCommissionRule mtCommissionRule = mtCommissionRuleMapper.selectById(mtCommissionRuleItem.getRuleId());
-                                  // 规则状态正常
-                                  if (mtCommissionRule != null && mtCommissionRule.getStatus().equals(StatusEnum.ENABLED.getKey())) {
+                                  // 规则状态正常且在活动有效期内
+                                  if (mtCommissionRule != null && mtCommissionRule.getStatus().equals(StatusEnum.ENABLED.getKey()) && isRuleInPeriod(mtCommissionRule)) {
                                      if (orderGoods.getNum() == null || orderGoods.getNum() < 1) {
                                          orderGoods.setNum(1d);
                                      }
@@ -324,6 +324,10 @@ public class CommissionLogServiceImpl extends ServiceImpl<MtCommissionLogMapper,
                 if (commissionRuleItemList != null && commissionRuleItemList.size() > 0) {
                     for (MtCommissionRuleItem mtCommissionRuleItem : commissionRuleItemList) {
                          MtCommissionRule mtCommissionRule = mtCommissionRuleMapper.selectById(mtCommissionRuleItem.getRuleId());
+                         // 规则状态正常且在活动有效期内
+                         if (mtCommissionRule == null || !mtCommissionRule.getStatus().equals(StatusEnum.ENABLED.getKey()) || !isRuleInPeriod(mtCommissionRule)) {
+                             continue;
+                         }
                          // 一级分佣
                          BigDecimal rate = isVisitorOrder ? mtCommissionRuleItem.getGuest() : mtCommissionRuleItem.getMember();
                          BigDecimal amount = mtOrder.getAmount().multiply(rate.divide(new BigDecimal("100")));
@@ -348,6 +352,10 @@ public class CommissionLogServiceImpl extends ServiceImpl<MtCommissionLogMapper,
                 if (commissionRuleItemList != null && commissionRuleItemList.size() > 0) {
                     for (MtCommissionRuleItem mtCommissionRuleItem : commissionRuleItemList) {
                          MtCommissionRule mtCommissionRule = mtCommissionRuleMapper.selectById(mtCommissionRuleItem.getRuleId());
+                         // 规则状态正常且在活动有效期内
+                         if (mtCommissionRule == null || !mtCommissionRule.getStatus().equals(StatusEnum.ENABLED.getKey()) || !isRuleInPeriod(mtCommissionRule)) {
+                             continue;
+                         }
                          // 一级分佣
                          BigDecimal rate = isVisitorOrder ? mtCommissionRuleItem.getGuest() : mtCommissionRuleItem.getMember();
                          BigDecimal amount = mtOrder.getPayAmount().multiply(rate.divide(new BigDecimal("100")));
@@ -770,6 +778,23 @@ public class CommissionLogServiceImpl extends ServiceImpl<MtCommissionLogMapper,
     private boolean rewardEnabled() {
         String theSwitch = environment.getProperty("commission.reward.switch");
         return theSwitch != null && theSwitch.equals("1");
+    }
+
+    /**
+     * 方案是否在活动有效期内（未配置起止时间视为长期有效）
+     *
+     * @param mtCommissionRule 方案
+     * @return
+     */
+    private boolean isRuleInPeriod(MtCommissionRule mtCommissionRule) {
+        Date now = new Date();
+        if (mtCommissionRule.getStartTime() != null && mtCommissionRule.getStartTime().after(now)) {
+            return false;
+        }
+        if (mtCommissionRule.getEndTime() != null && mtCommissionRule.getEndTime().before(now)) {
+            return false;
+        }
+        return true;
     }
 
     /**
