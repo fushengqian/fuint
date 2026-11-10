@@ -1102,11 +1102,21 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
             orderDto.setParam(targetId.toString());
             orderDto.setCouponId(couponId);
             MtUserGrade userGrade = userGradeService.queryUserGradeById(merchantId, targetId, orderDto.getUserId());
-            if (userGrade != null) {
-                orderDto.setRemark("付费升级" + userGrade.getName());
-                orderDto.setAmount(new BigDecimal(userGrade.getCatchValue().toString()));
-                orderDto.setPayAmount(orderDto.getAmount());
+            if (userGrade == null || !StatusEnum.ENABLED.getKey().equals(userGrade.getStatus())
+                    || !UserGradeCatchTypeEnum.PAY.getKey().equals(userGrade.getCatchType())) {
+                throw new BusinessCheckException("该会员等级不存在或已停用");
             }
+            // 已拥有该等级（或更高等级）时不允许重复购买
+            if (userInfo != null && userInfo.getGradeId() != null && userInfo.getGradeId() > 0) {
+                MtUserGrade myGrade = userGradeService.queryUserGradeById(merchantId, userInfo.getGradeId(), orderDto.getUserId());
+                if (myGrade != null && myGrade.getGrade() != null && userGrade.getGrade() != null
+                        && userGrade.getGrade() <= myGrade.getGrade()) {
+                    throw new BusinessCheckException("您已是" + myGrade.getName() + "，无需重复购买该会员等级");
+                }
+            }
+            orderDto.setRemark("付费升级" + userGrade.getName());
+            orderDto.setAmount(new BigDecimal(userGrade.getCatchValue().toString()));
+            orderDto.setPayAmount(orderDto.getAmount());
         }
 
         // 商品订单

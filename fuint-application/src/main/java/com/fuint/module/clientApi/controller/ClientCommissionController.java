@@ -74,4 +74,27 @@ public class ClientCommissionController extends BaseController {
         Boolean result = commissionCashService.withdraw(withdrawParam);
         return getSuccessResult(result);
     }
+
+    /**
+     * 推荐奖励首页数据（活动规则 + 已邀请人数 + 已获券/积分）
+     */
+    @Operation(summary="推荐奖励首页数据")
+    @RequestMapping(value = "/rewards", method = RequestMethod.GET)
+    @CrossOrigin
+    public ResponseObject rewards() {
+        UserInfo userInfo = TokenUtil.getUserInfo();
+        return getSuccessResult(commissionLogService.getRewardSummary(userInfo.getId()));
+    }
+
+    /**
+     * 推荐奖励记录（注册奖励 + 交易奖励）
+     */
+    @Operation(summary="推荐奖励记录")
+    @RequestMapping(value = "/rewardLogs", method = RequestMethod.GET)
+    @CrossOrigin
+    public ResponseObject rewardLogs(@ModelAttribute CommissionLogPage commissionLogPage) {
+        UserInfo userInfo = TokenUtil.getUserInfo();
+        commissionLogPage.setUserId(userInfo.getId());
+        return getSuccessResult(commissionLogService.queryRewardLogsByPagination(commissionLogPage));
+    }
 }

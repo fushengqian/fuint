@@ -244,17 +244,13 @@ public class UserGradeServiceImpl extends ServiceImpl<MtUserGradeMapper, MtUserG
         }
 
         if (userGrades.size() > 0) {
-            MtUserGrade myGradeInfo = mtUserGradeMapper.selectById(userGradeId);
-            if (myGradeInfo != null) {
-                Integer myGrade = myGradeInfo.getGrade();
-                for (MtUserGrade grade : userGrades) {
-                    if (!myGrade.equals(grade.getGrade().toString()) && (grade.getGrade() > myGrade)) {
-                        dataList.add(grade);
-                    }
-                }
-            } else {
-                for (MtUserGrade grade : userGrades) {
-                     dataList.add(grade);
+            MtUserGrade myGradeInfo = userGradeId > 0 ? mtUserGradeMapper.selectById(userGradeId) : null;
+            // 当前等级值；查不到等级（默认等级/等级已删除）时按 0 处理，视为尚未拥有付费等级
+            Integer myGrade = (myGradeInfo != null && myGradeInfo.getGrade() != null) ? myGradeInfo.getGrade() : 0;
+            for (MtUserGrade grade : userGrades) {
+                // 只返回高于当前等级的付费等级，已拥有等级及更低等级不允许重复购买
+                if (grade.getGrade() != null && grade.getGrade() > myGrade) {
+                    dataList.add(grade);
                 }
             }
         }

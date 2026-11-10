@@ -124,7 +124,12 @@ public class CommissionLogServiceImpl extends ServiceImpl<MtCommissionLogMapper,
         }
         String scene = commissionLogPage.getScene();
         if (StringUtils.isNotBlank(scene)) {
-            lambdaQueryWrapper.eq(MtCommissionLog::getScene, scene);
+            if ("reward".equals(scene)) {
+                // 会员端推荐奖励：注册奖励 + 交易奖励
+                lambdaQueryWrapper.in(MtCommissionLog::getScene, Arrays.asList(RewardSceneEnum.REGISTER.getKey(), RewardSceneEnum.ORDER.getKey()));
+            } else {
+                lambdaQueryWrapper.eq(MtCommissionLog::getScene, scene);
+            }
         }
         String realName = commissionLogPage.getRealName();
         if (StringUtils.isNotBlank(realName)) {
@@ -773,11 +778,152 @@ public class CommissionLogServiceImpl extends ServiceImpl<MtCommissionLogMapper,
     }
 
     /**
-     * 推荐奖励开关（commission.reward.switch，默认关闭）
+     * 会员端推荐奖励首页数据（活动规则 + 已邀请人数 + 已获券/积分）
+     *
+     * @param userId 会员ID
+     * @return
+     */
+    @Override
+    public Map<String, Object> getRewardSummary(Integer userId) {
+        Map<String, Object> result = new HashMap<>();
+        result.put("rules", new ArrayList<>());
+        result.put("inviteCount", 0);
+        result.put("couponCount", 0);
+        result.put("pointCount", 0);
+        // 奖励发放开关关闭时不展示活动规则与邀请入口，仅展示历史统计
+        result.put("rewardEnabled", rewardEnabled());
+
+        MtUser user = memberService.queryMemberById(userId);
+        if (user == null) {
+            return result;
+        }
+
+        // 已邀请好友数
+        Long inviteCount = mtCommissionRelationMapper.getInvitedUserCount(userId);
+        result.put("inviteCount", inviteCount == null ? 0 : inviteCount.intValue());
+
+        // 已获券/积分统计（已追回的不计入）
+        List<MtCommissionLog> rewardLogs = queryUserRewardLogs(userId);
+        int couponCount = 0;
+        int pointCount = 0;
+        for (MtCommissionLog log : rewardLogs) {
+            if (CommissionStatusEnum.CLAWBACK.getKey().equals(log.getStatus())) {
+                continue;
+            }
+            if (RewardTypeEnum.COUPON.getKey().equals(log.getRewardType())) {
+                couponCount += log.getCouponNum() == null || log.getCouponNum() < 1 ? 1 : log.getCouponNum();
+            } else if (RewardTypeEnum.POINT.getKey().equals(log.getRewardType())) {
+                pointCount += log.getPoint() == null ? 0 : log.getPoint();
+            }
+        }
+        result.put("couponCount", couponCount);
+        result.put("pointCount", pointCount);
+
+        // 启用中的推荐奖励方案 → 活动规则文案
+        List<Map<String, Object>> ruleTexts = new ArrayList<>();
+        List<MtCommissionRule> activeRules = queryActiveRecommendRules(user.getMerchantId(), user.getStoreId());
+        for (MtCommissionRule rule : activeRules) {
+            List<MtCommissionRuleItem> items = queryRuleItems(rule.getId());
+            if ("Y".equals(rule.getRegisterSwitch())) {
+                String text = buildRewardText(items, RewardSceneEnum.REGISTER.getKey());
+                if (StringUtil.isNotEmpty(text)) {
+                    Map<String, Object> item = new HashMap<>();
+                    item.put("scene", "register");
+                    item.put("text", "好友注册成功，你得 " + text);
+                    ruleTexts.add(item);
+                }
+            }
+            if ("Y".equals(rule.getOrderSwitch())) {
+                String text = buildRewardText(items, RewardSceneEnum.ORDER.getKey());
+                if (StringUtil.isNotEmpty(text)) {
+                    BigDecimal threshold = rule.getOrderAmount() == null ? BigDecimal.ZERO : rule.getOrderAmount();
+                    String prefix = threshold.compareTo(BigDecimal.ZERO) > 0
+                            ? "好友单笔实付满 ¥" + threshold.stripTrailingZeros().toPlainString() + "，你再得 "
+                            : "好友每笔实付订单，你再得 ";
+                    Map<String, Object> item = new HashMap<>();
+                    item.put("scene", "order");
+                    item.put("text", prefix + text);
+                    ruleTexts.add(item);
+                }
+            }
+        }
+        result.put("rules", ruleTexts);
+        return result;
+    }
+
+    /**
+     * 会员端推荐奖励记录分页（注册奖励 + 交易奖励）
+     *
+     * @param commissionLogPage 分页参数
+     * @return
+     */
+    @Override
+    public PaginationResponse<CommissionLogDto> queryRewardLogsByPagination(CommissionLogPage commissionLogPage) {
+        commissionLogPage.setScene("reward");
+        PaginationResponse<CommissionLogDto> response = queryCommissionLogByPagination(commissionLogPage);
+        if (response.getContent() != null) {
+            for (CommissionLogDto dto : response.getContent()) {
+                // 来源：被推荐人昵称
+                if (dto.getInviteeUserId() != null && dto.getInviteeUserId() > 0) {
+                    MtUser invitee = memberService.queryMemberById(dto.getInviteeUserId());
+                    if (invitee != null) {
+                        dto.setInviteeName(invitee.getName());
+                    }
+                }
+                // 来源：交易奖励关联订单号
+                if (RewardSceneEnum.ORDER.getKey().equals(dto.getScene()) && dto.getOrderInfo() != null) {
+                    dto.setOrderSn(dto.getOrderInfo().getOrderSn());
+                }
+                // 奖励内容：券名称
+                if (RewardTypeEnum.COUPON.getKey().equals(dto.getRewardType()) && dto.getCouponId() != null) {
+                    MtCoupon coupon = couponService.getById(dto.getCouponId());
+                    if (coupon != null) {
+                        dto.setCouponName(coupon.getName());
+                    }
+                }
+            }
+        }
+        return response;
+    }
+
+    /**
+     * 查询会员的全部推荐奖励记录（注册 + 交易，不含已删除）
+     * */
+    private List<MtCommissionLog> queryUserRewardLogs(Integer userId) {
+        LambdaQueryWrapper<MtCommissionLog> wrapper = Wrappers.lambdaQuery();
+        wrapper.eq(MtCommissionLog::getUserId, userId);
+        wrapper.in(MtCommissionLog::getScene, Arrays.asList(RewardSceneEnum.REGISTER.getKey(), RewardSceneEnum.ORDER.getKey()));
+        wrapper.ne(MtCommissionLog::getStatus, StatusEnum.DISABLE.getKey());
+        return mtCommissionLogMapper.selectList(wrapper);
+    }
+
+    /**
+     * 按场景拼接奖励文案：券「xxx」×2 + 100积分
+     * */
+    private String buildRewardText(List<MtCommissionRuleItem> items, String scene) {
+        List<String> texts = new ArrayList<>();
+        for (MtCommissionRuleItem item : items) {
+            if (!scene.equals(item.getScene())) {
+                continue;
+            }
+            if (RewardTypeEnum.COUPON.getKey().equals(item.getRewardType())) {
+                MtCoupon coupon = item.getCouponId() != null ? couponService.getById(item.getCouponId()) : null;
+                String name = coupon != null ? coupon.getName() : "卡券";
+                int num = item.getCouponNum() == null || item.getCouponNum() < 1 ? 1 : item.getCouponNum();
+                texts.add("「" + name + "」×" + num);
+            } else if (RewardTypeEnum.POINT.getKey().equals(item.getRewardType())) {
+                texts.add((item.getPoint() == null ? 0 : item.getPoint()) + "积分");
+            }
+        }
+        return String.join(" + ", texts);
+    }
+
+    /**
+     * 推荐奖励开关（commission.reward.switch，默认开启，显式配置 0 关闭）
      * */
     private boolean rewardEnabled() {
         String theSwitch = environment.getProperty("commission.reward.switch");
-        return theSwitch != null && theSwitch.equals("1");
+        return theSwitch == null || !theSwitch.trim().equals("0");
     }
 
     /**

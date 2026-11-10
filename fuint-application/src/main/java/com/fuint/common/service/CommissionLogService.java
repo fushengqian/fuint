@@ -108,4 +108,20 @@ public interface CommissionLogService extends IService<MtCommissionLog> {
      * @return
      */
     void clawbackOrderReward(Integer orderId, String operator);
+
+    /**
+     * 会员端推荐奖励首页数据（活动规则 + 已邀请人数 + 已获券/积分）
+     *
+     * @param userId 会员ID
+     * @return
+     */
+    Map<String, Object> getRewardSummary(Integer userId);
+
+    /**
+     * 会员端推荐奖励记录分页（注册奖励 + 交易奖励）
+     *
+     * @param commissionLogPage 分页参数
+     * @return
+     */
+    PaginationResponse<CommissionLogDto> queryRewardLogsByPagination(CommissionLogPage commissionLogPage);
 }

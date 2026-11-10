@@ -40,6 +40,15 @@ public class CommissionLogDto implements Serializable {
     @Schema(description="被推荐人ID")
     private Integer inviteeUserId;
 
+    @Schema(description="被推荐人昵称")
+    private String inviteeName;
+
+    @Schema(description="关联订单号")
+    private String orderSn;
+
+    @Schema(description="奖励券名称")
+    private String couponName;
+
     @Schema(description="业务ID：注册=被推荐人ID；交易=订单ID")
     private Integer bizId;
 
