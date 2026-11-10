@@ -113,17 +113,17 @@ public class BackendGiveLogController extends BaseController {
                 MtCouponGroup groupInfo = mtCouponGroupMapper.selectById(userCouponInfo.getGroupId());
                 MtCoupon couponInfo = mtCouponMapper.selectById(userCouponInfo.getCouponId());
                 if (groupInfo != null && couponInfo != null) {
-                    GiveItemDto dto = new GiveItemDto();
-                    dto.setId(item.getId());
-                    dto.setMobile(CommonUtil.hidePhone(giveInfo.getUserMobile()));
-                    dto.setUserMobile(CommonUtil.hidePhone(giveInfo.getUserMobile()));
-                    dto.setGroupId(userCouponInfo.getGroupId());
-                    dto.setGroupName(groupInfo.getName());
-                    dto.setCouponId(userCouponInfo.getCouponId());
-                    dto.setCouponName(couponInfo.getName());
-                    dto.setMoney(userCouponInfo.getAmount());
-                    dto.setCreateTime(item.getCreateTime());
-                    dataList.add(dto);
+                    GiveItemDto giveItemDto = new GiveItemDto();
+                    giveItemDto.setId(item.getId());
+                    giveItemDto.setMobile(CommonUtil.hidePhone(giveInfo.getUserMobile()));
+                    giveItemDto.setUserMobile(CommonUtil.hidePhone(giveInfo.getUserMobile()));
+                    giveItemDto.setGroupId(userCouponInfo.getGroupId());
+                    giveItemDto.setGroupName(groupInfo.getName());
+                    giveItemDto.setCouponId(userCouponInfo.getCouponId());
+                    giveItemDto.setCouponName(couponInfo.getName());
+                    giveItemDto.setMoney(userCouponInfo.getAmount());
+                    giveItemDto.setCreateTime(item.getCreateTime());
+                    dataList.add(giveItemDto);
                 }
             }
         }

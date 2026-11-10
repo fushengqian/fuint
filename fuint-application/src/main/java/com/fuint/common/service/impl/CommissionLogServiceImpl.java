@@ -27,7 +27,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.context.annotation.Lazy;
-import org.springframework.core.env.Environment;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -102,11 +101,6 @@ public class CommissionLogServiceImpl extends ServiceImpl<MtCommissionLogMapper,
      * 积分服务接口
      * */
     private PointService pointService;
-
-    /**
-     * 系统环境变量
-     * */
-    private Environment environment;
 
     /**
      * 分页查询分销提成列表
@@ -502,7 +496,7 @@ public class CommissionLogServiceImpl extends ServiceImpl<MtCommissionLogMapper,
     @Override
     public void grantRegisterReward(Integer inviteeUserId) {
         try {
-            if (inviteeUserId == null || inviteeUserId <= 0 || !rewardEnabled()) {
+            if (inviteeUserId == null || inviteeUserId <= 0) {
                 return;
             }
             MtUser invitee = memberService.queryMemberById(inviteeUserId);
@@ -545,7 +539,7 @@ public class CommissionLogServiceImpl extends ServiceImpl<MtCommissionLogMapper,
     @Override
     public void grantOrderReward(Integer orderId) {
         try {
-            if (orderId == null || orderId <= 0 || !rewardEnabled()) {
+            if (orderId == null || orderId <= 0) {
                 return;
             }
             MtOrder mtOrder = orderService.getById(orderId);
@@ -649,9 +643,6 @@ public class CommissionLogServiceImpl extends ServiceImpl<MtCommissionLogMapper,
      */
     @Override
     public void retryRewards() {
-        if (!rewardEnabled()) {
-            return;
-        }
         LambdaQueryWrapper<MtCommissionLog> wrapper = Wrappers.lambdaQuery();
         wrapper.eq(MtCommissionLog::getScene, "recommend");
         wrapper.in(MtCommissionLog::getStatus, Arrays.asList(CommissionStatusEnum.NORMAL.getKey(), CommissionStatusEnum.CANCEL.getKey()));
@@ -790,8 +781,6 @@ public class CommissionLogServiceImpl extends ServiceImpl<MtCommissionLogMapper,
         result.put("inviteCount", 0);
         result.put("couponCount", 0);
         result.put("pointCount", 0);
-        // 奖励发放开关关闭时不展示活动规则与邀请入口，仅展示历史统计
-        result.put("rewardEnabled", rewardEnabled());
 
         MtUser user = memberService.queryMemberById(userId);
         if (user == null) {
@@ -916,14 +905,6 @@ public class CommissionLogServiceImpl extends ServiceImpl<MtCommissionLogMapper,
             }
         }
         return String.join(" + ", texts);
-    }
-
-    /**
-     * 推荐奖励开关（commission.reward.switch，默认开启，显式配置 0 关闭）
-     * */
-    private boolean rewardEnabled() {
-        String theSwitch = environment.getProperty("commission.reward.switch");
-        return theSwitch == null || !theSwitch.trim().equals("0");
     }
 
     /**
