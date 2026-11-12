@@ -5,6 +5,7 @@ import com.fuint.common.dto.system.AccountInfo;
 import com.fuint.common.param.GoodsCommentListParam;
 import com.fuint.common.param.StatusParam;
 import com.fuint.common.service.GoodsCommentService;
+import com.fuint.common.service.SettingService;
 import com.fuint.common.util.TokenUtil;
 import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.framework.pagination.PaginationResponse;
@@ -40,6 +41,11 @@ public class BackendGoodsCommentController extends BaseController {
     private GoodsCommentService goodsCommentService;
 
     /**
+     * 系统设置服务接口
+     * */
+    private SettingService settingService;
+
+    /**
      * 分页查询评价列表
      */
     @Operation(summary="分页查询评价列表")
@@ -60,6 +66,7 @@ public class BackendGoodsCommentController extends BaseController {
 
         Map<String, Object> result = new HashMap<>();
         result.put("paginationResponse", paginationResponse);
+        result.put("imagePath", settingService.getUploadBasePath());
 
         return getSuccessResult(result);
     }

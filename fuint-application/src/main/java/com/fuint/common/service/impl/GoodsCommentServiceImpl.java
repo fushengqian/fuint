@@ -17,6 +17,7 @@ import com.fuint.framework.pagination.PaginationResponse;
 import com.fuint.repository.mapper.MtGoodsCommentMapper;
 import com.fuint.repository.mapper.MtGoodsMapper;
 import com.fuint.repository.mapper.MtOrderGoodsMapper;
+import com.fuint.repository.mapper.MtOrderMapper;
 import com.fuint.repository.mapper.MtUserMapper;
 import com.fuint.repository.model.MtGoods;
 import com.fuint.repository.model.MtGoodsComment;
@@ -57,6 +58,8 @@ public class GoodsCommentServiceImpl extends ServiceImpl<MtGoodsCommentMapper, M
     private MtOrderGoodsMapper mtOrderGoodsMapper;
 
     private MtUserMapper mtUserMapper;
+
+    private MtOrderMapper mtOrderMapper;
 
     /**
      * 订单服务接口
@@ -134,6 +137,30 @@ public class GoodsCommentServiceImpl extends ServiceImpl<MtGoodsCommentMapper, M
                 return buildEmptyResponse(param);
             }
             lambdaQueryWrapper.in(MtGoodsComment::getGoodsId, goodsIds);
+        }
+        // 按订单号筛选（模糊匹配订单表订单号，再按订单ID过滤）
+        String orderSn = param.getOrderSn();
+        if (StringUtil.isNotEmpty(orderSn)) {
+            LambdaQueryWrapper<MtOrder> orderWrapper = Wrappers.lambdaQuery();
+            orderWrapper.like(MtOrder::getOrderSn, orderSn);
+            orderWrapper.select(MtOrder::getId);
+            List<Integer> orderIds = mtOrderMapper.selectList(orderWrapper).stream().map(MtOrder::getId).collect(Collectors.toList());
+            if (orderIds.size() == 0) {
+                return buildEmptyResponse(param);
+            }
+            lambdaQueryWrapper.in(MtGoodsComment::getOrderId, orderIds);
+        }
+        // 按会员号筛选（模糊匹配会员表会员号，再按会员ID过滤）
+        String userNo = param.getUserNo();
+        if (StringUtil.isNotEmpty(userNo)) {
+            LambdaQueryWrapper<MtUser> userWrapper = Wrappers.lambdaQuery();
+            userWrapper.like(MtUser::getUserNo, userNo);
+            userWrapper.select(MtUser::getId);
+            List<Integer> userIds = mtUserMapper.selectList(userWrapper).stream().map(MtUser::getId).collect(Collectors.toList());
+            if (userIds.size() == 0) {
+                return buildEmptyResponse(param);
+            }
+            lambdaQueryWrapper.in(MtGoodsComment::getUserId, userIds);
         }
         lambdaQueryWrapper.orderByDesc(MtGoodsComment::getId);
 
@@ -215,7 +242,8 @@ public class GoodsCommentServiceImpl extends ServiceImpl<MtGoodsCommentMapper, M
         // 默认免审直接通过，开启审核的商户可在后台调整审核状态
         mtGoodsComment.setAuditStatus(AuditStatusEnum.PASS.getKey());
         mtGoodsComment.setStatus(StatusEnum.ENABLED.getKey());
-
+        mtGoodsComment.setCreateTime(new Date());
+        mtGoodsComment.setUpdateTime(new Date());
         mtGoodsCommentMapper.insert(mtGoodsComment);
         logger.info("会员提交商品评价, commentId = {}, userId = {}, orderGoodsId = {}", mtGoodsComment.getId(), userId, param.getOrderGoodsId());
 
@@ -451,6 +479,13 @@ public class GoodsCommentServiceImpl extends ServiceImpl<MtGoodsCommentMapper, M
                  goodsMap.put(mtGoods.getId(), mtGoods);
             }
         }
+        List<Integer> orderIds = commentList.stream().map(MtGoodsComment::getOrderId).distinct().collect(Collectors.toList());
+        Map<Integer, MtOrder> orderMap = new HashMap<>();
+        if (orderIds.size() > 0) {
+            for (MtOrder mtOrder : mtOrderMapper.selectBatchIds(orderIds)) {
+                 orderMap.put(mtOrder.getId(), mtOrder);
+            }
+        }
         for (MtGoodsComment comment : commentList) {
              GoodsCommentDto dto = new GoodsCommentDto();
              dto.setId(comment.getId());
@@ -480,6 +515,11 @@ public class GoodsCommentServiceImpl extends ServiceImpl<MtGoodsCommentMapper, M
              if (mtUser != null) {
                  dto.setUserInfo(mtUser);
                  dto.setUserName(getShowName(mtUser, comment.getIsAnonymous()));
+                 dto.setUserNo(mtUser.getUserNo());
+             }
+             MtOrder mtOrder = orderMap.get(comment.getOrderId());
+             if (mtOrder != null) {
+                 dto.setOrderSn(mtOrder.getOrderSn());
              }
              MtGoods mtGoods = goodsMap.get(comment.getGoodsId());
              if (mtGoods != null) {

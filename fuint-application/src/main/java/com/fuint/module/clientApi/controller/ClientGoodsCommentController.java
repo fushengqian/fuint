@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.*;
 
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -128,7 +129,16 @@ public class ClientGoodsCommentController extends BaseController {
             return getFailureResult(201, "订单ID不能为空");
         }
         Map<String, Object> result = new HashMap<>();
-        result.put("list", goodsCommentService.getOrderGoodsCommentList(orderId, userInfo.getId()));
+        List<Map<String, Object>> list = goodsCommentService.getOrderGoodsCommentList(orderId, userInfo.getId());
+        // 补全商品图片访问路径
+        String basePath = settingService.getUploadBasePath();
+        for (Map<String, Object> item : list) {
+             Object goodsLogo = item.get("goodsLogo");
+             if (goodsLogo != null && StringUtil.isNotEmpty(goodsLogo.toString())) {
+                 item.put("goodsLogo", basePath + goodsLogo);
+             }
+        }
+        result.put("list", list);
 
         return getSuccessResult(result);
     }

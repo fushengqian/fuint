@@ -21,6 +21,12 @@ public class GoodsCommentListParam extends PageParam implements Serializable {
     @Schema(description="商品名称", name="goodsName")
     private String goodsName;
 
+    @Schema(description="订单号，模糊匹配", name="orderSn")
+    private String orderSn;
+
+    @Schema(description="会员号，模糊匹配", name="userNo")
+    private String userNo;
+
     @Schema(description="评分筛选", name="score")
     private Integer score;
 

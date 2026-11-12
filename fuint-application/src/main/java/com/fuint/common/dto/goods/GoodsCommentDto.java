@@ -1,5 +1,6 @@
 package com.fuint.common.dto.goods;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fuint.repository.model.MtUser;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
@@ -64,6 +65,7 @@ public class GoodsCommentDto implements Serializable {
     private String replyContent;
 
     @Schema(description="回复时间")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date replyTime;
 
     @Schema(description="状态 A：正常；D：删除")
@@ -75,9 +77,17 @@ public class GoodsCommentDto implements Serializable {
     @Schema(description="展示的会员称呼，匿名时脱敏")
     private String userName;
 
+    @Schema(description="会员号")
+    private String userNo;
+
+    @Schema(description="订单号")
+    private String orderSn;
+
     @Schema(description="创建时间")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date createTime;
 
     @Schema(description="更新时间")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date updateTime;
 }
