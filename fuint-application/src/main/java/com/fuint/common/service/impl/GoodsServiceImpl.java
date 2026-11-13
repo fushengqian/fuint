@@ -638,6 +638,9 @@ public class GoodsServiceImpl extends ServiceImpl<MtGoodsMapper, MtGoods> implem
             // 多规格商品的价格、库存数量
             if (goodsSkuList.size() > 0) {
                 goodsInfo.setPrice(goodsSkuList.get(0).getPrice());
+                if (goodsSkuList.get(0).getMemberPrice() != null && goodsSkuList.get(0).getMemberPrice().compareTo(BigDecimal.ZERO) > 0) {
+                    goodsInfo.setMemberPrice(goodsSkuList.get(0).getMemberPrice());
+                }
                 goodsInfo.setLinePrice(goodsSkuList.get(0).getLinePrice());
                 Double stock = 0.0;
                 for (MtGoodsSku mtGoodsSku : goodsSkuList) {
@@ -708,6 +711,9 @@ public class GoodsServiceImpl extends ServiceImpl<MtGoodsMapper, MtGoods> implem
                     List<MtGoodsSku> goodsSkuList = mtGoodsSkuMapper.selectByMap(param);
                     if (goodsSkuList.size() > 0) {
                         mtGoods.setPrice(goodsSkuList.get(0).getPrice());
+                        if (goodsSkuList.get(0).getMemberPrice() != null && goodsSkuList.get(0).getMemberPrice().compareTo(BigDecimal.ZERO) > 0) {
+                            mtGoods.setMemberPrice(goodsSkuList.get(0).getMemberPrice());
+                        }
                         mtGoods.setLinePrice(goodsSkuList.get(0).getLinePrice());
                         Double stock = 0.0;
                         for (MtGoodsSku mtGoodsSku : goodsSkuList) {

@@ -3,7 +3,7 @@
 <mapper namespace="com.fuint.repository.mapper.MtGoodsMapper">
     <sql id="Base_Column_List">
         `ID`, `TYPE`, `MERCHANT_ID`, `STORE_ID`, `NAME`, `CATE_ID`, `GOODS_NO`, `PLATFORM`, `IS_SINGLE_SPEC`,
-        `LOGO`, `PRICE`, `LINE_PRICE`, `COST_PRICE`, `STOCK`, `WEIGHT`, `COUPON_IDS`, `INIT_SALE`, `SALE_POINT`,
+        `LOGO`, `PRICE`, `MEMBER_PRICE`, `LINE_PRICE`, `COST_PRICE`, `STOCK`, `WEIGHT`, `COUPON_IDS`, `INIT_SALE`, `SALE_POINT`,
         `CAN_USE_POINT`, `IS_POINT_GOODS`, `POINT_PRICE`, `EXCHANGE_LIMIT`, `IS_MEMBER_DISCOUNT`, `GRADE_IDS`, `SORT`, `CREATE_TIME`, `UPDATE_TIME`, `OPERATOR`, `STATUS`
     </sql>
     <select id="getStoreGoodsList" resultType="com.fuint.repository.model.MtGoods">
