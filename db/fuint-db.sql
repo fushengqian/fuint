@@ -498,6 +498,33 @@ CREATE TABLE `mt_goods` (
   PRIMARY KEY (`ID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='商品表';
 
+/*Table structure for table `mt_goods_comment` */
+CREATE TABLE `mt_goods_comment` (
+  `ID` int NOT NULL AUTO_INCREMENT COMMENT '自增ID',
+  `MERCHANT_ID` int NOT NULL DEFAULT '0' COMMENT '商户ID',
+  `STORE_ID` int NOT NULL DEFAULT '0' COMMENT '店铺ID',
+  `USER_ID` int NOT NULL COMMENT '评价会员ID（mt_user.ID）',
+  `ORDER_ID` int NOT NULL COMMENT '订单ID（mt_order.ID）',
+  `ORDER_GOODS_ID` int NOT NULL COMMENT '订单商品ID（mt_order_goods.ID）',
+  `GOODS_ID` int NOT NULL COMMENT '商品ID（mt_goods.ID）',
+  `SCORE` tinyint NOT NULL DEFAULT '5' COMMENT '评分1-5星',
+  `CONTENT` varchar(500) DEFAULT NULL COMMENT '评价内容',
+  `IMAGES` varchar(1000) DEFAULT NULL COMMENT '评价图片，逗号分隔',
+  `IS_ANONYMOUS` char(1) NOT NULL DEFAULT 'N' COMMENT '是否匿名 Y/N',
+  `AUDIT_STATUS` char(1) NOT NULL DEFAULT 'P' COMMENT '审核状态 A待审/P通过/R拒绝',
+  `REPLY_CONTENT` varchar(500) DEFAULT NULL COMMENT '商家回复内容',
+  `REPLY_ACCOUNT_ID` int DEFAULT NULL COMMENT '回复操作后台账号ID',
+  `REPLY_TIME` datetime DEFAULT NULL COMMENT '回复时间',
+  `STATUS` char(1) NOT NULL DEFAULT 'A' COMMENT '状态 A正常/D删除',
+  `REMARK` varchar(255) DEFAULT NULL COMMENT '备注',
+  `CREATE_TIME` datetime DEFAULT NULL COMMENT '创建时间',
+  `UPDATE_TIME` datetime DEFAULT NULL COMMENT '更新时间',
+  PRIMARY KEY (`ID`),
+  UNIQUE KEY `UK_ORDER_GOODS` (`ORDER_GOODS_ID`),
+  KEY `IDX_GOODS_ID` (`GOODS_ID`),
+  KEY `IDX_USER_ID` (`USER_ID`),
+  KEY `IDX_ORDER_ID` (`ORDER_ID`)
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb3 COMMENT='商品评价表';
 
 /*Table structure for table `mt_goods_cate` */
 
