@@ -196,6 +196,7 @@ public class ClientGoodsController extends BaseController {
         goodsDetailDto.setName(goodsDto.getName());
         goodsDetailDto.setCateId(goodsDto.getCateId());
         goodsDetailDto.setPrice(goodsDto.getPrice());
+        goodsDetailDto.setMemberPrice(goodsDto.getMemberPrice());
         goodsDetailDto.setLinePrice(goodsDto.getLinePrice());
         goodsDetailDto.setSalePoint(goodsDto.getSalePoint());
         goodsDetailDto.setSort(goodsDto.getSort());

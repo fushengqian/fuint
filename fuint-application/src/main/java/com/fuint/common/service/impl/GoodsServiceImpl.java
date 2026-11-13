@@ -208,6 +208,7 @@ public class GoodsServiceImpl extends ServiceImpl<MtGoodsMapper, MtGoods> implem
                 MtGoods::getIsSingleSpec,
                 MtGoods::getPlatform,
                 MtGoods::getPrice,
+                MtGoods::getMemberPrice,
                 MtGoods::getLinePrice,
                 MtGoods::getImages,
                 MtGoods::getLogo,
@@ -251,6 +252,7 @@ public class GoodsServiceImpl extends ServiceImpl<MtGoodsMapper, MtGoods> implem
              item.setCateInfo(cateInfo);
              item.setType(mtGoods.getType());
              item.setPrice(mtGoods.getPrice());
+             item.setMemberPrice(mtGoods.getMemberPrice());
              item.setLinePrice(mtGoods.getLinePrice());
              item.setSalePoint(mtGoods.getSalePoint());
              item.setCreateTime(mtGoods.getCreateTime());
@@ -355,6 +357,9 @@ public class GoodsServiceImpl extends ServiceImpl<MtGoodsMapper, MtGoods> implem
         }
         if (reqDto.getPrice() != null) {
             mtGoods.setPrice(reqDto.getPrice());
+        }
+        if (reqDto.getMemberPrice() != null) {
+            mtGoods.setMemberPrice(reqDto.getMemberPrice());
         }
         if (reqDto.getPrice() == null && reqDto.getId() <= 0) {
             mtGoods.setPrice(new BigDecimal("0.00"));

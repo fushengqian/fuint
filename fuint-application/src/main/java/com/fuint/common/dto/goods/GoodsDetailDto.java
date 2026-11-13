@@ -41,6 +41,9 @@ public class GoodsDetailDto implements Serializable {
     @Schema(description="商品价格")
     private BigDecimal price;
 
+    @Schema(description="基础会员价，会员购买价=会员价×等级折扣，0或NULL表示未设置")
+    private BigDecimal memberPrice;
+
     @Schema(description="划线价格")
     private BigDecimal linePrice;
 

@@ -43,6 +43,9 @@ public class MtGoodsSku implements Serializable {
     @Schema(description="价格")
     private BigDecimal price;
 
+    @Schema(description="该规格的会员价，会员购买价=会员价×等级折扣，0或NULL表示未设置（回退商品级会员价）")
+    private BigDecimal memberPrice;
+
     @Schema(description="划线价格")
     private BigDecimal linePrice;
 

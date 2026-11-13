@@ -696,8 +696,11 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
                  orderGoods.setNum(cart.getNum());
                  // 计算会员折扣
                  BigDecimal price = cart.getGoodsInfo().getPrice();
+                 // 已按基础会员价计价的商品，行价已含等级折扣，不再叠加原价折扣
+                 BigDecimal cartMemberPrice = cart.getGoodsInfo().getMemberPrice();
+                 boolean usedMemberPrice = cartMemberPrice != null && cartMemberPrice.compareTo(new BigDecimal("0")) > 0;
                  boolean isDiscount = cart.getGoodsInfo().getIsMemberDiscount().equals(YesOrNoEnum.YES.getKey()) ? true : false;
-                 if (percent.compareTo(new BigDecimal("0")) > 0 && isDiscount) {
+                 if (percent.compareTo(new BigDecimal("0")) > 0 && isDiscount && !usedMemberPrice) {
                      orderGoods.setPrice(price.multiply(percent));
                      BigDecimal discount = price.subtract(price.multiply(percent)).multiply(new BigDecimal(cart.getNum()));
                      orderGoods.setDiscount(discount);
@@ -2450,16 +2453,43 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
                 if (mtGoodsInfo == null || !mtGoodsInfo.getStatus().equals(StatusEnum.ENABLED.getKey())) {
                     continue;
                 }
+                // 商品原价（SKU价格覆盖前，用于会员价差价换算）
+                BigDecimal originalPrice = mtGoodsInfo.getPrice();
                 // 取对应sku的价格
+                MtGoodsSku cartSku = null;
                 if (cart.getSkuId() != null && cart.getSkuId() > 0) {
-                    MtGoodsSku mtGoodsSku = mtGoodsSkuMapper.selectById(cart.getSkuId());
-                    if (mtGoodsSku != null && mtGoodsSku.getPrice().compareTo(new BigDecimal("0")) > 0) {
-                        mtGoodsInfo.setPrice(mtGoodsSku.getPrice());
+                    cartSku = mtGoodsSkuMapper.selectById(cart.getSkuId());
+                    if (cartSku != null && cartSku.getPrice().compareTo(new BigDecimal("0")) > 0) {
+                        mtGoodsInfo.setPrice(cartSku.getPrice());
                     }
                 }
-                // 会员支付折扣
+                // 基础会员价基数：SKU级会员价优先，其次商品级会员价（多规格按差价平移到SKU）
+                BigDecimal goodsMemberPrice = mtGoodsInfo.getMemberPrice();
+                BigDecimal memberBase = null;
+                if (percent.compareTo(new BigDecimal("0")) > 0) {
+                    BigDecimal skuMemberPrice = cartSku != null ? cartSku.getMemberPrice() : null;
+                    if (skuMemberPrice != null && skuMemberPrice.compareTo(new BigDecimal("0")) > 0) {
+                        memberBase = skuMemberPrice;
+                    } else if (goodsMemberPrice != null && goodsMemberPrice.compareTo(new BigDecimal("0")) > 0) {
+                        if (cartSku != null) {
+                            memberBase = cartSku.getPrice().subtract(originalPrice.subtract(goodsMemberPrice));
+                        } else {
+                            memberBase = goodsMemberPrice;
+                        }
+                    }
+                }
+                // 基础会员价：行价=会员价基数×等级折扣
+                boolean useMemberPrice = memberBase != null;
+                if (useMemberPrice) {
+                    if (memberBase.compareTo(new BigDecimal("0.01")) < 0) {
+                        memberBase = new BigDecimal("0.01");
+                    }
+                    mtGoodsInfo.setPrice(memberBase.multiply(percent).setScale(2, BigDecimal.ROUND_HALF_UP));
+                    mtGoodsInfo.setMemberPrice(memberBase);
+                }
+                // 会员支付折扣（按原价打折；已按会员价计价的商品不叠加，避免双重优惠）
                 boolean isDiscount = mtGoodsInfo.getIsMemberDiscount().equals(YesOrNoEnum.YES.getKey()) ? true : false;
-                if (percent.compareTo(new BigDecimal("0")) > 0 && isDiscount) {
+                if (percent.compareTo(new BigDecimal("0")) > 0 && isDiscount && !useMemberPrice) {
                     BigDecimal discount = mtGoodsInfo.getPrice().subtract(mtGoodsInfo.getPrice().multiply(percent)).multiply(new BigDecimal(cart.getNum()));
                     memberDiscount = memberDiscount.add(discount);
                 }

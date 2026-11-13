@@ -385,6 +385,13 @@ public class BackendGoodsController extends BaseController {
             }
             sku.setPrice(skuPrice);
 
+            // 该规格的会员价，0表示未设置（回退商品级会员价差价平移）
+            BigDecimal skuMemberPrice = new BigDecimal("0");
+            if (skuDto.get("memberPrice") != null && StringUtil.isNotEmpty(skuDto.get("memberPrice").toString())) {
+                skuMemberPrice = new BigDecimal(skuDto.get("memberPrice").toString());
+            }
+            sku.setMemberPrice(skuMemberPrice);
+
             BigDecimal skuLinePrice = new BigDecimal("0");
             if (skuDto.get("linePrice") != null && StringUtil.isNotEmpty(skuDto.get("linePrice").toString())) {
                 skuLinePrice = new BigDecimal(skuDto.get("linePrice").toString());
@@ -469,6 +476,11 @@ public class BackendGoodsController extends BaseController {
         }
         if (StringUtil.isNotEmpty(price)) {
             mtGoods.setPrice(new BigDecimal(price));
+        }
+        // 基础会员价：仅在扩展信息 tab 提交了该字段时写入，空值表示未设置会员价（0）
+        if (param.containsKey("memberPrice")) {
+            String memberPrice = param.get("memberPrice") == null ? "" : param.get("memberPrice").toString();
+            mtGoods.setMemberPrice(StringUtil.isEmpty(memberPrice) ? new BigDecimal("0") : new BigDecimal(memberPrice));
         }
         if (StringUtil.isNotEmpty(linePrice)) {
             mtGoods.setLinePrice(new BigDecimal(linePrice));
