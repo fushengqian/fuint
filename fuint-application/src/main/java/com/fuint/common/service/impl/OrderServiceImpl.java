@@ -560,7 +560,9 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
             }
 
             boolean isUsePoint = orderDto.getUsePoint() > 0 ? true : false;
-            cartData = calculateCartGoods(orderInfo.getMerchantId(), orderDto.getUserId(), cartList, orderDto.getCouponId(), isUsePoint, orderDto.getPlatform(), orderInfo.getOrderMode(), orderDto.getCouponIds());
+            // 游客订单按原价计价（订单归属不变）
+            Integer calcUserId = YesOrNoEnum.YES.getKey().equals(orderDto.getIsVisitor()) ? 0 : orderDto.getUserId();
+            cartData = calculateCartGoods(orderInfo.getMerchantId(), calcUserId, cartList, orderDto.getCouponId(), isUsePoint, orderDto.getPlatform(), orderInfo.getOrderMode(), orderDto.getCouponIds());
 
             mtOrder.setAmount(new BigDecimal(cartData.get("totalPrice").toString()));
             mtOrder.setUsePoint(Integer.parseInt(cartData.get("usePoint").toString()));
@@ -2436,12 +2438,14 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
         BigDecimal percent = new BigDecimal("0");
         Integer storeId = 0;
         if (cartList.size() > 0) {
-            // 会员折扣
-            MtUserGrade userGrade = userGradeService.queryUserGradeById(userInfo.getMerchantId(), userInfo.getGradeId() != null ? userInfo.getGradeId() : 1, userId);
-            if (userGrade != null && userGrade.getDiscount() != null && userGrade.getDiscount() > 0 && !userInfo.getIsStaff().equals(YesOrNoEnum.YES.getKey())) {
-                percent = new BigDecimal(userGrade.getDiscount()).divide(new BigDecimal("10"), BigDecimal.ROUND_CEILING, 4);
-                if (percent.compareTo(new BigDecimal("0")) <= 0) {
-                    percent = new BigDecimal("1");
+            // 会员折扣（游客不参与）
+            if (userInfo != null) {
+                MtUserGrade userGrade = userGradeService.queryUserGradeById(userInfo.getMerchantId(), userInfo.getGradeId() != null ? userInfo.getGradeId() : 1, userId);
+                if (userGrade != null && userGrade.getDiscount() != null && userGrade.getDiscount() > 0 && !YesOrNoEnum.YES.getKey().equals(userInfo.getIsStaff())) {
+                    percent = new BigDecimal(userGrade.getDiscount()).divide(new BigDecimal("10"), BigDecimal.ROUND_CEILING, 4);
+                    if (percent.compareTo(new BigDecimal("0")) <= 0) {
+                        percent = new BigDecimal("1");
+                    }
                 }
             }
             for (MtCart cart : cartList) {
@@ -2476,8 +2480,11 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
                         memberBase = goodsMemberPrice;
                     }
                 }
-                // 基础会员价：有等级折扣时行价=会员价基数×等级折扣，否则按会员价原价
-                boolean useMemberPrice = memberBase != null;
+                // 基础会员价：有等级折扣时行价=会员价基数×等级折扣，否则按会员价原价；游客不享受会员价
+                boolean useMemberPrice = memberBase != null && userInfo != null;
+                if (memberBase != null && !useMemberPrice) {
+                    mtGoodsInfo.setMemberPrice(new BigDecimal("0"));
+                }
                 if (useMemberPrice) {
                     if (memberBase.compareTo(new BigDecimal("0.01")) < 0) {
                         memberBase = new BigDecimal("0.01");
