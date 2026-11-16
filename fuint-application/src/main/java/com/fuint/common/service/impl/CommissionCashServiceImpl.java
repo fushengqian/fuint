@@ -325,6 +325,10 @@ public class CommissionCashServiceImpl extends ServiceImpl<MtCommissionCashMappe
             logger.error("更新分销提成提现失败...");
             throw new BusinessCheckException("更新分销提成提现失败，数据不存在");
         }
+        // 终态（已打款、已作废）记录不允许修改
+        if (CommissionCashStatusEnum.PAYED.getKey().equals(mtCommissionCash.getStatus()) || CommissionCashStatusEnum.CANCEL.getKey().equals(mtCommissionCash.getStatus())) {
+            throw new BusinessCheckException("该提现记录已打款或已作废，不允许修改");
+        }
         mtCommissionCash.setUpdateTime(new Date());
         if (requestParam.getAmount() != null) {
             mtCommissionCash.setAmount(new BigDecimal(requestParam.getAmount()));
@@ -333,6 +337,28 @@ public class CommissionCashServiceImpl extends ServiceImpl<MtCommissionCashMappe
             mtCommissionCash.setDescription(requestParam.getDescription());
         }
         if (requestParam.getStatus() != null) {
+            // 校验状态取值合法性
+            boolean validStatus = false;
+            for (CommissionCashStatusEnum statusEnum : CommissionCashStatusEnum.values()) {
+                if (statusEnum.getKey().equals(requestParam.getStatus())) {
+                    validStatus = true;
+                    break;
+                }
+            }
+            if (!validStatus) {
+                throw new BusinessCheckException("提现状态取值不合法");
+            }
+            // 校验状态流转：仅允许 待确认→已确认/已作废、已确认→已打款/已作废；状态不变视为仅修改其他字段
+            String currentStatus = mtCommissionCash.getStatus();
+            boolean sameStatus = currentStatus.equals(requestParam.getStatus());
+            boolean allowedFlow =
+                (CommissionCashStatusEnum.WAIT.getKey().equals(currentStatus)
+                    && (CommissionCashStatusEnum.SETTLED.getKey().equals(requestParam.getStatus()) || CommissionCashStatusEnum.CANCEL.getKey().equals(requestParam.getStatus())))
+                || (CommissionCashStatusEnum.SETTLED.getKey().equals(currentStatus)
+                    && (CommissionCashStatusEnum.PAYED.getKey().equals(requestParam.getStatus()) || CommissionCashStatusEnum.CANCEL.getKey().equals(requestParam.getStatus())));
+            if (!sameStatus && !allowedFlow) {
+                throw new BusinessCheckException("提现状态不允许这样变更，请通过确认结算、取消结算或付款到余额接口操作");
+            }
             mtCommissionCash.setStatus(requestParam.getStatus());
         }
         mtCommissionCash.setOperator(requestParam.getOperator());

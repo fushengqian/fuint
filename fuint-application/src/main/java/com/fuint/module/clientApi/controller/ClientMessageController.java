@@ -108,7 +108,8 @@ public class ClientMessageController extends BaseController {
     public String wxPush(HttpServletRequest request) {
         String echostr =  request.getParameter("echostr") == null ? "" : request.getParameter("echostr");
 
-        if (StringUtil.isNotEmpty(echostr)) {
+        // echostr 仅允许字母数字，防止反射型XSS（微信验证的echostr为随机数字串，白名单兼容）
+        if (StringUtil.isNotEmpty(echostr) && echostr.matches("^[a-zA-Z0-9_-]{1,64}$")) {
             return echostr;
         }
 

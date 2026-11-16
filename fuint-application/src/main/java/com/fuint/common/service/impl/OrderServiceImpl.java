@@ -1678,7 +1678,11 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
         }
 
         if (StringUtil.isNotBlank(orderDto.getVerifyCode())) {
-            if (orderDto.getVerifyCode().equals(mtOrder.getVerifyCode()) || StringUtil.isEmpty(mtOrder.getVerifyCode())) {
+            // 订单无核销码时不允许核销
+            if (StringUtil.isEmpty(mtOrder.getVerifyCode())) {
+                throw new BusinessCheckException("该订单无核销码，不允许核销！");
+            }
+            if (orderDto.getVerifyCode().equals(mtOrder.getVerifyCode())) {
                 mtOrder.setStatus(OrderStatusEnum.DELIVERED.getKey());
                 mtOrder.setVerifyCode("");
                 mtOrder.setConfirmStatus(YesOrNoEnum.YES.getKey());
@@ -2725,7 +2729,7 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
         BigDecimal payPrice = totalPrice.subtract(couponAmount);
 
         // 可用积分、可用积分金额
-        Integer myPoint = userInfo.getPoint() == null ? 0 : userInfo.getPoint();
+        Integer myPoint = userInfo != null && userInfo.getPoint() != null ? userInfo.getPoint() : 0;
         Integer usePoint = 0;
         BigDecimal usePointAmount = new BigDecimal("0");
         if (hasPointGoods) {

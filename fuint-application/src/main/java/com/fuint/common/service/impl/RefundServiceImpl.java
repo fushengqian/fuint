@@ -450,6 +450,12 @@ public class RefundServiceImpl extends ServiceImpl<MtRefundMapper, MtRefund> imp
             throw new BusinessCheckException("不同商户，没有操作权限");
         }
 
+        // 绑定具体门店的账户只能操作本门店的售后单
+        if (accountInfo.getStoreId() != null && accountInfo.getStoreId() > 0
+                && refund.getStoreId() != null && !accountInfo.getStoreId().equals(refund.getStoreId())) {
+            throw new BusinessCheckException("不同门店，没有操作权限");
+        }
+
         // 已经同意过了
         if (refund.getStatus().equals(RefundStatusEnum.COMPLETE.getKey())) {
             if (StringUtil.isNotEmpty(refundDto.getRemark())) {
@@ -696,6 +702,12 @@ public class RefundServiceImpl extends ServiceImpl<MtRefundMapper, MtRefund> imp
         if (refund != null) {
             logger.error("售后订单已存在，orderId = " + orderId);
             throw new BusinessCheckException("该售后订单已存在，请查询售后订单列表！");
+        }
+
+        // 绑定具体门店的账户只能操作本门店的订单
+        if (accountInfo.getStoreId() != null && accountInfo.getStoreId() > 0
+                && orderInfo.getStoreInfo() != null && !accountInfo.getStoreId().equals(orderInfo.getStoreInfo().getId())) {
+            throw new BusinessCheckException("不同门店，没有操作权限");
         }
 
         if (new BigDecimal(refundAmount).compareTo(orderInfo.getAmount()) > 0) {

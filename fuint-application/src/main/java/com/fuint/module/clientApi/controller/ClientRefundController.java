@@ -121,11 +121,16 @@ public class ClientRefundController extends BaseController {
     @RequestMapping(value = "/detail", method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject detail(HttpServletRequest request) throws BusinessCheckException {
+        UserInfo mtUser = TokenUtil.getUserInfo();
         String refundId = request.getParameter("refundId");
         if (StringUtil.isEmpty(refundId)) {
             return getFailureResult(201, "售后订单ID不能为空");
         }
         RefundDto refundInfo = refundService.getRefundById(Integer.parseInt(refundId));
+        // 只能查看本人的售后单
+        if (refundInfo == null || !mtUser.getId().equals(refundInfo.getUserId())) {
+            return getFailureResult(201, "售后订单信息有误");
+        }
         return getSuccessResult(refundInfo);
     }
 

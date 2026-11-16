@@ -255,9 +255,14 @@ public class ClientBookController extends BaseController {
     @RequestMapping(value = "/myBookDetail", method = RequestMethod.POST)
     @CrossOrigin
     public ResponseObject myBookDetail(@RequestBody BookDetailParam param) {
+        UserInfo userInfo = TokenUtil.getUserInfo();
         Integer bookId = param.getBookId() == null ? 0 : param.getBookId();
 
         BookItemDto bookInfo = bookItemService.getBookDetail(bookId);
+        // 只能查看本人的预约记录
+        if (bookInfo == null || !userInfo.getId().equals(bookInfo.getUserId())) {
+            return getFailureResult(2000, "预约信息有误");
+        }
         Map<String, Object> result = new HashMap<>();
         result.put("bookInfo", bookInfo);
 

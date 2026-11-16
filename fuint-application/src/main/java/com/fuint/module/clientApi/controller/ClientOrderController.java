@@ -77,7 +77,16 @@ public class ClientOrderController extends BaseController {
     @RequestMapping(value = "/detail", method = RequestMethod.GET)
     @CrossOrigin
     public ResponseObject detail(HttpServletRequest request) throws BusinessCheckException {
-        return getSuccessResult(getOrderInfo(request));
+        UserInfo mtUser = TokenUtil.getUserInfo();
+        if (mtUser == null) {
+            return getFailureResult(1001, "请先登录");
+        }
+        UserOrderDto order = getOrderInfo(request);
+        // 只能查看本人的订单
+        if (order == null || !mtUser.getId().equals(order.getUserId())) {
+            return getFailureResult(201, "订单信息有误");
+        }
+        return getSuccessResult(order);
     }
 
     /**
@@ -143,6 +152,13 @@ public class ClientOrderController extends BaseController {
         UserOrderDto order = getOrderInfo(request);
         if (!order.getUserId().equals(mtUser.getId())) {
             return getFailureResult(2000, "订单信息有误");
+        }
+
+        // 仅已支付、已发货订单可确认收货；已收货视为幂等处理，其余状态不允许
+        if (!order.getStatus().equals(OrderStatusEnum.PAID.getKey())
+                && !order.getStatus().equals(OrderStatusEnum.DELIVERED.getKey())
+                && !order.getStatus().equals(OrderStatusEnum.RECEIVED.getKey())) {
+            return getFailureResult(201, "该订单状态不允许确认收货");
         }
 
         OrderDto reqDto = new OrderDto();

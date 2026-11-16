@@ -263,8 +263,40 @@ public class ClientPayController extends BaseController {
             Boolean verifyResult = alipayService.checkCallBack(params);
             if (verifyResult) {
                 logger.info("支付宝验证成功 success");
+                // 校验交易状态：仅处理支付成功通知
+                String tradeStatus = params.get("trade_status") != null ? params.get("trade_status") : "";
+                if (!"TRADE_SUCCESS".equals(tradeStatus) && !"TRADE_FINISHED".equals(tradeStatus)) {
+                    logger.error("支付宝回调交易状态非支付成功 trade_status={} orderSn={}", tradeStatus, orderSn);
+                    return "failure";
+                }
                 UserOrderDto orderInfo = orderService.getOrderByPaySn(orderSn);
+                if (orderInfo == null) {
+                    logger.error("支付订单{}对应的信息不存在", orderSn);
+                    return "failure";
+                }
+                // 校验通知金额与应付金额一致（以发起支付时记录的支付单金额为准）
+                String totalAmt = params.get("total_amount") != null ? params.get("total_amount") : "";
+                if (StringUtil.isEmpty(totalAmt)) {
+                    logger.error("支付宝回调金额为空 orderSn={}", orderSn);
+                    return "failure";
+                }
+                BigDecimal tranAmount = new BigDecimal(totalAmt);
+                BigDecimal payAmount = orderInfo.getPayAmount();
+                MtOrderPay orderPay = orderPayService.getPayLogByPaySn(orderSn);
+                if (orderPay != null && orderPay.getAmount() != null) {
+                    payAmount = orderPay.getAmount();
+                }
+                if (tranAmount.compareTo(payAmount) != 0) {
+                    logger.error("支付宝回调金额与应付金额不匹配 totalAmount = {}, payAmount = {}, orderSn = {}", tranAmount, payAmount, orderSn);
+                    return "failure";
+                }
+                // 仅待支付订单可回调为已支付；重复通知幂等返回 success，避免支付宝持续重试
+                if (!orderInfo.getStatus().equals(OrderStatusEnum.CREATED.getKey())) {
+                    logger.error("订单{}已经支付，orderInfo.getStatus() = {}, CREATED.getKey() = {}", orderSn, orderInfo.getStatus(), OrderStatusEnum.CREATED.getKey());
+                    return "success";
+                }
                 Boolean flag = paymentService.paymentCallback(orderInfo);
+                logger.info("支付宝回调结果：{}", flag);
                 if (flag) {
                     return "success";
                 } else {

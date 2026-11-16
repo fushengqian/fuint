@@ -149,7 +149,16 @@ public class MerchantOrderController extends BaseController {
 
         MtUser userInfo = memberService.queryMemberById(mtUser.getId());
         MtStaff staffInfo = staffService.queryStaffByMobile(userInfo.getMobile());
-        if (staffInfo == null || (staffInfo.getStoreId() != null && staffInfo.getStoreId() > 0 && !staffInfo.getStoreId().equals(orderInfo.getStoreInfo().getId()))) {
+        if (staffInfo == null) {
+            return getFailureResult(1004);
+        }
+        // 员工商户必须与订单商户一致
+        if (staffInfo.getMerchantId() == null || !staffInfo.getMerchantId().equals(orderInfo.getMerchantId())) {
+            return getFailureResult(1004);
+        }
+        // 员工必须绑定有效门店，且与订单门店一致
+        if (staffInfo.getStoreId() == null || staffInfo.getStoreId() <= 0
+                || orderInfo.getStoreInfo() == null || !staffInfo.getStoreId().equals(orderInfo.getStoreInfo().getId())) {
             return getFailureResult(1004);
         }
 
