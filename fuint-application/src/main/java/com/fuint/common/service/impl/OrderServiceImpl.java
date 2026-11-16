@@ -2466,25 +2466,27 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
                 // 基础会员价基数：SKU级会员价优先，其次商品级会员价（多规格按差价平移到SKU）
                 BigDecimal goodsMemberPrice = mtGoodsInfo.getMemberPrice();
                 BigDecimal memberBase = null;
-                if (percent.compareTo(new BigDecimal("0")) > 0) {
-                    BigDecimal skuMemberPrice = cartSku != null ? cartSku.getMemberPrice() : null;
-                    if (skuMemberPrice != null && skuMemberPrice.compareTo(new BigDecimal("0")) > 0) {
-                        memberBase = skuMemberPrice;
-                    } else if (goodsMemberPrice != null && goodsMemberPrice.compareTo(new BigDecimal("0")) > 0) {
-                        if (cartSku != null) {
-                            memberBase = cartSku.getPrice().subtract(originalPrice.subtract(goodsMemberPrice));
-                        } else {
-                            memberBase = goodsMemberPrice;
-                        }
+                BigDecimal skuMemberPrice = cartSku != null ? cartSku.getMemberPrice() : null;
+                if (skuMemberPrice != null && skuMemberPrice.compareTo(new BigDecimal("0")) > 0) {
+                    memberBase = skuMemberPrice;
+                } else if (goodsMemberPrice != null && goodsMemberPrice.compareTo(new BigDecimal("0")) > 0) {
+                    if (cartSku != null) {
+                        memberBase = cartSku.getPrice().subtract(originalPrice.subtract(goodsMemberPrice));
+                    } else {
+                        memberBase = goodsMemberPrice;
                     }
                 }
-                // 基础会员价：行价=会员价基数×等级折扣
+                // 基础会员价：有等级折扣时行价=会员价基数×等级折扣，否则按会员价原价
                 boolean useMemberPrice = memberBase != null;
                 if (useMemberPrice) {
                     if (memberBase.compareTo(new BigDecimal("0.01")) < 0) {
                         memberBase = new BigDecimal("0.01");
                     }
-                    mtGoodsInfo.setPrice(memberBase.multiply(percent).setScale(2, BigDecimal.ROUND_HALF_UP));
+                    if (percent.compareTo(new BigDecimal("0")) > 0) {
+                        mtGoodsInfo.setPrice(memberBase.multiply(percent).setScale(2, BigDecimal.ROUND_HALF_UP));
+                    } else {
+                        mtGoodsInfo.setPrice(memberBase.setScale(2, BigDecimal.ROUND_HALF_UP));
+                    }
                     mtGoodsInfo.setMemberPrice(memberBase);
                 }
                 // 会员支付折扣（按原价打折；已按会员价计价的商品不叠加，避免双重优惠）
@@ -2521,7 +2523,10 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
                         if (mtGoodsSku.getWeight().compareTo(new BigDecimal("0")) > 0) {
                             mtGoods.setWeight(mtGoodsSku.getWeight());
                         }
-                        mtGoods.setPrice(mtGoodsSku.getPrice());
+                        // 已按会员价计价的商品保留会员价，不覆盖回SKU原价
+                        if (!useMemberPrice) {
+                            mtGoods.setPrice(mtGoodsSku.getPrice());
+                        }
                         mtGoods.setLinePrice(mtGoodsSku.getLinePrice());
                         mtGoods.setStock(mtGoodsSku.getStock());
                     }
