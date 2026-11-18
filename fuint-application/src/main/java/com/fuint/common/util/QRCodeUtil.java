@@ -5,6 +5,7 @@ import com.google.zxing.*;
 import com.google.zxing.client.j2se.BufferedImageLuminanceSource;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.common.HybridBinarizer;
+import com.google.zxing.oned.Code128Writer;
 import com.google.zxing.qrcode.QRCodeReader;
 import com.google.zxing.qrcode.QRCodeWriter;
 import org.slf4j.Logger;
@@ -82,6 +83,44 @@ public class QRCodeUtil {
             } else {
                 return ImageIO.write(image, imageFormat, outputStream);
             }
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+        }
+        return false;
+    }
+
+    /**
+     * 生成一维码（Code128）图片
+     *
+     * @param outputStream 输出流
+     * @param content      一维码携带信息
+     * @param width        宽度
+     * @param height       高度
+     * @param imageFormat  图片格式
+     */
+    public static boolean createBarcode(OutputStream outputStream, String content, int width, int height, String imageFormat) {
+        HashMap<EncodeHintType, Object> hints = new HashMap<>();
+        hints.put(EncodeHintType.CHARACTER_SET, "utf-8");
+        hints.put(EncodeHintType.MARGIN, 4);
+        try {
+            Code128Writer writer = new Code128Writer();
+            BitMatrix byteMatrix = writer.encode(content, BarcodeFormat.CODE_128, width, height, hints);
+
+            int matrixWidth = byteMatrix.getWidth();
+            int matrixHeight = byteMatrix.getHeight();
+            BufferedImage image = new BufferedImage(matrixWidth, matrixHeight, BufferedImage.TYPE_INT_RGB);
+            image.createGraphics();
+            Graphics2D graphics = (Graphics2D) image.getGraphics();
+            graphics.setColor(Color.WHITE);
+            graphics.fillRect(0, 0, matrixWidth, matrixHeight);
+            graphics.setColor(Color.BLACK);
+            // 一维码所有行同值，按列绘制即可
+            for (int i = 0; i < matrixWidth; i++) {
+                if (byteMatrix.get(i, 0)) {
+                    graphics.fillRect(i, 0, 1, matrixHeight);
+                }
+            }
+            return ImageIO.write(image, imageFormat, outputStream);
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
         }

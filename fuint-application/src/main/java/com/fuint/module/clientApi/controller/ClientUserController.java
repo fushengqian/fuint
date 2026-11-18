@@ -420,18 +420,23 @@ public class ClientUserController extends BaseController {
         }
         MtUser mtUser = memberService.queryMemberById(loginInfo.getId());
         String qrCode = "";
+        String barcode = "";
         try {
-            // 生成并输出二维码
-            ByteArrayOutputStream out = new ByteArrayOutputStream();
-
             String content = mtUser.getUserNo();
 
+            // 生成并输出二维码
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
             QRCodeUtil.createQrCode(out, content, 800, 800, "png", "");
 
             // 对数据进行Base64编码
             qrCode = new String(Base64Util.baseEncode(out.toByteArray()), "UTF-8");
 
             qrCode = "data:image/jpg;base64," + qrCode;
+
+            // 生成并输出一维码（Code128）
+            ByteArrayOutputStream barOut = new ByteArrayOutputStream();
+            QRCodeUtil.createBarcode(barOut, content, 800, 200, "png");
+            barcode = "data:image/png;base64," + new String(Base64Util.baseEncode(barOut.toByteArray()), "UTF-8");
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
         }
@@ -445,6 +450,7 @@ public class ClientUserController extends BaseController {
 
         Map<String, Object> outParams = new HashMap<>();
         outParams.put("qrCode", qrCode);
+        outParams.put("barcode", barcode);
         outParams.put("userInfo", mtUser);
         outParams.put("wxCardQrCode", wxCardQrCode);
 
