@@ -202,6 +202,9 @@ public class PageDecorateServiceImpl extends ServiceImpl<MtPageMapper, MtPage> i
     @Override
     @Transactional(rollbackFor = Exception.class)
     public MtPage savePage(PageDecorationDto pageDto, AccountInfo accountInfo) throws BusinessCheckException {
+        if (accountInfo.getMerchantId() == null || accountInfo.getMerchantId() < 1) {
+            throw new BusinessCheckException("平台方帐号无法执行该操作，请使用商户帐号操作");
+        }
         if (StringUtil.isBlank(pageDto.getPageName())) {
             throw new BusinessCheckException("页面名称不能为空");
         }
@@ -230,7 +233,8 @@ public class PageDecorateServiceImpl extends ServiceImpl<MtPageMapper, MtPage> i
                 pageDto.setStoreId(accountInfo.getStoreId());
             }
         }
-        mtPage.setStoreId(pageDto.getStoreId() == null ? 0 : pageDto.getStoreId());
+        mtPage.setMerchantId(accountInfo.getMerchantId());
+        mtPage.setStoreId(accountInfo.getStoreId());
         mtPage.setPageName(pageDto.getPageName());
         mtPage.setPageType(pageDto.getPageType());
         mtPage.setShareTitle(pageDto.getShareTitle());

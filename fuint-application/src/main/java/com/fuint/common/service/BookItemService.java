@@ -9,6 +9,7 @@ import com.fuint.framework.exception.BusinessCheckException;
 import com.fuint.repository.model.MtBookItem;
 
 import java.text.ParseException;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -90,4 +91,15 @@ public interface BookItemService extends IService<MtBookItem> {
      * @return
      * */
     Boolean cancelBook(Integer id, String remark) throws BusinessCheckException;
+
+    /**
+     * 获取预约单数量
+     *
+     * @param merchantId 商户ID
+     * @param storeId 店铺ID（空或0表示全部门店）
+     * @param beginTime 开始时间
+     * @param endTime 结束时间
+     * @return
+     * */
+    Long getBookCount(Integer merchantId, Integer storeId, Date beginTime, Date endTime);
 }

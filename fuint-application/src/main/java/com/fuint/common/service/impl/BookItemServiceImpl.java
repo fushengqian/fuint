@@ -369,4 +369,19 @@ public class BookItemServiceImpl extends ServiceImpl<MtBookItemMapper, MtBookIte
         mtBookItemMapper.updateById(mtBookItem);
         return true;
     }
+
+    /**
+     * 获取预约单数量
+     * */
+    @Override
+    public Long getBookCount(Integer merchantId, Integer storeId, Date beginTime, Date endTime) {
+        LambdaQueryWrapper<MtBookItem> lambdaQueryWrapper = Wrappers.lambdaQuery();
+        lambdaQueryWrapper.eq(MtBookItem::getMerchantId, merchantId);
+        if (storeId != null && storeId > 0) {
+            lambdaQueryWrapper.eq(MtBookItem::getStoreId, storeId);
+        }
+        lambdaQueryWrapper.ge(MtBookItem::getCreateTime, beginTime);
+        lambdaQueryWrapper.le(MtBookItem::getCreateTime, endTime);
+        return mtBookItemMapper.selectCount(lambdaQueryWrapper);
+    }
 }

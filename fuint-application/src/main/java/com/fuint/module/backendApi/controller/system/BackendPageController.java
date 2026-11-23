@@ -74,8 +74,7 @@ public class BackendPageController extends BaseController {
     @CrossOrigin
     @PreAuthorize("@pms.hasPermission('decorate:page')")
     public ResponseObject saveHandler(@RequestBody PageDecorationDto pageDto) throws BusinessCheckException {
-        AccountInfo accountInfo = TokenUtil.getAccountInfo();
-        pageDecorateService.savePage(pageDto, accountInfo);
+        pageDecorateService.savePage(pageDto, TokenUtil.getAccountInfo());
         return getSuccessResult(true);
     }
 

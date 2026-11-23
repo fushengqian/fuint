@@ -3009,4 +3009,25 @@ public class OrderServiceImpl extends ServiceImpl<MtOrderMapper, MtOrder> implem
         }
         return idList;
     }
+
+    /**
+     * 获取待核销订单数量（已支付、到店自提、未核销的实物订单）
+     * 查询口径与getUserOrderList的dataType=todo保持一致
+     * */
+    @Override
+    public Long getTodoOrderCount(Integer merchantId, Integer storeId, Date beginTime, Date endTime) {
+        LambdaQueryWrapper<MtOrder> lambdaQueryWrapper = Wrappers.lambdaQuery();
+        lambdaQueryWrapper.ne(MtOrder::getStatus, OrderStatusEnum.DELETED.getKey());
+        lambdaQueryWrapper.eq(MtOrder::getPayStatus, PayStatusEnum.SUCCESS.getKey());
+        lambdaQueryWrapper.eq(MtOrder::getConfirmStatus, YesOrNoEnum.NO.getKey());
+        lambdaQueryWrapper.eq(MtOrder::getType, OrderTypeEnum.GOODS.getKey());
+        lambdaQueryWrapper.eq(MtOrder::getOrderMode, OrderModeEnum.ONESELF.getKey());
+        lambdaQueryWrapper.eq(MtOrder::getMerchantId, merchantId);
+        if (storeId != null && storeId > 0) {
+            lambdaQueryWrapper.eq(MtOrder::getStoreId, storeId);
+        }
+        lambdaQueryWrapper.ge(MtOrder::getCreateTime, beginTime);
+        lambdaQueryWrapper.le(MtOrder::getCreateTime, endTime);
+        return mtOrderMapper.selectCount(lambdaQueryWrapper);
+    }
 }

@@ -259,4 +259,15 @@ public interface OrderService extends IService<MtOrder> {
      * @return
      * */
     MtOrder doRecharge(HttpServletRequest request, RechargeParam rechargeParam) throws BusinessCheckException;
+
+    /**
+     * 获取待核销订单数量（已支付、到店自提、未核销的实物订单）
+     *
+     * @param merchantId 商户ID
+     * @param storeId 店铺ID（空或0表示全部门店）
+     * @param beginTime 开始时间
+     * @param endTime 结束时间
+     * @return
+     * */
+    Long getTodoOrderCount(Integer merchantId, Integer storeId, Date beginTime, Date endTime);
 }
