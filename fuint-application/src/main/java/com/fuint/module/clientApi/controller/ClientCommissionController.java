@@ -97,4 +97,15 @@ public class ClientCommissionController extends BaseController {
         commissionLogPage.setUserId(userInfo.getId());
         return getSuccessResult(commissionLogService.queryRewardLogsByPagination(commissionLogPage));
     }
+
+    /**
+     * 奖励规则说明（分佣提成 + 推荐奖励）
+     */
+    @Operation(summary="奖励规则说明")
+    @RequestMapping(value = "/ruleDesc", method = RequestMethod.GET)
+    @CrossOrigin
+    public ResponseObject ruleDesc() {
+        UserInfo userInfo = TokenUtil.getUserInfo();
+        return getSuccessResult(commissionLogService.getRewardRuleDesc(userInfo.getId()));
+    }
 }

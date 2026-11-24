@@ -124,4 +124,12 @@ public interface CommissionLogService extends IService<MtCommissionLog> {
      * @return
      */
     PaginationResponse<CommissionLogDto> queryRewardLogsByPagination(CommissionLogPage commissionLogPage);
+
+    /**
+     * 会员端奖励规则说明（按当前生效的分佣提成/推荐奖励方案自动生成）
+     *
+     * @param userId 会员ID
+     * @return
+     */
+    Map<String, Object> getRewardRuleDesc(Integer userId);
 }

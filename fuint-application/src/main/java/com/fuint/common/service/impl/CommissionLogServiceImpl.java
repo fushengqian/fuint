@@ -103,6 +103,11 @@ public class CommissionLogServiceImpl extends ServiceImpl<MtCommissionLogMapper,
     private PointService pointService;
 
     /**
+     * 商品服务接口（奖励说明中解析指定商品名称）
+     * */
+    private GoodsService goodsService;
+
+    /**
      * 分页查询分销提成列表
      *
      * @param commissionLogPage
@@ -809,8 +814,116 @@ public class CommissionLogServiceImpl extends ServiceImpl<MtCommissionLogMapper,
         result.put("pointCount", pointCount);
 
         // 启用中的推荐奖励方案 → 活动规则文案
-        List<Map<String, Object>> ruleTexts = new ArrayList<>();
         List<MtCommissionRule> activeRules = queryActiveRecommendRules(user.getMerchantId(), user.getStoreId());
+        result.put("rules", buildRecommendRuleTexts(activeRules));
+        return result;
+    }
+
+    /**
+     * 会员端奖励规则说明（分佣提成 + 推荐奖励，按当前生效方案自动生成）
+     *
+     * @param userId 会员ID
+     * @return
+     */
+    @Override
+    public Map<String, Object> getRewardRuleDesc(Integer userId) {
+        Map<String, Object> result = new HashMap<>();
+        result.put("commission", buildCommissionRuleDesc(userId));
+        result.put("recommend", buildRecommendRuleDesc(userId));
+        return result;
+    }
+
+    /**
+     * 分佣提成规则说明：按生效中的分佣方案逐条生成比例与计算口径
+     * */
+    private Map<String, Object> buildCommissionRuleDesc(Integer userId) {
+        Map<String, Object> result = new HashMap<>();
+        List<Map<String, Object>> sections = new ArrayList<>();
+        MtUser user = memberService.queryMemberById(userId);
+        if (user != null) {
+            List<MtCommissionRule> rules = queryActiveCommissionRules(user.getMerchantId(), user.getStoreId());
+            for (MtCommissionRule rule : rules) {
+                String typeName = CommissionTypeEnum.getName(rule.getType());
+                Map<String, Object> section = new HashMap<>();
+                section.put("title", StringUtil.isNotEmpty(rule.getName()) ? rule.getName() : (typeName == null ? "分佣提成" : typeName));
+                section.put("period", buildRulePeriod(rule));
+                if (StringUtil.isNotEmpty(rule.getDescription())) {
+                    section.put("description", rule.getDescription());
+                }
+                List<String> lines = new ArrayList<>();
+                lines.add("计算基数：" + buildCommissionBasis(rule.getType()));
+                for (MtCommissionRuleItem item : queryRuleItems(rule.getId())) {
+                    String rateText = buildRateText(item);
+                    if (rateText.isEmpty()) {
+                        continue;
+                    }
+                    if (CommissionTypeEnum.GOODS.getKey().equals(rule.getType())) {
+                        if (item.getTargetId() != null && item.getTargetId() > 0) {
+                            MtGoods goods = goodsService.queryGoodsById(item.getTargetId());
+                            lines.add("「" + (goods == null ? "指定商品" : goods.getName()) + "」" + rateText);
+                        } else {
+                            lines.add("全部商品：" + rateText);
+                        }
+                    } else {
+                        lines.add(rateText);
+                    }
+                }
+                section.put("lines", lines);
+                sections.add(section);
+            }
+        }
+        result.put("sections", sections);
+        result.put("notes", Arrays.asList(
+                "订单完成后由系统按方案自动计算佣金，需商家结算后方可申请提现。",
+                "二级分佣仅在存在二级邀请关系、且方案配置了二级比例时产生。",
+                "会员订单适用会员比例，散客订单适用散客比例。",
+                "仅方案有效期内、适用店铺范围内的订单参与分佣。"
+        ));
+        return result;
+    }
+
+    /**
+     * 推荐奖励规则说明：复用首页的规则文案拼装逻辑，按方案分组
+     * */
+    private Map<String, Object> buildRecommendRuleDesc(Integer userId) {
+        Map<String, Object> result = new HashMap<>();
+        List<Map<String, Object>> sections = new ArrayList<>();
+        MtUser user = memberService.queryMemberById(userId);
+        if (user != null) {
+            List<MtCommissionRule> rules = queryActiveRecommendRules(user.getMerchantId(), user.getStoreId());
+            for (MtCommissionRule rule : rules) {
+                List<Map<String, Object>> texts = buildRecommendRuleTexts(Collections.singletonList(rule));
+                if (texts.isEmpty()) {
+                    continue;
+                }
+                List<String> lines = new ArrayList<>();
+                for (Map<String, Object> text : texts) {
+                    lines.add(String.valueOf(text.get("text")));
+                }
+                Map<String, Object> section = new HashMap<>();
+                section.put("title", StringUtil.isNotEmpty(rule.getName()) ? rule.getName() : "推荐奖励");
+                section.put("period", buildRulePeriod(rule));
+                if (StringUtil.isNotEmpty(rule.getDescription())) {
+                    section.put("description", rule.getDescription());
+                }
+                section.put("lines", lines);
+                sections.add(section);
+            }
+        }
+        result.put("sections", sections);
+        result.put("notes", Arrays.asList(
+                "好友注册成功或订单满足门槛后，卡券、积分奖励即时发放。",
+                "若好友退款且奖励已被使用，退款将被拒绝。",
+                "奖励仅在活动有效期内、适用店铺范围内产生。"
+        ));
+        return result;
+    }
+
+    /**
+     * 推荐奖励方案 → 规则文案（供首页与奖励说明页复用）
+     * */
+    private List<Map<String, Object>> buildRecommendRuleTexts(List<MtCommissionRule> activeRules) {
+        List<Map<String, Object>> ruleTexts = new ArrayList<>();
         for (MtCommissionRule rule : activeRules) {
             List<MtCommissionRuleItem> items = queryRuleItems(rule.getId());
             if ("Y".equals(rule.getRegisterSwitch())) {
@@ -836,8 +949,114 @@ public class CommissionLogServiceImpl extends ServiceImpl<MtCommissionLogMapper,
                 }
             }
         }
-        result.put("rules", ruleTexts);
-        return result;
+        return ruleTexts;
+    }
+
+    /**
+     * 查询生效中的会员分销方案（启用中 + 有效期内 + 店铺匹配）
+     * */
+    private List<MtCommissionRule> queryActiveCommissionRules(Integer merchantId, Integer storeId) {
+        LambdaQueryWrapper<MtCommissionRule> wrapper = Wrappers.lambdaQuery();
+        wrapper.in(MtCommissionRule::getType, Arrays.asList(
+                CommissionTypeEnum.GOODS.getKey(), CommissionTypeEnum.PAYMENT.getKey(), CommissionTypeEnum.RECHARGE.getKey()));
+        wrapper.eq(MtCommissionRule::getStatus, StatusEnum.ENABLED.getKey());
+        wrapper.eq(MtCommissionRule::getMerchantId, merchantId);
+        Date now = new Date();
+        wrapper.and(w -> w.isNull(MtCommissionRule::getStartTime).or().le(MtCommissionRule::getStartTime, now));
+        wrapper.and(w -> w.isNull(MtCommissionRule::getEndTime).or().ge(MtCommissionRule::getEndTime, now));
+        List<MtCommissionRule> matched = new ArrayList<>();
+        for (MtCommissionRule rule : mtCommissionRuleMapper.selectList(wrapper)) {
+            if (CommissionTargetEnum.MEMBER.getKey().equals(rule.getTarget()) && !"recommend".equals(rule.getScene()) && isRuleStoreMatched(rule, storeId)) {
+                matched.add(rule);
+            }
+        }
+        return matched;
+    }
+
+    /**
+     * 方案是否匹配当前店铺（未配置适用店铺视为全店通用）
+     * */
+    private boolean isRuleStoreMatched(MtCommissionRule rule, Integer storeId) {
+        if (StringUtil.isEmpty(rule.getStoreIds()) || storeId == null) {
+            return true;
+        }
+        for (String storeIdStr : rule.getStoreIds().split(",")) {
+            if (storeIdStr.trim().equals(String.valueOf(storeId))) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * 方案有效期文案
+     * */
+    private String buildRulePeriod(MtCommissionRule rule) {
+        if (rule.getStartTime() == null && rule.getEndTime() == null) {
+            return "长期有效";
+        }
+        java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd");
+        String start = rule.getStartTime() == null ? "不限" : sdf.format(rule.getStartTime());
+        String end = rule.getEndTime() == null ? "不限" : sdf.format(rule.getEndTime());
+        return start + " 至 " + end;
+    }
+
+    /**
+     * 分佣计算基数文案（与calculateCommission保持一致）
+     * */
+    private String buildCommissionBasis(String type) {
+        if (CommissionTypeEnum.RECHARGE.getKey().equals(type)) {
+            return "充值订单金额";
+        }
+        if (CommissionTypeEnum.PAYMENT.getKey().equals(type)) {
+            return "订单实付金额";
+        }
+        return "商品单价 × 购买数量";
+    }
+
+    /**
+     * 分佣比例文案：仅展示大于0的比例，为0的档位不展示
+     * */
+    private String buildRateText(MtCommissionRuleItem item) {
+        List<String> memberRates = new ArrayList<>();
+        if (isPositiveRate(item.getMember())) {
+            memberRates.add("一级 " + formatRate(item.getMember()));
+        }
+        if (isPositiveRate(item.getSubMember())) {
+            memberRates.add("二级 " + formatRate(item.getSubMember()));
+        }
+        List<String> guestRates = new ArrayList<>();
+        if (isPositiveRate(item.getGuest())) {
+            guestRates.add("一级 " + formatRate(item.getGuest()));
+        }
+        if (isPositiveRate(item.getSubGuest())) {
+            guestRates.add("二级 " + formatRate(item.getSubGuest()));
+        }
+        List<String> groups = new ArrayList<>();
+        if (!memberRates.isEmpty()) {
+            groups.add("会员订单：" + String.join("、", memberRates));
+        }
+        if (!guestRates.isEmpty()) {
+            groups.add("散客订单：" + String.join("、", guestRates));
+        }
+        return String.join("；", groups);
+    }
+
+    /**
+     * 比例是否大于0
+     * */
+    private boolean isPositiveRate(BigDecimal rate) {
+        return rate != null && rate.compareTo(BigDecimal.ZERO) > 0;
+    }
+
+    /**
+     * 比例文案（百分比）
+     * */
+    private String formatRate(BigDecimal rate) {
+        if (rate == null || rate.compareTo(BigDecimal.ZERO) <= 0) {
+            return "0%";
+        }
+        return rate.stripTrailingZeros().toPlainString() + "%";
     }
 
     /**
