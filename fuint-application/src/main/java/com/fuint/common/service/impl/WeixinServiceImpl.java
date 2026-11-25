@@ -1786,6 +1786,96 @@ public class WeixinServiceImpl implements WeixinService {
     }
 
     /**
+     * 微信商家转账（付款到用户微信零钱，APIv3 /v3/transfer/batches）
+     *
+     * 受理成功不代表最终到账（用户确认收款模式下以微信侧结果为准），
+     * 此处仅以受理结果作为打款依据，批次单号落库供人工对账
+     *
+     * @param storeId 店铺ID（用于选取支付配置）
+     * @param platform 支付平台（决定appId）
+     * @param openId 收款用户openid
+     * @param outBatchNo 商户批次单号
+     * @param amount 转账金额（元）
+     * @param batchName 批次名称
+     * @param batchRemark 转账备注
+     * @throws BusinessCheckException
+     * @return 微信侧转账单号（bill_id）
+     * */
+    @Override
+    public String transferToUser(Integer storeId, String platform, String openId, String outBatchNo, BigDecimal amount, String batchName, String batchRemark) throws BusinessCheckException {
+        if (StringUtil.isEmpty(openId)) {
+            throw new BusinessCheckException("收款用户未绑定微信，无法转账到微信钱包");
+        }
+        if (amount == null || amount.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new BusinessCheckException("转账金额不能小于等于0");
+        }
+        try {
+            getApiConfig(storeId, platform);
+            WxPayV3Config v3Config = getV3Config();
+            PrivateKey privateKey = getV3PrivateKey(v3Config);
+
+            // APIv3 商家转账（升级版单笔转账），金额单位为分
+            int transferAmount = amount.multiply(new BigDecimal("100")).intValue();
+
+            // 转账备注必填，超长截断
+            String transferRemark = StringUtil.isNotEmpty(batchRemark) ? batchRemark : "佣金结算";
+            transferRemark = transferRemark.length() > 64 ? transferRemark.substring(0, 64) : transferRemark;
+
+            JSONObject reqBody = new JSONObject();
+            reqBody.put("appid", v3Config.getAppId());
+            reqBody.put("out_bill_no", outBatchNo);
+            reqBody.put("openid", openId);
+            reqBody.put("transfer_amount", transferAmount);
+            reqBody.put("transfer_remark", transferRemark);
+            // 转账场景ID必填，1000=现金营销、1005=佣金报酬（需在商户平台「商家转账」中报备对应场景）
+            reqBody.put("transfer_scene_id", "1005");
+            // 转账场景报备信息（佣金报酬场景固定传「岗位类型」「报酬说明」两条，info_type为固定中文字符串）
+            JSONArray sceneList = new JSONArray();
+            JSONObject sceneJob = new JSONObject();
+            sceneJob.put("info_type", "岗位类型");
+            sceneJob.put("info_content", "推广人员");
+            sceneList.add(sceneJob);
+            JSONObject sceneDesc = new JSONObject();
+            sceneDesc.put("info_type", "报酬说明");
+            String descContent = transferRemark.length() > 32 ? transferRemark.substring(0, 32) : transferRemark;
+            sceneDesc.put("info_content", descContent);
+            sceneList.add(sceneDesc);
+            reqBody.put("transfer_scene_report_infos", sceneList);
+
+            logger.info("WeixinService transferToUser params: {}", reqBody.toJSONString());
+            IJPayHttpResponse response = WxPayApi.v3(RequestMethodEnum.POST,
+                    WxDomainEnum.CHINA.getDomain(),
+                    "/v3/fund-app/mch-transfer/transfer-bills",
+                    v3Config.getMchId(),
+                    v3Config.getSerialNo(),
+                    v3Config.getPubKeyId(),
+                    privateKey,
+                    reqBody.toJSONString());
+            verifyV3Response(response, v3Config, "商家转账");
+            logger.info("WeixinService transferToUser return: {}", response.getBody());
+
+            // APIv3 以 HTTP 状态码判定业务结果，非 2xx 表示转账受理失败
+            if (response.getStatus() < 200 || response.getStatus() >= 300) {
+                JSONObject result = JSONObject.parseObject(response.getBody());
+                String message = result != null ? result.getString("message") : response.getBody();
+                logger.error("微信商家转账受理失败，message = {}", message);
+                throw new BusinessCheckException("微信商家转账失败：" + message);
+            }
+            JSONObject result = JSONObject.parseObject(response.getBody());
+            // WAIT_USER_CONFIRM 表示等待收款用户在微信内确认收款
+            String state = result != null ? result.getString("state") : null;
+            if ("WAIT_USER_CONFIRM".equals(state)) {
+                logger.warn("商家转账待收款用户确认，billId = {}", result != null ? result.getString("bill_id") : "");
+            }
+            return result != null ? result.getString("bill_id") : "";
+        } catch (BusinessCheckException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new BusinessCheckException("WeixinService.transferToUser 微信商家转账失败：" + e.getMessage());
+        }
+    }
+
+    /**
      * 获取当前线程的微信支付 APIv3 配置
      * */
     private WxPayV3Config getV3Config() {

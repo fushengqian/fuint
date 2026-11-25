@@ -37,4 +37,10 @@ public class CommissionCashPage extends PageParam implements Serializable {
     @Schema(description="状态，A正常；D作废")
     private String status;
 
+    @Schema(description="分佣对象类型：member会员；staff员工")
+    private String userType;
+
+    @Schema(description="付款方式，A会员余额；B微信钱包")
+    private String payType;
+
 }

@@ -20,6 +20,14 @@
         WHERE USER_ID = #{userId} AND STATUS IN ('A', 'B')
     </select>
 
+    <!-- 可提现佣金汇总：已结算且订单已完成（待结算、未完成订单的佣金不计入可提现金额） -->
+    <select id="getFinishedCommissionAmount" resultType="java.math.BigDecimal">
+        SELECT IFNULL(SUM(L.AMOUNT), 0)
+        FROM mt_commission_log L
+        INNER JOIN mt_order O ON O.ID = L.ORDER_ID
+        WHERE L.USER_ID = #{userId} AND L.STATUS = 'B' AND L.SCENE = 'commission' AND O.STATUS = 'I'
+    </select>
+
     <select id="getCommissionOrderCount" resultType="java.lang.Long">
         SELECT COUNT(DISTINCT ORDER_ID) FROM mt_commission_log
         WHERE USER_ID = #{userId} AND STATUS != 'C'

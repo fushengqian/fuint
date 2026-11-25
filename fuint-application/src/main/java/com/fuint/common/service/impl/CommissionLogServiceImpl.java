@@ -181,6 +181,20 @@ public class CommissionLogServiceImpl extends ServiceImpl<MtCommissionLogMapper,
             lambdaQueryWrapper.le(MtCommissionLog::getCreateTime, endTime);
         }
 
+        // 会员端佣金订单：按最近一次已打款提现单标记「已提现」（提现为汇总打款，不与逐笔明细关联）
+        Integer cashUserId = commissionLogPage.getUserId();
+        MtCommissionCash lastPayedCash = null;
+        if (cashUserId != null && cashUserId > 0) {
+            lastPayedCash = mtCommissionCashMapper.selectOne(Wrappers.<MtCommissionCash>lambdaQuery()
+                    .eq(MtCommissionCash::getUserId, cashUserId)
+                    .eq(MtCommissionCash::getStatus, CommissionCashStatusEnum.PAYED.getKey())
+                    .orderByDesc(MtCommissionCash::getPayTime)
+                    .last("limit 1"));
+        }
+        Date lastPayTime = null;
+        if (lastPayedCash != null) {
+            lastPayTime = lastPayedCash.getPayTime() != null ? lastPayedCash.getPayTime() : lastPayedCash.getUpdateTime();
+        }
         lambdaQueryWrapper.orderByDesc(MtCommissionLog::getId);
         Page<MtCommissionLog> pageHelper = PageHelper.startPage(commissionLogPage.getPage(), commissionLogPage.getPageSize());
         List<MtCommissionLog> commissionLogList = mtCommissionLogMapper.selectList(lambdaQueryWrapper);
@@ -192,6 +206,13 @@ public class CommissionLogServiceImpl extends ServiceImpl<MtCommissionLogMapper,
                  commissionLogDto.setTypeName(CommissionTypeEnum.getName(mtCommissionLog.getType()));
                  MtOrder mtOrder = orderService.getById(mtCommissionLog.getOrderId());
                  commissionLogDto.setOrderInfo(mtOrder);
+                 if (lastPayTime != null && mtOrder != null
+                         && OrderStatusEnum.COMPLETE.getKey().equals(mtOrder.getStatus())
+                         && mtCommissionLog.getCreateTime() != null
+                         && !mtCommissionLog.getCreateTime().after(lastPayTime)) {
+                     commissionLogDto.setIsCash("Y");
+                     commissionLogDto.setCashId(lastPayedCash.getId());
+                 }
                  MtStore mtStore = storeService.getById(mtCommissionLog.getStoreId());
                  commissionLogDto.setStoreInfo(mtStore);
                  MtStaff mtStaff = staffService.getById(mtCommissionLog.getStaffId());
@@ -245,8 +266,10 @@ public class CommissionLogServiceImpl extends ServiceImpl<MtCommissionLogMapper,
         BigDecimal withdrawAmount = mtCommissionCashMapper.getWithdrawAmount(userId);
         overviewDto.setWithdrawAmount(withdrawAmount != null ? withdrawAmount : BigDecimal.ZERO);
 
-        // 待提现金额 = 总佣金 - 已提现金额
-        overviewDto.setAmount(overviewDto.getTotalAmount().subtract(overviewDto.getWithdrawAmount()));
+        // 待提现金额 = 已完成订单的佣金 - 已提现金额（未完成订单的佣金不计入可提现金额）
+        BigDecimal finishedAmount = mtCommissionLogMapper.getFinishedCommissionAmount(userId);
+        BigDecimal withdrawableAmount = (finishedAmount == null ? BigDecimal.ZERO : finishedAmount).subtract(overviewDto.getWithdrawAmount());
+        overviewDto.setAmount(withdrawableAmount.compareTo(BigDecimal.ZERO) > 0 ? withdrawableAmount : BigDecimal.ZERO);
 
         // 邀请会员数
         Long userCount = mtCommissionRelationMapper.getInvitedUserCount(userId);
@@ -830,8 +853,59 @@ public class CommissionLogServiceImpl extends ServiceImpl<MtCommissionLogMapper,
         Map<String, Object> result = new HashMap<>();
         result.put("commission", buildCommissionRuleDesc(userId));
         result.put("recommend", buildRecommendRuleDesc(userId));
+        result.put("withdraw", buildWithdrawRuleDesc(userId));
         return result;
     }
+
+    /**
+     * 提现规则说明：可提现额度、提现次数、提现与到账时间等
+     * */
+    private Map<String, Object> buildWithdrawRuleDesc(Integer userId) {
+        Map<String, Object> result = new HashMap<>();
+        List<Map<String, Object>> sections = new ArrayList<>();
+
+        // 可提现额度（动态展示当前额度与计算口径）
+        Map<String, Object> amountSection = new HashMap<>();
+        amountSection.put("title", "可提现额度");
+        List<String> amountLines = new ArrayList<>();
+        BigDecimal withdrawAmount = BigDecimal.ZERO;
+        CommissionOverviewDto overview = getCommissionOverview(userId);
+        if (overview != null && overview.getAmount() != null) {
+            withdrawAmount = overview.getAmount();
+        }
+        amountLines.add("当前可提现金额：￥" + withdrawAmount.stripTrailingZeros().toPlainString());
+        amountLines.add("额度构成：仅包含已完成订单且商家已结算的佣金，并扣除已打款金额。");
+        amountLines.add("提现金额固定为全部可提现金额，不支持自定义金额。");
+        amountSection.put("lines", amountLines);
+        sections.add(amountSection);
+
+        // 提现次数
+        Map<String, Object> timesSection = new HashMap<>();
+        timesSection.put("title", "提现次数");
+        timesSection.put("lines", Arrays.asList(
+                "同一时间仅允许存在一笔待审核或待打款的提现申请。",
+                "提现申请处理完成后，方可再次发起新的提现申请。"
+        ));
+        sections.add(timesSection);
+
+        // 提现与到账时间
+        Map<String, Object> timeSection = new HashMap<>();
+        timeSection.put("title", "提现与到账时间");
+        timeSection.put("lines", Arrays.asList(
+                "提现时间：会员可随时发起提现申请，无时间限制。",
+                "审核打款：由商家审核确认后安排打款，具体时间以商家处理进度为准。",
+                "到账时间：提现到会员余额的，审核通过后即时到账；提现到微信钱包的，商家发起转账后一般1-3个工作日内到账，以微信通知为准。"
+        ));
+        sections.add(timeSection);
+
+        result.put("sections", sections);
+        result.put("notes", Arrays.asList(
+                "提现申请提交后由商家审核，审核不通过时请联系商家处理。",
+                "可提现金额实时变化，以提交申请时系统计算的额度为准。"
+        ));
+        return result;
+    }
+
 
     /**
      * 分佣提成规则说明：按生效中的分佣方案逐条生成比例与计算口径

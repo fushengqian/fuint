@@ -20,6 +20,8 @@ public interface MtCommissionLogMapper extends BaseMapper<MtCommissionLog> {
 
     BigDecimal getTotalCommissionAmount(@Param("userId") Integer userId);
 
+    BigDecimal getFinishedCommissionAmount(@Param("userId") Integer userId);
+
     Long getCommissionOrderCount(@Param("userId") Integer userId);
 
 }

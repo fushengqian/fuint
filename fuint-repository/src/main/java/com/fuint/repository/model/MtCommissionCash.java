@@ -62,4 +62,13 @@ public class MtCommissionCash implements Serializable {
     @Schema(description="状态")
     private String status;
 
+    @Schema(description="付款方式，A:余额，B:微信钱包")
+    private String payType;
+
+    @Schema(description="打款时间")
+    private Date payTime;
+
+    @Schema(description="微信商家转账批次单号")
+    private String transferNo;
+
 }

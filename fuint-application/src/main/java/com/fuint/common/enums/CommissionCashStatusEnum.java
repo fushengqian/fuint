@@ -13,8 +13,8 @@ import java.util.stream.Collectors;
  * CopyRight https://www.fuint.cn
  */
 public enum CommissionCashStatusEnum {
-    WAIT("A", "待确认"),
-    SETTLED("B", "已确认"),
+    WAIT("A", "待审核"),
+    SETTLED("B", "审核通过"),
     CANCEL("C", "已作废"),
     PAYED("D", "已打款");
 

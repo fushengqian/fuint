@@ -204,4 +204,19 @@ public interface WeixinService {
      */
     void uploadShippingInfo(String orderSn) throws BusinessCheckException;
 
+    /**
+     * 微信商家转账（付款到用户微信零钱，APIv3 /v3/transfer/batches）
+     *
+     * @param storeId 店铺ID（用于选取支付配置）
+     * @param platform 支付平台（决定 appId）
+     * @param openId 收款用户openid
+     * @param outBatchNo 商户批次单号
+     * @param amount 转账金额（元）
+     * @param batchName 批次名称
+     * @param batchRemark 批次备注
+     * @throws BusinessCheckException
+     * @return 微信侧批次单号（batch_id）
+     */
+    String transferToUser(Integer storeId, String platform, String openId, String outBatchNo, BigDecimal amount, String batchName, String batchRemark) throws BusinessCheckException;
+
 }
