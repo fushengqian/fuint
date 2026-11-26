@@ -873,7 +873,7 @@ public class CouponServiceImpl extends ServiceImpl<MtCouponMapper, MtCoupon> imp
             throw new BusinessCheckException("该卡券状态有误，可能已使用或已过期！");
         }
 
-        if (userCoupon.getType().equals(CouponTypeEnum.PRESTORE.getKey()) && (amount == null) || (amount.compareTo(new BigDecimal("0")) <= 0)) {
+        if (userCoupon.getType().equals(CouponTypeEnum.PRESTORE.getKey()) && (amount == null || amount.compareTo(new BigDecimal("0")) <= 0)) {
             throw new BusinessCheckException("储值卡核销金额不能为空！");
         }
 

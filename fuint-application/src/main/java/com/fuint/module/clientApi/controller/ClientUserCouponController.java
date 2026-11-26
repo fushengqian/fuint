@@ -105,6 +105,9 @@ public class ClientUserCouponController extends BaseController {
             userCoupon = mtUserCouponMapper.findByCode(userCouponCode);
         }
 
+        if (userCoupon == null) {
+            return getFailureResult(201, Message.COUPON_NOT_EXIST);
+        }
         if (!mtUser.getId().equals(userCoupon.getUserId())) {
             MtStaff confirmInfo = staffService.queryStaffByMobile(loginInfo.getMobile());
             if (null == confirmInfo) {

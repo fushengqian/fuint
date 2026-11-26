@@ -150,16 +150,19 @@ public class MerchantOrderController extends BaseController {
         MtUser userInfo = memberService.queryMemberById(mtUser.getId());
         MtStaff staffInfo = staffService.queryStaffByMobile(userInfo.getMobile());
         if (staffInfo == null) {
-            return getFailureResult(1004);
+            return getFailureResult(1004, "当前账号不是店员，无法核销订单");
         }
-        // 员工商户必须与订单商户一致
-        if (staffInfo.getMerchantId() == null || !staffInfo.getMerchantId().equals(orderInfo.getMerchantId())) {
-            return getFailureResult(1004);
+        // 员工商户一致：仅在员工与订单都记录了商户时校验，兼容历史数据缺商户的情况
+        if (staffInfo.getMerchantId() != null && staffInfo.getMerchantId() > 0
+                && orderInfo.getMerchantId() != null && orderInfo.getMerchantId() > 0
+                && !staffInfo.getMerchantId().equals(orderInfo.getMerchantId())) {
+            return getFailureResult(1004, "该订单不属于当前商户，无法核销");
         }
-        // 员工必须绑定有效门店，且与订单门店一致
-        if (staffInfo.getStoreId() == null || staffInfo.getStoreId() <= 0
-                || orderInfo.getStoreInfo() == null || !staffInfo.getStoreId().equals(orderInfo.getStoreInfo().getId())) {
-            return getFailureResult(1004);
+        // 门店一致：员工绑定门店且订单有门店信息时才校验；未绑定门店的店员可核销全部订单
+        if (staffInfo.getStoreId() != null && staffInfo.getStoreId() > 0
+                && orderInfo.getStoreInfo() != null
+                && !staffInfo.getStoreId().equals(orderInfo.getStoreInfo().getId())) {
+            return getFailureResult(1004, "该订单不属于当前门店，无法核销");
         }
 
         OrderDto orderDto = new OrderDto();
